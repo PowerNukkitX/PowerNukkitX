@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome;
 
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.level.biome.impl.HellBiome;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
@@ -16,9 +17,7 @@ import cn.nukkit.level.biome.impl.jungle.*;
 import cn.nukkit.level.biome.impl.mesa.*;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandShoreBiome;
-import cn.nukkit.level.biome.impl.ocean.DeepOceanBiome;
-import cn.nukkit.level.biome.impl.ocean.FrozenOceanBiome;
-import cn.nukkit.level.biome.impl.ocean.OceanBiome;
+import cn.nukkit.level.biome.impl.ocean.*;
 import cn.nukkit.level.biome.impl.plains.PlainsBiome;
 import cn.nukkit.level.biome.impl.plains.SunflowerPlainsBiome;
 import cn.nukkit.level.biome.impl.river.FrozenRiverBiome;
@@ -40,8 +39,10 @@ import cn.nukkit.level.biome.impl.taiga.*;
  * Also just looks cleaner than listing everything as static final in {@link Biome}
  * </p>
  */
+@PowerNukkitDifference(info = "FROZEN_OCEAN generates naturally, old FrozenOceanBiome(LegacyFrozenOceanBiome) is LEGACY_FROZEN_OCEAN", since = "1.4.0.0-PN")
+@PowerNukkitDifference(info = "OCEAN ID changed to 42", since = "1.4.0.0-PN")
 public enum EnumBiome {
-    OCEAN(0, new OceanBiome()),//
+    //OCEAN(0, new OceanBiome()),
     PLAINS(1, new PlainsBiome()),
     DESERT(2, new DesertBiome()),
     EXTREME_HILLS(3, new ExtremeHillsBiome()),
@@ -50,7 +51,7 @@ public enum EnumBiome {
     SWAMP(6, new SwampBiome()),
     RIVER(7, new RiverBiome()),//
     HELL(8, new HellBiome()),
-    FROZEN_OCEAN(10, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
+    FROZEN_OCEAN(10, new FrozenOceanBiome()),
     FROZEN_RIVER(11, new FrozenRiverBiome()),
     ICE_PLAINS(12, new IcePlainsBiome()),
     MUSHROOM_ISLAND(14, new MushroomIslandBiome()),//
@@ -79,6 +80,16 @@ public enum EnumBiome {
     MESA(37, new MesaBiome()),
     MESA_PLATEAU_F(38, new MesaPlateauFBiome()),
     MESA_PLATEAU(39, new MesaPlateauBiome()),
+    
+    OCEAN(42, new OceanBiome()),
+    LEGACY_FROZEN_OCEAN(43, new LegacyFrozenOceanBiome()), // Does not generate naturally!
+    WARM_OCEAN(44, new WarmOceanBiome()),
+    LUKEWARM_OCEAN(45, new LukewarmOceanBiome()),
+    COLD_OCEAN(46, new ColdOceanBiome()),
+    DEEP_WARM_OCEAN(47, new DeepWarmOceanBiome()), // Does not generate naturally!
+    DEEP_LUKEWARM_OCEAN(48, new DeepLukewarmOceanBiome()),
+    DEEP_COLD_OCEAN(49, new DeepColdOceanBiome()),
+    DEEP_FROZEN_OCEAN(50, new DeepFrozenOceanBiome()),
     //    All biomes below this comment are mutated variants of existing biomes
     SUNFLOWER_PLAINS(129, new SunflowerPlainsBiome()),
     DESERT_M(130, new DesertMBiome()),
