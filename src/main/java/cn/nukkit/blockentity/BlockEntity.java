@@ -67,11 +67,16 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final String TARGET = "Target";
-
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final String END_PORTAL = "EndPortal";
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final String END_GATEWAY = "EndGateway";
 
     public static long count = 1;
 
-    private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(21);
+    private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(35);
 
     public FullChunk chunk;
     public String name;
