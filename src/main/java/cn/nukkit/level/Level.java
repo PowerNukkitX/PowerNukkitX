@@ -161,6 +161,7 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[BlockID.CRIMSON_NYLIUM] = true;
         randomTickBlocks[BlockID.WARPED_NYLIUM] = true;
         randomTickBlocks[BlockID.TWISTING_VINES] = true;
+        randomTickBlocks[BlockID.CHORUS_FLOWER] = true;
     }
     
     @PowerNukkitOnly
