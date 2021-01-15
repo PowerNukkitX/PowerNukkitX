@@ -1,21 +1,54 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.projectile.EntityArrow;
+import cn.nukkit.entity.projectile.EntitySnowball;
+import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.level.Position;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
 
-public class BlockChorusFlower extends BlockTransparent {
+public class BlockChorusFlower extends BlockTransparentMeta {
 
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final IntBlockProperty AGE = new IntBlockProperty("age", false, 5);
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
+    
     public BlockChorusFlower() {
+        this(0);
     }
-
+    
+    public BlockChorusFlower(int meta) {
+        super(meta);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
+    }
+    
     @Override
     public int getId() {
         return CHORUS_FLOWER;
@@ -38,7 +71,7 @@ public class BlockChorusFlower extends BlockTransparent {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_NONE;
+        return ItemTool.TYPE_AXE;
     }
 
     private boolean isPositionValid() {
@@ -67,19 +100,97 @@ public class BlockChorusFlower extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isPositionValid()) {
-                level.scheduleUpdate(this, 1);
+                this.getLevel().scheduleUpdate(this, 1);
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            Map<Integer, Player> players = level.getChunkPlayers((int) x >> 4, (int) z >> 4);
-            level.addParticle(new DestroyBlockParticle(this, this), players.values());
-            level.setBlock(this, Block.get(AIR));
+            this.getLevel().useBreakOn(this, null, null, true);
             return type;
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+            // Check limit
+            if (this.up().getId() == AIR && this.up().getY() < 256) {
+                if (!isFullyAged()) {
+                    boolean growUp = false; // Grow upward?
+                    boolean ground = false; // Is on the ground directly?
+                    if (this.down().getId() == AIR || this.down().getId() == END_STONE) {
+                        growUp = true;
+                    } else if (this.down().getId() == CHORUS_PLANT) {
+                        int height = 1;
+                        for (int y = 2; y < 6; y++) {
+                            if (this.down(y).getId() == CHORUS_PLANT) {
+                                height++;
+                            } else {
+                                if (this.down(y).getId() == END_STONE) {
+                                    ground = true;
+                                }
+                                break;
+                            }
+                        }
+                        
+                        if (height < 2 || height <= ThreadLocalRandom.current().nextInt(ground ? 5 : 4)) {
+                            growUp = true;
+                        }
+                    }
+                    
+                    // Grow Upward
+                    if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
+                        BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                        block.y = this.y + 1;
+                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                        Server.getInstance().getPluginManager().callEvent(ev);
+                        
+                        if (!ev.isCancelled()) {
+                            this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
+                            this.getLevel().setBlock(block, ev.getNewState());
+                            this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
+                        } else {
+                            return Level.BLOCK_UPDATE_RANDOM;
+                        }
+                    // Grow Horizontally
+                    } else if (!isFullyAged()) {
+                        for (int i = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
+                            BlockFace face = BlockFace.Plane.HORIZONTAL.random();
+                            Block check = this.getSide(face);
+                            if (check.getId() == AIR && check.down().getId() == AIR && isHorizontalAirExcept(check, face.getOpposite())) {
+                                BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                                block.x = check.x;
+                                block.y = check.y;
+                                block.z = check.z;
+                                block.setAge(getAge() + 1);
+                                BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                                Server.getInstance().getPluginManager().callEvent(ev);
+                                
+                                if (!ev.isCancelled()) {
+                                    this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
+                                    this.getLevel().setBlock(block, ev.getNewState());
+                                    this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_GROW);
+                                } else {
+                                    return Level.BLOCK_UPDATE_RANDOM;
+                                }
+                            }
+                        }
+                    // Death
+                    } else {
+                        BlockChorusFlower block = (BlockChorusFlower) this.clone();
+                        block.setAge(getMaxAge());
+                        BlockGrowEvent ev = new BlockGrowEvent(this, block);
+                        Server.getInstance().getPluginManager().callEvent(ev);
+                        
+                        if (!ev.isCancelled()) {
+                            this.getLevel().setBlock(block, ev.getNewState());
+                            this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_DEATH);
+                        } else {
+                            return Level.BLOCK_UPDATE_RANDOM;
+                        }
+                    }
+                }
+            } else {
+                return Level.BLOCK_UPDATE_RANDOM;
+            }
         }
-
+        
         return 0;
     }
 
@@ -93,7 +204,7 @@ public class BlockChorusFlower extends BlockTransparent {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{this.toItem()};
+        return new Item[]{ this.toItem() };
     }
 
     @Override
@@ -104,5 +215,65 @@ public class BlockChorusFlower extends BlockTransparent {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Override
+    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+        if (projectile instanceof EntityArrow || projectile instanceof EntitySnowball) { // TODO: Check Fire Charge too
+            this.getLevel().useBreakOn(this);
+            projectile.kill();
+            return true;
+        }
+        return super.onProjectileHit(projectile, position, motion);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public int getMaxAge() {
+        return AGE.getMaxValue();
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public int getAge() {
+        return getIntValue(AGE);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public void setAge(int age) {
+        setIntValue(AGE, age);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isFullyAged() {
+        return getAge() >= getMaxAge();
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean isHorizontalAir(Block block) {
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+            if (block.getSide(face).getId() != AIR) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean isHorizontalAirExcept(Block block, BlockFace except) {
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+            if (face != except) {
+                if (block.getSide(face).getId() != AIR) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
