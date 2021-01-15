@@ -42,6 +42,7 @@ import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.Nether;
 import cn.nukkit.level.generator.Normal;
+import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -263,7 +264,11 @@ public class Server {
     private boolean forceSkinTrusted = false;
 
     private boolean checkMovement = true;
-
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean allowTheEnd;
+    
     /**
      * Minimal initializer for testing
      */
@@ -530,6 +535,7 @@ public class Server {
                 put("level-seed", "");
                 put("level-type", "DEFAULT");
                 put("allow-nether", true);
+                put("allow-the_end", true);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -541,7 +547,9 @@ public class Server {
 
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
-
+        
+        this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
+        
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
@@ -680,6 +688,7 @@ public class Server {
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
         Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
+        Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
         //todo: add old generator and hell generator
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
@@ -2613,6 +2622,8 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.NETHER_REACTOR, BlockEntityNetherReactor.class);
         BlockEntity.registerBlockEntity(BlockEntity.LODESTONE, BlockEntityLodestone.class);
         BlockEntity.registerBlockEntity(BlockEntity.TARGET, BlockEntityTarget.class);
+        BlockEntity.registerBlockEntity(BlockEntity.END_PORTAL, BlockEntityEndPortal.class);
+        BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
     }
 
     public boolean isNetherAllowed() {
@@ -2660,7 +2671,13 @@ public class Server {
     public boolean isCheckMovement(){
         return checkMovement;
     }
-
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isTheEndAllowed() {
+        return this.allowTheEnd;
+    }
+    
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
         @Override
