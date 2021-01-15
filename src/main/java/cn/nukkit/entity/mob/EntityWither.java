@@ -1,6 +1,8 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,6 +51,13 @@ public class EntityWither extends EntityMob implements EntitySmite {
 
     @Override
     public boolean isPreventingSleep(Player player) {
+        return true;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Override
+    public boolean isBoss() {
         return true;
     }
 }
