@@ -19,7 +19,7 @@ import static cn.nukkit.block.BlockID.IRON_BARS;
  */
 public class ObjectEndSpike extends BasicGenerator {
 
-    private static final BlockState STATE_BEDROCK_INFINIBURN = BlockState.of(BEDROCK); // TODO: Use an indefinitely burning bedrock
+    private static final BlockState STATE_BEDROCK_INFINIBURN = BlockState.of(BEDROCK, 1);
     private static final BlockState STATE_OBSIDIAN = BlockState.of(OBSIDIAN);
     private static final BlockState STATE_IRON_BARS = BlockState.of(IRON_BARS);
     
