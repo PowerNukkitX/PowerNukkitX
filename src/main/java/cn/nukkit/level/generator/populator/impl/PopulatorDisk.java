@@ -64,7 +64,7 @@ public class PopulatorDisk extends PopulatorCount {
         int radius = NukkitMath.randomRange(random, radiusMin, radiusMax);
         for (int x = sourceX - radius; x <= sourceX + radius; x++) {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
-                if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (x - sourceX) <= radius * radius) {
+                if ((x - sourceX) * (x - sourceX) + (z - sourceZ) * (z - sourceZ) <= radius * radius) {
                     for (int y = sourceY - radiusY; y <= sourceY + radiusY; y++) {
                         for (BlockState replaceBlockState : replaceBlocks) {
                             if (level.getBlockStateAt(x, y, z).equals(replaceBlockState)) {
