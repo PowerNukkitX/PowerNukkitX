@@ -338,7 +338,7 @@ public class BlockVine extends BlockTransparentMeta {
         return faces;
     }
 
-    private static int getMetaFromFaces(Set<BlockFace> faces) {
+    public static int getMetaFromFaces(Set<BlockFace> faces) {
         int meta = 0;
 
         for (BlockFace face : faces) {
@@ -349,7 +349,7 @@ public class BlockVine extends BlockTransparentMeta {
         return meta;
     }
 
-    private static int getMetaFromFace(BlockFace face) {
+    public static int getMetaFromFace(BlockFace face) {
         switch (face) {
             case SOUTH:
             default:
