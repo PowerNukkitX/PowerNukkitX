@@ -508,5 +508,129 @@ public interface BlockID {
     @Since("1.4.0.0-PN") @PowerNukkitOnly int CHISELED_NETHER_BRICKS = 557;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int CRACKED_NETHER_BRICKS = 558;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int QUARTZ_BRICKS = 559;
-    //int UNKNOWN = 600;
+    
+    // TODO @Since("FUTURE") @PowerNukkitOnly int GLOW_BERRIES = ??? 
+
+    //TODO 560
+    
+    @Since("FUTURE") @PowerNukkitOnly int POWDER_SNOW = 561;
+    @Since("FUTURE") @PowerNukkitOnly int SCULK_SENSOR = 562;
+    @Since("FUTURE") @PowerNukkitOnly int POINTED_DRIPSTONE = 563;
+    //TODO 564
+    //TODO 565
+    @Since("FUTURE") @PowerNukkitOnly int COPPER_ORE = 566;
+    @Since("FUTURE") @PowerNukkitOnly int LIGHTNING_ROD = 567;
+    //TODO 568
+    //TODO 569
+    //TODO 569
+    //TODO 570
+    //TODO 571
+    @Since("FUTURE") @PowerNukkitOnly int DRIPSTONE_BLOCK = 572;
+    @Since("FUTURE") @PowerNukkitOnly int DIRT_WITH_ROOTS = 573;
+    @Since("FUTURE") @PowerNukkitOnly int HANGING_ROOTS = 574;
+    @Since("FUTURE") @PowerNukkitOnly int MOSS_BLOCK = 575;
+    @Since("FUTURE") @PowerNukkitOnly int SPORE_BLOSSOM = 576;
+    @Since("FUTURE") @PowerNukkitOnly int CAVE_VINES = 577;
+    @Since("FUTURE") @PowerNukkitOnly int BIG_DRIPLEAF = 578;
+    @Since("FUTURE") @PowerNukkitOnly int AZALEA_LEAVES = 579;
+    @Since("FUTURE") @PowerNukkitOnly int AZALEA_LEAVES_FLOWERED = 580;
+    @Since("FUTURE") @PowerNukkitOnly int CALCITE = 581;
+    @Since("FUTURE") @PowerNukkitOnly int AMETHYST_BLOCK = 582;
+    @Since("FUTURE") @PowerNukkitOnly int BUDDING_AMETHYST = 583;
+    @Since("FUTURE") @PowerNukkitOnly int AMETHYST_CLUSTER = 584;
+    @Since("FUTURE") @PowerNukkitOnly int LARGE_AMETHYST_BUD = 585;
+    @Since("FUTURE") @PowerNukkitOnly int MEDIUM_AMETHYST_BUD = 586;
+    @Since("FUTURE") @PowerNukkitOnly int SMALL_AMETHYST_BUD = 587;
+    @Since("FUTURE") @PowerNukkitOnly int TUFF = 588;
+    @Since("FUTURE") @PowerNukkitOnly int TINTED_GLASS = 589;
+    @Since("FUTURE") @PowerNukkitOnly int MOSS_CARPET = 590;
+    @Since("FUTURE") @PowerNukkitOnly int SMALL_DRIPLEAF_BLOCK = 591;
+    @Since("FUTURE") @PowerNukkitOnly int AZALEA = 592;
+    @Since("FUTURE") @PowerNukkitOnly int FLOWERING_AZALEA = 593;
+    @Since("FUTURE") @PowerNukkitOnly int GLOW_FRAME = 594;
+    @Since("FUTURE") @PowerNukkitOnly int COPPER_BLOCK = 595;
+    @Since("FUTURE") @PowerNukkitOnly int EXPOSED_COPPER = 596;
+    @Since("FUTURE") @PowerNukkitOnly int WEATHERED_COPPER = 597;
+    @Since("FUTURE") @PowerNukkitOnly int OXIDIZED_COPPER = 598;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_COPPER = 599;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_EXPOSED_COPPER = 600;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_WEATHERED_COPPER = 601;
+    @Since("FUTURE") @PowerNukkitOnly int CUT_COPPER = 602;
+    @Since("FUTURE") @PowerNukkitOnly int EXPOSED_CUT_COPPER = 603;
+    @Since("FUTURE") @PowerNukkitOnly int WEATHERED_CUT_COPPER = 604;
+    @Since("FUTURE") @PowerNukkitOnly int OXIDIZED_CUT_COPPER = 605;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_CUT_COPPER = 606;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_EXPOSED_CUT_COPPER = 607;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_WEATHERED_CUT_COPPER = 608;
+    @Since("FUTURE") @PowerNukkitOnly int CUT_COPPER_STAIRS = 609;
+    @Since("FUTURE") @PowerNukkitOnly int EXPOSED_CUT_COPPER_STAIRS = 610;
+    @Since("FUTURE") @PowerNukkitOnly int WEATHERED_CUT_COPPER_STAIRS = 611;
+    @Since("FUTURE") @PowerNukkitOnly int OXIDIZED_CUT_COPPER_STAIRS = 612;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_CUT_COPPER_STAIRS = 613;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_EXPOSED_CUT_COPPER_STAIRS = 614;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_WEATHERED_CUT_COPPER_STAIRS = 615;
+    @Since("FUTURE") @PowerNukkitOnly int CUT_COPPER_SLAB = 616;
+    @Since("FUTURE") @PowerNukkitOnly int EXPOSED_CUT_COPPER_SLAB = 617;
+    @Since("FUTURE") @PowerNukkitOnly int WEATHERED_CUT_COPPER_SLAB = 618;
+    @Since("FUTURE") @PowerNukkitOnly int OXIDIZED_CUT_COPPER_SLAB = 619;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_CUT_COPPER_SLAB = 620;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_EXPOSED_CUT_COPPER_SLAB = 621;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_WEATHERED_CUT_COPPER_SLAB = 622;
+    @Since("FUTURE") @PowerNukkitOnly int DOUBLE_CUT_COPPER_SLAB = 623;
+    @Since("FUTURE") @PowerNukkitOnly int EXPOSED_DOUBLE_CUT_COPPER_SLAB = 624;
+    @Since("FUTURE") @PowerNukkitOnly int WEATHERED_DOUBLE_CUT_COPPER_SLAB = 625;
+    @Since("FUTURE") @PowerNukkitOnly int OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 626;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_DOUBLE_CUT_COPPER_SLAB = 627;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB = 628;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB = 629;
+    @Since("FUTURE") @PowerNukkitOnly int CAVE_VINES_BODY_WITH_BERRIES = 630;
+    @Since("FUTURE") @PowerNukkitOnly int CAVE_VINES_HEAD_WITH_BERRIES = 631;
+    @Since("FUTURE") @PowerNukkitOnly int SMOOTH_BASALT = 632;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE = 633;
+    @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE = 634;
+    @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_SLAB = 635;
+    @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_STAIRS = 636;
+    @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_WALL = 637;
+    // TODO 638
+    @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_SLAB = 639;
+    @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_STAIRS = 640;
+    @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_WALL = 641;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILES = 642;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_SLAB = 643;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_STAIRS = 644;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_WALL = 645;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICKS = 646;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_SLAB = 647;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_STAIRS = 648;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_WALL = 649;
+    @Since("FUTURE") @PowerNukkitOnly int CHISELED_DEEPSLATE = 650;
+    @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_DOUBLE_SLAB = 651;
+    @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_DOUBLE_SLAB = 652;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_DOUBLE_SLAB = 653;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_DOUBLE_SLAB = 654;
+    // TODO 655
+    // TODO 656
+    // TODO 657
+    // TODO 658
+    // TODO 659
+    // TODO 660
+    // TODO 661
+    // TODO 662
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_COPPER_ORE = 663;
+    @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_TILES = 664;
+    @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_BRICKS = 665;
+    @Since("FUTURE") @PowerNukkitOnly int GLOW_LICHEN = 666;
+    // TODO 667
+    // TODO 668
+    // TODO 669
+    // TODO 700
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_COPPER = 701;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER = 702;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_SLAB = 704;
+    @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 705;
+    @Since("FUTURE") @PowerNukkitOnly int RAW_IRON_BLOCK = 706;
+    @Since("FUTURE") @PowerNukkitOnly int RAW_COPPER_BLOCK = 707;
+    @Since("FUTURE") @PowerNukkitOnly int RAW_GOLD_BLOCK = 708;
+    @Since("FUTURE") @PowerNukkitOnly int INFESTED_DEEPSLATE = 709;
 }
