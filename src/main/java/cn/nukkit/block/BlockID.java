@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
@@ -9,17 +10,35 @@ public interface BlockID {
     int GRASS = 2;
     int DIRT = 3;
     int COBBLESTONE = 4;
-    int COBBLE = 4;
-    int PLANK = 5;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", 
+        replaceWith = "COBBLESTONE", reason = "Wrong Minecraft block name")
+    int COBBLE = COBBLESTONE;
     int PLANKS = 5;
-    int WOODEN_PLANK = 5;
-    int WOODEN_PLANKS = 5;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "PLANKS", reason = "Wrong Minecraft block name")
+    int PLANK = PLANKS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "PLANKS", reason = "Wrong Minecraft block name")
+    int WOODEN_PLANK = PLANKS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "PLANKS", reason = "Wrong Minecraft block name")
+    int WOODEN_PLANKS = PLANKS;
     int SAPLING = 6;
-    int SAPLINGS = 6;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "SAPLING", reason = "Wrong Minecraft block name")
+    int SAPLINGS = SAPLING;
     int BEDROCK = 7;
-    int WATER = 8;
+    @Since("FUTURE") @PowerNukkitOnly int FLOWING_WATER = 8;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "FLOWING_WATER for minecraft:flowing_water or STILL_WATER for minecraft:water",
+            reason = "Wrong Minecraft block name")
+    int WATER = FLOWING_WATER;
     int STILL_WATER = 9;
-    int LAVA = 10;
+    @Since("FUTURE") @PowerNukkitOnly int FLOWING_LAVA = 10;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "FLOWING_LAVA for minecraft:flowing_lava or STILL_LAVA for minecraft:lava",
+            reason = "Wrong Minecraft block name")
+    int LAVA = FLOWING_LAVA;
     int STILL_LAVA = 11;
     int SAND = 12;
     int GRAVEL = 13;
@@ -27,10 +46,17 @@ public interface BlockID {
     int IRON_ORE = 15;
     int COAL_ORE = 16;
     int LOG = 17;
-    int WOOD = 17;
-    int TRUNK = 17;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LOG for minecraft:log or WOOD_BARK for minecraft:wood",
+            reason = "Wrong Minecraft block name")
+    int WOOD = LOG;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LOG", reason = "Wrong Minecraft block name")
+    int TRUNK = LOG;
     int LEAVES = 18;
-    int LEAVE = 18;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LEAVES", reason = "Wrong Minecraft block name and English word")
+    int LEAVE = LEAVES;
     int SPONGE = 19;
     int GLASS = 20;
     int LAPIS_ORE = 21;
@@ -50,120 +76,204 @@ public interface BlockID {
     int PISTON_HEAD = 34;
     int WOOL = 35;
     int DANDELION = 37;
-    int POPPY = 38;
-    int ROSE = 38;
-    int FLOWER = 38;
     int RED_FLOWER = 38;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "RED_FLOWER", reason = "Wrong Minecraft block name")
+    int POPPY = RED_FLOWER;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "RED_FLOWER", reason = "Wrong Minecraft block name")
+    int ROSE = RED_FLOWER;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "RED_FLOWER", reason = "Wrong Minecraft block name")
+    int FLOWER = RED_FLOWER;
     int BROWN_MUSHROOM = 39;
     int RED_MUSHROOM = 40;
     int GOLD_BLOCK = 41;
     int IRON_BLOCK = 42;
-    int DOUBLE_SLAB = 43;
     int DOUBLE_STONE_SLAB = 43;
-    int DOUBLE_SLABS = 43;
-    int SLAB = 44;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "DOUBLE_STONE_SLAB", reason = "Wrong Minecraft block name")
+    int DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "DOUBLE_STONE_SLAB", reason = "Wrong Minecraft block name")
+    int DOUBLE_SLABS = DOUBLE_STONE_SLAB;
     int STONE_SLAB = 44;
-    int SLABS = 44;
-    int BRICKS = 45;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONE_SLAB", reason = "Wrong Minecraft block name")
+    int SLAB = STONE_SLAB;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONE_SLAB", reason = "Wrong Minecraft block name")
+    int SLABS = STONE_SLAB;
     int BRICKS_BLOCK = 45;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "BRICKS_BLOCK", reason = "Wrong Minecraft block name")
+    int BRICKS = BRICKS_BLOCK;
     int TNT = 46;
     int BOOKSHELF = 47;
-    int MOSS_STONE = 48;
-    int MOSSY_STONE = 48;
+    @Since("FUTURE") @PowerNukkitOnly int MOSSY_COBBLESTONE = 48;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "MOSSY_COBBLESTONE", reason = "Wrong Minecraft block name")
+    int MOSS_STONE = MOSSY_COBBLESTONE;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "MOSSY_COBBLESTONE", reason = "Wrong Minecraft block name")
+    int MOSSY_STONE = MOSSY_COBBLESTONE;
     int OBSIDIAN = 49;
     int TORCH = 50;
     int FIRE = 51;
-    int MONSTER_SPAWNER = 52;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") int MOB_SPAWNER = MONSTER_SPAWNER;
-    int WOOD_STAIRS = 53;
-    int WOODEN_STAIRS = 53;
-    int OAK_WOOD_STAIRS = 53;
-    int OAK_WOODEN_STAIRS = 53;
+    @PowerNukkitOnly @Since("1.4.0.0-PN") int MOB_SPAWNER = 52;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "MOB_SPAWNER", reason = "Wrong Minecraft block name")
+    int MONSTER_SPAWNER = MOB_SPAWNER;
+    @Since("FUTURE") @PowerNukkitOnly int OAK_STAIRS = 53;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_STAIRS", reason = "Wrong Minecraft block name")
+    int WOOD_STAIRS = OAK_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_STAIRS", reason = "Wrong Minecraft block name")
+    int WOODEN_STAIRS = OAK_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_STAIRS", reason = "Wrong Minecraft block name")
+    int OAK_WOOD_STAIRS = OAK_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_STAIRS", reason = "Wrong Minecraft block name")
+    int OAK_WOODEN_STAIRS = OAK_STAIRS;
     int CHEST = 54;
     int REDSTONE_WIRE = 55;
     int DIAMOND_ORE = 56;
     int DIAMOND_BLOCK = 57;
     int CRAFTING_TABLE = 58;
-    int WORKBENCH = 58;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "CRAFTING_TABLE", reason = "Wrong Minecraft block name")
+    int WORKBENCH = CRAFTING_TABLE;
     int WHEAT_BLOCK = 59;
     int FARMLAND = 60;
     int FURNACE = 61;
-    int BURNING_FURNACE = 62;
     int LIT_FURNACE = 62;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LIT_FURNACE", reason = "Wrong Minecraft block name")
+    int BURNING_FURNACE = LIT_FURNACE;
     int SIGN_POST = 63;
-    int DOOR_BLOCK = 64;
-    int WOODEN_DOOR_BLOCK = 64;
-    int WOOD_DOOR_BLOCK = 64;
+    @Since("FUTURE") @PowerNukkitOnly int OAK_DOOR_BLOCK = 64;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_DOOR_BLOCK", reason = "Wrong Minecraft block name")
+    int DOOR_BLOCK = OAK_DOOR_BLOCK;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_DOOR_BLOCK", reason = "Wrong Minecraft block name")
+    int WOODEN_DOOR_BLOCK = OAK_DOOR_BLOCK;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "OAK_DOOR_BLOCK", reason = "Wrong Minecraft block name")
+    int WOOD_DOOR_BLOCK = OAK_DOOR_BLOCK;
     int LADDER = 65;
     int RAIL = 66;
-    int COBBLE_STAIRS = 67;
-    int COBBLESTONE_STAIRS = 67;
+    @Since("FUTURE") @PowerNukkitOnly int STONE_STAIRS = 67;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONE_STAIRS", reason = "Wrong Minecraft block name")
+    int COBBLESTONE_STAIRS = STONE_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONE_STAIRS", reason = "Wrong Minecraft block name")
+    int COBBLE_STAIRS = COBBLESTONE_STAIRS;
     int WALL_SIGN = 68;
     int LEVER = 69;
     int STONE_PRESSURE_PLATE = 70;
     int IRON_DOOR_BLOCK = 71;
     int WOODEN_PRESSURE_PLATE = 72;
-
     int REDSTONE_ORE = 73;
-    int GLOWING_REDSTONE_ORE = 74;
     int LIT_REDSTONE_ORE = 74;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LIT_REDSTONE_ORE", reason = "Wrong Minecraft block name")
+    int GLOWING_REDSTONE_ORE = LIT_REDSTONE_ORE;
     int UNLIT_REDSTONE_TORCH = 75;
     int REDSTONE_TORCH = 76;
     int STONE_BUTTON = 77;
-    int SNOW = 78;
     int SNOW_LAYER = 78;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "SNOW_LAYER for minecraft:snow_layer and SNOW_BLOCK for minecraft:snow", 
+            reason = "Wrong Minecraft block name")
+    int SNOW = SNOW_LAYER;
     int ICE = 79;
     int SNOW_BLOCK = 80;
     int CACTUS = 81;
     int CLAY_BLOCK = 82;
     int REEDS = 83;
-    int SUGARCANE_BLOCK = 83;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "REEDS", reason = "Wrong Minecraft block name")
+    int SUGARCANE_BLOCK = REEDS;
     int JUKEBOX = 84;
     int FENCE = 85;
     int PUMPKIN = 86;
     int NETHERRACK = 87;
     int SOUL_SAND = 88;
     int GLOWSTONE = 89;
-    int GLOWSTONE_BLOCK = 89;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "GLOWSTONE", reason = "Wrong Minecraft block name")
+    int GLOWSTONE_BLOCK = GLOWSTONE;
     int NETHER_PORTAL = 90;
     int LIT_PUMPKIN = 91;
-    int JACK_O_LANTERN = 91;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "LIT_PUMPKIN", reason = "Wrong Minecraft block name")
+    int JACK_O_LANTERN = LIT_PUMPKIN;
     int CAKE_BLOCK = 92;
     int UNPOWERED_REPEATER = 93;
     int POWERED_REPEATER = 94;
     int INVISIBLE_BEDROCK = 95;
     int TRAPDOOR = 96;
     int MONSTER_EGG = 97;
-    int STONE_BRICKS = 98;
-    int STONE_BRICK = 98;
+    @Since("FUTURE") @PowerNukkitOnly int STONEBRICK = 98;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONEBRICK", reason = "Wrong Minecraft block name")
+    int STONE_BRICKS = STONEBRICK;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "STONEBRICK", reason = "Wrong Minecraft block name")
+    int STONE_BRICK = STONEBRICK;
     int BROWN_MUSHROOM_BLOCK = 99;
     int RED_MUSHROOM_BLOCK = 100;
-    int IRON_BAR = 101;
     int IRON_BARS = 101;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "IRON_BARS", reason = "Wrong Minecraft block name")
+    int IRON_BAR = IRON_BARS;
     int GLASS_PANE = 102;
-    int GLASS_PANEL = 102;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "GLASS_PANE", reason = "Wrong Minecraft block name")
+    int GLASS_PANEL = GLASS_PANE;
     int MELON_BLOCK = 103;
     int PUMPKIN_STEM = 104;
     int MELON_STEM = 105;
     int VINE = 106;
-    int VINES = 106;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "VINE", reason = "Wrong Minecraft block name")
+    int VINES = VINE;
     int FENCE_GATE = 107;
-    int FENCE_GATE_OAK = 107;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "FENCE_GATE", reason = "Wrong Minecraft block name")
+    int FENCE_GATE_OAK = FENCE_GATE;
     int BRICK_STAIRS = 108;
     int STONE_BRICK_STAIRS = 109;
     int MYCELIUM = 110;
-    int WATER_LILY = 111;
-    int LILY_PAD = 111;
-    int NETHER_BRICKS = 112;
+    @Since("FUTURE") @PowerNukkitOnly int WATERLILY = 111;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "WATERLILY", reason = "Wrong Minecraft block name")
+    int WATER_LILY = WATERLILY;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "WATERLILY", reason = "Wrong Minecraft block name")
+    int LILY_PAD = WATERLILY;
     int NETHER_BRICK_BLOCK = 112;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "NETHER_BRICK_BLOCK", reason = "Confusing name with block and item")
+    int NETHER_BRICKS = NETHER_BRICK_BLOCK;
     int NETHER_BRICK_FENCE = 113;
     int NETHER_BRICKS_STAIRS = 114;
     int NETHER_WART_BLOCK = 115;
     int ENCHANTING_TABLE = 116;
-    int ENCHANT_TABLE = 116;
-    int ENCHANTMENT_TABLE = 116;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "ENCHANTING_TABLE", reason = "Wrong Minecraft block name")
+    int ENCHANT_TABLE = ENCHANTING_TABLE;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "ENCHANTING_TABLE", reason = "Wrong Minecraft block name")
+    int ENCHANTMENT_TABLE = ENCHANTING_TABLE;
     int BREWING_STAND_BLOCK = 117;
-    int BREWING_BLOCK = 117;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "ENCHANTING_TABLE", reason = "Wrong Minecraft block name")
+    int BREWING_BLOCK = BREWING_STAND_BLOCK;
     int CAULDRON_BLOCK = 118;
     int END_PORTAL = 119;
     int END_PORTAL_FRAME = 120;
@@ -171,24 +281,40 @@ public interface BlockID {
     int DRAGON_EGG = 122;
     int REDSTONE_LAMP = 123;
     int LIT_REDSTONE_LAMP = 124;
-    //Note: dropper CAN NOT BE HARVESTED WITH HAND -- canHarvestWithHand method should be overridden FALSE.
     int DROPPER = 125;
     int ACTIVATOR_RAIL = 126;
     int COCOA = 127;
-    int COCOA_BLOCK = 127;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "COCOA", reason = "Wrong Minecraft block name")
+    int COCOA_BLOCK = COCOA;
     int SANDSTONE_STAIRS = 128;
     int EMERALD_ORE = 129;
     int ENDER_CHEST = 130;
     int TRIPWIRE_HOOK = 131;
     int TRIPWIRE = 132;
     int EMERALD_BLOCK = 133;
-    int SPRUCE_WOOD_STAIRS = 134;
-    int SPRUCE_WOODEN_STAIRS = 134;
-    int BIRCH_WOOD_STAIRS = 135;
-    int BIRCH_WOODEN_STAIRS = 135;
-    int JUNGLE_WOOD_STAIRS = 136;
-    int JUNGLE_WOODEN_STAIRS = 136;
-
+    @Since("FUTURE") @PowerNukkitOnly int SPRUCE_STAIRS = 134;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "SPRUCE_STAIRS", reason = "Wrong Minecraft block name")
+    int SPRUCE_WOOD_STAIRS = SPRUCE_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "SPRUCE_STAIRS", reason = "Wrong Minecraft block name")
+    int SPRUCE_WOODEN_STAIRS = SPRUCE_STAIRS;
+    @Since("FUTURE") @PowerNukkitOnly int BIRCH_STAIRS = 135;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "BIRCH_STAIRS", reason = "Wrong Minecraft block name")
+    int BIRCH_WOOD_STAIRS = BIRCH_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "BIRCH_STAIRS", reason = "Wrong Minecraft block name")
+    int BIRCH_WOODEN_STAIRS = BIRCH_STAIRS;
+    @Since("FUTURE") @PowerNukkitOnly int JUNGLE_STAIRS = 136;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "JUNGLE_STAIRS", reason = "Wrong Minecraft block name")
+    int JUNGLE_WOOD_STAIRS = JUNGLE_STAIRS;
+    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
+            replaceWith = "JUNGLE_STAIRS", reason = "Wrong Minecraft block name")
+    int JUNGLE_WOODEN_STAIRS = JUNGLE_STAIRS;
+    // TODO 137 - command_block
     int BEACON = 138;
     int COBBLE_WALL = 139;
     int STONE_WALL = 139;
@@ -312,7 +438,8 @@ public interface BlockID {
     int GLOWING_OBSIDIAN = 246;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int NETHERREACTOR = 247;
     int NETHER_REACTOR = NETHERREACTOR;
-
+    // 248 - Special block: minecraft:info_update
+    // 249 - Special block: minecraft:info_update2
     int PISTON_EXTENSION = 250;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int MOVING_BLOCK = PISTON_EXTENSION;
 
@@ -508,23 +635,18 @@ public interface BlockID {
     @Since("1.4.0.0-PN") @PowerNukkitOnly int CHISELED_NETHER_BRICKS = 557;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int CRACKED_NETHER_BRICKS = 558;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int QUARTZ_BRICKS = 559;
-    
-    // TODO @Since("FUTURE") @PowerNukkitOnly int GLOW_BERRIES = ??? 
-
-    //TODO 560
-    
+    // 560 Special block: minecraft:unknown
     @Since("FUTURE") @PowerNukkitOnly int POWDER_SNOW = 561;
     @Since("FUTURE") @PowerNukkitOnly int SCULK_SENSOR = 562;
     @Since("FUTURE") @PowerNukkitOnly int POINTED_DRIPSTONE = 563;
-    //TODO 564
-    //TODO 565
+    // 564 (unused)
+    // 565 (unused)
     @Since("FUTURE") @PowerNukkitOnly int COPPER_ORE = 566;
     @Since("FUTURE") @PowerNukkitOnly int LIGHTNING_ROD = 567;
-    //TODO 568
-    //TODO 569
-    //TODO 569
-    //TODO 570
-    //TODO 571
+    // 568 (unused)
+    // 569 (unused)
+    // 570 (unused)
+    // 571 (unused)
     @Since("FUTURE") @PowerNukkitOnly int DRIPSTONE_BLOCK = 572;
     @Since("FUTURE") @PowerNukkitOnly int DIRT_WITH_ROOTS = 573;
     @Since("FUTURE") @PowerNukkitOnly int HANGING_ROOTS = 574;
@@ -591,7 +713,7 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_SLAB = 635;
     @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_STAIRS = 636;
     @Since("FUTURE") @PowerNukkitOnly int COBBLED_DEEPSLATE_WALL = 637;
-    // TODO 638
+    @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE = 638;
     @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_SLAB = 639;
     @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_STAIRS = 640;
     @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_WALL = 641;
@@ -608,14 +730,14 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_DOUBLE_SLAB = 652;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_DOUBLE_SLAB = 653;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_DOUBLE_SLAB = 654;
-    // TODO 655
-    // TODO 656
-    // TODO 657
-    // TODO 658
-    // TODO 659
-    // TODO 660
-    // TODO 661
-    // TODO 662
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_LAPIS_LAZULI_ORE = 655;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_IRON_ORE = 656;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_GOLD_ORE = 657;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_REDSTONE_ORE = 658;
+    @Since("FUTURE") @PowerNukkitOnly int LIT_DEEPSLATE_REDSTONE_ORE = 659;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_DIAMOND_ORE = 660;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_COAL_ORE = 661;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_EMERALD_ORE = 662;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_COPPER_ORE = 663;
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_TILES = 664;
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_BRICKS = 665;
