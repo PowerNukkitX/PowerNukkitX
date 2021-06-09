@@ -603,6 +603,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[CHISELED_NETHER_BRICKS] = BlockBricksNetherChiseled.class; //557
             list[CRACKED_NETHER_BRICKS] = BlockBricksNetherCracked.class; //558
             list[QUARTZ_BRICKS] = BlockBricksQuartz.class; //559
+
+            list[DRIPSTONE_BLOCK] = BlockDripstone.class; //572
+
+            list[CALCITE] = BlockCalcite.class; //581
+            list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
+
+            list[DEEPSLATE] = BlockDeepslate.class; //633
+            list[COBBLED_DEEPSLATE] = BlockCobbledDeepslate.class; //634
+
+            list[POLISHED_DEEPSLATE] = BlockPolishedDeepslate.class; //638
             
             initializing = true;
             
