@@ -59,6 +59,8 @@ public class ItemBucket extends Item {
                 return "Water Bucket";
             case 10:
                 return "Lava Bucket";
+            case 12:
+                return "Bucket of Axolotl";
             default:
                 return "Bucket";
         }
@@ -72,6 +74,7 @@ public class ItemBucket extends Item {
             case 5:
             case 8:
             case 9:
+            case 12:
                 return BlockID.WATER;
             case 10:
             case 11:
@@ -111,6 +114,7 @@ public class ItemBucket extends Item {
             case 3: return "Salmon";
             case 4: return "TropicalFish";
             case 5: return "Pufferfish";
+            case 12: return "Axolotl";
             default: return null;
         }
     }
@@ -133,7 +137,6 @@ public class ItemBucket extends Item {
 
 
     @PowerNukkitDifference(info = "You can't use bucket in adventure mode.", since = "1.4.0.0-PN")
-    @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (player.isAdventure()) {
@@ -303,6 +306,13 @@ public class ItemBucket extends Item {
             case 5:
                 Entity e5 = Entity.createEntity("Pufferfish", block);
                 if (e5 != null) e5.spawnToAll();
+                break;
+            case 12:
+                //TODO: Uncomment this code after adding the entity
+                /*
+                Entity e12 = Entity.createEntity("Axolotl", block);
+                if (e12 != null) e12.spawnToAll();
+                */
                 break;
         }
     }
