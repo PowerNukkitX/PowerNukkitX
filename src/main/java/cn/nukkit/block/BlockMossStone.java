@@ -19,7 +19,7 @@ public class BlockMossStone extends BlockSolid {
 
     @Override
     public int getId() {
-        return MOSS_STONE;
+        return MOSSY_COBBLESTONE;
     }
 
     @Override

@@ -22,7 +22,7 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return STONE_BRICKS;
+        return STONEBRICK;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BlockBricksStone extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.STONE_BRICKS, this.getDamage() & 0x03, 1)
+                    Item.get(Item.STONEBRICK, this.getDamage() & 0x03, 1)
             };
         } else {
             return Item.EMPTY_ARRAY;

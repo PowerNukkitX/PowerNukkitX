@@ -214,9 +214,9 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
             for (int iz = -1; iz <= 1; iz++) {
                 for (int iy = -1; iy <= 1; iy++) {
                     int blockId = this.getLevel().getBlockIdAt(x + ix, y + iy, z + iz, 0);
-                    if (blockId != Block.WATER && blockId != Block.STILL_WATER) {
+                    if (blockId != Block.FLOWING_WATER && blockId != Block.STILL_WATER) {
                         blockId = this.getLevel().getBlockIdAt(x + ix, y + iy, z + iz, 1);
-                        if (blockId != Block.WATER && blockId != Block.STILL_WATER) {
+                        if (blockId != Block.FLOWING_WATER && blockId != Block.STILL_WATER) {
                             return false;
                         }
                     }

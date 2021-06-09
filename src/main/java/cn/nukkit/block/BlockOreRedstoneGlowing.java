@@ -23,7 +23,7 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     @Override
     public int getId() {
-        return GLOWING_REDSTONE_ORE;
+        return LIT_REDSTONE_ORE;
     }
 
     @Override

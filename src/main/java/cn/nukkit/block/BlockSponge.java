@@ -88,7 +88,7 @@ public class BlockSponge extends BlockSolidMeta {
                 packet.x = (float) block.getX() + 0.5f;
                 packet.y = (float) block.getY() + 1f;
                 packet.z = (float) block.getZ() + 0.5f;
-                packet.data = GlobalBlockPalette.getOrCreateRuntimeId(BlockID.WATER, 0);
+                packet.data = GlobalBlockPalette.getOrCreateRuntimeId(BlockID.FLOWING_WATER, 0);
                 level.addChunkPacket(getChunkX(), getChunkZ(), packet);
             }
 

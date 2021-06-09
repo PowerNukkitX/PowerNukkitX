@@ -20,7 +20,7 @@ public class BlockMobSpawner extends BlockSolid {
 
     @Override
     public int getId() {
-        return MONSTER_SPAWNER;
+        return MOB_SPAWNER;
     }
 
     @Override

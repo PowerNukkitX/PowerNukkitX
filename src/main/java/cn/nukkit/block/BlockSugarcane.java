@@ -33,7 +33,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public int getId() {
-        return SUGARCANE_BLOCK;
+        return REEDS;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BlockSugarcane extends BlockFlowable {
             for (int i = 1; i <= 2; i++) {
                 int id = this.level.getBlockIdAt(this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
 
-                if (id == SUGARCANE_BLOCK) {
+                if (id == REEDS) {
                     count++;
                 }
             }
@@ -66,14 +66,14 @@ public class BlockSugarcane extends BlockFlowable {
                 for (int i = 1; i <= toGrow; i++) {
                     Block block = this.up(i);
                     if (block.getId() == 0) {
-                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.SUGARCANE_BLOCK));
+                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
                         Server.getInstance().getPluginManager().callEvent(ev);
 
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(block, ev.getNewState(), true);
                             success = true;
                         }
-                    } else if (block.getId() != SUGARCANE_BLOCK) {
+                    } else if (block.getId() != REEDS) {
                         break;
                     }
                 }
@@ -123,21 +123,21 @@ public class BlockSugarcane extends BlockFlowable {
             }
             
             int height = 0;
-            for (Block current = this; height < 3 && current.getId() == SUGARCANE_BLOCK; height++) {
+            for (Block current = this; height < 3 && current.getId() == REEDS; height++) {
                 current = current.down();
             }
             if (height >= 3) {
                 return type;
             }
 
-            BlockGrowEvent ev = new BlockGrowEvent(up, Block.get(BlockID.SUGARCANE_BLOCK));
+            BlockGrowEvent ev = new BlockGrowEvent(up, Block.get(BlockID.REEDS));
             Server.getInstance().getPluginManager().callEvent(ev);
 
             if (ev.isCancelled()) {
                 return type;
             }
             
-            if (!level.setBlock(up, Block.get(BlockID.SUGARCANE_BLOCK), false)) {
+            if (!level.setBlock(up, Block.get(BlockID.REEDS), false)) {
                 return type;
             }
             
@@ -166,7 +166,7 @@ public class BlockSugarcane extends BlockFlowable {
     private boolean isSupportValid() {
         Block down = this.down();
         int downId = down.getId();
-        if (downId == SUGARCANE_BLOCK) {
+        if (downId == REEDS) {
             return true;
         }
         if (downId != GRASS && downId != DIRT && downId != SAND || down.getId() == PODZOL) {

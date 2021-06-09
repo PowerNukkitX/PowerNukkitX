@@ -74,7 +74,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
         int charge = getCharge();
-        if (item.getBlockId() == BlockID.GLOWSTONE_BLOCK && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
+        if (item.getBlockId() == BlockID.GLOWSTONE && charge < RESPAWN_ANCHOR_CHARGE.getMaxValue()) {
             if (player == null || !player.isCreative()) {
                 item.count--;
             }

@@ -77,7 +77,7 @@ public class BlockKelp extends BlockFlowable {
                 (layer1Block instanceof BlockWater && ((BlockWater) layer1Block).isSourceOrFlowingDown())
         ) {
             if (((BlockWater) layer1Block).isFlowingDown()) {
-                this.getLevel().setBlock(this, 1, get(WATER), true, false);
+                this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
             }
 
             int maxAge = KELP_AGE.getMaxValue();
@@ -112,7 +112,7 @@ public class BlockKelp extends BlockFlowable {
             }
         
             if (blockLayer1 instanceof BlockWater && ((BlockWater)blockLayer1).isFlowingDown()) {
-                this.getLevel().setBlock(this, 1, get(WATER), true, false);
+                this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
             }
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -137,7 +137,7 @@ public class BlockKelp extends BlockFlowable {
                 if (!ev.isCancelled()) {
                     this.setAge(maxValue);
                     this.getLevel().setBlock(this, 0, this, true, true);
-                    this.getLevel().setBlock(up, 1, get(WATER), true, false);
+                    this.getLevel().setBlock(up, 1, get(FLOWING_WATER), true, false);
                     this.getLevel().setBlock(up, 0, ev.getNewState(), true, true);
                     return true;
                 }
@@ -166,7 +166,7 @@ public class BlockKelp extends BlockFlowable {
                 BlockState blockStateAbove = getLevel().getBlockStateAt(x, y, z);
                 int blockIdAbove = blockStateAbove.getBlockId();
                 if (blockIdAbove != BLOCK_KELP) {
-                    if (blockIdAbove == WATER || blockIdAbove == STILL_WATER) {
+                    if (blockIdAbove == FLOWING_WATER || blockIdAbove == STILL_WATER) {
                         if (((BlockWater)blockStateAbove.getBlock()).isSourceOrFlowingDown()) {
                             BlockKelp highestKelp = (BlockKelp) getLevel().getBlock(x, y - 1, z);
                             if (highestKelp.grow()) {

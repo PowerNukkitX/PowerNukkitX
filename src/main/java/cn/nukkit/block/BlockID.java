@@ -4,6 +4,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
+@SuppressWarnings("unused")
 public interface BlockID {
     int AIR = 0;
     int STONE = 1;
@@ -171,7 +172,7 @@ public interface BlockID {
     int COBBLESTONE_STAIRS = STONE_STAIRS;
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
             replaceWith = "STONE_STAIRS", reason = "Wrong Minecraft block name")
-    int COBBLE_STAIRS = COBBLESTONE_STAIRS;
+    int COBBLE_STAIRS = STONE_STAIRS;
     int WALL_SIGN = 68;
     int LEVER = 69;
     int STONE_PRESSURE_PLATE = 70;

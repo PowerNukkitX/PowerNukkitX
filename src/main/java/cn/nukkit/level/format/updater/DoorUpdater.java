@@ -32,7 +32,7 @@ public class DoorUpdater implements Updater {
     @Override
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {
         switch (state.getBlockId()) {
-            case WOODEN_DOOR_BLOCK:
+            case OAK_DOOR_BLOCK:
             case DARK_OAK_DOOR_BLOCK:
             case ACACIA_DOOR_BLOCK:
             case BIRCH_DOOR_BLOCK:

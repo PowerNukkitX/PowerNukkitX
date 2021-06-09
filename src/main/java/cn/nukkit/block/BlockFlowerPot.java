@@ -51,7 +51,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             case SAPLING:
             case DEAD_BUSH:
             case DANDELION:
-            case ROSE:
+            case RED_FLOWER:
             case RED_MUSHROOM:
             case BROWN_MUSHROOM:
             case CACTUS:

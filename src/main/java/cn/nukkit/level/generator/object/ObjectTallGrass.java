@@ -25,7 +25,7 @@ public class ObjectTallGrass {
                             if (random.nextBoolean()) {
                                 level.setBlockAt(x, y, z, Block.DANDELION);
                             } else {
-                                level.setBlockAt(x, y, z, Block.POPPY);
+                                level.setBlockAt(x, y, z, Block.RED_FLOWER);
                             }
                         } else {
                             level.setBlockAt(x, y, z, Block.TALL_GRASS, 1);
@@ -51,7 +51,7 @@ public class ObjectTallGrass {
     public static void growGrass(ChunkManager level, Vector3 pos, NukkitRandom random, int count, int radius) {
         int[][] arr = {
                 {Block.DANDELION, 0},
-                {Block.POPPY, 0},
+                {Block.RED_FLOWER, 0},
                 {Block.TALL_GRASS, 1},
                 {Block.TALL_GRASS, 1},
                 {Block.TALL_GRASS, 1},

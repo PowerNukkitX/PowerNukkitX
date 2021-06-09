@@ -75,10 +75,10 @@ public class ItemBucket extends Item {
             case 8:
             case 9:
             case 12:
-                return BlockID.WATER;
+                return BlockID.FLOWING_WATER;
             case 10:
             case 11:
-                return BlockID.LAVA;
+                return BlockID.FLOWING_LAVA;
             default:
                 return BlockID.AIR;
         }
@@ -93,13 +93,13 @@ public class ItemBucket extends Item {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isWater() {
-        return getTargetBlock().getId() == BlockID.WATER;
+        return getTargetBlock().getId() == BlockID.FLOWING_WATER;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isLava() {
-        return getTargetBlock().getId() == BlockID.LAVA;
+        return getTargetBlock().getId() == BlockID.FLOWING_LAVA;
     }
 
     @PowerNukkitOnly
@@ -167,7 +167,7 @@ public class ItemBucket extends Item {
                     for (BlockFace side : Plane.HORIZONTAL) {
                         Block b = target.getSideAtLayer(0, side);
                         if (b.getId() == STILL_WATER) {
-                            level.setBlock(b, Block.get(BlockID.WATER));
+                            level.setBlock(b, Block.get(BlockID.FLOWING_WATER));
                         }
                     }
 
