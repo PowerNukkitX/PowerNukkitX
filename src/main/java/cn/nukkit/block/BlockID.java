@@ -730,7 +730,7 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int POLISHED_DEEPSLATE_DOUBLE_SLAB = 652;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_TILE_DOUBLE_SLAB = 653;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_BRICK_DOUBLE_SLAB = 654;
-    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_LAPIS_LAZULI_ORE = 655;
+    @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_LAPIS_ORE = 655;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_IRON_ORE = 656;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_GOLD_ORE = 657;
     @Since("FUTURE") @PowerNukkitOnly int DEEPSLATE_REDSTONE_ORE = 658;
