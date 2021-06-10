@@ -2,6 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSugarcane;
@@ -17,6 +22,14 @@ import javax.annotation.Nonnull;
  * @since 09.01.2016
  */
 public class BlockSugarcane extends BlockFlowable {
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final IntBlockProperty AGE = CommonBlockProperties.AGE_15;
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
     public BlockSugarcane() {
         this(0);
@@ -34,6 +47,14 @@ public class BlockSugarcane extends BlockFlowable {
     @Override
     public int getId() {
         return REEDS;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
