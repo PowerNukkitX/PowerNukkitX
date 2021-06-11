@@ -604,15 +604,37 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[CRACKED_NETHER_BRICKS] = BlockBricksNetherCracked.class; //558
             list[QUARTZ_BRICKS] = BlockBricksQuartz.class; //559
 
+            list[COPPER_ORE] = BlockOreCopper.class; //566
+
             list[DRIPSTONE_BLOCK] = BlockDripstone.class; //572
 
             list[CALCITE] = BlockCalcite.class; //581
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
 
+            list[COPPER_BLOCK] = BlockCopperBlock.class; //595
+            list[EXPOSED_COPPER] = BlockCopperExposed.class; //596
+            list[WEATHERED_COPPER] = BlockCopperWeathered.class; //597
+            list[OXIDIZED_COPPER] = BlockCopperOxidized.class; //598
+            list[WAXED_COPPER] = BlockCopperWaxed.class; //599
+            list[WAXED_EXPOSED_COPPER] = BlockCopperWaxedExposed.class; //600
+            list[WAXED_WEATHERED_COPPER] = BlockCopperWaxedWeathered.class; //601
+            list[CUT_COPPER] = BlockCopperCut.class; //602
+            list[EXPOSED_CUT_COPPER] = BlockCopperExposedCut.class; //603
+            list[WEATHERED_CUT_COPPER] = BlockCopperWeatheredCut.class; //604
+            list[OXIDIZED_CUT_COPPER] = BlockCopperOxidizedCut.class; //605
+            list[WAXED_CUT_COPPER] = BlockCopperWaxedCut.class; //606
+            list[WAXED_EXPOSED_CUT_COPPER] = BlockCopperWaxedExposedCut.class; //607
+            list[WAXED_WEATHERED_CUT_COPPER] = BlockCopperWaxedWeatheredCut.class; //608
+
             list[DEEPSLATE] = BlockDeepslate.class; //633
             list[COBBLED_DEEPSLATE] = BlockCobbledDeepslate.class; //634
 
             list[POLISHED_DEEPSLATE] = BlockPolishedDeepslate.class; //638
+
+            list[DEEPSLATE_COPPER_ORE] = BlockOreCopperDeepslate.class; //663
+
+            list[WAXED_OXIDIZED_COPPER] = BlockCopperWaxedOxidized.class; //701
+            list[WAXED_OXIDIZED_CUT_COPPER] = BlockCopperWaxedOxidizedCut.class; //702
 
             list[RAW_IRON_BLOCK] = BlockRawIron.class; //706
             list[RAW_COPPER_BLOCK] = BlockRawCopper.class; //707
