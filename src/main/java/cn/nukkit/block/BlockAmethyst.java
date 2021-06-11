@@ -2,7 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author LoboMetalurgico
@@ -14,7 +18,19 @@ import cn.nukkit.item.ItemTool;
 public class BlockAmethyst extends BlockSolid {
     @PowerNukkitOnly
     @Since("FUTURE")
+    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
     public BlockAmethyst() {
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override
@@ -42,6 +58,8 @@ public class BlockAmethyst extends BlockSolid {
         return ItemTool.TYPE_PICKAXE;
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_IRON;

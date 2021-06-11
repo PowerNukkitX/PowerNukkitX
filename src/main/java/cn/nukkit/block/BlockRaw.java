@@ -2,7 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author LoboMetalurgico
@@ -14,6 +18,10 @@ import cn.nukkit.item.ItemTool;
 public abstract class BlockRaw extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("FUTURE")
+    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
     public BlockRaw() {
         this(0);
     }
@@ -22,6 +30,14 @@ public abstract class BlockRaw extends BlockSolidMeta {
     @Since("FUTURE")
     public BlockRaw(int meta) {
         super(meta);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 
     @Override

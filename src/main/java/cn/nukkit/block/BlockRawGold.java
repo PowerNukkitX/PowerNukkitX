@@ -34,6 +34,8 @@ public class BlockRawGold extends BlockRaw {
         return RAW_GOLD_BLOCK;
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_IRON;
