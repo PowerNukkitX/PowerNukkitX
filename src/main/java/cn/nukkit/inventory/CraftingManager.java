@@ -1,14 +1,17 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
+import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.RuntimeItemMapping;
 import cn.nukkit.item.RuntimeItems;
-import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.utils.BinaryStream;
@@ -36,11 +39,8 @@ public class CraftingManager {
 
     public final Collection<Recipe> recipes = new ArrayDeque<>();
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", reason = "Field signature change from BatchPacket to DataPacket",
-        replaceWith = "getCraftingPacket() to be safer", toBeRemovedAt = "1.5.0.0-PN")
-    public static BatchPacket packet = null;
-    private static DataPacket packet0 = null;
+    @Since("1.5.0.0-PN")
+    public static DataPacket packet = null;
     
     
     protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = new Int2ObjectOpenHashMap<>();
@@ -77,7 +77,7 @@ public class CraftingManager {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static DataPacket getCraftingPacket() {
-        return packet0;
+        return packet;
     }
 
     public CraftingManager() {
@@ -129,6 +129,7 @@ public class CraftingManager {
     private void loadRecipes(Config config) {
         List<Map> recipes = config.getMapList("recipes");
         log.info("Loading recipes...");
+        toNextRecipe:
         for (Map<String, Object> recipe : recipes) {
             try {
                 switch (Utils.toInt(recipe.get("type"))) {
@@ -146,7 +147,11 @@ public class CraftingManager {
                         Map<String, Object> first = outputs.get(0);
                         List<Item> sorted = new ArrayList<>();
                         for (Map<String, Object> ingredient : ((List<Map>) recipe.get("input"))) {
-                            sorted.add(parseRecipeItem(ingredient));
+                            Item recipeItem = parseRecipeItem(ingredient);
+                            if (recipeItem.isNull()) {
+                                continue toNextRecipe;
+                            }
+                            sorted.add(recipeItem);
                         }
                         // Bake sorted list
                         sorted.sort(recipeComparator);
@@ -154,15 +159,19 @@ public class CraftingManager {
                         String recipeId = (String) recipe.get("id");
                         int priority = Utils.toInt(recipe.get("priority"));
 
+                        Item result = parseRecipeItem(first);
+                        if (result.isNull()) {
+                            continue toNextRecipe;
+                        }
                         switch (craftingBlock) {
                             case "crafting_table":
-                                this.registerRecipe(new ShapelessRecipe(recipeId, priority, parseRecipeItem(first), sorted));
+                                this.registerRecipe(new ShapelessRecipe(recipeId, priority, result, sorted));
                                 break;
                             case "stonecutter":
-                                this.registerRecipe(new StonecutterRecipe(recipeId, priority, parseRecipeItem(first), sorted.get(0)));
+                                this.registerRecipe(new StonecutterRecipe(recipeId, priority, result, sorted.get(0)));
                                 break;
                             case "cartography_table":
-                                this.registerRecipe(new CartographyRecipe(recipeId, priority, parseRecipeItem(first), sorted));
+                                this.registerRecipe(new CartographyRecipe(recipeId, priority, result, sorted));
                                 break;
                         }
                         break;
@@ -183,18 +192,28 @@ public class CraftingManager {
                         for (Map.Entry<String, Map<String, Object>> ingredientEntry : input.entrySet()) {
                             char ingredientChar = ingredientEntry.getKey().charAt(0);
                             Item ingredient = parseRecipeItem(ingredientEntry.getValue());
-
+                            if (ingredient.isNull()) {
+                                continue toNextRecipe;
+                            }
                             ingredients.put(ingredientChar, ingredient);
                         }
 
                         for (Map<String, Object> data : outputs) {
-                            extraResults.add(parseRecipeItem(data));
+                            Item output = parseRecipeItem(data);
+                            if (output.isNull()) {
+                                continue toNextRecipe;
+                            }
+                            extraResults.add(output);
                         }
 
                         recipeId = (String) recipe.get("id");
                         priority = Utils.toInt(recipe.get("priority"));
 
-                        this.registerRecipe(new ShapedRecipe(recipeId, priority, parseRecipeItem(first), shape, ingredients, extraResults));
+                        Item primaryResult = parseRecipeItem(first);
+                        if (primaryResult.isNull()) {
+                            continue toNextRecipe;
+                        }
+                        this.registerRecipe(new ShapedRecipe(recipeId, priority, primaryResult, shape, ingredients, extraResults));
                         break;
                     case 2:
                     case 3:
@@ -206,12 +225,18 @@ public class CraftingManager {
                         }
                         Map<String, Object> resultMap = (Map) recipe.get("output");
                         Item resultItem = parseRecipeItem(resultMap);
+                        if (resultItem.isNull()) {
+                            continue toNextRecipe;
+                        }
                         Item inputItem;
                         try {
                             Map<String, Object> inputMap = (Map) recipe.get("input");
                             inputItem = parseRecipeItem(inputMap);
                         } catch (Exception old) {
                             inputItem = Item.get(Utils.toInt(recipe.get("inputId")), recipe.containsKey("inputDamage") ? Utils.toInt(recipe.get("inputDamage")) : -1, 1);
+                        }
+                        if (inputItem.isNull()) {
+                            continue toNextRecipe;
                         }
                         switch (craftingBlock) {
                             case "furnace":
@@ -281,21 +306,75 @@ public class CraftingManager {
         String nbt = (String) data.get("nbt_b64");
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
 
-        String id = data.get("id").toString();
         int count = data.containsKey("count")? ((Number)data.get("count")).intValue() : 1;
+        Integer legacyId = null;
+        if (data.containsKey("legacyId")) {
+            legacyId = Utils.toInt(data.get("legacyId"));
+        }
+
         Item item;
+        if (data.containsKey("blockRuntimeId")) {
+            int blockRuntimeId = Utils.toInt(data.get("blockRuntimeId"));
+            try {
+                BlockState state = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
+                if (state == null || state.equals(BlockState.AIR)) {
+                    return Item.getBlock(BlockID.AIR);
+                }
+                if (state.getProperties().equals(BlockUnknown.PROPERTIES)) {
+                    return Item.getBlock(BlockID.AIR);
+                }
+                item = state.asItemBlock(count);
+                item.setCompoundTag(nbtBytes);
+                return item;
+            } catch (BlockPropertyNotFoundException e) {
+                log.debug("Failed to load the block runtime id {}", blockRuntimeId, e);
+            }
+        }
+
+        if (legacyId != null && legacyId > 255) {
+            try {
+                int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(legacyId);
+                int itemId = RuntimeItems.getId(fullId);
+                Integer meta = null;
+                if (RuntimeItems.hasData(fullId)) {
+                    meta = RuntimeItems.getData(fullId);
+                }
+
+                boolean fuzzy = false;
+                if (data.containsKey("damage")) {
+                    int damage = Utils.toInt(data.get("damage"));
+                    if (damage == Short.MAX_VALUE) {
+                        fuzzy = true;
+                    } else if (meta == null) {
+                        meta = damage;
+                    }
+                }
+
+                item = Item.get(itemId, meta == null ? 0 : meta, count);
+                if (fuzzy) {
+                    item = item.createFuzzyCraftingRecipe();
+                }
+
+                item.setCompoundTag(nbtBytes);
+                return item;
+            } catch (IllegalArgumentException e) {
+                log.debug("Failed to load a crafting recipe item, attempting to load by string id", e);
+            }
+        }
+
+        String id = data.get("id").toString();
         if (data.containsKey("damage")) {
             int meta = Utils.toInt(data.get("damage"));
             if (meta == Short.MAX_VALUE) {
                 item = Item.fromString(id).createFuzzyCraftingRecipe();
             } else {
-                item = Item.fromString(id+":"+meta);
+                item = Item.fromString(id + ":" + meta);
             }
         } else {
             item = Item.fromString(id);
         }
-        item.setCompoundTag(nbtBytes);
         item.setCount(count);
+        item.setCompoundTag(nbtBytes);
         return item;
     }
 
@@ -352,7 +431,6 @@ public class CraftingManager {
         pk.tryEncode();
         // TODO: find out whats wrong with compression
         packet = pk.compress(Deflater.BEST_COMPRESSION);
-        packet0 = pk;
     }
 
     public Collection<Recipe> getRecipes() {
