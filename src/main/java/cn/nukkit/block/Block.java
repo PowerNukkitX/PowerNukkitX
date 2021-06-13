@@ -614,6 +614,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
 
             list[TUFF] = BlockTuff.class; //588
+            list[TINTED_GLASS] = BlockGlassTinted.class; //589
 
             list[AZALEA] = BlockAzalea.class; //592
             list[FLOWERING_AZALEA] = BlockAzaleaFlowering.class; //593
