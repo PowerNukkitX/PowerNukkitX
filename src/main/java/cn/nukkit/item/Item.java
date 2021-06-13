@@ -3,10 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
-import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.UnknownRuntimeIdException;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -31,6 +31,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -420,6 +421,22 @@ public class Item implements Cloneable, BlockID, ItemID {
                     list[i] = Block.list[i];
                 }
             }
+
+            RuntimeItemMapping runtimeMapping = RuntimeItems.getRuntimeMapping();
+            for (@SuppressWarnings("unchecked") Class<Item> aClass : list) {
+                if (!Item.class.equals(aClass)) {
+                    continue;
+                }
+                try {
+                    Constructor<Item> constructor = aClass.getConstructor();
+                    Item item = constructor.newInstance();
+                    runtimeMapping.registerNamespacedIdItem(item.getNamespaceId(), constructor);
+                } catch (Exception e) {
+                    log.warn("Failed to cache the namespaced id resolution of the item {}", aClass, e);
+                }
+            }
+
+            runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
         }
 
         initCreativeItems();
@@ -467,7 +484,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                     addCreativeItem(item);
                 }
             } catch (Exception e) {
-                log.error("Error while registering a creative item", e);
+                log.error("Error while registering a creative item {}", map, e);
             }
         }
     }
@@ -483,7 +500,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             item = fromString(id + ":" + meta);
         } else if (data.containsKey("blockRuntimeId")) {
             Integer blockId = BlockStateRegistry.getBlockId(id);
-            if (blockId == null || blockId > BlockID.QUARTZ_BRICKS) { //TODO Remove this after the support is added
+            if (blockId == null) {
+                log.warn("Block runtime id for {} is not registered!", id);
                 return null;
             }
             int blockRuntimeId = -1;
@@ -494,6 +512,11 @@ public class Item implements Cloneable, BlockID, ItemID {
                     item = blockState.asItemBlock();
                 } else {
                     log.warn("Block state not found for the creative item {} with runtimeId {}", id, blockRuntimeId);
+                }
+            } catch (BlockPropertyNotFoundException e) {
+                if (blockId > BlockID.QUARTZ_BRICKS) {
+                    log.warn("The block {} (id:{}, runtime id:{}) is not supported yet!", id, blockId, blockRuntimeId);
+                    return null; // TODO Not implemented yet
                 }
             } catch (Throwable e) {
                 log.error("Error loading the creative item {} with runtimeId {}", id, blockRuntimeId, e);
@@ -801,6 +824,18 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     public boolean hasCompoundTag() {
         return this.tags != null && this.tags.length > 0;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean hasCustomCompoundTag() {
+        return hasCompoundTag();
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public byte[] getCustomCompoundTag() {
+        return getCompoundTag();
     }
 
     public boolean hasCustomBlockData() {
@@ -1403,7 +1438,11 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     @Override
     final public String toString() {
-        return "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
+        return "Item " + this.name +
+                " (" + (this instanceof StringItem? this.getNamespaceId() :this.id)
+                + ":" + (!this.hasMeta ? "?" : this.meta)
+                + ")x" + this.count
+                + (this.hasCustomCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCustomCompoundTag()) : "");
     }
 
     public int getDestroySpeed(Block block, Player player) {

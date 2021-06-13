@@ -127,6 +127,7 @@ public class CraftingManager {
 
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
+        if (true) return;
         List<Map> recipes = config.getMapList("recipes");
         log.info("Loading recipes...");
         toNextRecipe:

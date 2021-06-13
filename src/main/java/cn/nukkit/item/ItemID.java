@@ -3,7 +3,10 @@ package cn.nukkit.item;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
+import static cn.nukkit.utils.Utils.dynamic;
+
 public interface ItemID {
+    @PowerNukkitOnly @Since("FUTURE") int STRING_IDENTIFIED_ITEM = dynamic(255);
     int IRON_SHOVEL = 256;
     int IRON_PICKAXE = 257;
     int IRON_AXE = 258;
