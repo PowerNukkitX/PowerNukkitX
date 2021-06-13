@@ -613,6 +613,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[TUFF] = BlockTuff.class; //588
 
+            list[AZALEA] = BlockAzalea.class; //592
+            list[FLOWERING_AZALEA] = BlockAzaleaFlowering.class; //593
+
             list[COPPER_BLOCK] = BlockCopperBlock.class; //595
             list[EXPOSED_COPPER] = BlockCopperExposed.class; //596
             list[WEATHERED_COPPER] = BlockCopperWeathered.class; //597
