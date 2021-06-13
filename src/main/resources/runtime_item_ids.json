@@ -1,7 +1,553 @@
 [
   {
+    "name": "minecraft:infested_deepslate",
+    "id": -454,
+    "oldId": -454
+  },
+  {
+    "name": "minecraft:raw_gold_block",
+    "id": -453,
+    "oldId": -453
+  },
+  {
+    "name": "minecraft:raw_copper_block",
+    "id": -452,
+    "oldId": -452
+  },
+  {
+    "name": "minecraft:raw_iron_block",
+    "id": -451,
+    "oldId": -451
+  },
+  {
+    "name": "minecraft:waxed_oxidized_double_cut_copper_slab",
+    "id": -450,
+    "oldId": -450
+  },
+  {
+    "name": "minecraft:waxed_oxidized_cut_copper_slab",
+    "id": -449,
+    "oldId": -449
+  },
+  {
+    "name": "minecraft:waxed_oxidized_cut_copper_stairs",
+    "id": -448,
+    "oldId": -448
+  },
+  {
+    "name": "minecraft:waxed_oxidized_cut_copper",
+    "id": -447,
+    "oldId": -447
+  },
+  {
+    "name": "minecraft:waxed_oxidized_copper",
+    "id": -446,
+    "oldId": -446
+  },
+  {
+    "name": "minecraft:glow_lichen",
+    "id": -411,
+    "oldId": -411
+  },
+  {
+    "name": "minecraft:cracked_deepslate_bricks",
+    "id": -410,
+    "oldId": -410
+  },
+  {
+    "name": "minecraft:cracked_deepslate_tiles",
+    "id": -409,
+    "oldId": -409
+  },
+  {
+    "name": "minecraft:deepslate_copper_ore",
+    "id": -408,
+    "oldId": -408
+  },
+  {
+    "name": "minecraft:deepslate_emerald_ore",
+    "id": -407,
+    "oldId": -407
+  },
+  {
+    "name": "minecraft:deepslate_coal_ore",
+    "id": -406,
+    "oldId": -406
+  },
+  {
+    "name": "minecraft:deepslate_diamond_ore",
+    "id": -405,
+    "oldId": -405
+  },
+  {
+    "name": "minecraft:lit_deepslate_redstone_ore",
+    "id": -404,
+    "oldId": -404
+  },
+  {
+    "name": "minecraft:deepslate_redstone_ore",
+    "id": -403,
+    "oldId": -403
+  },
+  {
+    "name": "minecraft:deepslate_gold_ore",
+    "id": -402,
+    "oldId": -402
+  },
+  {
+    "name": "minecraft:deepslate_iron_ore",
+    "id": -401,
+    "oldId": -401
+  },
+  {
+    "name": "minecraft:deepslate_lapis_ore",
+    "id": -400,
+    "oldId": -400
+  },
+  {
+    "name": "minecraft:deepslate_brick_double_slab",
+    "id": -399,
+    "oldId": -399
+  },
+  {
+    "name": "minecraft:deepslate_tile_double_slab",
+    "id": -398,
+    "oldId": -398
+  },
+  {
+    "name": "minecraft:polished_deepslate_double_slab",
+    "id": -397,
+    "oldId": -397
+  },
+  {
+    "name": "minecraft:cobbled_deepslate_double_slab",
+    "id": -396,
+    "oldId": -396
+  },
+  {
+    "name": "minecraft:chiseled_deepslate",
+    "id": -395,
+    "oldId": -395
+  },
+  {
+    "name": "minecraft:deepslate_brick_wall",
+    "id": -394,
+    "oldId": -394
+  },
+  {
+    "name": "minecraft:deepslate_brick_stairs",
+    "id": -393,
+    "oldId": -393
+  },
+  {
+    "name": "minecraft:deepslate_brick_slab",
+    "id": -392,
+    "oldId": -392
+  },
+  {
+    "name": "minecraft:deepslate_bricks",
+    "id": -391,
+    "oldId": -391
+  },
+  {
+    "name": "minecraft:deepslate_tile_wall",
+    "id": -390,
+    "oldId": -390
+  },
+  {
+    "name": "minecraft:deepslate_tile_stairs",
+    "id": -389,
+    "oldId": -389
+  },
+  {
+    "name": "minecraft:deepslate_tile_slab",
+    "id": -388,
+    "oldId": -388
+  },
+  {
+    "name": "minecraft:deepslate_tiles",
+    "id": -387,
+    "oldId": -387
+  },
+  {
+    "name": "minecraft:polished_deepslate_wall",
+    "id": -386,
+    "oldId": -386
+  },
+  {
+    "name": "minecraft:polished_deepslate_stairs",
+    "id": -385,
+    "oldId": -385
+  },
+  {
+    "name": "minecraft:polished_deepslate_slab",
+    "id": -384,
+    "oldId": -384
+  },
+  {
+    "name": "minecraft:polished_deepslate",
+    "id": -383,
+    "oldId": -383
+  },
+  {
+    "name": "minecraft:cobbled_deepslate_wall",
+    "id": -382,
+    "oldId": -382
+  },
+  {
+    "name": "minecraft:cobbled_deepslate_stairs",
+    "id": -381,
+    "oldId": -381
+  },
+  {
+    "name": "minecraft:cobbled_deepslate_slab",
+    "id": -380,
+    "oldId": -380
+  },
+  {
+    "name": "minecraft:cobbled_deepslate",
+    "id": -379,
+    "oldId": -379
+  },
+  {
+    "name": "minecraft:deepslate",
+    "id": -378,
+    "oldId": -378
+  },
+  {
+    "name": "minecraft:smooth_basalt",
+    "id": -377,
+    "oldId": -377
+  },
+  {
+    "name": "minecraft:cave_vines_head_with_berries",
+    "id": -376,
+    "oldId": -376
+  },
+  {
+    "name": "minecraft:cave_vines_body_with_berries",
+    "id": -375,
+    "oldId": -375
+  },
+  {
+    "name": "minecraft:waxed_weathered_double_cut_copper_slab",
+    "id": -374,
+    "oldId": -374
+  },
+  {
+    "name": "minecraft:waxed_exposed_double_cut_copper_slab",
+    "id": -373,
+    "oldId": -373
+  },
+  {
+    "name": "minecraft:waxed_double_cut_copper_slab",
+    "id": -372,
+    "oldId": -372
+  },
+  {
+    "name": "minecraft:oxidized_double_cut_copper_slab",
+    "id": -371,
+    "oldId": -371
+  },
+  {
+    "name": "minecraft:weathered_double_cut_copper_slab",
+    "id": -370,
+    "oldId": -370
+  },
+  {
+    "name": "minecraft:exposed_double_cut_copper_slab",
+    "id": -369,
+    "oldId": -369
+  },
+  {
+    "name": "minecraft:double_cut_copper_slab",
+    "id": -368,
+    "oldId": -368
+  },
+  {
+    "name": "minecraft:waxed_weathered_cut_copper_slab",
+    "id": -367,
+    "oldId": -367
+  },
+  {
+    "name": "minecraft:waxed_exposed_cut_copper_slab",
+    "id": -366,
+    "oldId": -366
+  },
+  {
+    "name": "minecraft:waxed_cut_copper_slab",
+    "id": -365,
+    "oldId": -365
+  },
+  {
+    "name": "minecraft:oxidized_cut_copper_slab",
+    "id": -364,
+    "oldId": -364
+  },
+  {
+    "name": "minecraft:weathered_cut_copper_slab",
+    "id": -363,
+    "oldId": -363
+  },
+  {
+    "name": "minecraft:exposed_cut_copper_slab",
+    "id": -362,
+    "oldId": -362
+  },
+  {
+    "name": "minecraft:cut_copper_slab",
+    "id": -361,
+    "oldId": -361
+  },
+  {
+    "name": "minecraft:waxed_weathered_cut_copper_stairs",
+    "id": -360,
+    "oldId": -360
+  },
+  {
+    "name": "minecraft:waxed_exposed_cut_copper_stairs",
+    "id": -359,
+    "oldId": -359
+  },
+  {
+    "name": "minecraft:waxed_cut_copper_stairs",
+    "id": -358,
+    "oldId": -358
+  },
+  {
+    "name": "minecraft:oxidized_cut_copper_stairs",
+    "id": -357,
+    "oldId": -357
+  },
+  {
+    "name": "minecraft:weathered_cut_copper_stairs",
+    "id": -356,
+    "oldId": -356
+  },
+  {
+    "name": "minecraft:exposed_cut_copper_stairs",
+    "id": -355,
+    "oldId": -355
+  },
+  {
+    "name": "minecraft:cut_copper_stairs",
+    "id": -354,
+    "oldId": -354
+  },
+  {
+    "name": "minecraft:waxed_weathered_cut_copper",
+    "id": -353,
+    "oldId": -353
+  },
+  {
+    "name": "minecraft:waxed_exposed_cut_copper",
+    "id": -352,
+    "oldId": -352
+  },
+  {
+    "name": "minecraft:waxed_cut_copper",
+    "id": -351,
+    "oldId": -351
+  },
+  {
+    "name": "minecraft:oxidized_cut_copper",
+    "id": -350,
+    "oldId": -350
+  },
+  {
+    "name": "minecraft:weathered_cut_copper",
+    "id": -349,
+    "oldId": -349
+  },
+  {
+    "name": "minecraft:exposed_cut_copper",
+    "id": -348,
+    "oldId": -348
+  },
+  {
+    "name": "minecraft:cut_copper",
+    "id": -347,
+    "oldId": -347
+  },
+  {
+    "name": "minecraft:waxed_weathered_copper",
+    "id": -346,
+    "oldId": -346
+  },
+  {
+    "name": "minecraft:waxed_exposed_copper",
+    "id": -345,
+    "oldId": -345
+  },
+  {
+    "name": "minecraft:waxed_copper",
+    "id": -344,
+    "oldId": -344
+  },
+  {
+    "name": "minecraft:oxidized_copper",
+    "id": -343,
+    "oldId": -343
+  },
+  {
+    "name": "minecraft:weathered_copper",
+    "id": -342,
+    "oldId": -342
+  },
+  {
+    "name": "minecraft:exposed_copper",
+    "id": -341,
+    "oldId": -341
+  },
+  {
+    "name": "minecraft:copper_block",
+    "id": -340,
+    "oldId": -340
+  },
+  {
+    "name": "minecraft:item.glow_frame",
+    "id": -339,
+    "oldId": -339
+  },
+  {
+    "name": "minecraft:flowering_azalea",
+    "id": -338,
+    "oldId": -338
+  },
+  {
+    "name": "minecraft:azalea",
+    "id": -337,
+    "oldId": -337
+  },
+  {
+    "name": "minecraft:small_dripleaf_block",
+    "id": -336,
+    "oldId": -336
+  },
+  {
+    "name": "minecraft:moss_carpet",
+    "id": -335,
+    "oldId": -335
+  },
+  {
+    "name": "minecraft:tinted_glass",
+    "id": -334,
+    "oldId": -334
+  },
+  {
+    "name": "minecraft:tuff",
+    "id": -333,
+    "oldId": -333
+  },
+  {
+    "name": "minecraft:small_amethyst_bud",
+    "id": -332,
+    "oldId": -332
+  },
+  {
+    "name": "minecraft:medium_amethyst_bud",
+    "id": -331,
+    "oldId": -331
+  },
+  {
+    "name": "minecraft:large_amethyst_bud",
+    "id": -330,
+    "oldId": -330
+  },
+  {
+    "name": "minecraft:amethyst_cluster",
+    "id": -329,
+    "oldId": -329
+  },
+  {
+    "name": "minecraft:budding_amethyst",
+    "id": -328,
+    "oldId": -328
+  },
+  {
+    "name": "minecraft:amethyst_block",
+    "id": -327,
+    "oldId": -327
+  },
+  {
+    "name": "minecraft:calcite",
+    "id": -326,
+    "oldId": -326
+  },
+  {
+    "name": "minecraft:azalea_leaves_flowered",
+    "id": -325,
+    "oldId": -325
+  },
+  {
+    "name": "minecraft:azalea_leaves",
+    "id": -324,
+    "oldId": -324
+  },
+  {
+    "name": "minecraft:big_dripleaf",
+    "id": -323,
+    "oldId": -323
+  },
+  {
+    "name": "minecraft:cave_vines",
+    "id": -322,
+    "oldId": -322
+  },
+  {
+    "name": "minecraft:spore_blossom",
+    "id": -321,
+    "oldId": -321
+  },
+  {
+    "name": "minecraft:moss_block",
+    "id": -320,
+    "oldId": -320
+  },
+  {
+    "name": "minecraft:hanging_roots",
+    "id": -319,
+    "oldId": -319
+  },
+  {
+    "name": "minecraft:dirt_with_roots",
+    "id": -318,
+    "oldId": -318
+  },
+  {
+    "name": "minecraft:dripstone_block",
+    "id": -317,
+    "oldId": -317
+  },
+  {
+    "name": "minecraft:lightning_rod",
+    "id": -312,
+    "oldId": -312
+  },
+  {
+    "name": "minecraft:copper_ore",
+    "id": -311,
+    "oldId": -311
+  },
+  {
+    "name": "minecraft:pointed_dripstone",
+    "id": -308,
+    "oldId": -308
+  },
+  {
+    "name": "minecraft:sculk_sensor",
+    "id": -307,
+    "oldId": -307
+  },
+  {
+    "name": "minecraft:powder_snow",
+    "id": -306,
+    "oldId": -306
+  },
+  {
     "name": "minecraft:unknown",
-    "id": -305
+    "id": -305,
+    "oldId": -305
   },
   {
     "name": "minecraft:quartz_bricks",
@@ -3339,6 +3885,14 @@
     "oldData": 5
   },
   {
+    "name": "minecraft:powder_snow_bucket",
+    "id": 368
+  },
+  {
+    "name": "minecraft:axolotl_bucket",
+    "id": 369
+  },
+  {
     "name": "minecraft:minecart",
     "id": 370,
     "oldId": 328
@@ -4085,6 +4639,44 @@
     "oldData": 127
   },
   {
+    "name": "minecraft:axolotl_spawn_egg",
+    "id": 500,
+    "oldId": 383,
+    "oldData": 130
+  },
+  {
+    "name": "minecraft:goat_spawn_egg",
+    "id": 501,
+    "oldId": 383,
+    "oldData": 128
+  },
+  {
+    "name": "minecraft:glow_squid_spawn_egg",
+    "id": 502,
+    "oldId": 383,
+    "oldData": 129
+  },
+  {
+    "name": "minecraft:glow_ink_sac",
+    "id": 503
+  },
+  {
+    "name": "minecraft:copper_ingot",
+    "id": 504
+  },
+  {
+    "name": "minecraft:raw_iron",
+    "id": 505
+  },
+  {
+    "name": "minecraft:raw_gold",
+    "id": 506
+  },
+  {
+    "name": "minecraft:raw_copper",
+    "id": 507
+  },
+  {
     "name": "minecraft:experience_bottle",
     "id": 508,
     "oldId": 384
@@ -4657,6 +5249,22 @@
     "oldId": 801
   },
   {
+    "name": "minecraft:glow_frame",
+    "id": 621
+  },
+  {
+    "name": "minecraft:goat_horn",
+    "id": 622
+  },
+  {
+    "name": "minecraft:amethyst_shard",
+    "id": 623
+  },
+  {
+    "name": "minecraft:spyglass",
+    "id": 624
+  },
+  {
     "name": "minecraft:boat",
     "id": 625,
     "oldId": 333,
@@ -4678,5 +5286,9 @@
     "name": "minecraft:end_crystal",
     "id": 629,
     "oldId": 426
+  },
+  {
+    "name": "minecraft:glow_berries",
+    "id": 630
   }
 ]
