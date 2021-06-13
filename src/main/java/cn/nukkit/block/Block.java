@@ -608,6 +608,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[DRIPSTONE_BLOCK] = BlockDripstone.class; //572
 
+            list[HANGING_ROOTS] = BlockRootsHanging.class; //574
+
             list[CALCITE] = BlockCalcite.class; //581
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
 
