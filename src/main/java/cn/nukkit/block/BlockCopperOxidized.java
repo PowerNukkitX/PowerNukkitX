@@ -10,7 +10,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockCopperOxidized extends BlockCopperBlock {
+public class BlockCopperOxidized extends BlockCopper {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockCopperOxidized() {

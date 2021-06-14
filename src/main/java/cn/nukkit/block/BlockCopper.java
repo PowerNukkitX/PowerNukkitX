@@ -9,11 +9,11 @@ import cn.nukkit.api.Since;
  */
 
 @PowerNukkitOnly
-@Since("FUTURE")//TODO Rename in next commit
-public class BlockCopperBlock extends BlockCopperBase {
+@Since("FUTURE")
+public class BlockCopper extends BlockCopperBase {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockCopperBlock() {
+    public BlockCopper() {
         // Does nothing
     }
 
