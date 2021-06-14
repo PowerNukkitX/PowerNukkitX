@@ -10,11 +10,11 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockCopperWeathered extends BlockCopper {
+public class BlockCopperWeathered extends BlockCopperBlock {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockCopperWeathered() {
-
+        // Does nothing
     }
 
     @Override

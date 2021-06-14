@@ -2,11 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author LoboMetalurgico
@@ -15,23 +11,11 @@ import javax.annotation.Nonnull;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public abstract class BlockCopper extends BlockSolid {
+public abstract class BlockCopperBase extends BlockSolid {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public BlockCopper() {
-
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    @Nonnull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+    public BlockCopperBase() {
+        // Does nothing
     }
 
     @Override
@@ -59,12 +43,5 @@ public abstract class BlockCopper extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return false;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public boolean isLavaResistant() {
-        return true;
     }
 }

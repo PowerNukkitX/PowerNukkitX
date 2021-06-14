@@ -10,20 +10,20 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockCopperWaxedExposedCut extends BlockCopper {
+public class BlockCopperCutWaxed extends BlockCopperCut implements Waxed {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockCopperWaxedExposedCut() {
-
+    public BlockCopperCutWaxed() {
+        // Does nothing
     }
 
     @Override
     public String getName() {
-        return "Waxed Exposed Cut Copper";
+        return "Waxed Cut Copper";
     }
 
     @Override
     public int getId() {
-        return WAXED_EXPOSED_CUT_COPPER;
+        return WAXED_CUT_COPPER;
     }
 }
