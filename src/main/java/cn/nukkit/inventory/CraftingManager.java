@@ -127,7 +127,6 @@ public class CraftingManager {
 
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
-        if (true) return;
         List<Map> recipes = config.getMapList("recipes");
         log.info("Loading recipes...");
         toNextRecipe:
@@ -443,24 +442,36 @@ public class CraftingManager {
     }
 
     public FurnaceRecipe matchFurnaceRecipe(Item input) {
+        if (input.isNull()) {
+            return null;
+        }
         FurnaceRecipe recipe = this.furnaceRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.furnaceRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
     }
 
     public CampfireRecipe matchCampfireRecipe(Item input) {
+        if (input.isNull()) {
+            return null;
+        }
         CampfireRecipe recipe = this.campfireRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.campfireRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
     }
 
     public BlastFurnaceRecipe matchBlastFurnaceRecipe(Item input) {
+        if (input.isNull()) {
+            return null;
+        }
         BlastFurnaceRecipe recipe = this.blastFurnaceRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.blastFurnaceRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
     }
 
     public SmokerRecipe matchSmokerRecipe(Item input) {
+        if (input.isNull()) {
+            return null;
+        }
         SmokerRecipe recipe = this.smokerRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.smokerRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
@@ -504,7 +515,8 @@ public class CraftingManager {
     }
 
     private static int getItemHash(Item item) {
-        return getItemHash(item.getId(), item.getDamage());
+        String fastStrId = item.getId() == ItemID.STRING_IDENTIFIED_ITEM? item.getNamespaceId() : "";
+        return 31 * getItemHash(item.getId(), item.getDamage()) + fastStrId.hashCode();
     }
 
     private static int getItemHash(int id, int meta) {
