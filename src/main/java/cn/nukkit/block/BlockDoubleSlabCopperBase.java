@@ -2,24 +2,39 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * @author LoboMetalurgico
- * @since 11/06/2021
+ * @author joserobjr
+ * @since 2021-06-14
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
-public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, Waxable {
+public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase implements Waxable, Oxidizable {
+
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockCopperBase() {
-        // Does nothing
+    public BlockDoubleSlabCopperBase(int meta) {
+        super(meta);
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return BlockSlab.SIMPLE_SLAB_PROPERTIES;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.ORANGE_BLOCK_COLOR;
     }
 
     @Override
@@ -78,21 +93,5 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
 
     @Since("FUTURE")
     @PowerNukkitOnly
-    protected int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel) {
-        if (oxidizationLevel == null) {
-            return getId();
-        }
-        switch (oxidizationLevel) {
-            case UNAFFECTED:
-                return waxed? WAXED_COPPER : COPPER_BLOCK;
-            case EXPOSED:
-                return waxed? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
-            case WEATHERED:
-                return waxed? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
-            case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
-            default:
-                return getId();
-        }
-    }
+    protected abstract int getCopperId(boolean waxed, @Nullable OxidizationLevel oxidizationLevel);
 }
