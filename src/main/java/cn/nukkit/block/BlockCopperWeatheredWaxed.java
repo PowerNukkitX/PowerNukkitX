@@ -10,7 +10,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockCopperWeatheredWaxed extends BlockCopperWeathered implements Waxed {
+public class BlockCopperWeatheredWaxed extends BlockCopperWeathered {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockCopperWeatheredWaxed() {
@@ -25,5 +25,12 @@ public class BlockCopperWeatheredWaxed extends BlockCopperWeathered implements W
     @Override
     public int getId() {
         return WAXED_WEATHERED_COPPER;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

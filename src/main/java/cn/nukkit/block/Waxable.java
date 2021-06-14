@@ -9,5 +9,12 @@ import cn.nukkit.api.Since;
  */
 @PowerNukkitOnly
 @Since("FUTURE")
-public interface Waxed {
+public interface Waxable {
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    boolean isWaxed();
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    boolean setWaxed(boolean waxed);
 }
