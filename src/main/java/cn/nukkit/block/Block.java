@@ -663,7 +663,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[EXPOSED_CUT_COPPER_SLAB] = BlockSlabCopperCutExposed.class; //617
             list[WEATHERED_CUT_COPPER_SLAB] = BlockSlabCopperCutWeathered.class; //618
             list[OXIDIZED_CUT_COPPER_SLAB] = BlockSlabCopperCutOxidized.class; //619
-            list[WAXED_CUT_COPPER_SLAB] = BlockSlabCopperCutOxidizedWaxed.class; //620
+            list[WAXED_CUT_COPPER_SLAB] = BlockSlabCopperCutWaxed.class; //620
             list[WAXED_EXPOSED_CUT_COPPER_SLAB] = BlockSlabCopperCutExposedWaxed.class; //621
             list[WAXED_WEATHERED_CUT_COPPER_SLAB] = BlockSlabCopperCutWeatheredWaxed.class; //622
             list[DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCut.class; //623

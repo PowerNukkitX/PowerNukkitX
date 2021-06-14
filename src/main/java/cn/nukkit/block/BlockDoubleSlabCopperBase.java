@@ -1,9 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -64,6 +66,16 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         return false;
     }
 
+    @Override
+    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+        return Waxable.super.onActivate(item, player);
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
     @Since("FUTURE")
     @PowerNukkitOnly
     @Override
@@ -71,7 +83,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         if (getOxidizationLevel().equals(oxidizationLevel)) {
             return true;
         }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(isWaxed(), oxidizationLevel)));
+        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel)).getBlock());
     }
 
     @Since("FUTURE")
@@ -81,7 +93,7 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
         if (isWaxed() == waxed) {
             return true;
         }
-        return getValidLevel().setBlock(this, Block.get(getCopperId(waxed, getOxidizationLevel())));
+        return getValidLevel().setBlock(this, getCurrentState().withBlockId(getCopperId(waxed, getOxidizationLevel())).getBlock());
     }
 
     @Since("FUTURE")

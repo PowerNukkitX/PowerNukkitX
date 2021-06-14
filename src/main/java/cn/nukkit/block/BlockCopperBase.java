@@ -1,8 +1,10 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
 import javax.annotation.Nonnull;
@@ -42,6 +44,16 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
     @Override
     public int getToolTier() {
         return ItemTool.TIER_STONE;
+    }
+
+    @Override
+    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+        return Waxable.super.onActivate(item, player);
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
     }
 
     @Override
