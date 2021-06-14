@@ -1238,7 +1238,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     public boolean isNull() {
-        return this.count <= 0 || this.id == AIR;
+        return this.count <= 0 || this.id == AIR || this.id == STRING_IDENTIFIED_ITEM && !(this instanceof StringItem);
     }
 
     final public String getName() {
