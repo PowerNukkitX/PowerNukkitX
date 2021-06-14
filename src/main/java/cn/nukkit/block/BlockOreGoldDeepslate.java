@@ -5,32 +5,32 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.BlockColor;
 
 /**
- * @author LoboMetalurgico
- * @since 11/06/2021
+ * @author joserobjr
+ * @since 2021-06-13
  */
-
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockOreCopperDeepslate extends BlockOreCopper {
+public class BlockOreGoldDeepslate extends BlockOreGold {
+
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockOreCopperDeepslate() {
+    public BlockOreGoldDeepslate() {
         // Does nothing
     }
 
     @Override
-    public String getName() {
-        return "Deepslate Copper Ore";
-    }
-
-    @Override
     public int getId() {
-        return DEEPSLATE_COPPER_ORE;
+        return DEEPSLATE_GOLD_ORE;
     }
 
     @Override
     public double getHardness() {
         return 4.5;
+    }
+
+    @Override
+    public String getName() {
+        return "Deepslate Gold Ore";
     }
 
     @Override

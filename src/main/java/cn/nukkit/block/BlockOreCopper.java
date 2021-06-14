@@ -2,11 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author LoboMetalurgico
@@ -15,23 +13,11 @@ import javax.annotation.Nonnull;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockOreCopper extends BlockSolid {
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
-
+public class BlockOreCopper extends BlockOre {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockOreCopper() {
-
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    @Nonnull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+        // Does nothing
     }
 
     @Override
@@ -44,42 +30,18 @@ public class BlockOreCopper extends BlockSolid {
         return COPPER_ORE;
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
     @Override
-    public double getHardness() {
-        return 3;
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.RAW_COPPER;
     }
 
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Since("1.4.0.0-PN")
+    @Since("FUTURE")
     @PowerNukkitOnly
     @Override
-    public int getToolTier() {
-        return ItemTool.TIER_STONE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    @Override
-    public boolean isLavaResistant() {
-        return true;
+    protected float getDropMultiplier() {
+        return 3;
     }
 }
