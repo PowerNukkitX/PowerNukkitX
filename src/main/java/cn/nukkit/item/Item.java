@@ -501,11 +501,6 @@ public class Item implements Cloneable, BlockID, ItemID {
             int meta = Utils.toInt(data.get("damage"));
             item = fromString(id + ":" + meta);
         } else if (data.containsKey("blockRuntimeId")) {
-            Integer blockId = BlockStateRegistry.getBlockId(id);
-            if (blockId == null) {
-                log.warn("Block runtime id for {} is not registered!", id);
-                return null;
-            }
             int blockRuntimeId = -1;
             try {
                 blockRuntimeId = ((Number) data.get("blockRuntimeId")).intValue();
@@ -516,10 +511,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                     log.warn("Block state not found for the creative item {} with runtimeId {}", id, blockRuntimeId);
                 }
             } catch (BlockPropertyNotFoundException e) {
-                if (blockId > BlockID.QUARTZ_BRICKS) {
-                    log.warn("The block {} (id:{}, runtime id:{}) is not supported yet!", id, blockId, blockRuntimeId);
-                    return null; // TODO Not implemented yet
-                }
+                log.warn("The block {} (runtime id:{}) is not supported yet!", id, blockRuntimeId);
             } catch (Throwable e) {
                 log.error("Error loading the creative item {} with runtimeId {}", id, blockRuntimeId, e);
                 return null;

@@ -67,7 +67,7 @@ public class RuntimeItemMapping {
         this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
                 .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        this.namespaceNetworkMap.keySet().forEach(key-> this.namespacedIdItem.put(key, ()-> new StringItemUnknown(key)));
+        //this.namespaceNetworkMap.keySet().forEach(key-> this.namespacedIdItem.put(key, ()-> new StringItemUnknown(key)));
     }
 
     /**
