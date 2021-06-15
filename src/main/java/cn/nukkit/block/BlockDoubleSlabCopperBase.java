@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
@@ -73,8 +74,20 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
     }
 
     @Override
+    public int onUpdate(int type) {
+        return Oxidizable.super.onUpdate(type);
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public BlockState getStateWithOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+        return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
     @Since("FUTURE")

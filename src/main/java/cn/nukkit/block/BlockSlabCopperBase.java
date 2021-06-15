@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.OxidizationLevel;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
@@ -37,6 +38,11 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
     public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
         return Waxable.super.onActivate(item, player)
                 || Oxidizable.super.onActivate(item, player);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        return Oxidizable.super.onUpdate(type);
     }
 
     @Override
@@ -82,6 +88,13 @@ public abstract class BlockSlabCopperBase extends BlockSlab implements Waxable, 
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public BlockState getStateWithOxidizationLevel(@Nonnull OxidizationLevel oxidizationLevel) {
+        return getCurrentState().withBlockId(getCopperId(isWaxed(), oxidizationLevel));
     }
 
     @Since("FUTURE")
