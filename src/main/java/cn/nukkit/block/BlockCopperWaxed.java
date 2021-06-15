@@ -31,6 +31,6 @@ public class BlockCopperWaxed extends BlockCopper {
     @PowerNukkitOnly
     @Override
     public boolean isWaxed() {
-        return false;
+        return true;
     }
 }

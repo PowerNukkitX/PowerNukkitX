@@ -23,7 +23,9 @@ public class ParticleCommand extends VanillaCommand {
     private static final String[] ENUM_VALUES = new String[]{"explode", "hugeexplosion", "hugeexplosionseed", "bubble"
             , "splash", "wake", "water", "crit", "smoke", "spell", "instantspell", "dripwater", "driplava", "townaura"
             , "spore", "portal", "flame", "lava", "reddust", "snowballpoof", "slime", "itembreak", "terrain", "heart"
-            , "ink", "droplet", "enchantmenttable", "happyvillager", "angryvillager", "forcefield", "waxon", "waxoff"};
+            , "ink", "droplet", "enchantmenttable", "happyvillager", "angryvillager", "forcefield", "waxon", "waxoff"
+            , "scrape", "electricspark"
+    };
     public ParticleCommand(String name) {
         super(name, "%nukkit.command.particle.description", "%nukkit.command.particle.usage");
         this.setPermission("nukkit.command.particle");

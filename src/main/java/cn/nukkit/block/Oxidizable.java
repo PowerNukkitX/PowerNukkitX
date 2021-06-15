@@ -10,7 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.particle.WaxOffParticle;
+import cn.nukkit.level.particle.ScrapeParticle;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -119,7 +119,7 @@ public interface Oxidizable {
         if (player == null || !player.isCreative()) {
             item.useOn(this instanceof Block? (Block) this : location.getLevelBlock());
         }
-        location.getValidLevel().addParticle(new WaxOffParticle(location));
+        location.getValidLevel().addParticle(new ScrapeParticle(location));
         return true;
     }
 
