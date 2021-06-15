@@ -16,6 +16,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -93,6 +94,10 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return super.attack(source);
     }
 
+    private static boolean isVulnerableOxidizable(@Nonnull Block block) {
+        return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
+    }
+
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onUpdate(int currentTick) {
@@ -115,7 +120,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
             this.level.addSound(this, Sound.RANDOM_EXPLODE);
 
             Block down = getLevel().getBlock(down());
-            if (down instanceof Oxidizable && (!(down instanceof Waxable) || !((Waxable) down).isWaxed())) {
+            if (isVulnerableOxidizable(down)) {
                 Map<Position, OxidizationLevel> changes = new LinkedHashMap<>();
                 changes.put(new Position().setComponents(down).setLevel(level), OxidizationLevel.UNAFFECTED);
 
@@ -130,7 +135,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                         randomPos.y = directionPos.y + (random.nextInt(3) - 1);
                         randomPos.z = directionPos.z + (random.nextInt(3) - 1);
                         Block possibility = level.getBlock(randomPos);
-                        if (possibility instanceof Oxidizable) {
+                        if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();
                             changes.compute(nextPos, (k, v) -> {
                                 int nextLevel = v == null?
