@@ -677,11 +677,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             //list[CAVE_VINES_HEAD_WITH_BERRIES] = .class; //631
             //list[SMOOTH_BASALT] = .class; //632
             list[DEEPSLATE] = BlockDeepslate.class; //633
-            list[COBBLED_DEEPSLATE] = BlockCobbledDeepslate.class; //634
-            //list[COBBLED_DEEPSLATE_SLAB] = .class; //635
+            list[COBBLED_DEEPSLATE] = BlockDeepslateCobbled.class; //634
+            list[COBBLED_DEEPSLATE_SLAB] = BlockSlabDeepslateCobbled.class; //635
             //list[COBBLED_DEEPSLATE_STAIRS] = .class; //636
             //list[COBBLED_DEEPSLATE_WALL] = .class; //637
-            list[POLISHED_DEEPSLATE] = BlockPolishedDeepslate.class; //638
+            list[POLISHED_DEEPSLATE] = BlockDeepslatePolished.class; //638
             //list[POLISHED_DEEPSLATE_SLAB] = .class; //639
             //list[POLISHED_DEEPSLATE_STAIRS] = .class; //640
             //list[POLISHED_DEEPSLATE_WALL] = .class; //641
@@ -694,7 +694,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             //list[DEEPSLATE_BRICK_STAIRS] = .class; //648
             //list[DEEPSLATE_BRICK_WALL] = .class; //649
             //list[CHISELED_DEEPSLATE] = .class; //650
-            //list[COBBLED_DEEPSLATE_DOUBLE_SLAB] = .class; //651
+            list[COBBLED_DEEPSLATE_DOUBLE_SLAB] = BlockDoubleSlabDeepslateCobbled.class; //651
             //list[POLISHED_DEEPSLATE_DOUBLE_SLAB] = .class; //652
             //list[DEEPSLATE_TILE_DOUBLE_SLAB] = .class; //653
             //list[DEEPSLATE_BRICK_DOUBLE_SLAB] = .class; //654

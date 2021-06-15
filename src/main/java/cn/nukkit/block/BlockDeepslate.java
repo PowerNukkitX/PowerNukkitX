@@ -2,12 +2,10 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-
-import javax.annotation.Nonnull;
+import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * @author LoboMetalurgico
@@ -19,19 +17,8 @@ import javax.annotation.Nonnull;
 public class BlockDeepslate extends BlockSolid {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockDeepslate() {
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    @Nonnull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
+        // Does nothing
     }
 
     @Override
@@ -73,7 +60,11 @@ public class BlockDeepslate extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        return Item.EMPTY_ARRAY; //TODO: Drop CobbledDeepslate if Silk Touch is not used
+        if (!canHarvest(item)) {
+            return Item.EMPTY_ARRAY;
+        }
+
+        return new Item[]{MinecraftItemID.COBBLED_DEEPSLATE.get(1)};
     }
 
     @Override
@@ -81,10 +72,8 @@ public class BlockDeepslate extends BlockSolid {
         return true;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
-    public boolean isLavaResistant() {
-        return true;
+    public BlockColor getColor() {
+        return BlockColor.DEEPSLATE_GRAY;
     }
 }

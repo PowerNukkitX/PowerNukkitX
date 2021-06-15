@@ -10,10 +10,10 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockPolishedDeepslate extends BlockCobbledDeepslate {
+public class BlockDeepslatePolished extends BlockDeepslateCobbled {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockPolishedDeepslate() {
+    public BlockDeepslatePolished() {
     }
 
     @Override
