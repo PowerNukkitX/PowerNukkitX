@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.WaxOffParticle;
 import cn.nukkit.level.particle.WaxOnParticle;
 
@@ -37,7 +38,7 @@ public interface Waxable {
             return false;
         }
 
-        Location location = getLocation();
+        Position location = this instanceof Block? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;
@@ -45,8 +46,7 @@ public interface Waxable {
                 item.useOn(this instanceof Block? (Block) this : location.getLevelBlock());
             }
         }
-        //location.up(2);
-        location.getLevel().addParticle(waxed? new WaxOnParticle(location) : new WaxOffParticle(location));
+        location.getValidLevel().addParticle(waxed? new WaxOnParticle(location) : new WaxOffParticle(location));
         return true;
     }
 

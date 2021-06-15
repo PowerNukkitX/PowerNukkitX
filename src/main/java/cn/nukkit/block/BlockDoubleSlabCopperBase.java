@@ -68,7 +68,8 @@ public abstract class BlockDoubleSlabCopperBase extends BlockDoubleSlabBase impl
 
     @Override
     public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
-        return Waxable.super.onActivate(item, player);
+        return Waxable.super.onActivate(item, player)
+                || Oxidizable.super.onActivate(item, player);
     }
 
     @Override
