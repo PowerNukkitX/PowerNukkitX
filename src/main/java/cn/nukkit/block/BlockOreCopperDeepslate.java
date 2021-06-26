@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * @author LoboMetalurgico
@@ -14,7 +15,7 @@ public class BlockOreCopperDeepslate extends BlockOreCopper {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockOreCopperDeepslate() {
-
+        // Does nothing
     }
 
     @Override
@@ -30,5 +31,10 @@ public class BlockOreCopperDeepslate extends BlockOreCopper {
     @Override
     public double getHardness() {
         return 4.5;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.DEEPSLATE_GRAY;
     }
 }

@@ -1,40 +1,31 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDiamond;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockOreDiamond extends BlockSolid {
+@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+public class BlockOreDiamond extends BlockOre {
 
 
     public BlockOreDiamond() {
+        // Does nothing
     }
 
     @Override
     public int getId() {
         return DIAMOND_ORE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -45,6 +36,14 @@ public class BlockOreDiamond extends BlockSolid {
     @Override
     public String getName() {
         return "Diamond Ore";
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
+    @Override
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.DIAMOND;
     }
 
     @Override
@@ -72,16 +71,6 @@ public class BlockOreDiamond extends BlockSolid {
 
     @Override
     public int getDropExp() {
-        return new NukkitRandom().nextRange(3, 7);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+        return ThreadLocalRandom.current().nextInt(3, 8);
     }
 }

@@ -216,6 +216,15 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.WEST, step);
     }
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public int distanceManhattan(Vector3 pos) {
+        double x = Math.abs(pos.getX() - this.getX());
+        double y = Math.abs(pos.getY() - this.getY());
+        double z = Math.abs(pos.getZ() - this.getZ());
+        return (int)(x + y + z);
+    }
+
     public double distance(Vector3 pos) {
         return distance(pos.x, pos.y, pos.z);
     }

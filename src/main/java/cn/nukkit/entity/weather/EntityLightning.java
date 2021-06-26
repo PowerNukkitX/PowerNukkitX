@@ -1,21 +1,27 @@
 package cn.nukkit.entity.weather;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFire;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.block.*;
+import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.ElectricSparkParticle;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import javax.annotation.Nonnull;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.IntConsumer;
+import java.util.function.Supplier;
 
 /**
  * @author boybook
@@ -88,6 +94,10 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return super.attack(source);
     }
 
+    private static boolean isVulnerableOxidizable(@Nonnull Block block) {
+        return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
+    }
+
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onUpdate(int currentTick) {
@@ -108,6 +118,66 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         if (this.state == 2) {
             this.level.addSound(this, Sound.AMBIENT_WEATHER_THUNDER);
             this.level.addSound(this, Sound.RANDOM_EXPLODE);
+
+            Block down = getLevel().getBlock(down());
+            if (isVulnerableOxidizable(down)) {
+                Map<Position, OxidizationLevel> changes = new LinkedHashMap<>();
+                changes.put(new Position().setComponents(down).setLevel(level), OxidizationLevel.UNAFFECTED);
+
+                ThreadLocalRandom random = ThreadLocalRandom.current();
+                int scans = random.nextInt(3) + 3;
+
+                Position directionPos = new Position().setLevel(level);
+                Position randomPos = new Position().setLevel(level);
+                Supplier<Vector3> cleanOxidizationAround = () -> {
+                    for (int attempt = 0; attempt < 10; attempt++) {
+                        randomPos.x = directionPos.x + (random.nextInt(3) - 1);
+                        randomPos.y = directionPos.y + (random.nextInt(3) - 1);
+                        randomPos.z = directionPos.z + (random.nextInt(3) - 1);
+                        Block possibility = level.getBlock(randomPos);
+                        if (isVulnerableOxidizable(possibility)) {
+                            Position nextPos = randomPos.clone();
+                            changes.compute(nextPos, (k, v) -> {
+                                int nextLevel = v == null?
+                                        ((Oxidizable) possibility).getOxidizationLevel().ordinal() - 1 :
+                                        v.ordinal() - 1;
+                                return OxidizationLevel.values()[Math.max(0, nextLevel)];
+                            });
+                            return nextPos;
+                        }
+                    }
+                    return null;
+                };
+
+                IntConsumer cleanOxidizationAroundLoop = count -> {
+                    directionPos.setComponents(down);
+                    for(int i = 0; i < count; ++i) {
+                        Vector3 next = cleanOxidizationAround.get();
+                        if (next != null) {
+                            directionPos.setComponents(next);
+                        } else {
+                            break;
+                        }
+                    }
+                };
+
+                for(int scan = 0; scan < scans; ++scan) {
+                    int count = random.nextInt(8) + 1;
+                    cleanOxidizationAroundLoop.accept(count);
+                }
+
+                for (Map.Entry<Position, OxidizationLevel> entry : changes.entrySet()) {
+                    Block current = level.getBlock(entry.getKey());
+                    Block next = ((Oxidizable) current).getStateWithOxidizationLevel(entry.getValue()).getBlock(current);
+                    BlockFadeEvent event = new BlockFadeEvent(current, next);
+                    getServer().getPluginManager().callEvent(event);
+                    if (event.isCancelled()) {
+                        break;
+                    }
+                    getLevel().setBlock(entry.getKey(), event.getNewState());
+                    getLevel().addParticle(new ElectricSparkParticle(entry.getKey()));
+                }
+            }
         }
 
         this.state--;

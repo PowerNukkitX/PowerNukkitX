@@ -8,7 +8,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.UnknownRuntimeIdException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyValueException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateDataTypeException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -19,6 +18,7 @@ import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.Validation;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 @Since("1.4.0.0-PN")
 @ToString
 @ParametersAreNonnullByDefault
+@Log4j2
 public final class BlockState implements Serializable, IBlockState {
     private static final long serialVersionUID = 623759888114628578L;
 
@@ -388,7 +389,8 @@ public final class BlockState implements Serializable, IBlockState {
         
         int runtimeId = trimmedState.getRuntimeId();
         if (runtimeId == BlockStateRegistry.getUpdateBlockRegistration() && !"minecraft:info_update".equals(trimmedState.getPersistenceName())) {
-            throw new UnknownRuntimeIdException("The current block state can't be represented as an item. State: "+trimmedState+", Trimmed: "+trimmedState+" ItemBlockMeta: "+itemBlockMeta);
+            log.warn("The current block state can't be represented as an item. State: {}, Trimmed: {} ItemBlockMeta: {}", this, trimmedState, itemBlockMeta);
+            //throw new UnknownRuntimeIdException("The current block state can't be represented as an item. State: "+trimmedState+", Trimmed: "+trimmedState+" ItemBlockMeta: "+itemBlockMeta);
         }
         Block block = trimmedState.getBlock();
         return new ItemBlock(block, itemBlockMeta, count);

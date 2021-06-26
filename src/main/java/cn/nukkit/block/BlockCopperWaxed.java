@@ -14,7 +14,7 @@ public class BlockCopperWaxed extends BlockCopper {
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockCopperWaxed() {
-
+        // Does nothing
     }
 
     @Override
@@ -25,5 +25,12 @@ public class BlockCopperWaxed extends BlockCopper {
     @Override
     public int getId() {
         return WAXED_COPPER;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public boolean isWaxed() {
+        return true;
     }
 }

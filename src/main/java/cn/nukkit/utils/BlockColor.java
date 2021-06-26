@@ -107,6 +107,10 @@ public class BlockColor  {
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    public static final BlockColor DEEPSLATE_GRAY = new BlockColor(0x64, 0x64, 0x64);
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
     public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
 
     private int red;

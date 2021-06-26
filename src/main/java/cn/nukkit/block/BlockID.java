@@ -752,40 +752,7 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_TILES = 664;
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_BRICKS = 665;
     @Since("FUTURE") @PowerNukkitOnly int GLOW_LICHEN = 666;
-    // TODO 667
-    // TODO 668
-    // TODO 669
-    // TODO 670
-    // TODO 671
-    // TODO 672
-    // TODO 673
-    // TODO 674
-    // TODO 675
-    // TODO 676
-    // TODO 677
-    // TODO 678
-    // TODO 679
-    // TODO 680
-    // TODO 681
-    // TODO 682
-    // TODO 683
-    // TODO 684
-    // TODO 685
-    // TODO 686
-    // TODO 687
-    // TODO 688
-    // TODO 689
-    // TODO 690
-    // TODO 691
-    // TODO 692
-    // TODO 693
-    // TODO 694
-    // TODO 695
-    // TODO 696
-    // TODO 697
-    // TODO 698
-    // TODO 699
-    // TODO 700
+    // Unused 667 - 700
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_COPPER = 701;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER = 702;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;

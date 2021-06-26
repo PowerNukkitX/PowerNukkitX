@@ -1,34 +1,26 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
+
+import javax.annotation.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockOreGold extends BlockSolid {
+@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+public class BlockOreGold extends BlockOre {
 
     public BlockOreGold() {
+        // Does nothing
     }
 
     @Override
     public int getId() {
         return GOLD_ORE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -41,8 +33,11 @@ public class BlockOreGold extends BlockSolid {
         return "Gold Ore";
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.RAW_GOLD;
     }
 }

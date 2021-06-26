@@ -122,10 +122,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.powernukkit.fastutil</groupId>
-            <artifactId>fastutil-lite</artifactId>
-            <version>8.1.1</version>
-            <scope>compile</scope>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil-core</artifactId>
+            <version>8.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil-extra</artifactId>
+            <version>8.5.4</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
