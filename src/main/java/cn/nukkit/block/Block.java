@@ -603,51 +603,123 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[CHISELED_NETHER_BRICKS] = BlockBricksNetherChiseled.class; //557
             list[CRACKED_NETHER_BRICKS] = BlockBricksNetherCracked.class; //558
             list[QUARTZ_BRICKS] = BlockBricksQuartz.class; //559
-
+            // 560 Special block: minecraft:unknown
+            //list[POWDER_SNOW] = .class; //561
+            //list[SCULK_SENSOR] = .class; //562
+            //list[POINTED_DRIPSTONE] = .class; //563
+            // 564 (unused)
+            // 565 (unused)
             list[COPPER_ORE] = BlockOreCopper.class; //566
-
+            //@Since("FUTURE") @PowerNukkitOnly int LIGHTNING_ROD = 567;
+            // 568 (unused)
+            // 569 (unused)
+            // 570 (unused)
+            // 571 (unused)
             list[DRIPSTONE_BLOCK] = BlockDripstone.class; //572
-
+            //list[DIRT_WITH_ROOTS] = .class; //573
+            list[HANGING_ROOTS] = BlockRootsHanging.class; //574
+            //list[MOSS_BLOCK] = .class; //575
+            //list[SPORE_BLOSSOM] = .class; //576
+            //list[CAVE_VINES] = .class; //577
+            //list[BIG_DRIPLEAF] = .class; //578
+            //list[AZALEA_LEAVES] = .class; //579
+            //list[AZALEA_LEAVES_FLOWERED] = .class; //580
             list[CALCITE] = BlockCalcite.class; //581
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
-
+            //list[BUDDING_AMETHYST] = .class; //583
+            //list[AMETHYST_CLUSTER] = .class; //584
+            //list[LARGE_AMETHYST_BUD] = .class; //585
+            //list[MEDIUM_AMETHYST_BUD] = .class; //586
+            //list[SMALL_AMETHYST_BUD] = .class; //587
             list[TUFF] = BlockTuff.class; //588
-
+            list[TINTED_GLASS] = BlockGlassTinted.class; //589
+            //list[MOSS_CARPET] = .class; //590
+            //list[SMALL_DRIPLEAF_BLOCK] = .class; //591
             list[AZALEA] = BlockAzalea.class; //592
             list[FLOWERING_AZALEA] = BlockAzaleaFlowering.class; //593
-
-            list[COPPER_BLOCK] = BlockCopperBlock.class; //595
+            list[GLOW_FRAME] = BlockItemFrameGlow.class; //594
+            list[COPPER_BLOCK] = BlockCopper.class; //595
             list[EXPOSED_COPPER] = BlockCopperExposed.class; //596
             list[WEATHERED_COPPER] = BlockCopperWeathered.class; //597
             list[OXIDIZED_COPPER] = BlockCopperOxidized.class; //598
             list[WAXED_COPPER] = BlockCopperWaxed.class; //599
-            list[WAXED_EXPOSED_COPPER] = BlockCopperWaxedExposed.class; //600
-            list[WAXED_WEATHERED_COPPER] = BlockCopperWaxedWeathered.class; //601
+            list[WAXED_EXPOSED_COPPER] = BlockCopperExposedWaxed.class; //600
+            list[WAXED_WEATHERED_COPPER] = BlockCopperWeatheredWaxed.class; //601
             list[CUT_COPPER] = BlockCopperCut.class; //602
-            list[EXPOSED_CUT_COPPER] = BlockCopperExposedCut.class; //603
-            list[WEATHERED_CUT_COPPER] = BlockCopperWeatheredCut.class; //604
-            list[OXIDIZED_CUT_COPPER] = BlockCopperOxidizedCut.class; //605
-            list[WAXED_CUT_COPPER] = BlockCopperWaxedCut.class; //606
-            list[WAXED_EXPOSED_CUT_COPPER] = BlockCopperWaxedExposedCut.class; //607
-            list[WAXED_WEATHERED_CUT_COPPER] = BlockCopperWaxedWeatheredCut.class; //608
-
+            list[EXPOSED_CUT_COPPER] = BlockCopperCutExposed.class; //603
+            list[WEATHERED_CUT_COPPER] = BlockCopperCutWeathered.class; //604
+            list[OXIDIZED_CUT_COPPER] = BlockCopperCutOxidized.class; //605
+            list[WAXED_CUT_COPPER] = BlockCopperCutWaxed.class; //606
+            list[WAXED_EXPOSED_CUT_COPPER] = BlockCopperCutExposedWaxed.class; //607
+            list[WAXED_WEATHERED_CUT_COPPER] = BlockCopperCutWeatheredWaxed.class; //608
+            list[CUT_COPPER_STAIRS] = BlockStairsCopperCut.class; //609
+            list[EXPOSED_CUT_COPPER_STAIRS] = BlockStairsCopperCutExposed.class; //610
+            list[WEATHERED_CUT_COPPER_STAIRS] = BlockStairsCopperCutWeathered.class; //611
+            list[OXIDIZED_CUT_COPPER_STAIRS] = BlockStairsCopperCutOxidized.class; //612
+            list[WAXED_CUT_COPPER_STAIRS] = BlockStairsCopperCutWaxed.class; //613
+            list[WAXED_EXPOSED_CUT_COPPER_STAIRS] = BlockStairsCopperCutExposedWaxed.class; //614
+            list[WAXED_WEATHERED_CUT_COPPER_STAIRS] = BlockStairsCopperCutWeatheredWaxed.class; //615
+            list[CUT_COPPER_SLAB] = BlockSlabCopperCut.class; //616
+            list[EXPOSED_CUT_COPPER_SLAB] = BlockSlabCopperCutExposed.class; //617
+            list[WEATHERED_CUT_COPPER_SLAB] = BlockSlabCopperCutWeathered.class; //618
+            list[OXIDIZED_CUT_COPPER_SLAB] = BlockSlabCopperCutOxidized.class; //619
+            list[WAXED_CUT_COPPER_SLAB] = BlockSlabCopperCutWaxed.class; //620
+            list[WAXED_EXPOSED_CUT_COPPER_SLAB] = BlockSlabCopperCutExposedWaxed.class; //621
+            list[WAXED_WEATHERED_CUT_COPPER_SLAB] = BlockSlabCopperCutWeatheredWaxed.class; //622
+            list[DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCut.class; //623
+            list[EXPOSED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutExposed.class; //624
+            list[WEATHERED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWeathered.class; //625
+            list[OXIDIZED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutOxidized.class; //626
+            list[WAXED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWaxed.class; //627
+            list[WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutExposedWaxed.class; //628
+            list[WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWeatheredWaxed.class; //629
+            //list[CAVE_VINES_BODY_WITH_BERRIES] = .class; //630
+            //list[CAVE_VINES_HEAD_WITH_BERRIES] = .class; //631
+            //list[SMOOTH_BASALT] = .class; //632
             list[DEEPSLATE] = BlockDeepslate.class; //633
-            list[COBBLED_DEEPSLATE] = BlockCobbledDeepslate.class; //634
-
-            list[POLISHED_DEEPSLATE] = BlockPolishedDeepslate.class; //638
-
+            list[COBBLED_DEEPSLATE] = BlockDeepslateCobbled.class; //634
+            list[COBBLED_DEEPSLATE_SLAB] = BlockSlabDeepslateCobbled.class; //635
+            //list[COBBLED_DEEPSLATE_STAIRS] = .class; //636
+            //list[COBBLED_DEEPSLATE_WALL] = .class; //637
+            list[POLISHED_DEEPSLATE] = BlockDeepslatePolished.class; //638
+            //list[POLISHED_DEEPSLATE_SLAB] = .class; //639
+            //list[POLISHED_DEEPSLATE_STAIRS] = .class; //640
+            //list[POLISHED_DEEPSLATE_WALL] = .class; //641
+            //list[DEEPSLATE_TILES] = .class; //642
+            //list[DEEPSLATE_TILE_SLAB] = .class; //643
+            //list[DEEPSLATE_TILE_STAIRS] = .class; //644
+            //list[DEEPSLATE_TILE_WALL] = .class; //645
+            //list[DEEPSLATE_BRICKS] = .class; //646
+            //list[DEEPSLATE_BRICK_SLAB] = .class; //647
+            //list[DEEPSLATE_BRICK_STAIRS] = .class; //648
+            //list[DEEPSLATE_BRICK_WALL] = .class; //649
+            //list[CHISELED_DEEPSLATE] = .class; //650
+            list[COBBLED_DEEPSLATE_DOUBLE_SLAB] = BlockDoubleSlabDeepslateCobbled.class; //651
+            //list[POLISHED_DEEPSLATE_DOUBLE_SLAB] = .class; //652
+            //list[DEEPSLATE_TILE_DOUBLE_SLAB] = .class; //653
+            //list[DEEPSLATE_BRICK_DOUBLE_SLAB] = .class; //654
+            list[DEEPSLATE_LAPIS_ORE] = BlockOreLapisDeepslate.class; //655
+            list[DEEPSLATE_IRON_ORE] = BlockOreIronDeepslate.class; //656
+            list[DEEPSLATE_GOLD_ORE] = BlockOreGoldDeepslate.class; //657
+            list[DEEPSLATE_REDSTONE_ORE] = BlockOreRedstoneDeepslate.class; //658
+            list[LIT_DEEPSLATE_REDSTONE_ORE] = BlockOreRedstoneDeepslateGlowing.class; //659
+            list[DEEPSLATE_DIAMOND_ORE] = BlockOreDiamondDeepslate.class; //660
+            list[DEEPSLATE_COAL_ORE] = BlockOreCoalDeepslate.class; //661
+            list[DEEPSLATE_EMERALD_ORE] = BlockOreEmeraldDeepslate.class; //662
             list[DEEPSLATE_COPPER_ORE] = BlockOreCopperDeepslate.class; //663
-
+            //list[CRACKED_DEEPSLATE_TILES] = .class; //664
+            //list[CRACKED_DEEPSLATE_BRICKS] = .class; //665
             list[GLOW_LICHEN] = BlockGlowLichen.class; //666
-
-            list[WAXED_OXIDIZED_COPPER] = BlockCopperWaxedOxidized.class; //701
-            list[WAXED_OXIDIZED_CUT_COPPER] = BlockCopperWaxedOxidizedCut.class; //702
-
+            // Unused 667 - 700
+            list[WAXED_OXIDIZED_COPPER] = BlockCopperOxidizedWaxed.class; //701
+            list[WAXED_OXIDIZED_CUT_COPPER] = BlockCopperCutOxidizedWaxed.class; //702
+            list[WAXED_OXIDIZED_CUT_COPPER_STAIRS] = BlockStairsCopperCutOxidizedWaxed.class; //703
+            list[WAXED_OXIDIZED_CUT_COPPER_SLAB] = BlockSlabCopperCutOxidizedWaxed.class; //704
+            list[WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutOxidizedWaxed.class; //705
             list[RAW_IRON_BLOCK] = BlockRawIron.class; //706
             list[RAW_COPPER_BLOCK] = BlockRawCopper.class; //707
             list[RAW_GOLD_BLOCK] = BlockRawGold.class; //708
-            
-            initializing = true;
+            //list[INFESTED_DEEPSLATE] = .class; //709            initializing = true;
             
             for (int id = 0; id < MAX_BLOCK_ID; id++) {
                 Class<? extends Block> c = list[id];
