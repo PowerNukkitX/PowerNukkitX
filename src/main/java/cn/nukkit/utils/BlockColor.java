@@ -104,8 +104,10 @@ public class BlockColor  {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
-    
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
 
     private int red;
     private int green;
