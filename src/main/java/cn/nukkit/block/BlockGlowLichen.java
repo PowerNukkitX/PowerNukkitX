@@ -147,35 +147,32 @@ public class BlockGlowLichen extends BlockTransparent {
             }
         }
 
-        item.count--;
+        if (!candidates.isEmpty()) {
+            candidates.forEach((candidate, face) -> {
+                candidate = Block.get(BlockID.DIAMOND_BLOCK);
+                getLevel().setBlock(candidate, candidate, true, true);
+            });
 
-        if (candidates.isEmpty()) {
-            return false;
+            Set<Block> keySet = candidates.keySet();
+            List<Block> keyList = new ArrayList<>(keySet);
+
+            int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
+
+            Block random = keyList.get(rand);
+            Block newLichen;
+
+            if (random.getId() == BlockID.GLOW_LICHEN) {
+                newLichen = random;
+            } else {
+                newLichen = Block.get(GLOW_LICHEN);
+            }
+
+            newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
+
+            getLevel().setBlock(random, newLichen, true, true);
         }
 
-        candidates.forEach((candidate, face) -> {
-            candidate = Block.get(BlockID.DIAMOND_BLOCK);
-            getLevel().setBlock(candidate, candidate, true, true);
-        });
-
-        Set<Block> keySet = candidates.keySet();
-        List<Block> keyList = new ArrayList<>(keySet);
-
-        int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
-
-        Block random = keyList.get(rand);
-        Block newLichen;
-
-        if (random.getId() == BlockID.GLOW_LICHEN) {
-            newLichen = random;
-        } else {
-            newLichen = Block.get(GLOW_LICHEN);
-        }
-
-        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
-
-        getLevel().setBlock(random, newLichen, true, true);
-
+        item.decrement(1);
         return true;
     }
 
