@@ -10,10 +10,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * @author Gabriel8579
@@ -50,17 +53,134 @@ public class BlockGlowLichen extends BlockTransparent {
         return PROPERTIES;
     }
 
-    @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public BlockFace[] getGrowthSides() {
+        Stream<BlockFace>returns = Arrays.stream(BlockFace.values()).filter(this::isGrowthToSide);
+        return returns.toArray(BlockFace[]::new);
+    }
 
-        Block current = getLevel().getBlock(this);
+    public boolean isGrowthToSide(@Nonnull BlockFace side) {
+        return ((getPropertyValue(MULTI_FACE_DIRECTION_BITS) >> side.getIndex()) & 0x1) > 0;
+    }
+
+    public void growToSide(BlockFace side) {
+        if (!isGrowthToSide(side)) {
+            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << side.getIndex()));
+            getLevel().setBlock(this, this, true, true);
+        }
+    }
+
+    @Override
+    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+
+        if (!target.isSolid() && target.getId() != BlockID.GLOW_LICHEN) {
+            return false;
+        }
+
         int currentMeta = 0;
-        if (current.getId() == GLOW_LICHEN) {
-            currentMeta = current.getPropertyValue(MULTI_FACE_DIRECTION_BITS);
+        if (block.getId() == GLOW_LICHEN) {
+            currentMeta = block.getPropertyValue(MULTI_FACE_DIRECTION_BITS);
         }
 
         setPropertyValue(MULTI_FACE_DIRECTION_BITS, currentMeta | (0b0001 << face.getOpposite().getIndex()));
+
+        if (getPropertyValue(MULTI_FACE_DIRECTION_BITS) == currentMeta) {
+            BlockFace[] sides = BlockFace.values();
+            Stream<BlockFace> faceStream = Arrays.stream(sides).filter(side ->
+                    block.getSide(side).isSolid() && !isGrowthToSide(side)
+            );
+            Optional<BlockFace> optionalFace = faceStream.findFirst();
+            if (optionalFace.isPresent()) {
+                growToSide(optionalFace.get());
+                return true;
+            }
+
+            return false;
+        }
+
         getLevel().setBlock(block, this, true, true);
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
+
+        if (!item.isFertilizer()) {
+            return false;
+        }
+
+        Map<Block, BlockFace> candidates = new HashMap<>();
+
+        for (int i = 0; i < 5; i++) {
+            BlockFace side = BlockFace.fromIndex(i);
+            Block support = this.getSide(side);
+
+            if (isGrowthToSide(side)) {
+                BlockFace[] supportSides = side.getEdges().toArray(new BlockFace[0]);
+
+                for (BlockFace supportSide : supportSides) {
+                    Block supportNeighbor = support.getSide(supportSide);
+
+                    if (supportNeighbor.getId() == BlockID.AIR) {
+                        candidates.put(supportNeighbor, supportSide.getOpposite());
+                    }
+
+                    if (!supportNeighbor.isSolid()) {
+                        continue;
+                    }
+
+                    Block supportNeighborOppositeSide = supportNeighbor.getSide(side.getOpposite());
+                    if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
+                        if (supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN &&
+                                (((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side)||
+                                supportNeighborOppositeSide.getSide(side).getId() == BlockID.AIR)) {
+                            continue;
+                        }
+                        candidates.put(supportNeighborOppositeSide, side);
+                    }
+
+                }
+
+            } else {
+                if (support.isSolid()) {
+                    candidates.put(this, side);
+                }
+            }
+        }
+
+        item.count--;
+
+        if (candidates.isEmpty()) {
+            return false;
+        }
+
+        candidates.forEach((candidate, face) -> {
+            candidate = Block.get(BlockID.DIAMOND_BLOCK);
+            getLevel().setBlock(candidate, candidate, true, true);
+        });
+
+        Set<Block> keySet = candidates.keySet();
+        List<Block> keyList = new ArrayList<>(keySet);
+
+        int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
+
+        Block random = keyList.get(rand);
+        Block newLichen;
+
+        if (random.getId() == BlockID.GLOW_LICHEN) {
+            newLichen = random;
+        } else {
+            newLichen = Block.get(GLOW_LICHEN);
+        }
+
+        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
+
+        getLevel().setBlock(random, newLichen, true, true);
+
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
         return true;
     }
 
