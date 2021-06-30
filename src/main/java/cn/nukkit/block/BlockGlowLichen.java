@@ -148,11 +148,6 @@ public class BlockGlowLichen extends BlockTransparent {
         }
 
         if (!candidates.isEmpty()) {
-            candidates.forEach((candidate, face) -> {
-                candidate = Block.get(BlockID.DIAMOND_BLOCK);
-                getLevel().setBlock(candidate, candidate, true, true);
-            });
-
             Set<Block> keySet = candidates.keySet();
             List<Block> keyList = new ArrayList<>(keySet);
 
