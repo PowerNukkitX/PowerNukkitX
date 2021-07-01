@@ -220,10 +220,12 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
         return true;
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Lightning Bolt";
     }
 }
