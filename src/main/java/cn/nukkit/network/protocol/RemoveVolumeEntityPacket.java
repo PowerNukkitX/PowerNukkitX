@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
 public class RemoveVolumeEntityPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final byte NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY;
+    public static final byte NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
 
     private long id;
 

@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class SyncEntityPropertyPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final byte NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY;
+    public static final byte NETWORK_ID = ProtocolInfo.SYNC_ENTITY_PROPERTY_PACKET;
 
     private CompoundTag data;
 
