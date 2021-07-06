@@ -198,7 +198,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.1.0-PN")
     protected EntityDamageEvent getDamageEvent(Entity entity) {
         return new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.FIRE, 1);
     }
@@ -272,12 +272,11 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
             setExtinguished(false);
             level.setBlock(this, this, true);
             return true;
-        } else if (projectile instanceof EntityPotion && !isExtinguished()) {
-            if (((EntityPotion) projectile).potionId == 0) {
-                setExtinguished(true);
-                level.setBlock(this, this, true);
-                return true;
-            }
+        } else if (projectile instanceof EntityPotion && !isExtinguished() 
+                && ((EntityPotion) projectile).potionId == 0) {
+            setExtinguished(true);
+            level.setBlock(this, this, true);
+            return true;
         }
         return false;
     }

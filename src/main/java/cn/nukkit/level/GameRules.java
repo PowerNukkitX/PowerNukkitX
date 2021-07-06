@@ -29,9 +29,9 @@ public class GameRules {
         gameRules.gameRules.put(COMMAND_BLOCK_OUTPUT, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(DO_DAYLIGHT_CYCLE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(DO_ENTITY_DROPS, new Value<>(Type.BOOLEAN, true));
-        gameRules.gameRules.put(DO_FIRE_TICK, new Value(Type.BOOLEAN, true));
-        gameRules.gameRules.put(DO_INSOMNIA, new Value(Type.BOOLEAN, true));
-        gameRules.gameRules.put(DO_IMMEDIATE_RESPAWN, new Value(Type.BOOLEAN, false));
+        gameRules.gameRules.put(DO_FIRE_TICK, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(DO_INSOMNIA, new Value<>(Type.BOOLEAN, true));
+        gameRules.gameRules.put(DO_IMMEDIATE_RESPAWN, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(DO_MOB_LOOT, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(DO_MOB_SPAWNING, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(DO_TILE_DROPS, new Value<>(Type.BOOLEAN, true));
@@ -51,9 +51,8 @@ public class GameRules {
         gameRules.gameRules.put(SHOW_COORDINATES, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DEATH_MESSAGES, new Value<>(Type.BOOLEAN, true));
         
-        // PN: Backward compatibility
-        //noinspection deprecation
-        gameRules.gameRules.put(SHOW_DEATH_MESSAGE, gameRules.gameRules.get(SHOW_DEATH_MESSAGES));
+        @SuppressWarnings("deprecation") GameRule deprecated = SHOW_DEATH_MESSAGE;
+        gameRules.gameRules.put(deprecated, gameRules.gameRules.get(SHOW_DEATH_MESSAGES));
         
         gameRules.gameRules.put(SPAWN_RADIUS, new Value<>(Type.INTEGER, 5));
         gameRules.gameRules.put(TNT_EXPLODES, new Value<>(Type.BOOLEAN, true));

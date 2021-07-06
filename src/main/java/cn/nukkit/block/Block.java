@@ -2057,7 +2057,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         getMutableState().setState(state);
     }
 
-    @Since("FUTURE")
+    @Since("1.5.1.0-PN")
     @PowerNukkitOnly
     @Override
     @Nonnull

@@ -420,8 +420,8 @@ public class Utils {
     }
 
     @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static boolean isNumeric(String str) {
+    @Since("1.5.1.0-PN")
+    public static boolean isInteger(String str) {
         if (str == null) {
             return false;
         }

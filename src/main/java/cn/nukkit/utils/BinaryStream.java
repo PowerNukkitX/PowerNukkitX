@@ -26,6 +26,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
+import lombok.val;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -742,13 +743,12 @@ public class BinaryStream {
     }
 
     public void putGameRules(GameRules gameRules) {
-        Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
-        this.putUnsignedVarInt(rules.size() - 1);
+        // LinkedHashMap gives mutability and is faster in iteration 
+        val rules = new LinkedHashMap<>(gameRules.getGameRules());
+        rules.keySet().removeIf(GameRule::isDeprecated);
+        
+        this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
-            //noinspection deprecation
-            if (gameRule == GameRule.SHOW_DEATH_MESSAGE) {
-                return;
-            }
             this.putString(gameRule.getName().toLowerCase());
             value.write(this);
         });

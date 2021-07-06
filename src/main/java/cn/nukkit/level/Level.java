@@ -54,10 +54,8 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.timings.LevelTimings;
 import cn.nukkit.utils.*;
-import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
-import co.aikar.timings.TimingsManager;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -91,7 +89,7 @@ public class Level implements ChunkManager, Metadatable {
     public static final Level[] EMPTY_ARRAY = new Level[0];
     
     static {
-        Timings.isTimingsEnabled(); // Fixes Concurrency issues on static initialization
+        Timings.init();
     }
 
     private static int levelIdCounter = 1;
@@ -228,6 +226,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private float time;
     public boolean stopTime;
+    private int nextTimeSendTick;
 
     public float skyLightSubtracted;
 
@@ -748,7 +747,7 @@ public class Level implements ChunkManager, Metadatable {
                 TextFormat.GREEN + this.getName() + TextFormat.WHITE));
         Level defaultLevel = this.server.getDefaultLevel();
 
-        for (Player player : new ArrayList<>(this.getPlayers().values())) {
+        for (Player player : this.getPlayers().values().toArray(Player.EMPTY_ARRAY)) {
             if (this == defaultLevel || defaultLevel == null) {
                 player.close(player.getLeaveMessage(), "Forced default level unload");
             } else {
@@ -853,7 +852,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public void checkTime() {
         if (!this.stopTime && this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
-            this.time = (this.time + 1) % TIME_FULL;
+            this.time += tickRate;
         }
     }
 
@@ -879,8 +878,9 @@ public class Level implements ChunkManager, Metadatable {
 
         updateBlockLight(lightQueue);
         this.checkTime();
-        if (currentTick % (30 * 20) == 0) {
+        if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
             this.sendTime();
+            nextTimeSendTick = currentTick + 30 * 20;
         }
 
         // Tick Weather
