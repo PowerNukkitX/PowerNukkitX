@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public class SetTitlePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
     
-    private static final Type[] TYPES = Type.values();
+    private static final TitleAction[] TITLE_ACTIONS = TitleAction.values();
 
     public static final int TYPE_CLEAR = 0;
     public static final int TYPE_RESET = 1;
@@ -62,17 +62,17 @@ public class SetTitlePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("FUTURE")
     @Nonnull
-    public Type getType() {
+    public TitleAction getTitleAction() {
         int currentType = this.type;
-        if (currentType > 0 && currentType < TYPES.length) {
-            return TYPES[currentType];
+        if (currentType > 0 && currentType < TITLE_ACTIONS.length) {
+            return TITLE_ACTIONS[currentType];
         }
         throw new UnsupportedOperationException("Bad type: "+currentType);
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setType(@Nonnull Type type) {
+    public void setTitleAction(@Nonnull TitleAction type) {
         this.type = type.ordinal();
     }
 
@@ -151,12 +151,15 @@ public class SetTitlePacket extends DataPacket {
     
     @PowerNukkitOnly
     @Since("FUTURE")
-    public enum Type {
-        CLEAR,
-        RESET,
-        TITLE,
-        SUBTITLE,
-        ACTION_BAR,
-        ANIMATION_TIMES
+    public enum TitleAction {
+        @PowerNukkitOnly @Since("FUTURE") CLEAR,
+        @PowerNukkitOnly @Since("FUTURE") RESET,
+        @PowerNukkitOnly @Since("FUTURE") SET_TITLE_MESSAGE,
+        @PowerNukkitOnly @Since("FUTURE") SET_SUBTITLE_MESSAGE,
+        @PowerNukkitOnly @Since("FUTURE") SET_ACTION_BAR_MESSAGE,
+        @PowerNukkitOnly @Since("FUTURE") SET_ANIMATION_TIMES,
+        @PowerNukkitOnly @Since("FUTURE") SET_TITLE_JSON,
+        @PowerNukkitOnly @Since("FUTURE") SET_SUBTITLE_JSON,
+        @PowerNukkitOnly @Since("FUTURE") SET_ACTIONBAR_JSON,
     }
 }
