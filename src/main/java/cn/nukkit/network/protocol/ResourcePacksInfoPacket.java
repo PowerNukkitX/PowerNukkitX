@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.resourcepacks.ResourcePack;
 import lombok.ToString;
 
@@ -12,6 +14,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
     public boolean scripting;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
+    private boolean forcingServerPacksEnabled;
 
     @Override
     public void decode() {
@@ -23,6 +26,7 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.reset();
         this.putBoolean(this.mustAccept);
         this.putBoolean(this.scripting);
+        this.putBoolean(this.forcingServerPacksEnabled);
 
         encodePacks(this.behaviourPackEntries);
         encodePacks(this.resourcePackEntries);
@@ -45,5 +49,65 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @Override
     public byte pid() {
         return NETWORK_ID;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean isForcedToAccept() {
+        return mustAccept;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setForcedToAccept(boolean mustAccept) {
+        this.mustAccept = mustAccept;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean isScriptingEnabled() {
+        return scripting;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setScriptingEnabled(boolean scripting) {
+        this.scripting = scripting;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public ResourcePack[] getBehaviourPackEntries() {
+        return behaviourPackEntries;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
+        this.behaviourPackEntries = behaviourPackEntries;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public ResourcePack[] getResourcePackEntries() {
+        return resourcePackEntries;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
+        this.resourcePackEntries = resourcePackEntries;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean isForcingServerPacksEnabled() {
+        return forcingServerPacksEnabled;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
+        this.forcingServerPacksEnabled = forcingServerPacksEnabled;
     }
 }

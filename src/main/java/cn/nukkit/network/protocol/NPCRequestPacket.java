@@ -1,18 +1,86 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
 @ToString
 public class NPCRequestPacket extends DataPacket {
 
-    @Since("1.4.0.0-PN") public long entityRuntimeId;
+    @Since("1.4.0.0-PN")
+    public long entityRuntimeId;
 
-    @Since("1.4.0.0-PN") public RequestType requestType;
+    @Since("1.4.0.0-PN")
+    public RequestType requestType;
 
-    @Since("1.4.0.0-PN") public String commandString;
+    @Since("1.4.0.0-PN")
+    public String commandString;
 
-    @Since("1.4.0.0-PN") public int actionType;
+    @Since("1.4.0.0-PN")
+    public int actionType;
+    
+    private String sceneName;
+
+    @Override
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public long getEntityRuntimeId() {
+        return entityRuntimeId;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setEntityRuntimeId(long entityRuntimeId) {
+        this.entityRuntimeId = entityRuntimeId;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public RequestType getRequestType() {
+        return requestType;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public String getCommandString() {
+        return commandString;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setCommandString(String commandString) {
+        this.commandString = commandString;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public int getActionType() {
+        return actionType;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setActionType(int actionType) {
+        this.actionType = actionType;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public String getSceneName() {
+        return sceneName;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setSceneName(String sceneName) {
+        this.sceneName = sceneName;
+    }
 
     @Since("1.4.0.0-PN")
     public enum RequestType {

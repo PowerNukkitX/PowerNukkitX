@@ -12,6 +12,11 @@ public class RemoveVolumeEntityPacket extends DataPacket {
 
     private long id;
 
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public RemoveVolumeEntityPacket() {
+        // Does nothing
+    }
 
     @Override
     public byte pid() {

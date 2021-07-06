@@ -13,6 +13,12 @@ public class SyncEntityPropertyPacket extends DataPacket {
 
     private CompoundTag data;
 
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public SyncEntityPropertyPacket() {
+        // Does nothing
+    }
+
     @Override
     public byte pid() {
         return NETWORK_ID;

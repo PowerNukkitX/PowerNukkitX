@@ -21,6 +21,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author joserobjr
  * @since 2021-07-06
@@ -60,13 +62,14 @@ public class SimulationTypePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @Nonnull
     public SimulationType getSimulationType() {
         return type;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setSimulationType(SimulationType type) {
+    public void setSimulationType(@Nonnull SimulationType type) {
         this.type = type;
     }
     

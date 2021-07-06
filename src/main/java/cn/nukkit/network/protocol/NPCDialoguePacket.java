@@ -21,6 +21,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author joserobjr
  * @since 2021-07-06
@@ -32,14 +34,14 @@ public class NPCDialoguePacket extends DataPacket {
     @Since("FUTURE")
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
-    private static final Action[] ACTIONS = Action.values();
+    private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
     
     private long runtimeEntityId;
-    private Action action;
-    private String dialogue;
-    private String sceneName;
-    private String npcName;
-    private String actionJson;
+    private NPCDialogAction action = NPCDialogAction.OPEN;
+    private String dialogue = "";
+    private String sceneName = "";
+    private String npcName = "";
+    private String actionJson = "";
 
     @PowerNukkitOnly
     @Since("FUTURE")
@@ -88,67 +90,72 @@ public class NPCDialoguePacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public Action getAction() {
+    @Nonnull
+    public NPCDialogAction getAction() {
         return action;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setAction(Action action) {
+    public void setAction(@Nonnull NPCDialogAction action) {
         this.action = action;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @Nonnull
     public String getDialogue() {
         return dialogue;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setDialogue(String dialogue) {
+    public void setDialogue(@Nonnull String dialogue) {
         this.dialogue = dialogue;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @Nonnull
     public String getSceneName() {
         return sceneName;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setSceneName(String sceneName) {
+    public void setSceneName(@Nonnull String sceneName) {
         this.sceneName = sceneName;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @Nonnull
     public String getNpcName() {
         return npcName;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setNpcName(String npcName) {
+    public void setNpcName(@Nonnull String npcName) {
         this.npcName = npcName;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @Nonnull
     public String getActionJson() {
         return actionJson;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setActionJson(String actionJson) {
+    public void setActionJson(@Nonnull String actionJson) {
         this.actionJson = actionJson;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public enum Action {
+    public enum NPCDialogAction {
         @PowerNukkitOnly @Since("FUTURE") OPEN,
         @PowerNukkitOnly @Since("FUTURE") CLOSE
     }
