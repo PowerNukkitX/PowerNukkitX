@@ -173,7 +173,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         }
         // Next check the if rail is on power state
         return canPowered(new Vector3(dx, dy, dz), base, power, relative)
-                || onStraight && canPowered(new Vector3(dx, dy - 1, dz), base, power, relative);
+                || onStraight && canPowered(new Vector3(dx, dy - 1.0D, dz), base, power, relative);
     }
 
     @PowerNukkitDifference(info = "Using new method for checking if powered", since = "1.4.0.0-PN")
