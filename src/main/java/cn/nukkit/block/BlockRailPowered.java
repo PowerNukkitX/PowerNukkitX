@@ -79,6 +79,17 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         return 0;
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public void afterRemoval(Block newBlock, boolean update) {
+        RedstoneComponent.updateAroundRedstone(down());
+        if (getOrientation().isAscending()) {
+            RedstoneComponent.updateAroundRedstone(up());
+        }
+        super.afterRemoval(newBlock, update);
+    }
+
     /**
      * Check the surrounding of the rail
      *
@@ -108,10 +119,10 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         }
 
         // Used to check if the next ascending rail should be what
-        Rail.Orientation base = null;
+        Rail.Orientation base = block.getOrientation();
         boolean onStraight = true;
         // Third: Recalculate the base position
-        switch (block.getOrientation()) {
+        switch (base) {
             case STRAIGHT_NORTH_SOUTH:
                 if (relative) {
                     dz++;
@@ -134,7 +145,6 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                     dy++;
                     onStraight = false;
                 }
-                base = Rail.Orientation.STRAIGHT_EAST_WEST;
                 break;
             case ASCENDING_WEST:
                 if (relative) {
@@ -144,7 +154,6 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                 } else {
                     dx++;
                 }
-                base = Rail.Orientation.STRAIGHT_EAST_WEST;
                 break;
             case ASCENDING_NORTH:
                 if (relative) {
@@ -154,7 +163,6 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                     dy++;
                     onStraight = false;
                 }
-                base = Rail.Orientation.STRAIGHT_NORTH_SOUTH;
                 break;
             case ASCENDING_SOUTH:
                 if (relative) {
@@ -164,7 +172,6 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
                 } else {
                     dz--;
                 }
-                base = Rail.Orientation.STRAIGHT_NORTH_SOUTH;
                 break;
             default:
                 // Unable to determinate the rail orientation
