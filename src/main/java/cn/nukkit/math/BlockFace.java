@@ -288,6 +288,8 @@ public enum BlockFace {
         }
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
     public Set<BlockFace> getEdges() {
         EnumSet<BlockFace> blockFaces = EnumSet.noneOf(BlockFace.class);
         if (axis.isVertical()) {
