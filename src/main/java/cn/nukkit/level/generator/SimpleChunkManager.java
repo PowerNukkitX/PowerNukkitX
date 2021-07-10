@@ -67,7 +67,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int id, int data) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.setBlock(x & 0xf, y & 0xff, z & 0xf, id, data);
+            return chunk.setBlockAtLayer(x & 0xf, y & 0xff, z & 0xf, layer, id, data);
         }
         return false;
     }
