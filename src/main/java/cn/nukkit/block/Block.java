@@ -1908,7 +1908,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * Check if the given face is fully occupied by the block bounding box.
      * @param face The face to be checked
-     * @return If and ony if the bounding box completely cover the face
+     * @return If and only if the bounding box completely cover the face
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

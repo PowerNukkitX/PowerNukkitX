@@ -86,7 +86,7 @@ public class BlockGlowLichen extends BlockTransparent {
         if (getPropertyValue(MULTI_FACE_DIRECTION_BITS) == currentMeta) {
             BlockFace[] sides = BlockFace.values();
             Stream<BlockFace> faceStream = Arrays.stream(sides).filter(side ->
-                    block.getSide(side).isSolid() && !isGrowthToSide(side)
+                    block.getSide(side).isSolid(side) && !isGrowthToSide(side)
             );
             Optional<BlockFace> optionalFace = faceStream.findFirst();
             if (optionalFace.isPresent()) {
@@ -108,41 +108,7 @@ public class BlockGlowLichen extends BlockTransparent {
             return false;
         }
 
-        Map<Block, BlockFace> candidates = new HashMap<>();
-
-        for (int i = 0; i < 5; i++) {
-            BlockFace side = BlockFace.fromIndex(i);
-            Block support = this.getSide(side);
-
-            if (isGrowthToSide(side)) {
-                BlockFace[] supportSides = side.getEdges().toArray(new BlockFace[0]);
-
-                for (BlockFace supportSide : supportSides) {
-                    Block supportNeighbor = support.getSide(supportSide);
-
-                    // Air is a valid candidate!
-                    if (supportNeighbor.getId() == BlockID.AIR) {
-                        candidates.put(supportNeighbor, supportSide.getOpposite());
-                    }
-
-                    // Other non solid blocks isn't a valid candidates
-                    if (!supportNeighbor.isSolid()) {
-                        continue;
-                    }
-
-                    Block supportNeighborOppositeSide = supportNeighbor.getSide(side.getOpposite());
-                    if (shouldAddSupportNeighborOppositeSide(side, supportNeighborOppositeSide)) {
-                        candidates.put(supportNeighborOppositeSide, side);
-                    }
-
-                }
-
-            } else {
-                if (support.isSolid()) {
-                    candidates.put(this, side);
-                }
-            }
-        }
+        Map<Block, BlockFace> candidates = getCandidates();
 
         item.decrement(1);
 
@@ -169,6 +135,48 @@ public class BlockGlowLichen extends BlockTransparent {
         getLevel().setBlock(random, newLichen, true, true);
 
         return true;
+    }
+
+    @Nonnull
+    private Map<Block, BlockFace> getCandidates() {
+        Map<Block, BlockFace> candidates = new HashMap<>();
+        for (BlockFace side : BlockFace.values()) {
+            Block support = this.getSide(side);
+
+            if (isGrowthToSide(side)) {
+                BlockFace[] supportSides = side.getEdges().toArray(new BlockFace[0]);
+
+                for (BlockFace supportSide : supportSides) {
+                    Block supportNeighbor = support.getSide(supportSide);
+
+                    if (!isSupportNeighborAdded(candidates, supportSide.getOpposite(), supportNeighbor)) {
+                        continue;
+                    }
+
+                    Block supportNeighborOppositeSide = supportNeighbor.getSide(side.getOpposite());
+                    if (shouldAddSupportNeighborOppositeSide(side, supportNeighborOppositeSide)) {
+                        candidates.put(supportNeighborOppositeSide, side);
+                    }
+
+                }
+
+            } else {
+                if (support.isSolid()) {
+                    candidates.put(this, side);
+                }
+            }
+        }
+        return candidates;
+    }
+
+    private boolean isSupportNeighborAdded(@Nonnull Map<Block, BlockFace> candidates, @Nonnull BlockFace side, @Nonnull Block supportNeighbor) {
+        // Air is a valid candidate!
+        if (supportNeighbor.getId() == BlockID.AIR) {
+            candidates.put(supportNeighbor, side);
+        }
+
+        // Other non solid blocks isn't a valid candidates
+        return supportNeighbor.isSolid(side);
     }
 
     private boolean shouldAddSupportNeighborOppositeSide(@Nonnull BlockFace side, @Nonnull Block supportNeighborOppositeSide) {
@@ -262,6 +270,13 @@ public class BlockGlowLichen extends BlockTransparent {
 
     @Override
     public boolean isSolid() {
+        return false;
+    }
+
+    @Since("1.3.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean isSolid(BlockFace side) {
         return false;
     }
 
