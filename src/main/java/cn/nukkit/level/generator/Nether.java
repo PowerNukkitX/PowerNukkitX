@@ -5,10 +5,11 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.EnumBiome;
+import cn.nukkit.level.biome.impl.nether.NetherBiome;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
-import cn.nukkit.level.generator.populator.impl.PopulatorGlowStone;
+import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.impl.PopulatorGroundFire;
 import cn.nukkit.level.generator.populator.impl.PopulatorLava;
 import cn.nukkit.level.generator.populator.impl.PopulatorOre;
@@ -29,7 +30,7 @@ public class Nether extends Generator {
     private double bedrockDepth = 5;
     private SimplexF[] noiseGen = new SimplexF[3];
     private final List<Populator> populators = new ArrayList<>();
-    private List<Populator> generationPopulators = new ArrayList<>();
+    private final List<Populator> generationPopulators = new ArrayList<>();
 
     private long localSeed1;
     private long localSeed2;
@@ -101,10 +102,13 @@ public class Nether extends Generator {
         this.populators.add(lava);
         this.populators.add(new PopulatorGlowStone());
         PopulatorOre ore = new PopulatorOre(Block.NETHERRACK, new OreType[]{
-                new OreType(Block.get(BlockID.QUARTZ_ORE), 40, 16, 0, 128, NETHERRACK),
+                new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128, NETHERRACK),
                 new OreType(Block.get(BlockID.SOUL_SAND), 1, 64, 30, 35, NETHERRACK),
                 new OreType(Block.get(BlockID.LAVA), 32, 1, 0, 32, NETHERRACK),
                 new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
+                new OreType(Block.get(BlockID.NETHER_GOLD_ORE), 5, 16, 10, 117, NETHERRACK),
+                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 2, 2, 8, 119, NETHERRACK),
+                new OreType(Block.get(BlockID.ANCIENT_DERBRIS), 1, 3, 8, 22, NETHERRACK),
         });
         this.populators.add(ore);
     }
@@ -116,23 +120,36 @@ public class Nether extends Generator {
         this.nukkitRandom.setSeed(chunkX * localSeed1 ^ chunkZ * localSeed2 ^ this.level.getSeed());
 
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
+        ArrayList<NetherBiome> netherBiomes = new ArrayList<>();
+        netherBiomes.add((NetherBiome) EnumBiome.HELL.biome);
+        netherBiomes.add((NetherBiome) EnumBiome.SOUL_SAND_VALLEY.biome);
+        netherBiomes.add((NetherBiome) EnumBiome.WARPED_NETHER.biome);
+        netherBiomes.add((NetherBiome) EnumBiome.CRIMSON_FOREST.biome);
 
+        NetherBiome biome = (NetherBiome) EnumBiome.CRIMSON_FOREST.biome;
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
-                Biome biome = EnumBiome.HELL.biome;
                 chunk.setBiomeId(x, z, biome.getId());
 
                 chunk.setBlockId(x, 0, z, Block.BEDROCK);
-                for (int y = 115; y < 127; ++y) {
+                for(int i = 0; i < nukkitRandom.nextBoundedInt(6); i++) {
+                    chunk.setBlockId(x, 126-i, z, NETHERRACK);
+                }
+                for (int y = 126; y < 127; ++y) {
                     chunk.setBlockId(x, y, z, Block.NETHERRACK);
                 }
                 chunk.setBlockId(x, 127, z, Block.BEDROCK);
                 for (int y = 1; y < 127; ++y) {
                     if (getNoise(baseX | x, y, baseZ | z) > 0) {
-                        chunk.setBlockId(x, y, z, Block.NETHERRACK);
+                        chunk.setBlockId(x, y, z, biome.getMiddleBlock());
                     } else if (y <= this.lavaHeight) {
                         chunk.setBlockId(x, y, z, Block.STILL_LAVA);
                         chunk.setBlockLight(x, y + 1, z, 15);
+                    }
+                }
+                for (int y = 1; y < 127; ++y) {
+                    if (getNoise(baseX | x, y, baseZ | z) > 0) {
+                        if(chunk.getBlockId(x, y+1, z) == 0) chunk.setBlockId(x, y, z, biome.getCoverBlock());
                     }
                 }
             }
