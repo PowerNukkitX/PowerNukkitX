@@ -120,21 +120,18 @@ public class BlockGlowLichen extends BlockTransparent {
                 for (BlockFace supportSide : supportSides) {
                     Block supportNeighbor = support.getSide(supportSide);
 
+                    // Air is a valid candidate!
                     if (supportNeighbor.getId() == BlockID.AIR) {
                         candidates.put(supportNeighbor, supportSide.getOpposite());
                     }
 
+                    // Other non solid blocks isn't a valid candidates
                     if (!supportNeighbor.isSolid()) {
                         continue;
                     }
 
                     Block supportNeighborOppositeSide = supportNeighbor.getSide(side.getOpposite());
-                    if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
-                        if (supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN &&
-                                (((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side)||
-                                supportNeighborOppositeSide.getSide(side).getId() == BlockID.AIR)) {
-                            continue;
-                        }
+                    if (shouldAddSupportNeighborOppositeSide(side, supportNeighborOppositeSide)) {
                         candidates.put(supportNeighborOppositeSide, side);
                     }
 
@@ -147,28 +144,40 @@ public class BlockGlowLichen extends BlockTransparent {
             }
         }
 
-        if (!candidates.isEmpty()) {
-            Set<Block> keySet = candidates.keySet();
-            List<Block> keyList = new ArrayList<>(keySet);
+        item.decrement(1);
 
-            int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
-
-            Block random = keyList.get(rand);
-            Block newLichen;
-
-            if (random.getId() == BlockID.GLOW_LICHEN) {
-                newLichen = random;
-            } else {
-                newLichen = Block.get(GLOW_LICHEN);
-            }
-
-            newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
-
-            getLevel().setBlock(random, newLichen, true, true);
+        if (candidates.isEmpty()) {
+            return true;
         }
 
-        item.decrement(1);
+        Set<Block> keySet = candidates.keySet();
+        List<Block> keyList = new ArrayList<>(keySet);
+
+        int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
+
+        Block random = keyList.get(rand);
+        Block newLichen;
+
+        if (random.getId() == BlockID.GLOW_LICHEN) {
+            newLichen = random;
+        } else {
+            newLichen = Block.get(GLOW_LICHEN);
+        }
+
+        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
+
+        getLevel().setBlock(random, newLichen, true, true);
+
         return true;
+    }
+
+    private boolean shouldAddSupportNeighborOppositeSide(@Nonnull BlockFace side, @Nonnull Block supportNeighborOppositeSide) {
+        if (supportNeighborOppositeSide.getId() == BlockID.AIR || supportNeighborOppositeSide.getId() == BlockID.GLOW_LICHEN) {
+            return supportNeighborOppositeSide.getId() != BlockID.GLOW_LICHEN ||
+                    (!((BlockGlowLichen) supportNeighborOppositeSide).isGrowthToSide(side) &&
+                            supportNeighborOppositeSide.getSide(side).getId() != BlockID.AIR);
+        }
+        return false;
     }
 
     @Override
