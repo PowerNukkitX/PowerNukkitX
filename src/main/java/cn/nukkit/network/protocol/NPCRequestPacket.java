@@ -101,18 +101,21 @@ public class NPCRequestPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.entityRuntimeId = this.getEntityRuntimeId();
+        this.entityRuntimeId = super.getEntityRuntimeId();
         this.requestType = RequestType.values()[this.getByte()];
         this.commandString = this.getString();
         this.actionType = this.getByte();
+        this.sceneName = this.getString();
     }
 
     @Override
     public void encode() {
+        this.reset();
         this.putEntityRuntimeId(this.entityRuntimeId);
         this.putByte((byte) requestType.ordinal());
         this.putString(this.commandString);
         this.putByte((byte) this.actionType);
+        this.putString(sceneName);
     }
 
 }
