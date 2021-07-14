@@ -220,7 +220,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.3.0.0-PN") public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN") public static final int DATA_IS_BUOYANT = dynamic(119); //byte
     @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
-    @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121);
+    @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
     @Since("1.3.0.0-PN") public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
     @Since("1.4.0.0-PN") public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
     @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???

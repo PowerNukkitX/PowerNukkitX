@@ -239,6 +239,14 @@
         "runtime_id": -187,
         "component_based": false
     },
+    "minecraft:black_candle": {
+        "runtime_id": -428,
+        "component_based": false
+    },
+    "minecraft:black_candle_cake": {
+        "runtime_id": -445,
+        "component_based": false
+    },
     "minecraft:black_dye": {
         "runtime_id": 395,
         "component_based": false
@@ -285,6 +293,14 @@
     },
     "minecraft:bleach": {
         "runtime_id": 596,
+        "component_based": false
+    },
+    "minecraft:blue_candle": {
+        "runtime_id": -424,
+        "component_based": false
+    },
+    "minecraft:blue_candle_cake": {
+        "runtime_id": -441,
         "component_based": false
     },
     "minecraft:blue_dye": {
@@ -363,6 +379,14 @@
         "runtime_id": 108,
         "component_based": false
     },
+    "minecraft:brown_candle": {
+        "runtime_id": -425,
+        "component_based": false
+    },
+    "minecraft:brown_candle_cake": {
+        "runtime_id": -442,
+        "component_based": false
+    },
     "minecraft:brown_dye": {
         "runtime_id": 398,
         "component_based": false
@@ -409,6 +433,14 @@
     },
     "minecraft:campfire": {
         "runtime_id": 588,
+        "component_based": false
+    },
+    "minecraft:candle": {
+        "runtime_id": -412,
+        "component_based": false
+    },
+    "minecraft:candle_cake": {
+        "runtime_id": -429,
         "component_based": false
     },
     "minecraft:carpet": {
@@ -845,6 +877,14 @@
     },
     "minecraft:cut_copper_stairs": {
         "runtime_id": -354,
+        "component_based": false
+    },
+    "minecraft:cyan_candle": {
+        "runtime_id": -422,
+        "component_based": false
+    },
+    "minecraft:cyan_candle_cake": {
+        "runtime_id": -439,
         "component_based": false
     },
     "minecraft:cyan_dye": {
@@ -1979,12 +2019,28 @@
         "runtime_id": 13,
         "component_based": false
     },
+    "minecraft:gray_candle": {
+        "runtime_id": -420,
+        "component_based": false
+    },
+    "minecraft:gray_candle_cake": {
+        "runtime_id": -437,
+        "component_based": false
+    },
     "minecraft:gray_dye": {
         "runtime_id": 403,
         "component_based": false
     },
     "minecraft:gray_glazed_terracotta": {
         "runtime_id": 227,
+        "component_based": false
+    },
+    "minecraft:green_candle": {
+        "runtime_id": -426,
+        "component_based": false
+    },
+    "minecraft:green_candle_cake": {
+        "runtime_id": -443,
         "component_based": false
     },
     "minecraft:green_dye": {
@@ -2419,12 +2475,28 @@
         "runtime_id": -215,
         "component_based": false
     },
+    "minecraft:light_blue_candle": {
+        "runtime_id": -416,
+        "component_based": false
+    },
+    "minecraft:light_blue_candle_cake": {
+        "runtime_id": -433,
+        "component_based": false
+    },
     "minecraft:light_blue_dye": {
         "runtime_id": 407,
         "component_based": false
     },
     "minecraft:light_blue_glazed_terracotta": {
         "runtime_id": 223,
+        "component_based": false
+    },
+    "minecraft:light_gray_candle": {
+        "runtime_id": -421,
+        "component_based": false
+    },
+    "minecraft:light_gray_candle_cake": {
+        "runtime_id": -438,
         "component_based": false
     },
     "minecraft:light_gray_dye": {
@@ -2437,6 +2509,14 @@
     },
     "minecraft:lightning_rod": {
         "runtime_id": -312,
+        "component_based": false
+    },
+    "minecraft:lime_candle": {
+        "runtime_id": -418,
+        "component_based": false
+    },
+    "minecraft:lime_candle_cake": {
+        "runtime_id": -435,
         "component_based": false
     },
     "minecraft:lime_dye": {
@@ -2501,6 +2581,14 @@
     },
     "minecraft:loom": {
         "runtime_id": -204,
+        "component_based": false
+    },
+    "minecraft:magenta_candle": {
+        "runtime_id": -415,
+        "component_based": false
+    },
+    "minecraft:magenta_candle_cake": {
+        "runtime_id": -432,
         "component_based": false
     },
     "minecraft:magenta_dye": {
@@ -2799,6 +2887,14 @@
         "runtime_id": 451,
         "component_based": false
     },
+    "minecraft:orange_candle": {
+        "runtime_id": -414,
+        "component_based": false
+    },
+    "minecraft:orange_candle_cake": {
+        "runtime_id": -431,
+        "component_based": false
+    },
     "minecraft:orange_dye": {
         "runtime_id": 409,
         "component_based": false
@@ -2873,6 +2969,14 @@
     },
     "minecraft:pillager_spawn_egg": {
         "runtime_id": 491,
+        "component_based": false
+    },
+    "minecraft:pink_candle": {
+        "runtime_id": -419,
+        "component_based": false
+    },
+    "minecraft:pink_candle_cake": {
+        "runtime_id": -436,
         "component_based": false
     },
     "minecraft:pink_dye": {
@@ -3083,6 +3187,14 @@
         "runtime_id": 104,
         "component_based": false
     },
+    "minecraft:purple_candle": {
+        "runtime_id": -423,
+        "component_based": false
+    },
+    "minecraft:purple_candle_cake": {
+        "runtime_id": -440,
+        "component_based": false
+    },
     "minecraft:purple_dye": {
         "runtime_id": 400,
         "component_based": false
@@ -3189,6 +3301,14 @@
     },
     "minecraft:real_double_stone_slab4": {
         "runtime_id": -168,
+        "component_based": false
+    },
+    "minecraft:red_candle": {
+        "runtime_id": -427,
+        "component_based": false
+    },
+    "minecraft:red_candle_cake": {
+        "runtime_id": -444,
         "component_based": false
     },
     "minecraft:red_dye": {
@@ -4043,6 +4163,14 @@
         "runtime_id": 291,
         "component_based": false
     },
+    "minecraft:white_candle": {
+        "runtime_id": -413,
+        "component_based": false
+    },
+    "minecraft:white_candle_cake": {
+        "runtime_id": -430,
+        "component_based": false
+    },
     "minecraft:white_dye": {
         "runtime_id": 410,
         "component_based": false
@@ -4117,6 +4245,14 @@
     },
     "minecraft:written_book": {
         "runtime_id": 511,
+        "component_based": false
+    },
+    "minecraft:yellow_candle": {
+        "runtime_id": -417,
+        "component_based": false
+    },
+    "minecraft:yellow_candle_cake": {
+        "runtime_id": -434,
         "component_based": false
     },
     "minecraft:yellow_dye": {
