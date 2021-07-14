@@ -3,10 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.event.level.StructureGrowEvent;
-import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
@@ -38,14 +34,8 @@ public class BlockFungusCrimson extends BlockFungus {
 
     @Override
     public boolean grow(@Nullable Player cause) {
-        ObjectCrimsonTree crimsonTree = new ObjectCrimsonTree();
-        StructureGrowEvent event = new StructureGrowEvent(this, new ListChunkManager(level).getBlocks());
-        level.getServer().getPluginManager().callEvent(event);
-        if(event.isCancelled()) {
-            return false;
-        }
-        crimsonTree.placeObject(level, getFloorX(), getFloorY(), getFloorZ(), new NukkitRandom());
-        return true;
+        // TODO Make it grow
+        return false;
     }
 
     @Override
