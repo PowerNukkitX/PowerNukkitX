@@ -33,6 +33,7 @@ public class AddVolumeEntityPacket extends DataPacket {
 
     @Override
     public void encode() {
+        reset();
         putUnsignedVarInt(id);
         putTag(data);
     }

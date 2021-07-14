@@ -64,7 +64,7 @@ public class SetTitlePacket extends DataPacket {
     @Nonnull
     public TitleAction getTitleAction() {
         int currentType = this.type;
-        if (currentType > 0 && currentType < TITLE_ACTIONS.length) {
+        if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
         }
         throw new UnsupportedOperationException("Bad type: "+currentType);

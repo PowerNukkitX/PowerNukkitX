@@ -31,6 +31,7 @@ public class SyncEntityPropertyPacket extends DataPacket {
 
     @Override
     public void encode() {
+        reset();
         putTag(data);
     }
 

@@ -69,7 +69,6 @@ public class NPCDialoguePacket extends DataPacket {
         reset();
         putUnsignedVarLong(runtimeEntityId);
         putVarInt(action.ordinal());
-        putString(actionJson);
         putString(dialogue);
         putString(sceneName);
         putString(npcName);
