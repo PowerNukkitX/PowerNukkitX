@@ -1,16 +1,17 @@
 package cn.nukkit.level.generator.populator.impl.nether;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
+import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.Vector3;
 
-public class CrimsonGrassesPopulator extends Populator {
-
+public class WarpedGrassesPopulator extends Populator {
     private ChunkManager level;
 
     @Override
@@ -29,8 +30,8 @@ public class CrimsonGrassesPopulator extends Populator {
             int randomType = random.nextBoundedInt(6);
             int blockID;
 
-            if (randomType == 0) blockID = CRIMSON_FUNGUS;
-            else blockID = CRIMSON_ROOTS;
+            if (randomType == 0) blockID = WARPED_FUNGUS;
+            else blockID = WARPED_ROOTS;
 
             this.level.setBlockAt(x, y, z, blockID);
         }
@@ -40,7 +41,7 @@ public class CrimsonGrassesPopulator extends Populator {
         int y;
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
-            if (b == Block.CRIMSON_NYLIUM && this.level.getBlockIdAt(x, y+1, z) == 0) {
+            if (b == Block.WARPED_NYLIUM && this.level.getBlockIdAt(x, y+1, z) == 0) {
                 break;
             }
         }

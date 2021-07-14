@@ -1,7 +1,6 @@
 package cn.nukkit.level.generator.populator.impl.nether;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
@@ -9,9 +8,8 @@ import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 
-public class WarpedFungiPopulator extends Populator {
+public class WarpedFungiTreePopulator extends Populator {
     private ChunkManager level;
 
     @Override
@@ -26,7 +24,7 @@ public class WarpedFungiPopulator extends Populator {
             if (y == -1) {
                 continue;
             }
-            new ObjectCrimsonTree().placeObject(this.level, x, y, z, random);
+            new ObjectWarpedTree().placeObject(this.level, x, y, z, random);
         }
     }
 
