@@ -9,11 +9,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class AddVolumeEntityPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final byte NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY;
+    public static final byte NETWORK_ID = ProtocolInfo.ADD_VOLUME_ENTITY_PACKET;
 
     private long id;
     private CompoundTag data;
 
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public AddVolumeEntityPacket() {
+        // Does nothing
+    }
 
     @Override
     public byte pid() {
@@ -28,6 +33,7 @@ public class AddVolumeEntityPacket extends DataPacket {
 
     @Override
     public void encode() {
+        reset();
         putUnsignedVarInt(id);
         putTag(data);
     }

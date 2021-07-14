@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import com.google.common.primitives.Ints;
@@ -16,12 +17,12 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(440);
+    int CURRENT_PROTOCOL = dynamic(448);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION = dynamic("v1.17.0");
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.17.0");
+    String MINECRAFT_VERSION = dynamic("v1.17.10");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.17.10");
 
     byte LOGIN_PACKET = 0x01;
     byte PLAY_STATUS_PACKET = 0x02;
@@ -181,9 +182,14 @@ public interface ProtocolInfo {
     @Since("1.4.0.0-PN") byte ITEM_COMPONENT_PACKET = (byte) 0xa2;
     @Since("1.4.0.0-PN") byte FILTER_TEXT_PACKET = (byte) 0xa3;
     @Since("1.4.0.0-PN") byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly byte SYNC_ENTITY_PROPERTY = (byte) 0xa5;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly byte ADD_VOLUME_ENTITY = (byte) 0xa6;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly byte REMOVE_VOLUME_ENTITY = (byte) 0xa7;
+    @Since("FUTURE") @PowerNukkitOnly byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;
+    @Since("FUTURE") @PowerNukkitOnly byte ADD_VOLUME_ENTITY_PACKET = (byte) 0xa6;
+    @Since("FUTURE") @PowerNukkitOnly byte REMOVE_VOLUME_ENTITY_PACKET = (byte) 0xa7;
+    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "FUTURE", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "SYNC_ENTITY_PROPERTY_PACKET") byte SYNC_ENTITY_PROPERTY = SYNC_ENTITY_PROPERTY_PACKET;
+    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "FUTURE", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "ADD_VOLUME_ENTITY_PACKET") byte ADD_VOLUME_ENTITY = ADD_VOLUME_ENTITY_PACKET;
+    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "FUTURE", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "REMOVE_VOLUME_ENTITY_PACKET") byte REMOVE_VOLUME_ENTITY = REMOVE_VOLUME_ENTITY_PACKET;
+    @Since("FUTURE") @PowerNukkitOnly byte SIMULATION_TYPE_PACKET = (byte) 0xa8;
+    @Since("FUTURE") @PowerNukkitOnly byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
 
     byte BATCH_PACKET = (byte) 0xff;
 }
