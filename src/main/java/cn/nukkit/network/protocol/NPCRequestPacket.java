@@ -21,16 +21,15 @@ public class NPCRequestPacket extends DataPacket {
     
     private String sceneName;
 
-    @Override
     @PowerNukkitOnly
     @Since("FUTURE")
-    public long getEntityRuntimeId() {
+    public long getRequestedEntityRuntimeId() {
         return entityRuntimeId;
     }
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public void setEntityRuntimeId(long entityRuntimeId) {
+    public void setRequestedEntityRuntimeId(long entityRuntimeId) {
         this.entityRuntimeId = entityRuntimeId;
     }
 

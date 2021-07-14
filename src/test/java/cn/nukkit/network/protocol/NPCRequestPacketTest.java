@@ -37,7 +37,7 @@ class NPCRequestPacketTest {
     @Test
     void encodeDecode() {
         val packet = new NPCRequestPacket();
-        packet.setEntityRuntimeId(1L);
+        packet.setRequestedEntityRuntimeId(1L);
         packet.setRequestType(RequestType.SET_NAME);
         packet.setActionType(2);
         packet.setCommandString("command");
@@ -49,7 +49,7 @@ class NPCRequestPacketTest {
         packet2.getUnsignedVarInt();
         packet2.decode();
 
-        assertEquals(1L, packet2.getEntityRuntimeId());
+        assertEquals(1L, packet2.getRequestedEntityRuntimeId());
         assertEquals(RequestType.SET_NAME, packet2.getRequestType());
         assertEquals(2, packet2.getActionType());
         assertEquals("command", packet2.getCommandString());
