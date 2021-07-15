@@ -115,6 +115,7 @@ public class BlockStateRegistry {
         //</editor-fold>
         Integer infoUpdateRuntimeId = null;
         
+        Set<String> warned = new HashSet<>();
         for (CompoundTag state : tags) {
             int blockId = state.getInt("blockId");
             int runtimeId = state.getInt("runtimeId");
@@ -127,6 +128,11 @@ public class BlockStateRegistry {
             // All other cases, register the name normally
             if (isNameOwnerOfId(name, blockId)) {
                 registerPersistenceName(blockId, name);
+                registerStateId(state, runtimeId);
+            } else if (blockId == -1) {
+                if (warned.add(name)) {
+                    log.warn("Unknown block id for the block named {}", name);
+                }
                 registerStateId(state, runtimeId);
             }
         }
@@ -147,7 +153,7 @@ public class BlockStateRegistry {
     //</editor-fold>
     
     private boolean isNameOwnerOfId(String name, int blockId) {
-        return !name.equals("minecraft:wood") || blockId == BlockID.WOOD_BARK;
+        return blockId != -1 && !name.equals("minecraft:wood") || blockId == BlockID.WOOD_BARK;
     }
     
     @Nonnull

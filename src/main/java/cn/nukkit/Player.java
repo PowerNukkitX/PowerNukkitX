@@ -5121,7 +5121,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         PlayStatusPacket pk = new PlayStatusPacket();
         pk.status = status;
 
-        this.dataPacket(pk);
+        if (immediate) {
+            this.dataPacketImmediately(pk);
+        } else {
+            this.dataPacket(pk);
+        }
     }
 
     @Override

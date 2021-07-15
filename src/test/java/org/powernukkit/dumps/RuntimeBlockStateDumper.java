@@ -1,6 +1,6 @@
 /*
  * https://PowerNukkit.org - The Nukkit you know but Powerful!
- * Copyright (C) 2020  José Roberto de Araújo Júnior
+ * Copyright (C) 2021  José Roberto de Araújo Júnior
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.powernukkit.tools;
+package org.powernukkit.dumps;
 
 import cn.nukkit.Server;
 import cn.nukkit.nbt.NBTIO;
@@ -99,7 +99,7 @@ public class RuntimeBlockStateDumper {
             states.put(builder.toString(), block);
         }
 
-        try (FileWriter fos = new FileWriter("runtime_block_states.dat.dump.txt"); BufferedWriter bos = new BufferedWriter(fos)) {
+        try (FileWriter fos = new FileWriter("dumps/runtime_block_states.dat.dump.txt"); BufferedWriter bos = new BufferedWriter(fos)) {
             bos.write("# WARNING! Don't edit this file! It's automatically regenerated!");
             bos.newLine(); bos.newLine();
             for (Map.Entry<String, CompoundTag> entry : states.entrySet()) {
@@ -142,8 +142,8 @@ public class RuntimeBlockStateDumper {
 
         SortedSet<String> properties = new TreeSet<>(humanStringComparator);
 
-        try(FileWriter iniFW = new FileWriter("block-states.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW);
-            FileWriter txtFW = new FileWriter("simple-blocks-nukkit.txt"); BufferedWriter txtBuff = new BufferedWriter(txtFW)) {
+        try(FileWriter iniFW = new FileWriter("dumps/block-states.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW);
+            FileWriter txtFW = new FileWriter("dumps/simple-blocks-nukkit.txt"); BufferedWriter txtBuff = new BufferedWriter(txtFW)) {
             iniBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
             iniBuff.newLine(); iniBuff.newLine();
             txtBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
@@ -163,7 +163,7 @@ public class RuntimeBlockStateDumper {
             }
         }
 
-        try(FileWriter iniFW = new FileWriter("block-properties.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW)) {
+        try(FileWriter iniFW = new FileWriter("dumps/block-properties.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW)) {
             iniBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
             iniBuff.newLine(); iniBuff.newLine();
             iniBuff.write("[properties]");
