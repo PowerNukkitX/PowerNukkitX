@@ -3,6 +3,7 @@ package cn.nukkit.level.format.anvil;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWall;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.ByteArrayTag;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -66,6 +67,13 @@ class ChunkSectionTest {
         
         ChunkSection loaded = new ChunkSection(nbt);
         assertEquals(15, loaded.getBlockState(0,0,0).getExactIntStorage());
+        for (int i = 0; i < EmptyChunkSection.EMPTY_LIGHT_ARR.length; i++) {
+            assertEquals(0, EmptyChunkSection.EMPTY_LIGHT_ARR[i]);
+        }
+
+        for (int i = 0; i < EmptyChunkSection.EMPTY_SKY_LIGHT_ARR.length; i++) {
+            assertEquals((byte) 255, EmptyChunkSection.EMPTY_SKY_LIGHT_ARR[i]);
+        }
     }
     
     @Test
