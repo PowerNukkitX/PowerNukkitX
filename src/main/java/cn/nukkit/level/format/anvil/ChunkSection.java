@@ -502,19 +502,15 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public byte[] getSkyLightArray() {
-        if (this.skyLight != null) return skyLight;
-        if (hasSkyLight) {
-            if (compressedLight != null) {
-                inflate();
-                return this.skyLight;
-            }
-            return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
-        } else {
-            return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        if (skyLight != null) return skyLight;
+        if (hasSkyLight && compressedLight != null && inflate()) {
+            return skyLight;
         }
+        
+        return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
     }
 
-    private void inflate() {
+    private boolean inflate() {
         try {
             if (compressedLight != null && compressedLight.length != 0) {
                 byte[] inflated = Zlib.inflate(compressedLight);
@@ -535,20 +531,21 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                     Arrays.fill(skyLight, (byte) 0xFF);
                 }
             }
+            return true;
         } catch (IOException e) {
             log.error("Failed to decompress a chunk section", e);
+            return false;
         }
     }
 
     @Override
     public byte[] getLightArray() {
-        if (this.blockLight != null) return blockLight;
-        if (hasBlockLight) {
-            inflate();
-            return this.blockLight;
-        } else {
-            return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        if (blockLight != null) return blockLight;
+        if (hasBlockLight && compressedLight != null && inflate()) {
+            return blockLight;
         }
+        
+        return EmptyChunkSection.EMPTY_LIGHT_ARR;
     }
 
     @Override

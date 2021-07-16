@@ -8,6 +8,7 @@ import cn.nukkit.nbt.tag.ByteArrayTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkit.tests.api.ReflectionUtil;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import java.math.BigInteger;
@@ -17,6 +18,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ChunkSectionTest {
+    /**
+     * https://github.com/PowerNukkit/PowerNukkit/issues/1186
+     */
+    @Test
+    void issue1186() throws NoSuchFieldException {
+        ChunkSection section = new ChunkSection(2);
+        section.setBlockSkyLight(1,2,3,4);
+        section.setBlockLight(1,2,3,2);
+        assertTrue(section.compress());
+        
+        // Corrupting intentionally
+        ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
+        
+        section.setBlockSkyLight(1,2,3,5);
+    }
+
     @Test
     void omgThatIsHugePersistence() {
         ChunkSection section = new ChunkSection(4);
