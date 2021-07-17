@@ -119,12 +119,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         }
 
         byte[] dataBytes = storageTag.getByteArray("Data");
+        NibbleArray data;
         if (dataBytes.length == 0) {
-            dataBytes = EmptyChunkSection.EMPTY_DATA_ARRAY;
+            data = NibbleArray.EMPTY_DATA_ARRAY;
         } else {
             hasBlockIds = true;
+            data = new NibbleArray(dataBytes);
         }
-        NibbleArray data = new NibbleArray(dataBytes);
 
         byte[] dataExtraBytes = storageTag.getByteArray("DataExtra");
         if (dataExtraBytes.length == 0) {
@@ -502,12 +503,20 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public byte[] getSkyLightArray() {
-        if (skyLight != null) return skyLight;
-        if (hasSkyLight && compressedLight != null && inflate()) {
+        if (skyLight != null) {
             return skyLight;
         }
         
-        return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
+        if (!hasSkyLight) {
+            return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
+        }
+        
+        if (compressedLight != null && inflate()) {
+            return skyLight;
+        }
+        
+        // hasSkyLight == true, so the caller might change the array, we can't allow it to change the empty array itself
+        return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR.clone();
     }
 
     private boolean inflate() {
@@ -540,12 +549,20 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public byte[] getLightArray() {
-        if (blockLight != null) return blockLight;
-        if (hasBlockLight && compressedLight != null && inflate()) {
+        if (blockLight != null) {
             return blockLight;
         }
+
+        if (!hasBlockLight) {
+            return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        }
         
-        return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        if (compressedLight != null && inflate()) {
+            return blockLight;
+        }
+
+        // hasSkyLight == true, so the caller might change the array, we can't allow it to change the empty array itself
+        return new byte[EmptyChunkSection.EMPTY_LIGHT_ARR.length];
     }
 
     @Override

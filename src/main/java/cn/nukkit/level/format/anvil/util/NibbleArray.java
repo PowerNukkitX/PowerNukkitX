@@ -1,9 +1,16 @@
 package cn.nukkit.level.format.anvil.util;
 
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.level.format.generic.EmptyChunkSection;
 import com.google.common.base.Preconditions;
 
 public class NibbleArray implements Cloneable {
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final NibbleArray EMPTY_DATA_ARRAY = new NibbleArray(EmptyChunkSection.EMPTY_DATA_ARRAY);
+    
     private final byte[] data;
 
     public NibbleArray(int length) {
