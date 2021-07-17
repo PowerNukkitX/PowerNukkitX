@@ -25,14 +25,30 @@ class ChunkSectionTest {
     @Test
     void issue1186() throws NoSuchFieldException {
         ChunkSection section = new ChunkSection(2);
+        assertEquals(0, section.getBlockSkyLight(1,2,3));
+        section.hasSkyLight = true;
+        assertEquals(15, section.getBlockSkyLight(1,2,3));
+        assertEquals(0, section.getBlockLight(1,2,3));
+        
         section.setBlockSkyLight(1,2,3,4);
         section.setBlockLight(1,2,3,2);
         assertTrue(section.compress());
         
         // Corrupting intentionally
         ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
-        
         section.setBlockSkyLight(1,2,3,5);
+        section.setBlockLight(1,2,3, 7);
+
+        assertEquals(5, section.getBlockSkyLight(1,2,3));
+        assertEquals(7, section.getBlockLight(1,2,3));
+        
+        section.compress();
+        
+        // Corrupting intentionally
+        ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
+
+        assertEquals(15, section.getBlockSkyLight(1,2,3));
+        assertEquals(0, section.getBlockLight(1,2,3));
     }
 
     @Test

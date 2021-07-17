@@ -438,8 +438,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             } else if (compressedLight == null) {
                 return 15;
             }
+            this.skyLight = getSkyLightArray();
         }
-        this.skyLight = getSkyLightArray();
         int sl = this.skyLight[(y << 7) | (z << 3) | (x >> 1)] & 0xff;
         if ((x & 1) == 0) {
             return sl & 0x0f;
@@ -504,18 +504,17 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
     @Override
     public byte[] getSkyLightArray() {
         if (skyLight != null) {
-            return skyLight;
+            return skyLight.clone();
         }
         
         if (!hasSkyLight) {
-            return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
+            return new byte[EmptyChunkSection.EMPTY_LIGHT_ARR.length];
         }
         
-        if (compressedLight != null && inflate()) {
-            return skyLight;
+        if (compressedLight != null && inflate() && skyLight != null) {
+            return skyLight.clone();
         }
         
-        // hasSkyLight == true, so the caller might change the array, we can't allow it to change the empty array itself
         return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR.clone();
     }
 
@@ -550,18 +549,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
     @Override
     public byte[] getLightArray() {
         if (blockLight != null) {
-            return blockLight;
+            return blockLight.clone();
         }
 
-        if (!hasBlockLight) {
-            return EmptyChunkSection.EMPTY_LIGHT_ARR;
-        }
-        
-        if (compressedLight != null && inflate()) {
-            return blockLight;
+        if (hasBlockLight && compressedLight != null && inflate() && blockLight != null) {
+            return blockLight.clone();
         }
 
-        // hasSkyLight == true, so the caller might change the array, we can't allow it to change the empty array itself
         return new byte[EmptyChunkSection.EMPTY_LIGHT_ARR.length];
     }
 
@@ -733,8 +727,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         if (version >= SAVE_STORAGE_VERSION) {
             s.putList(storageList);
         }
-        s.putByteArray("BlockLight", getLightArray());
-        s.putByteArray("SkyLight", getSkyLightArray());
+        s.putByteArray("BlockLight", blockLight == null? getLightArray() : blockLight);
+        s.putByteArray("SkyLight", skyLight == null? getSkyLightArray(): skyLight);
         return s;
     }
     
