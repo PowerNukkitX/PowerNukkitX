@@ -40,14 +40,6 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         super(meta);
     }
     
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nonnull
-    @Override
-    public BlockProperties getProperties() {
-        return PROPERTIES;
-    }
-    
     @Override
     public int getId() {
         return CHORUS_FLOWER;
