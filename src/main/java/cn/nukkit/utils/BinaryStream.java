@@ -1,13 +1,13 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3f;
@@ -22,9 +22,12 @@ import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import lombok.val;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +37,7 @@ import java.util.function.Function;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Log4j2
 public class BinaryStream {
 
     public int offset;
@@ -450,7 +454,7 @@ public class BinaryStream {
             buf.release();
         }
 
-        Item item = Item.get(id, damage, count, nbt);
+        Item item = readUnknownItem(Item.get(id, damage, count, nbt));
 
         if (canBreak.length > 0 || canPlace.length > 0) {
             CompoundTag namedTag = item.getNamedTag();
@@ -479,6 +483,68 @@ public class BinaryStream {
 
         return item;
     }
+    
+    private Item readUnknownItem(Item item) {
+        if (item.getId() != 248 || !item.hasCompoundTag()) {
+            return item;
+        }
+        
+        CompoundTag tag = item.getNamedTag();
+        if (!tag.containsCompound("PowerNukkitUnknown")) {
+            return item;
+        }
+
+        CompoundTag pnTag = tag.getCompound("PowerNukkitUnknown");
+        int itemId = pnTag.getInt("OriginalItemId");
+        int meta = pnTag.getInt("OriginalMeta");
+        boolean hasCustomName = pnTag.getBoolean("HasCustomName");
+        boolean hasCompound = pnTag.getBoolean("HasCompound");
+        boolean hasDisplayTag = pnTag.getBoolean("HasDisplayTag");
+        String customName = pnTag.getString("OriginalCustomName");
+        
+        item = Item.get(itemId, meta, item.getCount());
+        if (hasCompound) {
+            tag.remove("PowerNukkitUnknown");
+            if (!hasDisplayTag) {
+                tag.remove("display");
+            } else if (tag.containsCompound("display")) {
+                if (!hasCustomName) {
+                    tag.getCompound("display").remove("Name");
+                } else {
+                    tag.getCompound("display").putString("Name", customName);
+                }
+            }
+            item.setNamedTag(tag);
+        }
+        
+        return item;
+    }
+    
+    private Item createFakeUnknownItem(Item item) {
+        boolean hasCompound = item.hasCompoundTag();
+        Item fallback = Item.getBlock(248, 0, item.getCount());
+        CompoundTag tag = item.getNamedTag();
+        if (tag == null) {
+            tag = new CompoundTag();
+        }
+        tag.putCompound("PowerNukkitUnknown", new CompoundTag()
+                .putInt("OriginalItemId", item.getId())
+                .putInt("OriginalMeta", item.getDamage())
+                .putBoolean("HasCustomName", item.hasCustomName())
+                .putBoolean("HasDisplayTag", tag.contains("display"))
+                .putBoolean("HasCompound", hasCompound)
+                .putString("OriginalCustomName", item.getCustomName()));
+
+        fallback.setNamedTag(tag);
+        String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC +
+                " (" + item.getId() + ":" + item.getDamage() + ")";
+        if (fallback.hasCustomName()) {
+            fallback.setCustomName(fallback.getCustomName() + suffix);
+        } else {
+            fallback.setCustomName(TextFormat.RESET + "" + TextFormat.BOLD + TextFormat.RED + "Unknown" + suffix);
+        }
+        return fallback;
+    }
 
     public void putSlot(Item item) {
         this.putSlot(item, false);
@@ -491,7 +557,14 @@ public class BinaryStream {
             return;
         }
 
-        int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        int networkFullId;
+        try {
+            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        } catch (IllegalArgumentException e) {
+            log.trace(e);
+            item = createFakeUnknownItem(item);
+            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        }
         int networkId = RuntimeItems.getNetworkId(networkFullId);
 
         putVarInt(networkId);
@@ -721,10 +794,13 @@ public class BinaryStream {
     }
 
     public void putGameRules(GameRules gameRules) {
-        Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
+        // LinkedHashMap gives mutability and is faster in iteration 
+        val rules = new LinkedHashMap<>(gameRules.getGameRules());
+        rules.keySet().removeIf(GameRule::isDeprecated);
+        
         this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
-            putString(gameRule.getName().toLowerCase());
+            this.putString(gameRule.getName().toLowerCase());
             value.write(this);
         });
     }
@@ -797,6 +873,26 @@ public class BinaryStream {
 
     public boolean feof() {
         return this.offset < 0 || this.offset >= this.buffer.length;
+    }
+
+    @SneakyThrows(IOException.class)
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public CompoundTag getTag() {
+        ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, buffer.length);
+        int initial = is.available();
+        try {
+            return NBTIO.read(is);
+        } finally {
+            offset += is.available() - initial;
+        }
+    }
+
+    @SneakyThrows(IOException.class)
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public void putTag(CompoundTag tag) {
+        put(NBTIO.write(tag));
     }
 
     private void ensureCapacity(int minCapacity) {

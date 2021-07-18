@@ -84,7 +84,7 @@ public abstract class Food {
             .addEffect(Effect.getEffect(Effect.NAUSEA).setAmplifier(1).setDuration(15 * 20))
             .addEffect(Effect.getEffect(Effect.POISON).setAmplifier(4).setDuration(60 * 20))
             .addRelative(Item.PUFFERFISH));
-    public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP));
+    public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP).setEatingTick(16));
     public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.SWEET_BERRIES));
     
     @PowerNukkitOnly
@@ -123,12 +123,12 @@ public abstract class Food {
     public static final Food suspicious_stew_wither = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WITHER).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 9));
     
-    @Deprecated @DeprecationDetails(since = "1.3.2.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
+    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
     @PowerNukkitOnly
     public static final Food honey = registerDefaultFood(new FoodHoney(6, 1.2F).addRelative(Item.HONEY_BOTTLE));
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "PowerNukkit uses FoodHoney instead of FoodNormal")
-    @Since("1.3.2.0-PN")
+    @Since("1.4.0.0-PN")
     public static final Food honey_bottle = honey;
 
     //Opened API for plugins
@@ -214,7 +214,24 @@ public abstract class Food {
         this.restoreSaturation = restoreSaturation;
         return this;
     }
-
+    
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    protected int eatingTick = 31;
+    
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public int getEatingTick() {
+        return eatingTick;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public Food setEatingTick(int eatingTick) {
+        this.eatingTick = eatingTick;
+        return this;
+    }
+    
     static class NodeIDMeta {
         final int id;
         final int meta;
@@ -233,5 +250,4 @@ public abstract class Food {
             this.plugin = plugin;
         }
     }
-
 }

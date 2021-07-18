@@ -21,6 +21,7 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.*;
@@ -36,10 +37,14 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
 import com.google.common.collect.Iterables;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
@@ -215,9 +220,11 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.3.0.0-PN") public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
     @Since("1.3.0.0-PN") public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN") public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = 120;
-    @Since("1.3.0.0-PN") public static final int DATA_BUOYANCY_DATA = dynamic(120); //string
-    @Since("1.4.0.0-PN") public static final int DATA_GOAT_HORN_COUNT = 122;
+    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
+    @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
+    @Since("1.3.0.0-PN") public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
+    @Since("1.4.0.0-PN") public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
+    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
 
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
@@ -328,6 +335,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.3.0.0-PN") public static final int DATA_FLAG_ADMIRING = dynamic(93);
     @Since("1.3.0.0-PN") public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
     @Since("1.4.0.0-PN") public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
+    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
 
     public static long entityCount = 1;
 
@@ -444,8 +452,18 @@ public abstract class Entity extends Location implements Metadatable {
         return 0;
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public float getCurrentHeight() {
+        if (isSwimming()) {
+            return getSwimmingHeight();
+        } else {
+            return getHeight();
+        }
+    }
+
     public float getEyeHeight() {
-        return this.getHeight() / 2 + 0.1f;
+        return getCurrentHeight() / 2 + 0.1f;
     }
 
     public float getWidth() {
@@ -677,13 +695,25 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean isSwimming() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING);
     }
+    
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public float getSwimmingHeight() {
+        return getHeight();
+    }
 
     public void setSwimming() {
         this.setSwimming(true);
     }
 
     public void setSwimming(boolean value) {
+        if (isSwimming() == value) {
+            return;
+        }
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING, value);
+        if (Float.compare(getSwimmingHeight(), getHeight()) != 0) {
+            recalculateBoundingBox(true);
+        }
     }
 
     public boolean isSprinting() {
@@ -830,11 +860,20 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void recalculateBoundingBox(boolean send) {
-        float height = this.getHeight() * this.scale;
+        float entityHeight = getCurrentHeight();
+        float height = entityHeight * this.scale;
         double radius = (this.getWidth() * this.scale) / 2d;
-        this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + height, z + radius);
+        this.boundingBox.setBounds(
+                x - radius, 
+                y, 
+                z - radius, 
+                
+                x + radius, 
+                y + height, 
+                z + radius
+        );
 
-        FloatEntityData bbH = new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
+        FloatEntityData bbH = new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, entityHeight);
         FloatEntityData bbW = new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
         this.dataProperties.put(bbH);
         this.dataProperties.put(bbW);
@@ -928,7 +967,7 @@ public abstract class Entity extends Location implements Metadatable {
                         cause.addSuppressed(exceptions.get(i));
                     }
                 }
-                log.error("Could not create an entity of type {} with {} args", name, args == null? 0 : args.length, cause);
+                log.debug("Could not create an entity of type {} with {} args", name, args == null? 0 : args.length, cause);
             }
         } else {
             log.debug("Entity type {} is unknown", name);
@@ -962,6 +1001,50 @@ public abstract class Entity extends Location implements Metadatable {
         knownEntities.put(name, clazz);
         shortNames.put(clazz.getSimpleName(), name);
         return true;
+    }
+    
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static IntCollection getKnownEntityIds() {
+        return knownEntities.keySet().stream()
+                .filter(Utils::isInteger)
+                .mapToInt(Integer::parseInt)
+                .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
+    }
+
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static List<String> getSaveIds() {
+        return new ArrayList<>(shortNames.values());
+    }
+
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static OptionalInt getSaveId(String id) {
+        Class<? extends Entity> entityClass = knownEntities.get(id);
+        if (entityClass == null) {
+            return OptionalInt.empty();
+        }
+        return knownEntities.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(entityClass))
+                .map(Map.Entry::getKey)
+                .filter(Utils::isInteger)
+                .mapToInt(Integer::parseInt)
+                .findFirst();
+    }
+
+    @Nullable
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static String getSaveId(int id) {
+        Class<? extends Entity> entityClass = knownEntities.get(Integer.toString(id));
+        if (entityClass == null) {
+            return null;
+        }
+        return shortNames.get(entityClass.getSimpleName());
     }
 
     @Nonnull
@@ -1052,12 +1135,38 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    /**
+     * The name that English name of the type of this entity. 
+     */
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public String getOriginalName() {
+        return this.getSaveId();
+    }
+
+    /**
+     * Similar to {@link #getName()}, but if the name is blank or empty it returns the static name instead.
+     */
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public final String getVisibleName() {
+        String name = getName();
+        if (!TextFormat.clean(name).trim().isEmpty()) {
+            return name;
+        } else {
+            return getOriginalName();
+        }
+    }
+
+    /**
+     * The current name used by this entity in the name tag, or the static name if the entity don't have nametag.
+     */
     @Nonnull
     public String getName() {
         if (this.hasCustomName()) {
             return this.getNameTag();
         } else {
-            return this.getSaveId();
+            return this.getOriginalName();
         }
     }
 
@@ -1219,7 +1328,10 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
         }
-
+        Entity attacker = source instanceof EntityDamageByEntityEvent? ((EntityDamageByEntityEvent) source).getDamager() : null;
+        for (SideEffect sideEffect : source.getSideEffects()) {
+            sideEffect.doPreHealthChange(this, source, attacker);
+        }
         setHealth(newHealth);
         return true;
     }
@@ -1343,7 +1455,7 @@ public abstract class Entity extends Location implements Metadatable {
                 direction = 5;
             }
 
-            double force = new Random().nextDouble() * 0.2 + 0.1;
+            double force = ThreadLocalRandom.current().nextDouble() * 0.2 + 0.1;
 
             if (direction == 0) {
                 this.motionX = -force;
@@ -2208,7 +2320,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitDifference(since = "1.3.2.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
+    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
         if (onGround && movX == 0 && movY == 0 && movZ == 0 && dx == 0 && dy == 0 && dz == 0) {
             return;
@@ -2523,6 +2635,11 @@ public abstract class Entity extends Location implements Metadatable {
             to = ev.getTo();
         }
 
+        Entity currentRide = getRiding();
+        if (currentRide != null && !currentRide.dismountEntity(this)) {
+            return false;
+        }
+
         this.ySize = 0;
 
         this.setMotion(this.temporalVector.setComponents(0, 0, 0));
@@ -2544,10 +2661,12 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void respawnToAll() {
-        for (Player player : this.hasSpawned.values()) {
+        Player[] players = this.hasSpawned.values().toArray(Player.EMPTY_ARRAY);
+        this.hasSpawned.clear();
+
+        for (Player player : players) {
             this.spawnTo(player);
         }
-        this.hasSpawned.clear();
     }
 
     public void spawnToAll() {

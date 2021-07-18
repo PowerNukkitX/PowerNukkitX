@@ -53,13 +53,15 @@ public class EntityEnderDragon extends EntityMob {
         return false;
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Ender Dragon";
     }
     
     @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    @Since("FUTURE")
     @Override
     public boolean isBoss() {
         return true;

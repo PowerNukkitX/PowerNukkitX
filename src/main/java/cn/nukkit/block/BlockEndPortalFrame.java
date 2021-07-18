@@ -28,16 +28,15 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceable {
 
     @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    protected static final BooleanBlockProperty END_PORTAL_EYE_BIT = new BooleanBlockProperty("end_portal_eye_bit", false);
-    
+    @Since("1.5.0.0-PN")
+    public static final BooleanBlockProperty END_PORTAL_EYE = new BooleanBlockProperty("end_portal_eye_bit", false);
+
     @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(
-        DIRECTION,
-        END_PORTAL_EYE_BIT
-    );
-    
+    @Since("1.5.0.0-PN")
+    public static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, END_PORTAL_EYE);
+
+    private static final int[] FACES = {2, 3, 0, 1};
+
     public BlockEndPortalFrame() {
         this(0);
     }
@@ -51,8 +50,8 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
         return END_PORTAL_FRAME;
     }
     
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public BlockProperties getProperties() {

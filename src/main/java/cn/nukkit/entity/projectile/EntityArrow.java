@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public class EntityArrow extends EntityProjectile {
+
     public static final int NETWORK_ID = 80;
 
     public static final int DATA_SOURCE_ID = 17;
@@ -143,6 +144,12 @@ public class EntityArrow extends EntityProjectile {
             hasUpdate = true;
         }
 
+        if (this.level.isRaining() && this.fireTicks > 0 && this.level.canBlockSeeSky(this)) {
+            extinguish();
+
+            hasUpdate = true;
+        }
+
         this.timing.stopTiming();
 
         return hasUpdate;
@@ -189,5 +196,12 @@ public class EntityArrow extends EntityProjectile {
 
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    @Override
+    public String getOriginalName() {
+        return "Arrow";
     }
 }
