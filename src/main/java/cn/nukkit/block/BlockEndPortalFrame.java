@@ -249,12 +249,12 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isEndPortalEye() {
-        return getPropertyValue(END_PORTAL_EYE_BIT);
+        return getPropertyValue(END_PORTAL_EYE);
     }
     
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setEndPortalEye(boolean endPortalEye) {
-        setPropertyValue(END_PORTAL_EYE_BIT, endPortalEye);
+        setPropertyValue(END_PORTAL_EYE, endPortalEye);
     }
 }
