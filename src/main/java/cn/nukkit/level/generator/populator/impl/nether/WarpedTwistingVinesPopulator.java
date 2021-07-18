@@ -18,12 +18,12 @@ public class WarpedTwistingVinesPopulator extends Populator {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             int y = this.getHighestWorkableBlock(x, z);
-            if (y == -1) {
+            if (y <= 1) {
                 continue;
             }
             int endY = this.getHighestEndingBlock(x, y, z);
             int amountToDecrease = random.nextBoundedInt(endY-y);
-            for(int yPos = y; yPos < y+amountToDecrease; yPos++) {
+            for(int yPos = y; yPos < y+(amountToDecrease/2); yPos++) {
                 this.level.setBlockAt(x, yPos, z, TWISTING_VINES);
             }
         }
@@ -50,7 +50,6 @@ public class WarpedTwistingVinesPopulator extends Populator {
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
             if ((b == NETHERRACK || b == WARPED_NYLIUM || b == WARPED_WART_BLOCK ||
-                 b == STILL_LAVA || b == LAVA ||
                  b == WARPED_FUNGUS || b == WARPED_ROOTS ||
                  b == QUARTZ_ORE || b == NETHER_GOLD_ORE || b == ANCIENT_DERBRIS)
                  && this.level.getBlockIdAt(x, y+1, z) == 0) {

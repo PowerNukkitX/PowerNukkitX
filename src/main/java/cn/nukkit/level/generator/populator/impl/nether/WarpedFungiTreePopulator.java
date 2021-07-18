@@ -21,7 +21,7 @@ public class WarpedFungiTreePopulator extends Populator {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             int y = this.getHighestWorkableBlock(x, z);
-            if (y == -1) {
+            if (y <= 1) {
                 continue;
             }
             new ObjectWarpedTree().placeObject(this.level, x, y, z, random);

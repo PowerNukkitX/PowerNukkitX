@@ -126,7 +126,7 @@ public class Nether extends Generator {
         netherBiomes.add((NetherBiome) EnumBiome.WARPED_NETHER.biome);
         netherBiomes.add((NetherBiome) EnumBiome.CRIMSON_FOREST.biome);
 
-        NetherBiome biome = (NetherBiome) EnumBiome.CRIMSON_FOREST.biome;
+        NetherBiome biome = (NetherBiome) EnumBiome.WARPED_NETHER.biome;
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
                 chunk.setBiomeId(x, z, biome.getId());
