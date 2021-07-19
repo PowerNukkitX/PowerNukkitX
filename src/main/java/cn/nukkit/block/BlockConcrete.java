@@ -53,7 +53,7 @@ public class BlockConcrete extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return "Concrete";
+        return getDyeColor().getName() + " Concrete";
     }
 
     @Override

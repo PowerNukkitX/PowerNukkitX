@@ -10,6 +10,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.DyeColor;
 
 import javax.annotation.Nonnull;
 
@@ -46,7 +47,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
 
     @Override
     public String getName() {
-        return "Concrete Powder";
+        return getDyeColor().getName() + " Concrete Powder";
     }
 
     @Override
@@ -100,5 +101,9 @@ public class BlockConcretePowder extends BlockFallableMeta {
         }
 
         return true;
+    }
+
+    public DyeColor getDyeColor() {
+        return DyeColor.getByWoolData(getDamage());
     }
 }
