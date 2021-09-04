@@ -55,10 +55,12 @@ public class EntityPotionLingering extends EntityPotion {
             entity.spawnToAll();
         }
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Lingering Potion";
     }
 }

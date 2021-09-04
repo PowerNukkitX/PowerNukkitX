@@ -43,10 +43,12 @@ public class EntitySquid extends EntityWaterAnimal {
     public Item[] getDrops() {
         return new Item[]{MinecraftItemID.INK_SAC.get(1)};
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Squid";
     }
 }

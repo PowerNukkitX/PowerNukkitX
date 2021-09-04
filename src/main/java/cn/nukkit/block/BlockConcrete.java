@@ -53,7 +53,7 @@ public class BlockConcrete extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return "Concrete";
+        return getDyeColor().getName() + " Concrete";
     }
 
     @Override
@@ -68,10 +68,10 @@ public class BlockConcrete extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        return DyeColor.getByWoolData(getDamage()).getColor();
+        return getDyeColor().getColor();
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
+        return getPropertyValue(CommonBlockProperties.COLOR);
     }
 }

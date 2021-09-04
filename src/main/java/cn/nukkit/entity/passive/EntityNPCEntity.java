@@ -49,8 +49,10 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         return "action.interact.edit";
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "NPC";
     }
 

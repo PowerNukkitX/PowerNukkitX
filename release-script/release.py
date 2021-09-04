@@ -147,7 +147,7 @@ try:
             base = docker_tag
             if is_snapshot:
                 base = "bleeding"
-            build_docker(pterodactyl_tag_name(base, java), './pterodactyl-image-java'+java+'.Dockerfile')
+            build_docker(pterodactyl_tag_name(base, java), './docker_pterodactyl-image-java'+java+'.Dockerfile')
 
         if run_docker_build_pterodactyl:
             start_progress("Building pterodactyl images")
@@ -183,11 +183,11 @@ try:
     if run_maven_deploy:
         start_progress("Executing Maven Deploy")
         log('-> Executing a maven deploy with', mvn, 'clean deploy')
-        args = [mvn, ntp, 'clean', 'deploy']
+        args = [mvn, ntp, 'clean', 'deploy', '-DskipGpg=false']
         if run_test_build or not run_tests:
-            args += ['-DDskipTests=true']
+            args += ['-DskipTests=true']
         else:
-            args += ['-DDskipTests=false']
+            args += ['-DskipTests=false']
         status_code = subprocess.call(args)
         check(status_code == 0, "Could not execute the maven deploy! Maven returned status code " + str(status_code))
         finish_progress()

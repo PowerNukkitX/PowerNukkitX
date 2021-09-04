@@ -50,8 +50,10 @@ public class EntityPiglinBrute extends EntityMob {
         return true;
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Piglin Brute";
     }
 }

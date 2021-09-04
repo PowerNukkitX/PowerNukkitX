@@ -121,10 +121,12 @@ public class EntityBee extends EntityAnimal {
     public void setAngry(Player player) {
     
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Bee";
     }
 }

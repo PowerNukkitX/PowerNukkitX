@@ -242,7 +242,7 @@ public class Server {
         }
     };
 
-    private Level[] levelArray = Level.EMPTY_ARRAY;
+    private Level[] levelArray;
 
     private final ServiceManager serviceManager = new NKServiceManager();
 
@@ -279,6 +279,8 @@ public class Server {
             throw new IOException("Failed to delete " + tempDir);
         }
         instance = this;
+        config = new Config();
+        levelArray = Level.EMPTY_ARRAY;
         launchTime = System.currentTimeMillis();
         BatchPacket batchPacket = new BatchPacket();
         batchPacket.payload = EmptyArrays.EMPTY_BYTES;
@@ -300,7 +302,6 @@ public class Server {
         
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
-        config = new Config();
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -496,6 +497,7 @@ public class Server {
 
         log.info("Loading {} ...", TextFormat.GREEN + "nukkit.yml" + TextFormat.WHITE);
         this.config = new Config(this.dataPath + "nukkit.yml", Config.YAML);
+        levelArray = Level.EMPTY_ARRAY;
 
         Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
 
@@ -1270,15 +1272,8 @@ public class Server {
     }
 
     private void checkTickUpdates(int currentTick, long tickTime) {
-        for (Player p : new ArrayList<>(this.players.values())) {
-            /*if (!p.loggedIn && (tickTime - p.creationTime) >= 10000 && p.kick(PlayerKickEvent.Reason.LOGIN_TIMEOUT, "Login timeout")) {
-                continue;
-            }
-
-            client freezes when applying resource packs
-            todo: fix*/
-
-            if (this.alwaysTickPlayers) {
+        if (this.alwaysTickPlayers) {
+            for (Player p : new ArrayList<>(this.players.values())) {
                 p.onUpdate(currentTick);
             }
         }

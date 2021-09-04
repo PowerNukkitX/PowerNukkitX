@@ -48,10 +48,11 @@ public class EntityZombieHorse extends EntityAnimal implements EntitySmite {
     public boolean isUndead() {
         return true;
     }
-    
-    
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Zombie Horse";
     }
 }

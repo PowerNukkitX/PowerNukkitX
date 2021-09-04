@@ -164,10 +164,12 @@ public class EntityPotion extends EntityProjectile {
         this.timing.stopTiming();
         return hasUpdate;
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Potion";
     }
 }

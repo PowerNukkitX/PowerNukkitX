@@ -145,8 +145,7 @@ public class EntityArrow extends EntityProjectile {
         }
 
         if (this.level.isRaining() && this.fireTicks > 0 && this.level.canBlockSeeSky(this)) {
-            this.fireTicks = 0;
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_ONFIRE, false);
+            extinguish();
 
             hasUpdate = true;
         }
@@ -198,10 +197,11 @@ public class EntityArrow extends EntityProjectile {
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
-    
-    
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Arrow";
     }
 }

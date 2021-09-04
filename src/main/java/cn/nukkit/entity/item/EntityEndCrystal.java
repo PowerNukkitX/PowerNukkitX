@@ -109,10 +109,12 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
     public void setShowBase(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Ender Crystal";
     }
 }

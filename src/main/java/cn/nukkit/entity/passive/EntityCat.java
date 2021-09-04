@@ -39,10 +39,12 @@ public class EntityCat extends EntityAnimal {
         super.initEntity();
         this.setMaxHealth(10);
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Cat";
     }
 }

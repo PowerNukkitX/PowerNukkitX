@@ -21,13 +21,13 @@ package org.powernukkit.dumps;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.HumanStringComparator;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j2;
-import org.powernukkit.HumanStringComparator;
 
 import java.io.*;
 import java.util.Map;

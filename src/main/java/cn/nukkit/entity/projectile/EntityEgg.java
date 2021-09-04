@@ -79,10 +79,11 @@ public class EntityEgg extends EntityProjectile {
             level.addParticle(new ItemBreakParticle(this, egg));
         }
     }
-    
-    
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Egg";
     }
 }

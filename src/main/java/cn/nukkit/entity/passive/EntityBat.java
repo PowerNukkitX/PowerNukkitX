@@ -36,10 +36,12 @@ public class EntityBat extends EntityAnimal {
         super.initEntity();
         this.setMaxHealth(6);
     }
-    
-    
+
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Bat";
     }
 }
