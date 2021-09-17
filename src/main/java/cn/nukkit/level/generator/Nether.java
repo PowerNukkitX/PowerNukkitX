@@ -7,6 +7,7 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.biome.impl.nether.NetherBiome;
 import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.generator.noise.nukkit.OpenSimplex2S;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
@@ -29,6 +30,9 @@ public class Nether extends Generator {
     private double lavaHeight = 32;
     private double bedrockDepth = 5;
     private SimplexF[] noiseGen = new SimplexF[3];
+    private OpenSimplex2S biomeGen;
+    private OpenSimplex2S biomeGen1;
+    private OpenSimplex2S biomeGen2;
     private final List<Populator> populators = new ArrayList<>();
     private final List<Populator> generationPopulators = new ArrayList<>();
 
@@ -79,6 +83,10 @@ public class Nether extends Generator {
             noiseGen[i] = new SimplexF(nukkitRandom, 4, 1 / 4f, 1 / 64f);
         }
 
+        this.biomeGen = new OpenSimplex2S(random.getSeed());
+        this.biomeGen1 = new OpenSimplex2S(random.getSeed()+1);
+        this.biomeGen2 = new OpenSimplex2S(random.getSeed()+2);
+
         this.nukkitRandom.setSeed(this.level.getSeed());
         this.localSeed1 = this.random.nextLong();
         this.localSeed2 = this.random.nextLong();
@@ -120,16 +128,10 @@ public class Nether extends Generator {
         this.nukkitRandom.setSeed(chunkX * localSeed1 ^ chunkZ * localSeed2 ^ this.level.getSeed());
 
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
-        ArrayList<NetherBiome> netherBiomes = new ArrayList<>();
-        netherBiomes.add((NetherBiome) EnumBiome.HELL.biome);
-        netherBiomes.add((NetherBiome) EnumBiome.SOUL_SAND_VALLEY.biome);
-        netherBiomes.add((NetherBiome) EnumBiome.WARPED_NETHER.biome);
-        netherBiomes.add((NetherBiome) EnumBiome.CRIMSON_FOREST.biome);
-        netherBiomes.add((NetherBiome) EnumBiome.BASLAT_DELTAS.biome);
 
-        NetherBiome biome = (NetherBiome) EnumBiome.BASLAT_DELTAS.biome;
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
+                NetherBiome biome = (NetherBiome) pickBiome(baseX + x, baseZ + z).biome;
                 chunk.setBiomeId(x, z, biome.getId());
 
                 chunk.setBlockId(x, 0, z, Block.BEDROCK);
@@ -167,7 +169,6 @@ public class Nether extends Generator {
         for (Populator populator : this.populators) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }
-
         Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
     }
@@ -182,5 +183,25 @@ public class Nether extends Generator {
             val += noiseGen[i].noise3D(x >> i, y, z >> i, true);
         }
         return val;
+    }
+
+    private static final double FEATURE_SIZE = 256;
+
+    public EnumBiome pickBiome(int x, int z) {
+        double value = biomeGen.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
+        //value += biomeGen1.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
+        //value += biomeGen2.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
+        //value = value/3d;
+        if(value >= .6) {
+            return EnumBiome.BASLAT_DELTAS;
+        } else if(value >= .2) {
+            return EnumBiome.WARPED_NETHER;
+        } else if(value >= -.2) {
+            return EnumBiome.HELL;
+        } else if(value >= -.6) {
+            return EnumBiome.CRIMSON_FOREST;
+        } else {
+            return EnumBiome.SOUL_SAND_VALLEY;
+        }
     }
 }

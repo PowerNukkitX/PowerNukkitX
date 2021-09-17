@@ -35,6 +35,10 @@ public class NukkitRandom {
         return t;
     }
 
+    public long getSeed() {
+        return seed;
+    }
+
     public int nextInt() {
         return this.nextSignedInt() & 0x7fffffff;
     }
