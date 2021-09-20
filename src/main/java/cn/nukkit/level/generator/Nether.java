@@ -136,10 +136,10 @@ public class Nether extends Generator {
 
                 chunk.setBlockId(x, 0, z, Block.BEDROCK);
                 for(int i = 0; i < nukkitRandom.nextBoundedInt(6); i++) {
-                    chunk.setBlockId(x, 126-i, z, NETHERRACK);
+                    chunk.setBlockId(x, 126-i, z, biome.getMiddleBlock());
                 }
                 for (int y = 126; y < 127; ++y) {
-                    chunk.setBlockId(x, y, z, Block.NETHERRACK);
+                    chunk.setBlockId(x, y, z, biome.getMiddleBlock());
                 }
                 chunk.setBlockId(x, 127, z, Block.BEDROCK);
                 for (int y = 1; y < 127; ++y) {
