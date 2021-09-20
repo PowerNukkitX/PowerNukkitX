@@ -102,10 +102,10 @@ public enum EnumBiome {
     MESA_PLATEAU_F_M(166, new MesaPlateauFMBiome()),
     MESA_PLATEAU_M(167, new MesaPlateauMBiome()),
 
-    WARPED_NETHER(168, new WarpedNetherBiome()),
-    SOUL_SAND_VALLEY(169, new SoulSandValleyBiome()),
-    CRIMSON_FOREST(170, new CrimsonForestBiome()),
-    BASLAT_DELTAS(171, new BasaltDeltasBiome());
+    SOUL_SAND_VALLEY(178, new SoulSandValleyBiome()),
+    CRIMSON_FOREST(179, new CrimsonForestBiome()),
+    WARPED_FOREST(180, new WarpedForestBiome()),
+    BASLAT_DELTAS(181, new BasaltDeltasBiome());
 
     public final int id;
     public final Biome biome;

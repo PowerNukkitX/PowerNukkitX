@@ -195,7 +195,7 @@ public class Nether extends Generator {
         if(value >= .6) {
             return EnumBiome.BASLAT_DELTAS;
         } else if(value >= .2) {
-            return EnumBiome.WARPED_NETHER;
+            return EnumBiome.WARPED_FOREST;
         } else if(value >= -.2) {
             return EnumBiome.HELL;
         } else if(value >= -.6) {

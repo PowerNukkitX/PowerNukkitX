@@ -4,9 +4,9 @@ import cn.nukkit.level.generator.populator.impl.nether.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.impl.nether.WarpedFungiTreePopulator;
 import cn.nukkit.level.generator.populator.impl.nether.WarpedTwistingVinesPopulator;
 
-public class WarpedNetherBiome extends NetherBiome {
+public class WarpedForestBiome extends NetherBiome {
 
-    public WarpedNetherBiome() {
+    public WarpedForestBiome() {
         this.addPopulator(new WarpedFungiTreePopulator());
         this.addPopulator(new WarpedGrassesPopulator());
         this.addPopulator(new WarpedTwistingVinesPopulator());
