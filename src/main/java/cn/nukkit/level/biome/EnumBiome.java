@@ -105,7 +105,7 @@ public enum EnumBiome {
     SOUL_SAND_VALLEY(178, new SoulSandValleyBiome()),
     CRIMSON_FOREST(179, new CrimsonForestBiome()),
     WARPED_FOREST(180, new WarpedForestBiome()),
-    BASLAT_DELTAS(181, new BasaltDeltasBiome());
+    BASALT_DELTAS(181, new BasaltDeltasBiome());
 
     public final int id;
     public final Biome biome;

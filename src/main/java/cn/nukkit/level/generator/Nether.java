@@ -31,8 +31,6 @@ public class Nether extends Generator {
     private double bedrockDepth = 5;
     private SimplexF[] noiseGen = new SimplexF[3];
     private OpenSimplex2S biomeGen;
-    private OpenSimplex2S biomeGen1;
-    private OpenSimplex2S biomeGen2;
     private final List<Populator> populators = new ArrayList<>();
     private final List<Populator> generationPopulators = new ArrayList<>();
 
@@ -84,8 +82,6 @@ public class Nether extends Generator {
         }
 
         this.biomeGen = new OpenSimplex2S(random.getSeed());
-        this.biomeGen1 = new OpenSimplex2S(random.getSeed()+1);
-        this.biomeGen2 = new OpenSimplex2S(random.getSeed()+2);
 
         this.nukkitRandom.setSeed(this.level.getSeed());
         this.localSeed1 = this.random.nextLong();
@@ -131,7 +127,7 @@ public class Nether extends Generator {
 
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
-                NetherBiome biome = (NetherBiome) pickBiome(baseX + x, baseZ + z).biome;
+                NetherBiome biome = (NetherBiome) pickBiomeExperimental(baseX + x, baseZ + z).biome;
                 chunk.setBiomeId(x, z, biome.getId());
 
                 chunk.setBlockId(x, 0, z, Block.BEDROCK);
@@ -185,15 +181,12 @@ public class Nether extends Generator {
         return val;
     }
 
-    private static final double FEATURE_SIZE = 256;
+    private static final double BIOME_AMPLIFICATION = 512;
 
     public EnumBiome pickBiome(int x, int z) {
-        double value = biomeGen.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
-        //value += biomeGen1.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
-        //value += biomeGen2.noise2(x/FEATURE_SIZE, z/FEATURE_SIZE);
-        //value = value/3d;
+        double value = biomeGen.noise2(x/ BIOME_AMPLIFICATION, z/ BIOME_AMPLIFICATION);
         if(value >= .6) {
-            return EnumBiome.BASLAT_DELTAS;
+            return EnumBiome.BASALT_DELTAS;
         } else if(value >= .2) {
             return EnumBiome.WARPED_FOREST;
         } else if(value >= -.2) {
@@ -202,6 +195,18 @@ public class Nether extends Generator {
             return EnumBiome.CRIMSON_FOREST;
         } else {
             return EnumBiome.SOUL_SAND_VALLEY;
+        }
+    }
+
+    public EnumBiome pickBiomeExperimental(int x, int z) {
+        double value = biomeGen.noise2(x/ BIOME_AMPLIFICATION, z/ BIOME_AMPLIFICATION);
+        double secondaryValue = biomeGen.noise3_XZBeforeY(x/ (BIOME_AMPLIFICATION*2d), 0, z/ (BIOME_AMPLIFICATION*2d));
+        if(value >= 1/3f) {
+            return secondaryValue >= 0 ? EnumBiome.WARPED_FOREST : EnumBiome.CRIMSON_FOREST;
+        } else if(value >= -1/3f) {
+            return EnumBiome.HELL;
+        } else {
+            return secondaryValue >= 0 ? EnumBiome.BASALT_DELTAS : EnumBiome.SOUL_SAND_VALLEY;
         }
     }
 }
