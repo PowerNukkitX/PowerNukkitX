@@ -54,8 +54,8 @@ public class CrimsonWeepingVinesPopulator extends Populator {
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
-            if ((b == Block.CRIMSON_NYLIUM || b == Block.NETHERRACK) && this.level.getBlockIdAt(x, y+1, z) == 0) {
-                blockYs.add(y+1);
+            if ((b == Block.CRIMSON_NYLIUM || b == Block.NETHERRACK) && this.level.getBlockIdAt(x, y-1, z) == 0) {
+                blockYs.add(y-1);
             }
         }
         return blockYs;
