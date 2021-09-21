@@ -120,7 +120,8 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         return this;
     }
 
-    public static void spawnPortal(Position pos)   {
+    public static void spawnPortal(Position pos) {
+        System.out.println("Generating portal\n");
         Level lvl = pos.level;
         int x = pos.getFloorX();
         int y = pos.getFloorY();
