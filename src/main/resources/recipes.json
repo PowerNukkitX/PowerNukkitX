@@ -17937,7 +17937,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 617,
+                    "legacyId" : 618,
                     "id" : "minecraft:chain"
                 }
             ],
@@ -19231,7 +19231,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 614,
+                    "legacyId" : 615,
                     "id" : "minecraft:crimson_door",
                     "count" : 3
                 }
@@ -19456,7 +19456,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 612,
+                    "legacyId" : 613,
                     "id" : "minecraft:crimson_sign",
                     "count" : 3
                 }
@@ -21743,7 +21743,7 @@
             ],
             "output" : [
                 {
-                    "legacyId" : 621,
+                      "legacyId" : 621,
                     "id" : "minecraft:glow_frame"
                 }
             ],
@@ -25936,7 +25936,7 @@
                     "damage" : 3
                 },
                 "B" : {
-                    "legacyId" : 601,
+                    "legacyId" : 602,
                     "id" : "minecraft:netherite_ingot",
                     "damage" : 32767
                 }
@@ -27035,7 +27035,7 @@
             "type" : 1,
             "input" : {
                 "A" : {
-                    "legacyId" : 601,
+                    "legacyId" : 602,
                     "id" : "minecraft:netherite_ingot",
                     "damage" : 32767
                 }
@@ -27059,22 +27059,22 @@
             "type" : 0,
             "input" : [
                 {
-                    "legacyId" : 611,
+                    "legacyId" : 612,
                     "id" : "minecraft:netherite_scrap",
                     "damage" : 32767
                 },
                 {
-                    "legacyId" : 611,
+                    "legacyId" : 612,
                     "id" : "minecraft:netherite_scrap",
                     "damage" : 32767
                 },
                 {
-                    "legacyId" : 611,
+                    "legacyId" : 612,
                     "id" : "minecraft:netherite_scrap",
                     "damage" : 32767
                 },
                 {
-                    "legacyId" : 611,
+                    "legacyId" : 612,
                     "id" : "minecraft:netherite_scrap",
                     "damage" : 32767
                 },
@@ -27101,7 +27101,7 @@
             ],
             "output" : [
                 {
-                    "legacyId" : 601,
+                    "legacyId" : 602,
                     "id" : "minecraft:netherite_ingot"
                 }
             ],
@@ -27120,7 +27120,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 601,
+                    "legacyId" : 602,
                     "id" : "minecraft:netherite_ingot",
                     "count" : 9
                 }
@@ -31378,7 +31378,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 620,
+                    "legacyId" : 621,
                     "id" : "minecraft:soul_campfire"
                 }
             ],
@@ -34178,7 +34178,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 615,
+                    "legacyId" : 616,
                     "id" : "minecraft:warped_door",
                     "count" : 3
                 }
@@ -34265,7 +34265,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 616,
+                    "legacyId" : 617,
                     "id" : "minecraft:warped_fungus_on_a_stick"
                 }
             ],
@@ -34431,7 +34431,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 613,
+                    "legacyId" : 614,
                     "id" : "minecraft:warped_sign",
                     "count" : 3
                 }
@@ -54171,7 +54171,7 @@
                 "damage" : -1
             },
             "output" : {
-                "legacyId" : 611,
+                "legacyId" : 612,
                 "id" : "minecraft:netherite_scrap",
                 "damage" : 32767
             },
@@ -54185,7 +54185,7 @@
                 "damage" : -1
             },
             "output" : {
-                "legacyId" : 611,
+                "legacyId" : 612,
                 "id" : "minecraft:netherite_scrap",
                 "damage" : 32767
             },
