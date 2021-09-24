@@ -888,7 +888,7 @@ public class BinaryStream {
         try {
             return NBTIO.read(is);
         } finally {
-            offset += is.available() - initial;
+            offset += initial - is.available();
         }
     }
 
