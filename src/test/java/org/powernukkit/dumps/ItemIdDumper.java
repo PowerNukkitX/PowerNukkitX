@@ -82,7 +82,7 @@ public class ItemIdDumper {
             }
         }
         
-        try (FileWriter writer = new FileWriter("item-id-dump.properties")) {
+        try (FileWriter writer = new FileWriter("dumps/item-id-dump.properties")) {
             for (Map.Entry<String, String> entry : itemIds.entrySet()) {
                 writer.write(entry.getKey());
                 writer.write('=');
@@ -91,7 +91,7 @@ public class ItemIdDumper {
             }
         }
 
-        try (FileWriter writer = new FileWriter("block-id-dump-from-items.properties")) {
+        try (FileWriter writer = new FileWriter("dumps/block-id-dump-from-items.properties")) {
             for (Map.Entry<String, String> entry : blockIds.entrySet()) {
                 writer.write(entry.getKey());
                 writer.write('=');
