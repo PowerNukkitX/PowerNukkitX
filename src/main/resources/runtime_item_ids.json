@@ -3690,11 +3690,6 @@
     "oldId": 382
   },
   {
-    "name": "minecraft:spawn_egg",
-    "id": 628,
-    "oldId": 383
-  },
-  {
     "name": "minecraft:chicken_spawn_egg",
     "id": 435,
     "oldId": 383,
@@ -4691,6 +4686,11 @@
     "id": 627,
     "oldId": 434,
     "deprecated": true
+  },
+  {
+    "name": "minecraft:spawn_egg",
+    "id": 628,
+    "oldId": 383
   },
   {
     "name": "minecraft:end_crystal",
