@@ -63,7 +63,7 @@ public class CraftingEventPacket extends DataPacket {
     @Override
     public void decode() {
         this.windowId = this.getByte();
-        this.type = (int) this.getUnsignedVarInt();
+        this.type = this.getVarInt();
         this.id = this.getUUID();
 
         this.input = this.getArray(Item.class, BinaryStream::getSlot);

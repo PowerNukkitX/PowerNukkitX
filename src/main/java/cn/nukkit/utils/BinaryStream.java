@@ -3,6 +3,8 @@ package cn.nukkit.utils;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.*;
@@ -404,7 +406,13 @@ public class BinaryStream {
             getVarInt(); // netId
         }
 
-        getVarInt(); // blockRuntimeId
+        int blockRuntimeId = getVarInt();
+        if (id <= 255) {
+            BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
+            if (blockStateByRuntimeId != null) {
+                damage = blockStateByRuntimeId.asItemBlock().getDamage();
+            }
+        }
 
         byte[] bytes = getByteArray();
         ByteBuf buf = AbstractByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
@@ -428,7 +436,9 @@ public class BinaryStream {
 
             if (compoundTag != null && compoundTag.getAllTags().size() > 0) {
                 if (compoundTag.contains("Damage")) {
-                    damage = compoundTag.getInt("Damage");
+                    if (id > 255) {
+                        damage = compoundTag.getInt("Damage");
+                    }
                     compoundTag.remove("Damage");
                 }
                 if (compoundTag.contains("__DamageConflict__")) {
