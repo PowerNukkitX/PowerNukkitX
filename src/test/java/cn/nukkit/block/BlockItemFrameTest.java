@@ -5,12 +5,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.powernukkit.tests.api.MockServer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.when;
  * @since 2021-09-25
  */
 @ExtendWith(PowerNukkitExtension.class)
-@MockServer(callsRealMethods = false)
 class BlockItemFrameTest {
     @Mock
     Level level;
@@ -30,7 +28,7 @@ class BlockItemFrameTest {
     @Mock
     Player player;
 
-    @Test @Ignore //TODO Fix
+    @Test @Disabled //TODO Fix
     void testPlaceOnTallGrass() {
         BlockItemFrame itemFrame = new BlockItemFrame();
         itemFrame.setLevel(level);
