@@ -3,9 +3,11 @@ package cn.nukkit.utils;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
+@EqualsAndHashCode
 public class SkinAnimation {
     public final SerializedImage image;
     public final int type;

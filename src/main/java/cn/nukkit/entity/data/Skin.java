@@ -4,6 +4,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 @ToString(exclude = {"geometryData", "animationData"})
+@EqualsAndHashCode
 public class Skin {
     private static final int PIXEL_SIZE = 4;
 

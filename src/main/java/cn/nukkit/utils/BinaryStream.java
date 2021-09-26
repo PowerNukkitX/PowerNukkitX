@@ -37,6 +37,7 @@ import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -878,6 +879,30 @@ public class BinaryStream {
                 getBoolean(),
                 getBoolean()
         );
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
+        if (collection == null) {
+            putUnsignedVarInt(0);
+            return;
+        }
+        putUnsignedVarInt(collection.size());
+        collection.forEach(writer);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public <T> void putArray(T[] collection, Consumer<T> writer) {
+        if (collection == null) {
+            putUnsignedVarInt(0);
+            return;
+        }
+        putUnsignedVarInt(collection.length);
+        for (T t : collection) {
+            writer.accept(t);
+        }
     }
 
     @SuppressWarnings("unchecked")

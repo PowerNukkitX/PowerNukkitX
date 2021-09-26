@@ -193,7 +193,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (!(target instanceof BlockWall) && (!target.isSolid() && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWall)  && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
