@@ -21,7 +21,7 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 @ToString(exclude = {"geometryData", "animationData"})
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"fullSkinId", "trusted"})
 public class Skin {
     private static final int PIXEL_SIZE = 4;
 
