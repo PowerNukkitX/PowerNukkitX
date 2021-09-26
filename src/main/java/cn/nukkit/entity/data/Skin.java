@@ -4,6 +4,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * @author MagicDroidX (Nukkit Project)
  */
 @ToString(exclude = {"geometryData", "animationData"})
+@EqualsAndHashCode(exclude = {"fullSkinId", "trusted"})
 public class Skin {
     private static final int PIXEL_SIZE = 4;
 
@@ -45,10 +47,12 @@ public class Skin {
     private boolean premium;
     private boolean persona;
     private boolean capeOnClassic;
+    private boolean primaryUser = true;
     private String capeId;
     private String skinColor = "#0";
     private String armSize = "wide";
     private boolean trusted = false;
+    private String geometryDataEngineVersion = "";
 
     public boolean isValid() {
         return isValidSkin() && isValidResourcePatch();
@@ -233,6 +237,26 @@ public class Skin {
 
     public void setCapeOnClassic(boolean capeOnClassic) {
         this.capeOnClassic = capeOnClassic;
+    }
+
+    @Since("FUTURE")
+    public void setPrimaryUser(boolean primaryUser) {
+        this.primaryUser = primaryUser;
+    }
+
+    @Since("FUTURE")
+    public boolean isPrimaryUser() {
+        return primaryUser;
+    }
+
+    @Since("FUTURE")
+    public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
+        this.geometryDataEngineVersion = geometryDataEngineVersion;
+    }
+
+    @Since("FUTURE")
+    public String getGeometryDataEngineVersion() {
+        return geometryDataEngineVersion;
     }
 
     public boolean isTrusted() {
