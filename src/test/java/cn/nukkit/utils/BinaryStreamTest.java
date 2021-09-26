@@ -20,6 +20,8 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,15 @@ class BinaryStreamTest {
     @Test
     void putSlotGetSlotNoTag() {
         Item item = new Item(1000, 0, 1, "Test");
+        stream.putSlot(item);
+        stream.setOffset(0);
+        Item read = stream.getSlot();
+        assertEquals(item, read);
+    }
+
+    @Test
+    void putSlotGetSlotBlock() {
+        Item item = BlockState.of(BlockID.SHULKER_BOX, 11).asItemBlock();
         stream.putSlot(item);
         stream.setOffset(0);
         Item read = stream.getSlot();

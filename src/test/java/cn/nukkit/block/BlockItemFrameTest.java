@@ -69,10 +69,10 @@ class BlockItemFrameTest {
     void testStoringPhoto() {
         BlockItemFrame block = new BlockItemFrame();
 
-        assertFalse(block.isStoringMap());
-        block.setStoringMap(true);
-        assertTrue(block.isStoringMap());
-        block.setStoringMap(false);
+        assertFalse(block.isStoringPhoto());
+        block.setStoringPhoto(true);
+        assertTrue(block.isStoringPhoto());
+        block.setStoringPhoto(false);
         assertFalse(block.isStoringMap());
     }
 }
