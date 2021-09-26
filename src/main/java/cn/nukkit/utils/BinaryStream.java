@@ -7,7 +7,10 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDurable;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -41,6 +44,8 @@ import java.util.function.Function;
  */
 @Log4j2
 public class BinaryStream {
+
+    private static final int FALLBACK_ID = 248;
 
     public int offset;
     private byte[] buffer;
@@ -407,7 +412,7 @@ public class BinaryStream {
         }
 
         int blockRuntimeId = getVarInt();
-        if (id <= 255) {
+        if (id <= 255 && id != FALLBACK_ID) {
             BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
                 damage = blockStateByRuntimeId.asItemBlock().getDamage();
@@ -499,7 +504,7 @@ public class BinaryStream {
     }
     
     private Item readUnknownItem(Item item) {
-        if (item.getId() != 248 || !item.hasCompoundTag()) {
+        if (item.getId() != FALLBACK_ID || !item.hasCompoundTag()) {
             return item;
         }
         
@@ -536,7 +541,7 @@ public class BinaryStream {
     
     private Item createFakeUnknownItem(Item item) {
         boolean hasCompound = item.hasCompoundTag();
-        Item fallback = Item.getBlock(248, 0, item.getCount());
+        Item fallback = Item.getBlock(FALLBACK_ID, 0, item.getCount());
         CompoundTag tag = item.getNamedTag();
         if (tag == null) {
             tag = new CompoundTag();
