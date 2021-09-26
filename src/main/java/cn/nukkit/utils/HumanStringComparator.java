@@ -110,10 +110,10 @@ public class HumanStringComparator implements Comparator<String> {
 
                     // Detect ommitted number
                     if (strLen1 < strLen2) {
-                        if (detectOmmitedNumber(l1, len1, i, str2, strLen2, minStrLen, commonPart1)) {
+                        if (detectOmittedNumber(l1, len1, i, str2, strLen2, minStrLen, commonPart1)) {
                             return RIGHT;
                         }
-                    } else if (detectOmmitedNumber(l2, len2, i, str1, strLen1, minStrLen, commonPart2)) {
+                    } else if (detectOmittedNumber(l2, len2, i, str1, strLen1, minStrLen, commonPart2)) {
                         return LEFT;
                     }
 
@@ -125,7 +125,7 @@ public class HumanStringComparator implements Comparator<String> {
         return Integer.compare(len1, len2);
     }
 
-    private boolean detectOmmitedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
+    private boolean detectOmittedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
         String combined;
         String comparingWith;
         String next1 = len1 > i + 1? l1.get(i + 1) : null;
