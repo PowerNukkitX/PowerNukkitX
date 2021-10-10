@@ -546,7 +546,11 @@ minecraft:sandstone
 minecraft:sandstone_stairs
 minecraft:sapling
 minecraft:scaffolding
+minecraft:sculk
+minecraft:sculk_catalyst
 minecraft:sculk_sensor
+minecraft:sculk_shrieker
+minecraft:sculk_vein
 minecraft:seaLantern
 minecraft:sea_pickle
 minecraft:seagrass

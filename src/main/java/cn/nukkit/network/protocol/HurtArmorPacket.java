@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
@@ -17,6 +16,8 @@ public class HurtArmorPacket extends DataPacket {
 
     @Since("1.3.0.0-PN")
     public int damage;
+
+    @Since("FUTURE")
     public long armorSlots;
 
     @Override
@@ -28,7 +29,7 @@ public class HurtArmorPacket extends DataPacket {
     public void encode() {
         this.reset();
         this.putVarInt(this.cause);
-        this.putVarInt(damage);
+        this.putVarInt(this.damage);
         this.putUnsignedVarLong(this.armorSlots);
     }
 
