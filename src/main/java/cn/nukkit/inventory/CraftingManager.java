@@ -270,10 +270,16 @@ public class CraftingManager {
         toNextRecipe:
         for (Map<String, Object> recipe : recipes) {
             try {
-                switch (Utils.toInt(recipe.get("type"))) {
+                int type = Utils.toInt(recipe.get("type"));
+                switch (type) {
                     case 0:
+                    case 5:
                         String craftingBlock = (String) recipe.get("block");
-                        if (!"crafting_table".equals(craftingBlock) && !"stonecutter".equals(craftingBlock) && !"cartography_table".equalsIgnoreCase(craftingBlock)) {
+                        if (type == 5) {
+                            craftingBlock = "shulker_box";
+                        }
+                        if (!"crafting_table".equals(craftingBlock) && !"stonecutter".equals(craftingBlock)
+                                && !"cartography_table".equalsIgnoreCase(craftingBlock) && !"shulker_box".equalsIgnoreCase(craftingBlock)) {
                             // Ignore other recipes than crafting table, stonecutter and cartography table
                             continue;
                         }
@@ -304,6 +310,9 @@ public class CraftingManager {
                         switch (craftingBlock) {
                             case "crafting_table":
                                 this.registerRecipe(new ShapelessRecipe(recipeId, priority, result, sorted));
+                                break;
+                            case "shulker_box":
+                                this.registerRecipe(new ShulkerBoxRecipe(recipeId, priority, result, sorted));
                                 break;
                             case "stonecutter":
                                 this.registerRecipe(new StonecutterRecipe(recipeId, priority, result, sorted.get(0)));
