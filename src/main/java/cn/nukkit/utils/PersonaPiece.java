@@ -1,8 +1,10 @@
 package cn.nukkit.utils;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @ToString
+@EqualsAndHashCode
 public class PersonaPiece {
     public final String id;
     public final String type;
