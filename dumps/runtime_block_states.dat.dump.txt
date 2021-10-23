@@ -856,7 +856,15 @@ minecraft:barrier
 blockId=416
 runtimeId=213
 
+minecraft:basalt;pillar_axis=x
+blockId=489
+runtimeId=215
+
 minecraft:basalt;pillar_axis=y
+blockId=489
+runtimeId=214
+
+minecraft:basalt;pillar_axis=z
 blockId=489
 runtimeId=216
 
@@ -2760,19 +2768,51 @@ minecraft:blue_ice
 blockId=266
 runtimeId=691
 
+minecraft:bone_block;deprecated=0;pillar_axis=x
+blockId=216
+runtimeId=696
+
 minecraft:bone_block;deprecated=0;pillar_axis=y
+blockId=216
+runtimeId=692
+
+minecraft:bone_block;deprecated=0;pillar_axis=z
 blockId=216
 runtimeId=700
 
+minecraft:bone_block;deprecated=1;pillar_axis=x
+blockId=216
+runtimeId=697
+
 minecraft:bone_block;deprecated=1;pillar_axis=y
+blockId=216
+runtimeId=693
+
+minecraft:bone_block;deprecated=1;pillar_axis=z
 blockId=216
 runtimeId=701
 
+minecraft:bone_block;deprecated=2;pillar_axis=x
+blockId=216
+runtimeId=698
+
 minecraft:bone_block;deprecated=2;pillar_axis=y
+blockId=216
+runtimeId=694
+
+minecraft:bone_block;deprecated=2;pillar_axis=z
 blockId=216
 runtimeId=702
 
+minecraft:bone_block;deprecated=3;pillar_axis=x
+blockId=216
+runtimeId=699
+
 minecraft:bone_block;deprecated=3;pillar_axis=y
+blockId=216
+runtimeId=695
+
+minecraft:bone_block;deprecated=3;pillar_axis=z
 blockId=216
 runtimeId=703
 
@@ -4324,7 +4364,15 @@ minecraft:cave_vines_head_with_berries;growing_plant_age=25
 blockId=631
 runtimeId=1090
 
+minecraft:chain;pillar_axis=x
+blockId=541
+runtimeId=1092
+
 minecraft:chain;pillar_axis=y
+blockId=541
+runtimeId=1091
+
+minecraft:chain;pillar_axis=z
 blockId=541
 runtimeId=1093
 
@@ -4513,7 +4561,7 @@ blockId=82
 runtimeId=1139
 
 minecraft:client_request_placeholder_block
-blockId=-1
+blockId=720
 runtimeId=1140
 
 minecraft:coal_block
@@ -15296,7 +15344,15 @@ minecraft:crimson_fungus
 blockId=483
 runtimeId=3835
 
+minecraft:crimson_hyphae;pillar_axis=x
+blockId=554
+runtimeId=3837
+
 minecraft:crimson_hyphae;pillar_axis=y
+blockId=554
+runtimeId=3836
+
+minecraft:crimson_hyphae;pillar_axis=z
 blockId=554
 runtimeId=3838
 
@@ -15480,7 +15536,15 @@ minecraft:crimson_standing_sign;ground_sign_direction=15
 blockId=505
 runtimeId=3883
 
+minecraft:crimson_stem;pillar_axis=x
+blockId=480
+runtimeId=3885
+
 minecraft:crimson_stem;pillar_axis=y
+blockId=480
+runtimeId=3884
+
+minecraft:crimson_stem;pillar_axis=z
 blockId=480
 runtimeId=3886
 
@@ -16336,7 +16400,15 @@ minecraft:deadbush
 blockId=32
 runtimeId=4099
 
+minecraft:deepslate;pillar_axis=x
+blockId=633
+runtimeId=4101
+
 minecraft:deepslate;pillar_axis=y
+blockId=633
+runtimeId=4100
+
+minecraft:deepslate;pillar_axis=z
 blockId=633
 runtimeId=4102
 
@@ -20264,19 +20336,51 @@ minecraft:hardened_clay
 blockId=172
 runtimeId=5083
 
+minecraft:hay_block;deprecated=0;pillar_axis=x
+blockId=170
+runtimeId=5088
+
 minecraft:hay_block;deprecated=0;pillar_axis=y
+blockId=170
+runtimeId=5084
+
+minecraft:hay_block;deprecated=0;pillar_axis=z
 blockId=170
 runtimeId=5092
 
+minecraft:hay_block;deprecated=1;pillar_axis=x
+blockId=170
+runtimeId=5089
+
 minecraft:hay_block;deprecated=1;pillar_axis=y
+blockId=170
+runtimeId=5085
+
+minecraft:hay_block;deprecated=1;pillar_axis=z
 blockId=170
 runtimeId=5093
 
+minecraft:hay_block;deprecated=2;pillar_axis=x
+blockId=170
+runtimeId=5090
+
 minecraft:hay_block;deprecated=2;pillar_axis=y
+blockId=170
+runtimeId=5086
+
+minecraft:hay_block;deprecated=2;pillar_axis=z
 blockId=170
 runtimeId=5094
 
+minecraft:hay_block;deprecated=3;pillar_axis=x
+blockId=170
+runtimeId=5091
+
 minecraft:hay_block;deprecated=3;pillar_axis=y
+blockId=170
+runtimeId=5087
+
+minecraft:hay_block;deprecated=3;pillar_axis=z
 blockId=170
 runtimeId=5095
 
@@ -20404,7 +20508,15 @@ minecraft:ice
 blockId=79
 runtimeId=5126
 
+minecraft:infested_deepslate;pillar_axis=x
+blockId=709
+runtimeId=5128
+
 minecraft:infested_deepslate;pillar_axis=y
+blockId=709
+runtimeId=5127
+
+minecraft:infested_deepslate;pillar_axis=z
 blockId=709
 runtimeId=5129
 
@@ -22144,27 +22256,75 @@ minecraft:lodestone
 blockId=477
 runtimeId=5563
 
+minecraft:log;old_log_type=birch;pillar_axis=x
+blockId=17
+runtimeId=5570
+
 minecraft:log;old_log_type=birch;pillar_axis=y
+blockId=17
+runtimeId=5566
+
+minecraft:log;old_log_type=birch;pillar_axis=z
 blockId=17
 runtimeId=5574
 
+minecraft:log;old_log_type=jungle;pillar_axis=x
+blockId=17
+runtimeId=5571
+
 minecraft:log;old_log_type=jungle;pillar_axis=y
+blockId=17
+runtimeId=5567
+
+minecraft:log;old_log_type=jungle;pillar_axis=z
 blockId=17
 runtimeId=5575
 
+minecraft:log;old_log_type=oak;pillar_axis=x
+blockId=17
+runtimeId=5568
+
 minecraft:log;old_log_type=oak;pillar_axis=y
+blockId=17
+runtimeId=5564
+
+minecraft:log;old_log_type=oak;pillar_axis=z
 blockId=17
 runtimeId=5572
 
+minecraft:log;old_log_type=spruce;pillar_axis=x
+blockId=17
+runtimeId=5569
+
 minecraft:log;old_log_type=spruce;pillar_axis=y
+blockId=17
+runtimeId=5565
+
+minecraft:log;old_log_type=spruce;pillar_axis=z
 blockId=17
 runtimeId=5573
 
+minecraft:log2;new_log_type=acacia;pillar_axis=x
+blockId=162
+runtimeId=5578
+
 minecraft:log2;new_log_type=acacia;pillar_axis=y
+blockId=162
+runtimeId=5576
+
+minecraft:log2;new_log_type=acacia;pillar_axis=z
 blockId=162
 runtimeId=5580
 
+minecraft:log2;new_log_type=dark_oak;pillar_axis=x
+blockId=162
+runtimeId=5579
+
 minecraft:log2;new_log_type=dark_oak;pillar_axis=y
+blockId=162
+runtimeId=5577
+
+minecraft:log2;new_log_type=dark_oak;pillar_axis=z
 blockId=162
 runtimeId=5581
 
@@ -22585,11 +22745,11 @@ blockId=110
 runtimeId=5685
 
 minecraft:mysterious_frame
-blockId=-1
+blockId=721
 runtimeId=5686
 
 minecraft:mysterious_frame_slot
-blockId=-1
+blockId=722
 runtimeId=5687
 
 minecraft:nether_brick
@@ -23128,7 +23288,15 @@ minecraft:polished_andesite_stairs;upside_down_bit=1;weirdo_direction=3
 blockId=429
 runtimeId=5821
 
+minecraft:polished_basalt;pillar_axis=x
+blockId=490
+runtimeId=5823
+
 minecraft:polished_basalt;pillar_axis=y
+blockId=490
+runtimeId=5822
+
+minecraft:polished_basalt;pillar_axis=z
 blockId=490
 runtimeId=5824
 
@@ -25408,13 +25576,17 @@ minecraft:polished_granite_stairs;upside_down_bit=1;weirdo_direction=3
 blockId=427
 runtimeId=6393
 
-minecraft:portal;portal_axis=x
-blockId=90
-runtimeId=6396
-
 minecraft:portal;portal_axis=unknown
 blockId=90
 runtimeId=6394
+
+minecraft:portal;portal_axis=x
+blockId=90
+runtimeId=6395
+
+minecraft:portal;portal_axis=z
+blockId=90
+runtimeId=6396
 
 minecraft:potatoes;growth=0
 blockId=142
@@ -25928,19 +26100,51 @@ minecraft:purple_glazed_terracotta;facing_direction=5
 blockId=219
 runtimeId=6524
 
+minecraft:purpur_block;chisel_type=chiseled;pillar_axis=x
+blockId=201
+runtimeId=6530
+
 minecraft:purpur_block;chisel_type=chiseled;pillar_axis=y
+blockId=201
+runtimeId=6526
+
+minecraft:purpur_block;chisel_type=chiseled;pillar_axis=z
 blockId=201
 runtimeId=6534
 
+minecraft:purpur_block;chisel_type=default;pillar_axis=x
+blockId=201
+runtimeId=6529
+
 minecraft:purpur_block;chisel_type=default;pillar_axis=y
+blockId=201
+runtimeId=6525
+
+minecraft:purpur_block;chisel_type=default;pillar_axis=z
 blockId=201
 runtimeId=6533
 
+minecraft:purpur_block;chisel_type=lines;pillar_axis=x
+blockId=201
+runtimeId=6531
+
 minecraft:purpur_block;chisel_type=lines;pillar_axis=y
+blockId=201
+runtimeId=6527
+
+minecraft:purpur_block;chisel_type=lines;pillar_axis=z
 blockId=201
 runtimeId=6535
 
+minecraft:purpur_block;chisel_type=smooth;pillar_axis=x
+blockId=201
+runtimeId=6532
+
 minecraft:purpur_block;chisel_type=smooth;pillar_axis=y
+blockId=201
+runtimeId=6528
+
+minecraft:purpur_block;chisel_type=smooth;pillar_axis=z
 blockId=201
 runtimeId=6536
 
@@ -25976,19 +26180,51 @@ minecraft:purpur_stairs;upside_down_bit=1;weirdo_direction=3
 blockId=203
 runtimeId=6544
 
+minecraft:quartz_block;chisel_type=chiseled;pillar_axis=x
+blockId=155
+runtimeId=6550
+
 minecraft:quartz_block;chisel_type=chiseled;pillar_axis=y
+blockId=155
+runtimeId=6546
+
+minecraft:quartz_block;chisel_type=chiseled;pillar_axis=z
 blockId=155
 runtimeId=6554
 
+minecraft:quartz_block;chisel_type=default;pillar_axis=x
+blockId=155
+runtimeId=6549
+
 minecraft:quartz_block;chisel_type=default;pillar_axis=y
+blockId=155
+runtimeId=6545
+
+minecraft:quartz_block;chisel_type=default;pillar_axis=z
 blockId=155
 runtimeId=6553
 
+minecraft:quartz_block;chisel_type=lines;pillar_axis=x
+blockId=155
+runtimeId=6551
+
 minecraft:quartz_block;chisel_type=lines;pillar_axis=y
+blockId=155
+runtimeId=6547
+
+minecraft:quartz_block;chisel_type=lines;pillar_axis=z
 blockId=155
 runtimeId=6555
 
+minecraft:quartz_block;chisel_type=smooth;pillar_axis=x
+blockId=155
+runtimeId=6552
+
 minecraft:quartz_block;chisel_type=smooth;pillar_axis=y
+blockId=155
+runtimeId=6548
+
+minecraft:quartz_block;chisel_type=smooth;pillar_axis=z
 blockId=155
 runtimeId=6556
 
@@ -26749,15 +26985,15 @@ blockId=420
 runtimeId=6745
 
 minecraft:sculk
-blockId=-1
+blockId=713
 runtimeId=6746
 
 minecraft:sculk_catalyst;bloom=0
-blockId=-1
+blockId=715
 runtimeId=6747
 
 minecraft:sculk_catalyst;bloom=1
-blockId=-1
+blockId=715
 runtimeId=6748
 
 minecraft:sculk_sensor;powered_bit=0
@@ -26769,267 +27005,267 @@ blockId=562
 runtimeId=6750
 
 minecraft:sculk_shrieker;active=0
-blockId=-1
+blockId=716
 runtimeId=6751
 
 minecraft:sculk_shrieker;active=1
-blockId=-1
+blockId=716
 runtimeId=6752
 
 minecraft:sculk_vein;multi_face_direction_bits=0
-blockId=-1
+blockId=714
 runtimeId=6753
 
 minecraft:sculk_vein;multi_face_direction_bits=1
-blockId=-1
+blockId=714
 runtimeId=6754
 
 minecraft:sculk_vein;multi_face_direction_bits=2
-blockId=-1
+blockId=714
 runtimeId=6755
 
 minecraft:sculk_vein;multi_face_direction_bits=3
-blockId=-1
+blockId=714
 runtimeId=6756
 
 minecraft:sculk_vein;multi_face_direction_bits=4
-blockId=-1
+blockId=714
 runtimeId=6757
 
 minecraft:sculk_vein;multi_face_direction_bits=5
-blockId=-1
+blockId=714
 runtimeId=6758
 
 minecraft:sculk_vein;multi_face_direction_bits=6
-blockId=-1
+blockId=714
 runtimeId=6759
 
 minecraft:sculk_vein;multi_face_direction_bits=7
-blockId=-1
+blockId=714
 runtimeId=6760
 
 minecraft:sculk_vein;multi_face_direction_bits=8
-blockId=-1
+blockId=714
 runtimeId=6761
 
 minecraft:sculk_vein;multi_face_direction_bits=9
-blockId=-1
+blockId=714
 runtimeId=6762
 
 minecraft:sculk_vein;multi_face_direction_bits=10
-blockId=-1
+blockId=714
 runtimeId=6763
 
 minecraft:sculk_vein;multi_face_direction_bits=11
-blockId=-1
+blockId=714
 runtimeId=6764
 
 minecraft:sculk_vein;multi_face_direction_bits=12
-blockId=-1
+blockId=714
 runtimeId=6765
 
 minecraft:sculk_vein;multi_face_direction_bits=13
-blockId=-1
+blockId=714
 runtimeId=6766
 
 minecraft:sculk_vein;multi_face_direction_bits=14
-blockId=-1
+blockId=714
 runtimeId=6767
 
 minecraft:sculk_vein;multi_face_direction_bits=15
-blockId=-1
+blockId=714
 runtimeId=6768
 
 minecraft:sculk_vein;multi_face_direction_bits=16
-blockId=-1
+blockId=714
 runtimeId=6769
 
 minecraft:sculk_vein;multi_face_direction_bits=17
-blockId=-1
+blockId=714
 runtimeId=6770
 
 minecraft:sculk_vein;multi_face_direction_bits=18
-blockId=-1
+blockId=714
 runtimeId=6771
 
 minecraft:sculk_vein;multi_face_direction_bits=19
-blockId=-1
+blockId=714
 runtimeId=6772
 
 minecraft:sculk_vein;multi_face_direction_bits=20
-blockId=-1
+blockId=714
 runtimeId=6773
 
 minecraft:sculk_vein;multi_face_direction_bits=21
-blockId=-1
+blockId=714
 runtimeId=6774
 
 minecraft:sculk_vein;multi_face_direction_bits=22
-blockId=-1
+blockId=714
 runtimeId=6775
 
 minecraft:sculk_vein;multi_face_direction_bits=23
-blockId=-1
+blockId=714
 runtimeId=6776
 
 minecraft:sculk_vein;multi_face_direction_bits=24
-blockId=-1
+blockId=714
 runtimeId=6777
 
 minecraft:sculk_vein;multi_face_direction_bits=25
-blockId=-1
+blockId=714
 runtimeId=6778
 
 minecraft:sculk_vein;multi_face_direction_bits=26
-blockId=-1
+blockId=714
 runtimeId=6779
 
 minecraft:sculk_vein;multi_face_direction_bits=27
-blockId=-1
+blockId=714
 runtimeId=6780
 
 minecraft:sculk_vein;multi_face_direction_bits=28
-blockId=-1
+blockId=714
 runtimeId=6781
 
 minecraft:sculk_vein;multi_face_direction_bits=29
-blockId=-1
+blockId=714
 runtimeId=6782
 
 minecraft:sculk_vein;multi_face_direction_bits=30
-blockId=-1
+blockId=714
 runtimeId=6783
 
 minecraft:sculk_vein;multi_face_direction_bits=31
-blockId=-1
+blockId=714
 runtimeId=6784
 
 minecraft:sculk_vein;multi_face_direction_bits=32
-blockId=-1
+blockId=714
 runtimeId=6785
 
 minecraft:sculk_vein;multi_face_direction_bits=33
-blockId=-1
+blockId=714
 runtimeId=6786
 
 minecraft:sculk_vein;multi_face_direction_bits=34
-blockId=-1
+blockId=714
 runtimeId=6787
 
 minecraft:sculk_vein;multi_face_direction_bits=35
-blockId=-1
+blockId=714
 runtimeId=6788
 
 minecraft:sculk_vein;multi_face_direction_bits=36
-blockId=-1
+blockId=714
 runtimeId=6789
 
 minecraft:sculk_vein;multi_face_direction_bits=37
-blockId=-1
+blockId=714
 runtimeId=6790
 
 minecraft:sculk_vein;multi_face_direction_bits=38
-blockId=-1
+blockId=714
 runtimeId=6791
 
 minecraft:sculk_vein;multi_face_direction_bits=39
-blockId=-1
+blockId=714
 runtimeId=6792
 
 minecraft:sculk_vein;multi_face_direction_bits=40
-blockId=-1
+blockId=714
 runtimeId=6793
 
 minecraft:sculk_vein;multi_face_direction_bits=41
-blockId=-1
+blockId=714
 runtimeId=6794
 
 minecraft:sculk_vein;multi_face_direction_bits=42
-blockId=-1
+blockId=714
 runtimeId=6795
 
 minecraft:sculk_vein;multi_face_direction_bits=43
-blockId=-1
+blockId=714
 runtimeId=6796
 
 minecraft:sculk_vein;multi_face_direction_bits=44
-blockId=-1
+blockId=714
 runtimeId=6797
 
 minecraft:sculk_vein;multi_face_direction_bits=45
-blockId=-1
+blockId=714
 runtimeId=6798
 
 minecraft:sculk_vein;multi_face_direction_bits=46
-blockId=-1
+blockId=714
 runtimeId=6799
 
 minecraft:sculk_vein;multi_face_direction_bits=47
-blockId=-1
+blockId=714
 runtimeId=6800
 
 minecraft:sculk_vein;multi_face_direction_bits=48
-blockId=-1
+blockId=714
 runtimeId=6801
 
 minecraft:sculk_vein;multi_face_direction_bits=49
-blockId=-1
+blockId=714
 runtimeId=6802
 
 minecraft:sculk_vein;multi_face_direction_bits=50
-blockId=-1
+blockId=714
 runtimeId=6803
 
 minecraft:sculk_vein;multi_face_direction_bits=51
-blockId=-1
+blockId=714
 runtimeId=6804
 
 minecraft:sculk_vein;multi_face_direction_bits=52
-blockId=-1
+blockId=714
 runtimeId=6805
 
 minecraft:sculk_vein;multi_face_direction_bits=53
-blockId=-1
+blockId=714
 runtimeId=6806
 
 minecraft:sculk_vein;multi_face_direction_bits=54
-blockId=-1
+blockId=714
 runtimeId=6807
 
 minecraft:sculk_vein;multi_face_direction_bits=55
-blockId=-1
+blockId=714
 runtimeId=6808
 
 minecraft:sculk_vein;multi_face_direction_bits=56
-blockId=-1
+blockId=714
 runtimeId=6809
 
 minecraft:sculk_vein;multi_face_direction_bits=57
-blockId=-1
+blockId=714
 runtimeId=6810
 
 minecraft:sculk_vein;multi_face_direction_bits=58
-blockId=-1
+blockId=714
 runtimeId=6811
 
 minecraft:sculk_vein;multi_face_direction_bits=59
-blockId=-1
+blockId=714
 runtimeId=6812
 
 minecraft:sculk_vein;multi_face_direction_bits=60
-blockId=-1
+blockId=714
 runtimeId=6813
 
 minecraft:sculk_vein;multi_face_direction_bits=61
-blockId=-1
+blockId=714
 runtimeId=6814
 
 minecraft:sculk_vein;multi_face_direction_bits=62
-blockId=-1
+blockId=714
 runtimeId=6815
 
 minecraft:sculk_vein;multi_face_direction_bits=63
-blockId=-1
+blockId=714
 runtimeId=6816
 
 minecraft:seaLantern
@@ -28968,43 +29204,123 @@ minecraft:stonecutter_block;facing_direction=5
 blockId=452
 runtimeId=7300
 
+minecraft:stripped_acacia_log;pillar_axis=x
+blockId=263
+runtimeId=7302
+
 minecraft:stripped_acacia_log;pillar_axis=y
+blockId=263
+runtimeId=7301
+
+minecraft:stripped_acacia_log;pillar_axis=z
 blockId=263
 runtimeId=7303
 
+minecraft:stripped_birch_log;pillar_axis=x
+blockId=261
+runtimeId=7305
+
 minecraft:stripped_birch_log;pillar_axis=y
+blockId=261
+runtimeId=7304
+
+minecraft:stripped_birch_log;pillar_axis=z
 blockId=261
 runtimeId=7306
 
+minecraft:stripped_crimson_hyphae;pillar_axis=x
+blockId=555
+runtimeId=7308
+
 minecraft:stripped_crimson_hyphae;pillar_axis=y
+blockId=555
+runtimeId=7307
+
+minecraft:stripped_crimson_hyphae;pillar_axis=z
 blockId=555
 runtimeId=7309
 
+minecraft:stripped_crimson_stem;pillar_axis=x
+blockId=495
+runtimeId=7311
+
 minecraft:stripped_crimson_stem;pillar_axis=y
+blockId=495
+runtimeId=7310
+
+minecraft:stripped_crimson_stem;pillar_axis=z
 blockId=495
 runtimeId=7312
 
+minecraft:stripped_dark_oak_log;pillar_axis=x
+blockId=264
+runtimeId=7314
+
 minecraft:stripped_dark_oak_log;pillar_axis=y
+blockId=264
+runtimeId=7313
+
+minecraft:stripped_dark_oak_log;pillar_axis=z
 blockId=264
 runtimeId=7315
 
+minecraft:stripped_jungle_log;pillar_axis=x
+blockId=262
+runtimeId=7317
+
 minecraft:stripped_jungle_log;pillar_axis=y
+blockId=262
+runtimeId=7316
+
+minecraft:stripped_jungle_log;pillar_axis=z
 blockId=262
 runtimeId=7318
 
+minecraft:stripped_oak_log;pillar_axis=x
+blockId=265
+runtimeId=7320
+
 minecraft:stripped_oak_log;pillar_axis=y
+blockId=265
+runtimeId=7319
+
+minecraft:stripped_oak_log;pillar_axis=z
 blockId=265
 runtimeId=7321
 
+minecraft:stripped_spruce_log;pillar_axis=x
+blockId=260
+runtimeId=7323
+
 minecraft:stripped_spruce_log;pillar_axis=y
+blockId=260
+runtimeId=7322
+
+minecraft:stripped_spruce_log;pillar_axis=z
 blockId=260
 runtimeId=7324
 
+minecraft:stripped_warped_hyphae;pillar_axis=x
+blockId=556
+runtimeId=7326
+
 minecraft:stripped_warped_hyphae;pillar_axis=y
+blockId=556
+runtimeId=7325
+
+minecraft:stripped_warped_hyphae;pillar_axis=z
 blockId=556
 runtimeId=7327
 
+minecraft:stripped_warped_stem;pillar_axis=x
+blockId=496
+runtimeId=7329
+
 minecraft:stripped_warped_stem;pillar_axis=y
+blockId=496
+runtimeId=7328
+
+minecraft:stripped_warped_stem;pillar_axis=z
 blockId=496
 runtimeId=7330
 
@@ -30060,7 +30376,15 @@ minecraft:warped_fungus
 blockId=484
 runtimeId=7593
 
+minecraft:warped_hyphae;pillar_axis=x
+blockId=553
+runtimeId=7595
+
 minecraft:warped_hyphae;pillar_axis=y
+blockId=553
+runtimeId=7594
+
+minecraft:warped_hyphae;pillar_axis=z
 blockId=553
 runtimeId=7596
 
@@ -30244,7 +30568,15 @@ minecraft:warped_standing_sign;ground_sign_direction=15
 blockId=506
 runtimeId=7641
 
+minecraft:warped_stem;pillar_axis=x
+blockId=481
+runtimeId=7643
+
 minecraft:warped_stem;pillar_axis=y
+blockId=481
+runtimeId=7642
+
+minecraft:warped_stem;pillar_axis=z
 blockId=481
 runtimeId=7644
 
@@ -30896,51 +31228,147 @@ minecraft:wither_rose
 blockId=471
 runtimeId=7806
 
+minecraft:wood;wood_type=acacia;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7823
+
 minecraft:wood;wood_type=acacia;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7811
+
+minecraft:wood;wood_type=acacia;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7835
 
+minecraft:wood;wood_type=acacia;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7829
+
 minecraft:wood;wood_type=acacia;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7817
+
+minecraft:wood;wood_type=acacia;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7841
 
+minecraft:wood;wood_type=birch;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7821
+
 minecraft:wood;wood_type=birch;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7809
+
+minecraft:wood;wood_type=birch;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7833
 
+minecraft:wood;wood_type=birch;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7827
+
 minecraft:wood;wood_type=birch;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7815
+
+minecraft:wood;wood_type=birch;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7839
 
+minecraft:wood;wood_type=dark_oak;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7824
+
 minecraft:wood;wood_type=dark_oak;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7812
+
+minecraft:wood;wood_type=dark_oak;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7836
 
+minecraft:wood;wood_type=dark_oak;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7830
+
 minecraft:wood;wood_type=dark_oak;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7818
+
+minecraft:wood;wood_type=dark_oak;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7842
 
+minecraft:wood;wood_type=jungle;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7822
+
 minecraft:wood;wood_type=jungle;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7810
+
+minecraft:wood;wood_type=jungle;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7834
 
+minecraft:wood;wood_type=jungle;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7828
+
 minecraft:wood;wood_type=jungle;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7816
+
+minecraft:wood;wood_type=jungle;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7840
 
+minecraft:wood;wood_type=oak;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7819
+
 minecraft:wood;wood_type=oak;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7807
+
+minecraft:wood;wood_type=oak;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7831
 
+minecraft:wood;wood_type=oak;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7825
+
 minecraft:wood;wood_type=oak;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7813
+
+minecraft:wood;wood_type=oak;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7837
 
+minecraft:wood;wood_type=spruce;stripped_bit=0;pillar_axis=x
+blockId=467
+runtimeId=7820
+
 minecraft:wood;wood_type=spruce;stripped_bit=0;pillar_axis=y
+blockId=467
+runtimeId=7808
+
+minecraft:wood;wood_type=spruce;stripped_bit=0;pillar_axis=z
 blockId=467
 runtimeId=7832
 
+minecraft:wood;wood_type=spruce;stripped_bit=1;pillar_axis=x
+blockId=467
+runtimeId=7826
+
 minecraft:wood;wood_type=spruce;stripped_bit=1;pillar_axis=y
+blockId=467
+runtimeId=7814
+
+minecraft:wood;wood_type=spruce;stripped_bit=1;pillar_axis=z
 blockId=467
 runtimeId=7838
 
