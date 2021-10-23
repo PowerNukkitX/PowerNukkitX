@@ -234,6 +234,10 @@ data/
 data/*
 /src/main/resources/rebel.xml
 /run
+!/src/main/resources/*
+!/src/main/resources/**/*
+!/src/test/resources/*
+!/src/test/resources/**/*
 
 ### Add the codestyle to the repo
 !/.idea/codeStyles

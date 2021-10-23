@@ -154,6 +154,74 @@ public final class BlockState implements Serializable, IBlockState {
             throw new InvalidBlockStateDataTypeException(blockData);
         }
     }
+
+    /**
+     * <p>Returns the {@link BlockState} object that represents the given {@code persistedStateId}.
+     *
+     * <p>Same as {@code of(persistedStateid, true}.
+     *
+     * @param persistedStateId Must follow the same syntax returned by {@link #getStateId()} or {@link #getLegacyStateId()}
+     * @throws InvalidBlockPropertyValueException If any property value in the given {@code persistedStateId} is not valid for the state.
+     *
+     * @return The block state, never null
+     */
+    @Nonnull
+    public static BlockState of(@Nonnull String persistedStateId) {
+        return of(persistedStateId, true);
+    }
+
+    /**
+     * Returns the {@link BlockState} object that represents the given {@code persistedStateId}.
+     *
+     * @param persistedStateId Must follow the same syntax returned by {@link #getStateId()} or {@link #getLegacyStateId()}
+     * @param useDefaultPropertyValues When {@code true}, the default value will be used for any missing {@link BlockProperty}
+     *                                in {@code persistedStateId}.
+     * @throws IllegalArgumentException If {@code useDefaultPropertyValues} is false and there are missing properties
+     * @throws InvalidBlockPropertyValueException If any property value in the given {@code persistedStateId} is not valid for the state.
+     * @throws NoSuchElementException If there are no block registered with the given id.
+     *
+     * @return The block state, never null
+     */
+    @Nonnull
+    public static BlockState of(@Nonnull String persistedStateId, boolean useDefaultPropertyValues) {
+        String[] parts = persistedStateId.split(";");
+        String namespacedId = parts[0];
+        int id = Optional.ofNullable(BlockStateRegistry.getBlockId(namespacedId))
+                .map(OptionalInt::of)
+                .orElse(OptionalInt.empty())
+                .orElseThrow(()-> new NoSuchElementException("Block " + namespacedId + " not found."));
+
+        // Fast path
+        BlockState state = BlockState.of(id);
+        if (parts.length == 1 && useDefaultPropertyValues) {
+            return state;
+        }
+
+        if (parts.length == 1 && state.getPropertyNames().isEmpty()) {
+            return state;
+        }
+
+        if (useDefaultPropertyValues) {
+            for (int i = 1; i < parts.length; i++) {
+                state = state.withProperty(parts[0], parts[1]);
+            }
+            return state;
+        } else {
+            Set<String> defined = new LinkedHashSet<>();
+            Set<String> needed = new LinkedHashSet<>(state.getPropertyNames());
+            for (int i = 1; i < parts.length; i++) {
+                state = state.withProperty(parts[0], parts[1]);
+                defined.add(parts[0]);
+            }
+            needed.removeAll(defined);
+            if (needed.isEmpty()) {
+                return state;
+            }
+            throw new IllegalArgumentException(
+                    "The state id " + persistedStateId + " is missing the following properties: " + needed
+            );
+        }
+    }
     
     @Getter
     @Nonnegative

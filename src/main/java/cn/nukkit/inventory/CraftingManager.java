@@ -320,12 +320,25 @@ public class CraftingManager {
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
 
         int count = data.containsKey("count")? ((Number)data.get("count")).intValue() : 1;
+
+        Item item;
+        if (data.containsKey("blockState")) {
+            try {
+                BlockState state = BlockState.of(data.get("blockState").toString());
+                item = state.asItemBlock(count);
+                item.setCompoundTag(nbtBytes);
+                return item;
+            } catch (Exception e) {
+                log.error("Failed to load the block state {}", data.get("blockState"), e);
+                return Item.getBlock(BlockID.AIR);
+            }
+        }
+
         Integer legacyId = null;
         if (data.containsKey("legacyId")) {
             legacyId = Utils.toInt(data.get("legacyId"));
         }
 
-        Item item;
         if (data.containsKey("blockRuntimeId")) {
             int blockRuntimeId = Utils.toInt(data.get("blockRuntimeId"));
             try {
