@@ -115,11 +115,7 @@ public class BlockStateRegistry {
         //</editor-fold>
         Integer infoUpdateRuntimeId = null;
 
-        // Special cases, these blocks was partially published by Mojang, we must ignore them:
-        Set<String> warned = new HashSet<>(Arrays.asList(
-                "minecraft:sculk", "minecraft:sculk_catalyst",
-                "minecraft:sculk_shrieker", "minecraft:sculk_vein"
-        ));
+        Set<String> warned = new HashSet<>();
 
         for (CompoundTag state : tags) {
             int blockId = state.getInt("blockId");

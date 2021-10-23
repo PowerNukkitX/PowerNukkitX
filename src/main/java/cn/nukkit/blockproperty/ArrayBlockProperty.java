@@ -25,7 +25,10 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     
     @Nonnull
     private final E[] universe;
-    
+
+    /**
+     * Nullable when {@link #ordinal} is {@code true.
+     */
     private final String[] persistenceNames;
     
     private final Class<E> eClass;
@@ -177,7 +180,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
                 validateMetaDirectly(meta);
             } catch (IndexOutOfBoundsException|IllegalArgumentException e) {
                 throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue, 
-                        "Expected a number from 0 to " + persistenceNames.length, e);
+                        "Expected a number from 0 to " + (universe.length - 1), e);
             }
             return meta;
         }
