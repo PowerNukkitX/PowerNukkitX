@@ -197,6 +197,11 @@ public final class BlockState implements Serializable, IBlockState {
             return state;
         }
 
+        if (stateParts.length == 2 && (stateParts[1].startsWith("nukkit-unknown=") || stateParts[1].startsWith("unknown="))) {
+            BigInteger damage = new BigInteger(stateParts[1].split("=", 2)[1]);
+            return BlockState.of(id, damage);
+        }
+
         if (stateParts.length == 1 && state.getPropertyNames().isEmpty()) {
             return state;
         }

@@ -350,11 +350,6 @@ public class CraftingManager {
                     ).anyMatch(name-> blockStateId.split(";", 2)[0].endsWith(name))) {
                 return Item.get(BlockID.AIR);
             }
-            if (blockStateId.startsWith("minecraft:candle"))
-            switch (blockStateId) {
-                case "minecraft:candle;candles=0;lit=0":
-                case "minecraft:cracked_deepslate_bricks":
-            }
             try {
                 BlockState state = BlockState.of(blockStateId);
                 item = state.asItemBlock(count);

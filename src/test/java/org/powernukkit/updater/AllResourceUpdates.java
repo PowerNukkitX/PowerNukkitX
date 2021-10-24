@@ -196,7 +196,7 @@ public class AllResourceUpdates {
                     unknown = true;
                     stateId = BlockStateRegistry.getKnownBlockStateIdByRuntimeId(blockRuntimeId);
                 } else {
-                    stateId = state.getStateId();
+                    stateId = state.getMinimalistStateId();
                 }
             } catch (Exception e) {
                 try {
@@ -308,7 +308,7 @@ public class AllResourceUpdates {
             if (item.getBlock().getId() == BlockID.AIR) {
                 throw new NoSuchElementException("State not found for id: " + itemEntry.get("id") + " : " + damage);
             }
-            stateId = item.getBlock().getStateId();
+            stateId = item.getBlock().getMinimalistStateId();
         }
         if (damage != null && damage == Short.MAX_VALUE) {
             fuzzy = true;

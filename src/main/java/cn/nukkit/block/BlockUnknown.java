@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public class BlockUnknown extends BlockMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final UnsignedIntBlockProperty UNKNOWN = new UnsignedIntBlockProperty("unknown", true, 0xFFFFFFFF);
+    public static final UnsignedIntBlockProperty UNKNOWN = new UnsignedIntBlockProperty("nukkit-unknown", true, 0xFFFFFFFF);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -669,7 +669,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite"
         }
       ],
       "block": "stonecutter",
@@ -685,7 +685,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:andesite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:andesite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -701,7 +701,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=andesite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=andesite"
         }
       ],
       "block": "stonecutter",
@@ -719,7 +719,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:blackstone_slab;top_slot_bit=0"
+          "blockState": "minecraft:blackstone_slab"
         }
       ],
       "block": "stonecutter",
@@ -736,7 +736,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:blackstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:blackstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -753,7 +753,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:blackstone_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:blackstone_wall"
         }
       ],
       "block": "stonecutter",
@@ -770,7 +770,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=brick"
         }
       ],
       "block": "stonecutter",
@@ -788,7 +788,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:polished_blackstone_brick_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_slab"
         }
       ],
       "block": "stonecutter",
@@ -804,7 +804,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -821,7 +821,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -837,7 +837,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=brick"
         }
       ],
       "block": "stonecutter",
@@ -854,7 +854,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_wall"
         }
       ],
       "block": "stonecutter",
@@ -939,7 +939,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=cobblestone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=cobblestone"
         }
       ],
       "block": "stonecutter",
@@ -955,7 +955,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:stone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:stone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -971,7 +971,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=cobblestone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall"
         }
       ],
       "block": "stonecutter",
@@ -1075,7 +1075,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_dark;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_dark"
         }
       ],
       "block": "stonecutter",
@@ -1091,7 +1091,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:dark_prismarine_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:dark_prismarine_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1108,7 +1108,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite"
         }
       ],
       "block": "stonecutter",
@@ -1124,7 +1124,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:diorite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:diorite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1140,7 +1140,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=diorite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=diorite"
         }
       ],
       "block": "stonecutter",
@@ -1157,7 +1157,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone"
         }
       ],
       "block": "stonecutter",
@@ -1174,7 +1174,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=end_stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3"
         }
       ],
       "block": "stonecutter",
@@ -1191,7 +1191,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=end_stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3"
         }
       ],
       "block": "stonecutter",
@@ -1207,7 +1207,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:end_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:end_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1223,7 +1223,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:end_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:end_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1239,7 +1239,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick"
         }
       ],
       "block": "stonecutter",
@@ -1255,7 +1255,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick"
         }
       ],
       "block": "stonecutter",
@@ -1375,7 +1375,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite"
         }
       ],
       "block": "stonecutter",
@@ -1391,7 +1391,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:granite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:granite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1407,7 +1407,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=granite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=granite"
         }
       ],
       "block": "stonecutter",
@@ -1424,7 +1424,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone"
         }
       ],
       "block": "stonecutter",
@@ -1440,7 +1440,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:mossy_cobblestone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:mossy_cobblestone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1456,7 +1456,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_cobblestone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_cobblestone"
         }
       ],
       "block": "stonecutter",
@@ -1473,7 +1473,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=mossy_stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4"
         }
       ],
       "block": "stonecutter",
@@ -1489,7 +1489,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:mossy_stone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:mossy_stone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1505,7 +1505,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick"
         }
       ],
       "block": "stonecutter",
@@ -1522,7 +1522,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick"
         }
       ],
       "block": "stonecutter",
@@ -1538,7 +1538,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:nether_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:nether_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1554,7 +1554,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=nether_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=nether_brick"
         }
       ],
       "block": "stonecutter",
@@ -1674,7 +1674,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite"
         }
       ],
       "block": "stonecutter",
@@ -1691,7 +1691,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite"
         }
       ],
       "block": "stonecutter",
@@ -1707,7 +1707,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_andesite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_andesite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1723,7 +1723,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_andesite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_andesite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1740,7 +1740,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_basalt;pillar_axis=y"
+          "blockState": "minecraft:polished_basalt"
         }
       ],
       "block": "stonecutter",
@@ -1758,7 +1758,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:polished_blackstone_brick_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_slab"
         }
       ],
       "block": "stonecutter",
@@ -1775,7 +1775,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1792,7 +1792,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_wall"
         }
       ],
       "block": "stonecutter",
@@ -1842,7 +1842,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite"
         }
       ],
       "block": "stonecutter",
@@ -1859,7 +1859,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite"
         }
       ],
       "block": "stonecutter",
@@ -1875,7 +1875,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_diorite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_diorite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1891,7 +1891,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_diorite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_diorite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1941,7 +1941,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite"
         }
       ],
       "block": "stonecutter",
@@ -1958,7 +1958,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite"
         }
       ],
       "block": "stonecutter",
@@ -1974,7 +1974,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_granite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_granite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -1990,7 +1990,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_granite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_granite_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2008,7 +2008,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:polished_blackstone_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_slab"
         }
       ],
       "block": "stonecutter",
@@ -2025,7 +2025,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2042,7 +2042,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_wall"
         }
       ],
       "block": "stonecutter",
@@ -2059,7 +2059,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_brick"
         }
       ],
       "block": "stonecutter",
@@ -2075,7 +2075,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:prismarine_bricks_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:prismarine_bricks_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2092,7 +2092,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough"
         }
       ],
       "block": "stonecutter",
@@ -2108,7 +2108,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:prismarine_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:prismarine_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2124,7 +2124,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=prismarine;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=prismarine"
         }
       ],
       "block": "stonecutter",
@@ -2140,7 +2140,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:purpur_block;chisel_type=lines;pillar_axis=y"
+          "blockState": "minecraft:purpur_block;chisel_type=lines"
         }
       ],
       "block": "stonecutter",
@@ -2157,7 +2157,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur"
         }
       ],
       "block": "stonecutter",
@@ -2173,7 +2173,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:purpur_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:purpur_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2205,7 +2205,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=chiseled;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=chiseled"
         }
       ],
       "block": "stonecutter",
@@ -2221,7 +2221,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=lines;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=lines"
         }
       ],
       "block": "stonecutter",
@@ -2238,7 +2238,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=quartz;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=quartz"
         }
       ],
       "block": "stonecutter",
@@ -2254,7 +2254,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:quartz_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:quartz_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2271,7 +2271,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick"
         }
       ],
       "block": "stonecutter",
@@ -2287,7 +2287,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:red_nether_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:red_nether_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2303,7 +2303,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_nether_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_nether_brick"
         }
       ],
       "block": "stonecutter",
@@ -2320,7 +2320,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2"
         }
       ],
       "block": "stonecutter",
@@ -2368,7 +2368,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:red_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:red_sandstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2384,7 +2384,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_sandstone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_sandstone"
         }
       ],
       "block": "stonecutter",
@@ -2401,7 +2401,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone"
         }
       ],
       "block": "stonecutter",
@@ -2449,7 +2449,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:sandstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2465,7 +2465,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=sandstone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=sandstone"
         }
       ],
       "block": "stonecutter",
@@ -2483,7 +2483,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:polished_blackstone_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_slab"
         }
       ],
       "block": "stonecutter",
@@ -2501,7 +2501,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:polished_blackstone_brick_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_slab"
         }
       ],
       "block": "stonecutter",
@@ -2518,7 +2518,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=smooth_stone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab"
         }
       ],
       "block": "stonecutter",
@@ -2529,13 +2529,13 @@
       "type": 0,
       "input": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=smooth"
         }
       ],
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz"
         }
       ],
       "block": "stonecutter",
@@ -2546,12 +2546,12 @@
       "type": 0,
       "input": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=smooth"
         }
       ],
       "output": [
         {
-          "blockState": "minecraft:smooth_quartz_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_quartz_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2568,7 +2568,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone"
         }
       ],
       "block": "stonecutter",
@@ -2584,7 +2584,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:smooth_red_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_red_sandstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2601,7 +2601,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone"
         }
       ],
       "block": "stonecutter",
@@ -2617,7 +2617,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:smooth_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_sandstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2634,7 +2634,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2650,7 +2650,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:normal_stone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:normal_stone_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2666,7 +2666,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:stonebrick;stone_brick_type=default"
+          "blockState": "minecraft:stonebrick"
         }
       ],
       "block": "stonecutter",
@@ -2699,7 +2699,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick"
         }
       ],
       "block": "stonecutter",
@@ -2716,7 +2716,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick"
         }
       ],
       "block": "stonecutter",
@@ -2732,7 +2732,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:stone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:stone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2748,7 +2748,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:stone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:stone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -2764,7 +2764,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick"
         }
       ],
       "block": "stonecutter",
@@ -2780,7 +2780,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick"
         }
       ],
       "block": "stonecutter",
@@ -2797,7 +2797,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_wall"
         }
       ],
       "block": "stonecutter",
@@ -2814,7 +2814,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_wall"
         }
       ],
       "block": "stonecutter",
@@ -3265,7 +3265,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_brick_stairs"
         }
       ],
       "block": "stonecutter",
@@ -3348,7 +3348,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:birch_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:birch_button"
         }
       ],
       "shape": [
@@ -3367,7 +3367,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:dark_oak_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:dark_oak_button"
         }
       ],
       "shape": [
@@ -3386,7 +3386,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:jungle_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:jungle_button"
         }
       ],
       "shape": [
@@ -3405,7 +3405,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:spruce_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:spruce_button"
         }
       ],
       "shape": [
@@ -3425,7 +3425,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:chest;facing_direction=0"
+          "blockState": "minecraft:chest"
         }
       ],
       "shape": [
@@ -3454,7 +3454,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:daylight_detector;redstone_signal=0"
+          "blockState": "minecraft:daylight_detector"
         }
       ],
       "shape": [
@@ -3579,7 +3579,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=cobblestone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=cobblestone"
         }
       ],
       "shape": [
@@ -3599,7 +3599,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick"
         }
       ],
       "shape": [
@@ -3619,7 +3619,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone"
         }
       ],
       "shape": [
@@ -3697,7 +3697,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:acacia_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:acacia_pressure_plate"
         }
       ],
       "shape": [
@@ -3716,7 +3716,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:birch_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:birch_pressure_plate"
         }
       ],
       "shape": [
@@ -3735,7 +3735,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:dark_oak_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:dark_oak_pressure_plate"
         }
       ],
       "shape": [
@@ -3754,7 +3754,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:jungle_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:jungle_pressure_plate"
         }
       ],
       "shape": [
@@ -3773,7 +3773,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:spruce_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:spruce_pressure_plate"
         }
       ],
       "shape": [
@@ -3813,7 +3813,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone"
         }
       ],
       "shape": [
@@ -3833,7 +3833,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=mossy_stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4"
         }
       ],
       "shape": [
@@ -3853,7 +3853,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=brick"
         }
       ],
       "shape": [
@@ -3873,7 +3873,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick"
         }
       ],
       "shape": [
@@ -3893,7 +3893,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=smooth_stone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab"
         }
       ],
       "shape": [
@@ -3918,7 +3918,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:torch;torch_facing_direction=unknown"
+          "blockState": "minecraft:torch"
         }
       ],
       "shape": [
@@ -3943,7 +3943,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:torch;torch_facing_direction=unknown"
+          "blockState": "minecraft:torch"
         }
       ],
       "shape": [
@@ -3964,7 +3964,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:acacia_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:acacia_trapdoor"
         }
       ],
       "shape": [
@@ -3985,7 +3985,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:birch_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:birch_trapdoor"
         }
       ],
       "shape": [
@@ -4006,7 +4006,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:dark_oak_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:dark_oak_trapdoor"
         }
       ],
       "shape": [
@@ -4027,7 +4027,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:jungle_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:jungle_trapdoor"
         }
       ],
       "shape": [
@@ -4048,7 +4048,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:spruce_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:spruce_trapdoor"
         }
       ],
       "shape": [
@@ -4069,7 +4069,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:trapdoor"
         }
       ],
       "shape": [
@@ -4099,7 +4099,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:tripwire_hook;attached_bit=0;direction=0;powered_bit=0"
+          "blockState": "minecraft:tripwire_hook"
         }
       ],
       "shape": [
@@ -4120,7 +4120,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:wooden_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:wooden_button"
         }
       ],
       "shape": [
@@ -4139,7 +4139,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:wooden_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:wooden_pressure_plate"
         }
       ],
       "shape": [
@@ -4180,7 +4180,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:acacia_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:acacia_stairs"
         }
       ],
       "shape": [
@@ -11963,7 +11963,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:birch_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:birch_stairs"
         }
       ],
       "shape": [
@@ -11983,12 +11983,12 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:double_stone_slab;stone_slab_type=quartz;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab;stone_slab_type=quartz"
         }
       },
       "output": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=chiseled;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=chiseled"
         }
       ],
       "shape": [
@@ -12003,7 +12003,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:double_stone_slab;stone_slab_type=stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab;stone_slab_type=stone_brick"
         }
       },
       "output": [
@@ -12033,7 +12033,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:dark_oak_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:dark_oak_stairs"
         }
       ],
       "shape": [
@@ -12073,7 +12073,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:double_stone_slab;stone_slab_type=sandstone;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab;stone_slab_type=sandstone"
         }
       },
       "output": [
@@ -12099,7 +12099,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:jungle_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:jungle_stairs"
         }
       ],
       "shape": [
@@ -12115,12 +12115,12 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:double_stone_slab2;stone_slab_type_2=purpur;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab2;stone_slab_type_2=purpur"
         }
       },
       "output": [
         {
-          "blockState": "minecraft:purpur_block;chisel_type=lines;pillar_axis=y"
+          "blockState": "minecraft:purpur_block;chisel_type=lines"
         }
       ],
       "shape": [
@@ -12145,7 +12145,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:loom;direction=0"
+          "blockState": "minecraft:loom"
         }
       ],
       "shape": [
@@ -12241,7 +12241,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:acacia_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:acacia_fence_gate"
         }
       ],
       "shape": [
@@ -12297,7 +12297,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=acacia"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=acacia"
         }
       },
       "output": [
@@ -12317,7 +12317,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=acacia"
+          "blockState": "minecraft:wood;wood_type=acacia"
         }
       },
       "output": [
@@ -12343,7 +12343,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:acacia_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:acacia_stairs"
         }
       ],
       "shape": [
@@ -12365,7 +12365,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=acacia"
+          "blockState": "minecraft:wood;wood_type=acacia"
         }
       ],
       "shape": [
@@ -12387,7 +12387,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=acacia"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=acacia"
         }
       ],
       "shape": [
@@ -12408,7 +12408,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=acacia"
+          "blockState": "minecraft:wooden_slab;wood_type=acacia"
         }
       ],
       "shape": [
@@ -12437,7 +12437,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:activator_rail;rail_data_bit=0;rail_direction=0"
+          "blockState": "minecraft:activator_rail"
         }
       ],
       "shape": [
@@ -12502,7 +12502,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:andesite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:andesite_stairs"
         }
       ],
       "shape": [
@@ -12524,7 +12524,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=andesite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=andesite"
         }
       ],
       "shape": [
@@ -12549,7 +12549,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:anvil;damage=undamaged;direction=0"
+          "blockState": "minecraft:anvil"
         }
       ],
       "shape": [
@@ -12761,7 +12761,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:barrel;facing_direction=0;open_bit=0"
+          "blockState": "minecraft:barrel"
         }
       ],
       "shape": [
@@ -12787,7 +12787,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:barrel;facing_direction=0;open_bit=0"
+          "blockState": "minecraft:barrel"
         }
       ],
       "shape": [
@@ -12813,7 +12813,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:barrel;facing_direction=0;open_bit=0"
+          "blockState": "minecraft:barrel"
         }
       ],
       "shape": [
@@ -12891,7 +12891,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:beehive;direction=0;honey_level=0"
+          "blockState": "minecraft:beehive"
         }
       ],
       "shape": [
@@ -12917,7 +12917,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:beehive;direction=0;honey_level=0"
+          "blockState": "minecraft:beehive"
         }
       ],
       "shape": [
@@ -12943,7 +12943,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:beehive;direction=0;honey_level=0"
+          "blockState": "minecraft:beehive"
         }
       ],
       "shape": [
@@ -13081,7 +13081,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:birch_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:birch_fence_gate"
         }
       ],
       "shape": [
@@ -13096,7 +13096,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=birch;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=birch"
         }
       },
       "output": [
@@ -13137,7 +13137,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=birch"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=birch"
         }
       },
       "output": [
@@ -13157,7 +13157,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=birch"
+          "blockState": "minecraft:wood;wood_type=birch"
         }
       },
       "output": [
@@ -13183,7 +13183,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:birch_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:birch_stairs"
         }
       ],
       "shape": [
@@ -13199,13 +13199,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=birch;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=birch"
         }
       },
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=birch"
+          "blockState": "minecraft:wood;wood_type=birch"
         }
       ],
       "shape": [
@@ -13227,7 +13227,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=birch"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=birch"
         }
       ],
       "shape": [
@@ -13248,7 +13248,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=birch"
+          "blockState": "minecraft:wooden_slab;wood_type=birch"
         }
       ],
       "shape": [
@@ -13661,7 +13661,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:blackstone_slab;top_slot_bit=0"
+          "blockState": "minecraft:blackstone_slab"
         }
       ],
       "shape": [
@@ -13682,7 +13682,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:blackstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:blackstone_stairs"
         }
       ],
       "shape": [
@@ -13705,7 +13705,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:blackstone_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:blackstone_wall"
         }
       ],
       "shape": [
@@ -13734,7 +13734,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:blast_furnace;facing_direction=0"
+          "blockState": "minecraft:blast_furnace"
         }
       ],
       "shape": [
@@ -14217,7 +14217,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:bone_block;deprecated=0;pillar_axis=y"
+          "blockState": "minecraft:bone_block"
         }
       ],
       "shape": [
@@ -14541,7 +14541,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:brick_stairs"
         }
       ],
       "shape": [
@@ -14564,7 +14564,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=brick"
         }
       ],
       "shape": [
@@ -15847,7 +15847,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:chest;facing_direction=0"
+          "blockState": "minecraft:chest"
         }
       ],
       "shape": [
@@ -15869,7 +15869,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:chest;facing_direction=0"
+          "blockState": "minecraft:chest"
         }
       ],
       "shape": [
@@ -15931,7 +15931,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:double_stone_slab;stone_slab_type=nether_brick;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab;stone_slab_type=nether_brick"
         }
       },
       "output": [
@@ -16159,7 +16159,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:stone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:stone_stairs"
         }
       ],
       "shape": [
@@ -16182,7 +16182,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=cobblestone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -16276,7 +16276,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:composter;composter_fill_level=0"
+          "blockState": "minecraft:composter"
         }
       ],
       "shape": [
@@ -16298,7 +16298,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:composter;composter_fill_level=0"
+          "blockState": "minecraft:composter"
         }
       ],
       "shape": [
@@ -16320,7 +16320,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:composter;composter_fill_level=0"
+          "blockState": "minecraft:composter"
         }
       ],
       "shape": [
@@ -16986,7 +16986,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:crimson_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:crimson_button"
         }
       ],
       "shape": [
@@ -17059,7 +17059,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:crimson_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:crimson_fence_gate"
         }
       ],
       "shape": [
@@ -17081,7 +17081,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:crimson_hyphae;pillar_axis=y"
+          "blockState": "minecraft:crimson_hyphae"
         }
       ],
       "shape": [
@@ -17186,7 +17186,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:crimson_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:crimson_pressure_plate"
         }
       ],
       "shape": [
@@ -17234,7 +17234,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:crimson_slab;top_slot_bit=0"
+          "blockState": "minecraft:crimson_slab"
         }
       ],
       "shape": [
@@ -17255,7 +17255,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:crimson_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:crimson_stairs"
         }
       ],
       "shape": [
@@ -17278,7 +17278,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:crimson_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:crimson_trapdoor"
         }
       ],
       "shape": [
@@ -17695,7 +17695,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:dark_oak_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:dark_oak_fence_gate"
         }
       ],
       "shape": [
@@ -17710,7 +17710,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log2;new_log_type=dark_oak;pillar_axis=y"
+          "blockState": "minecraft:log2;new_log_type=dark_oak"
         }
       },
       "output": [
@@ -17751,7 +17751,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=dark_oak"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=dark_oak"
         }
       },
       "output": [
@@ -17771,7 +17771,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=dark_oak"
+          "blockState": "minecraft:wood;wood_type=dark_oak"
         }
       },
       "output": [
@@ -17797,7 +17797,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:dark_oak_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:dark_oak_stairs"
         }
       ],
       "shape": [
@@ -17813,13 +17813,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log2;new_log_type=dark_oak;pillar_axis=y"
+          "blockState": "minecraft:log2;new_log_type=dark_oak"
         }
       },
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=dark_oak"
+          "blockState": "minecraft:wood;wood_type=dark_oak"
         }
       ],
       "shape": [
@@ -17841,7 +17841,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=dark_oak"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=dark_oak"
         }
       ],
       "shape": [
@@ -17862,7 +17862,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=dark_oak"
+          "blockState": "minecraft:wooden_slab;wood_type=dark_oak"
         }
       ],
       "shape": [
@@ -17941,7 +17941,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:daylight_detector;redstone_signal=0"
+          "blockState": "minecraft:daylight_detector"
         }
       ],
       "shape": [
@@ -17971,7 +17971,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:daylight_detector;redstone_signal=0"
+          "blockState": "minecraft:daylight_detector"
         }
       ],
       "shape": [
@@ -18178,7 +18178,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:detector_rail;rail_data_bit=0;rail_direction=0"
+          "blockState": "minecraft:detector_rail"
         }
       ],
       "shape": [
@@ -18485,7 +18485,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:diorite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:diorite_stairs"
         }
       ],
       "shape": [
@@ -18507,7 +18507,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=diorite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=diorite"
         }
       ],
       "shape": [
@@ -18536,7 +18536,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:dispenser;facing_direction=3;triggered_bit=0"
+          "blockState": "minecraft:dispenser;facing_direction=3"
         }
       ],
       "shape": [
@@ -18647,7 +18647,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:dropper;facing_direction=3;triggered_bit=0"
+          "blockState": "minecraft:dropper;facing_direction=3"
         }
       ],
       "shape": [
@@ -18764,7 +18764,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:end_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:end_brick_stairs"
         }
       ],
       "shape": [
@@ -18787,7 +18787,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=end_brick"
         }
       ],
       "shape": [
@@ -18865,7 +18865,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:end_rod;facing_direction=0"
+          "blockState": "minecraft:end_rod"
         }
       ],
       "shape": [
@@ -18890,7 +18890,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:ender_chest;facing_direction=0"
+          "blockState": "minecraft:ender_chest"
         }
       ],
       "shape": [
@@ -18937,7 +18937,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:fence;wood_type=oak"
+          "blockState": "minecraft:fence"
         }
       ],
       "shape": [
@@ -18961,7 +18961,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:fence_gate"
         }
       ],
       "shape": [
@@ -19153,7 +19153,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:furnace;facing_direction=0"
+          "blockState": "minecraft:furnace"
         }
       ],
       "shape": [
@@ -19175,7 +19175,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:furnace;facing_direction=0"
+          "blockState": "minecraft:furnace"
         }
       ],
       "shape": [
@@ -19197,7 +19197,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:furnace;facing_direction=0"
+          "blockState": "minecraft:furnace"
         }
       ],
       "shape": [
@@ -19618,7 +19618,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:golden_rail;rail_data_bit=0;rail_direction=0"
+          "blockState": "minecraft:golden_rail"
         }
       ],
       "shape": [
@@ -19712,7 +19712,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:granite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:granite_stairs"
         }
       ],
       "shape": [
@@ -19734,7 +19734,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=granite;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=granite"
         }
       ],
       "shape": [
@@ -20325,7 +20325,7 @@
           "fuzzy": true
         },
         "B": {
-          "blockState": "minecraft:double_stone_slab4;stone_slab_type_4=stone;top_slot_bit=0"
+          "blockState": "minecraft:double_stone_slab4;stone_slab_type_4=stone"
         },
         "C": {
           "fuzzy": true,
@@ -20334,7 +20334,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20363,7 +20363,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20392,7 +20392,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20421,7 +20421,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20450,7 +20450,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20479,7 +20479,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20508,7 +20508,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20537,7 +20537,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20566,7 +20566,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:grindstone;attachment=standing;direction=0"
+          "blockState": "minecraft:grindstone"
         }
       ],
       "shape": [
@@ -20587,7 +20587,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:hay_block;deprecated=0;pillar_axis=y"
+          "blockState": "minecraft:hay_block"
         }
       ],
       "shape": [
@@ -20609,7 +20609,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:heavy_weighted_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:heavy_weighted_pressure_plate"
         }
       ],
       "shape": [
@@ -21175,7 +21175,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:iron_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:iron_trapdoor"
         }
       ],
       "shape": [
@@ -21349,7 +21349,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:jungle_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:jungle_fence_gate"
         }
       ],
       "shape": [
@@ -21364,7 +21364,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=jungle;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=jungle"
         }
       },
       "output": [
@@ -21405,7 +21405,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=jungle"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=jungle"
         }
       },
       "output": [
@@ -21425,7 +21425,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=jungle"
+          "blockState": "minecraft:wood;wood_type=jungle"
         }
       },
       "output": [
@@ -21451,7 +21451,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:jungle_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:jungle_stairs"
         }
       ],
       "shape": [
@@ -21467,13 +21467,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=jungle;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=jungle"
         }
       },
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=jungle"
+          "blockState": "minecraft:wood;wood_type=jungle"
         }
       ],
       "shape": [
@@ -21495,7 +21495,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=jungle"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=jungle"
         }
       ],
       "shape": [
@@ -21516,7 +21516,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=jungle"
+          "blockState": "minecraft:wooden_slab;wood_type=jungle"
         }
       ],
       "shape": [
@@ -21537,7 +21537,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:ladder;facing_direction=0"
+          "blockState": "minecraft:ladder"
         }
       ],
       "shape": [
@@ -21563,7 +21563,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lantern;hanging=0"
+          "blockState": "minecraft:lantern"
         }
       ],
       "shape": [
@@ -21789,7 +21789,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lectern;direction=0;powered_bit=0"
+          "blockState": "minecraft:lectern"
         }
       ],
       "shape": [
@@ -21815,7 +21815,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lectern;direction=0;powered_bit=0"
+          "blockState": "minecraft:lectern"
         }
       ],
       "shape": [
@@ -21841,7 +21841,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lectern;direction=0;powered_bit=0"
+          "blockState": "minecraft:lectern"
         }
       ],
       "shape": [
@@ -21867,7 +21867,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lever;lever_direction=down_east_west;open_bit=0"
+          "blockState": "minecraft:lever"
         }
       ],
       "shape": [
@@ -22682,7 +22682,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:light_weighted_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:light_weighted_pressure_plate"
         }
       ],
       "shape": [
@@ -23016,7 +23016,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:lit_pumpkin;direction=0"
+          "blockState": "minecraft:lit_pumpkin"
         }
       ],
       "shape": [
@@ -23093,7 +23093,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:loom;direction=0"
+          "blockState": "minecraft:loom"
         }
       ],
       "shape": [
@@ -23118,7 +23118,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:loom;direction=0"
+          "blockState": "minecraft:loom"
         }
       ],
       "shape": [
@@ -23467,7 +23467,7 @@
       "type": 0,
       "input": [
         {
-          "blockState": "minecraft:double_plant;double_plant_type=syringa;upper_block_bit=0"
+          "blockState": "minecraft:double_plant;double_plant_type=syringa"
         }
       ],
       "output": [
@@ -23807,7 +23807,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:mossy_cobblestone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:mossy_cobblestone_stairs"
         }
       ],
       "shape": [
@@ -23830,7 +23830,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_cobblestone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_cobblestone"
         }
       ],
       "shape": [
@@ -23851,7 +23851,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:mossy_stone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:mossy_stone_brick_stairs"
         }
       ],
       "shape": [
@@ -23873,7 +23873,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick"
         }
       ],
       "shape": [
@@ -24007,7 +24007,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:nether_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:nether_brick_stairs"
         }
       ],
       "shape": [
@@ -24030,7 +24030,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=nether_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=nether_brick"
         }
       ],
       "shape": [
@@ -24213,7 +24213,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:planks;wood_type=oak"
+          "blockState": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24234,7 +24234,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:planks;wood_type=oak"
+          "blockState": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24248,13 +24248,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=oak"
+          "blockState": "minecraft:wood;stripped_bit=1"
         }
       },
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:planks;wood_type=oak"
+          "blockState": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24274,7 +24274,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:planks;wood_type=oak"
+          "blockState": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24294,7 +24294,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:oak_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:oak_stairs"
         }
       ],
       "shape": [
@@ -24316,7 +24316,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=oak"
+          "blockState": "minecraft:wood"
         }
       ],
       "shape": [
@@ -24338,7 +24338,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=oak"
+          "blockState": "minecraft:wood;stripped_bit=1"
         }
       ],
       "shape": [
@@ -24359,7 +24359,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=oak"
+          "blockState": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -24387,7 +24387,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:observer;facing_direction=0;powered_bit=0"
+          "blockState": "minecraft:observer"
         }
       ],
       "shape": [
@@ -24733,7 +24733,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:quartz_block;chisel_type=lines;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=lines"
         }
       ],
       "shape": [
@@ -24910,7 +24910,7 @@
       "type": 0,
       "input": [
         {
-          "blockState": "minecraft:double_plant;double_plant_type=paeonia;upper_block_bit=0"
+          "blockState": "minecraft:double_plant;double_plant_type=paeonia"
         }
       ],
       "output": [
@@ -25165,7 +25165,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_andesite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_andesite_stairs"
         }
       ],
       "shape": [
@@ -25188,7 +25188,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_basalt;pillar_axis=y"
+          "blockState": "minecraft:polished_basalt"
         }
       ],
       "shape": [
@@ -25232,7 +25232,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:polished_blackstone_brick_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_slab"
         }
       ],
       "shape": [
@@ -25253,7 +25253,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_blackstone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_brick_stairs"
         }
       ],
       "shape": [
@@ -25276,7 +25276,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_brick_wall"
         }
       ],
       "shape": [
@@ -25319,7 +25319,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:polished_blackstone_button"
         }
       ],
       "shape": [
@@ -25339,7 +25339,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:polished_blackstone_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:polished_blackstone_pressure_plate"
         }
       ],
       "shape": [
@@ -25360,7 +25360,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:polished_blackstone_slab;top_slot_bit=0"
+          "blockState": "minecraft:polished_blackstone_slab"
         }
       ],
       "shape": [
@@ -25381,7 +25381,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_blackstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_blackstone_stairs"
         }
       ],
       "shape": [
@@ -25404,7 +25404,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:polished_blackstone_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:polished_blackstone_wall"
         }
       ],
       "shape": [
@@ -25534,7 +25534,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_diorite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_diorite_stairs"
         }
       ],
       "shape": [
@@ -25577,7 +25577,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:polished_granite_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:polished_granite_stairs"
         }
       ],
       "shape": [
@@ -25599,7 +25599,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:prismarine;prismarine_block_type=default"
+          "blockState": "minecraft:prismarine"
         }
       ],
       "shape": [
@@ -25642,7 +25642,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:prismarine_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:prismarine_stairs"
         }
       ],
       "shape": [
@@ -25664,7 +25664,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:prismarine_bricks_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:prismarine_bricks_stairs"
         }
       ],
       "shape": [
@@ -25686,7 +25686,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:dark_prismarine_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:dark_prismarine_stairs"
         }
       ],
       "shape": [
@@ -25708,7 +25708,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=prismarine;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=prismarine"
         }
       ],
       "shape": [
@@ -26063,7 +26063,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:purpur_block;chisel_type=default;pillar_axis=y"
+          "blockState": "minecraft:purpur_block"
         }
       ],
       "shape": [
@@ -26085,7 +26085,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:purpur_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:purpur_stairs"
         }
       ],
       "shape": [
@@ -26107,7 +26107,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:quartz_block;chisel_type=default;pillar_axis=y"
+          "blockState": "minecraft:quartz_block"
         }
       ],
       "shape": [
@@ -26148,7 +26148,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:quartz_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:quartz_stairs"
         }
       ],
       "shape": [
@@ -26241,7 +26241,7 @@
       "output": [
         {
           "count": 16,
-          "blockState": "minecraft:rail;rail_direction=0"
+          "blockState": "minecraft:rail"
         }
       ],
       "shape": [
@@ -26566,7 +26566,7 @@
       "type": 0,
       "input": [
         {
-          "blockState": "minecraft:double_plant;double_plant_type=rose;upper_block_bit=0"
+          "blockState": "minecraft:double_plant;double_plant_type=rose"
         }
       ],
       "output": [
@@ -26633,7 +26633,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:red_nether_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:red_nether_brick_stairs"
         }
       ],
       "shape": [
@@ -26656,7 +26656,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_nether_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_nether_brick"
         }
       ],
       "shape": [
@@ -26676,7 +26676,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:red_sandstone;sand_stone_type=default"
+          "blockState": "minecraft:red_sandstone"
         }
       ],
       "shape": [
@@ -26697,7 +26697,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:red_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:red_sandstone_stairs"
         }
       ],
       "shape": [
@@ -26719,7 +26719,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_sandstone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=red_sandstone"
         }
       ],
       "shape": [
@@ -26915,7 +26915,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:redstone_torch;torch_facing_direction=unknown"
+          "blockState": "minecraft:redstone_torch"
         }
       ],
       "shape": [
@@ -26968,7 +26968,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:respawn_anchor;respawn_anchor_charge=0"
+          "blockState": "minecraft:respawn_anchor"
         }
       ],
       "shape": [
@@ -26989,7 +26989,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:sandstone;sand_stone_type=default"
+          "blockState": "minecraft:sandstone"
         }
       ],
       "shape": [
@@ -27010,7 +27010,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:sandstone_stairs"
         }
       ],
       "shape": [
@@ -27032,7 +27032,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=sandstone;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=sandstone"
         }
       ],
       "shape": [
@@ -27058,7 +27058,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:scaffolding;stability=0;stability_check=0"
+          "blockState": "minecraft:scaffolding"
         }
       ],
       "shape": [
@@ -27512,7 +27512,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27538,7 +27538,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27564,7 +27564,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27590,7 +27590,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27616,7 +27616,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27642,7 +27642,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27668,7 +27668,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27694,7 +27694,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27720,7 +27720,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27746,7 +27746,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27772,7 +27772,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27798,7 +27798,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:smoker;facing_direction=0"
+          "blockState": "minecraft:smoker"
         }
       ],
       "shape": [
@@ -27814,13 +27814,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=smooth"
         }
       },
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:smooth_quartz_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_quartz_stairs"
         }
       ],
       "shape": [
@@ -27863,7 +27863,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:smooth_red_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_red_sandstone_stairs"
         }
       ],
       "shape": [
@@ -27906,7 +27906,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:smooth_sandstone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:smooth_sandstone_stairs"
         }
       ],
       "shape": [
@@ -27950,7 +27950,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:snow_layer;covered_bit=0;height=0"
+          "blockState": "minecraft:snow_layer"
         }
       ],
       "shape": [
@@ -28754,7 +28754,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:soul_lantern;hanging=0"
+          "blockState": "minecraft:soul_lantern"
         }
       ],
       "shape": [
@@ -28784,7 +28784,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:soul_torch;torch_facing_direction=unknown"
+          "blockState": "minecraft:soul_torch"
         }
       ],
       "shape": [
@@ -28814,7 +28814,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:soul_torch;torch_facing_direction=unknown"
+          "blockState": "minecraft:soul_torch"
         }
       ],
       "shape": [
@@ -28937,7 +28937,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:spruce_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:spruce_fence_gate"
         }
       ],
       "shape": [
@@ -28952,7 +28952,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=spruce;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=spruce"
         }
       },
       "output": [
@@ -28993,7 +28993,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=spruce"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=spruce"
         }
       },
       "output": [
@@ -29013,7 +29013,7 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=spruce"
+          "blockState": "minecraft:wood;wood_type=spruce"
         }
       },
       "output": [
@@ -29039,7 +29039,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:spruce_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:spruce_stairs"
         }
       ],
       "shape": [
@@ -29055,13 +29055,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:log;old_log_type=spruce;pillar_axis=y"
+          "blockState": "minecraft:log;old_log_type=spruce"
         }
       },
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=spruce"
+          "blockState": "minecraft:wood;wood_type=spruce"
         }
       ],
       "shape": [
@@ -29083,7 +29083,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=spruce"
+          "blockState": "minecraft:wood;stripped_bit=1;wood_type=spruce"
         }
       ],
       "shape": [
@@ -29104,7 +29104,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:wooden_slab;top_slot_bit=0;wood_type=spruce"
+          "blockState": "minecraft:wooden_slab;wood_type=spruce"
         }
       ],
       "shape": [
@@ -29300,7 +29300,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:stone_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:stone_brick_stairs"
         }
       ],
       "shape": [
@@ -29322,7 +29322,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+          "blockState": "minecraft:cobblestone_wall;wall_block_type=stone_brick"
         }
       ],
       "shape": [
@@ -29342,7 +29342,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:stone_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:stone_button"
         }
       ],
       "shape": [
@@ -29517,7 +29517,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:stone_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:stone_pressure_plate"
         }
       ],
       "shape": [
@@ -29615,7 +29615,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:normal_stone_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:normal_stone_stairs"
         }
       ],
       "shape": [
@@ -29715,7 +29715,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:stonebrick;stone_brick_type=default"
+          "blockState": "minecraft:stonebrick"
         }
       ],
       "shape": [
@@ -29740,7 +29740,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:stonecutter_block;facing_direction=0"
+          "blockState": "minecraft:stonecutter_block"
         }
       ],
       "shape": [
@@ -29761,7 +29761,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "shape": [
@@ -29783,7 +29783,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:stripped_crimson_hyphae;pillar_axis=y"
+          "blockState": "minecraft:stripped_crimson_hyphae"
         }
       ],
       "shape": [
@@ -29805,7 +29805,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:stripped_warped_hyphae;pillar_axis=y"
+          "blockState": "minecraft:stripped_warped_hyphae"
         }
       ],
       "shape": [
@@ -30282,7 +30282,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:tnt;allow_underwater_bit=0;explode_bit=0"
+          "blockState": "minecraft:tnt"
         }
       ],
       "shape": [
@@ -30332,7 +30332,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:trapped_chest;facing_direction=0"
+          "blockState": "minecraft:trapped_chest"
         }
       ],
       "block": "crafting_table",
@@ -30357,7 +30357,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:tripwire_hook;attached_bit=0;direction=0;powered_bit=0"
+          "blockState": "minecraft:tripwire_hook"
         }
       ],
       "shape": [
@@ -30387,7 +30387,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:tripwire_hook;attached_bit=0;direction=0;powered_bit=0"
+          "blockState": "minecraft:tripwire_hook"
         }
       ],
       "shape": [
@@ -30430,7 +30430,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:warped_button;button_pressed_bit=0;facing_direction=0"
+          "blockState": "minecraft:warped_button"
         }
       ],
       "shape": [
@@ -30503,7 +30503,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:warped_fence_gate;direction=0;in_wall_bit=0;open_bit=0"
+          "blockState": "minecraft:warped_fence_gate"
         }
       ],
       "shape": [
@@ -30550,7 +30550,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:warped_hyphae;pillar_axis=y"
+          "blockState": "minecraft:warped_hyphae"
         }
       ],
       "shape": [
@@ -30655,7 +30655,7 @@
       },
       "output": [
         {
-          "blockState": "minecraft:warped_pressure_plate;redstone_signal=0"
+          "blockState": "minecraft:warped_pressure_plate"
         }
       ],
       "shape": [
@@ -30703,7 +30703,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:warped_slab;top_slot_bit=0"
+          "blockState": "minecraft:warped_slab"
         }
       ],
       "shape": [
@@ -30724,7 +30724,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:warped_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:warped_stairs"
         }
       ],
       "shape": [
@@ -30747,7 +30747,7 @@
       "output": [
         {
           "count": 2,
-          "blockState": "minecraft:warped_trapdoor;direction=0;open_bit=0;upside_down_bit=0"
+          "blockState": "minecraft:warped_trapdoor"
         }
       ],
       "shape": [
@@ -31193,7 +31193,7 @@
       "output": [
         {
           "count": 3,
-          "blockState": "minecraft:carpet;color=white"
+          "blockState": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -31242,7 +31242,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:concretepowder;color=white"
+          "blockState": "minecraft:concretepowder"
         }
       ],
       "block": "crafting_table",
@@ -31288,7 +31288,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:concretepowder;color=white"
+          "blockState": "minecraft:concretepowder"
         }
       ],
       "block": "crafting_table",
@@ -31345,7 +31345,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:stained_glass;color=white"
+          "blockState": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -31372,7 +31372,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:stained_glass;color=white"
+          "blockState": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -31394,7 +31394,7 @@
       "output": [
         {
           "count": 16,
-          "blockState": "minecraft:stained_glass_pane;color=white"
+          "blockState": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -31420,7 +31420,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:stained_glass_pane;color=white"
+          "blockState": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -31447,7 +31447,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:stained_hardened_clay;color=white"
+          "blockState": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -31474,7 +31474,7 @@
       "output": [
         {
           "count": 8,
-          "blockState": "minecraft:stained_hardened_clay;color=white"
+          "blockState": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -32078,7 +32078,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:oak_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:oak_stairs"
         }
       ],
       "shape": [
@@ -34926,7 +34926,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -34946,7 +34946,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -34966,7 +34966,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -34986,7 +34986,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35006,7 +35006,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35026,7 +35026,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35046,7 +35046,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35066,7 +35066,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35086,7 +35086,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35106,7 +35106,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35126,7 +35126,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35146,7 +35146,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35166,7 +35166,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35186,7 +35186,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -35206,7 +35206,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36126,7 +36126,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36146,7 +36146,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36166,7 +36166,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36186,7 +36186,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36206,7 +36206,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36226,7 +36226,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36246,7 +36246,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36266,7 +36266,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36286,7 +36286,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36306,7 +36306,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36326,7 +36326,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36346,7 +36346,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36366,7 +36366,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36386,7 +36386,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -36406,7 +36406,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -39246,7 +39246,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -39326,7 +39326,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:shulker_box;color=white"
+          "blockState": "minecraft:shulker_box"
         }
       ],
       "block": "crafting_table",
@@ -39523,7 +39523,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=end_stone_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3"
         }
       ],
       "shape": [
@@ -39543,7 +39543,7 @@
       "output": [
         {
           "count": 4,
-          "blockState": "minecraft:spruce_stairs;upside_down_bit=0;weirdo_direction=0"
+          "blockState": "minecraft:spruce_stairs"
         }
       ],
       "shape": [
@@ -39587,7 +39587,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2"
         }
       ],
       "shape": [
@@ -39607,7 +39607,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_brick"
         }
       ],
       "shape": [
@@ -39627,7 +39627,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_dark;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_dark"
         }
       ],
       "shape": [
@@ -39647,7 +39647,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur"
         }
       ],
       "shape": [
@@ -39667,7 +39667,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone"
         }
       ],
       "shape": [
@@ -39687,7 +39687,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick"
         }
       ],
       "shape": [
@@ -39707,7 +39707,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2"
         }
       ],
       "shape": [
@@ -39727,7 +39727,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone"
         }
       ],
       "shape": [
@@ -39747,7 +39747,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite"
         }
       ],
       "shape": [
@@ -39767,7 +39767,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite"
         }
       ],
       "shape": [
@@ -39787,7 +39787,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite"
         }
       ],
       "shape": [
@@ -39807,7 +39807,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite"
         }
       ],
       "shape": [
@@ -39827,7 +39827,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite"
         }
       ],
       "shape": [
@@ -39847,7 +39847,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite"
         }
       ],
       "shape": [
@@ -39867,7 +39867,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone"
         }
       ],
       "shape": [
@@ -39887,7 +39887,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_red_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_red_sandstone"
         }
       ],
       "shape": [
@@ -39907,7 +39907,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_sandstone"
         }
       ],
       "shape": [
@@ -39921,13 +39921,13 @@
       "type": 1,
       "input": {
         "A": {
-          "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=y"
+          "blockState": "minecraft:quartz_block;chisel_type=smooth"
         }
       },
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz"
         }
       ],
       "shape": [
@@ -39947,7 +39947,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=quartz;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=quartz"
         }
       ],
       "shape": [
@@ -39967,7 +39967,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough"
         }
       ],
       "shape": [
@@ -39987,7 +39987,7 @@
       "output": [
         {
           "count": 6,
-          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone;top_slot_bit=0"
+          "blockState": "minecraft:stone_slab;stone_slab_type=sandstone"
         }
       ],
       "shape": [
@@ -42970,7 +42970,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -42990,7 +42990,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43010,7 +43010,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43030,7 +43030,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43050,7 +43050,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43070,7 +43070,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43090,7 +43090,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43110,7 +43110,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43130,7 +43130,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43150,7 +43150,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43170,7 +43170,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43190,7 +43190,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43210,7 +43210,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43230,7 +43230,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -43250,7 +43250,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44170,7 +44170,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44190,7 +44190,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44210,7 +44210,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44230,7 +44230,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44250,7 +44250,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44270,7 +44270,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44290,7 +44290,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44310,7 +44310,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44330,7 +44330,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44350,7 +44350,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44370,7 +44370,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44390,7 +44390,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44410,7 +44410,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44430,7 +44430,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -44450,7 +44450,7 @@
       ],
       "output": [
         {
-          "blockState": "minecraft:wool;color=white"
+          "blockState": "minecraft:wool"
         }
       ],
       "block": "crafting_table",
@@ -47491,7 +47491,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=spruce"
+        "blockState": "minecraft:wood;wood_type=spruce"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47502,7 +47502,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=birch"
+        "blockState": "minecraft:wood;wood_type=birch"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47513,7 +47513,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=jungle"
+        "blockState": "minecraft:wood;wood_type=jungle"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47524,7 +47524,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=acacia"
+        "blockState": "minecraft:wood;wood_type=acacia"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47535,7 +47535,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=0;wood_type=dark_oak"
+        "blockState": "minecraft:wood;wood_type=dark_oak"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47546,7 +47546,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=oak"
+        "blockState": "minecraft:wood;stripped_bit=1"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47557,7 +47557,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=spruce"
+        "blockState": "minecraft:wood;stripped_bit=1;wood_type=spruce"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47568,7 +47568,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=birch"
+        "blockState": "minecraft:wood;stripped_bit=1;wood_type=birch"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47579,7 +47579,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=jungle"
+        "blockState": "minecraft:wood;stripped_bit=1;wood_type=jungle"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47590,7 +47590,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=acacia"
+        "blockState": "minecraft:wood;stripped_bit=1;wood_type=acacia"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47601,7 +47601,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:wood;pillar_axis=y;stripped_bit=1;wood_type=dark_oak"
+        "blockState": "minecraft:wood;stripped_bit=1;wood_type=dark_oak"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47710,7 +47710,7 @@
         "blockState": "minecraft:cobblestone"
       },
       "output": {
-        "blockState": "minecraft:stone;stone_type=stone"
+        "blockState": "minecraft:stone"
       },
       "block": "furnace"
     },
@@ -47809,7 +47809,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:log;old_log_type=spruce;pillar_axis=y"
+        "blockState": "minecraft:log;old_log_type=spruce"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47820,7 +47820,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:log;old_log_type=birch;pillar_axis=y"
+        "blockState": "minecraft:log;old_log_type=birch"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47831,7 +47831,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:log;old_log_type=jungle;pillar_axis=y"
+        "blockState": "minecraft:log;old_log_type=jungle"
       },
       "output": {
         "id": "minecraft:charcoal",
@@ -47845,7 +47845,7 @@
         "blockState": "minecraft:sponge;sponge_type=wet"
       },
       "output": {
-        "blockState": "minecraft:sponge;sponge_type=dry"
+        "blockState": "minecraft:sponge"
       },
       "block": "furnace"
     },
@@ -48042,7 +48042,7 @@
         "blockState": "minecraft:quartz_block"
       },
       "output": {
-        "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=y"
+        "blockState": "minecraft:quartz_block;chisel_type=smooth"
       },
       "block": "furnace"
     },
@@ -48052,7 +48052,7 @@
         "blockState": "minecraft:stained_hardened_clay"
       },
       "output": {
-        "blockState": "minecraft:white_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:white_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48062,7 +48062,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=orange"
       },
       "output": {
-        "blockState": "minecraft:orange_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:orange_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48072,7 +48072,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=magenta"
       },
       "output": {
-        "blockState": "minecraft:magenta_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:magenta_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48082,7 +48082,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=light_blue"
       },
       "output": {
-        "blockState": "minecraft:light_blue_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:light_blue_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48092,7 +48092,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=yellow"
       },
       "output": {
-        "blockState": "minecraft:yellow_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:yellow_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48102,7 +48102,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=lime"
       },
       "output": {
-        "blockState": "minecraft:lime_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:lime_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48112,7 +48112,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=pink"
       },
       "output": {
-        "blockState": "minecraft:pink_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:pink_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48122,7 +48122,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=gray"
       },
       "output": {
-        "blockState": "minecraft:gray_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:gray_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48132,7 +48132,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=silver"
       },
       "output": {
-        "blockState": "minecraft:silver_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:silver_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48142,7 +48142,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=cyan"
       },
       "output": {
-        "blockState": "minecraft:cyan_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:cyan_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48152,7 +48152,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=purple"
       },
       "output": {
-        "blockState": "minecraft:purple_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:purple_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48162,7 +48162,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=blue"
       },
       "output": {
-        "blockState": "minecraft:blue_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:blue_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48172,7 +48172,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=brown"
       },
       "output": {
-        "blockState": "minecraft:brown_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:brown_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48182,7 +48182,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=green"
       },
       "output": {
-        "blockState": "minecraft:green_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:green_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48192,7 +48192,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=red"
       },
       "output": {
-        "blockState": "minecraft:red_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:red_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48202,7 +48202,7 @@
         "blockState": "minecraft:stained_hardened_clay;color=black"
       },
       "output": {
-        "blockState": "minecraft:black_glazed_terracotta;facing_direction=0"
+        "blockState": "minecraft:black_glazed_terracotta"
       },
       "block": "furnace"
     },
@@ -48220,7 +48220,7 @@
     {
       "type": 3,
       "input": {
-        "blockState": "minecraft:log2;new_log_type=dark_oak;pillar_axis=y"
+        "blockState": "minecraft:log2;new_log_type=dark_oak"
       },
       "output": {
         "id": "minecraft:charcoal",
