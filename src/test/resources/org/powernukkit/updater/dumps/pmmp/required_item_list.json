@@ -303,14 +303,6 @@
         "runtime_id": -441,
         "component_based": false
     },
-    "minecraft:blue_candle": {
-        "runtime_id": -424,
-        "component_based": false
-    },
-    "minecraft:blue_candle_cake": {
-        "runtime_id": -441,
-        "component_based": false
-    },
     "minecraft:blue_dye": {
         "runtime_id": 399,
         "component_based": false

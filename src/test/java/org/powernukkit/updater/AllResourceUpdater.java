@@ -14,7 +14,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import io.netty.util.internal.EmptyArrays;
+import lombok.SneakyThrows;
 import lombok.var;
+import org.powernukkit.dumps.ItemIdDumper;
+import org.powernukkit.dumps.RuntimeBlockStateDumper;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,34 +30,17 @@ import java.util.*;
  * @author joserobjr
  * @since 2021-10-23
  */
-public class AllResourceUpdates {
+public class AllResourceUpdater {
     public static void main(String[] args) {
         /*
         Pre-requisites:
-        - Download: https://github.com/pmmp/BedrockData/blob/master/canonical_block_states.nbt
-            into: src/main/resources/canonical_block_states.nbt
-        - Download: https://github.com/pmmp/BedrockData/blob/master/required_item_list.json
-            into: src/test/resources/org/powernukkit/updater/dumps/pmmp/required_item_list.json
-        - Run ProxyPass with export-data in config.yml set to true, the proxy pass must be
-            pointing to a vanilla BDS server from https://www.minecraft.net/en-us/download/server/bedrock
-        - Connect to the ProxyPass server with the last Minecraft Bedrock Edition client
-        - Copy data/biome_definitions.dat from the proxy pass dump
-            into: src/main/resources/biome_definitions.dat
-        - Copy data/entity_identifiers.dat from the proxy pass dump
-            into: src/main/resources/entity_identifiers.dat
-        - Copy data/creativeitems.json from the proxy pass dump
-            into: src/main/resources/creativeitems.json
-        - Copy data/runtime_item_states.json from the proxy pass dump
-            into: src/test/resources/org/powernukkit/updater/dumps/proxypass/runtime_item_states.json
-        - Copy data/recipes.json from the proxy pass dump
-            into: src/test/resources/org/powernukkit/updater/dumps/proxypass/runtime_item_states.json
-        - Run src/test/java/org/powernukkit/tools/RuntimeItemIdUpdater.java
-        - Run src/test/java/org/powernukkit/dumps/ItemIdDumper.java
-        - Run src/test/java/org/powernukkit/dumps/RuntimeBlockStateDumper.java
+        - Run src/test/java/org/powernukkit/updater/AllResourcesDownloader.java
+        - Run mvn clean package
+        - Run src/test/java/org/powernukkit/updater/RuntimeItemIdUpdater.java
+        - Run mvn clean package
          */
-
         try {
-            new AllResourceUpdates().execute();
+            new AllResourceUpdater().execute();
         } catch (Throwable e) {
             e.printStackTrace();
             System.exit(1);
@@ -69,7 +56,10 @@ public class AllResourceUpdates {
                 return new JsonPrimitive(src);
             }).create();
 
+    @SneakyThrows
     private void execute() {
+        ItemIdDumper.main(EmptyArrays.EMPTY_STRINGS);
+        RuntimeBlockStateDumper.main(EmptyArrays.EMPTY_STRINGS);
         init();
         updateRecipes();
         updateCreativeItems();

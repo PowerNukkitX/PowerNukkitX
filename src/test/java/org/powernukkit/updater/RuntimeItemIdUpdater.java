@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.powernukkit.tools;
+package org.powernukkit.updater;
 
 import cn.nukkit.Server;
 import com.google.gson.*;
@@ -34,6 +34,11 @@ import java.util.Objects;
 
 public class RuntimeItemIdUpdater {
     public static void main(String[] args) throws IOException {
+        /*
+        Pre-requisites:
+        - Run src/test/java/org/powernukkit/updater/AllResourcesDownloader.java
+        - Run mvn clean package
+         */
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
@@ -75,6 +80,7 @@ public class RuntimeItemIdUpdater {
         ) {
             gson.toJson(runtimeItems, LIST, bufferedWriter);
         }
+        System.out.println("OK");
     }
 
     private static Type LIST = new TypeToken<List<RuntimeItem>>(){}.getType();
