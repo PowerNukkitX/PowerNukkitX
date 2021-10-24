@@ -8,6 +8,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -15,6 +16,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.HumanStringComparator;
 import com.google.common.base.Preconditions;
+import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AllArgsConstructor;
@@ -58,6 +60,8 @@ public class BlockStateRegistry {
     
     private final byte[] blockPaletteBytes;
 
+    private final List<String> knownStateIds;
+
     //<editor-fold desc="static initialization" defaultstate="collapsed">
     static {
 
@@ -95,6 +99,7 @@ public class BlockStateRegistry {
 
         //<editor-fold desc="Loading canonical_block_states.nbt" defaultstate="collapsed">
         List<CompoundTag> tags = new ArrayList<>();
+        List<String> loadingKnownStateIds = new ArrayList<>();
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
@@ -107,8 +112,10 @@ public class BlockStateRegistry {
                     tag.putInt("runtimeId", runtimeId++);
                     tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1));
                     tags.add(tag);
+                    loadingKnownStateIds.add(getStateId(tag));
                 }
             }
+            knownStateIds = Arrays.asList(loadingKnownStateIds.toArray(EmptyArrays.EMPTY_STRINGS));
         } catch (IOException e) {
             throw new AssertionError(e);
         }
@@ -152,7 +159,7 @@ public class BlockStateRegistry {
         
     }
     //</editor-fold>
-    
+
     private boolean isNameOwnerOfId(String name, int blockId) {
         return blockId != -1 && !name.equals("minecraft:wood") || blockId == BlockID.WOOD_BARK;
     }
@@ -174,6 +181,22 @@ public class BlockStateRegistry {
     @Nullable
     private static Registration findRegistrationByRuntimeId(int runtimeId) {
         return runtimeIdRegistration.get(runtimeId);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nullable
+    public String getKnownBlockStateIdByRuntimeId(int runtimeId) {
+        if (runtimeId >= 0 && runtimeId < knownStateIds.size()) {
+            return knownStateIds.get(runtimeId);
+        }
+        return null;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public int getKnownRuntimeIdByBlockStateId(String stateId) {
+        return knownStateIds.indexOf(stateId);
     }
 
     /**
@@ -218,6 +241,40 @@ public class BlockStateRegistry {
         }
         
         return state;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public int getBlockIdByRuntimeId(int runtimeId) {
+        Registration registration = findRegistrationByRuntimeId(runtimeId);
+        if (registration == null) {
+            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+        }
+        BlockState state = registration.state;
+        if (state != null) {
+            return state.getBlockId();
+        }
+        CompoundTag originalBlock = registration.originalBlock;
+        if (originalBlock == null) {
+            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+        }
+        try {
+            state = buildStateFromCompound(originalBlock);
+        } catch (BlockPropertyNotFoundException e) {
+            String name = originalBlock.getString("name").toLowerCase(Locale.ENGLISH);
+            Integer id = getBlockId(name);
+            if (id == null) {
+                throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+            }
+            return id;
+        }
+        if (state != null) {
+            registration.state = state;
+            registration.originalBlock = null;
+        } else {
+            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+        }
+        return state.getBlockId();
     }
 
     @PowerNukkitOnly

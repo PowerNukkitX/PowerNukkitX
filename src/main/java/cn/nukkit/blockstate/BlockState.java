@@ -184,8 +184,8 @@ public final class BlockState implements Serializable, IBlockState {
      */
     @Nonnull
     public static BlockState of(@Nonnull String persistedStateId, boolean useDefaultPropertyValues) {
-        String[] parts = persistedStateId.split(";");
-        String namespacedId = parts[0];
+        String[] stateParts = persistedStateId.split(";");
+        String namespacedId = stateParts[0];
         int id = Optional.ofNullable(BlockStateRegistry.getBlockId(namespacedId))
                 .map(OptionalInt::of)
                 .orElse(OptionalInt.empty())
@@ -193,25 +193,27 @@ public final class BlockState implements Serializable, IBlockState {
 
         // Fast path
         BlockState state = BlockState.of(id);
-        if (parts.length == 1 && useDefaultPropertyValues) {
+        if (stateParts.length == 1 && useDefaultPropertyValues) {
             return state;
         }
 
-        if (parts.length == 1 && state.getPropertyNames().isEmpty()) {
+        if (stateParts.length == 1 && state.getPropertyNames().isEmpty()) {
             return state;
         }
 
         if (useDefaultPropertyValues) {
-            for (int i = 1; i < parts.length; i++) {
-                state = state.withProperty(parts[0], parts[1]);
+            for (int i = 1; i < stateParts.length; i++) {
+                String[] propertyKeyValue = stateParts[i].split("=", 2);
+                state = state.withProperty(propertyKeyValue[0], propertyKeyValue[1]);
             }
             return state;
         } else {
             Set<String> defined = new LinkedHashSet<>();
             Set<String> needed = new LinkedHashSet<>(state.getPropertyNames());
-            for (int i = 1; i < parts.length; i++) {
-                state = state.withProperty(parts[0], parts[1]);
-                defined.add(parts[0]);
+            for (int i = 1; i < stateParts.length; i++) {
+                String[] propertyKeyValue = stateParts[i].split("=", 2);
+                state = state.withProperty(propertyKeyValue[0], propertyKeyValue[1]);
+                defined.add(propertyKeyValue[0]);
             }
             needed.removeAll(defined);
             if (needed.isEmpty()) {
