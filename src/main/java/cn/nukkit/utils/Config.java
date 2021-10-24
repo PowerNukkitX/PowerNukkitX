@@ -245,7 +245,7 @@ public class Config {
         if (!this.correct) {
             return false;
         }
-        save0(async, new StringBuilder(gson.toJson(this.config)));
+        save0(async, new StringBuilder(gson.toJson(this.config)).append('\n'));
         return true;
     }
 

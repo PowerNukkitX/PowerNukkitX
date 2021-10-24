@@ -15,8 +15,10 @@ import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -38,13 +40,17 @@ public class RuntimeItems {
 
     static {
         log.debug("Loading runtime items...");
-        InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
-        if (stream == null) {
-            throw new AssertionError("Unable to load runtime_item_ids.json");
-        }
+        Collection<Entry> entries;
+        try(InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json")) {
+            if (stream == null) {
+                throw new AssertionError("Unable to load runtime_item_ids.json");
+            }
 
-        InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-        Collection<Entry> entries = GSON.fromJson(reader, ENTRY_TYPE);
+            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            entries = GSON.fromJson(reader, ENTRY_TYPE);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
         BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(entries.size());

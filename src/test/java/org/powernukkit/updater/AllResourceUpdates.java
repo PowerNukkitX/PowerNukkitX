@@ -1,6 +1,7 @@
 package org.powernukkit.updater;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -51,24 +52,32 @@ public class AllResourceUpdates {
         - Run src/test/java/org/powernukkit/dumps/RuntimeBlockStateDumper.java
          */
 
-        new AllResourceUpdates().execute();
+        try {
+            new AllResourceUpdates().execute();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            System.exit(1);
+        } finally {
+            System.exit(0);
+        }
     }
+
+    private final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting()
+            .registerTypeAdapter(Double.class, (JsonSerializer<Double>) (src, typeOfSrc, context) -> {
+                if (src == src.longValue())
+                    return new JsonPrimitive(src.longValue());
+                return new JsonPrimitive(src);
+            }).create();
 
     private void execute() {
         init();
         updateRecipes();
+        updateCreativeItems();
         System.exit(0);
     }
 
     @SuppressWarnings("unchecked")
     private void updateRecipes() {
-        Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting()
-                .registerTypeAdapter(Double.class, (JsonSerializer<Double>) (src, typeOfSrc, context) -> {
-                    if (src == src.longValue())
-                        return new JsonPrimitive(src.longValue());
-                    return new JsonPrimitive(src);
-                }).create();
-
         Config config = new Config(Config.JSON);
         try(InputStream recipesStream = getClass().getClassLoader()
                 .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/recipes.json")
@@ -123,6 +132,27 @@ public class AllResourceUpdates {
         config.saveAsJson(new File("src/main/resources/recipes.json"), false, gson);
     }
 
+    @SuppressWarnings("unchecked")
+    private void updateCreativeItems() {
+        Config config = new Config(Config.JSON);
+        try(InputStream recipesStream = getClass().getClassLoader()
+                .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/creativeitems.json")
+        ) {
+            if (recipesStream == null) {
+                throw new AssertionError("Unable to findcreativeitems.json");
+            }
+            config.loadAsJson(recipesStream, gson);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        var newItems = (List<Map<String, Object>>)(Object)config.getMapList("items");
+        newItems = updateItemEntryList(newItems);
+        config.set("items", newItems);
+
+        config.saveAsJson(new File("src/main/resources/creativeitems.json"), false, gson);
+    }
+
     private List<Map<String, Object>> updateItemEntryList(List<Map<String, Object>> inputs) {
         inputs = new ArrayList<>(inputs);
         var inputIterator = inputs.listIterator();
@@ -133,9 +163,17 @@ public class AllResourceUpdates {
     }
 
     private Map<String, Object> updateItemEntry(Map<String, Object> itemEntry) {
+        var result = updateItemEntry0(itemEntry);
+        if ("minecraft:air".equals(result.get("blockState"))) {
+            throw new NoSuchElementException("State not found for: "+itemEntry);
+        }
+        return result;
+    }
+
+    private Map<String, Object> updateItemEntry0(Map<String, Object> itemEntry) {
         itemEntry = new LinkedHashMap<>(itemEntry);
         Integer damage = itemEntry.containsKey("damage")? Utils.toInt(itemEntry.get("damage")) : null;
-        boolean fuzzy = damage != null && damage.equals((int)Short.MAX_VALUE);
+        boolean fuzzy = damage != null && (damage.equals((int)Short.MAX_VALUE) || damage.equals(-1));
         if (itemEntry.containsKey("blockState")) {
             itemEntry.remove("legacyId");
             itemEntry.remove("blockRuntimeId");
@@ -237,22 +275,52 @@ public class AllResourceUpdates {
         }
 
         String id = itemEntry.get("id").toString();
-        Item item;
-        if (damage != null && !fuzzy) {
-            item = Item.fromString(id + ":" + damage);
-        } else {
-            item = Item.fromString(id);
-            damage = item.getDamage();
-        }
-        if (damage != 0) {
-            itemEntry.put("damage", damage);
-        } else {
+        Item item = Item.fromString(id);
+        if (item.getId() > 255) {
+            if (damage != null && !fuzzy && damage != 0) {
+                item = Item.fromString(id+":"+damage);
+            }
+            itemEntry.remove("legacyId");
+            itemEntry.remove("blockRuntimeId");
             itemEntry.remove("damage");
+            itemEntry.remove("blockState");
+            itemEntry.put("id", item.getNamespaceId());
+            if (fuzzy) {
+                itemEntry.put("fuzzy", true);
+            } else if (damage != null && damage != 0) {
+                itemEntry.put("damage", damage);
+            }
+            return itemEntry;
         }
+
+        Integer blockId = BlockStateRegistry.getBlockId(id);
+        if (blockId == null) {
+            System.out.println("Block id not found for id: " + itemEntry.get("id") + " : " + damage);
+            return itemEntry;
+        }
+
+        String namespacedId = BlockStateRegistry.getPersistenceName(blockId);
+        String stateId;
+        if (damage == null || damage == 0 || damage == Short.MAX_VALUE || damage == -1) {
+            stateId = namespacedId;
+        } else {
+            item = Item.getBlock(blockId, damage);
+            if (item.getBlock().getId() == BlockID.AIR) {
+                throw new NoSuchElementException("State not found for id: " + itemEntry.get("id") + " : " + damage);
+            }
+            stateId = item.getBlock().getStateId();
+        }
+        if (damage != null && damage == Short.MAX_VALUE) {
+            fuzzy = true;
+        }
+        if (fuzzy) {
+            itemEntry.put("fuzzy", true);
+        }
+        itemEntry.remove("damage");
         itemEntry.remove("legacyId");
         itemEntry.remove("blockRuntimeId");
         itemEntry.remove("id");
-        itemEntry.put("blockState", item.getBlock().getStateId());
+        itemEntry.put("blockState", stateId);
         return itemEntry;
     }
 

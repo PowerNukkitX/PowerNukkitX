@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.*;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 
 /**
@@ -328,8 +329,34 @@ public class CraftingManager {
 
         Item item;
         if (data.containsKey("blockState")) {
+            String blockStateId = data.get("blockState").toString();
+            // TODO Remove this when the support is added to these blocks
+            if (Stream.of(
+                    "minecraft:candle",
+                    "minecraft:cracked_deepslate_bricks",
+                    "minecraft:cracked_deepslate_tiles",
+                    "minecraft:smooth_basalt",
+                    "minecraft:moss_block",
+                    "minecraft:deepslate",
+                    "minecraft:copper",
+                    "minecraft:raw_",
+                    "minecraft:pointed_dripstone"
+            ).anyMatch(blockStateId::startsWith)) {
+                return Item.get(BlockID.AIR);
+            }
+            if (Stream.of(
+                    "copper", "deepslate", "deepslate_slab",
+                    "copper_slab", "copper_stairs"
+                    ).anyMatch(name-> blockStateId.split(";", 2)[0].endsWith(name))) {
+                return Item.get(BlockID.AIR);
+            }
+            if (blockStateId.startsWith("minecraft:candle"))
+            switch (blockStateId) {
+                case "minecraft:candle;candles=0;lit=0":
+                case "minecraft:cracked_deepslate_bricks":
+            }
             try {
-                BlockState state = BlockState.of(data.get("blockState").toString());
+                BlockState state = BlockState.of(blockStateId);
                 item = state.asItemBlock(count);
                 item.setCompoundTag(nbtBytes);
                 if (fuzzy) {
@@ -337,21 +364,21 @@ public class CraftingManager {
                 }
                 return item;
             } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
-                int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(data.get("blockState").toString());
+                int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
                 if (runtimeId == -1) {
-                    log.warn("Unsupported block found in recipes.json: {}", data.get("blockState"));
+                    log.warn("Unsupported block found in recipes.json: {}", blockStateId);
                     return Item.get(BlockID.AIR);
                 }
                 int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
                 BlockState defaultBlockState = BlockState.of(blockId);
                 if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
-                    log.warn("Unsupported block found in recipes.json: {}", data.get("blockState"));
+                    log.warn("Unsupported block found in recipes.json: {}", blockStateId);
                     return Item.get(BlockID.AIR);
                 }
-                log.error("Failed to load a recipe with {}", data.get("blockState"), e);
+                log.error("Failed to load a recipe with {}", blockStateId, e);
                 return Item.get(Block.AIR);
             } catch (Exception e) {
-                log.error("Failed to load the block state {}", data.get("blockState"), e);
+                log.error("Failed to load the block state {}", blockStateId, e);
                 return Item.getBlock(BlockID.AIR);
             }
         }
