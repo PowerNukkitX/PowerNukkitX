@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BinaryStream;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -13,6 +14,7 @@ import java.util.UUID;
  * @author Nukkit Project Team
  */
 @ToString
+@EqualsAndHashCode(callSuper = false)
 public class CraftingEventPacket extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.CRAFTING_EVENT_PACKET;
@@ -63,7 +65,7 @@ public class CraftingEventPacket extends DataPacket {
     @Override
     public void decode() {
         this.windowId = this.getByte();
-        this.type = (int) this.getUnsignedVarInt();
+        this.type = this.getVarInt();
         this.id = this.getUUID();
 
         this.input = this.getArray(Item.class, BinaryStream::getSlot);
@@ -72,7 +74,12 @@ public class CraftingEventPacket extends DataPacket {
 
     @Override
     public void encode() {
+        putByte((byte) (windowId & 0xFF));
+        putVarInt(type);
+        putUUID(id);
 
+        putArray(input, this::putSlot);
+        putArray(output, this::putSlot);
     }
 
     @Override
