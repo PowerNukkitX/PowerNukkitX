@@ -49,7 +49,7 @@ public class AllResourceUpdater {
         }
     }
 
-    private final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting()
+    public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting()
             .registerTypeAdapter(Double.class, (JsonSerializer<Double>) (src, typeOfSrc, context) -> {
                 if (src == src.longValue())
                     return new JsonPrimitive(src.longValue());
@@ -75,7 +75,7 @@ public class AllResourceUpdater {
             if (recipesStream == null) {
                 throw new AssertionError("Unable to find recipes.json");
             }
-            config.loadAsJson(recipesStream, gson);
+            config.loadAsJson(recipesStream, GSON);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -119,7 +119,7 @@ public class AllResourceUpdater {
         }
         config.set("recipes", newRecipes);
 
-        config.saveAsJson(new File("src/main/resources/recipes.json"), false, gson);
+        config.saveAsJson(new File("src/main/resources/recipes.json"), false, GSON);
     }
 
     @SuppressWarnings("unchecked")
@@ -131,7 +131,7 @@ public class AllResourceUpdater {
             if (recipesStream == null) {
                 throw new AssertionError("Unable to findcreativeitems.json");
             }
-            config.loadAsJson(recipesStream, gson);
+            config.loadAsJson(recipesStream, GSON);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -140,7 +140,7 @@ public class AllResourceUpdater {
         newItems = updateItemEntryList(newItems);
         config.set("items", newItems);
 
-        config.saveAsJson(new File("src/main/resources/creativeitems.json"), false, gson);
+        config.saveAsJson(new File("src/main/resources/creativeitems.json"), false, GSON);
     }
 
     private List<Map<String, Object>> updateItemEntryList(List<Map<String, Object>> inputs) {

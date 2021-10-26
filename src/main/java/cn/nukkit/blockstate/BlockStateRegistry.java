@@ -196,7 +196,18 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("FUTURE")
     public int getKnownRuntimeIdByBlockStateId(String stateId) {
-        return knownStateIds.indexOf(stateId);
+        int result = knownStateIds.indexOf(stateId);
+        if (result != -1) {
+            return result;
+        }
+        BlockState state;
+        try {
+            state = BlockState.of(stateId);
+        } catch (NoSuchElementException|IllegalStateException|IllegalArgumentException ignored) {
+            return -1;
+        }
+        String fullStateId = state.getStateId();
+        return knownStateIds.indexOf(fullStateId);
     }
 
     /**
@@ -243,12 +254,16 @@ public class BlockStateRegistry {
         return state;
     }
 
+    private static NoSuchElementException runtimeIdNotRegistered(int runtimeId) {
+        return new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+    }
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public int getBlockIdByRuntimeId(int runtimeId) {
         Registration registration = findRegistrationByRuntimeId(runtimeId);
         if (registration == null) {
-            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+            throw runtimeIdNotRegistered(runtimeId);
         }
         BlockState state = registration.state;
         if (state != null) {
@@ -256,7 +271,7 @@ public class BlockStateRegistry {
         }
         CompoundTag originalBlock = registration.originalBlock;
         if (originalBlock == null) {
-            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+            throw runtimeIdNotRegistered(runtimeId);
         }
         try {
             state = buildStateFromCompound(originalBlock);
@@ -264,7 +279,7 @@ public class BlockStateRegistry {
             String name = originalBlock.getString("name").toLowerCase(Locale.ENGLISH);
             Integer id = getBlockId(name);
             if (id == null) {
-                throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+                throw runtimeIdNotRegistered(runtimeId);
             }
             return id;
         }
@@ -272,7 +287,7 @@ public class BlockStateRegistry {
             registration.state = state;
             registration.originalBlock = null;
         } else {
-            throw new NoSuchElementException("The block id for the runtime id "+runtimeId+" is not registered");
+            throw runtimeIdNotRegistered(runtimeId);
         }
         return state.getBlockId();
     }

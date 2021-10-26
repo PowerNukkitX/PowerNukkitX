@@ -33,6 +33,16 @@ public class BlockUnknown extends BlockMeta {
         }
     }
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public BlockUnknown(int id, Number meta) {
+        super(0);
+        this.id = id;
+        if (meta != null) {
+            getMutableState().setDataStorage(meta, true);
+        }
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull

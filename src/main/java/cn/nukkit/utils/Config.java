@@ -11,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -188,7 +190,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public boolean loadAsJson(InputStream inputStream, Gson gson) {
+    public boolean loadAsJson(@Nullable InputStream inputStream, @Nonnull Gson gson) {
         if (inputStream == null) return false;
         if (this.correct) {
             String content;
