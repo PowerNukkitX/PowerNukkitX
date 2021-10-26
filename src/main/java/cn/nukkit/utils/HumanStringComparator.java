@@ -54,7 +54,7 @@ public class HumanStringComparator implements Comparator<String> {
                         result.set(i, Character.toString(c));
                         indexToAddLast = i + 1;
                     }
-                    if (j + 2 < length) {
+                    if (j + 2 <= length) {
                         result.add(indexToAddLast, str.substring(j + 1, lastPart));
                     }
                     lastPart = j;

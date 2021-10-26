@@ -92,6 +92,7 @@ minecraft:chiseled_polished_blackstone
 minecraft:chorus_flower
 minecraft:chorus_plant
 minecraft:clay
+minecraft:client_request_placeholder_block
 minecraft:coal_block
 minecraft:coal_ore
 minecraft:cobbled_deepslate
@@ -446,6 +447,8 @@ minecraft:mossy_cobblestone_stairs
 minecraft:mossy_stone_brick_stairs
 minecraft:movingBlock
 minecraft:mycelium
+minecraft:mysterious_frame
+minecraft:mysterious_frame_slot
 minecraft:nether_brick
 minecraft:nether_brick_fence
 minecraft:nether_brick_stairs

@@ -14,6 +14,14 @@ class HumanStringComparatorTest {
 
     @SuppressWarnings("EqualsWithItself")
     @Test
+    void pillars() {
+        assertEquals(-1, comparator.compare("minecraft:basalt;pillar_axis=x", "minecraft:basalt;pillar_axis=y"));
+        assertEquals(0, comparator.compare("minecraft:basalt;pillar_axis=y", "minecraft:basalt;pillar_axis=y"));
+        assertEquals(1, comparator.compare("minecraft:basalt;pillar_axis=z", "minecraft:basalt;pillar_axis=y"));
+    }
+
+    @SuppressWarnings("EqualsWithItself")
+    @Test
     void compare() {
         assertNegative(comparator.compare("-9", "9"));
         assertNegative(comparator.compare("32", "325_0"));

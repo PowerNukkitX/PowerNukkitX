@@ -3,8 +3,10 @@ package cn.nukkit.inventory;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
+import cn.nukkit.blockproperty.UnknownRuntimeIdException;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -27,8 +29,11 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.*;
+import java.util.stream.Stream;
 import java.util.zip.Deflater;
 
 /**
@@ -81,15 +86,19 @@ public class CraftingManager {
     }
 
     public CraftingManager() {
-        InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json");
-        if (recipesStream == null) {
-            throw new AssertionError("Unable to find recipes.json");
-        }
-
         registerSmithingRecipes();
 
         Config recipesConfig = new Config(Config.JSON);
-        recipesConfig.load(recipesStream);
+        try(InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json")) {
+            if (recipesStream == null) {
+                throw new AssertionError("Unable to find recipes.json");
+            }
+
+            recipesConfig.load(recipesStream);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
         this.loadRecipes(recipesConfig);
 
         String path = Server.getInstance().getDataPath() + "custom_recipes.json";
@@ -313,15 +322,62 @@ public class CraftingManager {
 
     private Item parseRecipeItem(Map<String, Object> data) {
         String nbt = (String) data.get("nbt_b64");
+        boolean fuzzy = data.containsKey("fuzzy") && Boolean.parseBoolean(data.get("fuzzy").toString());
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
 
         int count = data.containsKey("count")? ((Number)data.get("count")).intValue() : 1;
-        Integer legacyId = null;
-        if (data.containsKey("legacyId")) {
-            legacyId = Utils.toInt(data.get("legacyId"));
-        }
 
         Item item;
+        if (data.containsKey("blockState")) {
+            String blockStateId = data.get("blockState").toString();
+            // TODO Remove this when the support is added to these blocks
+            if (Stream.of(
+                    "minecraft:candle",
+                    "minecraft:cracked_deepslate_bricks",
+                    "minecraft:cracked_deepslate_tiles",
+                    "minecraft:smooth_basalt",
+                    "minecraft:moss_block",
+                    "minecraft:deepslate",
+                    "minecraft:copper",
+                    "minecraft:raw_",
+                    "minecraft:pointed_dripstone"
+            ).anyMatch(blockStateId::startsWith)) {
+                return Item.get(BlockID.AIR);
+            }
+            if (Stream.of(
+                    "copper", "deepslate", "deepslate_slab",
+                    "copper_slab", "copper_stairs"
+                    ).anyMatch(name-> blockStateId.split(";", 2)[0].endsWith(name))) {
+                return Item.get(BlockID.AIR);
+            }
+            try {
+                BlockState state = BlockState.of(blockStateId);
+                item = state.asItemBlock(count);
+                item.setCompoundTag(nbtBytes);
+                if (fuzzy) {
+                    item = item.createFuzzyCraftingRecipe();
+                }
+                return item;
+            } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
+                int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
+                if (runtimeId == -1) {
+                    log.warn("Unsupported block found in recipes.json: {}", blockStateId);
+                    return Item.get(BlockID.AIR);
+                }
+                int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
+                BlockState defaultBlockState = BlockState.of(blockId);
+                if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
+                    log.warn("Unsupported block found in recipes.json: {}", blockStateId);
+                    return Item.get(BlockID.AIR);
+                }
+                log.error("Failed to load a recipe with {}", blockStateId, e);
+                return Item.get(Block.AIR);
+            } catch (Exception e) {
+                log.error("Failed to load the block state {}", blockStateId, e);
+                return Item.getBlock(BlockID.AIR);
+            }
+        }
+
         if (data.containsKey("blockRuntimeId")) {
             int blockRuntimeId = Utils.toInt(data.get("blockRuntimeId"));
             try {
@@ -334,12 +390,19 @@ public class CraftingManager {
                 }
                 item = state.asItemBlock(count);
                 item.setCompoundTag(nbtBytes);
+                if (fuzzy) {
+                    item = item.createFuzzyCraftingRecipe();
+                }
                 return item;
             } catch (BlockPropertyNotFoundException e) {
                 log.debug("Failed to load the block runtime id {}", blockRuntimeId, e);
             }
         }
 
+        Integer legacyId = null;
+        if (data.containsKey("legacyId")) {
+            legacyId = Utils.toInt(data.get("legacyId"));
+        }
         if (legacyId != null && legacyId > 255) {
             try {
                 int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(legacyId);
@@ -349,7 +412,6 @@ public class CraftingManager {
                     meta = RuntimeItems.getData(fullId);
                 }
 
-                boolean fuzzy = false;
                 if (data.containsKey("damage")) {
                     int damage = Utils.toInt(data.get("damage"));
                     if (damage == Short.MAX_VALUE) {
@@ -375,7 +437,8 @@ public class CraftingManager {
         if (data.containsKey("damage")) {
             int meta = Utils.toInt(data.get("damage"));
             if (meta == Short.MAX_VALUE) {
-                item = Item.fromString(id).createFuzzyCraftingRecipe();
+                item = Item.fromString(id);
+                fuzzy = true;
             } else {
                 item = Item.fromString(id + ":" + meta);
             }
@@ -384,6 +447,10 @@ public class CraftingManager {
         }
         item.setCount(count);
         item.setCompoundTag(nbtBytes);
+        if (fuzzy) {
+            item = item.createFuzzyCraftingRecipe();
+        }
+
         return item;
     }
 

@@ -29,6 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 
 import static cn.nukkit.blockstate.Loggers.logIBlockState;
@@ -195,6 +196,29 @@ public interface IBlockState {
         Map<String, String> propertyMap = new TreeMap<>(HumanStringComparator.getInstance());
         try {
             properties.getNames().forEach(name -> propertyMap.put(properties.getBlockProperty(name).getPersistenceName(), getPersistenceValue(name)));
+        } catch (InvalidBlockPropertyException e) {
+            logIBlockState.debug("Attempted to get the stateId of an invalid state {}:{}\nProperties: {}", getBlockId(), getDataStorage(), properties, e);
+            return getLegacyStateId();
+        }
+
+        StringBuilder stateId = new StringBuilder(getPersistenceName());
+        propertyMap.forEach((name, value) -> stateId.append(';').append(name).append('=').append(value));
+        return stateId.toString();
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    default String getMinimalistStateId() {
+        if (isDefaultState()) {
+            return getPersistenceName();
+        }
+        BlockProperties properties = getProperties();
+        Map<String, String> propertyMap = new TreeMap<>(HumanStringComparator.getInstance());
+        try {
+            properties.getNames().stream()
+                    .map(name -> new SimpleEntry<>(properties.getBlockProperty(name), getPersistenceValue(name)))
+                    .filter(entry -> !entry.getKey().isDefaultPersistentValue(entry.getValue()))
+                    .forEach(entry -> propertyMap.put(entry.getKey().getPersistenceName(), entry.getValue()));
         } catch (InvalidBlockPropertyException e) {
             logIBlockState.debug("Attempted to get the stateId of an invalid state {}:{}\nProperties: {}", getBlockId(), getDataStorage(), properties, e);
             return getLegacyStateId();
