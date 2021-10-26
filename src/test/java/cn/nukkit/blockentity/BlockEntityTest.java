@@ -23,34 +23,19 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockChest;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPodzol;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.inventory.ChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.generator.Flat;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.test.LogLevelAdjuster;
-import co.aikar.timings.Timings;
-import org.iq80.leveldb.util.FileUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
-import java.io.File;
-import java.io.IOException;
-
 import static cn.nukkit.block.BlockID.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -62,50 +47,9 @@ import static org.mockito.Mockito.when;
 @Since("FUTURE")
 @ExtendWith(PowerNukkitExtension.class)
 class BlockEntityTest {
-    static final LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster();
-
-    File levelFolder;
-
+    @MockLevel
     Level level;
 
-    @Test
-    void repairing() throws Exception {
-        Block block = level.getBlock(new Vector3(2, 2, 2));
-        assertThat(block).isInstanceOf(BlockPodzol.class);
-        assertEquals(BlockID.PODZOL, block.getId());
-        assertEquals(0, block.getExactIntStorage());
-
-        assertEquals(BlockState.of(BlockID.PODZOL), level.getBlockStateAt(2, 2, 2));
-
-        assertTrue(level.unloadChunk(block.getChunkX(), block.getChunkZ()));
-
-        assertEquals(BlockState.of(BlockID.PODZOL), level.getBlockStateAt(2, 2, 2));
-    }
-
-    @BeforeEach
-    void setUp() throws IOException {
-        Server server = Server.getInstance();
-        levelFolder = new File(server.getDataPath(), "worlds/TestLevel");
-        String path = levelFolder.getAbsolutePath()+File.separator;
-        Anvil.generate(path, "TestLevel", 0, Flat.class);
-        Timings.init();
-        level = new Level(server, "TestLevel", path, Anvil.class);
-        level.setAutoSave(true);
-
-        server.getLevels().put(level.getId(), level);
-        server.setDefaultLevel(level);
-    }
-
-    @AfterEach
-    void tearDown() {
-        FileUtils.deleteRecursively(levelFolder);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        logLevelAdjuster.restoreLevels();
-    }
-    
     /**
      * https://github.com/PowerNukkit/PowerNukkit/issues/1174
      */
