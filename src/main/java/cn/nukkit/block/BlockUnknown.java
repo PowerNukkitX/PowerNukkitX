@@ -29,7 +29,7 @@ public class BlockUnknown extends BlockMeta {
         super(0);
         this.id = id;
         if (meta != null && meta != 0) {
-            getMutableState().setDataStorageFromInt(meta, true);
+            getMutableState().setDataStorageFromInt(meta, false);
         }
     }
 
@@ -39,7 +39,7 @@ public class BlockUnknown extends BlockMeta {
         super(0);
         this.id = id;
         if (meta != null) {
-            getMutableState().setDataStorage(meta, true);
+            getMutableState().setDataStorage(meta, false);
         }
     }
 

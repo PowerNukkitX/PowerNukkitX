@@ -232,7 +232,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public boolean saveAsJson(File file, boolean async, Gson gson) {
+    public boolean saveAsJson(@Nonnull File file, boolean async, @Nonnull Gson gson) {
         this.file = file;
         return saveAsJson(async, gson);
     }
@@ -243,7 +243,7 @@ public class Config {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public boolean saveAsJson(Boolean async, Gson gson) {
+    public boolean saveAsJson(boolean async, @Nonnull Gson gson) {
         if (!this.correct) {
             return false;
         }
@@ -282,7 +282,7 @@ public class Config {
         }
     }
 
-    private void save0(Boolean async, StringBuilder content) {
+    private void save0(boolean async, StringBuilder content) {
         if (async) {
             Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content.toString()));
         } else {

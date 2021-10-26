@@ -4,6 +4,7 @@ import cn.nukkit.test.ThrowingFunction;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
+import io.netty.util.internal.EmptyArrays;
 import joptsimple.internal.Strings;
 import lombok.var;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,6 +70,8 @@ class ConfigTest {
             config.set("a", 5);
             assertFalse(config.saveAsJson(temp, false, gson));
             assertFalse(config.save(temp));
+            assertFalse(config.loadAsJson(null, gson));
+            assertFalse(config.loadAsJson(new ByteArrayInputStream(EmptyArrays.EMPTY_BYTES), gson));
         } finally {
             //noinspection ResultOfMethodCallIgnored
             temp.delete();
