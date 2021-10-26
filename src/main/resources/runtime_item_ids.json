@@ -1,7 +1,8 @@
 [
   {
     "name": "minecraft:unknown",
-    "id": -305
+    "id": -305,
+    "oldId": -305
   },
   {
     "name": "minecraft:quartz_bricks",

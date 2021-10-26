@@ -1,6 +1,8 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.scheduler.FileWriteTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,6 +188,23 @@ public class Config {
         return correct;
     }
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean loadAsJson(@Nullable InputStream inputStream, @Nonnull Gson gson) {
+        if (inputStream == null) return false;
+        if (this.correct) {
+            String content;
+            try {
+                content = Utils.readFile(inputStream);
+            } catch (IOException e) {
+                log.error("An error occurred while loading a config from an input stream, input: {}", inputStream, e);
+                return false;
+            }
+            this.parseContentAsJson(content, gson);
+        }
+        return correct;
+    }
+
     public boolean check() {
         return this.correct;
     }
@@ -209,8 +230,25 @@ public class Config {
         return save();
     }
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean saveAsJson(@Nonnull File file, boolean async, @Nonnull Gson gson) {
+        this.file = file;
+        return saveAsJson(async, gson);
+    }
+
     public boolean save() {
         return this.save(false);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public boolean saveAsJson(boolean async, @Nonnull Gson gson) {
+        if (!this.correct) {
+            return false;
+        }
+        save0(async, new StringBuilder(gson.toJson(this.config)).append('\n'));
+        return true;
     }
 
     public boolean save(Boolean async) {
@@ -237,19 +275,22 @@ public class Config {
                     }
                     break;
             }
-            if (async) {
-                Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content.toString()));
-
-            } else {
-                try {
-                    Utils.writeFile(this.file, content.toString());
-                } catch (IOException e) {
-                    log.error("Failed to save the config file {}", file, e);
-                }
-            }
+            save0(async, content);
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void save0(boolean async, StringBuilder content) {
+        if (async) {
+            Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content.toString()));
+        } else {
+            try {
+                Utils.writeFile(this.file, content.toString());
+            } catch (IOException e) {
+                log.error("Failed to save the config file {}", file, e);
+            }
         }
     }
 
@@ -533,6 +574,16 @@ public class Config {
     @Deprecated
     public void removeNested(String key) {
         remove(key);
+    }
+
+    private void parseContentAsJson(String content, Gson gson) {
+        try {
+            this.config = new ConfigSection(gson.fromJson(content, new TypeToken<LinkedHashMap<String, Object>>() {
+            }.getType()));
+        } catch (Exception e) {
+            log.warn("Failed to parse the config file {}", file, e);
+            throw e;
+        }
     }
 
     private void parseContent(String content) {

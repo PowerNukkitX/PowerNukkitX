@@ -6,7 +6,9 @@ import cn.nukkit.api.*;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockproperty.UnknownRuntimeIdException;
+import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
@@ -478,6 +480,50 @@ public class Item implements Cloneable, BlockID, ItemID {
         String nbt = (String) data.get("nbt_b64");
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
 
+        if (data.containsKey("blockState")) {
+            String blockStateId = data.get("blockState").toString();
+            // TODO Remove this when the support is added to these blocks
+            if (Stream.of(
+                    "minecraft:candle",
+                    "minecraft:deepslate",
+                    "minecraft:cracked_deepslate_bricks",
+                    "minecraft:cracked_deepslate_tiles",
+                    "minecraft:smooth_basalt"
+            ).anyMatch(blockStateId::startsWith)) {
+                return null;
+            }
+            try {
+                // TODO Remove this when the support is added to these blocks
+                String[] stateParts = blockStateId.split(";", 2);
+                Integer blockId = BlockStateRegistry.getBlockId(stateParts[0]);
+                if (blockId != null && blockId > BlockID.QUARTZ_BRICKS) {
+                    return Item.getBlock(BlockID.AIR);
+                }
+
+                BlockState state = BlockState.of(blockStateId);
+                Item item = state.asItemBlock();
+                item.setCompoundTag(nbtBytes);
+                return item;
+            } catch (BlockPropertyNotFoundException | UnknownRuntimeIdException e) {
+                int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId(blockStateId);
+                if (runtimeId == -1) {
+                    log.warn("Unsupported block found in creativeitems.json: {}", blockStateId);
+                    return null;
+                }
+                int blockId = BlockStateRegistry.getBlockIdByRuntimeId(runtimeId);
+                BlockState defaultBlockState = BlockState.of(blockId);
+                if (defaultBlockState.getProperties().equals(BlockUnknown.PROPERTIES)) {
+                    log.warn("Unsupported block found in creativeitems.json: {}", blockStateId);
+                    return null;
+                }
+                log.error("Failed to load the creative item with {}", blockStateId, e);
+                return null;
+            } catch (Exception e) {
+                log.error("Failed to load the creative item {}", blockStateId, e);
+                return null;
+            }
+        }
+
         String id = data.get("id").toString();
         Item item = null;
         if (data.containsKey("damage")) {
@@ -619,7 +665,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                     } catch (UnknownRuntimeIdException e) {
                         log.warn("Attempted to get an illegal item block {}:{} ({}), the runtime id was unknown and the meta was changed to 0",
                                 id, meta, blockId, e);
-                        item = BlockState.of(id).asItemBlock(count);
+                        item = BlockState.of(blockId).asItemBlock(count);
                     }
                 }
             } else if (c == null) {
