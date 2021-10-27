@@ -37,7 +37,7 @@ public class EmptyChunkSection implements ChunkSection {
     
     private static final byte[] EMPTY_2KB = new byte[2048];
     public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2KB;
-    public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
+    public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048]; // Filled with 0xFF
     static {
         Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);
     }
