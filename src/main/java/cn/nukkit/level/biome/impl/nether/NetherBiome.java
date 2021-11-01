@@ -1,18 +1,10 @@
-package cn.nukkit.level.biome.impl;
+package cn.nukkit.level.biome.impl.nether;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.Biome;
 
-public class HellBiome extends Biome {
-
-    public HellBiome() {
-    }
-
-    @Override
-    public String getName() {
-        return "Hell";
-    }
+public abstract class NetherBiome extends Biome {
 
     @Override
     public boolean canRain() {
@@ -25,4 +17,7 @@ public class HellBiome extends Biome {
     public boolean isDry() {
         return true;
     }
+
+    public abstract int getCoverBlock();
+    public abstract int getMiddleBlock();
 }

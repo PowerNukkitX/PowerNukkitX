@@ -120,8 +120,8 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         return this;
     }
 
-    public static void spawnPortal(Position pos)   {
-        Level lvl = pos.level;
+    public static void spawnPortal(Position pos) {
+        Level lvl = pos.level; //TODO: This will generate part of the time, seems to be only when the chunk is populated
         int x = pos.getFloorX();
         int y = pos.getFloorY();
         int z = pos.getFloorZ();

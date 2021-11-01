@@ -503,12 +503,12 @@ public class BinaryStream {
 
         return item;
     }
-    
+
     private Item readUnknownItem(Item item) {
         if (item.getId() != FALLBACK_ID || !item.hasCompoundTag()) {
             return item;
         }
-        
+
         CompoundTag tag = item.getNamedTag();
         if (!tag.containsCompound("PowerNukkitUnknown")) {
             return item;
@@ -521,7 +521,7 @@ public class BinaryStream {
         boolean hasCompound = pnTag.getBoolean("HasCompound");
         boolean hasDisplayTag = pnTag.getBoolean("HasDisplayTag");
         String customName = pnTag.getString("OriginalCustomName");
-        
+
         item = Item.get(itemId, meta, item.getCount());
         if (hasCompound) {
             tag.remove("PowerNukkitUnknown");
@@ -536,10 +536,10 @@ public class BinaryStream {
             }
             item.setNamedTag(tag);
         }
-        
+
         return item;
     }
-    
+
     private Item createFakeUnknownItem(Item item) {
         boolean hasCompound = item.hasCompoundTag();
         Item fallback = Item.getBlock(FALLBACK_ID, 0, item.getCount());

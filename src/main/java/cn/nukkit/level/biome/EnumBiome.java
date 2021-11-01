@@ -1,6 +1,5 @@
 package cn.nukkit.level.biome;
 
-import cn.nukkit.level.biome.impl.HellBiome;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
 import cn.nukkit.level.biome.impl.desert.DesertBiome;
@@ -16,6 +15,7 @@ import cn.nukkit.level.biome.impl.jungle.*;
 import cn.nukkit.level.biome.impl.mesa.*;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandShoreBiome;
+import cn.nukkit.level.biome.impl.nether.*;
 import cn.nukkit.level.biome.impl.ocean.DeepOceanBiome;
 import cn.nukkit.level.biome.impl.ocean.FrozenOceanBiome;
 import cn.nukkit.level.biome.impl.ocean.OceanBiome;
@@ -49,7 +49,7 @@ public enum EnumBiome {
     TAIGA(5, new TaigaBiome()),
     SWAMP(6, new SwampBiome()),
     RIVER(7, new RiverBiome()),//
-    HELL(8, new HellBiome()),
+    HELL(8, new WastelandsBiome()),
     FROZEN_OCEAN(10, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
     FROZEN_RIVER(11, new FrozenRiverBiome()),
     ICE_PLAINS(12, new IcePlainsBiome()),
@@ -100,7 +100,12 @@ public enum EnumBiome {
     SAVANNA_PLATEAU_M(164, new SavannaPlateauMBiome()),
     MESA_BRYCE(165, new MesaBryceBiome()),
     MESA_PLATEAU_F_M(166, new MesaPlateauFMBiome()),
-    MESA_PLATEAU_M(167, new MesaPlateauMBiome());
+    MESA_PLATEAU_M(167, new MesaPlateauMBiome()),
+
+    SOUL_SAND_VALLEY(178, new SoulSandValleyBiome()),
+    CRIMSON_FOREST(179, new CrimsonForestBiome()),
+    WARPED_FOREST(180, new WarpedForestBiome()),
+    BASALT_DELTAS(181, new BasaltDeltasBiome());
 
     public final int id;
     public final Biome biome;
