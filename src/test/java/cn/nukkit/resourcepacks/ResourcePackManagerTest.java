@@ -4,6 +4,8 @@ import org.iq80.leveldb.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,6 +13,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(PowerNukkitExtension.class)
 class ResourcePackManagerTest {
 
     ResourcePackManager resourcePackManager;
