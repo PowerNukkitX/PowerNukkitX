@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
@@ -8,7 +9,8 @@ import org.powernukkit.version.Version;
 import java.util.UUID;
 
 @ToString(exclude = "sha256")
-public class ResourcePackDataInfoPacket extends DataPacket {
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "FUTURE")
+public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
@@ -34,14 +36,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
 
     @Override
     public void decode() {
-        String packInfo = this.getString();
-        String[] packInfoParts = packInfo.split("_", 2);
-        try {
-            this.packId = UUID.fromString(packInfoParts[0]);
-        } catch (IllegalArgumentException exception) {
-            this.packId = null;
-        }
-        this.packVersion = (packInfoParts.length > 1)? new Version(packInfoParts[1]) : null;
+        decodePackInfo();
         this.maxChunkSize = this.getLInt();
         this.chunkCount = this.getLInt();
         this.compressedPackSize = this.getLLong();
@@ -53,11 +48,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        String packInfo = (packId != null) ? packId.toString() : new UUID(0, 0).toString();
-        if (packVersion != null) {
-            packInfo += "_" + packVersion;
-        }
-        this.putString(packInfo);
+        encodePackInfo();
         this.putLInt(this.maxChunkSize);
         this.putLInt(this.chunkCount);
         this.putLLong(this.compressedPackSize);
@@ -81,5 +72,19 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Since("FUTURE")
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public UUID getPackId() {
+        return packId;
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Override
+    public void setPackId(UUID packId) {
+        this.packId = packId;
     }
 }
