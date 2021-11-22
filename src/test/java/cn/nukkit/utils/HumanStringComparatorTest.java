@@ -43,6 +43,27 @@ class HumanStringComparatorTest {
         ));
     }
 
+    @Test
+    void omitted() {
+        assertPositive(comparator.compare("a1b", "ab"));
+        assertNegative(comparator.compare("ab", "a1b"));
+    }
+
+    @Test
+    void negative() {
+        assertNegative(comparator.compare("a-1", "a1"));
+        assertPositive(comparator.compare("a1", "a-1"));
+
+        assertNegative(comparator.compare("a-2", "a-1"));
+        assertPositive(comparator.compare("a-1", "a-2"));
+    }
+
+    @Test
+    void empty() {
+        assertNegative(comparator.compare("", "1"));
+        assertPositive(comparator.compare("1", ""));
+    }
+
     private void assertNegative(int actual) {
         if (actual >= 0) {
             throw new AssertionFailedError("Expected a negative value, got " + actual, -1, actual);
