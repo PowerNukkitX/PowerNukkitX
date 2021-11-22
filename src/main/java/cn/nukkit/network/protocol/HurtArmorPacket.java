@@ -22,7 +22,9 @@ public class HurtArmorPacket extends DataPacket {
 
     @Override
     public void decode() {
-
+        this.cause = getVarInt();
+        this.damage = getVarInt();
+        this.armorSlots = getUnsignedVarLong();
     }
 
     @Override
