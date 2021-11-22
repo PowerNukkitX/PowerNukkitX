@@ -2510,7 +2510,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     dataPacket.packInfo = resourcePack.getPackId().toString() + "_" + resourcePack.getPackVersion();
                     dataPacket.chunkIndex = requestPacket.chunkIndex;
                     dataPacket.data = resourcePack.getPackChunk(ResourcePackManager.getMaxChunkSize() * requestPacket.chunkIndex, ResourcePackManager.getMaxChunkSize());
-                    dataPacket.progress = ResourcePackManager.getMaxChunkSize() * requestPacket.chunkIndex;
+                    dataPacket.progress = ResourcePackManager.getMaxChunkSize() * (long)requestPacket.chunkIndex;
                     this.dataResourcePacket(dataPacket);
                     break;
                 case ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET:
@@ -4606,7 +4606,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case HUNGER:
                     message = "death.attack.starve";
                     break;
-                case MAGMA:
+                case HOT_FLOOR:
                     message = "death.attack.magma";
                     break;
                 default:

@@ -90,11 +90,7 @@ public class CraftingManager {
 
         Config recipesConfig = new Config(Config.JSON);
         try(InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json")) {
-            if (recipesStream == null) {
-                throw new AssertionError("Unable to find recipes.json");
-            }
-
-            recipesConfig.load(recipesStream);
+            recipesConfig.load(Objects.requireNonNull(recipesStream, "Unable to find recipes.json"));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
