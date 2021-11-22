@@ -14,7 +14,7 @@ import java.util.*;
 @Log4j2
 public class ResourcePackManager {
 
-    private static int MAX_CHUNK_SIZE = 102400;
+    private int maxChunkSize = 102400;
     
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private ResourcePack[] resourcePacks;
@@ -69,13 +69,13 @@ public class ResourcePackManager {
     
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static int getMaxChunkSize() {
-        return MAX_CHUNK_SIZE;
+    public int getMaxChunkSize() {
+        return this.maxChunkSize;
     }
     
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static void setMaxChunkSize(int maxChunkSize) {
-        MAX_CHUNK_SIZE = maxChunkSize;
+    public void setMaxChunkSize(int size) {
+        this.maxChunkSize = size;
     }
 }
