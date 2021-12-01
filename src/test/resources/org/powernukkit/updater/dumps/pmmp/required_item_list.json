@@ -64,7 +64,7 @@
         "component_based": false
     },
     "minecraft:amethyst_shard": {
-        "runtime_id": 623,
+        "runtime_id": 624,
         "component_based": false
     },
     "minecraft:ancient_debris": {
@@ -132,7 +132,7 @@
         "component_based": false
     },
     "minecraft:banner_pattern": {
-        "runtime_id": 627,
+        "runtime_id": 629,
         "component_based": false
     },
     "minecraft:barrel": {
@@ -316,7 +316,7 @@
         "component_based": false
     },
     "minecraft:boat": {
-        "runtime_id": 625,
+        "runtime_id": 627,
         "component_based": false
     },
     "minecraft:bone": {
@@ -492,7 +492,7 @@
         "component_based": false
     },
     "minecraft:chain": {
-        "runtime_id": 617,
+        "runtime_id": 618,
         "component_based": false
     },
     "minecraft:chain_command_block": {
@@ -796,7 +796,7 @@
         "component_based": false
     },
     "minecraft:crimson_door": {
-        "runtime_id": 614,
+        "runtime_id": 615,
         "component_based": false
     },
     "minecraft:crimson_double_slab": {
@@ -836,7 +836,7 @@
         "component_based": false
     },
     "minecraft:crimson_sign": {
-        "runtime_id": 612,
+        "runtime_id": 613,
         "component_based": false
     },
     "minecraft:crimson_slab": {
@@ -1172,7 +1172,7 @@
         "component_based": false
     },
     "minecraft:dye": {
-        "runtime_id": 626,
+        "runtime_id": 628,
         "component_based": false
     },
     "minecraft:egg": {
@@ -1700,7 +1700,7 @@
         "component_based": false
     },
     "minecraft:end_crystal": {
-        "runtime_id": 629,
+        "runtime_id": 631,
         "component_based": false
     },
     "minecraft:end_gateway": {
@@ -1896,11 +1896,11 @@
         "component_based": false
     },
     "minecraft:glow_berries": {
-        "runtime_id": 630,
+        "runtime_id": 632,
         "component_based": false
     },
     "minecraft:glow_frame": {
-        "runtime_id": 621,
+        "runtime_id": 622,
         "component_based": false
     },
     "minecraft:glow_ink_sac": {
@@ -1916,7 +1916,7 @@
         "component_based": false
     },
     "minecraft:glow_stick": {
-        "runtime_id": 166,
+        "runtime_id": 600,
         "component_based": false
     },
     "minecraft:glowingobsidian": {
@@ -1932,7 +1932,7 @@
         "component_based": false
     },
     "minecraft:goat_horn": {
-        "runtime_id": 622,
+        "runtime_id": 623,
         "component_based": false
     },
     "minecraft:goat_spawn_egg": {
@@ -2572,7 +2572,7 @@
         "component_based": false
     },
     "minecraft:lodestone_compass": {
-        "runtime_id": 600,
+        "runtime_id": 601,
         "component_based": false
     },
     "minecraft:log": {
@@ -2727,8 +2727,12 @@
         "runtime_id": 540,
         "component_based": false
     },
+    "minecraft:music_disc_otherside": {
+        "runtime_id": 626,
+        "component_based": false
+    },
     "minecraft:music_disc_pigstep": {
-        "runtime_id": 618,
+        "runtime_id": 619,
         "component_based": false
     },
     "minecraft:music_disc_stal": {
@@ -2788,7 +2792,7 @@
         "component_based": false
     },
     "minecraft:nether_sprouts": {
-        "runtime_id": 619,
+        "runtime_id": 620,
         "component_based": false
     },
     "minecraft:nether_star": {
@@ -2808,7 +2812,7 @@
         "component_based": false
     },
     "minecraft:netherite_axe": {
-        "runtime_id": 605,
+        "runtime_id": 606,
         "component_based": false
     },
     "minecraft:netherite_block": {
@@ -2816,43 +2820,43 @@
         "component_based": false
     },
     "minecraft:netherite_boots": {
-        "runtime_id": 610,
-        "component_based": false
-    },
-    "minecraft:netherite_chestplate": {
-        "runtime_id": 608,
-        "component_based": false
-    },
-    "minecraft:netherite_helmet": {
-        "runtime_id": 607,
-        "component_based": false
-    },
-    "minecraft:netherite_hoe": {
-        "runtime_id": 606,
-        "component_based": false
-    },
-    "minecraft:netherite_ingot": {
-        "runtime_id": 601,
-        "component_based": false
-    },
-    "minecraft:netherite_leggings": {
-        "runtime_id": 609,
-        "component_based": false
-    },
-    "minecraft:netherite_pickaxe": {
-        "runtime_id": 604,
-        "component_based": false
-    },
-    "minecraft:netherite_scrap": {
         "runtime_id": 611,
         "component_based": false
     },
+    "minecraft:netherite_chestplate": {
+        "runtime_id": 609,
+        "component_based": false
+    },
+    "minecraft:netherite_helmet": {
+        "runtime_id": 608,
+        "component_based": false
+    },
+    "minecraft:netherite_hoe": {
+        "runtime_id": 607,
+        "component_based": false
+    },
+    "minecraft:netherite_ingot": {
+        "runtime_id": 602,
+        "component_based": false
+    },
+    "minecraft:netherite_leggings": {
+        "runtime_id": 610,
+        "component_based": false
+    },
+    "minecraft:netherite_pickaxe": {
+        "runtime_id": 605,
+        "component_based": false
+    },
+    "minecraft:netherite_scrap": {
+        "runtime_id": 612,
+        "component_based": false
+    },
     "minecraft:netherite_shovel": {
-        "runtime_id": 603,
+        "runtime_id": 604,
         "component_based": false
     },
     "minecraft:netherite_sword": {
-        "runtime_id": 602,
+        "runtime_id": 603,
         "component_based": false
     },
     "minecraft:netherrack": {
@@ -3588,7 +3592,7 @@
         "component_based": false
     },
     "minecraft:soul_campfire": {
-        "runtime_id": 620,
+        "runtime_id": 621,
         "component_based": false
     },
     "minecraft:soul_fire": {
@@ -3616,7 +3620,7 @@
         "component_based": false
     },
     "minecraft:spawn_egg": {
-        "runtime_id": 628,
+        "runtime_id": 630,
         "component_based": false
     },
     "minecraft:spider_eye": {
@@ -3680,7 +3684,7 @@
         "component_based": false
     },
     "minecraft:spyglass": {
-        "runtime_id": 624,
+        "runtime_id": 625,
         "component_based": false
     },
     "minecraft:squid_spawn_egg": {
@@ -3988,7 +3992,7 @@
         "component_based": false
     },
     "minecraft:warped_door": {
-        "runtime_id": 615,
+        "runtime_id": 616,
         "component_based": false
     },
     "minecraft:warped_double_slab": {
@@ -4008,7 +4012,7 @@
         "component_based": false
     },
     "minecraft:warped_fungus_on_a_stick": {
-        "runtime_id": 616,
+        "runtime_id": 617,
         "component_based": false
     },
     "minecraft:warped_hyphae": {
@@ -4032,7 +4036,7 @@
         "component_based": false
     },
     "minecraft:warped_sign": {
-        "runtime_id": 613,
+        "runtime_id": 614,
         "component_based": false
     },
     "minecraft:warped_slab": {

@@ -1,5 +1,5 @@
 {
-  "version": 471,
+  "version": 475,
   "recipes": [
     {
       "type": 4,
@@ -988,6 +988,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:cut_copper"
         }
       ],
@@ -1005,7 +1006,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -1023,6 +1024,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -1288,6 +1290,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:exposed_cut_copper"
         }
       ],
@@ -1305,6 +1308,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:exposed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -1322,7 +1326,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:exposed_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -1571,6 +1575,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:oxidized_cut_copper"
         }
       ],
@@ -1588,7 +1593,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:oxidized_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -1606,6 +1611,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:oxidized_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -2831,6 +2837,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_cut_copper"
         }
       ],
@@ -2848,7 +2855,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:waxed_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -2866,6 +2873,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -2883,7 +2891,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:waxed_exposed_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -2936,6 +2944,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_exposed_cut_copper"
         }
       ],
@@ -2953,6 +2962,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_exposed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -3005,6 +3015,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_oxidized_cut_copper"
         }
       ],
@@ -3022,7 +3033,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:waxed_oxidized_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -3040,6 +3051,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_oxidized_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -3091,6 +3103,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_weathered_cut_copper"
         }
       ],
@@ -3108,7 +3121,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:waxed_weathered_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -3126,6 +3139,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:waxed_weathered_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -3178,6 +3192,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:weathered_cut_copper"
         }
       ],
@@ -3195,7 +3210,7 @@
       ],
       "output": [
         {
-          "count": 2,
+          "count": 8,
           "blockState": "minecraft:weathered_cut_copper_slab;top_slot_bit=0"
         }
       ],
@@ -3213,6 +3228,7 @@
       ],
       "output": [
         {
+          "count": 4,
           "blockState": "minecraft:weathered_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
         }
       ],
@@ -12453,7 +12469,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 623,
+          "legacyId": 624,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         }
@@ -19268,7 +19284,7 @@
       ],
       "output": [
         {
-          "legacyId": 621,
+          "legacyId": 622,
           "id": "minecraft:glow_frame"
         }
       ],
@@ -29118,7 +29134,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 623,
+          "legacyId": 624,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         },
@@ -29130,7 +29146,7 @@
       },
       "output": [
         {
-          "legacyId": 624,
+          "legacyId": 625,
           "id": "minecraft:spyglass"
         }
       ],
@@ -30244,7 +30260,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 623,
+          "legacyId": 624,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         },
@@ -49403,6 +49419,78 @@
     },
     {
       "inputId": "minecraft:potion",
+      "inputMeta": 21,
+      "reagentId": "minecraft:fermented_spider_eye",
+      "reagentMeta": 0,
+      "outputId": "minecraft:potion",
+      "outputMeta": 23
+    },
+    {
+      "inputId": "minecraft:splash_potion",
+      "inputMeta": 21,
+      "reagentId": "minecraft:fermented_spider_eye",
+      "reagentMeta": 0,
+      "outputId": "minecraft:splash_potion",
+      "outputMeta": 23
+    },
+    {
+      "inputId": "minecraft:lingering_potion",
+      "inputMeta": 21,
+      "reagentId": "minecraft:fermented_spider_eye",
+      "reagentMeta": 0,
+      "outputId": "minecraft:lingering_potion",
+      "outputMeta": 23
+    },
+    {
+      "inputId": "minecraft:potion",
+      "inputMeta": 5,
+      "reagentId": "minecraft:redstone",
+      "reagentMeta": 0,
+      "outputId": "minecraft:potion",
+      "outputMeta": 6
+    },
+    {
+      "inputId": "minecraft:splash_potion",
+      "inputMeta": 5,
+      "reagentId": "minecraft:redstone",
+      "reagentMeta": 0,
+      "outputId": "minecraft:splash_potion",
+      "outputMeta": 6
+    },
+    {
+      "inputId": "minecraft:lingering_potion",
+      "inputMeta": 5,
+      "reagentId": "minecraft:redstone",
+      "reagentMeta": 0,
+      "outputId": "minecraft:lingering_potion",
+      "outputMeta": 6
+    },
+    {
+      "inputId": "minecraft:potion",
+      "inputMeta": 0,
+      "reagentId": "minecraft:rabbit_foot",
+      "reagentMeta": 0,
+      "outputId": "minecraft:potion",
+      "outputMeta": 1
+    },
+    {
+      "inputId": "minecraft:splash_potion",
+      "inputMeta": 0,
+      "reagentId": "minecraft:rabbit_foot",
+      "reagentMeta": 0,
+      "outputId": "minecraft:splash_potion",
+      "outputMeta": 1
+    },
+    {
+      "inputId": "minecraft:lingering_potion",
+      "inputMeta": 0,
+      "reagentId": "minecraft:rabbit_foot",
+      "reagentMeta": 0,
+      "outputId": "minecraft:lingering_potion",
+      "outputMeta": 1
+    },
+    {
+      "inputId": "minecraft:potion",
       "inputMeta": 4,
       "reagentId": "minecraft:fermented_spider_eye",
       "reagentMeta": 0,
@@ -49716,30 +49804,6 @@
     {
       "inputId": "minecraft:potion",
       "inputMeta": 21,
-      "reagentId": "minecraft:fermented_spider_eye",
-      "reagentMeta": 0,
-      "outputId": "minecraft:potion",
-      "outputMeta": 23
-    },
-    {
-      "inputId": "minecraft:splash_potion",
-      "inputMeta": 21,
-      "reagentId": "minecraft:fermented_spider_eye",
-      "reagentMeta": 0,
-      "outputId": "minecraft:splash_potion",
-      "outputMeta": 23
-    },
-    {
-      "inputId": "minecraft:lingering_potion",
-      "inputMeta": 21,
-      "reagentId": "minecraft:fermented_spider_eye",
-      "reagentMeta": 0,
-      "outputId": "minecraft:lingering_potion",
-      "outputMeta": 23
-    },
-    {
-      "inputId": "minecraft:potion",
-      "inputMeta": 21,
       "reagentId": "minecraft:glowstone_dust",
       "reagentMeta": 0,
       "outputId": "minecraft:potion",
@@ -50048,30 +50112,6 @@
       "reagentMeta": 0,
       "outputId": "minecraft:lingering_potion",
       "outputMeta": 7
-    },
-    {
-      "inputId": "minecraft:potion",
-      "inputMeta": 5,
-      "reagentId": "minecraft:redstone",
-      "reagentMeta": 0,
-      "outputId": "minecraft:potion",
-      "outputMeta": 6
-    },
-    {
-      "inputId": "minecraft:splash_potion",
-      "inputMeta": 5,
-      "reagentId": "minecraft:redstone",
-      "reagentMeta": 0,
-      "outputId": "minecraft:splash_potion",
-      "outputMeta": 6
-    },
-    {
-      "inputId": "minecraft:lingering_potion",
-      "inputMeta": 5,
-      "reagentId": "minecraft:redstone",
-      "reagentMeta": 0,
-      "outputId": "minecraft:lingering_potion",
-      "outputMeta": 6
     },
     {
       "inputId": "minecraft:potion",
@@ -50672,30 +50712,6 @@
       "reagentMeta": 0,
       "outputId": "minecraft:lingering_potion",
       "outputMeta": 4
-    },
-    {
-      "inputId": "minecraft:potion",
-      "inputMeta": 0,
-      "reagentId": "minecraft:rabbit_foot",
-      "reagentMeta": 0,
-      "outputId": "minecraft:potion",
-      "outputMeta": 1
-    },
-    {
-      "inputId": "minecraft:splash_potion",
-      "inputMeta": 0,
-      "reagentId": "minecraft:rabbit_foot",
-      "reagentMeta": 0,
-      "outputId": "minecraft:splash_potion",
-      "outputMeta": 1
-    },
-    {
-      "inputId": "minecraft:lingering_potion",
-      "inputMeta": 0,
-      "reagentId": "minecraft:rabbit_foot",
-      "reagentMeta": 0,
-      "outputId": "minecraft:lingering_potion",
-      "outputMeta": 1
     },
     {
       "inputId": "minecraft:potion",
