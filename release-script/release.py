@@ -62,7 +62,7 @@ log("-> Preparing to publish", project_name, project_version)
 
 git_is_dirty = cmd('git', 'status', '--porcelain')
 if not ignore_dirty_state:
-    check(not git_is_dirty, "The workspace is dirty!\n" + git_is_dirty)
+    check(not git_is_dirty, "The workspace is dirty!\n" + str(git_is_dirty))
 
 
 set_build_number(project_version)
@@ -141,13 +141,13 @@ try:
             finish_progress()
 
         def pterodactyl_tag_name(base, java):
-            return base + '-pterodactyl-java-' + java
+            return base + '-pterodactyl-java-' + str(java)
 
         def build_pterodactyl(java):
             base = docker_tag
             if is_snapshot:
                 base = "bleeding"
-            build_docker(pterodactyl_tag_name(base, java), './docker_pterodactyl-image-java'+java+'.Dockerfile')
+            build_docker(pterodactyl_tag_name(base, java), './docker_pterodactyl-image-java'+str(java)+'.Dockerfile')
 
         if run_docker_build_pterodactyl:
             start_progress("Building pterodactyl images")
