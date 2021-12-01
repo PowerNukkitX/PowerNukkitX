@@ -53,61 +53,61 @@ public class ResourcePacksInfoPacket extends DataPacket {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean isForcedToAccept() {
         return mustAccept;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setForcedToAccept(boolean mustAccept) {
         this.mustAccept = mustAccept;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean isScriptingEnabled() {
         return scripting;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setScriptingEnabled(boolean scripting) {
         this.scripting = scripting;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public ResourcePack[] getBehaviourPackEntries() {
         return behaviourPackEntries;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setBehaviourPackEntries(ResourcePack[] behaviourPackEntries) {
         this.behaviourPackEntries = behaviourPackEntries;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public ResourcePack[] getResourcePackEntries() {
         return resourcePackEntries;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setResourcePackEntries(ResourcePack[] resourcePackEntries) {
         this.resourcePackEntries = resourcePackEntries;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean isForcingServerPacksEnabled() {
         return forcingServerPacksEnabled;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
         this.forcingServerPacksEnabled = forcingServerPacksEnabled;
     }

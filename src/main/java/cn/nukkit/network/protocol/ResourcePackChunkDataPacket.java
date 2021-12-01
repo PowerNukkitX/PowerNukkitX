@@ -9,7 +9,7 @@ import org.powernukkit.version.Version;
 import java.util.UUID;
 
 @ToString(exclude = "data")
-@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "FUTURE")
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "1.5.2.0-PN")
 public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
@@ -37,28 +37,28 @@ public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket 
         this.putByteArray(this.data);
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     @Override
     public Version getPackVersion() {
         return packVersion;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     @Override
     public void setPackVersion(Version packVersion) {
         this.packVersion = packVersion;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     @Override
     public UUID getPackId() {
         return packId;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     @Override
     public void setPackId(UUID packId) {

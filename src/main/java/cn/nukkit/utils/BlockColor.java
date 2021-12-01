@@ -166,7 +166,7 @@ public class BlockColor  {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getARGB() {
         return this.alpha << 24 | this.red << 16 | this.green << 8 | this.blue;
     }

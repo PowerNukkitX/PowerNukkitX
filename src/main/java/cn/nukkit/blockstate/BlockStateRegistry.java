@@ -184,7 +184,7 @@ public class BlockStateRegistry {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nullable
     public String getKnownBlockStateIdByRuntimeId(int runtimeId) {
         if (runtimeId >= 0 && runtimeId < knownStateIds.size()) {
@@ -194,7 +194,7 @@ public class BlockStateRegistry {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getKnownRuntimeIdByBlockStateId(String stateId) {
         int result = knownStateIds.indexOf(stateId);
         if (result != -1) {
@@ -259,7 +259,7 @@ public class BlockStateRegistry {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getBlockIdByRuntimeId(int runtimeId) {
         Registration registration = findRegistrationByRuntimeId(runtimeId);
         if (registration == null) {

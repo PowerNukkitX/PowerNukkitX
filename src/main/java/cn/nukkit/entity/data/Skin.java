@@ -239,22 +239,22 @@ public class Skin {
         this.capeOnClassic = capeOnClassic;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setPrimaryUser(boolean primaryUser) {
         this.primaryUser = primaryUser;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean isPrimaryUser() {
         return primaryUser;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
         this.geometryDataEngineVersion = geometryDataEngineVersion;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public String getGeometryDataEngineVersion() {
         return geometryDataEngineVersion;
     }

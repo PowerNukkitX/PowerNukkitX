@@ -23,7 +23,7 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_EXPLODE = dynamic(6);
     public static final int TYPE_EVAPORATION = dynamic(7);
     public static final int TYPE_FLAME = dynamic(8);
-    @PowerNukkitOnly @Since("FUTURE") public static final int TYPE_CANDLE_FLAME = dynamic(9);
+    @PowerNukkitOnly @Since("1.5.2.0-PN") public static final int TYPE_CANDLE_FLAME = dynamic(9);
     public static final int TYPE_LAVA = dynamic(10);
     public static final int TYPE_LARGE_SMOKE = dynamic(11);
     public static final int TYPE_REDSTONE = dynamic(12);
@@ -37,15 +37,15 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_TERRAIN = dynamic(20);
     public static final int TYPE_TOWN_AURA = dynamic(21);
 
-    @Deprecated @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Same as TYPE_TOWN_AURA",
+    @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_TOWN_AURA",
             replaceWith = "TYPE_TOWN_AURA")
     public static final int TYPE_SUSPENDED_TOWN = TYPE_TOWN_AURA;
     
     public static final int TYPE_PORTAL = dynamic(22);
-    @PowerNukkitOnly @Since("FUTURE") public static final int TYPE_MOB_PORTAL = dynamic(23);
+    @PowerNukkitOnly @Since("1.5.2.0-PN") public static final int TYPE_MOB_PORTAL = dynamic(23);
     public static final int TYPE_SPLASH = dynamic(24);
 
-    @Deprecated @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Same as TYPE_SPLASH",
+    @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_SPLASH",
             replaceWith = "TYPE_SPLASH")
     public static final int TYPE_WATER_SPLASH = TYPE_SPLASH;
     
@@ -58,7 +58,7 @@ public abstract class Particle extends Vector3 {
     @Since("1.4.0.0-PN") public static final int TYPE_STALACTITE_DRIP_LAVA = dynamic(31);
     public static final int TYPE_FALLING_DUST = dynamic(32);
     
-    @Deprecated @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Same as TYPE_FALLING_DUST",
+    @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_FALLING_DUST",
             replaceWith = "TYPE_FALLING_DUST")
     public static final int TYPE_DUST = TYPE_FALLING_DUST;
     

@@ -263,7 +263,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Override
     public Integer putResourcePacket(Player player, DataPacket packet) {
         NukkitRakNetSession session = this.sessions.get(player.getSocketAddress());

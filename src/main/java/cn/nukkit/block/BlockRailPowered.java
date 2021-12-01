@@ -79,7 +79,7 @@ public class BlockRailPowered extends BlockRail implements RedstoneComponent {
         return 0;
     }
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     @Override
     public void afterRemoval(Block newBlock, boolean update) {

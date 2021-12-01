@@ -68,13 +68,13 @@ public class ResourcePackManager {
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getMaxChunkSize() {
         return this.maxChunkSize;
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setMaxChunkSize(int size) {
         this.maxChunkSize = size;
     }

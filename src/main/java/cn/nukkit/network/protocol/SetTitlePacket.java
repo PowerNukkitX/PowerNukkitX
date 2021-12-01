@@ -60,7 +60,7 @@ public class SetTitlePacket extends DataPacket {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public TitleAction getTitleAction() {
         int currentType = this.type;
@@ -71,95 +71,95 @@ public class SetTitlePacket extends DataPacket {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setTitleAction(@Nonnull TitleAction type) {
         this.type = type.ordinal();
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public String getText() {
         return text;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setText(@Nonnull String text) {
         this.text = text;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getFadeInTime() {
         return fadeInTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setFadeInTime(int fadeInTime) {
         this.fadeInTime = fadeInTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getStayTime() {
         return stayTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setStayTime(int stayTime) {
         this.stayTime = stayTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public int getFadeOutTime() {
         return fadeOutTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setFadeOutTime(int fadeOutTime) {
         this.fadeOutTime = fadeOutTime;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public String getXuid() {
         return xuid;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setXuid(String xuid) {
         this.xuid = xuid;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public String getPlatformOnlineId() {
         return platformOnlineId;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setPlatformOnlineId(String platformOnlineId) {
         this.platformOnlineId = platformOnlineId;
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public enum TitleAction {
-        @PowerNukkitOnly @Since("FUTURE") CLEAR,
-        @PowerNukkitOnly @Since("FUTURE") RESET,
-        @PowerNukkitOnly @Since("FUTURE") SET_TITLE_MESSAGE,
-        @PowerNukkitOnly @Since("FUTURE") SET_SUBTITLE_MESSAGE,
-        @PowerNukkitOnly @Since("FUTURE") SET_ACTION_BAR_MESSAGE,
-        @PowerNukkitOnly @Since("FUTURE") SET_ANIMATION_TIMES,
-        @PowerNukkitOnly @Since("FUTURE") SET_TITLE_JSON,
-        @PowerNukkitOnly @Since("FUTURE") SET_SUBTITLE_JSON,
-        @PowerNukkitOnly @Since("FUTURE") SET_ACTIONBAR_JSON,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") CLEAR,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") RESET,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_TITLE_MESSAGE,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_SUBTITLE_MESSAGE,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ACTION_BAR_MESSAGE,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ANIMATION_TIMES,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_TITLE_JSON,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_SUBTITLE_JSON,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") SET_ACTIONBAR_JSON,
     }
 }

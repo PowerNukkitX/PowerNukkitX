@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @since 2021-07-13
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 class AddVolumeEntityPacketTest {
     @Test
     void encodeDecode() {

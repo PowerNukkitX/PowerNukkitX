@@ -6111,7 +6111,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean dataResourcePacket(DataPacket packet) {
         if (!this.connected) {
             return false;

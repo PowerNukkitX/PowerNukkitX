@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 2021-07-14
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 @ExtendWith(PowerNukkitExtension.class)
 class BinaryStreamTest {
     BinaryStream stream;
