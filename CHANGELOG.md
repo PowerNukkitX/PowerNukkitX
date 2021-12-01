@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 with an added upstream's major version number in front of the major version, so we have a better distinction from
 Nukkit 1.X and 2.X.
 
-## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
+## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
 
 ## [1.5.2.0-PN] - 2021-12-01 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
@@ -25,9 +25,11 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 ### Added
 - [#1233] New API classes and methods was added, check the [JDiff](https://devs.powernukkit.org/jdiff/1.5.2.0-PN_x_1.5.1.0-PN/changes.html) for details.
 - [#1193] Add more damage causes to the API and improve magma block death message
+- [#1233] French translations (thank you for the translations!) 
 
 ### Changed
 - [#1244] Changed the `recipes.json` and `creativeitems.json` format for easier changes, updates, and maintenance (backward compatible)
+- [#1233] Updated Deutsch, Indonesian, Korean, Poland, Russian, Spanish, Turkish, Vietnamese, Brazilian Portuguese, and Simplified Chinese translations. (thank you!)
 
 ### Fixes
 - [#1187] Fixes powered rails do not update in a row
@@ -950,6 +952,8 @@ Fixes several anvil issues.
 [#1187]: https://github.com/PowerNukkit/PowerNukkit/issues/1187
 [#1191]: https://github.com/PowerNukkit/PowerNukkit/issues/1191
 [#1193]: https://github.com/PowerNukkit/PowerNukkit/issues/1193
+[#1202]: https://github.com/PowerNukkit/PowerNukkit/issues/1202
+[#1214]: https://github.com/PowerNukkit/PowerNukkit/issues/1214
 [#1233]: https://github.com/PowerNukkit/PowerNukkit/issues/1233
 [#1244]: https://github.com/PowerNukkit/PowerNukkit/issues/1244
 [#1216]: https://github.com/PowerNukkit/PowerNukkit/issues/1216
