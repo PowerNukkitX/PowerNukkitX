@@ -21,13 +21,13 @@ package org.powernukkit.dumps;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.HumanStringComparator;
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j2;
-import org.powernukkit.HumanStringComparator;
 
 import java.io.*;
 import java.util.Map;
@@ -82,7 +82,7 @@ public class ItemIdDumper {
             }
         }
         
-        try (FileWriter writer = new FileWriter("item-id-dump.properties")) {
+        try (FileWriter writer = new FileWriter("dumps/item-id-dump.properties")) {
             for (Map.Entry<String, String> entry : itemIds.entrySet()) {
                 writer.write(entry.getKey());
                 writer.write('=');
@@ -91,7 +91,7 @@ public class ItemIdDumper {
             }
         }
 
-        try (FileWriter writer = new FileWriter("block-id-dump-from-items.properties")) {
+        try (FileWriter writer = new FileWriter("dumps/block-id-dump-from-items.properties")) {
             for (Map.Entry<String, String> entry : blockIds.entrySet()) {
                 writer.write(entry.getKey());
                 writer.write('=');

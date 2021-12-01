@@ -499,6 +499,15 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
     public abstract boolean isDefaultValue(@Nullable T value);
 
     @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public final boolean isDefaultPersistentValue(@Nonnull String value) {
+        int meta = getMetaForPersistenceValue(value);
+        int intValue = getIntValueForMeta(meta);
+        int defaultIntValue = getDefaultIntValue();
+        return intValue == defaultIntValue;
+    }
+
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
     public abstract T getDefaultValue();

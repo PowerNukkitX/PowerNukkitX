@@ -3,11 +3,13 @@ package cn.nukkit.level.format.anvil;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWall;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.ByteArrayTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.powernukkit.tests.api.ReflectionUtil;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import java.math.BigInteger;
@@ -17,6 +19,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ChunkSectionTest {
+    /**
+     * https://github.com/PowerNukkit/PowerNukkit/issues/1186
+     */
+    @Test
+    void issue1186() throws NoSuchFieldException {
+        ChunkSection section = new ChunkSection(2);
+        assertEquals(0, section.getBlockSkyLight(1,2,3));
+        section.hasSkyLight = true;
+        assertEquals(15, section.getBlockSkyLight(1,2,3));
+        assertEquals(0, section.getBlockLight(1,2,3));
+        
+        section.setBlockSkyLight(1,2,3,4);
+        section.setBlockLight(1,2,3,2);
+        assertTrue(section.compress());
+        
+        // Corrupting intentionally
+        ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
+        section.setBlockSkyLight(1,2,3,5);
+        section.setBlockLight(1,2,3, 7);
+
+        assertEquals(5, section.getBlockSkyLight(1,2,3));
+        assertEquals(7, section.getBlockLight(1,2,3));
+        
+        section.compress();
+        
+        // Corrupting intentionally
+        ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
+
+        assertEquals(15, section.getBlockSkyLight(1,2,3));
+        assertEquals(0, section.getBlockLight(1,2,3));
+    }
+
     @Test
     void omgThatIsHugePersistence() {
         ChunkSection section = new ChunkSection(4);
@@ -49,6 +83,13 @@ class ChunkSectionTest {
         
         ChunkSection loaded = new ChunkSection(nbt);
         assertEquals(15, loaded.getBlockState(0,0,0).getExactIntStorage());
+        for (int i = 0; i < EmptyChunkSection.EMPTY_LIGHT_ARR.length; i++) {
+            assertEquals(0, EmptyChunkSection.EMPTY_LIGHT_ARR[i]);
+        }
+
+        for (int i = 0; i < EmptyChunkSection.EMPTY_SKY_LIGHT_ARR.length; i++) {
+            assertEquals((byte) 255, EmptyChunkSection.EMPTY_SKY_LIGHT_ARR[i]);
+        }
     }
     
     @Test

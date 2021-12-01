@@ -2,6 +2,8 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerCreationEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.network.protocol.BatchPacket;
@@ -9,10 +11,13 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Utils;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+
 import com.nukkitx.network.raknet.*;
 import com.nukkitx.network.util.DisconnectReason;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,8 +27,10 @@ import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.concurrent.ScheduledFuture;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.io.IOException;
@@ -254,7 +261,21 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     public void onUnhandledDatagram(ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
         this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
     }
+    
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    @Override
+    public Integer putResourcePacket(Player player, DataPacket packet) {
+        NukkitRakNetSession session = this.sessions.get(player.getSocketAddress());
 
+        if (session != null) {
+            packet.tryEncode();
+            session.sendResourcePacket(packet.clone());
+        }
+
+        return null;
+    }
+    
     @RequiredArgsConstructor
     private class NukkitRakNetSession implements RakNetSessionListener {
         private final RakNetServerSession raknet;
@@ -361,6 +382,24 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 byteBuf.writeByte(0xfe);
                 byteBuf.writeBytes(payload);
                 this.raknet.send(byteBuf, RakNetPriority.IMMEDIATE);
+            } catch (Exception e) {
+                log.error("Error occured while sending a packet immediately", e);
+            }
+        }
+        
+        private void sendResourcePacket(DataPacket packet) {
+            BinaryStream batched = new BinaryStream();
+            Preconditions.checkArgument(!(packet instanceof BatchPacket), "Cannot batch BatchPacket");
+            Preconditions.checkState(packet.isEncoded, "Packet should have already been encoded");
+            byte[] buf = packet.getBuffer();
+            batched.putUnsignedVarInt(buf.length);
+            batched.put(buf);
+            try {
+                byte[] payload = Network.deflateRaw(batched.getBuffer(), network.getServer().networkCompressionLevel);
+                ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length);
+                byteBuf.writeByte(0xfe);
+                byteBuf.writeBytes(payload);
+                this.raknet.send(byteBuf);
             } catch (Exception e) {
                 log.error("Error occured while sending a packet immediately", e);
             }

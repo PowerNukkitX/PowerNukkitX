@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public class BlockUnknown extends BlockMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final UnsignedIntBlockProperty UNKNOWN = new UnsignedIntBlockProperty("unknown", true, 0xFFFFFFFF);
+    public static final UnsignedIntBlockProperty UNKNOWN = new UnsignedIntBlockProperty("nukkit-unknown", true, 0xFFFFFFFF);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -29,7 +29,17 @@ public class BlockUnknown extends BlockMeta {
         super(0);
         this.id = id;
         if (meta != null && meta != 0) {
-            getMutableState().setDataStorageFromInt(meta, true);
+            getMutableState().setDataStorageFromInt(meta, false);
+        }
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public BlockUnknown(int id, Number meta) {
+        super(0);
+        this.id = id;
+        if (meta != null) {
+            getMutableState().setDataStorage(meta, false);
         }
     }
 

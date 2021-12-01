@@ -278,6 +278,48 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by hunger
          */
-        HUNGER
+        HUNGER,
+        /**
+         * Damage caused by Wither
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        WITHER,
+        /**
+         * Damage caused by thorns
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        THORNS,
+        /**
+         * Damage caused by falling block
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FALLING_BLOCK,
+        /**
+         * Damage caused by flying into wall
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FLYING_INTO_WALL,
+        /**
+         * Damage caused when an entity steps on a hot block, like {@link cn.nukkit.block.BlockID#MAGMA}
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        HOT_FLOOR,
+        /**
+         * Damage caused by fireworks
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FIREWORKS,
+        /**
+         * Damage caused by temperature
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FREEZING,
     }
 }

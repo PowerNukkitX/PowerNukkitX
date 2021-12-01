@@ -85,6 +85,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.powernukkit.version.Version;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -2355,7 +2356,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             disconnectPacket.encode();
                             BatchPacket batch = new BatchPacket();
                             batch.payload = disconnectPacket.getBuffer();
-                            this.dataPacket(batch);
+                            this.dataPacketImmediately(batch);
                             // Still want to run close() to allow the player to be removed properly
                         }
                         this.close("", message, false);
@@ -2475,18 +2476,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                                 dataInfoPacket.packId = resourcePack.getPackId();
-                                dataInfoPacket.maxChunkSize = 1048576; //megabyte
-                                dataInfoPacket.chunkCount = resourcePack.getPackSize() / dataInfoPacket.maxChunkSize;
+                                dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
+                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 102400 is default
+                                dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
-                                this.dataPacket(dataInfoPacket);
+                                this.dataResourcePacket(dataInfoPacket);
                             }
                             break;
                         case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS:
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
-                            this.dataPacket(stackPacket);
+                            this.dataResourcePacket(stackPacket);
                             break;
                         case ResourcePackClientResponsePacket.STATUS_COMPLETED:
                             this.shouldLogin = true;
@@ -2497,21 +2499,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                     }
                     break;
-                case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET:
+                case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET: {
                     ResourcePackChunkRequestPacket requestPacket = (ResourcePackChunkRequestPacket) packet;
-                    ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(requestPacket.packId);
+                    ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(requestPacket.getPackId()); // TODO: Pack version check
                     if (resourcePack == null) {
                         this.close("", "disconnectionScreen.resourcePack");
                         break;
                     }
 
+                    int maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                     ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
-                    dataPacket.packId = resourcePack.getPackId();
+                    dataPacket.setPackId(resourcePack.getPackId());
+                    dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
                     dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(1048576 * requestPacket.chunkIndex, 1048576);
-                    dataPacket.progress = 1048576 * requestPacket.chunkIndex;
-                    this.dataPacket(dataPacket);
+                    dataPacket.data = resourcePack.getPackChunk(maxChunkSize * requestPacket.chunkIndex, maxChunkSize);
+                    dataPacket.progress = maxChunkSize * (long) requestPacket.chunkIndex;
+                    this.dataResourcePacket(dataPacket);
                     break;
+                }
                 case ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET:
                     if (this.locallyInitialized) {
                         break;
@@ -2551,7 +2556,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     return false;
                                 }
                             }).map(Field::getName).findFirst();
-                    log.warn("Violation warning from {}{}", this.getName(), packetName.map(name-> " for packet "+name).orElse("")+": " + packet.toString());
+                    log.warn("Violation warning from {}{}", this.getName(), packetName.map(name-> " for packet "+name).orElse("")+": " + packet);
                     break;
                 case ProtocolInfo.EMOTE_PACKET:
                     for (Player viewer : this.getViewers().values()) {
@@ -4543,12 +4548,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
 
                 case LAVA:
-                    Block block = this.level.getBlock(new Vector3(this.x, this.y - 1, this.z));
-                    if (block.getId() == Block.MAGMA) {
-                        message = "death.attack.magma";
-                    } else {
-                        message = "death.attack.lava";
-                    }
+                    message = "death.attack.lava";
+                    
                     if (killer instanceof EntityProjectile) {
                         Entity shooter = ((EntityProjectile) killer).shootingEntity;
                         if (shooter != null) {
@@ -4608,6 +4609,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case HUNGER:
                     message = "death.attack.starve";
+                    break;
+                case HOT_FLOOR:
+                    message = "death.attack.magma";
                     break;
                 default:
                     message = "death.attack.generic";
@@ -5122,7 +5126,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         PlayStatusPacket pk = new PlayStatusPacket();
         pk.status = status;
 
-        this.dataPacket(pk);
+        if (immediate) {
+            this.dataPacketImmediately(pk);
+        } else {
+            this.dataPacket(pk);
+        }
     }
 
     @Override
@@ -6097,6 +6105,30 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.interfaz.putPacket(this, packet, false, true);
+        }
+        
+        return true;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public boolean dataResourcePacket(DataPacket packet) {
+        if (!this.connected) {
+            return false;
+        }
+
+        try (Timing ignored = Timings.getSendDataPacketTiming(packet)) {
+            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+            this.server.getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                return false;
+            }
+
+            if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
+                log.trace("Resource Outbound {}: {}", this.getName(), packet);
+            }
+
+            this.interfaz.putResourcePacket(this, packet);
         }
         
         return true;

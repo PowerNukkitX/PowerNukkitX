@@ -1,11 +1,16 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import lombok.ToString;
+import org.powernukkit.version.Version;
 
 import java.util.UUID;
 
 @ToString(exclude = "sha256")
-public class ResourcePackDataInfoPacket extends DataPacket {
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "1.5.2.0-PN")
+public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
@@ -21,6 +26,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     public static final int TYPE_COUNT = 9;
 
     public UUID packId;
+    private Version packVersion;
     public int maxChunkSize;
     public int chunkCount;
     public long compressedPackSize;
@@ -30,7 +36,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.packId = UUID.fromString(this.getString());
+        decodePackInfo();
         this.maxChunkSize = this.getLInt();
         this.chunkCount = this.getLInt();
         this.compressedPackSize = this.getLLong();
@@ -42,7 +48,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putString(this.packId.toString());
+        encodePackInfo();
         this.putLInt(this.maxChunkSize);
         this.putLInt(this.chunkCount);
         this.putLLong(this.compressedPackSize);
@@ -54,5 +60,31 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Override
     public byte pid() {
         return NETWORK_ID;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public Version getPackVersion() {
+        return packVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public void setPackVersion(Version packVersion) {
+        this.packVersion = packVersion;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public UUID getPackId() {
+        return packId;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public void setPackId(UUID packId) {
+        this.packId = packId;
     }
 }

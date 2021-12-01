@@ -1,7 +1,11 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+
 import com.google.common.io.Files;
+
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -9,6 +13,9 @@ import java.util.*;
 
 @Log4j2
 public class ResourcePackManager {
+
+    private int maxChunkSize = 102400;
+    
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private ResourcePack[] resourcePacks;
 
@@ -58,5 +65,17 @@ public class ResourcePackManager {
 
     public ResourcePack getPackById(UUID id) {
         return this.resourcePacksById.get(id);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public int getMaxChunkSize() {
+        return this.maxChunkSize;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public void setMaxChunkSize(int size) {
+        this.maxChunkSize = size;
     }
 }

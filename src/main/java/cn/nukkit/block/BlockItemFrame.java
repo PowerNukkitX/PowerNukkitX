@@ -40,8 +40,12 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     public static final BooleanBlockProperty HAS_MAP = new BooleanBlockProperty("item_frame_map_bit", false);
 
     @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public static final BooleanBlockProperty HAS_PHOTO = new BooleanBlockProperty("item_frame_photo_bit", false);
+
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, HAS_MAP);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, HAS_MAP, HAS_PHOTO);
 
     public BlockItemFrame() {
         this(0);
@@ -89,6 +93,18 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @Since("1.4.0.0-PN")
     public void setStoringMap(boolean map) {
         setBooleanValue(HAS_MAP, map);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public boolean isStoringPhoto() {
+        return getBooleanValue(HAS_PHOTO);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public void setStoringPhoto(boolean hasPhoto) {
+        setBooleanValue(HAS_PHOTO, hasPhoto);
     }
 
     @PowerNukkitOnly
@@ -177,8 +193,16 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (target.getId() != COBBLE_WALL && (!target.isSolid() || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWall)  && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
+        }
+
+        if (target.equals(block) && block.canBeReplaced()) {
+            face = BlockFace.UP;
+            target = block.down();
+            if (!target.isSolid() && !(target instanceof BlockWall)) {
+                return false;
+            }
         }
 
         setBlockFace(face);

@@ -14,7 +14,7 @@
     Upstream is the NukkitX major version
     PN is a indicator that software is running PowerNukkit, it must be present both in releases and snapshot versions
     -->
-    <version>1.5.1.0-PN-CUSTOM</version>
+    <version>1.5.2.0-PN</version>
 
     <inceptionYear>2020</inceptionYear>
     <organization>
@@ -125,6 +125,11 @@
             <artifactId>fastutil-lite</artifactId>
             <version>8.1.1</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powernukkit</groupId>
+            <artifactId>version-library</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -417,6 +422,25 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.20.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <addOutputDirectory>false</addOutputDirectory>
+                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/delombok</outputDirectory>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
@@ -424,6 +448,7 @@
                     <source>8</source>
                     <doclint>none</doclint>
                     <quiet>true</quiet>
+                    <sourcepath>${project.build.directory}/delombok</sourcepath>
                 </configuration>
                 <executions>
                     <execution>

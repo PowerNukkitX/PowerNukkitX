@@ -11,6 +11,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ChunkException;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -258,7 +259,14 @@ public abstract class BlockEntity extends Position {
         chunk.setChanged();
 
         if (this.getLevelBlock().getId() != BlockID.AIR) {
-            this.level.updateComparatorOutputLevelSelective(this, isObservable());
+            getLevel().getServer().getScheduler().scheduleTask(new Task() {
+                @Override
+                public void onRun(int currentTick) {
+                    if (isValid() && isBlockEntityValid()) {
+                        getLevel().updateComparatorOutputLevelSelective(BlockEntity.this, isObservable());
+                    }
+                }
+            });
         }
     }
 

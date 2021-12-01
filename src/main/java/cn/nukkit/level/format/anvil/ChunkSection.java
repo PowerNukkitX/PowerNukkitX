@@ -119,12 +119,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         }
 
         byte[] dataBytes = storageTag.getByteArray("Data");
+        NibbleArray data;
         if (dataBytes.length == 0) {
-            dataBytes = EmptyChunkSection.EMPTY_DATA_ARRAY;
+            data = NibbleArray.EMPTY_DATA_ARRAY;
         } else {
             hasBlockIds = true;
+            data = new NibbleArray(dataBytes);
         }
-        NibbleArray data = new NibbleArray(dataBytes);
 
         byte[] dataExtraBytes = storageTag.getByteArray("DataExtra");
         if (dataExtraBytes.length == 0) {
@@ -437,8 +438,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             } else if (compressedLight == null) {
                 return 15;
             }
+            this.skyLight = getSkyLightArray();
         }
-        this.skyLight = getSkyLightArray();
         int sl = this.skyLight[(y << 7) | (z << 3) | (x >> 1)] & 0xff;
         if ((x & 1) == 0) {
             return sl & 0x0f;
@@ -502,19 +503,22 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public byte[] getSkyLightArray() {
-        if (this.skyLight != null) return skyLight;
-        if (hasSkyLight) {
-            if (compressedLight != null) {
-                inflate();
-                return this.skyLight;
-            }
-            return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR;
-        } else {
-            return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        if (skyLight != null) {
+            return skyLight.clone();
         }
+        
+        if (!hasSkyLight) {
+            return new byte[EmptyChunkSection.EMPTY_LIGHT_ARR.length];
+        }
+        
+        if (compressedLight != null && inflate() && skyLight != null) {
+            return skyLight.clone();
+        }
+        
+        return EmptyChunkSection.EMPTY_SKY_LIGHT_ARR.clone();
     }
 
-    private void inflate() {
+    private boolean inflate() {
         try {
             if (compressedLight != null && compressedLight.length != 0) {
                 byte[] inflated = Zlib.inflate(compressedLight);
@@ -535,20 +539,24 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                     Arrays.fill(skyLight, (byte) 0xFF);
                 }
             }
+            return true;
         } catch (IOException e) {
             log.error("Failed to decompress a chunk section", e);
+            return false;
         }
     }
 
     @Override
     public byte[] getLightArray() {
-        if (this.blockLight != null) return blockLight;
-        if (hasBlockLight) {
-            inflate();
-            return this.blockLight;
-        } else {
-            return EmptyChunkSection.EMPTY_LIGHT_ARR;
+        if (blockLight != null) {
+            return blockLight.clone();
         }
+
+        if (hasBlockLight && compressedLight != null && inflate() && blockLight != null) {
+            return blockLight.clone();
+        }
+
+        return new byte[EmptyChunkSection.EMPTY_LIGHT_ARR.length];
     }
 
     @Override
@@ -719,8 +727,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         if (version >= SAVE_STORAGE_VERSION) {
             s.putList(storageList);
         }
-        s.putByteArray("BlockLight", getLightArray());
-        s.putByteArray("SkyLight", getSkyLightArray());
+        s.putByteArray("BlockLight", blockLight == null? getLightArray() : blockLight);
+        s.putByteArray("SkyLight", skyLight == null? getSkyLightArray(): skyLight);
         return s;
     }
     

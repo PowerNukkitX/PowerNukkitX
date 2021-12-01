@@ -3,6 +3,8 @@ package cn.nukkit.utils;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
@@ -26,6 +28,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
@@ -34,12 +37,16 @@ import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@Log4j2
 public class BinaryStream {
+
+    private static final int FALLBACK_ID = 248;
 
     public int offset;
     private byte[] buffer;
@@ -287,10 +294,8 @@ public class BinaryStream {
 
         this.putImage(skin.getCapeData());
         this.putString(skin.getGeometryData());
+        this.putString(skin.getGeometryDataEngineVersion());
         this.putString(skin.getAnimationData());
-        this.putBoolean(skin.isPremium());
-        this.putBoolean(skin.isPersona());
-        this.putBoolean(skin.isCapeOnClassic());
         this.putString(skin.getCapeId());
         this.putString(skin.getFullSkinId());
         this.putString(skin.getArmSize());
@@ -315,6 +320,10 @@ public class BinaryStream {
                 this.putString(color);
             }
         }
+        this.putBoolean(skin.isPremium());
+        this.putBoolean(skin.isPersona());
+        this.putBoolean(skin.isCapeOnClassic());
+        this.putBoolean(skin.isPrimaryUser());
     }
 
     public Skin getSkin() {
@@ -335,10 +344,8 @@ public class BinaryStream {
 
         skin.setCapeData(this.getImage());
         skin.setGeometryData(this.getString());
+        skin.setGeometryDataEngineVersion(this.getString());
         skin.setAnimationData(this.getString());
-        skin.setPremium(this.getBoolean());
-        skin.setPersona(this.getBoolean());
-        skin.setCapeOnClassic(this.getBoolean());
         skin.setCapeId(this.getString());
         this.getString(); // TODO: Full skin id
         skin.setArmSize(this.getString());
@@ -364,6 +371,10 @@ public class BinaryStream {
             }
             skin.getTintColors().add(new PersonaPieceTint(pieceType, colors));
         }
+        skin.setPremium(this.getBoolean());
+        skin.setPersona(this.getBoolean());
+        skin.setCapeOnClassic(this.getBoolean());
+        skin.setPrimaryUser(this.getBoolean());
         return skin;
     }
 
@@ -401,7 +412,13 @@ public class BinaryStream {
             getVarInt(); // netId
         }
 
-        getVarInt(); // blockRuntimeId
+        int blockRuntimeId = getVarInt();
+        if (id <= 255 && id != FALLBACK_ID) {
+            BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
+            if (blockStateByRuntimeId != null) {
+                damage = blockStateByRuntimeId.asItemBlock().getDamage();
+            }
+        }
 
         byte[] bytes = getByteArray();
         ByteBuf buf = AbstractByteBufAllocator.DEFAULT.ioBuffer(bytes.length);
@@ -425,7 +442,9 @@ public class BinaryStream {
 
             if (compoundTag != null && compoundTag.getAllTags().size() > 0) {
                 if (compoundTag.contains("Damage")) {
-                    damage = compoundTag.getInt("Damage");
+                    if (id > 255) {
+                        damage = compoundTag.getInt("Damage");
+                    }
                     compoundTag.remove("Damage");
                 }
                 if (compoundTag.contains("__DamageConflict__")) {
@@ -455,7 +474,7 @@ public class BinaryStream {
             buf.release();
         }
 
-        Item item = Item.get(id, damage, count, nbt);
+        Item item = readUnknownItem(Item.get(id, damage, count, nbt));
 
         if (canBreak.length > 0 || canPlace.length > 0) {
             CompoundTag namedTag = item.getNamedTag();
@@ -484,6 +503,68 @@ public class BinaryStream {
 
         return item;
     }
+    
+    private Item readUnknownItem(Item item) {
+        if (item.getId() != FALLBACK_ID || !item.hasCompoundTag()) {
+            return item;
+        }
+        
+        CompoundTag tag = item.getNamedTag();
+        if (!tag.containsCompound("PowerNukkitUnknown")) {
+            return item;
+        }
+
+        CompoundTag pnTag = tag.getCompound("PowerNukkitUnknown");
+        int itemId = pnTag.getInt("OriginalItemId");
+        int meta = pnTag.getInt("OriginalMeta");
+        boolean hasCustomName = pnTag.getBoolean("HasCustomName");
+        boolean hasCompound = pnTag.getBoolean("HasCompound");
+        boolean hasDisplayTag = pnTag.getBoolean("HasDisplayTag");
+        String customName = pnTag.getString("OriginalCustomName");
+        
+        item = Item.get(itemId, meta, item.getCount());
+        if (hasCompound) {
+            tag.remove("PowerNukkitUnknown");
+            if (!hasDisplayTag) {
+                tag.remove("display");
+            } else if (tag.containsCompound("display")) {
+                if (!hasCustomName) {
+                    tag.getCompound("display").remove("Name");
+                } else {
+                    tag.getCompound("display").putString("Name", customName);
+                }
+            }
+            item.setNamedTag(tag);
+        }
+        
+        return item;
+    }
+    
+    private Item createFakeUnknownItem(Item item) {
+        boolean hasCompound = item.hasCompoundTag();
+        Item fallback = Item.getBlock(FALLBACK_ID, 0, item.getCount());
+        CompoundTag tag = item.getNamedTag();
+        if (tag == null) {
+            tag = new CompoundTag();
+        }
+        tag.putCompound("PowerNukkitUnknown", new CompoundTag()
+                .putInt("OriginalItemId", item.getId())
+                .putInt("OriginalMeta", item.getDamage())
+                .putBoolean("HasCustomName", item.hasCustomName())
+                .putBoolean("HasDisplayTag", tag.contains("display"))
+                .putBoolean("HasCompound", hasCompound)
+                .putString("OriginalCustomName", item.getCustomName()));
+
+        fallback.setNamedTag(tag);
+        String suffix = "" + TextFormat.RESET + TextFormat.GRAY + TextFormat.ITALIC +
+                " (" + item.getId() + ":" + item.getDamage() + ")";
+        if (fallback.hasCustomName()) {
+            fallback.setCustomName(fallback.getCustomName() + suffix);
+        } else {
+            fallback.setCustomName(TextFormat.RESET + "" + TextFormat.BOLD + TextFormat.RED + "Unknown" + suffix);
+        }
+        return fallback;
+    }
 
     public void putSlot(Item item) {
         this.putSlot(item, false);
@@ -496,7 +577,14 @@ public class BinaryStream {
             return;
         }
 
-        int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        int networkFullId;
+        try {
+            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        } catch (IllegalArgumentException e) {
+            log.trace(e);
+            item = createFakeUnknownItem(item);
+            networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(item);
+        }
         int networkId = RuntimeItems.getNetworkId(networkFullId);
 
         putVarInt(networkId);
@@ -793,6 +881,30 @@ public class BinaryStream {
         );
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
+        if (collection == null) {
+            putUnsignedVarInt(0);
+            return;
+        }
+        putUnsignedVarInt(collection.size());
+        collection.forEach(writer);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public <T> void putArray(T[] collection, Consumer<T> writer) {
+        if (collection == null) {
+            putUnsignedVarInt(0);
+            return;
+        }
+        putUnsignedVarInt(collection.length);
+        for (T t : collection) {
+            writer.accept(t);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
@@ -816,7 +928,7 @@ public class BinaryStream {
         try {
             return NBTIO.read(is);
         } finally {
-            offset += is.available() - initial;
+            offset += initial - is.available();
         }
     }
 

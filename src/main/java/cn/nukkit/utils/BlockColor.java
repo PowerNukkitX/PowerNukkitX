@@ -165,6 +165,12 @@ public class BlockColor  {
         return (this.red << 16 | this.green << 8 | this.blue) & 0xffffff;
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public int getARGB() {
+        return this.alpha << 24 | this.red << 16 | this.green << 8 | this.blue;
+    }
+
     @Deprecated
     public static BlockColor getDyeColor(int dyeColorMeta) {
         return DyeColor.getByDyeData(dyeColorMeta).getColor();

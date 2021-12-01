@@ -2,6 +2,7 @@ package cn.nukkit.blockproperty;
 
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
+import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -10,7 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BlockPropertyTest {
     BlockProperty<BlockFace> direction = CommonBlockProperties.FACING_DIRECTION;
-    
+
+    @Test
+    void isDefaultPersistentValue() {
+        var defaultValue = direction.getDefaultValue();
+        var defaultMeta = direction.getMetaForValue(defaultValue);
+        var defaultPersistenceValue = direction.getPersistenceValueForMeta(defaultMeta);
+        assertTrue(direction.isDefaultPersistentValue(defaultPersistenceValue));
+    }
+
     @Test
     void validateMeta() {
         assertThrows(InvalidBlockPropertyMetaException.class, ()-> direction.validateMeta(7, 0));
