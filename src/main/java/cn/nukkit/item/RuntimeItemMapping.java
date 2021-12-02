@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Data;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -153,5 +154,23 @@ public class RuntimeItemMapping {
             item.setCount(amount);
             return item;
         }
+    }
+
+    @Data
+    public static class LegacyEntry {
+        private final int legacyId;
+        private final boolean hasDamage;
+        private final int damage;
+
+        public int getDamage() {
+            return this.hasDamage ? this.damage : 0;
+        }
+    }
+
+    @Data
+    public static class RuntimeEntry {
+        private final String identifier;
+        private final int runtimeId;
+        private final boolean hasDamage;
     }
 }

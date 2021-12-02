@@ -9,13 +9,11 @@ package cn.nukkit.entity;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.ServerException;
-import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@ToString
 public class Attribute implements Cloneable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -176,5 +174,15 @@ public class Attribute implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return name + "{" +
+                "min=" + minValue +
+                ", max=" + maxValue +
+                ", def=" + defaultValue +
+                ", val=" + currentValue +
+                '}';
     }
 }

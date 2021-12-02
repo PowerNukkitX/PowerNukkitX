@@ -18,12 +18,6 @@ public class EntityArrow extends EntityProjectile {
 
     public static final int NETWORK_ID = 80;
 
-    public static final int DATA_SOURCE_ID = 17;
-
-    public static final int PICKUP_NONE = 0;
-    public static final int PICKUP_ANY = 1;
-    public static final int PICKUP_CREATIVE = 2;
-
     protected int pickupMode;
 
     @Override
@@ -66,7 +60,7 @@ public class EntityArrow extends EntityProjectile {
         }
 
         float drag = 1 - this.getDrag() * 20;
-        
+
         motionY -= getGravity() * 2;
         if (motionY < 0) {
             motionY *= drag / 1.5;
@@ -179,7 +173,7 @@ public class EntityArrow extends EntityProjectile {
         packet.event = EntityEventPacket.ARROW_SHAKE;
         packet.data = 7; // TODO Magic value. I have no idea why we have to set it to 7 here...
         Server.broadcastPacket(this.hasSpawned.values(), packet);
-        
+
         onGround = true;
     }
 

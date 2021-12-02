@@ -75,6 +75,10 @@ public class BlockSand extends BlockFallableMeta {
 
     @Override
     public BlockColor getColor() {
+        if (this.getDamage() == 0x01) {
+            return BlockColor.ORANGE_BLOCK_COLOR;
+        }
+
         return BlockColor.SAND_BLOCK_COLOR;
     }
 }

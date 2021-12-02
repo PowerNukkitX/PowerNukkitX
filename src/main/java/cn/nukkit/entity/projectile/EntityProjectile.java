@@ -31,11 +31,11 @@ public abstract class EntityProjectile extends Entity {
     public static final int DATA_SHOOTER_ID = 17;
 
     public Entity shootingEntity = null;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean hasAge = true;
-    
+
     protected double getDamage() {
         return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
     }
@@ -49,6 +49,10 @@ public abstract class EntityProjectile extends Entity {
     public boolean closeOnCollide = true;
 
     protected double damage = 0;
+
+    public static final int PICKUP_NONE = 0;
+    public static final int PICKUP_ANY = 1;
+    public static final int PICKUP_CREATIVE = 2;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -98,7 +102,7 @@ public abstract class EntityProjectile extends Entity {
 
             if (this.fireTicks > 0) {
                 EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
-                this.server.getPluginManager().callEvent(ev);
+                this.server.getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     entity.setOnFire(event.getDuration());
                 }
@@ -109,11 +113,11 @@ public abstract class EntityProjectile extends Entity {
             this.close();
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected void afterCollisionWithEntity(Entity entity) {
-        
+
     }
 
     @Override
@@ -147,7 +151,7 @@ public abstract class EntityProjectile extends Entity {
         this.motionX *= 1 - this.getDrag();
         this.motionZ *= 1 - this.getDrag();
     }
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -277,13 +281,13 @@ public abstract class EntityProjectile extends Entity {
     protected void addHitEffect() {
 
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean hasAge() {
         return hasAge;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setAge(boolean hasAge) {

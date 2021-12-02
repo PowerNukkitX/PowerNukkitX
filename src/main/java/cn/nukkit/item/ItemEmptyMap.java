@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 public class ItemEmptyMap extends Item {
-    
+
     public ItemEmptyMap() {
         this(0, 1);
     }
@@ -16,5 +16,4 @@ public class ItemEmptyMap extends Item {
             this.name = "Empty Locator Map";
         }
     }
-    
 }

@@ -25,4 +25,9 @@ public class LongEntityData extends EntityData<Long> {
     public int getType() {
         return Entity.DATA_TYPE_LONG;
     }
+
+    @Override
+    public String toString() {
+        return data + "l";
+    }
 }

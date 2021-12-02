@@ -53,7 +53,12 @@ public class ItemWarpedFungusOnAStick extends ItemTool {
 
     @Override
     public int getMaxDurability() {
-        return 100;
+        return ItemTool.DURABILITY_WARPED_FUNGUS_ON_A_STICK;
+    }
+
+    @Override
+    public boolean noDamageOnBreak() {
+        return true;
     }
 
     @Override

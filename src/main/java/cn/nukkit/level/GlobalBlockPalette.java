@@ -30,4 +30,9 @@ public class GlobalBlockPalette {
     public static String getName(int blockId) {
         return BlockStateRegistry.getPersistenceName(blockId);
     }
+
+    public static int getLegacyFullId(int runtimeId) {
+        //TODO Implement
+        throw new UnsupportedOperationException();
+    }
 }

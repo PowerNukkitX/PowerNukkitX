@@ -19,13 +19,23 @@ public class ItemCarrotOnAStick extends ItemTool {
     }
 
     @Override
+    public int getMaxDurability() {
+        return ItemTool.DURABILITY_CARROT_ON_A_STICK;
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }
 
     @Override
-    public int getMaxDurability() {
-        return 25;
+    public boolean noDamageOnAttack() {
+        return true;
+    }
+
+    @Override
+    public boolean noDamageOnBreak() {
+        return true;
     }
 }
 

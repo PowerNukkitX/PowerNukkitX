@@ -1,6 +1,7 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
 
 import java.util.Map;
@@ -13,6 +14,8 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     private final Entity damager;
 
     private float knockBack;
+
+    private Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage) {
         this(damager, entity, cause, damage, 0.3f);
@@ -30,9 +33,14 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack) {
+        this(damager, entity, cause, modifiers, knockBack, new Enchantment[0]);
+    }
+
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack, Enchantment[] enchantments) {
         super(entity, cause, modifiers);
         this.damager = damager;
         this.knockBack = knockBack;
+        this.enchantments = enchantments;
         this.addAttackerModifiers(damager);
     }
 
@@ -56,5 +64,9 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
     public void setKnockBack(float knockBack) {
         this.knockBack = knockBack;
+    }
+
+    public Enchantment[] getWeaponEnchantments() {
+        return enchantments;
     }
 }
