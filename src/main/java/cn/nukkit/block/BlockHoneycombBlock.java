@@ -1,10 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockHoneycombBlock extends BlockSolid {
 
+    @PowerNukkitOnly
     public BlockHoneycombBlock() {
 
     }

@@ -12,13 +12,15 @@ import cn.nukkit.item.ItemTool;
 
 import javax.annotation.Nonnull;
 
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+@PowerNukkitOnly
 public class BlockDropper extends BlockDispenser {
 
+    @PowerNukkitOnly
     public BlockDropper() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockDropper(int meta) {
         super(meta);
     }

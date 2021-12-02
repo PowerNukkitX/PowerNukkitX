@@ -14,11 +14,14 @@ import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 
+@PowerNukkitOnly
 public class BlockWitherRose extends BlockFlower {
+    @PowerNukkitOnly
     public BlockWitherRose() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockWitherRose(int meta) {
         super(0);
     }

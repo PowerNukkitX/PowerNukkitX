@@ -6,9 +6,11 @@ import cn.nukkit.item.ItemAcaciaSign;
 
 @PowerNukkitOnly
 public class BlockAcaciaSignPost extends BlockSignPost {
+    @PowerNukkitOnly
     public BlockAcaciaSignPost() {
     }
 
+    @PowerNukkitOnly
     public BlockAcaciaSignPost(int meta) {
         super(meta);
     }

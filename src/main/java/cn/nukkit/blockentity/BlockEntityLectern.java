@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.RedstoneComponent;
@@ -11,10 +12,12 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 
+@PowerNukkitOnly
 public class BlockEntityLectern extends BlockEntitySpawnable {
 
     private int totalPages;
 
+    @PowerNukkitOnly
     public BlockEntityLectern(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -64,10 +67,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         level.dropItem(this, getBook());
     }
 
+    @PowerNukkitOnly
     public boolean hasBook() {
         return this.namedTag.contains("book") && this.namedTag.get("book") instanceof CompoundTag;
     }
 
+    @PowerNukkitOnly
     public Item getBook() {
         if (!hasBook()) {
             return new ItemBlock(new BlockAir(), 0, 0);
@@ -76,6 +81,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         }
     }
 
+    @PowerNukkitOnly
     public void setBook(Item item) {
         if (item.getId() == Item.WRITTEN_BOOK || item.getId() == Item.BOOK_AND_QUILL) {
             this.namedTag.putCompound("book", NBTIO.putItemHelper(item));
@@ -86,31 +92,38 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
         updateTotalPages();
     }
 
+    @PowerNukkitOnly
     public int getLeftPage() {
         return (getRawPage() * 2) + 1;
     }
 
+    @PowerNukkitOnly
     public int getRightPage() {
         return getLeftPage() + 1;
     }
 
+    @PowerNukkitOnly
     public void setLeftPage(int newLeftPage) {
         setRawPage((newLeftPage - 1) /2);
     }
 
+    @PowerNukkitOnly
     public void setRightPage(int newRightPage) {
         setLeftPage(newRightPage -1);
     }
 
+    @PowerNukkitOnly
     public void setRawPage(int page) {
         this.namedTag.putInt("page", Math.min(page, totalPages));
         this.getLevel().updateAround(this);
     }
 
+    @PowerNukkitOnly
     public int getRawPage() {
         return this.namedTag.getInt("page");
     }
 
+    @PowerNukkitOnly
     public int getTotalPages() {
         return totalPages;
     }

@@ -1,10 +1,15 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
+
+@PowerNukkitOnly
 public class BlockButtonJungle extends BlockButtonWooden {
+    @PowerNukkitOnly
     public BlockButtonJungle() {
         this(0);
     }
-    
+
+    @PowerNukkitOnly
     public BlockButtonJungle(int meta) {
         super(meta);
     }

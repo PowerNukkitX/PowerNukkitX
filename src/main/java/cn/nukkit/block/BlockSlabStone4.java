@@ -9,6 +9,7 @@ import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
 
+@PowerNukkitOnly
 public class BlockSlabStone4 extends BlockSlab {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -17,17 +18,18 @@ public class BlockSlabStone4 extends BlockSlab {
             TOP_SLOT_PROPERTY
     );
 
-    public static final int MOSSY_STONE_BRICKS = 0;
-    public static final int SMOOTH_QUARTZ = 1;
-    public static final int STONE = 2;
-    public static final int CUT_SANDSTONE = 3;
-    public static final int CUT_RED_SANDSTONE = 4;
+    @PowerNukkitOnly public static final int MOSSY_STONE_BRICKS = 0;
+    @PowerNukkitOnly public static final int SMOOTH_QUARTZ = 1;
+    @PowerNukkitOnly public static final int STONE = 2;
+    @PowerNukkitOnly public static final int CUT_SANDSTONE = 3;
+    @PowerNukkitOnly public static final int CUT_RED_SANDSTONE = 4;
 
-
+    @PowerNukkitOnly
     public BlockSlabStone4() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockSlabStone4(int meta) {
         super(meta, DOUBLE_STONE_SLAB4);
     }

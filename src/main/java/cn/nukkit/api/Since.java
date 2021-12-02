@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 /**
  * Indicates which version added the annotated element.
  */
+@PowerNukkitOnly
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
         ElementType.FIELD, ElementType.PACKAGE})

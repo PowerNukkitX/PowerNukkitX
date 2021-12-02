@@ -1,13 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockStairsRedNetherBrick extends BlockStairs {
+    @PowerNukkitOnly
     public BlockStairsRedNetherBrick() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockStairsRedNetherBrick(int meta) {
         super(meta);
     }

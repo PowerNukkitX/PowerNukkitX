@@ -1,18 +1,17 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.DropperInventory;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-@PowerNukkitDifference(info = "Extends BlockEntityEjectable instead of " +
-        "BlockEntitySpawnable, BlockEntityContainer, BlockEntityNameable, and InventoryHolder " +
-        "only in PowerNukkit", since = "1.4.0.0-PN")
+@PowerNukkitOnly
 public class BlockEntityDropper extends BlockEntityEjectable {
 
-    protected DropperInventory inventory;
+    @PowerNukkitOnly protected DropperInventory inventory;
 
+    @PowerNukkitOnly
     public BlockEntityDropper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

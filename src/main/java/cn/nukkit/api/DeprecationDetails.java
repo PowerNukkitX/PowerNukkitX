@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 /**
  * Describe the deprecation with more details. This is persisted to the class file, so it can be read without javadocs.
  */
+@PowerNukkitOnly
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,
         ElementType.FIELD, ElementType.PACKAGE})

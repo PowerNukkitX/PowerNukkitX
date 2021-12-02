@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.inventory.SmeltingRecipe;
@@ -7,7 +8,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+@PowerNukkitOnly
 public class BlockEntitySmoker extends BlockEntityFurnace {
+    @PowerNukkitOnly
     public BlockEntitySmoker(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

@@ -1,13 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockStairsDarkPrismarine extends BlockStairs {
+    @PowerNukkitOnly
     public BlockStairsDarkPrismarine() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockStairsDarkPrismarine(int meta) {
         super(meta);
     }

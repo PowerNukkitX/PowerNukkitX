@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
@@ -11,6 +12,7 @@ import cn.nukkit.item.ItemBoat;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
+@PowerNukkitOnly
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override

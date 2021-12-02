@@ -12,6 +12,7 @@ import cn.nukkit.math.Vector3;
 
 import java.util.Random;
 
+@PowerNukkitOnly
 public class BlockHoney extends BlockSolid {
     private static final Random RANDOM = new Random();
 

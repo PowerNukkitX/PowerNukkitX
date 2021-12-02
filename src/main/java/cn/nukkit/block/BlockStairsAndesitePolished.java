@@ -1,13 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockStairsAndesitePolished extends BlockStairs {
+    @PowerNukkitOnly
     public BlockStairsAndesitePolished() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockStairsAndesitePolished(int meta) {
         super(meta);
     }

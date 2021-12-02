@@ -6,10 +6,12 @@ import cn.nukkit.item.ItemAcaciaSign;
 
 @PowerNukkitOnly
 public class BlockAcaciaWallSign extends BlockWallSign {
+    @PowerNukkitOnly
     public BlockAcaciaWallSign() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockAcaciaWallSign(int meta) {
         super(meta);
     }

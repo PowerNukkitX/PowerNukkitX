@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author IWareQ
  */
- @PowerNukkitOnly
+@PowerNukkitOnly
 @Since("1.5.1.0-PN")
 public class AnimateEntityPacket extends DataPacket {
 

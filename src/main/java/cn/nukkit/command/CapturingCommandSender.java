@@ -1,6 +1,7 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
@@ -16,6 +17,7 @@ import java.util.function.Function;
 /**
  * @since 1.2.1.0-PN
  */
+@PowerNukkitOnly
 @AllArgsConstructor
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();

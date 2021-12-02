@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -24,7 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@PowerNukkitOnly
 public class BlockEntityConduit extends BlockEntitySpawnable {
+    @PowerNukkitOnly
     public static IntSet VALID_STRUCTURE_BLOCKS = new IntOpenHashSet(new int[]{
             BlockID.PRISMARINE,
             BlockID.SEA_LANTERN
@@ -35,6 +38,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     private boolean active;
     private int validBlocks;
 
+    @PowerNukkitOnly
     public BlockEntityConduit(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -117,10 +121,12 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return getBlock().getId() == BlockID.CONDUIT;
     }
 
+    @PowerNukkitOnly
     public void setTargetEntity(Entity targetEntity) {
         this.targetEntity = targetEntity;
     }
 
+    @PowerNukkitOnly
     public Entity getTargetEntity() {
         return targetEntity;
     }
@@ -130,10 +136,12 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         this.active = active;
     }*/
 
+    @PowerNukkitOnly
     public boolean isActive() {
         return active;
     }
 
+    @PowerNukkitOnly
     public void addEffectToPlayers() {
         int radius = getPlayerRadius();
         if (radius <= 0) {
@@ -155,6 +163,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
                 );
     }
 
+    @PowerNukkitOnly
     public void attackMob() {
         int radius = getAttackRadius();
         if (radius <= 0) {
@@ -196,10 +205,12 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         }
     }
 
+    @PowerNukkitOnly
     public boolean canAttack(Entity target) {
         return target instanceof EntityMob && canAffect(target);
     }
 
+    @PowerNukkitOnly
     public boolean canAffect(Entity target) {
         return target.isTouchingWater()
                 || target.level.isRaining() && target.level.canBlockSeeSky(target)
@@ -285,6 +296,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return validBlocks;
     }
 
+    @PowerNukkitOnly
     public List<Block> scanEdgeBlock() {
         List<Block> validBlocks = new ArrayList<>();
         int x = getFloorX();
@@ -316,6 +328,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return validBlocks;
     }
 
+    @PowerNukkitOnly
     public boolean scanStructure() {
         if(!scanWater()) {
             this.validBlocks = 0;
@@ -333,15 +346,18 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         return true;
     }
 
+    @PowerNukkitOnly
     public int getValidBlocks() {
         return validBlocks;
     }
 
+    @PowerNukkitOnly
     public int getPlayerRadius() {
         int radius = validBlocks / 7;
         return radius * 16;
     }
 
+    @PowerNukkitOnly
     public int getAttackRadius() {
         if (validBlocks >= 42) {
             return 8;

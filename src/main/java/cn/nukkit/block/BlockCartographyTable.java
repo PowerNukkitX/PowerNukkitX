@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
@@ -8,8 +9,10 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@PowerNukkitOnly
 public class BlockCartographyTable extends BlockSolid {
 
+    @PowerNukkitOnly
     public BlockCartographyTable() {
     }
 
