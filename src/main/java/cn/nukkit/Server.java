@@ -644,7 +644,7 @@ public class Server {
 
         Block.init();
         Enchantment.init();
-        RuntimeItems.init();
+        RuntimeItems.getRuntimeMapping();
         Item.init();
         EnumBiome.values(); //load class, this also registers biomes
         Effect.init();

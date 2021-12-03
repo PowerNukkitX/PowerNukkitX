@@ -320,15 +320,15 @@ public class Vector3 implements Cloneable {
         );
     }
 
-    /**
+    /* PowerNukkit: The Angle class was removed because it had all rights reserved copyright on it.
      * Calculates the angle between this and the supplied Vector.
      *
      * @param v the Vector to calculate the angle to.
      * @return the Angle between the two Vectors.
      */
-    public Angle angleBetween(Vector3 v) {
+    /*public Angle angleBetween(Vector3 v) {
         return Angle.fromRadian(Math.acos(Math.min(Math.max(this.normalize().dot(v.normalize()), -1.0d), 1.0d)));
-    }
+    }*/
 
     /**
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the

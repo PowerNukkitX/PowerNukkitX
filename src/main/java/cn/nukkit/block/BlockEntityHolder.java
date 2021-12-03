@@ -11,7 +11,6 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.LevelException;
-import jdk.nashorn.internal.objects.annotations.Getter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -130,7 +129,6 @@ public interface BlockEntityHolder<E extends BlockEntity> {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Getter
     Level getLevel();
 
     @PowerNukkitOnly
