@@ -17,12 +17,14 @@ public class HurtArmorPacket extends DataPacket {
     @Since("1.3.0.0-PN")
     public int damage;
 
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public long armorSlots;
 
     @Override
     public void decode() {
-
+        this.cause = getVarInt();
+        this.damage = getVarInt();
+        this.armorSlots = getUnsignedVarLong();
     }
 
     @Override

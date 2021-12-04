@@ -28,10 +28,10 @@ import javax.annotation.Nonnull;
  * @since 2021-07-06
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 public class SimulationTypePacket extends DataPacket {
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final SimulationType[] TYPES = SimulationType.values();
@@ -39,7 +39,7 @@ public class SimulationTypePacket extends DataPacket {
     private SimulationType type;
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public SimulationTypePacket() {
         type = SimulationType.GAME;
     }
@@ -61,23 +61,23 @@ public class SimulationTypePacket extends DataPacket {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public SimulationType getSimulationType() {
         return type;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setSimulationType(@Nonnull SimulationType type) {
         this.type = type;
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public enum SimulationType {
-        @PowerNukkitOnly @Since("FUTURE") GAME,
-        @PowerNukkitOnly @Since("FUTURE") EDITOR,
-        @PowerNukkitOnly @Since("FUTURE") TEST
+        @PowerNukkitOnly @Since("1.5.2.0-PN") GAME,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") EDITOR,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") TEST
     } 
 }

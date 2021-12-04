@@ -68,7 +68,6 @@ import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.resourcepacks.ResourcePack;
-import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.utils.*;
@@ -86,6 +85,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.powernukkit.version.Version;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -2475,8 +2475,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 }
 
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
-                                dataInfoPacket.packInfo = resourcePack.getPackId().toString() + "_" + resourcePack.getPackVersion();
-                                dataInfoPacket.maxChunkSize = ResourcePackManager.getMaxChunkSize(); // 102400 is default
+                                dataInfoPacket.packId = resourcePack.getPackId();
+                                dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
+                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 102400 is default
                                 dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
@@ -2498,21 +2499,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                     }
                     break;
-                case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET:
+                case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET: {
                     ResourcePackChunkRequestPacket requestPacket = (ResourcePackChunkRequestPacket) packet;
-                    ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(UUID.fromString(requestPacket.packInfo.split("_")[0])); // TODO: Pack version check
+                    ResourcePack resourcePack = this.server.getResourcePackManager().getPackById(requestPacket.getPackId()); // TODO: Pack version check
                     if (resourcePack == null) {
                         this.close("", "disconnectionScreen.resourcePack");
                         break;
                     }
 
+                    int maxChunkSize = server.getResourcePackManager().getMaxChunkSize();
                     ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
-                    dataPacket.packInfo = resourcePack.getPackId().toString() + "_" + resourcePack.getPackVersion();
+                    dataPacket.setPackId(resourcePack.getPackId());
+                    dataPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
                     dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(ResourcePackManager.getMaxChunkSize() * requestPacket.chunkIndex, ResourcePackManager.getMaxChunkSize());
-                    dataPacket.progress = ResourcePackManager.getMaxChunkSize() * requestPacket.chunkIndex;
+                    dataPacket.data = resourcePack.getPackChunk(maxChunkSize * requestPacket.chunkIndex, maxChunkSize);
+                    dataPacket.progress = maxChunkSize * (long) requestPacket.chunkIndex;
                     this.dataResourcePacket(dataPacket);
                     break;
+                }
                 case ProtocolInfo.SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET:
                     if (this.locallyInitialized) {
                         break;
@@ -2552,7 +2556,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     return false;
                                 }
                             }).map(Field::getName).findFirst();
-                    log.warn("Violation warning from {}{}", this.getName(), packetName.map(name-> " for packet "+name).orElse("")+": " + packet.toString());
+                    log.warn("Violation warning from {}{}", this.getName(), packetName.map(name-> " for packet "+name).orElse("")+": " + packet);
                     break;
                 case ProtocolInfo.EMOTE_PACKET:
                     for (Player viewer : this.getViewers().values()) {
@@ -4606,7 +4610,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case HUNGER:
                     message = "death.attack.starve";
                     break;
-                case MAGMA:
+                case HOT_FLOOR:
                     message = "death.attack.magma";
                     break;
                 default:
@@ -6107,7 +6111,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
     
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean dataResourcePacket(DataPacket packet) {
         if (!this.connected) {
             return false;

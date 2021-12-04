@@ -189,7 +189,7 @@ public class Config {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean loadAsJson(@Nullable InputStream inputStream, @Nonnull Gson gson) {
         if (inputStream == null) return false;
         if (this.correct) {
@@ -231,7 +231,7 @@ public class Config {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean saveAsJson(@Nonnull File file, boolean async, @Nonnull Gson gson) {
         this.file = file;
         return saveAsJson(async, gson);
@@ -242,7 +242,7 @@ public class Config {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public boolean saveAsJson(boolean async, @Nonnull Gson gson) {
         if (!this.correct) {
             return false;

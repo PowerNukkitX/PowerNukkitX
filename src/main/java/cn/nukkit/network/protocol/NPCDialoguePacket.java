@@ -28,10 +28,10 @@ import javax.annotation.Nonnull;
  * @since 2021-07-06
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 public class NPCDialoguePacket extends DataPacket {
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
     
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
@@ -44,7 +44,7 @@ public class NPCDialoguePacket extends DataPacket {
     private String actionJson = "";
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public NPCDialoguePacket() {
         // Indicates when this public constructor were accessible
     }
@@ -76,86 +76,86 @@ public class NPCDialoguePacket extends DataPacket {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public long getRuntimeEntityId() {
         return runtimeEntityId;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setRuntimeEntityId(long runtimeEntityId) {
         this.runtimeEntityId = runtimeEntityId;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public NPCDialogAction getAction() {
         return action;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setAction(@Nonnull NPCDialogAction action) {
         this.action = action;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public String getDialogue() {
         return dialogue;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setDialogue(@Nonnull String dialogue) {
         this.dialogue = dialogue;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public String getSceneName() {
         return sceneName;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setSceneName(@Nonnull String sceneName) {
         this.sceneName = sceneName;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public String getNpcName() {
         return npcName;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setNpcName(@Nonnull String npcName) {
         this.npcName = npcName;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     @Nonnull
     public String getActionJson() {
         return actionJson;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public void setActionJson(@Nonnull String actionJson) {
         this.actionJson = actionJson;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public enum NPCDialogAction {
-        @PowerNukkitOnly @Since("FUTURE") OPEN,
-        @PowerNukkitOnly @Since("FUTURE") CLOSE
+        @PowerNukkitOnly @Since("1.5.2.0-PN") OPEN,
+        @PowerNukkitOnly @Since("1.5.2.0-PN") CLOSE
     }
 }

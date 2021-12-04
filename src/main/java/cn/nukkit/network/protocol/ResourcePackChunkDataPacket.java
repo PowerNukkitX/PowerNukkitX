@@ -1,36 +1,28 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import lombok.ToString;
+import org.powernukkit.version.Version;
 
 import java.util.UUID;
 
 @ToString(exclude = "data")
-public class ResourcePackChunkDataPacket extends DataPacket {
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "1.5.2.0-PN")
+public class ResourcePackChunkDataPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_CHUNK_DATA_PACKET;
 
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "The format has been changed from '(uuid of pack)' to '(uuid of pack)_(version of pack)'", replaceWith = "packInfo")
     public UUID packId;
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public String packInfo;
+    private Version packVersion;
     public int chunkIndex;
     public long progress;
     public byte[] data;
 
     @Override
     public void decode() {
-        String packInfo = this.getString();
-        try {
-            this.packId = UUID.fromString(packInfo);
-        } catch (IllegalArgumentException exception) {
-            this.packInfo = packInfo;
-        }
+        decodePackInfo();
         this.chunkIndex = this.getLInt();
         this.progress = this.getLLong();
         this.data = this.getByteArray();
@@ -39,15 +31,38 @@ public class ResourcePackChunkDataPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        
-        if (packInfo == null) {
-            this.putString(this.packId.toString());
-        } else {
-            this.putString(this.packInfo);
-        }
+        encodePackInfo();
         this.putLInt(this.chunkIndex);
         this.putLLong(this.progress);
         this.putByteArray(this.data);
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public Version getPackVersion() {
+        return packVersion;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public void setPackVersion(Version packVersion) {
+        this.packVersion = packVersion;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public UUID getPackId() {
+        return packId;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public void setPackId(UUID packId) {
+        this.packId = packId;
     }
 
     @Override

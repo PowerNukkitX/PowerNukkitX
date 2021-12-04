@@ -882,7 +882,7 @@ public class BinaryStream {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public <T> void putArray(Collection<T> collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);
@@ -893,7 +893,7 @@ public class BinaryStream {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public <T> void putArray(T[] collection, Consumer<T> writer) {
         if (collection == null) {
             putUnsignedVarInt(0);

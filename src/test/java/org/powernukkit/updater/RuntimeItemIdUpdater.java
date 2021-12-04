@@ -58,7 +58,7 @@ public class RuntimeItemIdUpdater {
         }
 
         JsonArray requiredItems;
-        try(InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("org/powernukkit/dumps/proxypass/runtime_item_states.json");
+        try(InputStream resourceAsStream = RuntimeItemIdUpdater.class.getClassLoader().getResourceAsStream("org/powernukkit/updater/dumps/proxypass/runtime_item_states.json");
             Reader reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(reader);
         ) {

@@ -73,8 +73,10 @@ public class HumanStringComparator implements Comparator<String> {
             String str2 = l2.get(i);
             int strLen1 = str1.length();
             int strLen2 = str2.length();
-            boolean isNum1 = !str1.isEmpty() && Character.isDigit(str1.charAt(strLen1 - 1));
-            boolean isNum2 = !str2.isEmpty() && Character.isDigit(str2.charAt(strLen2 - 1));
+            assert strLen1 > 0;
+            assert strLen2 > 0;
+            boolean isNum1 = Character.isDigit(str1.charAt(strLen1 - 1));
+            boolean isNum2 = Character.isDigit(str2.charAt(strLen2 - 1));
             if (isNum1) {
                 if (isNum2) {
                     int i1 = Integer.parseInt(str1);
@@ -108,7 +110,7 @@ public class HumanStringComparator implements Comparator<String> {
                         return result;
                     }
 
-                    // Detect ommitted number
+                    // Detect omitted number
                     if (strLen1 < strLen2) {
                         if (detectOmittedNumber(l1, len1, i, str2, strLen2, minStrLen, commonPart1)) {
                             return RIGHT;

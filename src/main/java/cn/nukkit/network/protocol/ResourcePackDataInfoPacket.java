@@ -1,15 +1,16 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import lombok.ToString;
+import org.powernukkit.version.Version;
 
 import java.util.UUID;
 
 @ToString(exclude = "sha256")
-public class ResourcePackDataInfoPacket extends DataPacket {
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = AbstractResourcePackDataPacket.class, insteadOf = DataPacket.class, since = "1.5.2.0-PN")
+public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.RESOURCE_PACK_DATA_INFO_PACKET;
 
@@ -24,12 +25,8 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     public static final int TYPE_WORLD_TEMPLATE = 8;
     public static final int TYPE_COUNT = 9;
 
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", reason = "The format has been changed from '(uuid of pack)' to '(uuid of pack)_(version of pack)'", replaceWith = "packInfo")
     public UUID packId;
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public String packInfo;
+    private Version packVersion;
     public int maxChunkSize;
     public int chunkCount;
     public long compressedPackSize;
@@ -39,14 +36,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
 
     @Override
     public void decode() {
-        String packInfo = this.getString();
-        try {
-            packId = UUID.fromString(packInfo);
-        } catch (IllegalArgumentException exception) {
-            packId = null;
-        }
-        this.packId = UUID.fromString(packInfo);
-        this.packInfo = packInfo;
+        decodePackInfo();
         this.maxChunkSize = this.getLInt();
         this.chunkCount = this.getLInt();
         this.compressedPackSize = this.getLLong();
@@ -58,11 +48,7 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        if (packInfo == null) {
-            this.putString(this.packId.toString());
-        } else {
-            this.putString(this.packInfo);
-        }
+        encodePackInfo();
         this.putLInt(this.maxChunkSize);
         this.putLInt(this.chunkCount);
         this.putLLong(this.compressedPackSize);
@@ -74,5 +60,31 @@ public class ResourcePackDataInfoPacket extends DataPacket {
     @Override
     public byte pid() {
         return NETWORK_ID;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public Version getPackVersion() {
+        return packVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.2.0-PN")
+    public void setPackVersion(Version packVersion) {
+        this.packVersion = packVersion;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public UUID getPackId() {
+        return packId;
+    }
+
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public void setPackId(UUID packId) {
+        this.packId = packId;
     }
 }

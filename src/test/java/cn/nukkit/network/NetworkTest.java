@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @since 2021-07-13
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 @ExtendWith(MockitoExtension.class)
 class NetworkTest {
     @Mock

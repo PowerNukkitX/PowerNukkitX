@@ -212,16 +212,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public enum DamageCause {
         /**
-         * Plugins
-         */
-        CUSTOM,
-        /**
-         * Damage caused by /kill command
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        OVERRIDE,
-        /**
          * Damage caused by contact with a block such as a Cactus
          */
         CONTACT,
@@ -278,78 +268,58 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          */
         MAGIC,
         /**
-         * Damage caused by Wither
+         * Plugins
          */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        WITHER,
-        /**
-         * Damage caused by hunger
-         */
-        HUNGER,
-        /**
-         * Damage caused by anvil
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        ANVIL,
-        /**
-         * Damage caused by thorns
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        THORNS,
-        /**
-         * Damage caused by falling block
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        FALLING_BLOCK,
-        /**
-         * Damage caused by piston
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        PISTON,
-        /**
-         * Damage caused by flying into wall
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        FLYING_INTO_WALL,
-        /**
-         * Damage caused by magma
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        MAGMA,
-        /**
-         * Damage caused by fireworks
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        FIREWORKS,
+        CUSTOM,
         /**
          * Damage caused by being struck by lightning
          */
         LIGHTNING,
         /**
-         * Damage caused by charging
+         * Damage caused by hunger
+         */
+        HUNGER,
+        /**
+         * Damage caused by Wither
          */
         @PowerNukkitOnly
-        @Since("FUTURE")
-        CHARGING,
+        @Since("1.5.2.0-PN")
+        WITHER,
+        /**
+         * Damage caused by thorns
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        THORNS,
+        /**
+         * Damage caused by falling block
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FALLING_BLOCK,
+        /**
+         * Damage caused by flying into wall
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FLYING_INTO_WALL,
+        /**
+         * Damage caused when an entity steps on a hot block, like {@link cn.nukkit.block.BlockID#MAGMA}
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        HOT_FLOOR,
+        /**
+         * Damage caused by fireworks
+         */
+        @PowerNukkitOnly
+        @Since("1.5.2.0-PN")
+        FIREWORKS,
         /**
          * Damage caused by temperature
          */
         @PowerNukkitOnly
-        @Since("FUTURE")
-        TEMPERATURE,
-        /**
-         * Damage caused by all
-         */
-        @PowerNukkitOnly
-        @Since("FUTURE")
-        ALL
+        @Since("1.5.2.0-PN")
+        FREEZING,
     }
 }

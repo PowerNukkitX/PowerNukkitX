@@ -3,7 +3,6 @@ package cn.nukkit.inventory;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockproperty.UnknownRuntimeIdException;
@@ -90,11 +89,7 @@ public class CraftingManager {
 
         Config recipesConfig = new Config(Config.JSON);
         try(InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json")) {
-            if (recipesStream == null) {
-                throw new AssertionError("Unable to find recipes.json");
-            }
-
-            recipesConfig.load(recipesStream);
+            recipesConfig.load(Objects.requireNonNull(recipesStream, "Unable to find recipes.json"));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -347,7 +342,7 @@ public class CraftingManager {
             if (Stream.of(
                     "copper", "deepslate", "deepslate_slab",
                     "copper_slab", "copper_stairs"
-                    ).anyMatch(name-> blockStateId.split(";", 2)[0].endsWith(name))) {
+                    ).anyMatch(blockStateId.split(";", 2)[0]::endsWith)) {
                 return Item.get(BlockID.AIR);
             }
             try {
@@ -371,7 +366,7 @@ public class CraftingManager {
                     return Item.get(BlockID.AIR);
                 }
                 log.error("Failed to load a recipe with {}", blockStateId, e);
-                return Item.get(Block.AIR);
+                return Item.get(BlockID.AIR);
             } catch (Exception e) {
                 log.error("Failed to load the block state {}", blockStateId, e);
                 return Item.getBlock(BlockID.AIR);

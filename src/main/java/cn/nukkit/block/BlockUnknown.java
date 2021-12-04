@@ -34,7 +34,7 @@ public class BlockUnknown extends BlockMeta {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     public BlockUnknown(int id, Number meta) {
         super(0);
         this.id = id;

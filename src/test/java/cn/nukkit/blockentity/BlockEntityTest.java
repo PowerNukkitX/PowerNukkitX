@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
  * @since 2021-07-14
  */
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.5.2.0-PN")
 @ExtendWith(PowerNukkitExtension.class)
 class BlockEntityTest {
     @MockLevel

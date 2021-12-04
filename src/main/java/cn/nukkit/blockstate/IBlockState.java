@@ -207,7 +207,7 @@ public interface IBlockState {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.5.2.0-PN")
     default String getMinimalistStateId() {
         if (isDefaultState()) {
             return getPersistenceName();
