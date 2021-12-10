@@ -1042,6 +1042,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     // https://minecraft.gamepedia.com/Opacity#Lighting
+    @PowerNukkitOnly
     public boolean diffusesSkyLight() {
         return false;
     }
@@ -1131,6 +1132,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return full id
      * @deprecated PowerNukkit: The meta is limited to 32 bits
      */
+    @Override
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public int getFullId() {
@@ -1140,6 +1142,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * The properties that fully describe all possible and valid states that this block can have. 
      */
+    @Override
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1147,6 +1150,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
     
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -1154,6 +1158,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return mutableState == null? BlockState.of(getId()) : mutableState.getCurrentState();
     }
     
+    @Override
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public final int getRuntimeId() {
@@ -1464,10 +1469,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getHardness() != -1;
     }
 
+    @Override
     public Block getSide(BlockFace face) {
         return getSideAtLayer(layer, face);
     }
 
+    @Override
     public Block getSide(BlockFace face, int step) {
         return getSideAtLayer(layer, face, step);
     }
@@ -1495,10 +1502,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return block;
     }
 
+    @Override
     public Block up() {
         return up(1);
     }
 
+    @Override
     public Block up(int step) {
         return getSide(BlockFace.UP, step);
     }
@@ -1507,10 +1516,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, BlockFace.UP, step);
     }
 
+    @Override
     public Block down() {
         return down(1);
     }
 
+    @Override
     public Block down(int step) {
         return getSide(BlockFace.DOWN, step);
     }
@@ -1519,10 +1530,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, BlockFace.DOWN, step);
     }
 
+    @Override
     public Block north() {
         return north(1);
     }
 
+    @Override
     public Block north(int step) {
         return getSide(BlockFace.NORTH, step);
     }
@@ -1531,10 +1544,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, BlockFace.NORTH, step);
     }
 
+    @Override
     public Block south() {
         return south(1);
     }
 
+    @Override
     public Block south(int step) {
         return getSide(BlockFace.SOUTH, step);
     }
@@ -1543,10 +1558,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, BlockFace.SOUTH, step);
     }
 
+    @Override
     public Block east() {
         return east(1);
     }
 
+    @Override
     public Block east(int step) {
         return getSide(BlockFace.EAST, step);
     }
@@ -1555,10 +1572,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, BlockFace.EAST, step);
     }
 
+    @Override
     public Block west() {
         return west(1);
     }
 
+    @Override
     public Block west(int step) {
         return getSide(BlockFace.WEST, step);
     }
@@ -1632,6 +1651,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getBoundingBox();
     }
 
+    @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
         AxisAlignedBB bb = this.getBoundingBox();
         if (bb == null) {
@@ -1747,6 +1767,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
+    @Override
     public Block clone() {
         Block clone = (Block) super.clone();
         clone.mutableState = mutableState != null? mutableState.copy() : null;

@@ -48,6 +48,7 @@ public class SlotChangeAction extends InventoryAction {
      * @param source player
      * @return valid
      */
+    @Override
     public boolean isValid(Player source) {
         Item check = inventory.getItem(this.inventorySlot);
 
@@ -60,6 +61,7 @@ public class SlotChangeAction extends InventoryAction {
      * @param source player
      * @return successfully executed
      */
+    @Override
     public boolean execute(Player source) {
         return this.inventory.setItem(this.inventorySlot, this.targetItem, false);
     }
@@ -69,6 +71,7 @@ public class SlotChangeAction extends InventoryAction {
      *
      * @param source player
      */
+    @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
         viewers.remove(source);
@@ -81,6 +84,7 @@ public class SlotChangeAction extends InventoryAction {
      *
      * @param source player
      */
+    @Override
     public void onExecuteFail(Player source) {
         this.inventory.sendSlot(this.inventorySlot, source);
     }

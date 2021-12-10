@@ -74,10 +74,12 @@ public class Position extends NamedPosition {
         return false;
     }
 
+    @Override
     public Position getSide(BlockFace face) {
         return this.getSide(face, 1);
     }
 
+    @Override
     public Position getSide(BlockFace face, int step) {
         return Position.fromObject(super.getSide(face, step), getValidLevel());
     }

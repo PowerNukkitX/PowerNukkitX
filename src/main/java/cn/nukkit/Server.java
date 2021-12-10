@@ -224,18 +224,21 @@ public class Server {
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
+        @Override
         public Level put(Integer key, Level value) {
             Level result = super.put(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
+        @Override
         public boolean remove(Object key, Object value) {
             boolean result = super.remove(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
+        @Override
         public Level remove(Object key) {
             Level result = super.remove(key);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);

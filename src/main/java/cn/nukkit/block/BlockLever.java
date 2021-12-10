@@ -204,6 +204,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return isPowerOn() ? 15 : 0;
     }
 
+    @Override
     public int getStrongPower(BlockFace side) {
         return !isPowerOn() ? 0 : getLeverOrientation().getFacing() == side ? 15 : 0;
     }
@@ -242,6 +243,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
             return this.facing;
         }
 
+        @Override
         public String toString() {
             return this.name;
         }

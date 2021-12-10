@@ -25,6 +25,7 @@ public class BlockWarpedWallSign extends BlockWallSign {
         return WARPED_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return WARPED_STANDING_SIGN;

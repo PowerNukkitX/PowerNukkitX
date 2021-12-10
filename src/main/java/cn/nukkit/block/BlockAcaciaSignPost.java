@@ -20,6 +20,7 @@ public class BlockAcaciaSignPost extends BlockSignPost {
         return ACACIA_STANDING_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getWallId() {
         return ACACIA_WALL_SIGN;

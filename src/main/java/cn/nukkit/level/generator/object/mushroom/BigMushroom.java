@@ -37,6 +37,7 @@ public class BigMushroom extends BasicGenerator {
         this.mushroomType = -1;
     }
 
+    @Override
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
         int block = this.mushroomType;
         if (block < 0) {

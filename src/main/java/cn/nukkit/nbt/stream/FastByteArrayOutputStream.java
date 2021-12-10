@@ -82,7 +82,8 @@ public class FastByteArrayOutputStream extends OutputStream {
         return this;
     }
 
-    public void write( final int b ) {
+    @Override
+    public void write(final int b ) {
         if ( position == length ) {
             length++;
             if ( position == array.length ) array = grow( array, length );
@@ -118,7 +119,8 @@ public class FastByteArrayOutputStream extends OutputStream {
         return array;
     }
 
-    public void write( final byte[] b, final int off, final int len ) throws IOException {
+    @Override
+    public void write(final byte[] b, final int off, final int len ) throws IOException {
         if ( position + len > array.length ) array = grow( array, position + len, position );
         System.arraycopy( b, off, array, position, len );
         if ( position + len > length ) length = position += len;

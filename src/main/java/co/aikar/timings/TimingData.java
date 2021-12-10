@@ -76,6 +76,7 @@ class TimingData {
         this.curTickTotal = 0;
     }
 
+    @Override
     protected TimingData clone() {
         return new TimingData(this);
     }

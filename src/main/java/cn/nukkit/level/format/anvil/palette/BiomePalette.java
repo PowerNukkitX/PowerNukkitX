@@ -118,6 +118,7 @@ public final class BiomePalette {
         return (z << 4) | x;
     }
 
+    @Override
     public synchronized BiomePalette clone() {
         return new BiomePalette(this);
     }

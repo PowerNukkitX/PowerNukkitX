@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -16,6 +17,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
 
     public boolean success = true;
 
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 dispensePos = block.getDispensePosition();

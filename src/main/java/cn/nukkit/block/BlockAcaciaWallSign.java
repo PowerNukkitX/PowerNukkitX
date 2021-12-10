@@ -21,6 +21,7 @@ public class BlockAcaciaWallSign extends BlockWallSign {
         return ACACIA_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return ACACIA_STANDING_SIGN;

@@ -21,6 +21,7 @@ public class BlockSpruceWallSign extends BlockWallSign {
         return SPRUCE_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return SPRUCE_STANDING_SIGN;

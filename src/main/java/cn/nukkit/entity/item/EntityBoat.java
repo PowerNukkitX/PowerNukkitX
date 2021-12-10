@@ -341,6 +341,7 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdated;
     }
 
+    @Override
     public void updatePassengers() {
         updatePassengers(false);
     }

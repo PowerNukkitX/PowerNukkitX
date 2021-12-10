@@ -1,7 +1,5 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.api.NewRakNetOnly;
-import cn.nukkit.api.RemovedFromNewRakNet;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
@@ -21,7 +19,6 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @RemovedFromNewRakNet
     @Since("1.4.0.0-PN")
     public PopulatorOre() {
         this(Block.STONE);
@@ -30,13 +27,11 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @RemovedFromNewRakNet
     @Since("1.4.0.0-PN")
     public PopulatorOre(int id) {
         this.replaceId = id;
     }
 
-    @NewRakNetOnly
     public PopulatorOre(int replaceId, OreType[] oreTypes) {
         this.replaceId = replaceId;
         this.oreTypes = oreTypes;
@@ -64,7 +59,6 @@ public class PopulatorOre extends Populator {
     /**
      * @implNote Removed from the new-raknet branch
      */
-    @RemovedFromNewRakNet
     @Since("1.4.0.0-PN")
     public void setOreTypes(OreType[] oreTypes) {
         this.oreTypes = oreTypes;

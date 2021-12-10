@@ -13,10 +13,12 @@ public class FloatEntityData extends EntityData<Float> {
         this.data = data;
     }
 
+    @Override
     public Float getData() {
         return data;
     }
 
+    @Override
     public void setData(Float data) {
         if (data == null) {
             this.data = 0;

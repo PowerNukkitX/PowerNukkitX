@@ -32,6 +32,7 @@ public class AsyncWorker extends Thread implements InterruptibleThread {
         }
     }
 
+    @Override
     public void run() {
         while (true) {
             synchronized (stack) {

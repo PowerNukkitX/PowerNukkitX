@@ -161,6 +161,7 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         return minValue;
     }
 
+    @Override
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

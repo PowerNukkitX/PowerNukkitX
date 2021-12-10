@@ -76,6 +76,7 @@ public abstract class EntityProjectile extends Entity {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
+    @Override
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }

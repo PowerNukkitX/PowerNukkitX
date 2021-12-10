@@ -807,6 +807,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return results;
     }
 
+    @Override
     @SneakyThrows(CloneNotSupportedException.class)
     @Nonnull
     public ChunkSection copy() {

@@ -171,6 +171,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
         return BlockColor.IRON_BLOCK_COLOR;
     }
 
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }

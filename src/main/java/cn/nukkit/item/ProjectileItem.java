@@ -25,6 +25,7 @@ public abstract class ProjectileItem extends Item {
 
     abstract public float getThrowForce();
 
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")

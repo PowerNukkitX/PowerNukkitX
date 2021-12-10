@@ -31,6 +31,7 @@ public class ConstantItemSelector extends Selector {
         return item;
     }
 
+    @Override
     public Object select() {
         return getItem();
     }

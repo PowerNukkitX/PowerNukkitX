@@ -13,10 +13,12 @@ public class LongEntityData extends EntityData<Long> {
         this.data = data;
     }
 
+    @Override
     public Long getData() {
         return data;
     }
 
+    @Override
     public void setData(Long data) {
         this.data = data;
     }

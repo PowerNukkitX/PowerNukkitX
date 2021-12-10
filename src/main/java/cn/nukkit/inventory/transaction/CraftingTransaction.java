@@ -98,6 +98,7 @@ public class CraftingTransaction extends InventoryTransaction {
         return recipe;
     }
 
+    @Override
     public boolean canExecute() {
         CraftingManager craftingManager = source.getServer().getCraftingManager();
         Inventory inventory;
@@ -171,6 +172,7 @@ public class CraftingTransaction extends InventoryTransaction {
         return this.recipe != null && super.canExecute();
     }
 
+    @Override
     protected boolean callExecuteEvent() {
         CraftItemEvent ev;
 
@@ -178,11 +180,13 @@ public class CraftingTransaction extends InventoryTransaction {
         return !ev.isCancelled();
     }
 
+    @Override
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "No longer closes the inventory")
     protected void sendInventories() {
         super.sendInventories();
     }
 
+    @Override
     public boolean execute() {
         if (super.execute()) {
             switch (this.primaryOutput.getId()) {

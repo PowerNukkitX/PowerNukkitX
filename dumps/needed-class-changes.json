@@ -1,0 +1,3154 @@
+{
+  "cn.nukkit.level.biome.impl.ocean.OceanBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.ocean.OceanBiome#getGroundBlock(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockCobweb": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCobweb#diffusesSkyLight()"
+    ]
+  },
+  "cn.nukkit.dispenser.DropperDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.DropperDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.block.BlockStonecutterBlock": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStonecutterBlock#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSpruceWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSpruceWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.entity.data.IntEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.IntEntityData#getData()",
+      "cn.nukkit.entity.data.IntEntityData#setData(Integer)"
+    ]
+  },
+  "cn.nukkit.network.protocol.AdventureSettingsPacket": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.network.protocol.AdventureSettingsPacket#decode()",
+      "cn.nukkit.network.protocol.AdventureSettingsPacket#encode()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsSmoothQuartz": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsSmoothQuartz#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.util.ImmutableBlockStorage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.util.ImmutableBlockStorage#setBlockState(int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockLiquid": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLiquid#breaksWhenMoved()",
+      "cn.nukkit.block.BlockLiquid#sticksToPiston()",
+      "cn.nukkit.block.BlockLiquid#usesWaterLogging()"
+    ]
+  },
+  "cn.nukkit.block.BlockCobblestone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCobblestone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.passive.EntityTurtle": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.passive.EntityTurtle#setBreedingAge(int)",
+      "cn.nukkit.entity.passive.EntityTurtle#setHomePos(Vector3)"
+    ]
+  },
+  "cn.nukkit.item.ProjectileItem": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.item.ProjectileItem#onClickAir(Player, Vector3)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ProjectileItem#addThrowSound(Player)",
+      "cn.nukkit.item.ProjectileItem#correctProjectile(Player, Entity)"
+    ]
+  },
+  "cn.nukkit.command.CapturingCommandSender": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.command.CapturingCommandSender#getName()",
+      "cn.nukkit.command.CapturingCommandSender#isOp()",
+      "cn.nukkit.command.CapturingCommandSender#setOp(boolean)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.command.CapturingCommandSender#getCleanCapture()",
+      "cn.nukkit.command.CapturingCommandSender#getRawCapture()",
+      "cn.nukkit.command.CapturingCommandSender#resetCapture()",
+      "cn.nukkit.command.CapturingCommandSender#setName(String)",
+      "cn.nukkit.command.CapturingCommandSender#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsSmoothRedSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsSmoothRedSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockRedstoneWire": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockRedstoneWire#getStrongPower(BlockFace)",
+      "cn.nukkit.block.BlockRedstoneWire#getWeakPower(BlockFace)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRedstoneWire#canBePlacedOn(Block)"
+    ]
+  },
+  "cn.nukkit.entity.EntityLiving": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.EntityLiving#isBlocking()",
+      "cn.nukkit.entity.EntityLiving#onBlock(Entity, boolean)",
+      "cn.nukkit.entity.EntityLiving#setBlocking(boolean)"
+    ]
+  },
+  "cn.nukkit.api.Since": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.api.Since#value()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityDispenser": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityDispenser#createInventory()",
+      "cn.nukkit.blockentity.BlockEntityDispenser#getBlockEntityName()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityEvoker": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityEvoker#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityFurnace": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityFurnace#getBurningBlockId()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#getClientName()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#getFurnaceName()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#getIdleBlockId()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#getInventoryType()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#getSpeedMultiplier()",
+      "cn.nukkit.blockentity.BlockEntityFurnace#matchRecipe(Item)",
+      "cn.nukkit.blockentity.BlockEntityFurnace#setBurning(boolean)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityElderGuardian": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityElderGuardian#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.utils.InvalidBlockDamageException": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.InvalidBlockDamageException#canEqual(Object)",
+      "cn.nukkit.utils.InvalidBlockDamageException#equals(Object)",
+      "cn.nukkit.utils.InvalidBlockDamageException#hashCode()"
+    ]
+  },
+  "cn.nukkit.block.BlockPistonHead": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPistonHead#canBePulled()",
+      "cn.nukkit.block.BlockPistonHead#getBlockFace()"
+    ]
+  },
+  "cn.nukkit.block.BlockCake": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockCake#getComparatorInputOverride()",
+      "cn.nukkit.block.BlockCake#hasComparatorInputOverride()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCake#breaksWhenMoved()",
+      "cn.nukkit.block.BlockCake#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.entity.data.FloatEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.FloatEntityData#getData()",
+      "cn.nukkit.entity.data.FloatEntityData#setData(Float)"
+    ]
+  },
+  "cn.nukkit.OfflinePlayer": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.OfflinePlayer#getMetadata(String)",
+      "cn.nukkit.OfflinePlayer#getServer()",
+      "cn.nukkit.OfflinePlayer#hasMetadata(String)",
+      "cn.nukkit.OfflinePlayer#removeMetadata(String, Plugin)",
+      "cn.nukkit.OfflinePlayer#setMetadata(String, MetadataValue)"
+    ]
+  },
+  "cn.nukkit.positiontracking.PositionTrackingStorage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.positiontracking.PositionTrackingStorage#close()",
+      "cn.nukkit.positiontracking.PositionTrackingStorage#finalize()"
+    ]
+  },
+  "cn.nukkit.item.randomitem.ConstantItemSelector": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.item.randomitem.ConstantItemSelector#select()"
+    ]
+  },
+  "cn.nukkit.level.biome.type.SandyBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.type.SandyBiome#getGroundBlock(int)",
+      "cn.nukkit.level.biome.type.SandyBiome#getGroundDepth(int)",
+      "cn.nukkit.level.biome.type.SandyBiome#getSurfaceBlock(int)",
+      "cn.nukkit.level.biome.type.SandyBiome#getSurfaceDepth(int)"
+    ]
+  },
+  "cn.nukkit.entity.projectile.EntitySnowball": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.projectile.EntitySnowball#addHitEffect()"
+    ]
+  },
+  "cn.nukkit.block.BlockSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSignPost#breaksWhenMoved()",
+      "cn.nukkit.block.BlockSignPost#getPostId()",
+      "cn.nukkit.block.BlockSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityBlaze": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityBlaze#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.math.AtomicIntIncrementSupplier": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.math.AtomicIntIncrementSupplier#getAsInt()"
+    ]
+  },
+  "cn.nukkit.dispenser.FlintAndSteelDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.FlintAndSteelDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.inventory.GrindstoneInventory": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.GrindstoneInventory#updateResult(boolean)"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedOak": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedOak#getWoodType()"
+    ]
+  },
+  "cn.nukkit.entity.data.ByteEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.ByteEntityData#getData()",
+      "cn.nukkit.entity.data.ByteEntityData#setData(Integer)"
+    ]
+  },
+  "cn.nukkit.item.ItemHoeNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemHoeNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.level.biome.type.GrassyBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.type.GrassyBiome#getGroundBlock(int)",
+      "cn.nukkit.level.biome.type.GrassyBiome#getSurfaceBlock(int)"
+    ]
+  },
+  "cn.nukkit.nbt.stream.FastByteArrayOutputStream": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.nbt.stream.FastByteArrayOutputStream#write(byte[], int, int)",
+      "cn.nukkit.nbt.stream.FastByteArrayOutputStream#write(int)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityWitherSkeleton": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityWitherSkeleton#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityWitherSkeleton#isUndead()"
+    ]
+  },
+  "cn.nukkit.network.protocol.UpdateAttributesPacket": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.network.protocol.UpdateAttributesPacket#decode()",
+      "cn.nukkit.network.protocol.UpdateAttributesPacket#encode()"
+    ]
+  },
+  "cn.nukkit.inventory.BlastFurnaceRecipe": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.BlastFurnaceRecipe#getInput()"
+    ]
+  },
+  "cn.nukkit.block.BlockDispenser": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDispenser#dispense()",
+      "cn.nukkit.block.BlockDispenser#getDispenseBehavior(Item)",
+      "cn.nukkit.block.BlockDispenser#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.projectile.EntityEgg": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.projectile.EntityEgg#addHitEffect()"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.taiga.ColdTaigaBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.taiga.ColdTaigaBiome#getCoverBlock()"
+    ]
+  },
+  "cn.nukkit.block.BlockPistonSticky": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPistonSticky#getPistonHeadBlockId()"
+    ]
+  },
+  "cn.nukkit.inventory.transaction.CraftingTransaction": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.transaction.CraftingTransaction#callExecuteEvent()",
+      "cn.nukkit.inventory.transaction.CraftingTransaction#canExecute()",
+      "cn.nukkit.inventory.transaction.CraftingTransaction#execute()",
+      "cn.nukkit.inventory.transaction.CraftingTransaction#sendInventories()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.transaction.CraftingTransaction#recipe",
+      "cn.nukkit.inventory.transaction.CraftingTransaction#craftingType"
+    ]
+  },
+  "cn.nukkit.item.ItemNuggetIron": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemNuggetIron"
+    ]
+  },
+  "cn.nukkit.block.BlockLeaves": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLeaves#breaksWhenMoved()",
+      "cn.nukkit.block.BlockLeaves#diffusesSkyLight()",
+      "cn.nukkit.block.BlockLeaves#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockVinesNether": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockVinesNether#breaksWhenMoved()",
+      "cn.nukkit.block.BlockVinesNether#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityVindicator": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityVindicator#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockSoulSand": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSoulSand#isSoulSpeedCompatible()"
+    ]
+  },
+  "cn.nukkit.inventory.transaction.action.DropItemAction": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.transaction.action.DropItemAction#execute(Player)",
+      "cn.nukkit.inventory.transaction.action.DropItemAction#isValid(Player)",
+      "cn.nukkit.inventory.transaction.action.DropItemAction#onExecuteFail(Player)",
+      "cn.nukkit.inventory.transaction.action.DropItemAction#onExecuteSuccess(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockDeny": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDeny#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockBorder": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBorder#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabCrimson": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabCrimson#getSlabName()",
+      "cn.nukkit.block.BlockSlabCrimson#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.block.BlockAnvil": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockAnvil#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockConcrete": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockConcrete#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSoulSoil": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSoulSoil#isSoulSpeedCompatible()"
+    ]
+  },
+  "cn.nukkit.entity.passive.EntityBee": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.passive.EntityBee#getHasNectar()",
+      "cn.nukkit.entity.passive.EntityBee#isAngry()",
+      "cn.nukkit.entity.passive.EntityBee#leftBeehive(BlockEntityBeehive)",
+      "cn.nukkit.entity.passive.EntityBee#nectarDelivered(BlockEntityBeehive)",
+      "cn.nukkit.entity.passive.EntityBee#setAngry(boolean)",
+      "cn.nukkit.entity.passive.EntityBee#setAngry(Player)",
+      "cn.nukkit.entity.passive.EntityBee#setHasNectar(boolean)"
+    ]
+  },
+  "cn.nukkit.inventory.PlayerUIComponent": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.PlayerUIComponent#playerUI"
+    ]
+  },
+  "cn.nukkit.block.BlockBanner": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBanner#breaksWhenMoved()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsPurpur": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsPurpur#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.generic.BaseLevelProvider": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.generic.BaseLevelProvider#updateLevelName(String)"
+    ]
+  },
+  "cn.nukkit.block.BlockBed": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBed#breaksWhenMoved()",
+      "cn.nukkit.block.BlockBed#sticksToPiston()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBed#clone()"
+    ]
+  },
+  "cn.nukkit.Server": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.Server#getGitCommit()",
+      "cn.nukkit.Server#isRedstoneEnabled()",
+      "cn.nukkit.Server#setRedstoneEnabled(boolean)"
+    ]
+  },
+  "cn.nukkit.entity.item.EntityFallingBlock": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.item.EntityFallingBlock#canCollideWith(Entity)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.item.EntityFallingBlock#breakOnLava"
+    ]
+  },
+  "cn.nukkit.block.BlockCoal": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCoal#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockLectern": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLectern#executeRedstonePulse()"
+    ]
+  },
+  "cn.nukkit.level.Location": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.Location#fromObject(Vector3)",
+      "cn.nukkit.level.Location#fromObject(Vector3, Level)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.Location#setPitch(double)",
+      "cn.nukkit.level.Location#setYaw(double)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsMossyCobblestone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsMossyCobblestone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.math.IntIncrementSupplier": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.math.IntIncrementSupplier#getAsInt()"
+    ]
+  },
+  "cn.nukkit.dispenser.FireworksDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.FireworksDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.inventory.BaseInventory": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.BaseInventory#addListener(InventoryListener)",
+      "cn.nukkit.inventory.BaseInventory#removeListener(InventoryListener)"
+    ]
+  },
+  "cn.nukkit.block.BlockAcaciaWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockAcaciaWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityCauldron": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityCauldron#POTION_TYPE_EMPTY",
+      "cn.nukkit.blockentity.BlockEntityCauldron#POTION_TYPE_NORMAL",
+      "cn.nukkit.blockentity.BlockEntityCauldron#POTION_TYPE_SPLASH",
+      "cn.nukkit.blockentity.BlockEntityCauldron#POTION_TYPE_LINGERING",
+      "cn.nukkit.blockentity.BlockEntityCauldron#POTION_TYPE_LAVA",
+      "cn.nukkit.blockentity.BlockEntityCauldron#getPotionType()",
+      "cn.nukkit.blockentity.BlockEntityCauldron#setPotionType(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStemCrimson": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStemCrimson#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityZombieVillager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityZombieVillager#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityZombieVillager#isUndead()"
+    ]
+  },
+  "cn.nukkit.entity.data.StringEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.StringEntityData#getData()",
+      "cn.nukkit.entity.data.StringEntityData#setData(String)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.BeehiveUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.BeehiveUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockOreGold": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreGold#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsQuartz": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsQuartz#getToolTier()"
+    ]
+  },
+  "cn.nukkit.dispenser.DyeDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.DyeDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.level.GameRule": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.GameRule#EXPERIMENTAL_GAMEPLAY"
+    ]
+  },
+  "cn.nukkit.block.BlockScaffolding": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockScaffolding#createFallingEntity(CompoundTag)"
+    ]
+  },
+  "cn.nukkit.level.biome.type.WateryBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.type.WateryBiome#getGroundBlock(int)",
+      "cn.nukkit.level.biome.type.WateryBiome#getGroundDepth(int)",
+      "cn.nukkit.level.biome.type.WateryBiome#getSurfaceBlock(int)",
+      "cn.nukkit.level.biome.type.WateryBiome#getSurfaceDepth(int)"
+    ]
+  },
+  "cn.nukkit.level.generator.SimpleChunkManager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.generator.SimpleChunkManager#getBlockDataAt(int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#getBlockIdAt(int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#getBlockStateAt(int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#setBlockDataAt(int, int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#setBlockFullIdAt(int, int, int, int, int)",
+      "cn.nukkit.level.generator.SimpleChunkManager#setBlockIdAt(int, int, int, int, int)"
+    ]
+  },
+  "cn.nukkit.block.BlockChorusPlant": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockChorusPlant#breaksWhenMoved()",
+      "cn.nukkit.block.BlockChorusPlant#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockWall": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWall#getToolTier()"
+    ]
+  },
+  "cn.nukkit.math.MathHelper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.math.MathHelper#clamp(float, float, float)"
+    ]
+  },
+  "cn.nukkit.utils.OptionalBoolean": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.OptionalBoolean#toString()"
+    ]
+  },
+  "cn.nukkit.blockstate.BlockState": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockstate.BlockState#getBlockId()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.BlockState#equals(Object)",
+      "cn.nukkit.blockstate.BlockState#getBigDamage()",
+      "cn.nukkit.blockstate.BlockState#getBitSize()",
+      "cn.nukkit.blockstate.BlockState#getBlock()",
+      "cn.nukkit.blockstate.BlockState#getBlock(Level, int, int, int, int, boolean, Consumer)",
+      "cn.nukkit.blockstate.BlockState#getBlockId()",
+      "cn.nukkit.blockstate.BlockState#getBooleanValue(String)",
+      "cn.nukkit.blockstate.BlockState#getCurrentState()",
+      "cn.nukkit.blockstate.BlockState#getDataStorage()",
+      "cn.nukkit.blockstate.BlockState#getIntValue(String)",
+      "cn.nukkit.blockstate.BlockState#getLegacyDamage()",
+      "cn.nukkit.blockstate.BlockState#getPersistenceValue(String)",
+      "cn.nukkit.blockstate.BlockState#getProperties()",
+      "cn.nukkit.blockstate.BlockState#getPropertyValue(String)",
+      "cn.nukkit.blockstate.BlockState#hashCode()",
+      "cn.nukkit.blockstate.BlockState#toString()"
+    ]
+  },
+  "cn.nukkit.network.protocol.PositionTrackingDBClientRequestPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.PositionTrackingDBClientRequestPacket#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsDiorite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsDiorite#getToolTier()"
+    ]
+  },
+  "cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent#getHandlers()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.vehicle.VehicleDestroyByEntityEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.blockstate.MutableBlockState": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.MutableBlockState#canEqual(Object)",
+      "cn.nukkit.blockstate.MutableBlockState#equals(Object)",
+      "cn.nukkit.blockstate.MutableBlockState#getBigId()",
+      "cn.nukkit.blockstate.MutableBlockState#getBitSize()",
+      "cn.nukkit.blockstate.MutableBlockState#getBlockId()",
+      "cn.nukkit.blockstate.MutableBlockState#getFullId()",
+      "cn.nukkit.blockstate.MutableBlockState#getProperties()",
+      "cn.nukkit.blockstate.MutableBlockState#hashCode()",
+      "cn.nukkit.blockstate.MutableBlockState#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockStonecutter": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStonecutter#getToolTier()"
+    ]
+  },
+  "cn.nukkit.event.entity.EntityExplodeEvent": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.entity.EntityExplodeEvent#ignitions"
+    ]
+  },
+  "cn.nukkit.nbt.tag.Tag": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.nbt.tag.Tag#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockStemStripped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStemStripped#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.block.BlockLadder": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLadder#breaksWhenMoved()",
+      "cn.nukkit.block.BlockLadder#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.nbt.tag.ListTag": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.nbt.tag.ListTag#print(String, PrintStream)"
+    ]
+  },
+  "cn.nukkit.inventory.ShapelessRecipe": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.ShapelessRecipe#matchItems(List, List, int)"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.iceplains.IcePlainsSpikesBiome": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.biome.impl.iceplains.IcePlainsSpikesBiome#getName()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.iceplains.IcePlainsSpikesBiome#getSurfaceBlock(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsStoneBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsStoneBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockQuartz": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockQuartz#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntitySpider": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntitySpider#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.item.ItemDragonBreath": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemDragonBreath"
+    ]
+  },
+  "cn.nukkit.level.ListChunkManager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.ListChunkManager#getBlockDataAt(int, int, int, int)",
+      "cn.nukkit.level.ListChunkManager#getBlockIdAt(int, int, int, int)",
+      "cn.nukkit.level.ListChunkManager#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.ListChunkManager#setBlockDataAt(int, int, int, int, int)",
+      "cn.nukkit.level.ListChunkManager#setBlockFullIdAt(int, int, int, int, int)",
+      "cn.nukkit.level.ListChunkManager#setBlockIdAt(int, int, int, int, int)"
+    ]
+  },
+  "cn.nukkit.inventory.transaction.action.SlotChangeAction": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.transaction.action.SlotChangeAction#execute(Player)",
+      "cn.nukkit.inventory.transaction.action.SlotChangeAction#isValid(Player)",
+      "cn.nukkit.inventory.transaction.action.SlotChangeAction#onExecuteFail(Player)",
+      "cn.nukkit.inventory.transaction.action.SlotChangeAction#onExecuteSuccess(Player)"
+    ]
+  },
+  "cn.nukkit.item.ItemFishingRod": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemFishingRod#damageWhenBreaking()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityGuardian": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityGuardian#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockBricks": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBricks#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.ChunkSection": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.anvil.ChunkSection#copy()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.ChunkSection#STREAM_STORAGE_VERSION",
+      "cn.nukkit.level.format.anvil.ChunkSection#SAVE_STORAGE_VERSION",
+      "cn.nukkit.level.format.anvil.ChunkSection#getAndSetBlock(int, int, int, int, Block)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getBlockChangeStateAbove(int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getBlockData(int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getBlockId(int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getBlockState(int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getFullBlock(int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#getMaximumLayer()",
+      "cn.nukkit.level.format.anvil.ChunkSection#hasBlocks()",
+      "cn.nukkit.level.format.anvil.ChunkSection#setBlockAtLayer(int, int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#setBlockData(int, int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#setBlockId(int, int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#setBlockStateAtLayer(int, int, int, int, BlockState)",
+      "cn.nukkit.level.format.anvil.ChunkSection#setFullBlockId(int, int, int, int, int)",
+      "cn.nukkit.level.format.anvil.ChunkSection#toNBT()"
+    ]
+  },
+  "cn.nukkit.scheduler.AsyncWorker": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.scheduler.AsyncWorker#run()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabBlackstonePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabBlackstonePolished#getSlabName()",
+      "cn.nukkit.block.BlockSlabBlackstonePolished#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.block.BlockDoorIron": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoorIron#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.palette.BiomePalette": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.anvil.palette.BiomePalette#clone()"
+    ]
+  },
+  "cn.nukkit.block.BlockDaylightDetectorInverted": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDaylightDetectorInverted#isInverted()"
+    ]
+  },
+  "cn.nukkit.blockstate.BlockStateRepair": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.BlockStateRepair#equals(Object)",
+      "cn.nukkit.blockstate.BlockStateRepair#getBlockId()",
+      "cn.nukkit.blockstate.BlockStateRepair#getBrokenPropertyMeta()",
+      "cn.nukkit.blockstate.BlockStateRepair#getCurrentState()",
+      "cn.nukkit.blockstate.BlockStateRepair#getFixedPropertyValue()",
+      "cn.nukkit.blockstate.BlockStateRepair#getNextState()",
+      "cn.nukkit.blockstate.BlockStateRepair#getOriginalState()",
+      "cn.nukkit.blockstate.BlockStateRepair#getProperties()",
+      "cn.nukkit.blockstate.BlockStateRepair#getProperty()",
+      "cn.nukkit.blockstate.BlockStateRepair#getPropertyOffset()",
+      "cn.nukkit.blockstate.BlockStateRepair#getProposedPropertyValue()",
+      "cn.nukkit.blockstate.BlockStateRepair#getRepairs()",
+      "cn.nukkit.blockstate.BlockStateRepair#getValidationException()",
+      "cn.nukkit.blockstate.BlockStateRepair#hashCode()",
+      "cn.nukkit.blockstate.BlockStateRepair#toString()"
+    ]
+  },
+  "cn.nukkit.entity.item.EntityPainting": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.item.EntityPainting#onPushByPiston(BlockEntityPistonArm)"
+    ]
+  },
+  "cn.nukkit.network.protocol.ItemComponentPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.ItemComponentPacket#toString()"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.mesa.MesaPlateauFBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.mesa.MesaPlateauFBiome#getCoverBlock()"
+    ]
+  },
+  "cn.nukkit.network.protocol.DataPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.DataPacket#EMPTY_ARRAY"
+    ]
+  },
+  "cn.nukkit.item.ItemRabbitHide": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemRabbitHide"
+    ]
+  },
+  "cn.nukkit.block.BlockEnchantingTable": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEnchantingTable#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityPiglin": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityPiglin#isBaby()",
+      "cn.nukkit.entity.mob.EntityPiglin#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.level.format.ChunkSection": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.ChunkSection#setFullBlockId(int, int, int, int, int)"
+    ]
+  },
+  "cn.nukkit.level.format.generic.BaseFullChunk": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.generic.BaseFullChunk#initChunk()",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setX(int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setZ(int)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.generic.BaseFullChunk#getBlockDataAt(int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#getBlockIdAt(int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#recalculateHeightMapColumn(int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setBlockAtLayer(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setBlockDataAt(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setBlockFullIdAt(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseFullChunk#setBlockIdAt(int, int, int, int, int)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsRedNetherBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsRedNetherBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockRespawnAnchor": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRespawnAnchor#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsRedSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsRedSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityHusk": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityHusk#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityHusk#isUndead()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedJungle": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedJungle#getWoodType()"
+    ]
+  },
+  "cn.nukkit.block.BlockObsidian": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockObsidian#canBePulled()",
+      "cn.nukkit.block.BlockObsidian#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.passive.EntitySkeletonHorse": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.passive.EntitySkeletonHorse#isUndead()"
+    ]
+  },
+  "cn.nukkit.item.Item": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.Item#equalsIgnoringEnchantmentOrder(Item, boolean)",
+      "cn.nukkit.item.Item#getBlock(int)",
+      "cn.nukkit.item.Item#getBlock(int, Integer)",
+      "cn.nukkit.item.Item#getBlock(int, Integer, int)",
+      "cn.nukkit.item.Item#getBlock(int, Integer, int, byte[])"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.Item#hasEnchantment(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockWarpedWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWarpedWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.block.BlockObsidianCrying": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockObsidianCrying#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsSmoothSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsSmoothSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.particle.Particle": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.particle.Particle#TYPE_CANDLE_FLAME"
+    ]
+  },
+  "cn.nukkit.network.rcon.RCONServer": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.network.rcon.RCONServer#run()"
+    ]
+  },
+  "cn.nukkit.blockproperty.IntBlockProperty": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockproperty.IntBlockProperty#getDefaultValue()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.IntBlockProperty#getIntValueForMeta(int)",
+      "cn.nukkit.blockproperty.IntBlockProperty#getMetaForValue(Integer)",
+      "cn.nukkit.blockproperty.IntBlockProperty#getPersistenceValueForMeta(int)",
+      "cn.nukkit.blockproperty.IntBlockProperty#getValueClass()",
+      "cn.nukkit.blockproperty.IntBlockProperty#getValueForMeta(int)",
+      "cn.nukkit.blockproperty.IntBlockProperty#validateDirectly(Integer)",
+      "cn.nukkit.blockproperty.IntBlockProperty#validateMetaDirectly(int)"
+    ]
+  },
+  "cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.PositionTrackingDBServerBroadcastPacket#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockPumpkin": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPumpkin#breaksWhenMoved()",
+      "cn.nukkit.block.BlockPumpkin#getProperties()",
+      "cn.nukkit.block.BlockPumpkin#setBlockFace(BlockFace)",
+      "cn.nukkit.block.BlockPumpkin#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityMovingBlock": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityMovingBlock#blockString",
+      "cn.nukkit.blockentity.BlockEntityMovingBlock#getBlockEntity()",
+      "cn.nukkit.blockentity.BlockEntityMovingBlock#getMovingBlock()",
+      "cn.nukkit.blockentity.BlockEntityMovingBlock#getMovingBlockString()",
+      "cn.nukkit.blockentity.BlockEntityMovingBlock#moveCollidedEntities(BlockEntityPistonArm, BlockFace)"
+    ]
+  },
+  "cn.nukkit.blockstate.LongMutableBlockState": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockstate.LongMutableBlockState#canEqual(Object)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.LongMutableBlockState#canEqual(Object)",
+      "cn.nukkit.blockstate.LongMutableBlockState#copy()",
+      "cn.nukkit.blockstate.LongMutableBlockState#equals(Object)",
+      "cn.nukkit.blockstate.LongMutableBlockState#getBigDamage()",
+      "cn.nukkit.blockstate.LongMutableBlockState#getBooleanValue(String)",
+      "cn.nukkit.blockstate.LongMutableBlockState#getCurrentState()",
+      "cn.nukkit.blockstate.LongMutableBlockState#getDataStorage()",
+      "cn.nukkit.blockstate.LongMutableBlockState#getIntValue(String)",
+      "cn.nukkit.blockstate.LongMutableBlockState#getLegacyDamage()",
+      "cn.nukkit.blockstate.LongMutableBlockState#getPersistenceValue(String)",
+      "cn.nukkit.blockstate.LongMutableBlockState#getPropertyValue(String)",
+      "cn.nukkit.blockstate.LongMutableBlockState#hashCode()",
+      "cn.nukkit.blockstate.LongMutableBlockState#toString()",
+      "cn.nukkit.blockstate.LongMutableBlockState#validate()"
+    ]
+  },
+  "cn.nukkit.item.ItemWarpedFungusOnAStick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemWarpedFungusOnAStick#damageWhenBreaking()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemWarpedFungusOnAStick"
+    ]
+  },
+  "cn.nukkit.level.format.updater.OldWoodBarkUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.OldWoodBarkUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.blockproperty.BlockProperty": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.BlockProperty#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockItemFrame": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockItemFrame#breaksWhenMoved()",
+      "cn.nukkit.block.BlockItemFrame#sticksToPiston()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockItemFrame#recalculateBoundingBox()"
+    ]
+  },
+  "cn.nukkit.utils.SkinAnimation": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.SkinAnimation#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.blockstate.BigIntegerMutableBlockState": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#canEqual(Object)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#canEqual(Object)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#copy()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#equals(Object)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getBigDamage()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getBooleanValue(String)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getCurrentState()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getDataStorage()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getIntValue(String)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getLegacyDamage()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getPersistenceValue(String)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#getPropertyValue(String)",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#hashCode()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#toString()",
+      "cn.nukkit.blockstate.BigIntegerMutableBlockState#validate()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityItemFrame": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityItemFrame#setDirty()"
+    ]
+  },
+  "cn.nukkit.block.BlockPistonBase": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPistonBase#canPush(Block, BlockFace, boolean, boolean)",
+      "cn.nukkit.block.BlockPistonBase#createHead(int)",
+      "cn.nukkit.block.BlockPistonBase#getPistonHeadBlockId()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityBeehive": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityBeehive#onBreak(boolean)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsCobblestone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsCobblestone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabWarped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabWarped#getSlabName()",
+      "cn.nukkit.block.BlockSlabWarped#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.DoorUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.DoorUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.blockstate.ZeroMutableBlockState": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.ZeroMutableBlockState#copy()",
+      "cn.nukkit.blockstate.ZeroMutableBlockState#validate()"
+    ]
+  },
+  "cn.nukkit.block.BlockLapis": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLapis#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntitySilverfish": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntitySilverfish#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockOreLapis": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreLapis#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockIronBars": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockIronBars#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodBark": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodBark#getWoodType()",
+      "cn.nukkit.block.BlockWoodBark#setWoodType(WoodType)"
+    ]
+  },
+  "cn.nukkit.item.ItemLeggingsNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemLeggingsNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.item.enchantment.EnchantmentEfficiency": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.EnchantmentEfficiency#isItemAcceptable(Item)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.StemStrippedUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.StemStrippedUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.level.util.Pow2BitArray": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.util.Pow2BitArray#get(int)",
+      "cn.nukkit.level.util.Pow2BitArray#getVersion()",
+      "cn.nukkit.level.util.Pow2BitArray#set(int, int)",
+      "cn.nukkit.level.util.Pow2BitArray#size()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabStone#getSlabName()",
+      "cn.nukkit.block.BlockSlabStone#getToolTier()",
+      "cn.nukkit.block.BlockSlabStone#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.Player": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.Player#isPlayer()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.Player#addExperience(int, boolean)",
+      "cn.nukkit.Player#onBlock(Entity, boolean)",
+      "cn.nukkit.Player#setExperience(int, int, boolean)"
+    ]
+  },
+  "cn.nukkit.blockproperty.UnsignedIntBlockProperty": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getDefaultValue()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getIntValueForMeta(int)",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getMetaForValue(Integer)",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getPersistenceValueForMeta(int)",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getValueClass()",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#getValueForMeta(int)",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#validateDirectly(Integer)",
+      "cn.nukkit.blockproperty.UnsignedIntBlockProperty#validateMetaDirectly(int)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityZombieVillagerV1": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityZombieVillagerV1#isUndead()"
+    ]
+  },
+  "cn.nukkit.utils.collection.ConvertingSetWrapper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#add(V1)",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#clear()",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#contains(Object)",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#isEmpty()",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#iterator()",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#remove(Object)",
+      "cn.nukkit.utils.collection.ConvertingSetWrapper#size()"
+    ]
+  },
+  "cn.nukkit.block.BlockDarkOakWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDarkOakWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.block.BlockCampfire": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCampfire#breaksWhenMoved()",
+      "cn.nukkit.block.BlockCampfire#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsPrismarineBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsPrismarineBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.event.block.BlockFormEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.block.BlockFormEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.block.BlockBricksRedNether": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBricksRedNether#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockObserver": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockObserver#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStructure": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStructure#canBePulled()"
+    ]
+  },
+  "cn.nukkit.network.Network": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.Network#getPacket(byte)"
+    ]
+  },
+  "cn.nukkit.level.format.generic.BaseChunk": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.generic.BaseChunk#findBorders(int, int)",
+      "cn.nukkit.level.format.generic.BaseChunk#getBlockData(int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseChunk#getBlockStateAt(int, int, int, int)",
+      "cn.nukkit.level.format.generic.BaseChunk#isBlockChangeAllowed(int, int, int)",
+      "cn.nukkit.level.format.generic.BaseChunk#isBlockedByBorder(int, int)",
+      "cn.nukkit.level.format.generic.BaseChunk#setBlockData(int, int, int, int, int)"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.generic.BaseChunk#setBlock(int, int, int, int, int)"
+    ]
+  },
+  "cn.nukkit.block.BlockFallable": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockFallable#onUpdate(int)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFallable#createFallingEntity(CompoundTag)"
+    ]
+  },
+  "cn.nukkit.block.BlockWeightedPressurePlateLight": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWeightedPressurePlateLight#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.weather.EntityLightning": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.weather.EntityLightning#isEffect()",
+      "cn.nukkit.entity.weather.EntityLightning#setEffect(boolean)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityCaveSpider": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityCaveSpider#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.event.vehicle.VehicleDamageByEntityEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.vehicle.VehicleDamageByEntityEvent#getHandlers()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.vehicle.VehicleDamageByEntityEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.item.ItemBlock": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.item.ItemBlock#getBlock()",
+      "cn.nukkit.item.ItemBlock#setDamage(Integer)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemBlock#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.block.BlockButtonStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockButtonStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockTerracotta": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockTerracotta#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityEndermite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityEndermite#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.level.biome.type.SnowyBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.type.SnowyBiome#getCoverBlock()"
+    ]
+  },
+  "cn.nukkit.block.BlockLodestone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLodestone#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.item.ItemBootsNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemBootsNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.block.BlockMoving": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockMoving#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockWarpedSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWarpedSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.blockproperty.ArrayBlockProperty": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getIntValueForMeta(int)",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getMetaForValue(E)",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getPersistenceValueForMeta(int)",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getUniverse()",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getValueClass()",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#getValueForMeta(int)",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#validateDirectly(E)",
+      "cn.nukkit.blockproperty.ArrayBlockProperty#validateMetaDirectly(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockRedstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRedstone#getToolTier()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRedstone#onBreak(Item)",
+      "cn.nukkit.block.BlockRedstone#place(Item, Block, Block, BlockFace, double, double, double, Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockBell": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBell#getAttachmentType()",
+      "cn.nukkit.block.BlockBell#getToolTier()",
+      "cn.nukkit.block.BlockBell#setAttachmentType(int)"
+    ]
+  },
+  "cn.nukkit.command.ConsoleCommandSender": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.command.ConsoleCommandSender#isPlayer()"
+    ]
+  },
+  "cn.nukkit.block.Block": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.Block#calculateIntercept(Vector3, Vector3)",
+      "cn.nukkit.block.Block#clone()",
+      "cn.nukkit.block.Block#down()",
+      "cn.nukkit.block.Block#down(int)",
+      "cn.nukkit.block.Block#east()",
+      "cn.nukkit.block.Block#east(int)",
+      "cn.nukkit.block.Block#getCurrentState()",
+      "cn.nukkit.block.Block#getFullId()",
+      "cn.nukkit.block.Block#getProperties()",
+      "cn.nukkit.block.Block#getRuntimeId()",
+      "cn.nukkit.block.Block#getSide(BlockFace)",
+      "cn.nukkit.block.Block#getSide(BlockFace, int)",
+      "cn.nukkit.block.Block#north()",
+      "cn.nukkit.block.Block#north(int)",
+      "cn.nukkit.block.Block#south()",
+      "cn.nukkit.block.Block#south(int)",
+      "cn.nukkit.block.Block#up()",
+      "cn.nukkit.block.Block#up(int)",
+      "cn.nukkit.block.Block#west()",
+      "cn.nukkit.block.Block#west(int)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.Block#diffusesSkyLight",
+      "cn.nukkit.block.Block#asItemBlock()",
+      "cn.nukkit.block.Block#breaksWhenMoved()",
+      "cn.nukkit.block.Block#canBePulled()",
+      "cn.nukkit.block.Block#canWaterloggingFlowInto()",
+      "cn.nukkit.block.Block#diffusesSkyLight()",
+      "cn.nukkit.block.Block#down(int, int)",
+      "cn.nukkit.block.Block#east(int, int)",
+      "cn.nukkit.block.Block#firstInLayers(int, Predicate)",
+      "cn.nukkit.block.Block#firstInLayers(Predicate)",
+      "cn.nukkit.block.Block#get(int, Level, int, int, int, int)",
+      "cn.nukkit.block.Block#get(int, Integer, Position, int)",
+      "cn.nukkit.block.Block#getBlock()",
+      "cn.nukkit.block.Block#getItemId()",
+      "cn.nukkit.block.Block#getSideAtLayer(int, BlockFace)",
+      "cn.nukkit.block.Block#getSideAtLayer(int, BlockFace, int)",
+      "cn.nukkit.block.Block#north(int, int)",
+      "cn.nukkit.block.Block#south(int, int)",
+      "cn.nukkit.block.Block#sticksToPiston()",
+      "cn.nukkit.block.Block#up(int, int)",
+      "cn.nukkit.block.Block#west(int, int)"
+    ]
+  },
+  "cn.nukkit.command.Command": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.command.Command#parseTilde(String, double)"
+    ]
+  },
+  "cn.nukkit.entity.projectile.EntityThrownTrident": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.projectile.EntityThrownTrident#gravity",
+      "cn.nukkit.entity.projectile.EntityThrownTrident#drag",
+      "cn.nukkit.entity.projectile.EntityThrownTrident#create(Object, Position, Object[])",
+      "cn.nukkit.entity.projectile.EntityThrownTrident#isCritical()",
+      "cn.nukkit.entity.projectile.EntityThrownTrident#setCritical()",
+      "cn.nukkit.entity.projectile.EntityThrownTrident#setCritical(boolean)"
+    ]
+  },
+  "cn.nukkit.utils.Hash": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.Hash#hashBlock(Vector3)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsAndesite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsAndesite#getToolTier()"
+    ]
+  },
+  "cn.nukkit.network.protocol.CraftingEventPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.CraftingEventPacket#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.block.BlockFungusCrimson": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFungusCrimson#canGrowOn(Block)",
+      "cn.nukkit.block.BlockFungusCrimson#grow(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsEndBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsEndBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsGranitePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsGranitePolished#getToolTier()"
+    ]
+  },
+  "cn.nukkit.dispenser.ProjectileDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.ProjectileDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)",
+      "cn.nukkit.dispenser.ProjectileDispenseBehavior#getAccuracy()",
+      "cn.nukkit.dispenser.ProjectileDispenseBehavior#getMotion()"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.beach.ColdBeachBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.beach.ColdBeachBiome#getCoverBlock()"
+    ]
+  },
+  "cn.nukkit.block.BlockConcretePowder": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockConcretePowder#getDyeColor()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityStray": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityStray#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityStray#isUndead()"
+    ]
+  },
+  "cn.nukkit.blockstate.IBlockState": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.IBlockState#getBigId()"
+    ]
+  },
+  "cn.nukkit.event.redstone.RedstoneUpdateEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.redstone.RedstoneUpdateEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.network.protocol.TickSyncPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.TickSyncPacket#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockCoralFanHang": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCoralFanHang#getRootsFace()",
+      "cn.nukkit.block.BlockCoralFanHang#getType()",
+      "cn.nukkit.block.BlockCoralFanHang#isDead()"
+    ]
+  },
+  "cn.nukkit.block.BlockFence": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFence#PROPERTIES"
+    ]
+  },
+  "cn.nukkit.item.ItemLead": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemLead"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityRavager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityRavager#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityPhantom": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityPhantom#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityPhantom#isUndead()"
+    ]
+  },
+  "cn.nukkit.block.BlockBedrockInvisible": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBedrockInvisible#canBePulled()"
+    ]
+  },
+  "cn.nukkit.dispenser.TNTDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.TNTDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.blockstate.IntMutableBlockState": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockstate.IntMutableBlockState#canEqual(Object)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.IntMutableBlockState#canEqual(Object)",
+      "cn.nukkit.blockstate.IntMutableBlockState#copy()",
+      "cn.nukkit.blockstate.IntMutableBlockState#equals(Object)",
+      "cn.nukkit.blockstate.IntMutableBlockState#getBigDamage()",
+      "cn.nukkit.blockstate.IntMutableBlockState#getBooleanValue(String)",
+      "cn.nukkit.blockstate.IntMutableBlockState#getCurrentState()",
+      "cn.nukkit.blockstate.IntMutableBlockState#getDataStorage()",
+      "cn.nukkit.blockstate.IntMutableBlockState#getIntValue(String)",
+      "cn.nukkit.blockstate.IntMutableBlockState#getLegacyDamage()",
+      "cn.nukkit.blockstate.IntMutableBlockState#getPersistenceValue(String)",
+      "cn.nukkit.blockstate.IntMutableBlockState#getPropertyValue(String)",
+      "cn.nukkit.blockstate.IntMutableBlockState#hashCode()",
+      "cn.nukkit.blockstate.IntMutableBlockState#toString()",
+      "cn.nukkit.blockstate.IntMutableBlockState#validate()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityCreeper": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.mob.EntityCreeper#onStruckByLightning(Entity)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityCreeper#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.item.enchantment.EnchantmentSilkTouch": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.EnchantmentSilkTouch#isItemAcceptable(Item)"
+    ]
+  },
+  "cn.nukkit.block.BlockBedrock": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBedrock#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockLever": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockLever#getStrongPower(BlockFace)"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.palette.IntPalette": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.anvil.palette.IntPalette#clone()"
+    ]
+  },
+  "cn.nukkit.entity.item.EntityExpBottle": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.item.EntityExpBottle#addHitEffect()"
+    ]
+  },
+  "cn.nukkit.block.BlockIron": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockIron#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsNetherBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsNetherBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockCoralFanDead": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCoralFanDead#isDead()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedAcacia": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedAcacia#getWoodType()"
+    ]
+  },
+  "cn.nukkit.dispenser.EmptyBucketDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.EmptyBucketDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.dispenser.DefaultDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.DefaultDispenseBehavior#success",
+      "cn.nukkit.dispenser.DefaultDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.block.BlockRedstoneComparator": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockRedstoneComparator#calculateInputStrength()",
+      "cn.nukkit.block.BlockRedstoneComparator#shouldBePowered()"
+    ]
+  },
+  "cn.nukkit.block.BlockFlowable": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFlowable#breaksWhenMoved()",
+      "cn.nukkit.block.BlockFlowable#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockNetherWartBlock": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockNetherWartBlock"
+    ]
+  },
+  "cn.nukkit.block.BlockHyphaeWarped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockHyphaeWarped#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.palette.BlockDataPalette": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.anvil.palette.BlockDataPalette#clone()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabCrimson": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabCrimson#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabCrimson#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabCrimson#isCorrectTool(Item)"
+    ]
+  },
+  "cn.nukkit.item.ItemBannerPattern": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemBannerPattern#updateName()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemBannerPattern"
+    ]
+  },
+  "cn.nukkit.block.BlockMobSpawner": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockMobSpawner#canBePulled()",
+      "cn.nukkit.block.BlockMobSpawner#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.Position": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.Position#getSide(BlockFace)",
+      "cn.nukkit.level.Position#getSide(BlockFace, int)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.Position#getLevelBlockAtLayer(int)"
+    ]
+  },
+  "cn.nukkit.nbt.tag.CompoundTag": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.nbt.tag.CompoundTag#copy()",
+      "cn.nukkit.nbt.tag.CompoundTag#print(String, PrintStream)",
+      "cn.nukkit.nbt.tag.CompoundTag#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockGold": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockGold#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSeaLantern": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSeaLantern"
+    ]
+  },
+  "cn.nukkit.level.format.generic.EmptyChunkSection": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getAndSetBlock(int, int, int, int, Block)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getBlockChangeStateAbove(int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getBlockData(int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getBlockId(int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getBlockState(int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getFullBlock(int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#getMaximumLayer()",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setBlockAtLayer(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setBlockData(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setBlockId(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setBlockStateAtLayer(int, int, int, int, BlockState)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#setFullBlockId(int, int, int, int, int)",
+      "cn.nukkit.level.format.generic.EmptyChunkSection#toNBT()"
+    ]
+  },
+  "cn.nukkit.block.BlockWeightedPressurePlateHeavy": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWeightedPressurePlateHeavy#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockRedstoneDiode": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockRedstoneDiode#getStrongPower(BlockFace)",
+      "cn.nukkit.block.BlockRedstoneDiode#getWeakPower(BlockFace)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRedstoneDiode#isSupportValid(Block)"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabWood": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabWood#getSlabName()",
+      "cn.nukkit.block.BlockSlabWood#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.WallUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.WallUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockBeacon": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBeacon#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabWarped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabWarped#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabWarped#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabWarped#isCorrectTool(Item)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityPillager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityPillager#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockWood2": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWood2#getWoodType()",
+      "cn.nukkit.block.BlockWood2#setWoodType(WoodType)"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.extremehills.StoneBeachBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.extremehills.StoneBeachBiome#getGroundBlock(int)",
+      "cn.nukkit.level.biome.impl.extremehills.StoneBeachBiome#getGroundDepth(int)",
+      "cn.nukkit.level.biome.impl.extremehills.StoneBeachBiome#getSurfaceBlock(int)",
+      "cn.nukkit.level.biome.impl.extremehills.StoneBeachBiome#getSurfaceDepth(int)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.NewLeafUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.NewLeafUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockBricksEndStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBricksEndStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.dispenser.ShulkerBoxDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.ShulkerBoxDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.item.ItemArmorStand": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemArmorStand"
+    ]
+  },
+  "cn.nukkit.block.BlockSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSandstone#getSandstoneType()",
+      "cn.nukkit.block.BlockSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.network.protocol.ItemStackResponsePacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.ItemStackResponsePacket#toString()"
+    ]
+  },
+  "cn.nukkit.level.format.updater.FrameUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.FrameUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.network.protocol.ResourcePackDataInfoPacket": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.network.protocol.ResourcePackDataInfoPacket#getPackVersion()",
+      "cn.nukkit.network.protocol.ResourcePackDataInfoPacket#setPackVersion(Version)"
+    ]
+  },
+  "cn.nukkit.block.BlockSkull": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSkull#breaksWhenMoved()",
+      "cn.nukkit.block.BlockSkull#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockPressurePlateStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPressurePlateStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockPrismarine": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPrismarine#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityHoglin": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityHoglin#isBaby()"
+    ]
+  },
+  "cn.nukkit.block.BlockWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWallSign#getPostId()",
+      "cn.nukkit.block.BlockWallSign#getSignDirection()",
+      "cn.nukkit.block.BlockWallSign#getWallId()",
+      "cn.nukkit.block.BlockWallSign#setSignDirection(CompassRoseDirection)"
+    ]
+  },
+  "cn.nukkit.block.BlockObsidianGlowing": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockObsidianGlowing#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockUndyedShulkerBox": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockUndyedShulkerBox#breaksWhenMoved()",
+      "cn.nukkit.block.BlockUndyedShulkerBox#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome#getSurfaceBlock(int)"
+    ]
+  },
+  "cn.nukkit.level.format.LevelProvider": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.LevelProvider#getMaximumLayer()"
+    ]
+  },
+  "cn.nukkit.level.format.updater.MesaBiomeUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.MesaBiomeUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.level.generator.object.ObjectTallGrass": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.generator.object.ObjectTallGrass#growGrass(ChunkManager, Vector3, NukkitRandom, int, int)"
+    ]
+  },
+  "cn.nukkit.utils.PersonaPiece": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.PersonaPiece#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.event.block.AnvilDamageEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.block.AnvilDamageEvent#getHandlers()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.block.AnvilDamageEvent#getCause()"
+    ]
+  },
+  "cn.nukkit.block.BlockFenceBase": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFenceBase#getWoodType()",
+      "cn.nukkit.block.BlockFenceBase#setWoodType(WoodType)"
+    ]
+  },
+  "cn.nukkit.utils.SerializedImage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.SerializedImage#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.block.BlockFenceNetherBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFenceNetherBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabStone4": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabStone4#getSlabName()",
+      "cn.nukkit.block.BlockSlabStone4#getToolTier()",
+      "cn.nukkit.block.BlockSlabStone4#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabStone3": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabStone3#getSlabName()",
+      "cn.nukkit.block.BlockSlabStone3#getToolTier()",
+      "cn.nukkit.block.BlockSlabStone3#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.level.generator.populator.impl.PopulatorOre": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.generator.populator.impl.PopulatorOre#setOreTypes(OreType[])"
+    ]
+  },
+  "cn.nukkit.entity.EntityHuman": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.EntityHuman#onBlock(Entity, boolean)"
+    ]
+  },
+  "cn.nukkit.block.BlockCauldronLava": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCauldronLava#setFillLevel(int)"
+    ]
+  },
+  "cn.nukkit.block.BlockGrindstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockGrindstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.item.enchantment.EnchantmentThorns": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.EnchantmentThorns#isItemAcceptable(Item)"
+    ]
+  },
+  "cn.nukkit.math.BlockFace": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.math.BlockFace#toString()"
+    ]
+  },
+  "cn.nukkit.utils.PersonaPieceTint": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.PersonaPieceTint#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.api.NewRakNetOnly": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.api.NewRakNetOnly#value()"
+    ]
+  },
+  "cn.nukkit.inventory.transaction.action.CraftingTakeResultAction": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.transaction.action.CraftingTakeResultAction#onAddToTransaction(InventoryTransaction)"
+    ]
+  },
+  "cn.nukkit.block.BlockNetherrack": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockNetherrack#getToolTier()"
+    ]
+  },
+  "cn.nukkit.item.ItemScrapNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemScrapNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityWither": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityWither#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityWither#isUndead()"
+    ]
+  },
+  "cn.nukkit.block.BlockOreCoal": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreCoal#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.SingleLayerStorage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.SingleLayerStorage#clone()"
+    ]
+  },
+  "cn.nukkit.event.player.PlayerDeathEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.player.PlayerDeathEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.block.BlockBricksNether": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBricksNether#getToolTier()"
+    ]
+  },
+  "cn.nukkit.dispenser.DispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.DispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.item.ItemSwordNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemSwordNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.LayerStorage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.LayerStorage#clone()"
+    ]
+  },
+  "cn.nukkit.math.AxisAlignedBB": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.math.AxisAlignedBB#getOffsetBoundingBox(BlockFace, double, double, double)"
+    ]
+  },
+  "cn.nukkit.item.ItemEnderPearl": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemEnderPearl#correctProjectile(Player, Entity)"
+    ]
+  },
+  "cn.nukkit.block.BlockSpruceSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSpruceSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.event.block.DoorToggleEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.block.DoorToggleEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.block.BlockEmerald": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEmerald#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityVex": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityVex#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.level.format.FullChunk": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.FullChunk#recalculateHeightMapColumn(int, int)"
+    ]
+  },
+  "cn.nukkit.blockproperty.BlockProperties": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.BlockProperties#getPersistenceValue(int, String)",
+      "cn.nukkit.blockproperty.BlockProperties#getPersistenceValue(BigInteger, String)",
+      "cn.nukkit.blockproperty.BlockProperties#getPersistenceValue(long, String)",
+      "cn.nukkit.blockproperty.BlockProperties#toString()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityBlastFurnace": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getBurningBlockId()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getClientName()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getFurnaceName()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getIdleBlockId()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getInventoryType()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#getSpeedMultiplier()",
+      "cn.nukkit.blockentity.BlockEntityBlastFurnace#matchRecipe(Item)"
+    ]
+  },
+  "cn.nukkit.block.BlockTurtleEgg": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockTurtleEgg#getHardness()"
+    ]
+  },
+  "cn.nukkit.block.BlockCauldron": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockCauldron#getName()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCauldron#getFillLevel()",
+      "cn.nukkit.block.BlockCauldron#getToolTier()",
+      "cn.nukkit.block.BlockCauldron#setFillLevel(int)"
+    ]
+  },
+  "cn.nukkit.inventory.CampfireRecipe": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.CampfireRecipe#getInput()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStripped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStripped#getStrippedState()",
+      "cn.nukkit.block.BlockWoodStripped#setWoodType(WoodType)"
+    ]
+  },
+  "cn.nukkit.block.BlockHopper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockHopper#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockRail": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockRail#canBePulled()"
+    ]
+  },
+  "cn.nukkit.level.GlobalBlockPalette": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.GlobalBlockPalette#BLOCK_PALETTE",
+      "cn.nukkit.level.GlobalBlockPalette#getName(int)"
+    ]
+  },
+  "cn.nukkit.math.ChunkVector2": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.math.ChunkVector2#toString()"
+    ]
+  },
+  "cn.nukkit.event.server.RemoteServerCommandEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.server.RemoteServerCommandEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.level.format.updater.SnowLayerUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.SnowLayerUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockVine": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockVine#breaksWhenMoved()",
+      "cn.nukkit.block.BlockVine#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.inventory.SmokerRecipe": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.SmokerRecipe#getInput()"
+    ]
+  },
+  "cn.nukkit.block.BlockPiston": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockPiston#getPistonHeadBlockId()"
+    ]
+  },
+  "cn.nukkit.event.block.BlockSpreadEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.block.BlockSpreadEvent#getHandlers()"
+    ]
+  },
+  "cn.nukkit.level.generator.object.mushroom.BigMushroom": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.generator.object.mushroom.BigMushroom#generate(ChunkManager, NukkitRandom, Vector3)"
+    ]
+  },
+  "cn.nukkit.inventory.SmithingRecipe": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.SmithingRecipe#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoor": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoor#PROPERTIES",
+      "cn.nukkit.block.BlockDoor#breaksWhenMoved()",
+      "cn.nukkit.block.BlockDoor#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.api.DeprecationDetails": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.api.DeprecationDetails#by()",
+      "cn.nukkit.api.DeprecationDetails#reason()",
+      "cn.nukkit.api.DeprecationDetails#replaceWith()",
+      "cn.nukkit.api.DeprecationDetails#since()",
+      "cn.nukkit.api.DeprecationDetails#toBeRemovedAt()"
+    ]
+  },
+  "cn.nukkit.block.BlockBasalt": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBasalt#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.palette.BitArray256": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.format.anvil.palette.BitArray256#clone()"
+    ]
+  },
+  "cn.nukkit.block.BlockAcaciaSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockAcaciaSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabBrickBlackstonePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabBrickBlackstonePolished#getSlabName()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityEnderman": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityEnderman#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.entity.projectile.EntityProjectile": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.projectile.EntityProjectile#attack(EntityDamageEvent)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.projectile.EntityProjectile#inaccurate(float)",
+      "cn.nukkit.entity.projectile.EntityProjectile#updateRotation()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityDropper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityDropper#createInventory()",
+      "cn.nukkit.blockentity.BlockEntityDropper#getBlockEntityName()"
+    ]
+  },
+  "cn.nukkit.positiontracking.NamedPosition": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.positiontracking.NamedPosition#matchesNamedPosition(NamedPosition)"
+    ]
+  },
+  "cn.nukkit.inventory.Inventory": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.Inventory#addListener(InventoryListener)",
+      "cn.nukkit.inventory.Inventory#removeListener(InventoryListener)"
+    ]
+  },
+  "cn.nukkit.utils.collection.ConvertingMapWrapper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#clear()",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#containsKey(Object)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#containsValue(Object)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#entrySet()",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#get(Object)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#isEmpty()",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#keySet()",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#put(K, V1)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#remove(Object)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#remove(Object, Object)",
+      "cn.nukkit.utils.collection.ConvertingMapWrapper#size()"
+    ]
+  },
+  "cn.nukkit.block.BlockFurnaceBurning": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFurnaceBurning#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockMossStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockMossStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.event.blockstate.BlockStateRepairFinishEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.blockstate.BlockStateRepairFinishEvent#getHandlers()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.blockstate.BlockStateRepairFinishEvent#getResult()"
+    ]
+  },
+  "cn.nukkit.item.enchantment.EnchantmentDurability": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.EnchantmentDurability#isItemAcceptable(Item)"
+    ]
+  },
+  "cn.nukkit.plugin.service.RegisteredServiceProvider": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.plugin.service.RegisteredServiceProvider#compareTo(RegisteredServiceProvider)"
+    ]
+  },
+  "cn.nukkit.entity.passive.EntityZombieHorse": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.passive.EntityZombieHorse#isUndead()"
+    ]
+  },
+  "cn.nukkit.block.BlockLantern": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLantern#getToolTier()"
+    ]
+  },
+  "cn.nukkit.form.window.FormWindowModal": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.form.window.FormWindowModal#getResponse()",
+      "cn.nukkit.form.window.FormWindowModal#setResponse(String)"
+    ]
+  },
+  "cn.nukkit.plugin.PluginBase": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.plugin.PluginBase#getDataFolder()",
+      "cn.nukkit.plugin.PluginBase#getDescription()",
+      "cn.nukkit.plugin.PluginBase#getLogger()",
+      "cn.nukkit.plugin.PluginBase#isDisabled()",
+      "cn.nukkit.plugin.PluginBase#isEnabled()",
+      "cn.nukkit.plugin.PluginBase#onDisable()",
+      "cn.nukkit.plugin.PluginBase#onEnable()",
+      "cn.nukkit.plugin.PluginBase#onLoad()"
+    ]
+  },
+  "cn.nukkit.block.BlockMelon": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockMelon#getHardness()",
+      "cn.nukkit.block.BlockMelon#getName()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockMelon#breaksWhenMoved()",
+      "cn.nukkit.block.BlockMelon#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockSmoothStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSmoothStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabBlackstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabBlackstone#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabBlackstone#getSlabName()"
+    ]
+  },
+  "cn.nukkit.Nukkit": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.Nukkit#GIT_COMMIT"
+    ]
+  },
+  "cn.nukkit.block.BlockLeaves2": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLeaves2#getType()",
+      "cn.nukkit.block.BlockLeaves2#setType(WoodType)"
+    ]
+  },
+  "cn.nukkit.block.BlockOreRedstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreRedstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedBirch": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedBirch#getWoodType()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntitySmoker": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntitySmoker#getBurningBlockId()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#getClientName()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#getFurnaceName()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#getIdleBlockId()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#getInventoryType()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#getSpeedMultiplier()",
+      "cn.nukkit.blockentity.BlockEntitySmoker#matchRecipe(Item)"
+    ]
+  },
+  "cn.nukkit.inventory.ShapedRecipe": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.ShapedRecipe#matchItems(List, List, int)"
+    ]
+  },
+  "cn.nukkit.entity.data.ShortEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.ShortEntityData#getData()",
+      "cn.nukkit.entity.data.ShortEntityData#setData(Integer)"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntitySpawnable": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntitySpawnable#getSpawnPacket()",
+      "cn.nukkit.blockentity.BlockEntitySpawnable#getSpawnPacket(CompoundTag)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsPrismarine": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsPrismarine#getToolTier()"
+    ]
+  },
+  "cn.nukkit.item.ItemPotionLingering": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemPotionLingering#correctNBT(CompoundTag)",
+      "cn.nukkit.item.ItemPotionLingering#getProjectileEntityType()",
+      "cn.nukkit.item.ItemPotionLingering#getThrowForce()"
+    ]
+  },
+  "cn.nukkit.event.inventory.PlayerTypingAnvilInventoryEvent": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.event.inventory.PlayerTypingAnvilInventoryEvent#toString()"
+    ]
+  },
+  "cn.nukkit.block.BlockHyphaeCrimson": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockHyphaeCrimson#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.item.ItemChorusFruitPopped": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemChorusFruitPopped"
+    ]
+  },
+  "cn.nukkit.level.biome.impl.iceplains.IcePlainsBiome": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.biome.impl.iceplains.IcePlainsBiome#getName()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedSpruce": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedSpruce#getWoodType()"
+    ]
+  },
+  "cn.nukkit.block.BlockCoralFanHang2": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCoralFanHang2#getType()"
+    ]
+  },
+  "cn.nukkit.item.ItemHelmetNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemHelmetNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityDrowned": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityDrowned#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityDrowned#isUndead()"
+    ]
+  },
+  "cn.nukkit.entity.item.EntityPrimedTNT": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.item.EntityPrimedTNT#canCollideWith(Entity)",
+      "cn.nukkit.entity.item.EntityPrimedTNT#explode()",
+      "cn.nukkit.entity.item.EntityPrimedTNT#initEntity()",
+      "cn.nukkit.entity.item.EntityPrimedTNT#onUpdate(int)",
+      "cn.nukkit.entity.item.EntityPrimedTNT#saveNBT()"
+    ]
+  },
+  "cn.nukkit.block.BlockCoralFanHang3": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCoralFanHang3#getType()"
+    ]
+  },
+  "cn.nukkit.block.BlockAllow": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockAllow#canBePulled()"
+    ]
+  },
+  "cn.nukkit.entity.projectile.EntityArrow": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.projectile.EntityArrow#addHitEffect()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabRedSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabStone#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabStone#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.entity.data.LongEntityData": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.data.LongEntityData#getData()",
+      "cn.nukkit.entity.data.LongEntityData#setData(Long)"
+    ]
+  },
+  "cn.nukkit.block.BlockJungleSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockJungleSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.item.RuntimeItemMapping": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.RuntimeItemMapping#getItemDataPalette()",
+      "cn.nukkit.item.RuntimeItemMapping#getLegacyFullId(int)",
+      "cn.nukkit.item.RuntimeItemMapping#getNetworkFullId(Item)"
+    ]
+  },
+  "cn.nukkit.item.enchantment.sideeffect.SideEffect": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.sideeffect.SideEffect#EMPTY_ARRAY"
+    ]
+  },
+  "cn.nukkit.api.RemovedFromNewRakNet": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.api.RemovedFromNewRakNet#value()"
+    ]
+  },
+  "cn.nukkit.item.ItemID": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemID#BANNER_PATTERN",
+      "cn.nukkit.item.ItemID#SUSPICIOUS_STEW"
+    ]
+  },
+  "cn.nukkit.block.BlockCocoa": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCocoa#breaksWhenMoved()",
+      "cn.nukkit.block.BlockCocoa#getGrowthStage()",
+      "cn.nukkit.block.BlockCocoa#grow()",
+      "cn.nukkit.block.BlockCocoa#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockEnderChest": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEnderChest#canBePulled()",
+      "cn.nukkit.block.BlockEnderChest#getBlockEntity()",
+      "cn.nukkit.block.BlockEnderChest#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStemWarped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStemWarped#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntityPistonArm": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityPistonArm#getSpawnCompound()",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#isBlockEntityValid()",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#saveNBT()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntityPistonArm#MOVE_STEP",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#state",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#newState",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#attachedBlocks",
+      "cn.nukkit.blockentity.BlockEntityPistonArm#move(boolean, List)"
+    ]
+  },
+  "cn.nukkit.item.ItemIngotNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemIngotNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.blockproperty.BooleanBlockProperty": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getDefaultValue()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getIntValue(int, int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getIntValueForMeta(int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getMetaForValue(Boolean)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getPersistenceValueForMeta(int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getValue(int, int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getValue(long, int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getValueClass()",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#getValueForMeta(int)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#setValue(int, int, Boolean)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#setValue(long, int, Boolean)",
+      "cn.nukkit.blockproperty.BooleanBlockProperty#validateMetaDirectly(int)"
+    ]
+  },
+  "cn.nukkit.entity.data.Skin": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.data.Skin#canEqual(Object)"
+    ]
+  },
+  "cn.nukkit.block.BlockDiamond": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDiamond#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockWallBase": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWallBase#canConnect(Block)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityZombiePigman": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityZombiePigman#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityZombiePigman#isUndead()"
+    ]
+  },
+  "cn.nukkit.api.PowerNukkitOnly": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.api.PowerNukkitOnly#value()"
+    ]
+  },
+  "cn.nukkit.level.biome.type.CoveredBiome": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.biome.type.CoveredBiome#synchronizeCover",
+      "cn.nukkit.level.biome.type.CoveredBiome#getCoverBlock()",
+      "cn.nukkit.level.biome.type.CoveredBiome#getGroundBlock(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#getGroundDepth(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#getGroundMeta(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#getStoneBlock()",
+      "cn.nukkit.level.biome.type.CoveredBiome#getSurfaceBlock(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#getSurfaceDepth(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#getSurfaceMeta(int)",
+      "cn.nukkit.level.biome.type.CoveredBiome#preCover(int, int)"
+    ]
+  },
+  "cn.nukkit.block.BlockDropper": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDropper#dispense()",
+      "cn.nukkit.block.BlockDropper#getDispenseBehavior(Item)",
+      "cn.nukkit.block.BlockDropper#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockWoodStrippedDarkOak": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWoodStrippedDarkOak#getWoodType()"
+    ]
+  },
+  "cn.nukkit.block.BlockDarkOakSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDarkOakSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityZombie": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityZombie#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityZombie#isUndead()"
+    ]
+  },
+  "cn.nukkit.block.BlockFlower": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFlower#canPlantOn(Block)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsGranite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsGranite#getToolTier()"
+    ]
+  },
+  "cn.nukkit.item.RuntimeItems": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.RuntimeItems#getData(int)",
+      "cn.nukkit.item.RuntimeItems#getFullId(int, int)",
+      "cn.nukkit.item.RuntimeItems#getId(int)",
+      "cn.nukkit.item.RuntimeItems#getNetworkId(int)",
+      "cn.nukkit.item.RuntimeItems#getRuntimeMapping()",
+      "cn.nukkit.item.RuntimeItems#hasData(int)"
+    ]
+  },
+  "cn.nukkit.item.ItemChestplateNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemChestplateNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.block.BlockStructureVoid": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStructureVoid#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsDarkPrismarine": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsDarkPrismarine#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockMushroom": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockMushroom#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockWallBanner": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWallBanner#getDirection()",
+      "cn.nukkit.block.BlockWallBanner#setDirection(CompassRoseDirection)"
+    ]
+  },
+  "cn.nukkit.dispenser.BoatDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.BoatDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabWood": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabWood#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabWood#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabWood#isCorrectTool(Item)"
+    ]
+  },
+  "cn.nukkit.dispenser.BucketDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.BucketDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.event.entity.ProjectileLaunchEvent": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.event.entity.ProjectileLaunchEvent#getEntity()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabBlackstonePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabBlackstonePolished#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabBlackstonePolished#getSlabName()"
+    ]
+  },
+  "cn.nukkit.block.BlockOreIron": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreIron#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockFungusWarped": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockFungusWarped#canGrowOn(Block)",
+      "cn.nukkit.block.BlockFungusWarped#grow(Player)"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabStone3": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabStone3#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabStone3#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabStone3#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabStone4": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabStone4#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabStone4#getSlabName()",
+      "cn.nukkit.block.BlockDoubleSlabStone4#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockCactus": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCactus#breaksWhenMoved()",
+      "cn.nukkit.block.BlockCactus#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.inventory.transaction.action.CreativeInventoryAction": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.inventory.transaction.action.CreativeInventoryAction#execute(Player)",
+      "cn.nukkit.inventory.transaction.action.CreativeInventoryAction#isValid(Player)",
+      "cn.nukkit.inventory.transaction.action.CreativeInventoryAction#onExecuteFail(Player)",
+      "cn.nukkit.inventory.transaction.action.CreativeInventoryAction#onExecuteSuccess(Player)"
+    ]
+  },
+  "cn.nukkit.dispenser.DispenseBehaviorRegister": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.DispenseBehaviorRegister#init()"
+    ]
+  },
+  "cn.nukkit.block.BlockBricksStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBricksStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.network.protocol.PlayerActionPacket": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.network.protocol.PlayerActionPacket#ACTION_INTERACT_BLOCK"
+    ]
+  },
+  "cn.nukkit.block.BlockDaylightDetector": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDaylightDetector#isInverted()",
+      "cn.nukkit.block.BlockDaylightDetector#updatePower()"
+    ]
+  },
+  "cn.nukkit.block.BlockTerracottaGlazed": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockTerracottaGlazed#getToolTier()"
+    ]
+  },
+  "cn.nukkit.form.window.FormWindowCustom": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.form.window.FormWindowCustom#getResponse()",
+      "cn.nukkit.form.window.FormWindowCustom#setResponse(String)"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityPiglinBrute": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityPiglinBrute#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.GroupedUpdaters": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.GroupedUpdaters#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockOreDiamond": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreDiamond#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockThin": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockThin#recalculateBoundingBox()"
+    ]
+  },
+  "cn.nukkit.block.BlockCrimsonWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCrimsonWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.block.BlockEndPortalFrame": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockEndPortalFrame#getComparatorInputOverride()",
+      "cn.nukkit.block.BlockEndPortalFrame#hasComparatorInputOverride()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEndPortalFrame#canBePulled()"
+    ]
+  },
+  "cn.nukkit.block.BlockDoubleSlabBrickBlackstonePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDoubleSlabBrickBlackstonePolished#getSingleSlabId()",
+      "cn.nukkit.block.BlockDoubleSlabBrickBlackstonePolished#getSlabName()"
+    ]
+  },
+  "cn.nukkit.positiontracking.PositionTrackingService": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.positiontracking.PositionTrackingService#close()",
+      "cn.nukkit.positiontracking.PositionTrackingService#finalize()"
+    ]
+  },
+  "cn.nukkit.blockentity.BlockEntity": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockentity.BlockEntity#createBlockEntity(String, Position, CompoundTag, Object[])",
+      "cn.nukkit.blockentity.BlockEntity#createBlockEntity(String, Position, Object[])",
+      "cn.nukkit.blockentity.BlockEntity#getLevelBlockEntity()",
+      "cn.nukkit.blockentity.BlockEntity#onBreak(boolean)"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.Anvil": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.Anvil#getMaximumLayer()"
+    ]
+  },
+  "cn.nukkit.block.BlockEndPortal": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEndPortal#getCollisionBoundingBox()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabRedSandstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabRedSandstone#PRISMARINE",
+      "cn.nukkit.block.BlockSlabRedSandstone#PRISMARINE_BRICKS",
+      "cn.nukkit.block.BlockSlabRedSandstone#DARK_PRISMARINE",
+      "cn.nukkit.block.BlockSlabRedSandstone#MOSSY_COBBLESTONE",
+      "cn.nukkit.block.BlockSlabRedSandstone#SMOOTH_SANDSTONE",
+      "cn.nukkit.block.BlockSlabRedSandstone#RED_NETHER_BRICK",
+      "cn.nukkit.block.BlockSlabRedSandstone#getSlabName()",
+      "cn.nukkit.block.BlockSlabRedSandstone#getToolTier()",
+      "cn.nukkit.block.BlockSlabRedSandstone#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.item.enchantment.damage.EnchantmentDamage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.enchantment.damage.EnchantmentDamage#isItemAcceptable(Item)"
+    ]
+  },
+  "cn.nukkit.level.format.anvil.util.BlockStorage": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.util.BlockStorage#hasBlockDataExtras()",
+      "cn.nukkit.level.format.anvil.util.BlockStorage#hasBlockIdExtras()",
+      "cn.nukkit.level.format.anvil.util.BlockStorage#hasBlockIds()"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.anvil.util.BlockStorage#copy()"
+    ]
+  },
+  "cn.nukkit.level.generator.populator.impl.PopulatorGroundCover": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.generator.populator.impl.PopulatorGroundCover#STONE"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityZoglin": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityZoglin#isBaby()",
+      "cn.nukkit.entity.mob.EntityZoglin#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntityZoglin#isUndead()"
+    ]
+  },
+  "cn.nukkit.command.data.CommandEnum": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.command.data.CommandEnum#hashCode()"
+    ]
+  },
+  "cn.nukkit.form.window.FormWindowSimple": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.form.window.FormWindowSimple#getResponse()",
+      "cn.nukkit.form.window.FormWindowSimple#setResponse(String)"
+    ]
+  },
+  "cn.nukkit.inventory.PlayerUIInventory": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.PlayerUIInventory#onSlotChangeBase(int, Item, boolean)"
+    ]
+  },
+  "cn.nukkit.block.BlockLoom": {
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockLoom#getBlockFace()"
+    ]
+  },
+  "cn.nukkit.level.Level": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.Level#setBlockStateAt(int, int, int, int, BlockState)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.Level#addLevelEvent(int, int)",
+      "cn.nukkit.level.Level#addLevelEvent(int, int, Vector3)",
+      "cn.nukkit.level.Level#addLevelEvent(int, int, float, float, float)",
+      "cn.nukkit.level.Level#getBlock(Vector3, int)",
+      "cn.nukkit.level.Level#getBlock(Vector3, int, boolean)",
+      "cn.nukkit.level.Level#getBlock(int, int, int, int)",
+      "cn.nukkit.level.Level#getBlock(int, int, int, int, boolean)",
+      "cn.nukkit.level.Level#getBlockDataAt(int, int, int, int)",
+      "cn.nukkit.level.Level#getBlockEntity(BlockVector3)",
+      "cn.nukkit.level.Level#getBlockIdAt(int, int, int, int)",
+      "cn.nukkit.level.Level#getBlockStateAt(int, int, int, int)",
+      "cn.nukkit.level.Level#getCelestialAngle(float)",
+      "cn.nukkit.level.Level#getCollisionBlocks(AxisAlignedBB, boolean, boolean)",
+      "cn.nukkit.level.Level#getCollisionBlocks(AxisAlignedBB, boolean, boolean, Predicate)",
+      "cn.nukkit.level.Level#getFullBlock(int, int, int, int)",
+      "cn.nukkit.level.Level#getFuzzySpawnLocation()",
+      "cn.nukkit.level.Level#getHighestAdjacentBlockSkyLight(int, int, int)",
+      "cn.nukkit.level.Level#getRainStrength(float)",
+      "cn.nukkit.level.Level#getThunderStrength(float)",
+      "cn.nukkit.level.Level#setBlock(Vector3, int, Block)",
+      "cn.nukkit.level.Level#setBlock(Vector3, int, Block, boolean)",
+      "cn.nukkit.level.Level#setBlock(Vector3, int, Block, boolean, boolean)",
+      "cn.nukkit.level.Level#setBlock(int, int, int, int, Block, boolean, boolean)",
+      "cn.nukkit.level.Level#setBlockAtLayer(int, int, int, int, int, int)",
+      "cn.nukkit.level.Level#setBlockDataAt(int, int, int, int, int)",
+      "cn.nukkit.level.Level#setBlockFullIdAt(int, int, int, int, int)",
+      "cn.nukkit.level.Level#setBlockIdAt(int, int, int, int, int)",
+      "cn.nukkit.level.Level#useBreakOn(Vector3, BlockFace, Item, Player, boolean, boolean)",
+      "cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsAndesitePolished": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsAndesitePolished#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.potion.Potion": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.potion.Potion#SLOWNESS_IV"
+    ]
+  },
+  "cn.nukkit.block.BlockOreEmerald": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreEmerald#getToolTier()"
+    ]
+  },
+  "cn.nukkit.level.generator.Nether": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.generator.Nether#getSpawn()"
+    ]
+  },
+  "cn.nukkit.block.BlockBirchSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBirchSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.block.BlockWood": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWood#getStrippedState()"
+    ]
+  },
+  "cn.nukkit.inventory.CraftingManager": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.CraftingManager#blastFurnaceRecipes",
+      "cn.nukkit.inventory.CraftingManager#smokerRecipes",
+      "cn.nukkit.inventory.CraftingManager#campfireRecipes",
+      "cn.nukkit.inventory.CraftingManager#stonecutterRecipes",
+      "cn.nukkit.inventory.CraftingManager#cartographyRecipes",
+      "cn.nukkit.inventory.CraftingManager#matchBlastFurnaceRecipe(Item)",
+      "cn.nukkit.inventory.CraftingManager#matchCampfireRecipe(Item)",
+      "cn.nukkit.inventory.CraftingManager#matchCartographyRecipe(List, Item, List)",
+      "cn.nukkit.inventory.CraftingManager#matchSmokerRecipe(Item)",
+      "cn.nukkit.inventory.CraftingManager#matchStonecutterRecipe(Item)",
+      "cn.nukkit.inventory.CraftingManager#registerBlastFurnaceRecipe(BlastFurnaceRecipe)",
+      "cn.nukkit.inventory.CraftingManager#registerCampfireRecipe(CampfireRecipe)",
+      "cn.nukkit.inventory.CraftingManager#registerCartographyRecipe(CartographyRecipe)",
+      "cn.nukkit.inventory.CraftingManager#registerSmokerRecipe(SmokerRecipe)",
+      "cn.nukkit.inventory.CraftingManager#registerStonecutterRecipe(StonecutterRecipe)"
+    ]
+  },
+  "cn.nukkit.block.BlockBirchWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBirchWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.dispenser.SpawnEggDispenseBehavior": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.dispenser.SpawnEggDispenseBehavior#dispense(BlockDispenser, BlockFace, Item)"
+    ]
+  },
+  "cn.nukkit.inventory.StonecutterRecipe": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.inventory.StonecutterRecipe#toString()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntitySkeleton": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntitySkeleton#isPreventingSleep(Player)",
+      "cn.nukkit.entity.mob.EntitySkeleton#isUndead()"
+    ]
+  },
+  "cn.nukkit.entity.item.EntityBoat": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.item.EntityBoat#updatePassengers()"
+    ]
+  },
+  "cn.nukkit.block.BlockOreQuartz": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockOreQuartz#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockDragonEgg": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockDragonEgg#breaksWhenMoved()",
+      "cn.nukkit.block.BlockDragonEgg#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockCrimsonSignPost": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCrimsonSignPost#getWallId()"
+    ]
+  },
+  "cn.nukkit.item.ItemPickaxeNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemPickaxeNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.entity.Entity": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.entity.Entity#getDirectionVector()",
+      "cn.nukkit.entity.Entity#getLocation()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.Entity#canBePushed()",
+      "cn.nukkit.entity.Entity#isTouchingWater()",
+      "cn.nukkit.entity.Entity#isUndead()",
+      "cn.nukkit.entity.Entity#onPushByPiston(BlockEntityPistonArm)"
+    ],
+    "removePowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.Entity#DATA_HAS_NPC_COMPONENT",
+      "cn.nukkit.entity.Entity#DATA_BASE_RUNTIME_ID",
+      "cn.nukkit.entity.Entity#DATA_UPDATE_PROPERTIES",
+      "cn.nukkit.entity.Entity#DATA_FLAG_PLAYING_DEAD"
+    ]
+  },
+  "cn.nukkit.item.PNAlphaItemID": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.PNAlphaItemID#getBadItemId()",
+      "cn.nukkit.item.PNAlphaItemID#getMinecraftItemId()"
+    ]
+  },
+  "cn.nukkit.utils.HumanStringComparator": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.utils.HumanStringComparator#compare(String, String)"
+    ]
+  },
+  "cn.nukkit.block.BlockStairsMossyStoneBrick": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockStairsMossyStoneBrick#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockEndStone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockEndStone#getToolTier()"
+    ]
+  },
+  "cn.nukkit.scheduler.AsyncTask": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.scheduler.AsyncTask#run()"
+    ]
+  },
+  "cn.nukkit.blockstate.ByteMutableBlockState": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.blockstate.ByteMutableBlockState#canEqual(Object)"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.blockstate.ByteMutableBlockState#canEqual(Object)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#copy()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#equals(Object)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getBigDamage()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getBooleanValue(String)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getCurrentState()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getDataStorage()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getIntValue(String)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getLegacyDamage()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getPersistenceValue(String)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#getPropertyValue(String)",
+      "cn.nukkit.blockstate.ByteMutableBlockState#hashCode()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#toString()",
+      "cn.nukkit.blockstate.ByteMutableBlockState#validate()"
+    ]
+  },
+  "cn.nukkit.block.BlockWitherRose": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWitherRose#canPlantOn(Block)"
+    ]
+  },
+  "cn.nukkit.item.ItemShovelNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemShovelNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.block.BlockCarpet": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockCarpet#getProperties()"
+    ]
+  },
+  "co.aikar.timings.TimingData": {
+    "addOverrideAnnotation": [
+      "co.aikar.timings.TimingData#clone()"
+    ]
+  },
+  "cn.nukkit.entity.mob.EntityWitch": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.entity.mob.EntityWitch#isPreventingSleep(Player)"
+    ]
+  },
+  "cn.nukkit.level.format.updater.StemUpdater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.level.format.updater.StemUpdater#update(int, int, int, int, int, int, BlockState)"
+    ]
+  },
+  "cn.nukkit.block.BlockDeadBush": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockDeadBush#getColor()"
+    ]
+  },
+  "cn.nukkit.block.BlockChorusFlower": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockChorusFlower#breaksWhenMoved()",
+      "cn.nukkit.block.BlockChorusFlower#sticksToPiston()"
+    ]
+  },
+  "cn.nukkit.block.BlockWater": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockWater#usesWaterLogging()"
+    ]
+  },
+  "cn.nukkit.block.BlockBrewingStand": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.block.BlockBrewingStand#hasComparatorInputOverride()"
+    ],
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockBrewingStand#getToolTier()"
+    ]
+  },
+  "cn.nukkit.block.BlockSlabBlackstone": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockSlabBlackstone#getSlabName()",
+      "cn.nukkit.block.BlockSlabBlackstone#isSameType(BlockSlab)"
+    ]
+  },
+  "cn.nukkit.block.BlockTrapdoorIron": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockTrapdoorIron#getToolTier()"
+    ]
+  },
+  "cn.nukkit.item.ItemAxeNetherite": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.item.ItemAxeNetherite#isLavaResistant()"
+    ]
+  },
+  "cn.nukkit.level.generator.object.tree.ObjectJungleBigTree": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.generator.object.tree.ObjectJungleBigTree#generate(ChunkManager, NukkitRandom, Vector3)"
+    ]
+  },
+  "cn.nukkit.block.BlockJungleWallSign": {
+    "addPowerNukkitOnlyAnnotation": [
+      "cn.nukkit.block.BlockJungleWallSign#getPostId()"
+    ]
+  },
+  "cn.nukkit.level.generator.object.tree.ObjectSavannaTree": {
+    "addOverrideAnnotation": [
+      "cn.nukkit.level.generator.object.tree.ObjectSavannaTree#generate(ChunkManager, NukkitRandom, Vector3)"
+    ]
+  }
+}

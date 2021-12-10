@@ -238,11 +238,13 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return this.extending ? progress - 1 : 1 - progress;
     }
 
+    @Override
     public boolean isBlockEntityValid() {
         int id = getLevelBlock().getId();
         return id == BlockID.PISTON || id == BlockID.STICKY_PISTON; 
     }
 
+    @Override
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("State", this.state);
@@ -254,6 +256,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putInt("facing", this.facing.getIndex());
     }
 
+    @Override
     public CompoundTag getSpawnCompound() {
         return new CompoundTag()
                 .putString("id", BlockEntity.PISTON_ARM)

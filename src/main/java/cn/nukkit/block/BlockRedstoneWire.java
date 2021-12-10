@@ -253,10 +253,12 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return support.isSolid(BlockFace.UP);
     }
 
+    @Override
     public int getStrongPower(BlockFace side) {
         return !this.canProvidePower ? 0 : getWeakPower(side);
     }
 
+    @Override
     public int getWeakPower(BlockFace side) {
         if (!this.canProvidePower) {
             return 0;

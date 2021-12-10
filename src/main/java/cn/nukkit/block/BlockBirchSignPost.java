@@ -20,6 +20,7 @@ public class BlockBirchSignPost extends BlockSignPost {
         return BIRCH_STANDING_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getWallId() {
         return BIRCH_WALL_SIGN;

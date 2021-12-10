@@ -273,6 +273,7 @@ public class BlockLeaves extends BlockTransparentMeta {
         return Item.get(BlockID.SAPLING, getIntValue(OLD_LEAF_TYPE));
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean diffusesSkyLight() {
         return true;

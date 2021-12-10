@@ -1,6 +1,5 @@
 package cn.nukkit.level.biome.impl.extremehills;
 
-import cn.nukkit.api.NewRakNetOnly;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
@@ -42,13 +41,11 @@ public class ExtremeHillsMBiome extends ExtremeHillsPlusBiome {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? STATE_GRAVEL : STATE_GRASS;
     }
 
-    @NewRakNetOnly
     @Override
     public int getSurfaceDepth(int x, int y, int z) {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? 4 : 1;
     }
     
-    @NewRakNetOnly
     @Override
     public int getGroundDepth(int x, int y, int z) {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? 0 : 4;

@@ -1714,6 +1714,7 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @Override
     public Vector3 getDirectionVector() {
         Vector3 vector = super.getDirectionVector();
         return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
@@ -2104,6 +2105,7 @@ public abstract class Entity extends Location implements Metadatable {
         return new Position(this.x, this.y, this.z, this.level);
     }
 
+    @Override
     @Nonnull
     public Location getLocation() {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);

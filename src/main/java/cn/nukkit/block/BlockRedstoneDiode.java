@@ -216,10 +216,12 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return 15;
     }
 
+    @Override
     public int getStrongPower(BlockFace side) {
         return getWeakPower(side);
     }
 
+    @Override
     public int getWeakPower(BlockFace side) {
         return !this.isPowered() ? 0 : (getFacing() == side ? this.getRedstoneSignal() : 0);
     }

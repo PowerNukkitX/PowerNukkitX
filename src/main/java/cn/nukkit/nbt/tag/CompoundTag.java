@@ -308,12 +308,14 @@ public class CompoundTag extends Tag implements Cloneable {
         return getByte(name) != 0;
     }
 
+    @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
         return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner.toString() + "\n}";
     }
 
+    @Override
     public void print(String prefix, PrintStream out) {
         super.print(prefix, out);
         out.println(prefix + "{");
@@ -329,6 +331,7 @@ public class CompoundTag extends Tag implements Cloneable {
         return tags.isEmpty();
     }
 
+    @Override
     public CompoundTag copy() {
         CompoundTag tag = new CompoundTag(getName());
         for (String key : tags.keySet()) {

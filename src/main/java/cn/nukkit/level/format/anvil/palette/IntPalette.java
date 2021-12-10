@@ -96,6 +96,7 @@ public class IntPalette {
         return keys.length;
     }
 
+    @Override
     public IntPalette clone() {
         IntPalette p = new IntPalette();
         p.keys = this.keys != EmptyArrays.EMPTY_INTS ? this.keys.clone() : EmptyArrays.EMPTY_INTS;

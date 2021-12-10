@@ -79,6 +79,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         return BlockEntityCauldron.class;
     }
 
+    @Override
     public String getName() {
         return "Cauldron Block";
     }

@@ -24,6 +24,7 @@ public class ItemBlock extends Item {
         this.block = block;
     }
 
+    @Override
     public void setDamage(Integer meta) {
         int blockMeta;
         if (meta != null) {
@@ -65,6 +66,7 @@ public class ItemBlock extends Item {
         return block;
     }
 
+    @Override
     public Block getBlock() {
         return this.block;
     }

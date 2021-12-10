@@ -145,6 +145,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         }
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull

@@ -1,6 +1,5 @@
 package cn.nukkit.dispenser;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
@@ -12,6 +11,8 @@ import cn.nukkit.math.BlockFace;
 
 @PowerNukkitOnly
 public class DropperDispenseBehavior extends DefaultDispenseBehavior {
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

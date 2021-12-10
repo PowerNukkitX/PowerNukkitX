@@ -153,6 +153,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return minValue;
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull

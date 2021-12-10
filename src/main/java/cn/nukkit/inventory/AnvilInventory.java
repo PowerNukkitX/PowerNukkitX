@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -59,6 +58,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Experimenting the new implementation by Nukkit")
+    @PowerNukkitOnly
     public void updateResult() {
         Item target = getFirstItem();
         Item sacrifice = getSecondItem();

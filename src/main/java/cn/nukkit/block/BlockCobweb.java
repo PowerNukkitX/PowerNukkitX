@@ -94,6 +94,7 @@ public class BlockCobweb extends BlockFlowable {
         return false;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean diffusesSkyLight() {
         return true;

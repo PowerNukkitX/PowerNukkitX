@@ -88,6 +88,7 @@ public class OfflinePlayer implements IPlayer {
         return null;
     }
 
+    @Override
     public Server getServer() {
         return server;
     }
@@ -158,18 +159,22 @@ public class OfflinePlayer implements IPlayer {
         return this.namedTag != null;
     }
 
+    @Override
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
     }
 
+    @Override
     public List<MetadataValue> getMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().getMetadata(this, metadataKey);
     }
 
+    @Override
     public boolean hasMetadata(String metadataKey) {
         return this.server.getPlayerMetadata().hasMetadata(this, metadataKey);
     }
 
+    @Override
     public void removeMetadata(String metadataKey, Plugin owningPlugin) {
         this.server.getPlayerMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }

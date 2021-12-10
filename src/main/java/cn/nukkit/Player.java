@@ -704,6 +704,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.addDefaultWindows();
     }
 
+    @Override
     public boolean isPlayer() {
         return true;
     }

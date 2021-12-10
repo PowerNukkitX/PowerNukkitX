@@ -13,10 +13,12 @@ public class ShortEntityData extends EntityData<Integer> {
         this.data = data;
     }
 
+    @Override
     public Integer getData() {
         return data;
     }
 
+    @Override
     public void setData(Integer data) {
         if (data == null) {
             this.data = 0;

@@ -49,6 +49,7 @@ public class BlockWallSign extends BlockSignPost {
         return getId();
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return SIGN_POST;
