@@ -134,6 +134,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

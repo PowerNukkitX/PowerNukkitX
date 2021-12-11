@@ -454,6 +454,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -84,6 +84,7 @@ public class BlockSlabRedSandstone extends BlockSlab {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

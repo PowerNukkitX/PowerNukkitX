@@ -81,6 +81,7 @@ public class BlockDoubleSlabStone3 extends BlockDoubleSlabBase {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

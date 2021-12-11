@@ -311,6 +311,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

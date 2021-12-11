@@ -1,59 +1,8 @@
 {
-  "cn.nukkit.block.BlockAllow": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockAllow#canBePulled()"
-    ]
-  },
-  "cn.nukkit.block.BlockAnvil": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockAnvil#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBasalt": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBasalt#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockBell": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockBell#getAttachmentType()",
-      "cn.nukkit.block.BlockBell#getToolTier()",
       "cn.nukkit.block.BlockBell#setAttachmentType(int)"
-    ]
-  },
-  "cn.nukkit.block.BlockBrewingStand": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBrewingStand#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBricks": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBricks#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBricksEndStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBricksEndStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBricksNether": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBricksNether#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBricksRedNether": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBricksRedNether#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBricksStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBricksStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockButtonStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockButtonStone#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockCarpet": {
@@ -69,7 +18,6 @@
   "cn.nukkit.block.BlockCauldron": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockCauldron#getFillLevel()",
-      "cn.nukkit.block.BlockCauldron#getToolTier()",
       "cn.nukkit.block.BlockCauldron#setFillLevel(int)"
     ]
   },
@@ -78,25 +26,10 @@
       "cn.nukkit.block.BlockCauldronLava#setFillLevel(int)"
     ]
   },
-  "cn.nukkit.block.BlockCoal": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCoal#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockCobblestone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCobblestone#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockCocoa": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockCocoa#getGrowthStage()",
       "cn.nukkit.block.BlockCocoa#grow()"
-    ]
-  },
-  "cn.nukkit.block.BlockConcrete": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockConcrete#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockConcretePowder": {
@@ -137,26 +70,15 @@
       "cn.nukkit.block.BlockDaylightDetectorInverted#isInverted()"
     ]
   },
-  "cn.nukkit.block.BlockDiamond": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockDiamond#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockDispenser": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDispenser#dispense()",
-      "cn.nukkit.block.BlockDispenser#getDispenseBehavior(Item)",
-      "cn.nukkit.block.BlockDispenser#getToolTier()"
+      "cn.nukkit.block.BlockDispenser#getDispenseBehavior(Item)"
     ]
   },
   "cn.nukkit.block.BlockDoor": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDoor#PROPERTIES"
-    ]
-  },
-  "cn.nukkit.block.BlockDoorIron": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockDoorIron#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockDoubleSlabBlackstone": {
@@ -187,29 +109,25 @@
   "cn.nukkit.block.BlockDoubleSlabRedSandstone": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDoubleSlabRedSandstone#getSingleSlabId()",
-      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getSlabName()",
-      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getToolTier()"
+      "cn.nukkit.block.BlockDoubleSlabRedSandstone#getSlabName()"
     ]
   },
   "cn.nukkit.block.BlockDoubleSlabStone": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDoubleSlabStone#getSingleSlabId()",
-      "cn.nukkit.block.BlockDoubleSlabStone#getSlabName()",
-      "cn.nukkit.block.BlockDoubleSlabStone#getToolTier()"
+      "cn.nukkit.block.BlockDoubleSlabStone#getSlabName()"
     ]
   },
   "cn.nukkit.block.BlockDoubleSlabStone3": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDoubleSlabStone3#getSingleSlabId()",
-      "cn.nukkit.block.BlockDoubleSlabStone3#getSlabName()",
-      "cn.nukkit.block.BlockDoubleSlabStone3#getToolTier()"
+      "cn.nukkit.block.BlockDoubleSlabStone3#getSlabName()"
     ]
   },
   "cn.nukkit.block.BlockDoubleSlabStone4": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDoubleSlabStone4#getSingleSlabId()",
-      "cn.nukkit.block.BlockDoubleSlabStone4#getSlabName()",
-      "cn.nukkit.block.BlockDoubleSlabStone4#getToolTier()"
+      "cn.nukkit.block.BlockDoubleSlabStone4#getSlabName()"
     ]
   },
   "cn.nukkit.block.BlockDoubleSlabWarped": {
@@ -229,29 +147,12 @@
   "cn.nukkit.block.BlockDropper": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDropper#dispense()",
-      "cn.nukkit.block.BlockDropper#getDispenseBehavior(Item)",
-      "cn.nukkit.block.BlockDropper#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockEmerald": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEmerald#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockEnchantingTable": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEnchantingTable#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockEndStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEndStone#getToolTier()"
+      "cn.nukkit.block.BlockDropper#getDispenseBehavior(Item)"
     ]
   },
   "cn.nukkit.block.BlockEnderChest": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEnderChest#getBlockEntity()",
-      "cn.nukkit.block.BlockEnderChest#getToolTier()"
+      "cn.nukkit.block.BlockEnderChest#getBlockEntity()"
     ]
   },
   "cn.nukkit.block.BlockFallable": {
@@ -268,11 +169,6 @@
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockFenceBase#getWoodType()",
       "cn.nukkit.block.BlockFenceBase#setWoodType(WoodType)"
-    ]
-  },
-  "cn.nukkit.block.BlockFenceNetherBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockFenceNetherBrick#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockFlower": {
@@ -292,29 +188,9 @@
       "cn.nukkit.block.BlockFungusWarped#grow(Player)"
     ]
   },
-  "cn.nukkit.block.BlockFurnaceBurning": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockFurnaceBurning#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockGold": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockGold#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockGrindstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockGrindstone#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockHoney": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockHoney#<init>()"
-    ]
-  },
-  "cn.nukkit.block.BlockHopper": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockHopper#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockHyphaeCrimson": {
@@ -325,26 +201,6 @@
   "cn.nukkit.block.BlockHyphaeWarped": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockHyphaeWarped#getStrippedState()"
-    ]
-  },
-  "cn.nukkit.block.BlockIron": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockIron#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockIronBars": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockIronBars#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockLantern": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLantern#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockLapis": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLapis#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockLeaves2": {
@@ -361,76 +217,6 @@
   "cn.nukkit.block.BlockLiquid": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockLiquid#usesWaterLogging()"
-    ]
-  },
-  "cn.nukkit.block.BlockMobSpawner": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMobSpawner#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockMossStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMossStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockMushroom": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMushroom#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockNetherrack": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockNetherrack#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockObserver": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockObserver#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockObsidian": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockObsidian#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreCoal": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreCoal#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreDiamond": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreDiamond#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreEmerald": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreEmerald#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreGold": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreGold#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreIron": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreIron#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreLapis": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreLapis#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreQuartz": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreQuartz#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockOreRedstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockOreRedstone#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockPiston": {
@@ -455,30 +241,10 @@
       "cn.nukkit.block.BlockPistonSticky#getPistonHeadBlockId()"
     ]
   },
-  "cn.nukkit.block.BlockPressurePlateStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockPressurePlateStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockPrismarine": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockPrismarine#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockPumpkin": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockPumpkin#getProperties()",
       "cn.nukkit.block.BlockPumpkin#setBlockFace(BlockFace)"
-    ]
-  },
-  "cn.nukkit.block.BlockQuartz": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockQuartz#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockRedstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockRedstone#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockRedstoneDiode": {
@@ -498,8 +264,7 @@
   },
   "cn.nukkit.block.BlockSandstone": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockSandstone#getSandstoneType()",
-      "cn.nukkit.block.BlockSandstone#getToolTier()"
+      "cn.nukkit.block.BlockSandstone#getSandstoneType()"
     ]
   },
   "cn.nukkit.block.BlockScaffolding": {
@@ -539,28 +304,24 @@
       "cn.nukkit.block.BlockSlabRedSandstone#SMOOTH_SANDSTONE",
       "cn.nukkit.block.BlockSlabRedSandstone#RED_NETHER_BRICK",
       "cn.nukkit.block.BlockSlabRedSandstone#getSlabName()",
-      "cn.nukkit.block.BlockSlabRedSandstone#getToolTier()",
       "cn.nukkit.block.BlockSlabRedSandstone#isSameType(BlockSlab)"
     ]
   },
   "cn.nukkit.block.BlockSlabStone": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockSlabStone#getSlabName()",
-      "cn.nukkit.block.BlockSlabStone#getToolTier()",
       "cn.nukkit.block.BlockSlabStone#isSameType(BlockSlab)"
     ]
   },
   "cn.nukkit.block.BlockSlabStone3": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockSlabStone3#getSlabName()",
-      "cn.nukkit.block.BlockSlabStone3#getToolTier()",
       "cn.nukkit.block.BlockSlabStone3#isSameType(BlockSlab)"
     ]
   },
   "cn.nukkit.block.BlockSlabStone4": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockSlabStone4#getSlabName()",
-      "cn.nukkit.block.BlockSlabStone4#getToolTier()",
       "cn.nukkit.block.BlockSlabStone4#isSameType(BlockSlab)"
     ]
   },
@@ -574,11 +335,6 @@
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockSlabWood#getSlabName()",
       "cn.nukkit.block.BlockSlabWood#isSameType(BlockSlab)"
-    ]
-  },
-  "cn.nukkit.block.BlockSmoothStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockSmoothStone#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockSoulSand": {
@@ -596,126 +352,6 @@
       "cn.nukkit.block.BlockSoulTorch#<init>(int)"
     ]
   },
-  "cn.nukkit.block.BlockStairsAndesite": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsAndesite#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsAndesitePolished": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsAndesitePolished#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsCobblestone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsCobblestone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsDarkPrismarine": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsDarkPrismarine#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsDiorite": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsDiorite#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsEndBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsEndBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsGranite": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsGranite#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsGranitePolished": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsGranitePolished#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsMossyCobblestone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsMossyCobblestone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsMossyStoneBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsMossyStoneBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsNetherBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsNetherBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsPrismarine": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsPrismarine#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsPrismarineBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsPrismarineBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsPurpur": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsPurpur#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsQuartz": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsQuartz#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsRedNetherBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsRedNetherBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsRedSandstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsRedSandstone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsSandstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsSandstone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsSmoothQuartz": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsSmoothQuartz#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsSmoothRedSandstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsSmoothRedSandstone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsSmoothSandstone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsSmoothSandstone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStairsStoneBrick": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStairsStoneBrick#getToolTier()"
-    ]
-  },
   "cn.nukkit.block.BlockStemCrimson": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockStemCrimson#getStrippedState()"
@@ -729,36 +365,6 @@
   "cn.nukkit.block.BlockStemWarped": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockStemWarped#getStrippedState()"
-    ]
-  },
-  "cn.nukkit.block.BlockStone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockStonecutter": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStonecutter#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockTerracotta": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockTerracotta#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockTerracottaGlazed": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockTerracottaGlazed#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockTrapdoorIron": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockTrapdoorIron#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockWall": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockWall#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockWallBanner": {
@@ -782,16 +388,6 @@
   "cn.nukkit.block.BlockWater": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockWater#usesWaterLogging()"
-    ]
-  },
-  "cn.nukkit.block.BlockWeightedPressurePlateHeavy": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockWeightedPressurePlateHeavy#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockWeightedPressurePlateLight": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockWeightedPressurePlateLight#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockWitherRose": {

@@ -64,6 +64,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

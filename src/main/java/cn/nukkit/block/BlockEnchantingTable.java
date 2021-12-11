@@ -93,6 +93,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

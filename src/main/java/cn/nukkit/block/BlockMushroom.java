@@ -123,6 +123,7 @@ public abstract class BlockMushroom extends BlockFlowable {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

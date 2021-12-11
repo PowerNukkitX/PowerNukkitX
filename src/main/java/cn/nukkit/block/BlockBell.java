@@ -499,6 +499,7 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
