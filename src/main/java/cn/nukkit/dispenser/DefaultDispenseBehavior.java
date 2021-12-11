@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DefaultDispenseBehavior implements DispenseBehavior {
 
+    @PowerNukkitOnly
     public boolean success = true;
 
     @PowerNukkitOnly

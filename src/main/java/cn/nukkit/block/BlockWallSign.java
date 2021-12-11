@@ -44,6 +44,7 @@ public class BlockWallSign extends BlockSignPost {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getWallId() {
         return getId();
@@ -83,11 +84,13 @@ public class BlockWallSign extends BlockSignPost {
         return getPropertyValue(FACING_DIRECTION);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setSignDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
 
+    @PowerNukkitOnly
     @Override
     public CompassRoseDirection getSignDirection() {
         return getBlockFace().getCompassRoseDirection();

@@ -10,6 +10,11 @@ import cn.nukkit.math.BlockFace;
 @PowerNukkitOnly
 public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public ShulkerBoxDispenseBehavior() {
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

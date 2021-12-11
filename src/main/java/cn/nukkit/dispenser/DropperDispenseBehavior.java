@@ -13,6 +13,10 @@ import cn.nukkit.math.BlockFace;
 public class DropperDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
+    public DropperDispenseBehavior() {
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

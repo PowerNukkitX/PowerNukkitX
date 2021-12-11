@@ -29,21 +29,25 @@ public class CapturingCommandSender implements CommandSender {
     @NonNull
     private final Permissible perms;
 
+    @PowerNukkitOnly
     public CapturingCommandSender() {
         this("System");
     }
-    
+
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name) {
         this.name = name;
         this.perms = new PermissibleBase(this);
     }
 
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp) {
         this.name = name;
         this.isOp = true;
         this.perms = new PermissibleBase(this);
     }
 
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp, @NonNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
         this.isOp = true;
@@ -71,14 +75,17 @@ public class CapturingCommandSender implements CommandSender {
         isOp = op;
     }
 
+    @PowerNukkitOnly
     public void resetCapture() {
         captured.setLength(0);
     }
-    
+
+    @PowerNukkitOnly
     public synchronized String getRawCapture() {
         return captured.toString();
     }
-    
+
+    @PowerNukkitOnly
     public synchronized String getCleanCapture() {
         return TextFormat.clean(captured.toString());
     }

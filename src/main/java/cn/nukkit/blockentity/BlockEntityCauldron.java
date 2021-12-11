@@ -28,22 +28,27 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Using -1 instead of the overflown 0xFFFF")
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
+    @PowerNukkitOnly
     public static final int POTION_TYPE_EMPTY = -1;
 
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
+    @PowerNukkitOnly
     public static final int POTION_TYPE_NORMAL = 0;
 
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
+    @PowerNukkitOnly
     public static final int POTION_TYPE_SPLASH = 1;
 
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
+    @PowerNukkitOnly
     public static final int POTION_TYPE_LINGERING = 2;
 
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
+    @PowerNukkitOnly
     public static final int POTION_TYPE_LAVA = 0xF19B;
 
     public BlockEntityCauldron(FullChunk chunk, CompoundTag nbt) {
@@ -84,11 +89,13 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public boolean hasPotion() {
         return (getPotionId() & 0xffff) != 0xffff;
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionType(int potionType) {
         this.namedTag.putShort("PotionType", (short)(potionType & 0xFFFF));
     }
-    
+
+    @PowerNukkitOnly
     public int getPotionType() {
         return (short)(this.namedTag.getShort("PotionType") & 0xFFFF);
     }

@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
@@ -20,9 +19,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Faceable;
+import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.nukkit.utils.Utils.dynamic;
 
 /**
  * @author CreeperFace
@@ -30,7 +32,8 @@ import java.util.List;
 @PowerNukkitDifference(info = "The piston will work as close as possible to vanilla")
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
-    public static final float MOVE_STEP = Float.valueOf(0.5f);
+    @PowerNukkitOnly
+    public static final float MOVE_STEP = dynamic(0.5f);
 
     public float progress;
     public float lastProgress = 1;
@@ -47,6 +50,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Since("FUTURE")
     public byte newState = 1;
 
+    @PowerNukkitOnly
     public List<BlockVector3> attachedBlocks;
 
     public boolean powered;
@@ -158,8 +162,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
     }
 
-    @PowerNukkitDifference(info = "Trigger observer (with #setDirty()).", since = "1.4.0.0-PN")
-    @PowerNukkitDifference(info = "Add option to see if blockentity is currently handling piston move (var finished)")
+    @PowerNukkitOnly
     public void move(boolean extending, List<BlockVector3> attachedBlocks) {
         this.extending = extending;
         this.lastProgress = this.progress = extending ? 0 : 1;

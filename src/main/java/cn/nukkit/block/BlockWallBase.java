@@ -482,7 +482,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         );
     }
 
-    @PowerNukkitDifference(info = "Will connect to glass panes, iron bars and fence gates", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public boolean canConnect(Block block) {
         switch (block.getId()) {

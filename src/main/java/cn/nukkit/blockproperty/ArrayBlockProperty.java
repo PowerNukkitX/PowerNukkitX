@@ -126,6 +126,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         return new ArrayBlockProperty<>(getName(), isExportedToItem(), universe, getBitSize(), getPersistenceName(), ordinal);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getMetaForValue(@Nullable E value) {
         if (value == null) {
@@ -140,11 +141,13 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     }
 
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public E getValueForMeta(int meta) {
         return universe[meta];
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValueForMeta(int meta) {
         try {
@@ -156,6 +159,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     }
     
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
         try {
@@ -195,6 +199,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         );
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateDirectly(@Nullable E value) {
         for (E object : universe) {
@@ -205,17 +210,20 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         throw new IllegalArgumentException(value+" is not valid for this property");
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateMetaDirectly(int meta) {
         Preconditions.checkElementIndex(meta, universe.length);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Class<E> getValueClass() {
         return eClass;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     public E[] getUniverse() {
         return universe.clone();

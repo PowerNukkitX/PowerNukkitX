@@ -248,7 +248,7 @@ public class BlockRedstoneWire extends BlockFlowable implements RedstoneComponen
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed placement logic")
+    @PowerNukkitOnly
     public boolean canBePlacedOn(Block support) {
         return support.isSolid(BlockFace.UP);
     }

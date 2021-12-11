@@ -231,6 +231,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
 
+    @PowerNukkitOnly
     @Nullable
     @Override
     public BlockEntityEnderChest getBlockEntity() {

@@ -13,6 +13,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @PowerNukkitOnly
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public FireworksDispenseBehavior() {
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         BlockFace opposite = face.getOpposite();

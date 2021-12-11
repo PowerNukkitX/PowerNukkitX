@@ -173,6 +173,7 @@ public class BlockScaffolding extends BlockFallableMeta {
         return 0;
     }
 
+    @PowerNukkitOnly
     @Override
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         setDamage(0);

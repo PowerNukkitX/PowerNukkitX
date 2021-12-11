@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 
@@ -39,7 +40,7 @@ public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
         return true;
     }
 
-    @PowerNukkitDifference
+    @PowerNukkitOnly
     @Override
     public boolean isInverted() {
         return true;

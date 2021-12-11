@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public interface BlockEntityHolder<E extends BlockEntity> {
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Nullable
     default E getBlockEntity() {
         Level level = getLevel();

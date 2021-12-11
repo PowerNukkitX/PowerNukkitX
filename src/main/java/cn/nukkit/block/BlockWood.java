@@ -67,7 +67,7 @@ public class BlockWood extends BlockLog {
     public double getResistance() {
         return 2;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {
@@ -119,6 +119,7 @@ public class BlockWood extends BlockLog {
         return 10;
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState getStrippedState() {
         int strippedId;

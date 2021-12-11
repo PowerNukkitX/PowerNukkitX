@@ -74,7 +74,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         }
         return true;
     }
-    
+
+    @PowerNukkitOnly
     protected boolean isSupportValid(Block support) {
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }

@@ -523,6 +523,7 @@ public final class BlockProperties {
      * @throws NoSuchElementException If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
+    @PowerNukkitOnly
     public String getPersistenceValue(int currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getPersistenceValue(currentMeta, registry.offset);
@@ -532,6 +533,7 @@ public final class BlockProperties {
      * @throws NoSuchElementException If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
+    @PowerNukkitOnly
     public String getPersistenceValue(long currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getPersistenceValue(currentMeta, registry.offset);
@@ -541,6 +543,7 @@ public final class BlockProperties {
      * @throws NoSuchElementException If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
+    @PowerNukkitOnly
     public String getPersistenceValue(BigInteger currentMeta, String propertyName) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
         return registry.property.getPersistenceValue(currentMeta, registry.offset);

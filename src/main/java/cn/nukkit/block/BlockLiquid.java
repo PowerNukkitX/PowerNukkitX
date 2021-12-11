@@ -117,6 +117,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
         return this;
     }
 
+    @PowerNukkitOnly
     public boolean usesWaterLogging() {
         return false;
     }

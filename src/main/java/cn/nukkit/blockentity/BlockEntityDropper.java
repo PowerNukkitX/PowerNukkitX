@@ -16,11 +16,13 @@ public class BlockEntityDropper extends BlockEntityEjectable {
         super(chunk, nbt);
     }
 
+    @PowerNukkitOnly
     @Override
     protected DropperInventory createInventory() {
         return inventory = new DropperInventory(this);
     }
 
+    @PowerNukkitOnly
     @Override
     protected String getBlockEntityName() {
         return BlockEntity.DISPENSER;

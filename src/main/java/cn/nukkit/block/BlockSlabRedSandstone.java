@@ -23,12 +23,12 @@ public class BlockSlabRedSandstone extends BlockSlab {
 
     public static final int RED_SANDSTONE = 0;
     public static final int PURPUR = 1;
-    public static final int PRISMARINE = 2;
-    public static final int PRISMARINE_BRICKS = 3;
-    public static final int DARK_PRISMARINE = 4;
-    public static final int MOSSY_COBBLESTONE = 5;
-    public static final int SMOOTH_SANDSTONE = 6;
-    public static final int RED_NETHER_BRICK = 7;
+    public @PowerNukkitOnly static final int PRISMARINE = 2;
+    public @PowerNukkitOnly static final int PRISMARINE_BRICKS = 3;
+    public @PowerNukkitOnly static final int DARK_PRISMARINE = 4;
+    public @PowerNukkitOnly static final int MOSSY_COBBLESTONE = 5;
+    public @PowerNukkitOnly static final int SMOOTH_SANDSTONE = 6;
+    public @PowerNukkitOnly static final int RED_NETHER_BRICK = 7;
 
     public BlockSlabRedSandstone() {
         this(0);

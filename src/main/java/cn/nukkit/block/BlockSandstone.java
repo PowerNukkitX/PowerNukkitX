@@ -63,6 +63,7 @@ public class BlockSandstone extends BlockSolidMeta {
         setPropertyValue(SAND_STONE_TYPE, sandStoneType);
     }
 
+    @PowerNukkitOnly
     public SandStoneType getSandstoneType() {
         return getPropertyValue(SAND_STONE_TYPE);
     }

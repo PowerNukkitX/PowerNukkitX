@@ -49,11 +49,13 @@ public class BlockWood2 extends BlockWood {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return getPropertyValue(NEW_LOG_TYPE);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setWoodType(WoodType woodType) {
         setPropertyValue(NEW_LOG_TYPE, woodType);

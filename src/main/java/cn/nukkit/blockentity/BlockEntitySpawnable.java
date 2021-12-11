@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -37,10 +38,12 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         player.dataPacket(getSpawnPacket());
     }
 
+    @PowerNukkitOnly
     public BlockEntityDataPacket getSpawnPacket() {
         return getSpawnPacket(null);
     }
 
+    @PowerNukkitOnly
     public BlockEntityDataPacket getSpawnPacket(CompoundTag nbt) {
         if (nbt == null) {
             nbt = this.getSpawnCompound();

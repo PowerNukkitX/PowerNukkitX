@@ -39,6 +39,7 @@ public class BlockWitherRose extends BlockFlower {
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean canPlantOn(Block block) {
         return super.canPlantOn(block) || block.getId() == BlockID.NETHERRACK || block.getId() == BlockID.SOUL_SAND;

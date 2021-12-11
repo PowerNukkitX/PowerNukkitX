@@ -31,6 +31,7 @@ public class BlockStemWarped extends BlockStem {
         return "Warped Stem";
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_WARPED_STEM);

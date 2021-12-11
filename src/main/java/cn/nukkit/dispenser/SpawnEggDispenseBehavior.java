@@ -12,6 +12,11 @@ import cn.nukkit.math.Vector3;
 @PowerNukkitOnly
 public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public SpawnEggDispenseBehavior() {
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 pos = block.getSide(face).add(0.5, 0.7, 0.5);

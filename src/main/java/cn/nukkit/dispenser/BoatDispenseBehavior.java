@@ -15,6 +15,11 @@ import cn.nukkit.math.Vector3;
 @PowerNukkitOnly
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public BoatDispenseBehavior() {
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 pos = block.getSide(face).multiply(1.125);

@@ -39,6 +39,7 @@ public abstract class BlockFenceBase extends BlockFence {
             reason = "Will always returns empty on this type. It is here for backward compatibility",
             since = "1.4.0.0-PN")
     @Override
+    @PowerNukkitOnly
     public Optional<WoodType> getWoodType() {
         return Optional.empty();
     }
@@ -47,6 +48,7 @@ public abstract class BlockFenceBase extends BlockFence {
             reason = "Only accepts null. It is here for backward compatibility",
             since = "1.4.0.0-PN")
     @Override
+    @PowerNukkitOnly
     public void setWoodType(@Nullable WoodType woodType) {
         if (woodType != null) {
             throw new InvalidBlockPropertyValueException(WoodType.PROPERTY, null, woodType, "This block don't have a regular wood type");

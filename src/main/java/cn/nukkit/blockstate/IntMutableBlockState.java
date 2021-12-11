@@ -56,6 +56,7 @@ public class IntMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getBigDamage() {
         return storage;
     }
@@ -71,6 +72,7 @@ public class IntMutableBlockState extends MutableBlockState {
 
     @Nonnegative
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public Integer getDataStorage() {
         return storage;
@@ -115,6 +117,7 @@ public class IntMutableBlockState extends MutableBlockState {
         this.storage = storage.intValue();
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
         validate(storage);
@@ -167,22 +170,26 @@ public class IntMutableBlockState extends MutableBlockState {
         storage = properties.setIntValue(storage, propertyName, value);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValue(String propertyName) {
         return properties.getIntValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean getBooleanValue(String propertyName) {
         return properties.getBooleanValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public String getPersistenceValue(String propertyName) {
@@ -191,6 +198,7 @@ public class IntMutableBlockState extends MutableBlockState {
 
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public BlockState getCurrentState() {
         return BlockState.of(blockId, storage);
     }
@@ -202,9 +210,10 @@ public class IntMutableBlockState extends MutableBlockState {
         return storage;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
-    public IntMutableBlockState copy() {
+    public MutableBlockState copy() {
         return new IntMutableBlockState(blockId, properties, storage);
     }
 }

@@ -12,9 +12,13 @@ import cn.nukkit.math.BlockFace;
 @PowerNukkitOnly
 public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public FlintAndSteelDispenseBehavior() {
+    }
+
     @Override
     @PowerNukkitDifference(info = "Reduce flint and steel usage instead of clearing.", since = "1.4.0.0-PN")
-    public Item dispense(BlockDispenser block, BlockFace face, Item item) {
+    public @PowerNukkitOnly Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         item = item.clone();
 

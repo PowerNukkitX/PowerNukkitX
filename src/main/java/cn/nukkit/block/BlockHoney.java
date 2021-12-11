@@ -16,6 +16,10 @@ import java.util.Random;
 public class BlockHoney extends BlockSolid {
     private static final Random RANDOM = new Random();
 
+    @PowerNukkitOnly
+    public BlockHoney() {
+    }
+
     @Override
     public String getName() {
         return "Honey Block";

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
@@ -35,6 +36,7 @@ public abstract class BlockFallable extends BlockSolid {
         return type;
     }
 
+    @PowerNukkitOnly
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")

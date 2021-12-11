@@ -25,6 +25,7 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
 
     protected final Position position;
     protected List<Block> blocks;
+    @PowerNukkitOnly
     protected Set<Block> ignitions;
     protected double yield;
 

@@ -27,11 +27,13 @@ public class BlockFungusCrimson extends BlockFungus {
         return "Crimson Fungus";
     }
 
+    @PowerNukkitOnly
     @Override
     protected boolean canGrowOn(Block support) {
         return support.getId() == CRIMSON_NYLIUM;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean grow(@Nullable Player cause) {
         // TODO Make it grow
