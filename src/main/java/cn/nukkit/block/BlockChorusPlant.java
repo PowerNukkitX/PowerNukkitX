@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -102,12 +103,14 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 

@@ -100,7 +100,8 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

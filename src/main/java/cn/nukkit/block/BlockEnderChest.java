@@ -205,7 +205,8 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

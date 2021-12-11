@@ -1,67 +1,4 @@
 {
-  "cn.nukkit.Nukkit": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.Nukkit#GIT_COMMIT"
-    ]
-  },
-  "cn.nukkit.Player": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.Player#addExperience(int, boolean)",
-      "cn.nukkit.Player#onBlock(Entity, boolean)",
-      "cn.nukkit.Player#setExperience(int, int, boolean)",
-      "cn.nukkit.Player#<init>(SourceInterface, Long, String, int)"
-    ]
-  },
-  "cn.nukkit.Server": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.Server#getGitCommit()",
-      "cn.nukkit.Server#isRedstoneEnabled()",
-      "cn.nukkit.Server#setRedstoneEnabled(boolean)"
-    ]
-  },
-  "cn.nukkit.api.DeprecationDetails": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.api.DeprecationDetails#by()",
-      "cn.nukkit.api.DeprecationDetails#reason()",
-      "cn.nukkit.api.DeprecationDetails#replaceWith()",
-      "cn.nukkit.api.DeprecationDetails#since()",
-      "cn.nukkit.api.DeprecationDetails#toBeRemovedAt()"
-    ]
-  },
-  "cn.nukkit.api.PowerNukkitOnly": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.api.PowerNukkitOnly#value()"
-    ]
-  },
-  "cn.nukkit.api.Since": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.api.Since#value()"
-    ]
-  },
-  "cn.nukkit.block.Block": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.Block#diffusesSkyLight",
-      "cn.nukkit.block.Block#asItemBlock()",
-      "cn.nukkit.block.Block#breaksWhenMoved()",
-      "cn.nukkit.block.Block#canBePulled()",
-      "cn.nukkit.block.Block#canWaterloggingFlowInto()",
-      "cn.nukkit.block.Block#down(int, int)",
-      "cn.nukkit.block.Block#east(int, int)",
-      "cn.nukkit.block.Block#firstInLayers(int, Predicate)",
-      "cn.nukkit.block.Block#firstInLayers(Predicate)",
-      "cn.nukkit.block.Block#get(int, Level, int, int, int, int)",
-      "cn.nukkit.block.Block#get(int, Integer, Position, int)",
-      "cn.nukkit.block.Block#getBlock()",
-      "cn.nukkit.block.Block#getItemId()",
-      "cn.nukkit.block.Block#getSideAtLayer(int, BlockFace)",
-      "cn.nukkit.block.Block#getSideAtLayer(int, BlockFace, int)",
-      "cn.nukkit.block.Block#north(int, int)",
-      "cn.nukkit.block.Block#south(int, int)",
-      "cn.nukkit.block.Block#sticksToPiston()",
-      "cn.nukkit.block.Block#up(int, int)",
-      "cn.nukkit.block.Block#west(int, int)"
-    ]
-  },
   "cn.nukkit.block.BlockAllow": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockAllow#canBePulled()"
@@ -72,35 +9,9 @@
       "cn.nukkit.block.BlockAnvil#getToolTier()"
     ]
   },
-  "cn.nukkit.block.BlockBanner": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBanner#breaksWhenMoved()"
-    ]
-  },
   "cn.nukkit.block.BlockBasalt": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockBasalt#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockBeacon": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBeacon#canBePulled()"
-    ]
-  },
-  "cn.nukkit.block.BlockBed": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBed#breaksWhenMoved()",
-      "cn.nukkit.block.BlockBed#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockBedrock": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBedrock#canBePulled()"
-    ]
-  },
-  "cn.nukkit.block.BlockBedrockInvisible": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBedrockInvisible#canBePulled()"
     ]
   },
   "cn.nukkit.block.BlockBell": {
@@ -108,11 +19,6 @@
       "cn.nukkit.block.BlockBell#getAttachmentType()",
       "cn.nukkit.block.BlockBell#getToolTier()",
       "cn.nukkit.block.BlockBell#setAttachmentType(int)"
-    ]
-  },
-  "cn.nukkit.block.BlockBorder": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockBorder#canBePulled()"
     ]
   },
   "cn.nukkit.block.BlockBrewingStand": {
@@ -150,24 +56,6 @@
       "cn.nukkit.block.BlockButtonStone#getToolTier()"
     ]
   },
-  "cn.nukkit.block.BlockCactus": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCactus#breaksWhenMoved()",
-      "cn.nukkit.block.BlockCactus#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockCake": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCake#breaksWhenMoved()",
-      "cn.nukkit.block.BlockCake#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockCampfire": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCampfire#breaksWhenMoved()",
-      "cn.nukkit.block.BlockCampfire#canBePulled()"
-    ]
-  },
   "cn.nukkit.block.BlockCarpet": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockCarpet#getProperties()"
@@ -190,18 +78,6 @@
       "cn.nukkit.block.BlockCauldronLava#setFillLevel(int)"
     ]
   },
-  "cn.nukkit.block.BlockChorusFlower": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockChorusFlower#breaksWhenMoved()",
-      "cn.nukkit.block.BlockChorusFlower#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockChorusPlant": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockChorusPlant#breaksWhenMoved()",
-      "cn.nukkit.block.BlockChorusPlant#sticksToPiston()"
-    ]
-  },
   "cn.nukkit.block.BlockCoal": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockCoal#getToolTier()"
@@ -214,10 +90,8 @@
   },
   "cn.nukkit.block.BlockCocoa": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockCocoa#breaksWhenMoved()",
       "cn.nukkit.block.BlockCocoa#getGrowthStage()",
-      "cn.nukkit.block.BlockCocoa#grow()",
-      "cn.nukkit.block.BlockCocoa#sticksToPiston()"
+      "cn.nukkit.block.BlockCocoa#grow()"
     ]
   },
   "cn.nukkit.block.BlockConcrete": {
@@ -263,11 +137,6 @@
       "cn.nukkit.block.BlockDaylightDetectorInverted#isInverted()"
     ]
   },
-  "cn.nukkit.block.BlockDeny": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockDeny#canBePulled()"
-    ]
-  },
   "cn.nukkit.block.BlockDiamond": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDiamond#getToolTier()"
@@ -282,9 +151,7 @@
   },
   "cn.nukkit.block.BlockDoor": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockDoor#PROPERTIES",
-      "cn.nukkit.block.BlockDoor#breaksWhenMoved()",
-      "cn.nukkit.block.BlockDoor#sticksToPiston()"
+      "cn.nukkit.block.BlockDoor#PROPERTIES"
     ]
   },
   "cn.nukkit.block.BlockDoorIron": {
@@ -359,12 +226,6 @@
       "cn.nukkit.block.BlockDoubleSlabWood#isCorrectTool(Item)"
     ]
   },
-  "cn.nukkit.block.BlockDragonEgg": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockDragonEgg#breaksWhenMoved()",
-      "cn.nukkit.block.BlockDragonEgg#sticksToPiston()"
-    ]
-  },
   "cn.nukkit.block.BlockDropper": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockDropper#dispense()",
@@ -382,11 +243,6 @@
       "cn.nukkit.block.BlockEnchantingTable#getToolTier()"
     ]
   },
-  "cn.nukkit.block.BlockEndPortalFrame": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEndPortalFrame#canBePulled()"
-    ]
-  },
   "cn.nukkit.block.BlockEndStone": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockEndStone#getToolTier()"
@@ -394,7 +250,6 @@
   },
   "cn.nukkit.block.BlockEnderChest": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockEnderChest#canBePulled()",
       "cn.nukkit.block.BlockEnderChest#getBlockEntity()",
       "cn.nukkit.block.BlockEnderChest#getToolTier()"
     ]
@@ -418,12 +273,6 @@
   "cn.nukkit.block.BlockFenceNetherBrick": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockFenceNetherBrick#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockFlowable": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockFlowable#breaksWhenMoved()",
-      "cn.nukkit.block.BlockFlowable#sticksToPiston()"
     ]
   },
   "cn.nukkit.block.BlockFlower": {
@@ -488,18 +337,6 @@
       "cn.nukkit.block.BlockIronBars#getToolTier()"
     ]
   },
-  "cn.nukkit.block.BlockItemFrame": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockItemFrame#breaksWhenMoved()",
-      "cn.nukkit.block.BlockItemFrame#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockLadder": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLadder#breaksWhenMoved()",
-      "cn.nukkit.block.BlockLadder#sticksToPiston()"
-    ]
-  },
   "cn.nukkit.block.BlockLantern": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockLantern#getToolTier()"
@@ -508,12 +345,6 @@
   "cn.nukkit.block.BlockLapis": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockLapis#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockLeaves": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLeaves#breaksWhenMoved()",
-      "cn.nukkit.block.BlockLeaves#sticksToPiston()"
     ]
   },
   "cn.nukkit.block.BlockLeaves2": {
@@ -529,36 +360,17 @@
   },
   "cn.nukkit.block.BlockLiquid": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLiquid#breaksWhenMoved()",
-      "cn.nukkit.block.BlockLiquid#sticksToPiston()",
       "cn.nukkit.block.BlockLiquid#usesWaterLogging()"
-    ]
-  },
-  "cn.nukkit.block.BlockLodestone": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockLodestone#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockMelon": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMelon#breaksWhenMoved()",
-      "cn.nukkit.block.BlockMelon#sticksToPiston()"
     ]
   },
   "cn.nukkit.block.BlockMobSpawner": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMobSpawner#canBePulled()",
       "cn.nukkit.block.BlockMobSpawner#getToolTier()"
     ]
   },
   "cn.nukkit.block.BlockMossStone": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockMossStone#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockMoving": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockMoving#canBePulled()"
     ]
   },
   "cn.nukkit.block.BlockMushroom": {
@@ -578,18 +390,7 @@
   },
   "cn.nukkit.block.BlockObsidian": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockObsidian#canBePulled()",
       "cn.nukkit.block.BlockObsidian#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockObsidianCrying": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockObsidianCrying#canBePulled()"
-    ]
-  },
-  "cn.nukkit.block.BlockObsidianGlowing": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockObsidianGlowing#canBePulled()"
     ]
   },
   "cn.nukkit.block.BlockOreCoal": {
@@ -646,7 +447,6 @@
   },
   "cn.nukkit.block.BlockPistonHead": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockPistonHead#canBePulled()",
       "cn.nukkit.block.BlockPistonHead#getBlockFace()"
     ]
   },
@@ -667,20 +467,13 @@
   },
   "cn.nukkit.block.BlockPumpkin": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockPumpkin#breaksWhenMoved()",
       "cn.nukkit.block.BlockPumpkin#getProperties()",
-      "cn.nukkit.block.BlockPumpkin#setBlockFace(BlockFace)",
-      "cn.nukkit.block.BlockPumpkin#sticksToPiston()"
+      "cn.nukkit.block.BlockPumpkin#setBlockFace(BlockFace)"
     ]
   },
   "cn.nukkit.block.BlockQuartz": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockQuartz#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockRail": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockRail#canBePulled()"
     ]
   },
   "cn.nukkit.block.BlockRedstone": {
@@ -700,7 +493,6 @@
   },
   "cn.nukkit.block.BlockRespawnAnchor": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockRespawnAnchor#canBePulled()",
       "cn.nukkit.block.BlockRespawnAnchor#<init>()"
     ]
   },
@@ -713,17 +505,6 @@
   "cn.nukkit.block.BlockScaffolding": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockScaffolding#createFallingEntity(CompoundTag)"
-    ]
-  },
-  "cn.nukkit.block.BlockSignPost": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockSignPost#breaksWhenMoved()"
-    ]
-  },
-  "cn.nukkit.block.BlockSkull": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockSkull#breaksWhenMoved()",
-      "cn.nukkit.block.BlockSkull#sticksToPiston()"
     ]
   },
   "cn.nukkit.block.BlockSlabBlackstone": {
@@ -960,16 +741,6 @@
       "cn.nukkit.block.BlockStonecutter#getToolTier()"
     ]
   },
-  "cn.nukkit.block.BlockStructure": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStructure#canBePulled()"
-    ]
-  },
-  "cn.nukkit.block.BlockStructureVoid": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockStructureVoid#canBePulled()"
-    ]
-  },
   "cn.nukkit.block.BlockTerracotta": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockTerracotta#getToolTier()"
@@ -983,24 +754,6 @@
   "cn.nukkit.block.BlockTrapdoorIron": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.block.BlockTrapdoorIron#getToolTier()"
-    ]
-  },
-  "cn.nukkit.block.BlockUndyedShulkerBox": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockUndyedShulkerBox#breaksWhenMoved()",
-      "cn.nukkit.block.BlockUndyedShulkerBox#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockVine": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockVine#breaksWhenMoved()",
-      "cn.nukkit.block.BlockVine#sticksToPiston()"
-    ]
-  },
-  "cn.nukkit.block.BlockVinesNether": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.block.BlockVinesNether#breaksWhenMoved()",
-      "cn.nukkit.block.BlockVinesNether#sticksToPiston()"
     ]
   },
   "cn.nukkit.block.BlockWall": {

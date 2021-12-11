@@ -352,12 +352,14 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 

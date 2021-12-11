@@ -281,12 +281,14 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 

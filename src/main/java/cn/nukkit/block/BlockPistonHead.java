@@ -89,7 +89,8 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

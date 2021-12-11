@@ -697,6 +697,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(id, meta, pos, 0);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     @SuppressWarnings("unchecked")
@@ -744,6 +745,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(fullId, level, x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public static Block get(int fullId, Level level, int x, int y, int z, int layer) {
@@ -1104,6 +1106,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    @PowerNukkitOnly
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
@@ -1124,14 +1127,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return true;
     }
 
+    @PowerNukkitOnly
     public boolean canBePulled() {
         return true;
     }
 
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return false;
     }
 
+    @PowerNukkitOnly
     public boolean sticksToPiston() {
         return true;
     }
@@ -1166,6 +1172,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     
     public abstract int getId();
 
+    @PowerNukkitOnly
     public int getItemId() {
         int id = getId();
         if (id > 255) {
@@ -1527,6 +1534,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSideAtLayer(layer, face, step);
     }
 
+    @PowerNukkitOnly
     public Block getSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
             return this.getLevel().getBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
@@ -1534,6 +1542,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getSide(face, 1);
     }
 
+    @PowerNukkitOnly
     public Block getSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
             if (step == 1) {
@@ -1560,6 +1569,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.UP, step);
     }
 
+    @PowerNukkitOnly
     public Block up(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.UP, step);
     }
@@ -1574,6 +1584,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.DOWN, step);
     }
 
+    @PowerNukkitOnly
     public Block down(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.DOWN, step);
     }
@@ -1588,6 +1599,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.NORTH, step);
     }
 
+    @PowerNukkitOnly
     public Block north(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.NORTH, step);
     }
@@ -1602,6 +1614,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.SOUTH, step);
     }
 
+    @PowerNukkitOnly
     public Block south(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.SOUTH, step);
     }
@@ -1616,6 +1629,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.EAST, step);
     }
 
+    @PowerNukkitOnly
     public Block east(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.EAST, step);
     }
@@ -1630,6 +1644,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getSide(BlockFace.WEST, step);
     }
 
+    @PowerNukkitOnly
     public Block west(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.WEST, step);
     }
@@ -1963,6 +1978,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public final ItemBlock asItemBlock() {
         return asItemBlock(1);
     }
@@ -1982,11 +1998,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
-    
+
+    @PowerNukkitOnly
     public Optional<Block> firstInLayers(Predicate<Block> condition) {
         return firstInLayers(0, condition);
     }
-    
+
+    @PowerNukkitOnly
     public Optional<Block> firstInLayers(int startingLayer, Predicate<Block> condition) {
         int maximumLayer = this.level.requireProvider().getMaximumLayer();
         for (int layer = startingLayer; layer <= maximumLayer; layer++) {
@@ -2233,6 +2251,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public final Block getBlock() {

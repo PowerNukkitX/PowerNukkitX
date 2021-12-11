@@ -209,7 +209,8 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

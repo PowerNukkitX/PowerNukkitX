@@ -351,12 +351,14 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

@@ -235,6 +235,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
