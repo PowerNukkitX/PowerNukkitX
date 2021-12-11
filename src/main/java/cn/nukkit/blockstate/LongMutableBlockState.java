@@ -74,8 +74,6 @@ public class LongMutableBlockState extends MutableBlockState {
         this.storage = state;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     void setDataStorageWithoutValidation(Number storage) {
         this.storage = storage.longValue();

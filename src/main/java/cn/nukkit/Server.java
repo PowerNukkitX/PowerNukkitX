@@ -276,8 +276,6 @@ public class Server {
      * Minimal initializer for testing
      */
     @SuppressWarnings("UnstableApiUsage")
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     Server(File tempDir) throws IOException {
         if (tempDir.isFile() && !tempDir.delete()) {
             throw new IOException("Failed to delete " + tempDir);

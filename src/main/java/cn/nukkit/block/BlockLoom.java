@@ -103,7 +103,6 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
         return true;
     }
 
-    @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     @Override
     public BlockFace getBlockFace() {

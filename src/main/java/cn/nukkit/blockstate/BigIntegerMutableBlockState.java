@@ -78,8 +78,6 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
         this.storage = state;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     @API(definition = INTERNAL, usage = INCUBATING)
     void setDataStorageWithoutValidation(Number storage) {

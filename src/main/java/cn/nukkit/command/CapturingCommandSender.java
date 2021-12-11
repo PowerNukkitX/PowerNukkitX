@@ -7,10 +7,9 @@ import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -23,11 +22,8 @@ public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 
     @NonNull
-    @Getter
-    @Setter
     private String name;
 
-    @Getter @Setter
     private boolean isOp;
     
     @NonNull
@@ -53,7 +49,28 @@ public class CapturingCommandSender implements CommandSender {
         this.isOp = true;
         this.perms = permissibleFactory.apply(this);
     }
-    
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @PowerNukkitOnly
+    public void setName(@Nonnull String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean isOp() {
+        return isOp;
+    }
+
+    @Override
+    public void setOp(boolean op) {
+        isOp = op;
+    }
+
     public void resetCapture() {
         captured.setLength(0);
     }

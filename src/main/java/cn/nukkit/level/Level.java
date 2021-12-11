@@ -322,14 +322,18 @@ public class Level implements ChunkManager, Metadatable {
         );
     }
 
-    @PowerNukkitOnly("Makes easier to create tests")
+    /**
+     * Easier constructor to create PowerNukkit tests.
+     */
     @Since("1.4.0.0-PN")
     Level(Server server, String name, File path, boolean usesChunkSection, LevelProvider provider) {
         this(server, name, path.getAbsolutePath()+"/", ()-> usesChunkSection, (lvl, p)-> provider);
     }
 
-    @PowerNukkitOnly("Makes easier to create tests")
-    @Since("1.4.0.0-PN")        
+    /**
+     * Easier constructor to create PowerNukkit tests.
+     */
+    @Since("1.4.0.0-PN")
     Level(Server server, String name, String path, BooleanSupplier usesChunkSection, BiFunction<Level, String, LevelProvider> provider) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);

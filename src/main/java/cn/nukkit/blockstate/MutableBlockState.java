@@ -35,8 +35,6 @@ public abstract class MutableBlockState implements IMutableBlockState {
         this.properties = properties;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @API(definition = INTERNAL, usage = INCUBATING)
     void setDataStorageWithoutValidation(Number storage) {
         setDataStorage(storage);

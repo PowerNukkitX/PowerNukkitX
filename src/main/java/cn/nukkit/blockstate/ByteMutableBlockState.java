@@ -132,8 +132,6 @@ public class ByteMutableBlockState extends MutableBlockState {
         this.storage = (byte)storage;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     @API(definition = INTERNAL, usage = INCUBATING)
     void setDataStorageWithoutValidation(Number storage) {

@@ -899,8 +899,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
     
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @Nullable
     private MutableBlockState mutableState;
     

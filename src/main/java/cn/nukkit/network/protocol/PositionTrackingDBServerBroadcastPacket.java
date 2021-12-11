@@ -25,8 +25,6 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.POS_TRACKING_SERVER_BROADCAST_PACKET;
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private static final Action[] ACTIONS = Action.values();
 
     private Action action;

@@ -126,7 +126,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             return sideEffectsArray;
         }
         return Arrays.stream(sideEffectsArray)
-                .map(SideEffect::clone)
+                .map(SideEffect::cloneSideEffect)
                 .toArray(SideEffect[]::new)
         ;
     }
@@ -136,7 +136,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     public void setSideEffects(@Nonnull SideEffect... sideEffects) {
         this.sideEffects = Arrays.stream(sideEffects)
                 .filter(Objects::nonNull)
-                .map(SideEffect::clone)
+                .map(SideEffect::cloneSideEffect)
                 .toArray(SideEffect[]::new)
         ;
     }
@@ -152,7 +152,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     public void addSideEffects(@Nonnull SideEffect... sideEffects) {
         Stream<SideEffect> safeStream = Arrays.stream(sideEffects)
                 .filter(Objects::nonNull)
-                .map(SideEffect::clone);
+                .map(SideEffect::cloneSideEffect);
 
         this.sideEffects = Stream.concat(Arrays.stream(this.sideEffects), safeStream).toArray(SideEffect[]::new);
     }

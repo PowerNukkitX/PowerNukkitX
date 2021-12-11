@@ -23,7 +23,7 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_EXPLODE = dynamic(6);
     public static final int TYPE_EVAPORATION = dynamic(7);
     public static final int TYPE_FLAME = dynamic(8);
-    @PowerNukkitOnly @Since("1.5.2.0-PN") public static final int TYPE_CANDLE_FLAME = dynamic(9);
+    @Since("1.5.2.0-PN") public static final int TYPE_CANDLE_FLAME = dynamic(9);
     public static final int TYPE_LAVA = dynamic(10);
     public static final int TYPE_LARGE_SMOKE = dynamic(11);
     public static final int TYPE_REDSTONE = dynamic(12);

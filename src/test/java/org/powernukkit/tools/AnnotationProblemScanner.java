@@ -2,11 +2,11 @@ package org.powernukkit.tools;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.HumanStringComparator;
 import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
 import io.netty.util.internal.EmptyArrays;
-import lombok.Getter;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import spoon.Launcher;
 import spoon.MavenLauncher;
@@ -14,6 +14,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.SpoonPom;
+import spoon.support.reflect.declaration.CtConstructorImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author joserobjr
@@ -49,22 +51,61 @@ public class AnnotationProblemScanner {
 
 
     private static boolean isApi(CtModifiable obj) {
-        return obj.isPublic() || obj.isProtected();
+        if (obj.isPublic() || obj.isProtected()) {
+            return true;
+        }
+        if (obj instanceof CtField<?>) {
+            CtType<?> declaringType = ((CtField<?>) obj).getDeclaringType();
+            String fieldName = ((CtField<?>) obj).getSimpleName();
+            fieldName = fieldName.substring(0, 1).toUpperCase(Locale.ENGLISH) + fieldName.substring(1);
+            CtMethod<?> getter = declaringType.getMethod("get" + fieldName);
+            if (getter == null || !getter.hasAnnotation(Generated.class) || !isApi(getter)) {
+                getter = declaringType.getMethod("is" + fieldName);
+            }
+            if (getter != null && getter.hasAnnotation(Generated.class) && isApi(getter)) {
+                return true;
+            }
+            CtMethod<?> setter = declaringType.getMethod("set" + fieldName, ((CtField<?>) obj).getType());
+            if (setter != null && setter.hasAnnotation(Generated.class)) {
+                return isApi(setter);
+            }
+        } else if (obj instanceof CtMethod<?> && obj.hasAnnotation(Generated.class)) {
+            if (((CtMethod<?>) obj).getSimpleName().equals("canEqual")) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPowerNukkitOnlyExecutable(CtTypedElement<?> powerNukkitExecutable, CtType<?> nukkitType) {
+        if (powerNukkitExecutable instanceof CtMethod<?>) {
+            return isPowerNukkitOnlyMethod((CtMethod<?>) powerNukkitExecutable, nukkitType);
+        } else {
+            return isPowerNukkitOnlyConstructor((CtConstructorImpl<?>) powerNukkitExecutable, nukkitType);
+        }
     }
 
     private boolean isPowerNukkitOnlyMethod(CtMethod<?> powerNukkitMethod, CtType<?> nukkitType) {
-        nukkitType = nukkitType == null? nukkitTypes.get(powerNukkitMethod.getDeclaringType().getQualifiedName()) : nukkitType;
+        String qualifiedName = powerNukkitMethod.getDeclaringType().getQualifiedName();
+        if (qualifiedName.startsWith("java.")) {
+            return false;
+        }
+        if (nukkitType == null) {
+            nukkitType = nukkitTypes.get(qualifiedName);
+        }
         if (nukkitType == null) {
             return true;
         }
         String name = powerNukkitMethod.getSimpleName();
         CtTypeReference<?>[] parameters = powerNukkitMethod.getParameters().stream().map(CtParameter::getType).toArray(CtTypeReference<?>[]::new);
-        if (nukkitType.getMethod(name, parameters) != null) {
-            return false;
+        CtMethod<?> nkMethod = nukkitType.getMethod(name, parameters);
+        if (nkMethod != null) {
+            return !isApi(nkMethod);
         }
 
         String[] parameterTypes = Arrays.stream(parameters).map(CtTypeInformation::getQualifiedName).toArray(String[]::new);
         return nukkitType.getAllMethods().stream()
+                        .filter(AnnotationProblemScanner::isApi)
                         .noneMatch(nukkitMethod ->
                                 name.equals(nukkitMethod.getSimpleName())
                                         && Arrays.equals(parameterTypes,
@@ -74,6 +115,32 @@ public class AnnotationProblemScanner {
                                                         .toArray(String[]::new)
                                         )
                         );
+    }
+
+    private boolean isPowerNukkitOnlyConstructor(CtConstructorImpl<?> constructor, CtType<?> nukkitType) {
+        if (nukkitType == null) {
+            nukkitType = nukkitTypes.get(constructor.getDeclaringType().getQualifiedName());
+        }
+        if (!(nukkitType instanceof CtClass<?>)) {
+            return true;
+        }
+        CtClass<?> nukkitClass = (CtClass<?>) nukkitType;
+        CtTypeReference<?>[] parameters = constructor.getParameters().stream().map(CtParameter::getType).toArray(CtTypeReference<?>[]::new);
+        CtConstructorImpl<?> nkConstructor = (CtConstructorImpl<?>) nukkitClass.getConstructor(parameters);
+        if (nkConstructor != null) {
+            return !isApi(nkConstructor);
+        }
+
+        String[] parameterTypes = Arrays.stream(parameters).map(CtTypeInformation::getQualifiedName).toArray(String[]::new);
+        return nukkitClass.getConstructors().stream()
+                .filter(AnnotationProblemScanner::isApi)
+                .noneMatch(nukkitConstructor -> Arrays.equals(parameterTypes,
+                                nukkitConstructor.getParameters().stream()
+                                        .map(CtParameter::getType)
+                                        .map(CtTypeInformation::getQualifiedName)
+                                        .toArray(String[]::new)
+                        )
+                );
     }
 
     @SneakyThrows
@@ -172,7 +239,9 @@ public class AnnotationProblemScanner {
                 .map(type-> checkType(type, nukkitTypes))
                 .peek(NeededClassChanges::close)
                 .filter(NeededClassChanges::isNotEmpty)
-                .collect(Collectors.toMap(NeededClassChanges::getName, Function.identity()));
+                .collect(Collectors.toMap(NeededClassChanges::getName, Function.identity(),
+                        (a,b)-> { throw new UnsupportedOperationException("Can't combine " + a + " with " + b); },
+                        ()-> new TreeMap<>(HumanStringComparator.getInstance())));
 
         Path jsonFile = Paths.get("dumps/needed-class-changes.json").toAbsolutePath().normalize();
         log.info("Creating ..." + jsonFile);
@@ -208,18 +277,21 @@ public class AnnotationProblemScanner {
 
         Set<CtMethod<?>> powerNukkitOnlyMethods = powerNukkitType.getMethods().stream()
                 .filter(AnnotationProblemScanner::isApi)
-                .filter(method -> method.getTopDefinitions().isEmpty()
+                .filter(method -> method.isStatic()
+                        || method.getTopDefinitions().isEmpty()
                         || method.getTopDefinitions().stream().allMatch(powerNukkitMethod -> isPowerNukkitOnlyMethod(powerNukkitMethod, null)))
                 .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
                 .collect(Collectors.toSet());
 
+        constructorStream(powerNukkitType)
+                .filter(it -> isApi((CtModifiable) it))
+                .forEachOrdered(method -> needsPowerNukkitOnly(neededClassChanges, method));
+
         powerNukkitType.getFields().stream()
-                .filter(AnnotationProblemScanner::isApi)
                 .filter(field -> !powerNukkitOnlyFields.contains(field))
                 .forEachOrdered(field -> dontNeedsPowerNukkitOnly(neededClassChanges, field));
 
         powerNukkitType.getMethods().stream()
-                .filter(AnnotationProblemScanner::isApi)
                 .filter(method-> !powerNukkitOnlyMethods.contains(method))
                 .forEachOrdered(method -> dontNeedsPowerNukkitOnly(neededClassChanges, method));
 
@@ -239,28 +311,35 @@ public class AnnotationProblemScanner {
 
         checkForMissingOverrides(neededClassChanges, powerNukkitType);
 
-        List<CtMethod<?>> powerNukkitOnlyMethods = powerNukkitType.getMethods().stream()
-                .filter(AnnotationProblemScanner::isApi)
-                .filter(powerNukkitMethod -> isPowerNukkitOnlyMethod(powerNukkitMethod, nukkitType))
-                .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
-                .collect(Collectors.toList());
+        List<CtTypedElement<?>> powerNukkitOnlyMethods =
+                Stream.concat(powerNukkitType.getMethods().stream(), constructorStream(powerNukkitType))
+                        .filter(it -> isApi((CtModifiable) it))
+                        .filter(powerNukkitMethod -> isPowerNukkitOnlyExecutable(powerNukkitMethod, nukkitType))
+                        .peek(method -> needsPowerNukkitOnly(neededClassChanges, method))
+                        .collect(Collectors.toList());
 
         powerNukkitType.getFields().stream()
-                .filter(AnnotationProblemScanner::isApi)
                 .filter(field -> !powerNukkitOnlyFields.contains(field))
                 .forEachOrdered(field -> dontNeedsPowerNukkitOnly(neededClassChanges, field));
 
-        powerNukkitType.getMethods().stream()
-                .filter(AnnotationProblemScanner::isApi)
+        Stream.concat(powerNukkitType.getMethods().stream(), constructorStream(powerNukkitType))
                 .filter(method-> !powerNukkitOnlyMethods.contains(method))
                 .forEachOrdered(method -> dontNeedsPowerNukkitOnly(neededClassChanges, method));
 
         return neededClassChanges;
     }
 
+    private Stream<CtTypedElement<?>> constructorStream(CtType<?> type) {
+        if (type instanceof CtClass<?>) {
+            return ((CtClass<?>) type).getConstructors().stream().map(it -> (CtTypedElement<?>) it);
+        } else {
+            return Stream.empty();
+        }
+    }
+
     private boolean compareFields(CtField<?> powerNukkitField, CtType<?> nukkitType) {
         CtField<?> nukkitField = nukkitType.getField(powerNukkitField.getSimpleName());
-        if (nukkitField == null) {
+        if (nukkitField == null || !isApi(nukkitField)) {
             return true;
         }
         CtTypeReference<?> nukkitFieldType = nukkitField.getType();
@@ -285,8 +364,10 @@ public class AnnotationProblemScanner {
     private void checkForMissingOverrides(NeededClassChanges neededClassChanges, CtType<?> powerNukkitType) {
         powerNukkitType.getMethods().stream()
                 .filter(AnnotationProblemScanner::isApi)
+                .filter(method -> !method.isStatic())
                 .filter(method -> !method.getTopDefinitions().isEmpty())
                 .filter(method -> !method.hasAnnotation(Override.class))
+                .filter(method -> !method.hasAnnotation(Generated.class))
                 .map(this::missingOverride)
                 .forEachOrdered(neededClassChanges.addOverrideAnnotation::add);
     }
@@ -298,12 +379,20 @@ public class AnnotationProblemScanner {
         return sig;
     }
 
-    private String methodString(CtMethod<?> method) {
-        return method.getDeclaringType().getQualifiedName() + "#" + method.getSimpleName()
+    private String methodString(CtTypedElement<?> method) {
+        return ((CtTypeMember) method).getDeclaringType().getQualifiedName() + "#" + ((CtNamedElement)method).getSimpleName()
                 + "("
-                + method.getParameters().stream()
+                + getParameters(method).stream()
                         .map(param -> param.getType().getSimpleName()).collect(Collectors.joining(", "))
                 + ")";
+    }
+
+    private List<CtParameter<?>> getParameters(CtTypedElement<?> method) {
+        if (method instanceof CtMethod<?>) {
+            return ((CtMethod<?>) method).getParameters();
+        } else {
+            return ((CtConstructorImpl<?>) method).getParameters();
+        }
     }
 
     private void needsPowerNukkitOnly(NeededClassChanges neededClassChanges, CtType<?> type) {
@@ -321,7 +410,7 @@ public class AnnotationProblemScanner {
         }
     }
 
-    private void needsPowerNukkitOnly(NeededClassChanges neededClassChanges, CtMethod<?> method) {
+    private void needsPowerNukkitOnly(NeededClassChanges neededClassChanges, CtTypedElement<?> method) {
         if (!method.hasAnnotation(PowerNukkitOnly.class)) {
             String sig = methodString(method);
             log.info(NEED_TO_ADD_POWERNUKKIT_ONLY + sig);
@@ -344,7 +433,7 @@ public class AnnotationProblemScanner {
         }
     }
 
-    private void dontNeedsPowerNukkitOnly(NeededClassChanges neededClassChanges, CtMethod<?> method) {
+    private void dontNeedsPowerNukkitOnly(NeededClassChanges neededClassChanges, CtTypedElement<?> method) {
         if (method.hasAnnotation(PowerNukkitOnly.class)) {
             String sig = methodString(method);
             log.info(NEED_TO_REMOVE_POWERNUKKIT_ONLY + sig);

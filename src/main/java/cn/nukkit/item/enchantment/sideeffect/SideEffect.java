@@ -26,7 +26,7 @@ public interface SideEffect extends Cloneable {
     }
 
     @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
+    @Since("FUTURE")
     @Nonnull
-    SideEffect clone();
+    SideEffect cloneSideEffect();
 }

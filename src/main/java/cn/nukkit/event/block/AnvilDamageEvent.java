@@ -142,7 +142,6 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this.newState = block.getCurrentState();
     }
 
-    @PowerNukkitOnly
     @Since("FUTURE")
     @Nonnull
     public DamageCause getCause() {

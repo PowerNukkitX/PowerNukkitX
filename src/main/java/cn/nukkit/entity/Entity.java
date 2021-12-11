@@ -130,7 +130,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_POTION_AUX_VALUE = dynamic(36); //short
     public static final int DATA_LEAD_HOLDER_EID = dynamic(37); //long
     public static final int DATA_SCALE = dynamic(38); //float
-    @PowerNukkitOnly @Since("1.2.0.0-PN") public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
+    @Since("1.2.0.0-PN") public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
     public static final int DATA_NPC_SKIN_ID = dynamic(40); //string
     public static final int DATA_URL_TAG = dynamic(41); //string
     public static final int DATA_MAX_AIR = dynamic(42); //short
@@ -218,11 +218,11 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.3.0.0-PN") public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
     @Since("1.3.0.0-PN") public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN") public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
+    @Since("1.5.0.0-PN") public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
     @Since("1.3.0.0-PN") public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
     @Since("1.4.0.0-PN") public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
-    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
+    @Since("1.5.0.0-PN") public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
 
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
@@ -333,7 +333,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.3.0.0-PN") public static final int DATA_FLAG_ADMIRING = dynamic(93);
     @Since("1.3.0.0-PN") public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
     @Since("1.4.0.0-PN") public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
-    @Since("1.5.0.0-PN") @PowerNukkitOnly public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
+    @Since("1.5.0.0-PN") public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
     public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
     public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
 

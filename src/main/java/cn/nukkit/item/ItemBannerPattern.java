@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.BannerPattern;
 
 @Since("1.2.1.0-PN")
-@PowerNukkitOnly
 public class ItemBannerPattern extends Item {
     @PowerNukkitOnly
     public static final int PATTERN_CREEPER_CHARGE = 0;
@@ -25,17 +24,14 @@ public class ItemBannerPattern extends Item {
     @PowerNukkitOnly
     public static final int PATTERN_BORDURE_INDENTED = 5;
 
-    @PowerNukkitOnly
     public ItemBannerPattern() {
         this(0, 1);
     }
 
-    @PowerNukkitOnly
     public ItemBannerPattern(Integer meta) {
         this(meta, 1);
     }
 
-    @PowerNukkitOnly
     public ItemBannerPattern(Integer meta, int count) {
         super(BANNER_PATTERN, meta, count, "Bone");
         updateName();

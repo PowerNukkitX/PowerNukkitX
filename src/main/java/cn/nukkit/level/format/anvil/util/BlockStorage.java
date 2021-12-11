@@ -68,7 +68,6 @@ public class BlockStorage {
         palette = new PalettedBlockStorage();
     }
 
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @API(definition = INTERNAL, usage = BLEEDING)
     BlockStorage(BlockState[] states, byte flags, PalettedBlockStorage palette, @Nullable BitSet denyStates) {
@@ -442,7 +441,6 @@ public class BlockStorage {
     }
 
     @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public BlockStorage copy() {
         BitSet deny = denyStates;
         return new BlockStorage(states.clone(), flags, palette.copy(), (BitSet) (deny != null? deny.clone() : null));

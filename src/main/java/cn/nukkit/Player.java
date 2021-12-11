@@ -239,8 +239,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private int noShieldTicks;
 
     protected AdventureSettings adventureSettings;
@@ -670,7 +668,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this(interfaz, clientID, uncheckedNewInetSocketAddress(ip, port));
     }
 
-    @PowerNukkitOnly
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;

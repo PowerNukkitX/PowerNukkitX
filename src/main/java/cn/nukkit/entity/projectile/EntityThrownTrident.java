@@ -6,8 +6,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
@@ -16,7 +14,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.MovingObjectPosition;
@@ -31,7 +28,6 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -46,41 +42,23 @@ public class EntityThrownTrident extends EntityProjectile {
 
     protected Item trident;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private Vector3 collisionPos;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private BlockVector3 stuckToBlockPos;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private int favoredSlot;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private boolean isCreative;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private boolean player;
 
     // Enchantment
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private int loyaltyLevel;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private boolean hasChanneling;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private int riptideLevel;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private int impalingLevel;
 
     // Default Values
@@ -88,12 +66,8 @@ public class EntityThrownTrident extends EntityProjectile {
 
     protected float drag = 0.01f;
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
 
     protected int pickupMode;

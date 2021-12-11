@@ -290,8 +290,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return false;
     }
 
-    @PowerNukkitOnly("Will calculate the correct AABB")
-    @Since("1.3.0.0-PN")
+    @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Will calculate the correct AABB")
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {

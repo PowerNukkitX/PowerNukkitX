@@ -185,7 +185,6 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean setBlock(int x, int y, int z, int blockId, int meta) {
         return this.setBlockAtLayer(x, y, z, 0, blockId, meta);
