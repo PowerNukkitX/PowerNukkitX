@@ -41,8 +41,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public boolean sticky;
 
-    public int state;
-    public int newState = 1;
+    @Since("FUTURE")
+    public byte state;
+
+    @Since("FUTURE")
+    public byte newState = 1;
 
     public List<BlockVector3> attachedBlocks;
 
@@ -160,7 +163,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public void move(boolean extending, List<BlockVector3> attachedBlocks) {
         this.extending = extending;
         this.lastProgress = this.progress = extending ? 0 : 1;
-        this.state = this.newState = extending ? 1 : 3;
+        this.state = this.newState = (byte) (extending ? 1 : 3);
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
         this.finished = false;
@@ -189,7 +192,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.moveCollidedEntities();
 
         if (this.progress == this.lastProgress) {
-            this.state = this.newState = extending ? 2 : 0;
+            this.state = this.newState = (byte) (extending ? 2 : 0);
 
             BlockFace pushDir = this.extending ? facing : facing.getOpposite();
 
