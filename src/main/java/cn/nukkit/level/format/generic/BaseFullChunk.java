@@ -269,7 +269,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         int max = getHighestBlockAt(x, z, false);
         int y;
         for (y = max; y >= 0; --y) {
-            if (Block.lightFilter[getBlockIdAt(x, y, z)] > 1 || Block.diffusesSkyLight[getBlockIdAt(x, y, z)]) {
+            if (Block.lightFilter(getBlockIdAt(x, y, z)) > 1 || Block.diffusesSkyLight(getBlockIdAt(x, y, z))) {
                 break;
             }
         }
@@ -339,14 +339,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                     // START of checks for the next block
                     int id = this.getBlockId(x, y, z);
 
-                    if (!Block.transparent[id]) { // if we encounter an opaque block, all the blocks under it will
+                    if (!Block.isTransparent(id)) { // if we encounter an opaque block, all the blocks under it will
                                            // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
                         nextLight = 0;
-                    } else if (Block.diffusesSkyLight[id]) {
+                    } else if (Block.diffusesSkyLight(id)) {
                         nextDecrease += 1; // skylight value decreases by one for each block under a block
                                            // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
                     } else {
-                        nextDecrease -= Block.lightFilter[id]; // blocks under a light filtering block will have a skylight value
+                        nextDecrease -= Block.lightFilter(id); // blocks under a light filtering block will have a skylight value
                                                             // decreased by the lightFilter value of that block. The block itself
                                                             // has a value of 15 (if it's a top-most block)
                     }

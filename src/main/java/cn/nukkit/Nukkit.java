@@ -1,5 +1,6 @@
 package cn.nukkit;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.ServerKiller;
@@ -53,7 +54,7 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    public final static String GIT_COMMIT = getGitCommit();
+    public @PowerNukkitOnly final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.13");
     public final static String CODENAME = dynamic("PowerNukkit");
     @Deprecated

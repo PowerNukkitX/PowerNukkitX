@@ -664,6 +664,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitOnly
     public Player(SourceInterface interfaz, Long clientID, String ip, int port) {
         this(interfaz, clientID, uncheckedNewInetSocketAddress(ip, port));
     }
@@ -4890,6 +4891,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         addExperience(add, false);
     }
 
+    @PowerNukkitOnly
     public void addExperience(int add, boolean playLevelUpSound) {
         if (add == 0) return;
         int now = this.getExperience();
@@ -4923,7 +4925,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
-
+    @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
         int levelBefore = this.expLevel;
         this.exp = exp;
@@ -6043,6 +6045,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitOnly
     @Override
     protected void onBlock(Entity entity, boolean animate) {
         super.onBlock(entity, animate);

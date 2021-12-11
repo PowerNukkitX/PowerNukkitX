@@ -140,7 +140,7 @@ public abstract class ObjectTree {
                     if (xOff == mid && zOff == mid && (yOff == 0 || random.nextBoundedInt(2) == 0)) {
                         continue;
                     }
-                    if (!Block.solid[level.getBlockIdAt(xx, yy, zz)]) {
+                    if (!Block.isSolid(level.getBlockIdAt(xx, yy, zz))) {
                         level.setBlockAt(xx, yy, zz, this.getLeafBlock(), this.getType());
                     }
                 }

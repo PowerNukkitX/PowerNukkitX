@@ -1170,8 +1170,6 @@
   "cn.nukkit.blockentity.BlockEntityPistonArm": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.blockentity.BlockEntityPistonArm#MOVE_STEP",
-      "cn.nukkit.blockentity.BlockEntityPistonArm#state",
-      "cn.nukkit.blockentity.BlockEntityPistonArm#newState",
       "cn.nukkit.blockentity.BlockEntityPistonArm#attachedBlocks",
       "cn.nukkit.blockentity.BlockEntityPistonArm#move(boolean, List)"
     ]
@@ -1252,7 +1250,6 @@
   "cn.nukkit.blockstate.BigIntegerMutableBlockState": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.blockstate.BigIntegerMutableBlockState",
-      "cn.nukkit.blockstate.BigIntegerMutableBlockState#canEqual(Object)",
       "cn.nukkit.blockstate.BigIntegerMutableBlockState#copy()",
       "cn.nukkit.blockstate.BigIntegerMutableBlockState#getBigDamage()",
       "cn.nukkit.blockstate.BigIntegerMutableBlockState#getBooleanValue(String)",
@@ -1302,7 +1299,6 @@
   },
   "cn.nukkit.blockstate.ByteMutableBlockState": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.blockstate.ByteMutableBlockState#canEqual(Object)",
       "cn.nukkit.blockstate.ByteMutableBlockState#copy()",
       "cn.nukkit.blockstate.ByteMutableBlockState#getBigDamage()",
       "cn.nukkit.blockstate.ByteMutableBlockState#getBooleanValue(String)",
@@ -1322,7 +1318,6 @@
   },
   "cn.nukkit.blockstate.IntMutableBlockState": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.blockstate.IntMutableBlockState#canEqual(Object)",
       "cn.nukkit.blockstate.IntMutableBlockState#copy()",
       "cn.nukkit.blockstate.IntMutableBlockState#getBigDamage()",
       "cn.nukkit.blockstate.IntMutableBlockState#getBooleanValue(String)",
@@ -1337,7 +1332,6 @@
   },
   "cn.nukkit.blockstate.LongMutableBlockState": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.blockstate.LongMutableBlockState#canEqual(Object)",
       "cn.nukkit.blockstate.LongMutableBlockState#copy()",
       "cn.nukkit.blockstate.LongMutableBlockState#getBigDamage()",
       "cn.nukkit.blockstate.LongMutableBlockState#getBooleanValue(String)",
@@ -1352,7 +1346,6 @@
   },
   "cn.nukkit.blockstate.MutableBlockState": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.blockstate.MutableBlockState#canEqual(Object)",
       "cn.nukkit.blockstate.MutableBlockState#getBigId()",
       "cn.nukkit.blockstate.MutableBlockState#getBitSize()",
       "cn.nukkit.blockstate.MutableBlockState#getBlockId()",
@@ -1475,11 +1468,6 @@
       "cn.nukkit.entity.EntityLiving#isBlocking()",
       "cn.nukkit.entity.EntityLiving#onBlock(Entity, boolean)",
       "cn.nukkit.entity.EntityLiving#setBlocking(boolean)"
-    ]
-  },
-  "cn.nukkit.entity.data.Skin": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.entity.data.Skin#canEqual(Object)"
     ]
   },
   "cn.nukkit.entity.item.EntityExpBottle": {
@@ -1844,7 +1832,6 @@
   },
   "cn.nukkit.inventory.transaction.CraftingTransaction": {
     "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.inventory.transaction.CraftingTransaction#recipe",
       "cn.nukkit.inventory.transaction.CraftingTransaction#craftingType"
     ]
   },
@@ -2383,11 +2370,6 @@
       "cn.nukkit.network.protocol.AnimateEntityPacket#<init>()"
     ]
   },
-  "cn.nukkit.network.protocol.CraftingEventPacket": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.network.protocol.CraftingEventPacket#canEqual(Object)"
-    ]
-  },
   "cn.nukkit.network.protocol.DataPacket": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.network.protocol.DataPacket#EMPTY_ARRAY"
@@ -2446,31 +2428,6 @@
   "cn.nukkit.utils.HumanStringComparator": {
     "addPowerNukkitOnlyAnnotation": [
       "cn.nukkit.utils.HumanStringComparator#<init>()"
-    ]
-  },
-  "cn.nukkit.utils.InvalidBlockDamageException": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.utils.InvalidBlockDamageException#canEqual(Object)"
-    ]
-  },
-  "cn.nukkit.utils.PersonaPiece": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.utils.PersonaPiece#canEqual(Object)"
-    ]
-  },
-  "cn.nukkit.utils.PersonaPieceTint": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.utils.PersonaPieceTint#canEqual(Object)"
-    ]
-  },
-  "cn.nukkit.utils.SerializedImage": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.utils.SerializedImage#canEqual(Object)"
-    ]
-  },
-  "cn.nukkit.utils.SkinAnimation": {
-    "addPowerNukkitOnlyAnnotation": [
-      "cn.nukkit.utils.SkinAnimation#canEqual(Object)"
     ]
   }
 }

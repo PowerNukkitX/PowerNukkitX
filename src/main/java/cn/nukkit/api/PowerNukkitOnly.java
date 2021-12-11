@@ -13,5 +13,6 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 public @interface PowerNukkitOnly {
+    @PowerNukkitOnly
     String value() default "";
 }

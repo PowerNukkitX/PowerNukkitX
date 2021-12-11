@@ -15,5 +15,6 @@ public @interface Since {
     /**
      * The version which added the element.
      */
+    @PowerNukkitOnly
     String value();
 }

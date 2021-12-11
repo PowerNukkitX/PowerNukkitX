@@ -97,39 +97,35 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getLightLevel()")
+            replaceWith = "Block.getLightLevel() or Block.light(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
     public static int[] light = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN", 
-            replaceWith = "Block.getLightFilter()")
+            replaceWith = "Block.getLightFilter() or Block.lightFilter(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
     public static int[] lightFilter = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.isSolid()")
+            replaceWith = "Block.isSolid() or Block.isSolid(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
     public static boolean[] solid = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getHardness()")
+            replaceWith = "Block.getHardness() or Block.hardness(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
     public static double[] hardness = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.isTransparent()")
+            replaceWith = "Block.isTransparent() or Block.isTransparent(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
     public static boolean[] transparent = null;
 
-    @Deprecated
-    @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.diffusesSkyLight()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
-    public static boolean[] diffusesSkyLight = null;
+    private static boolean[] diffusesSkyLight = null;
     
     /**
      * if a block has can have variants
@@ -788,6 +784,60 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return block;
     }
     //</editor-fold>
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static boolean isSolid(int blockId) {
+        if (blockId < 0 || blockId >= solid.length) {
+            return true;
+        }
+        return solid[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static boolean diffusesSkyLight(int blockId) {
+        if (blockId < 0 || blockId >= diffusesSkyLight.length) {
+            return false;
+        }
+        return diffusesSkyLight[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static double hardness(int blockId) {
+        if (blockId < 0 || blockId >= light.length) {
+            return Double.MAX_VALUE;
+        }
+        return hardness[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static int light(int blockId) {
+        if (blockId < 0 || blockId >= light.length) {
+            return 0;
+        }
+        return light[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static int lightFilter(int blockId) {
+        if (blockId < 0 || blockId >= lightFilter.length) {
+            return 15;
+        }
+        return lightFilter[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static boolean isTransparent(int blockId) {
+        if (blockId < 0 || blockId >= transparent.length) {
+            return false;
+        }
+        return transparent[blockId];
+    }
 
     /**
      * Register a new block implementation overriding the existing one.

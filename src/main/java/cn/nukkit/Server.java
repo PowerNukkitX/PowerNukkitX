@@ -1490,6 +1490,7 @@ public class Server {
         return Nukkit.VERSION;
     }
 
+    @PowerNukkitOnly
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
@@ -2273,10 +2274,12 @@ public class Server {
         return forceLanguage;
     }
 
+    @PowerNukkitOnly
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
     }
 
+    @PowerNukkitOnly
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
     }
