@@ -207,10 +207,12 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         return false;
     }
 
+    @PowerNukkitOnly
     public int getGrowthStage() {
         return this.getDamage() / 4;
     }
 
+    @PowerNukkitOnly
     public boolean grow() {
         Block block = this.clone();
         block.setDamage(block.getDamage() + 4);

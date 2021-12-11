@@ -50,6 +50,7 @@ public class BlockSlabStone3 extends BlockSlab {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
@@ -68,6 +69,7 @@ public class BlockSlabStone3 extends BlockSlab {
     }
 
 
+    @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId() && getSlabType().equals(slab.getPropertyValue(StoneSlab3Type.PROPERTY));

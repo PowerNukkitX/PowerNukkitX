@@ -111,11 +111,13 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     public boolean isEmpty() {
         return getFillLevel() == FILL_LEVEL.getMinValue();
     }
-    
+
+    @PowerNukkitOnly
     public int getFillLevel() {
         return getIntValue(FILL_LEVEL);
     }
-    
+
+    @PowerNukkitOnly
     public void setFillLevel(int fillLevel) {
         setIntValue(FILL_LEVEL, fillLevel);
     }

@@ -51,6 +51,7 @@ public class BlockDropper extends BlockDispenser {
         return BlockEntity.DROPPER;
     }
 
+    @PowerNukkitOnly
     @Override
     public void dispense() {
         super.dispense();

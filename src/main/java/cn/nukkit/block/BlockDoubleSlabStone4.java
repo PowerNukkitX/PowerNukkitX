@@ -52,6 +52,7 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
         setPropertyValue(StoneSlab4Type.PROPERTY, type);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
@@ -72,6 +73,7 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabBase {
         return ItemTool.TYPE_PICKAXE;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getSingleSlabId() {
         return STONE_SLAB4;

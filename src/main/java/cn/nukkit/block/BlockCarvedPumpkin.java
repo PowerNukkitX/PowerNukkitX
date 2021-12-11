@@ -9,6 +9,10 @@ import javax.annotation.Nonnull;
 @PowerNukkitOnly
 public class BlockCarvedPumpkin extends BlockPumpkin {
 
+    @PowerNukkitOnly
+    public BlockCarvedPumpkin() {
+    }
+
     @Override
     public int getId() {
         return CARVED_PUMPKIN;

@@ -109,6 +109,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
         return getDyeColor().getColor();
     }
 
+    @PowerNukkitOnly
     public DyeColor getDyeColor() {
         return getPropertyValue(CommonBlockProperties.COLOR);
     }

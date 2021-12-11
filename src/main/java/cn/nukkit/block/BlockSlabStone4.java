@@ -59,11 +59,13 @@ public class BlockSlabStone4 extends BlockSlab {
         setPropertyValue(StoneSlab4Type.PROPERTY, type);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId() && getSlabType().equals(slab.getPropertyValue(StoneSlab4Type.PROPERTY));

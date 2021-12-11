@@ -23,6 +23,7 @@ public class BlockDoubleSlabBlackstone extends BlockDoubleSlabBase {
         super(meta);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Double Blackstone Slab";
@@ -56,6 +57,7 @@ public class BlockDoubleSlabBlackstone extends BlockDoubleSlabBase {
         return ItemTool.TYPE_PICKAXE;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getSingleSlabId() {
         return BLACKSTONE_SLAB;

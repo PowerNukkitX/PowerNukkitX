@@ -447,12 +447,14 @@ public class BlockBell extends BlockTransparentMeta implements RedstoneComponent
     
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values.", replaceWith = "getAttachment()")
+    @PowerNukkitOnly
     public int getAttachmentType() {
         return getAttachment().ordinal();
     }
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic values.", replaceWith = "setAttachment(AttachmentType)")
+    @PowerNukkitOnly
     public void setAttachmentType(int attachmentType) {
         setAttachment(AttachmentType.values()[attachmentType]);
     }
