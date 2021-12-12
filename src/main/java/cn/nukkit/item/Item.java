@@ -598,18 +598,22 @@ public class Item implements Cloneable, BlockID, ItemID {
         return -1;
     }
 
+    @PowerNukkitOnly
     public static Item getBlock(int id) {
         return getBlock(id, 0);
     }
 
+    @PowerNukkitOnly
     public static Item getBlock(int id, Integer meta) {
         return getBlock(id, meta, 1);
     }
 
+    @PowerNukkitOnly
     public static Item getBlock(int id, Integer meta, int count) {
         return getBlock(id, meta, count, EmptyArrays.EMPTY_BYTES);
     }
 
+    @PowerNukkitOnly
     public static Item getBlock(int id, Integer meta, int count, byte[] tags) {
         if (id > 255) {
             id = 255 - id;
@@ -1546,6 +1550,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * Same as {@link #equals(Item, boolean)} but the enchantment order of the items does not affect the result.
      * @since 1.2.1.0-PN
      */
+    @PowerNukkitOnly
+    @Since("1.2.1.0-PN")
     public final boolean equalsIgnoringEnchantmentOrder(Item item, boolean checkDamage) {
         if (!this.equals(item, checkDamage, false)) {
             return false;

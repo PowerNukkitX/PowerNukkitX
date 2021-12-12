@@ -45,11 +45,13 @@ public class EntityWitherSkeleton extends EntityMob implements EntitySmite {
         return "Wither Skeleton";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

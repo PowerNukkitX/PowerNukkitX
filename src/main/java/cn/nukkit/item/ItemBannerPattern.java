@@ -71,6 +71,7 @@ public class ItemBannerPattern extends Item {
         }
     }
 
+    @PowerNukkitOnly
     protected void updateName() {
         if (getId() != BANNER_PATTERN) {
             return;

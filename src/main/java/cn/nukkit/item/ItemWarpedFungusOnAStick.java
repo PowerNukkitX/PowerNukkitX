@@ -18,6 +18,7 @@
 
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
 /**
@@ -56,6 +57,7 @@ public class ItemWarpedFungusOnAStick extends ItemTool {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean damageWhenBreaking() {
         return false;

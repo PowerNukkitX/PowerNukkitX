@@ -66,7 +66,7 @@ public class EntityFallingBlock extends Entity {
 
     protected int blockId;
     protected int damage;
-    protected boolean breakOnLava;
+    protected @PowerNukkitOnly boolean breakOnLava;
 
     public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

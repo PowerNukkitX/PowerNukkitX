@@ -51,10 +51,12 @@ public class EntityTurtle extends EntityAnimal {
         this.setMaxHealth(30);
     }
 
+    @PowerNukkitOnly
     public void setBreedingAge(int ticks) {
 
     }
 
+    @PowerNukkitOnly
     public void setHomePos(Vector3 pos) {
 
     }

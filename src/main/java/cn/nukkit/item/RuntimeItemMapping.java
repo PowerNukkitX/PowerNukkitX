@@ -38,6 +38,7 @@ public class RuntimeItemMapping {
     private final Int2ObjectMap<String> networkNamespaceMap;
 
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     public RuntimeItemMapping(byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap) {
         this.itemDataPalette = itemDataPalette;
         this.legacyNetworkMap = legacyNetworkMap;
@@ -71,6 +72,7 @@ public class RuntimeItemMapping {
      * @return The <b>network id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getNetworkFullId(Item item) {
         int fullId = RuntimeItems.getFullId(item.getId(), item.hasMeta() ? item.getDamage() : -1);
@@ -94,6 +96,7 @@ public class RuntimeItemMapping {
      * @return The <b>full id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getLegacyFullId(int networkId) {
         int fullId = networkLegacyMap.get(networkId);
@@ -103,6 +106,7 @@ public class RuntimeItemMapping {
         return fullId;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public byte[] getItemDataPalette() {
         return this.itemDataPalette;

@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSignPost;
@@ -17,6 +18,7 @@ public class ItemSign extends Item {
         this(meta, 1);
     }
 
+    @PowerNukkitOnly
     protected ItemSign(int id, Integer meta, int count, String name, BlockSignPost block) {
         super(id, meta, count, name);
         this.block = block;

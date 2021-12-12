@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.Vector3;
 
 /**
@@ -52,6 +53,7 @@ public class ItemFishingRod extends ItemTool {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean damageWhenBreaking() {
         return false;

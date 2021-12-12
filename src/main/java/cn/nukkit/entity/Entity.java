@@ -1887,6 +1887,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    @PowerNukkitOnly
     public boolean canBePushed() {
         return true;
     }
@@ -2063,6 +2064,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    @PowerNukkitOnly
     public void onPushByPiston(BlockEntityPistonArm piston) {
 
     }
@@ -2111,6 +2113,7 @@ public abstract class Entity extends Location implements Metadatable {
         return new Location(this.x, this.y, this.z, this.yaw, this.pitch, this.headYaw, this.level);
     }
 
+    @PowerNukkitOnly
     public boolean isTouchingWater() {
         return hasWaterAt(0) || hasWaterAt(this.getEyeHeight());
     }
@@ -2865,6 +2868,7 @@ public abstract class Entity extends Location implements Metadatable {
         return server;
     }
 
+    @PowerNukkitOnly
     public boolean isUndead() {
         return false;
     }

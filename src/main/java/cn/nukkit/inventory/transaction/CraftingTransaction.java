@@ -40,6 +40,7 @@ public class CraftingTransaction extends InventoryTransaction {
 
     private Recipe transactionRecipe;
 
+    @PowerNukkitOnly
     protected int craftingType;
     
     private boolean readyToExecute;

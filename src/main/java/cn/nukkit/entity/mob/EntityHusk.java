@@ -46,11 +46,13 @@ public class EntityHusk extends EntityMob implements EntitySmite {
         return "Husk";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

@@ -79,6 +79,7 @@ public class LongMutableBlockState extends MutableBlockState {
         this.storage = storage.longValue();
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
         validate(storage);
@@ -114,6 +115,7 @@ public class LongMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getLegacyDamage() {
         return (int) (storage & Block.DATA_MASK);
     }

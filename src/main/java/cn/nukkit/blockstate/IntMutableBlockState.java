@@ -48,6 +48,7 @@ public class IntMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getLegacyDamage() {
         return storage & Block.DATA_MASK;
     }

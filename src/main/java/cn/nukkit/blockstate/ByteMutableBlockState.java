@@ -218,6 +218,7 @@ public class ByteMutableBlockState extends MutableBlockState {
         return properties.getBooleanValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public String getPersistenceValue(String propertyName) {

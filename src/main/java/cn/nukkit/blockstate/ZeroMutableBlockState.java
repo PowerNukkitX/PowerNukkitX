@@ -51,6 +51,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
         state = BlockState.of(blockId);
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
     }

@@ -70,7 +70,8 @@ public class EntityEgg extends EntityProjectile {
 
         return hasUpdate;
     }
-    
+
+    @PowerNukkitOnly
     @Override
     protected void addHitEffect() {
         int particles = ThreadLocalRandom.current().nextInt(10) + 5;

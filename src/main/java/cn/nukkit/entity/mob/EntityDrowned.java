@@ -52,11 +52,13 @@ public class EntityDrowned extends EntityMob implements EntitySmite {
         return new Item[]{Item.get(Item.ROTTEN_FLESH)};
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

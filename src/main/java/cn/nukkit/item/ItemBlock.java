@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
@@ -71,6 +72,7 @@ public class ItemBlock extends Item {
         return this.block;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return block.isLavaResistant();

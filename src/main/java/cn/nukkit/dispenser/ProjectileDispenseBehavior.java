@@ -51,10 +51,12 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         return null;
     }
 
+    @PowerNukkitOnly
     protected double getMotion() {
         return 1.1;
     }
 
+    @PowerNukkitOnly
     protected float getAccuracy() {
         return 6;
     }

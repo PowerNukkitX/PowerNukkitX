@@ -45,6 +45,7 @@ public class EntityPiglinBrute extends EntityMob {
         return 1.9f;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

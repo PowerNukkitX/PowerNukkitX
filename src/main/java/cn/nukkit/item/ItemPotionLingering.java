@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public class ItemPotionLingering extends ProjectileItem {
@@ -25,17 +26,22 @@ public class ItemPotionLingering extends ProjectileItem {
     public boolean canBeActivated() {
         return true;
     }
-    
+
+    @PowerNukkitOnly
+
     @Override
     public String getProjectileEntityType() {
         return "LingeringPotion";
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public float getThrowForce() {
         return 0.5f;
     }
-    
+
+    @PowerNukkitOnly
+
     @Override
     protected void correctNBT(CompoundTag nbt) {
         nbt.putInt("PotionId", this.meta);

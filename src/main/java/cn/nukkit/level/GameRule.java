@@ -44,7 +44,7 @@ public enum GameRule {
     
     SPAWN_RADIUS("spawnRadius"),
     TNT_EXPLODES("tntExplodes"),
-    EXPERIMENTAL_GAMEPLAY("experimentalGameplay"),
+    @PowerNukkitOnly EXPERIMENTAL_GAMEPLAY("experimentalGameplay"),
     SHOW_TAGS("showTags");
 
     private final String name;

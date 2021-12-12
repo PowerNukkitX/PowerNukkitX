@@ -46,6 +46,7 @@ public class EntitySilverfish extends EntityMob implements EntityArthropod {
         this.setMaxHealth(8);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

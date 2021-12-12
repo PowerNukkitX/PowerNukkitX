@@ -609,7 +609,8 @@ public class CraftingManager {
 
         recipe.registerToCraftingManager(this);
     }
-    
+
+    @PowerNukkitOnly
     public void registerCartographyRecipe(CartographyRecipe recipe) {
         List<Item> list = recipe.getIngredientList();
         list.sort(recipeComparator);

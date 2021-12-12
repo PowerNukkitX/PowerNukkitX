@@ -48,11 +48,13 @@ public class EntityPiglin extends EntityMob implements EntityAgeable {
         return "Piglin";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isBaby() {
         return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return !this.isBaby()/*TODO: Should this check player's golden armor?*/;

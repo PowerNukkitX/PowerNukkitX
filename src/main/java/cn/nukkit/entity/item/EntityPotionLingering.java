@@ -33,6 +33,7 @@ public class EntityPotionLingering extends EntityPotion {
         setDataFlag(DATA_FLAGS, DATA_FLAG_LINGER, true);
     }
 
+    @PowerNukkitOnly
     @Override
     protected void splash(Entity collidedWith) {
         super.splash(collidedWith);

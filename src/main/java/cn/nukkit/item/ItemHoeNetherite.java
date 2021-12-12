@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
 @Since("1.4.0.0-PN")
@@ -39,7 +40,8 @@ public class ItemHoeNetherite extends ItemTool {
     public int getMaxDurability() {
         return ItemTool.DURABILITY_NETHERITE;
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return true;

@@ -45,6 +45,7 @@ public class EntityEnderman extends EntityMob {
         return "Enderman";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);

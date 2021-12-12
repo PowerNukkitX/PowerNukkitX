@@ -45,6 +45,7 @@ public class EntityWitch extends EntityMob {
         return "Witch";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

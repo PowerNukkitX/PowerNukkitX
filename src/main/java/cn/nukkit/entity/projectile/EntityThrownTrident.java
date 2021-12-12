@@ -62,8 +62,10 @@ public class EntityThrownTrident extends EntityProjectile {
     private int impalingLevel;
 
     // Default Values
+    @PowerNukkitOnly
     protected float gravity = 0.04f;
 
+    @PowerNukkitOnly
     protected float drag = 0.01f;
 
     private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
@@ -219,14 +221,17 @@ public class EntityThrownTrident extends EntityProjectile {
         this.impalingLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_IMPALING);
     }
 
+    @PowerNukkitOnly
     public void setCritical() {
         this.setCritical(true);
     }
 
+    @PowerNukkitOnly
     public void setCritical(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
     }
 
+    @PowerNukkitOnly
     public boolean isCritical() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
     }
@@ -353,6 +358,7 @@ public class EntityThrownTrident extends EntityProjectile {
         }
     }
 
+    @PowerNukkitOnly
     public Entity create(Object type, Position source, Object... args) {
         FullChunk chunk = source.getLevel().getChunk((int) source.x >> 4, (int) source.z >> 4);
         if (chunk == null) return null;

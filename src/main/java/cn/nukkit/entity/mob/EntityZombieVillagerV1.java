@@ -45,6 +45,7 @@ public class EntityZombieVillagerV1 extends EntityMob implements EntitySmite {
         return "Zombie Villager";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;

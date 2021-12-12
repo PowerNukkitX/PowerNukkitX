@@ -7,6 +7,7 @@ import cn.nukkit.level.Position;
 
 @PowerNukkitOnly
 public class StonecutterInventory extends FakeBlockUIComponent {
+    @PowerNukkitOnly
     public StonecutterInventory(PlayerUIInventory playerUI, Position position) {
         super(playerUI, InventoryType.STONECUTTER, 3, position);
     }

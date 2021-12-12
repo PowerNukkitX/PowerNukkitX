@@ -99,6 +99,7 @@ public class EntityCreeper extends EntityMob {
         return Item.EMPTY_ARRAY;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
