@@ -39,6 +39,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityThrownTrident extends EntityProjectile {
 
     public static final int NETWORK_ID = 73;
+    private static final String TAG_PICKUP = "pickup";
+    private static final String TAG_TRIDENT = "Trident";
+    private static final String NAME_TRIDENT = "Trident";
 
     protected Item trident;
 
@@ -122,21 +125,21 @@ public class EntityThrownTrident extends EntityProjectile {
     @Since("1.5.1.0-PN")
     @Override
     public String getOriginalName() {
-        return "Trident";
+        return NAME_TRIDENT;
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
 
-        this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(0);
-        this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
+        this.trident = namedTag.contains(TAG_TRIDENT) ? NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT)) : Item.get(0);
+        this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
         this.closeOnCollide = false;
 
         this.hasAge = false;
 
-        if (namedTag.contains("Trident")) {
-            this.trident = NBTIO.getItemHelper(namedTag.getCompound("Trident"));
+        if (namedTag.contains(TAG_TRIDENT)) {
+            this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
             this.loyaltyLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_LOYALTY);
             this.hasChanneling = this.trident.hasEnchantment(Enchantment.ID_TRIDENT_CHANNELING);
             this.riptideLevel = this.trident.getEnchantmentLevel(Enchantment.ID_TRIDENT_RIPTIDE);
@@ -159,14 +162,14 @@ public class EntityThrownTrident extends EntityProjectile {
             ListTag<DoubleTag> collisionPosList = this.namedTag.getList("CollisionPos", DoubleTag.class);
             collisionPos = new Vector3(collisionPosList.get(0).data, collisionPosList.get(1).data, collisionPosList.get(2).data);
         } else {
-            collisionPos = this.defaultCollisionPos.clone();
+            collisionPos = defaultCollisionPos.clone();
         }
 
         if (namedTag.contains("StuckToBlockPos")) {
             ListTag<IntTag> stuckToBlockPosList = this.namedTag.getList("StuckToBlockPos", IntTag.class);
             stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0).data, stuckToBlockPosList.get(1).data, stuckToBlockPosList.get(2).data);
         } else {
-            stuckToBlockPos = this.defaultStuckToBlockPos.clone();
+            stuckToBlockPos = defaultStuckToBlockPos.clone();
         }
 
         if (namedTag.contains("favoredSlot")) {
@@ -192,8 +195,8 @@ public class EntityThrownTrident extends EntityProjectile {
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.put("Trident", NBTIO.putItemHelper(this.trident));
-        this.namedTag.putByte("pickup", this.pickupMode);
+        this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
+        this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
         this.namedTag.putList(new ListTag<DoubleTag>("CollisionPos")
             .add(new DoubleTag("0", this.collisionPos.x))
             .add(new DoubleTag("1", this.collisionPos.y))

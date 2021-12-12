@@ -14,6 +14,7 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public SpawnEggDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

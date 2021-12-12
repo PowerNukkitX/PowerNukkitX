@@ -17,6 +17,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public BoatDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

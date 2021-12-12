@@ -782,7 +782,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setButtonText(String text) {
         this.buttonText = text;
-        this.setDataProperty(new StringEntityData(Entity.DATA_INTERACT_TEXT, this.buttonText));
+        this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, this.buttonText));
     }
 
     public void unloadChunk(int x, int z) {
@@ -1830,6 +1830,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    private void logTriedToSetButHadInHand(Item tried, Item had) {
+        log.debug("Tried to set item {} but {} had item {} in their hand slot", tried.getId(), this.username, had.getId());
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
@@ -2318,7 +2322,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET) {
-            server.getLogger().warning("Ignoring " + packet.getClass().getSimpleName() + " from " + getAddress() + " due to player not verified yet");
+            log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
             }
@@ -2577,7 +2581,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     EmotePacket emotePacket = (EmotePacket) packet;
                     if (emotePacket.runtimeId != this.id) {
-                        server.getLogger().warning(this.username + " sent EmotePacket with invalid entity id: " + emotePacket.runtimeId + " != " + this.id);
+                        log.warn("{} sent EmotePacket with invalid entity id: {} != {}", this.username, emotePacket.runtimeId, this.id);
                         return;
                     }
                     for (Player viewer : this.getViewers().values()) {
@@ -3709,7 +3713,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                                     if (oldItem.getId() == i.getId() || i.getId() == 0) {
                                                         inventory.setItemInHand(i);
                                                     } else {
-                                                        server.getLogger().debug("Tried to set item " + i.getId() + " but " + this.username + " had item " + oldItem.getId() + " in their hand slot");
+                                                        logTriedToSetButHadInHand(i, oldItem);
                                                     }
                                                     inventory.sendHeldItem(this.getViewers().values());
                                                 }
@@ -3748,7 +3752,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                                 if (oldItem.getId() == i.getId() || i.getId() == 0) {
                                                     inventory.setItemInHand(i);
                                                 } else {
-                                                    server.getLogger().debug("Tried to set item " + i.getId() + " but " + this.username + " had item " + oldItem.getId() + " in their hand slot");
+                                                    logTriedToSetButHadInHand(i, oldItem);
                                                 }
                                                 inventory.sendHeldItem(this.getViewers().values());
                                             }
@@ -3795,7 +3799,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             if (item.getId() == 0 || this.inventory.getItemInHand().getId() == item.getId()) {
                                                 this.inventory.setItemInHand(item);
                                             } else {
-                                                server.getLogger().debug("Tried to set item " + item.getId() + " but " + this.username + " had item " + this.inventory.getItemInHand().getId() + " in their hand slot");
+                                                logTriedToSetButHadInHand(item, this.inventory.getItemInHand());
                                             }
                                         }
 
@@ -3861,7 +3865,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         if (item.getId() == 0 || this.inventory.getItemInHand().getId() == item.getId()) {
                                             this.inventory.setItemInHand(item);
                                         } else {
-                                            server.getLogger().debug("Tried to set item " + item.getId() + " but " + this.username + " had item " + this.inventory.getItemInHand().getId() + " in their hand slot");
+                                            logTriedToSetButHadInHand(item, this.inventory.getItemInHand());
                                         }
                                     }
                                     break;
@@ -3939,7 +3943,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             if (item.getId() == 0 || this.inventory.getItemInHand().getId() == item.getId()) {
                                                 this.inventory.setItemInHand(item);
                                             } else {
-                                                server.getLogger().debug("Tried to set item " + item.getId() + " but " + this.username + " had item " + this.inventory.getItemInHand().getId() + " in their hand slot");
+                                                logTriedToSetButHadInHand(item, this.inventory.getItemInHand());
                                             }
                                         }
                                     }
@@ -4635,9 +4639,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
                         int id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
-                        if (id == Block.CACTUS) {
+                        if (id == BlockID.CACTUS) {
                             message = "death.attack.cactus";
-                        } else if (id == Block.ANVIL) {
+                        } else if (id == BlockID.ANVIL) {
                             message = "death.attack.anvil";
                         }
                     }
@@ -5800,7 +5804,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(inventory, (EntityArrow) entity);
 
                 int pickupMode = ((EntityArrow) entity).getPickupMode();
-                if (pickupMode == EntityArrow.PICKUP_NONE || (pickupMode == EntityArrow.PICKUP_CREATIVE && !this.isCreative())) {
+                if (pickupMode == EntityProjectile.PICKUP_NONE || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
                     ev.setCancelled();
                 }
 
@@ -5844,7 +5848,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 InventoryPickupTridentEvent ev = new InventoryPickupTridentEvent(this.inventory, (EntityThrownTrident) entity);
 
                 int pickupMode = ((EntityThrownTrident) entity).getPickupMode();
-                if (pickupMode == EntityThrownTrident.PICKUP_NONE || (pickupMode == EntityThrownTrident.PICKUP_CREATIVE && !this.isCreative())) {
+                if (pickupMode == EntityProjectile.PICKUP_NONE || (pickupMode == EntityProjectile.PICKUP_CREATIVE && !this.isCreative())) {
                     ev.setCancelled();
                 }
 

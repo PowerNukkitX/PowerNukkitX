@@ -14,6 +14,7 @@ public class DropperDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public DropperDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

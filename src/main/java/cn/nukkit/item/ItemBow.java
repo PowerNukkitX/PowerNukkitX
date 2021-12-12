@@ -118,7 +118,7 @@ public class ItemBow extends ItemTool {
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
-                ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);
+                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
             }
             if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {

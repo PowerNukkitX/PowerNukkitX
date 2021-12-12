@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol.types;
 
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 

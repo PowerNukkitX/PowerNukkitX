@@ -85,44 +85,44 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not encapsulated, easy to break", 
             replaceWith = "Block.get(int).getClass(), to register new blocks use registerBlockImplementation()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static Class<? extends Block>[] list = null;
     
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", 
             replaceWith = "To register/override implementations use registerBlockImplementation(), " +
                     "to get the block with a given state use BlockState.of and than BlockState.getBlock()")
     @Deprecated
-    @SuppressWarnings({"java:S1444", "java:S2386", "java:S1123", "java:S1133", "DeprecatedIsStillUsed"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "java:S1123", "java:S1133", "DeprecatedIsStillUsed", "MS_PKGPROTECT"})
     public static Block[] fullList = null;
     
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getLightLevel() or Block.light(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.getLightLevel() or Block.getLightLevel(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static int[] light = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN", 
-            replaceWith = "Block.getLightFilter() or Block.lightFilter(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.getLightFilter() or Block.getLightFilter(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static int[] lightFilter = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isSolid() or Block.isSolid(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static boolean[] solid = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getHardness() or Block.hardness(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.getHardness() or Block.getHardness(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static double[] hardness = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isTransparent() or Block.isTransparent(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
     public static boolean[] transparent = null;
 
     private static boolean[] diffusesSkyLight = null;
@@ -789,6 +789,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
     public static boolean isSolid(int blockId) {
         if (blockId < 0 || blockId >= solid.length) {
             return true;
@@ -807,7 +808,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static double hardness(int blockId) {
+    @SuppressWarnings("java:S1874")
+    public static double getHardness(int blockId) {
         if (blockId < 0 || blockId >= light.length) {
             return Double.MAX_VALUE;
         }
@@ -816,7 +818,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static int light(int blockId) {
+    @SuppressWarnings("java:S1874")
+    public static int getLightLevel(int blockId) {
         if (blockId < 0 || blockId >= light.length) {
             return 0;
         }
@@ -825,7 +828,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public static int lightFilter(int blockId) {
+    @SuppressWarnings("java:S1874")
+    public static int getLightFilter(int blockId) {
         if (blockId < 0 || blockId >= lightFilter.length) {
             return 15;
         }
@@ -834,6 +838,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
     public static boolean isTransparent(int blockId) {
         if (blockId < 0 || blockId >= transparent.length) {
             return false;

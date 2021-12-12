@@ -50,6 +50,7 @@ public abstract class CoveredBiome extends Biome {
      *
      * @return cover block
      */
+    @SuppressWarnings("unused")
     public int getCoverId(int x, int z) {
         useNewRakNetCover = false;
         return getCoverBlock() << 4;
@@ -117,6 +118,7 @@ public abstract class CoveredBiome extends Biome {
         }
     }
 
+    @SuppressWarnings("unused")
     public int getSurfaceId(int x, int y, int z) {
         useNewRakNetSurface = false;
         return getSurfaceBlock(y) << 4 | (getSurfaceMeta(y) & 0xF);
@@ -197,6 +199,7 @@ public abstract class CoveredBiome extends Biome {
         }
     }
 
+    @SuppressWarnings("unused")
     public int getGroundId(int x, int y, int z) {
         useNewRakNetGroundBlock = false;
         return getGroundBlock(y) << 4 | (getGroundMeta(y) & 0xF);
@@ -276,8 +279,9 @@ public abstract class CoveredBiome extends Biome {
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @SuppressWarnings("unused")
     public void preCover(int x, int z) {
-
+        // Does nothing
     }
 
     public void doCover(int x, int z, @Nonnull FullChunk chunk) {

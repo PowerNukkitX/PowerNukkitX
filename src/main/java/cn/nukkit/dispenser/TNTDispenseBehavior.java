@@ -13,6 +13,7 @@ public class TNTDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public TNTDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

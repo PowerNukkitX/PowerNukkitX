@@ -10,6 +10,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public DyeDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

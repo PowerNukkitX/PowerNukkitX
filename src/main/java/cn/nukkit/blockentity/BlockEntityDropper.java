@@ -9,8 +9,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @PowerNukkitOnly
 public class BlockEntityDropper extends BlockEntityEjectable {
 
-    @PowerNukkitOnly protected DropperInventory inventory;
-
     @PowerNukkitOnly
     public BlockEntityDropper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -19,7 +17,8 @@ public class BlockEntityDropper extends BlockEntityEjectable {
     @PowerNukkitOnly
     @Override
     protected DropperInventory createInventory() {
-        return inventory = new DropperInventory(this);
+        inventory = new DropperInventory(this);
+        return getInventory();
     }
 
     @PowerNukkitOnly
@@ -30,7 +29,7 @@ public class BlockEntityDropper extends BlockEntityEjectable {
 
     @Override
     public DropperInventory getInventory() {
-        return inventory;
+        return (DropperInventory) inventory;
     }
 
     @Override

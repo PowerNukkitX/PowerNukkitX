@@ -49,8 +49,8 @@ public class BlockStorage {
     private static final int BLOCK_ID_MASK          = 0x00FF;
     private static final int BLOCK_ID_EXTRA_MASK    = 0xFF00;
     private static final int BLOCK_ID_FULL          = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
-    
-    public @PowerNukkitOnly static final int SECTION_SIZE = 4096;
+
+    @PowerNukkitOnly public static final int SECTION_SIZE = 4096;
     
     private static final BlockState[] EMPTY = new BlockState[SECTION_SIZE];
     static {

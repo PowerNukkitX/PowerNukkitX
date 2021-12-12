@@ -12,6 +12,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public ShulkerBoxDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

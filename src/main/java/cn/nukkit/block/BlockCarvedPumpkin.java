@@ -11,6 +11,7 @@ public class BlockCarvedPumpkin extends BlockPumpkin {
 
     @PowerNukkitOnly
     public BlockCarvedPumpkin() {
+        super();
     }
 
     @Override

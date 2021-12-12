@@ -21,6 +21,7 @@ public class PopulatorOreEmerald extends Populator {
 
     @PowerNukkitOnly
     public PopulatorOreEmerald() {
+        super();
     }
 
     @Override

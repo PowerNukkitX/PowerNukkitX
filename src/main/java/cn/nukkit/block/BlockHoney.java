@@ -18,6 +18,7 @@ public class BlockHoney extends BlockSolid {
 
     @PowerNukkitOnly
     public BlockHoney() {
+        super();
     }
 
     @Override

@@ -15,6 +15,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public FireworksDispenseBehavior() {
+        super();
     }
 
     @PowerNukkitOnly

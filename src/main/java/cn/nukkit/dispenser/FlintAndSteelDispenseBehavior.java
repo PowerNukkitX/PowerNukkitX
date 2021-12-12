@@ -14,6 +14,7 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
     @PowerNukkitOnly
     public FlintAndSteelDispenseBehavior() {
+        super();
     }
 
     @Override

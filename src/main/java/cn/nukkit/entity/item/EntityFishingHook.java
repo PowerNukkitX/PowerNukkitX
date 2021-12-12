@@ -140,8 +140,6 @@ public class EntityFishingHook extends EntityProjectile {
             hasUpdate = true;
         }
 
-        Random random = ThreadLocalRandom.current();
-
         if (inWater) {
             if (this.waitTimer == 240) {
                 this.waitTimer = this.waitChance << 1;
@@ -153,6 +151,7 @@ public class EntityFishingHook extends EntityProjectile {
                     --this.waitTimer;
                 }
                 if (this.waitTimer == 0) {
+                    ThreadLocalRandom random = ThreadLocalRandom.current();
                     if (random.nextInt(100) < 90) {
                         this.attractTimer = (random.nextInt(40) + 20);
                         this.spawnFish();
@@ -164,7 +163,7 @@ public class EntityFishingHook extends EntityProjectile {
                 }
             } else if (!this.caught) {
                 if (this.attractFish()) {
-                    this.caughtTimer = (random.nextInt(20) + 30);
+                    this.caughtTimer = (ThreadLocalRandom.current().nextInt(20) + 30);
                     this.fishBites();
                     this.caught = true;
                 }
