@@ -84,6 +84,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.powernukkit.version.Version;
 
@@ -2316,6 +2317,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.server.onPlayerCompleteLoginSequence(this);
     }
 
+    @SneakyThrows
+    private List<DataPacket> unpackBatchedPackets(BatchPacket packet) {
+        return this.server.getNetwork().unpackBatchedPackets(packet);
+    }
+
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
             return;
@@ -2337,7 +2343,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
-                this.server.getNetwork().processBatch((BatchPacket) packet, this);
+                List<DataPacket> dataPackets = unpackBatchedPackets((BatchPacket) packet);
+                dataPackets.forEach(this::handleDataPacket);
                 return;
             }
 

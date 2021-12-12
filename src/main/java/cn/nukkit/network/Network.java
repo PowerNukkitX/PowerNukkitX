@@ -224,13 +224,20 @@ public class Network {
     }
 
     public void processBatch(BatchPacket packet, Player player) {
-        List<DataPacket> packets = new ObjectArrayList<>();
         try {
-            processBatch(packet.payload, packets);
+            unpackBatchedPackets(packet);
         } catch (ProtocolException e) {
             player.close("", e.getMessage());
             log.error("Unable to process player packets ", e);
         }
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet) throws ProtocolException {
+        List<DataPacket> packets = new ObjectArrayList<>();
+        processBatch(packet.payload, packets);
+        return packets;
     }
 
     @Since("1.4.0.0-PN")
