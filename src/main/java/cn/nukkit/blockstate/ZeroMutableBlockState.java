@@ -59,7 +59,7 @@ public class ZeroMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public ZeroMutableBlockState copy() {
         return this;
     }
 

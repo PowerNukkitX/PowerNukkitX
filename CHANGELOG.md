@@ -11,8 +11,23 @@ Click the link above to see the future.
 
 This work in progress version supports Minecraft `1.18.0`.
 
+### CRITICAL SECURITY FIX
+- [#1266] Changed Log4J library from `2.13.3` to `2.15.0`
+
+### Breaking changes
+- [#1267] Changed Nimbus Jose JWT library from `7.9` to `9.13`
+- [#1267] Removed some deprecated APIs, check the JDiff for details.
+
+### Depreciation
+- [#1266] Some APIs become deprecated, check the JDiff for details.
+
 ### Changed
 - [#1258] Changed supported version to Minecraft Bedrock Edition `1.18.0`.
+
+### Documentation
+- [#1267] Added all missing `@PowerNukkitOnly` annotations
+- [#1267] Added all missing `@Override` annotations
+- [#1267] Removed all incorrect `@PowerNukkitOnly` annotations
 
 ## [1.5.2.0-PN] - 2021-12-01 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
 This new version adds protocol support for Minecraft `1.17.40` as if it was `1.16.221` with some new features and fixes.
@@ -963,3 +978,5 @@ Fixes several anvil issues.
 [#1244]: https://github.com/PowerNukkit/PowerNukkit/issues/1244
 [#1216]: https://github.com/PowerNukkit/PowerNukkit/issues/1216
 [#1258]: https://github.com/PowerNukkit/PowerNukkit/issues/1258
+[#1266]: https://github.com/PowerNukkit/PowerNukkit/issues/1266
+[#1267]: https://github.com/PowerNukkit/PowerNukkit/issues/1267

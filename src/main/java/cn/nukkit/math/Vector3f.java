@@ -45,16 +45,19 @@ public class Vector3f implements Cloneable {
         return this.z;
     }
 
+    @Since("FUTURE")
     public Vector3f setX(float x) {
         this.x = x;
         return this;
     }
 
+    @Since("FUTURE")
     public Vector3f setY(float y) {
         this.y = y;
         return this;
     }
 
+    @Since("FUTURE")
     public Vector3f setZ(float z) {
         this.z = z;
         return this;

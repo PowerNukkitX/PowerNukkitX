@@ -35,7 +35,8 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
 
     //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
     @Override
-    protected @PowerNukkitOnly @Since("1.4.0.0-PN") boolean isCorrectTool(Item item) {
+    @PowerNukkitOnly
+    protected boolean isCorrectTool(Item item) {
         return true;
     }
 

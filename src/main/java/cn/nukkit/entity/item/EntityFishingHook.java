@@ -316,6 +316,7 @@ public class EntityFishingHook extends EntityProjectile {
         }
     }
 
+    @Since("FUTURE")
     public void checkLure() {
         if (rod != null) {
             Enchantment ench = rod.getEnchantment(Enchantment.ID_LURE);
@@ -325,6 +326,7 @@ public class EntityFishingHook extends EntityProjectile {
         }
     }
 
+    @Since("FUTURE")
     public void setTarget(long eid) {
         this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
         this.canCollide = eid == 0;

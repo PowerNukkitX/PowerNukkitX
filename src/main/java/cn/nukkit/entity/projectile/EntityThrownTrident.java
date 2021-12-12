@@ -75,8 +75,8 @@ public class EntityThrownTrident extends EntityProjectile {
 
     private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
 
-    protected int pickupMode;
-    public boolean alreadyCollided;
+    @Since("FUTURE") protected int pickupMode;
+    @Since("FUTURE") public boolean alreadyCollided;
 
     @Override
     public int getNetworkId() {
@@ -375,10 +375,12 @@ public class EntityThrownTrident extends EntityProjectile {
         return Entity.createEntity(type.toString(), chunk, nbt, args);
     }
 
+    @Since("FUTURE")
     public int getPickupMode() {
         return this.pickupMode;
     }
 
+    @Since("FUTURE")
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }

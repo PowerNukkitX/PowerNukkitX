@@ -242,7 +242,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public ByteMutableBlockState copy() {
         return new ByteMutableBlockState(blockId, properties, storage);
     }
 }

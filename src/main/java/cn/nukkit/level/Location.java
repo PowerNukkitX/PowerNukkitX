@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
 
@@ -13,7 +14,7 @@ public class Location extends Position {
 
     public double yaw;
     public double pitch;
-    public double headYaw;
+    @Since("FUTURE") public double headYaw;
 
     public Location() {
         this(0);
@@ -47,10 +48,12 @@ public class Location extends Position {
         this(x, y, z, yaw, pitch, 0, level);
     }
 
+    @Since("FUTURE")
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this(x, y, z, yaw, pitch, headYaw, null);
     }
 
+    @Since("FUTURE")
     public Location(double x, double y, double z, double yaw, double pitch, double headYaw, Level level) {
         this.x = x;
         this.y = y;
@@ -77,6 +80,7 @@ public class Location extends Position {
         return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
     }
 
+    @Since("FUTURE")
     public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch, double headYaw) {
         if (level == null && pos instanceof Position) {
             level = ((Position) pos).level;
@@ -92,6 +96,7 @@ public class Location extends Position {
         return this.pitch;
     }
 
+    @Since("FUTURE")
     public double getHeadYaw() {
         return this.headYaw;
     }

@@ -1455,10 +1455,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean damageWhenBreaking() { return true; }
-
     @Override
     final public String toString() {
         return "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
@@ -1627,6 +1623,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
+    @Since("FUTURE")
     public final RuntimeEntry getRuntimeEntry() {
         //TODO Implement
         throw new UnsupportedOperationException();

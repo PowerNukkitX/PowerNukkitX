@@ -28,6 +28,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
+    @Since("FUTURE") public static final int PICKUP_NONE = 0;
+    @Since("FUTURE") public static final int PICKUP_ANY = 1;
+    @Since("FUTURE") public static final int PICKUP_CREATIVE = 2;
 
     public Entity shootingEntity = null;
 
@@ -48,10 +51,6 @@ public abstract class EntityProjectile extends Entity {
     public boolean closeOnCollide = true;
 
     protected double damage = 0;
-
-    public static final int PICKUP_NONE = 0;
-    public static final int PICKUP_ANY = 1;
-    public static final int PICKUP_CREATIVE = 2;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);

@@ -19,6 +19,7 @@ public class NPCRequestPacket extends DataPacket {
     @Since("1.4.0.0-PN")
     public int actionType;
 
+    @Since("FUTURE")
     public String sceneName;
 
     @PowerNukkitOnly

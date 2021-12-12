@@ -239,7 +239,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public BigIntegerMutableBlockState copy() {
         return new BigIntegerMutableBlockState(getBlockId(), properties, storage);
     }
 }

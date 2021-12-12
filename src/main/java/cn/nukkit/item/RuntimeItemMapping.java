@@ -7,6 +7,8 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -161,6 +163,9 @@ public class RuntimeItemMapping {
     }
 
     @Data
+    @Getter(onMethod = @__(@Since("FUTURE")))
+    @RequiredArgsConstructor(onConstructor = @__(@Since("FUTURE")))
+    @Since("FUTURE")
     public static class LegacyEntry {
         private final int legacyId;
         private final boolean hasDamage;
@@ -172,6 +177,9 @@ public class RuntimeItemMapping {
     }
 
     @Data
+    @Getter(onMethod = @__(@Since("FUTURE")))
+    @RequiredArgsConstructor(onConstructor = @__(@Since("FUTURE")))
+    @Since("FUTURE")
     public static class RuntimeEntry {
         private final String identifier;
         private final int runtimeId;

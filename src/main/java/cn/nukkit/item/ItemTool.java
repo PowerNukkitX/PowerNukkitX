@@ -51,8 +51,8 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_TRIDENT = dynamic(251);
     public static final int DURABILITY_FISHING_ROD = dynamic(65);
     @Since("1.4.0.0-PN") public static final int DURABILITY_CROSSBOW = dynamic(465);
-    public static final int DURABILITY_CARROT_ON_A_STICK = dynamic(25);
-    public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(100);
+    @Since("future") public static final int DURABILITY_CARROT_ON_A_STICK = dynamic(25);
+    @Since("future") public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(100);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -220,6 +220,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
      * No damage to item when it's used to attack entities
      * @return whether the item should take damage when used to attack entities
      */
+    @Since("FUTURE")
     public boolean noDamageOnAttack() {
         return false;
     }
@@ -228,6 +229,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
      * No damage to item when it's used to break blocks
      * @return whether the item should take damage when used to break blocks
      */
+    @Since("FUTURE")
     public boolean noDamageOnBreak() {
         return false;
     }

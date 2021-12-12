@@ -214,7 +214,7 @@ public class IntMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public IntMutableBlockState copy() {
         return new IntMutableBlockState(blockId, properties, storage);
     }
 }

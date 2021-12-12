@@ -231,7 +231,7 @@ public class LongMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public LongMutableBlockState copy() {
         return new LongMutableBlockState(getBlockId(), properties, storage);
     }
 }
