@@ -86,7 +86,7 @@ class PlayerTest {
 
     @Test
     void moveEntityAbsolutePacketRidingPig() {
-        player.mountEntity(pig);
+        pig.mountEntity(player);
         assertSame(pig, player.getRiding());
         when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
         player.handleDataPacket(buildMoveEntityAbsolutePacket(pig.getId()));
