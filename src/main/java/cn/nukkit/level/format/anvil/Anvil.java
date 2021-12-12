@@ -1,6 +1,7 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
@@ -272,7 +273,8 @@ public class Anvil extends BaseLevelProvider {
             return region;
         }
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public int getMaximumLayer() {
         return 1;

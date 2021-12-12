@@ -39,7 +39,8 @@ public abstract class NamedPosition extends Vector3 {
     @Since("1.4.0.0-PN")
     @Nonnull
     public abstract String getLevelName();
-    
+
+    @PowerNukkitOnly
     public boolean matchesNamedPosition(NamedPosition position) {
         return x == position.x && y == position.y && z == position.z && getLevelName().equals(position.getLevelName());
     }

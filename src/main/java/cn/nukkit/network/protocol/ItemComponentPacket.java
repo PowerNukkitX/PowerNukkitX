@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.MainLogger;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.nio.ByteOrder;
 @ToString
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class ItemComponentPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -2,7 +2,6 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -264,6 +263,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     public int recalculateHeightMapColumn(int x, int z) {
         int max = getHighestBlockAt(x, z, false);
@@ -574,6 +574,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return getBlockIdAt(x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getBlockIdAt(int x, int y, int z, int layer) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -591,6 +592,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -598,6 +600,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId));
@@ -605,6 +608,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId, int meta) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId, meta));
@@ -615,6 +619,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         setBlockIdAt(x, y, z, 0, id);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setBlockIdAt(int x, int y, int z, int layer, int id) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -641,7 +646,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
     @Override
-    @PowerNukkitDifference(info = "Was returning the block id instead of the data", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     public int getBlockDataAt(int x, int y, int z, int layer) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
             return getBlockData(x & 15, y, z & 15, layer);
@@ -658,6 +663,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public void setBlockDataAt(int x, int y, int z, int layer, int data) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {

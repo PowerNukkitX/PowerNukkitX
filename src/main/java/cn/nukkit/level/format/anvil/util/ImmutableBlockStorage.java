@@ -49,6 +49,7 @@ public final class ImmutableBlockStorage extends BlockStorage {
         super(states.clone(), flags, palette.copy(), denyStates != null? (BitSet)denyStates.clone() : null);
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState setBlockState(int index, @Nonnull BlockState state) {
         throw new UnsupportedOperationException("This BlockStorage is immutable");

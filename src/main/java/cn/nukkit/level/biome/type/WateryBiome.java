@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
  * @author DaPorkchop_ (Nukkit Project)
  */
 public abstract class WateryBiome extends CoveredBiome {
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getSurfaceDepth(int y) {
@@ -16,6 +17,7 @@ public abstract class WateryBiome extends CoveredBiome {
         return 0;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getSurfaceBlock(int y) {
@@ -26,6 +28,7 @@ public abstract class WateryBiome extends CoveredBiome {
         return 0;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getGroundDepth(int y) {

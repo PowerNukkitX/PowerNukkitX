@@ -21,6 +21,7 @@ class OldWoodBarkUpdater implements Updater {
         this.increment = increment;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {
         if (state.getBlockId() != fromLog) {

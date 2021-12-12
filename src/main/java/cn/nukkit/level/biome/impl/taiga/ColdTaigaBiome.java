@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome.impl.taiga;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.populator.impl.WaterIcePopulator;
 
@@ -23,6 +24,7 @@ public class ColdTaigaBiome extends TaigaBiome {
     }
 
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {

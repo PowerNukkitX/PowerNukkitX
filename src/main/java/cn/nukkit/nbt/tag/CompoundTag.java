@@ -24,10 +24,12 @@ public class CompoundTag extends Tag implements Cloneable {
         this(name, new HashMap<>());
     }
 
+    @PowerNukkitOnly
     public CompoundTag(Map<String, Tag> tags) {
         this("", tags);
     }
 
+    @PowerNukkitOnly
     public CompoundTag(String name, Map<String, Tag> tags) {
         super(name);
         this.tags = tags;

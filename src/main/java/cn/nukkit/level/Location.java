@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
 
@@ -92,11 +93,13 @@ public class Location extends Position {
         return this.headYaw;
     }
 
+    @PowerNukkitOnly
     public Location setYaw(double yaw) {
         this.yaw = yaw;
         return this;
     }
 
+    @PowerNukkitOnly
     public Location setPitch(double pitch) {
         this.pitch = pitch;
         return this;

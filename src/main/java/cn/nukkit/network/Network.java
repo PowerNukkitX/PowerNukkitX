@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.*;
@@ -311,6 +312,7 @@ public class Network {
     @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
             reason = "Changed the id to int without backward compatibility", 
             replaceWith = "getPacket(int id)")
+    @PowerNukkitOnly
     public DataPacket getPacket(byte id) {
         return getPacket((int) id);
     }

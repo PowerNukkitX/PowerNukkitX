@@ -18,7 +18,11 @@ public class PopulatorOreEmerald extends Populator {
 
     private static final BlockState STATE_STONE = BlockState.of(STONE);
     private static final BlockState STATE_EMERALD_ORE = BlockState.of(EMERALD_ORE);
-    
+
+    @PowerNukkitOnly
+    public PopulatorOreEmerald() {
+    }
+
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         for (int i = 0; i < 11; i++) {

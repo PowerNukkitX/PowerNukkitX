@@ -1,5 +1,6 @@
 package cn.nukkit.level.format;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -112,7 +113,8 @@ public interface LevelProvider {
     GameRules getGamerules();
 
     void setGameRules(GameRules rules);
-    
+
+    @PowerNukkitOnly
     default int getMaximumLayer() {
         return 0;
     }

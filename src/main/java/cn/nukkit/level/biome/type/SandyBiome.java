@@ -1,11 +1,13 @@
 package cn.nukkit.level.biome.type;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class SandyBiome extends CoveredBiome {
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getSurfaceDepth(int y) {
@@ -15,6 +17,7 @@ public abstract class SandyBiome extends CoveredBiome {
         return 3;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getSurfaceBlock(int y) {
@@ -24,6 +27,7 @@ public abstract class SandyBiome extends CoveredBiome {
         return SAND;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getGroundDepth(int y) {
@@ -33,6 +37,7 @@ public abstract class SandyBiome extends CoveredBiome {
         return 2;
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getGroundBlock(int y) {

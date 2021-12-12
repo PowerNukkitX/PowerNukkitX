@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @PowerNukkitOnly
 @Since("1.5.1.0-PN")
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class AnimateEntityPacket extends DataPacket {
 
     @PowerNukkitOnly

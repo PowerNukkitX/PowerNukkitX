@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome.impl.mushroom;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.biome.type.GrassyBiome;
@@ -20,6 +21,7 @@ public class MushroomIslandBiome extends GrassyBiome {
         return "Mushroom Island";
     }
 
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public int getSurfaceBlock(int y) {

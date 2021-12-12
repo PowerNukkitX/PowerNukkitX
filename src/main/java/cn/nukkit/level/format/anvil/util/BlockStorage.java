@@ -50,7 +50,7 @@ public class BlockStorage {
     private static final int BLOCK_ID_EXTRA_MASK    = 0xFF00;
     private static final int BLOCK_ID_FULL          = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
     
-    public static final int SECTION_SIZE = 4096;
+    public @PowerNukkitOnly static final int SECTION_SIZE = 4096;
     
     private static final BlockState[] EMPTY = new BlockState[SECTION_SIZE];
     static {
@@ -465,14 +465,17 @@ public class BlockStorage {
         }
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockIds() {
         return getFlag(FLAG_HAS_ID);
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockIdExtras() {
         return getFlag(FLAG_HAS_ID_EXTRA);
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockDataExtras() {
         return getFlag(FLAG_HAS_DATA_EXTRA);
     }

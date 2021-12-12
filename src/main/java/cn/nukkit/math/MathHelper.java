@@ -1,5 +1,7 @@
 package cn.nukkit.math;
 
+import cn.nukkit.api.PowerNukkitOnly;
+
 import java.util.Random;
 
 public class MathHelper {
@@ -92,6 +94,7 @@ public class MathHelper {
         return check > max ? max : (check < min ? min : check);
     }
 
+    @PowerNukkitOnly
     public static float clamp(float num, float min, float max) {
         return num > max ? max : (num < min ? min : num);
     }

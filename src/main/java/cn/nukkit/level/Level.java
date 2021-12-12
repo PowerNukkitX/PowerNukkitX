@@ -1958,7 +1958,6 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public synchronized void setBlockFullIdAt(int x, int y, int z, int fullId) {
         setBlockFullIdAt(x, y, z, 0, fullId);
@@ -1966,6 +1965,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public synchronized void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
         setBlock(x, y, z, layer, Block.fullList[fullId], false, false);
@@ -2737,11 +2737,11 @@ public class Level implements ChunkManager, Metadatable {
         return loaders;
     }
 
-    @PowerNukkitOnly
     public BlockEntity getBlockEntity(Vector3 pos) {
         return getBlockEntity(pos.asBlockVector3());
     }
 
+    @PowerNukkitOnly
     public BlockEntity getBlockEntity(BlockVector3 pos) {
         FullChunk chunk = this.getChunk(pos.x >> 4, pos.z >> 4, false);
 
@@ -2793,12 +2793,12 @@ public class Level implements ChunkManager, Metadatable {
         return this.getChunk(x >> 4, z >> 4, true).getBlockId(x & 0x0f, y & 0xff, z & 0x0f, layer);
     }
 
-    @PowerNukkitOnly
     @Override
     public void setBlockIdAt(int x, int y, int z, int id) {
         setBlockIdAt(x, y, z, 0, id);
     }
 
+    @PowerNukkitOnly
     @Override
     public synchronized void setBlockIdAt(int x, int y, int z, int layer, int id) {
         this.getChunk(x >> 4, z >> 4, true).setBlockId(x & 0x0f, y & 0xff, z & 0x0f, layer, id & 0xfff);
@@ -2865,7 +2865,6 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public void setBlockDataAt(int x, int y, int z, int data) {
         setBlockDataAt(x, y, z, 0, data);
@@ -2873,6 +2872,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public synchronized void setBlockDataAt(int x, int y, int z, int layer, int data) {
         this.getChunk(x >> 4, z >> 4, true).setBlockData(x & 0x0f, y & 0xff, z & 0x0f, layer, data);

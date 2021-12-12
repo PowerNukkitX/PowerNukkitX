@@ -138,6 +138,7 @@ public class Position extends NamedPosition {
         return getValidLevel().getBlock(this);
     }
 
+    @PowerNukkitOnly
     public Block getLevelBlockAtLayer(int layer) {
         return getValidLevel().getBlock(this, layer);
     }

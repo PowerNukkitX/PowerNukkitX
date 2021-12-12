@@ -10,6 +10,7 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import io.netty.handler.codec.EncoderException;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
@@ -21,6 +22,7 @@ import java.io.IOException;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @ToString
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

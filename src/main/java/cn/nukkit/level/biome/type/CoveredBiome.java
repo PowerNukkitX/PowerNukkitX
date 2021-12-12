@@ -42,6 +42,7 @@ public abstract class CoveredBiome extends Biome {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Exposed lock object and removed from new-raknet and not used by PowerNukkit")
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     public final Object synchronizeCover = new Object();
 
     /**
@@ -61,6 +62,7 @@ public abstract class CoveredBiome extends Biome {
      * 
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getCoverBlock() {
         if (useNewRakNetCover()) {
@@ -105,6 +107,7 @@ public abstract class CoveredBiome extends Biome {
      *
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getSurfaceDepth(int y) {
         if (useNewRakNetSurfaceDepth()) {
@@ -127,6 +130,7 @@ public abstract class CoveredBiome extends Biome {
      * 
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {
@@ -145,6 +149,7 @@ public abstract class CoveredBiome extends Biome {
      *
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getSurfaceMeta(int y) {
         if (useNewRakNetSurface()) {
@@ -182,6 +187,7 @@ public abstract class CoveredBiome extends Biome {
      * 
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getGroundDepth(int y) {
         if (useNewRakNetGroundDepth()) {
@@ -221,6 +227,7 @@ public abstract class CoveredBiome extends Biome {
      * 
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getGroundMeta(int y) {
         if (useNewRakNetGround()) {
@@ -250,6 +257,7 @@ public abstract class CoveredBiome extends Biome {
      *
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getStoneBlock() {
         return STONE;
@@ -266,6 +274,7 @@ public abstract class CoveredBiome extends Biome {
      *          
      * @implNote Removed from new-raknet branch
      */
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void preCover(int x, int z) {
 
