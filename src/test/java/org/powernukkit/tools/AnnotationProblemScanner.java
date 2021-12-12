@@ -51,8 +51,14 @@ public class AnnotationProblemScanner {
 
 
     private static boolean isApi(CtModifiable obj) {
-        if (obj instanceof CtMethod<?> && ((CtMethod<?>) obj).getSimpleName().equals("canEqual") && obj.hasAnnotation(Generated.class)) {
-            return false;
+        if (obj instanceof CtMethod<?>) {
+            CtMethod<?> method = (CtMethod<?>) obj;
+            if (method.getSimpleName().equals("canEqual") && obj.hasAnnotation(Generated.class)) {
+                return false;
+            }
+            if (method.getDeclaringType().isAnnotationType()) {
+                return true;
+            }
         }
         if (obj.isPublic() || obj.isProtected()) {
             return true;
