@@ -24,6 +24,10 @@ This work in progress version supports Minecraft `1.18.0`.
 ### Changed
 - [#1258] Changed supported version to Minecraft Bedrock Edition `1.18.0`.
 
+### Fixes
+- [#267] Regression of: Fishing hooks without players, loaded from the level save.
+- [#1267] Network decoding of the `MoveEntityDeltaPacket`
+
 ### Documentation
 - [#1267] Added all missing `@PowerNukkitOnly` annotations
 - [#1267] Added all missing `@Override` annotations
