@@ -5,6 +5,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -12,37 +14,42 @@ import java.util.Map;
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
+    @Nonnull
     private final Entity damager;
 
     private float knockBack;
 
+    @Nullable
     private Enchantment[] enchantments;
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage) {
+    public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, float damage) {
         this(damager, entity, cause, damage, 0.3f);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers) {
+    public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, Map<DamageModifier, Float> modifiers) {
         this(damager, entity, cause, modifiers, 0.3f);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, float knockBack) {
+    public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, float damage, float knockBack) {
         super(entity, cause, damage);
         this.damager = damager;
         this.knockBack = knockBack;
         this.addAttackerModifiers(damager);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack) {
-        this(damager, entity, cause, modifiers, knockBack, Enchantment.EMPTY_ARRAY);
+    public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, @Nonnull Map<DamageModifier, Float> modifiers, float knockBack) {
+        this(damager, entity, cause, modifiers, knockBack, null);
     }
 
     @Since("FUTURE")
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack, Enchantment[] enchantments) {
+    public EntityDamageByEntityEvent(@Nonnull Entity damager, @Nonnull Entity entity, @Nonnull DamageCause cause, @Nonnull Map<DamageModifier, Float> modifiers, float knockBack, @Nullable Enchantment[] enchantments) {
         super(entity, cause, modifiers);
+        if (enchantments != null) {
+            enchantments = enchantments.length == 0 ? Enchantment.EMPTY_ARRAY : enchantments.clone();
+        }
         this.damager = damager;
         this.knockBack = knockBack;
-        this.enchantments = enchantments == null? Enchantment.EMPTY_ARRAY : enchantments.clone();
+        this.enchantments = enchantments;
         this.addAttackerModifiers(damager);
     }
 
@@ -56,6 +63,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         }
     }
 
+    @Nonnull
     public Entity getDamager() {
         return damager;
     }
@@ -69,7 +77,11 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     @Since("FUTURE")
+    @Nullable
     public Enchantment[] getWeaponEnchantments() {
+        if (enchantments == null) {
+            return null;
+        }
         return enchantments.length > 0? enchantments.clone() : Enchantment.EMPTY_ARRAY;
     }
 }

@@ -79,13 +79,13 @@ public class EntityArrow extends EntityProjectile {
 
     public EntityArrow(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
-        closeOnCollide = false;
         this.setCritical(critical);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
+        closeOnCollide = false;
 
         this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 2;
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;

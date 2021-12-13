@@ -60,11 +60,6 @@ public class EntityFishingHook extends EntityProjectile {
 
     public EntityFishingHook(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
-    }
-
-    @Override
-    protected void initEntity() {
-        super.initEntity();
         // https://github.com/PowerNukkit/PowerNukkit/issues/267
         if (this.age > 0) {
             this.close();

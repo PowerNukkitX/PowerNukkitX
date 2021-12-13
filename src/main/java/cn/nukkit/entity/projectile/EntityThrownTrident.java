@@ -130,13 +130,12 @@ public class EntityThrownTrident extends EntityProjectile {
 
     @Override
     protected void initEntity() {
+        super.setHasAge(false);
         super.initEntity();
 
         this.trident = namedTag.contains(TAG_TRIDENT) ? NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT)) : Item.get(0);
         this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
         this.closeOnCollide = false;
-
-        this.hasAge = false;
 
         if (namedTag.contains(TAG_TRIDENT)) {
             this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
