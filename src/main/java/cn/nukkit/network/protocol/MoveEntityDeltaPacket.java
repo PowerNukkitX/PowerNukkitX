@@ -34,7 +34,7 @@ public class MoveEntityDeltaPacket extends DataPacket {
     @Override
     public void decode() {
         this.runtimeEntityId = this.getEntityRuntimeId();
-        this.flags = this.getByte();
+        this.flags = this.getLShort();
         if ((this.flags & FLAG_HAS_X) != 0) {
             this.x = this.getCoordinate();
         }
