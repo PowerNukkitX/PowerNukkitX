@@ -133,9 +133,13 @@ public class EntityThrownTrident extends EntityProjectile {
         super.setHasAge(false);
         super.initEntity();
 
-        this.trident = namedTag.contains(TAG_TRIDENT) ? NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT)) : Item.get(0);
-        this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
         this.closeOnCollide = false;
+
+        this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
+        this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 8;
+        this.favoredSlot = namedTag.contains("favoredSlot") ? namedTag.getInt("favoredSlot") : -1;
+        this.isCreative = namedTag.contains("isCreative") && namedTag.getBoolean("isCreative");
+        this.player = !namedTag.contains("player") || namedTag.getBoolean("player");
 
         if (namedTag.contains(TAG_TRIDENT)) {
             this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
@@ -151,12 +155,6 @@ public class EntityThrownTrident extends EntityProjectile {
             this.impalingLevel = 0;
         }
 
-        if (namedTag.contains("damage")) {
-            this.damage = namedTag.getDouble("damage");
-        } else {
-            this.damage = 8;
-        }
-
         if (namedTag.contains("CollisionPos")) {
             ListTag<DoubleTag> collisionPosList = this.namedTag.getList("CollisionPos", DoubleTag.class);
             collisionPos = new Vector3(collisionPosList.get(0).data, collisionPosList.get(1).data, collisionPosList.get(2).data);
@@ -169,24 +167,6 @@ public class EntityThrownTrident extends EntityProjectile {
             stuckToBlockPos = new BlockVector3(stuckToBlockPosList.get(0).data, stuckToBlockPosList.get(1).data, stuckToBlockPosList.get(2).data);
         } else {
             stuckToBlockPos = defaultStuckToBlockPos.clone();
-        }
-
-        if (namedTag.contains("favoredSlot")) {
-            this.favoredSlot = namedTag.getInt("favoredSlot");
-        } else {
-            this.favoredSlot = -1;
-        }
-
-        if (namedTag.contains("isCreative")) {
-            this.isCreative = namedTag.getBoolean("isCreative");
-        } else {
-            this.isCreative = false;
-        }
-
-        if (namedTag.contains("player")) {
-            this.player = namedTag.getBoolean("player");
-        } else {
-            this.player = true;
         }
     }
 

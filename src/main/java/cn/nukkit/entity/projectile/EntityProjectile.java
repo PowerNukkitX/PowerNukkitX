@@ -54,6 +54,8 @@ public abstract class EntityProjectile extends Entity {
 
     public boolean closeOnCollide;
 
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Redundant and unused", replaceWith = "getDamage()")
     protected double damage;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
@@ -307,7 +309,7 @@ public abstract class EntityProjectile extends Entity {
             by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "setHasAge",
             toBeRemovedAt = "1.7.0.0-PN")
     public void setAge(boolean hasAge) {
-        this.noAge = hasAge;
+        this.noAge = !hasAge;
     }
 
     @PowerNukkitOnly
