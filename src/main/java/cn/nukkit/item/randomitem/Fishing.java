@@ -46,11 +46,8 @@ public final class Fishing {
         int fortuneLevel = 0;
         int lureLevel = 0;
         if (rod != null) {
-            if (rod.getEnchantment(Enchantment.ID_FORTUNE_FISHING) != null) {
-                fortuneLevel = rod.getEnchantment(Enchantment.ID_FORTUNE_FISHING).getLevel();
-            } else if (rod.getEnchantment(Enchantment.ID_LURE) != null) {
-                lureLevel = rod.getEnchantment(Enchantment.ID_LURE).getLevel();
-            }
+            fortuneLevel = rod.getEnchantmentLevel(Enchantment.ID_FORTUNE_FISHING);
+            lureLevel = rod.getEnchantmentLevel(Enchantment.ID_LURE);
         }
         return getFishingResult(fortuneLevel, lureLevel);
     }
@@ -63,7 +60,9 @@ public final class Fishing {
         putSelector(TREASURES, treasureChance);
         putSelector(JUNKS, junkChance);
         Object result = selectFrom(ROOT_FISHING);
-        if (result instanceof Item) return (Item) result;
+        if (result instanceof Item) {
+            return (Item) result;
+        }
         return null;
     }
 }

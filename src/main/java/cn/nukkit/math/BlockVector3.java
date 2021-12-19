@@ -2,6 +2,7 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.SneakyThrows;
 
 public class BlockVector3 implements Cloneable {
     public int x;
@@ -275,13 +276,10 @@ public class BlockVector3 implements Cloneable {
         return "BlockPosition(level=" + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
+    @SneakyThrows
     @Override
     public BlockVector3 clone() {
-        try {
-            return (BlockVector3) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        return (BlockVector3) super.clone();
     }
 
     public Vector3 asVector3() {

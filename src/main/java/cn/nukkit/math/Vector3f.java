@@ -2,6 +2,7 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.SneakyThrows;
 
 public class Vector3f implements Cloneable {
     public static final int SIDE_DOWN = 0;
@@ -389,13 +390,10 @@ public class Vector3f implements Cloneable {
         return super.hashCode();
     }
 
+    @SneakyThrows
     @Override
     public Vector3f clone() {
-        try {
-            return (Vector3f) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        return (Vector3f) super.clone();
     }
 
     public Vector3 asVector3() {

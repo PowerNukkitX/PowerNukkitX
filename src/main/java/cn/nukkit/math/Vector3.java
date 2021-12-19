@@ -3,6 +3,7 @@ package cn.nukkit.math;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.SneakyThrows;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -477,13 +478,10 @@ public class Vector3 implements Cloneable {
         return super.hashCode();
     }
 
+    @SneakyThrows
     @Override
     public Vector3 clone() {
-        try {
-            return (Vector3) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        return (Vector3) super.clone();
     }
 
     public Vector3f asVector3f() {
