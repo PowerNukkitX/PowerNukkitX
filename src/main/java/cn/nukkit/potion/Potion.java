@@ -454,7 +454,7 @@ public class Potion implements Cloneable {
             case MUNDANE_II:
                 return "Mundane";
             case THICK:
-                return "thick";
+                return "Thick";
             case AWKWARD:
                 return "Awkward";
             case NIGHT_VISION_LONG:
@@ -523,7 +523,14 @@ public class Potion implements Cloneable {
         String name = getPotionTypeName();
         StringBuilder finalName = new StringBuilder(255).append("Potion");
         if (!name.isEmpty()) {
-            finalName.append(" of ").append(name);
+            int id = getId();
+            if (id >= TURTLE_MASTER && id <= TURTLE_MASTER_II) {
+                finalName.append(" of the ").append(name);
+            } else if (id <= AWKWARD) {
+                finalName.insert(0, name + " ");
+            } else {
+                finalName.append(" of ").append(name);
+            }
         }
 
         int currentLevel = getLevel();
