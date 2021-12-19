@@ -463,8 +463,8 @@ class BlockTest {
 
     @Test
     void getHardness() {
-        assertEquals(15, Block.getHardness(-1));
-        assertEquals(15, Block.getHardness(100000000));
+        assertEquals(Double.MAX_VALUE, Block.getHardness(-1));
+        assertEquals(Double.MAX_VALUE, Block.getHardness(100000000));
         assertEquals(1.5, Block.getHardness(BlockID.STONE));
     }
 
@@ -477,9 +477,9 @@ class BlockTest {
 
     @Test
     void getLightFilter() {
-        assertEquals(15, Block.getLightLevel(-1));
-        assertEquals(15, Block.getLightLevel(100000000));
-        assertEquals(1, Block.getLightLevel(BlockID.GLASS));
+        assertEquals(15, Block.getLightFilter(-1));
+        assertEquals(15, Block.getLightFilter(100000000));
+        assertEquals(1, Block.getLightFilter(BlockID.GLASS));
     }
 
     @Test
