@@ -646,10 +646,10 @@ public class Server {
         Block.init();
         Enchantment.init();
         RuntimeItems.getRuntimeMapping();
+        Potion.init();
         Item.init();
         EnumBiome.values(); //load class, this also registers biomes
         Effect.init();
-        Potion.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load

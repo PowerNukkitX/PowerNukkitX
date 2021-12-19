@@ -32,22 +32,25 @@ public class ItemArrow extends Item {
     }
 
     private void updateName() {
-        final int damage = getDamage();
-        switch (damage) {
-            case 0:
-                name = "Arrow";
-                return;
-            case 1:
+        final int type = getDamage();
+        if (type <= 0) {
+            name = "Arrow";
+            return;
+        }
+
+        final int potionId = type - 1;
+        switch (potionId) {
+            case Potion.WATER:
                 name = "Arrow of Splashing";
                 return;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
+            case Potion.MUNDANE:
+            case Potion.MUNDANE_II:
+            case Potion.THICK:
+            case Potion.AWKWARD:
                 name = "Tipped Arrow";
                 return;
             default:
-                name = ItemPotion.buildName(damage - 1, "Arrow", false);
+                name = ItemPotion.buildName(potionId, "Arrow", false);
         }
     }
 

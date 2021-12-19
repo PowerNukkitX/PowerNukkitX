@@ -122,8 +122,8 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Unstable use of raw block state data", replaceWith = "getNewAnvilDamage or getNewBlockState")
     @Since("1.4.0.0-PN")
     public int getNewDamage() {
-        BlockState newState = getNewBlockState();
-        return newState.getProperties().contains(BlockAnvil.DAMAGE)? newState.getIntValue(BlockAnvil.DAMAGE) : 0;
+        BlockState newBlockState = getNewBlockState();
+        return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
     }
 
     @PowerNukkitOnly
@@ -137,9 +137,9 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
             replaceWith = "setNewBlockState example: setNewBlockState(BlockState.of(BlockID.ANVIL).withProperty(BlockAnvil.DAMAGE, AnvilDamage.VERY_DAMAGED))")
     @Since("1.4.0.0-PN")
     public void setNewDamage(int newDamage) {
-        BlockState newState = getNewBlockState();
-        if (newState.getProperties().contains(BlockAnvil.DAMAGE)) {
-            this.setNewBlockState(newState.withProperty(BlockAnvil.DAMAGE, BlockAnvil.DAMAGE.getValueForMeta(newDamage)));
+        BlockState newBlockState = getNewBlockState();
+        if (newBlockState.getProperties().contains(BlockAnvil.DAMAGE)) {
+            this.setNewBlockState(newBlockState.withProperty(BlockAnvil.DAMAGE, BlockAnvil.DAMAGE.getValueForMeta(newDamage)));
         }
     }
 

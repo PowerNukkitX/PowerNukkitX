@@ -168,4 +168,21 @@ class AnvilDamageEventTest {
     void getPlayer() {
         assertSame(player, event.getPlayer());
     }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    void nonAnvil() {
+        level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.STONE));
+        Block block = level.getBlock(1, 2, 3);
+        event = new AnvilDamageEvent(block, BlockState.of(BlockID.GLASS), null, null, AnvilDamageEvent.DamageCause.FALL);
+        assertEquals(0, event.getOldDamage());
+        assertEquals(0, event.getNewDamage());
+        assertNull(event.getOldAnvilDamage());
+
+        event.setNewDamage(1);
+        assertEquals(0, event.getNewDamage());
+        assertNull(event.getOldAnvilDamage());
+
+        assertEquals(AnvilDamageEvent.DamageCause.FALL, event.getCause());
+    }
 }

@@ -68,10 +68,26 @@ class EntityProjectileTest {
     void noAge() {
         assertTrue(projectile.getHasAge());
         assertTrue(projectile.hasAge());
+
         projectile.setAge(false);
+        projectile.namedTag.remove("Age");
+        projectile.saveNBT();
         assertFalse(projectile.getHasAge());
         assertFalse(projectile.hasAge());
+        assertFalse(projectile.namedTag.contains("Age"));
+
         projectile.setHasAge(true);
+        projectile.namedTag.remove("Age");
+        projectile.saveNBT();
+        assertTrue(projectile.getHasAge());
+        assertTrue(projectile.hasAge());
+        assertTrue(projectile.namedTag.contains("Age"));
+
+        projectile.setHasAge(false);
+        assertFalse(projectile.getHasAge());
+        assertFalse(projectile.hasAge());
+
+        projectile.setAge(true);
         assertTrue(projectile.getHasAge());
         assertTrue(projectile.hasAge());
     }

@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Potion;
 
 public class ItemPotionLingering extends ProjectileItem {
 
@@ -25,11 +26,11 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     private void updateName() {
-        int damage = getDamage();
-        if (damage == 0) {
+        int potionId = getDamage();
+        if (potionId == Potion.WATER) {
             name = "Lingering Water Bottle";
         } else {
-            name = ItemPotion.buildName(damage, "Lingering Potion", true);
+            name = ItemPotion.buildName(potionId, "Lingering Potion", true);
         }
     }
     

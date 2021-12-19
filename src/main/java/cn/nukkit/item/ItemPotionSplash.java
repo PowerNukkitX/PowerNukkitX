@@ -1,12 +1,21 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Potion;
 
 /**
  * @author xtypr
  * @since 2015/12/27
  */
 public class ItemPotionSplash extends ProjectileItem {
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public ItemPotionSplash() {
+        this(0, 1);
+    }
 
     public ItemPotionSplash(Integer meta) {
         this(meta, 1);
@@ -24,11 +33,11 @@ public class ItemPotionSplash extends ProjectileItem {
     }
 
     private void updateName() {
-        int damage = getDamage();
-        if (damage == 0) {
+        int potionId = getDamage();
+        if (potionId == Potion.WATER) {
             name = "Splash Water Bottle";
         } else {
-            name = ItemPotion.buildName(damage, "Splash Potion", true);
+            name = ItemPotion.buildName(potionId, "Splash Potion", true);
         }
     }
 

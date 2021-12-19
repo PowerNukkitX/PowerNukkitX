@@ -34,5 +34,7 @@ class ItemArrowTest {
             Potion potion = Potion.getPotion(damage - 1);
             assertEquals(potion, arrow.getTippedArrowPotion());
         }
+        arrow.setDamage(100);
+        assertNull(arrow.getTippedArrowPotion());
     }
 }

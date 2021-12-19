@@ -9,6 +9,7 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.ServerException;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ItemPotion extends Item {
 
@@ -70,40 +71,40 @@ public class ItemPotion extends Item {
     }
 
     private void updateName() {
-        int damage = getDamage();
-        if (damage == 0) {
+        int potionId = getDamage();
+        if (potionId == Potion.WATER) {
             name = "Water Bottle";
         } else {
-            name = buildName(damage, "Potion", true);
+            name = buildName(potionId, "Potion", true);
         }
     }
 
-    static String buildName(int damage, String type, boolean includeLevel) {
-        switch (damage) {
-            case 0:
+    static String buildName(int potionId, String type, boolean includeLevel) {
+        switch (potionId) {
+            case Potion.WATER:
                 return "Water " + type;
-            case 1:
-            case 2:
+            case Potion.MUNDANE:
+            case Potion.MUNDANE_II:
                 return "Mundane " + type;
-            case 3:
+            case Potion.THICK:
                 return "Thick " + type;
-            case 4:
+            case Potion.AWKWARD:
                 return "Awkward " + type;
-            case 37:
-            case 38:
-            case 39: {
+            case Potion.TURTLE_MASTER:
+            case Potion.TURTLE_MASTER_II:
+            case Potion.TURTLE_MASTER_LONG: {
                 String name = type + " of the Turtle Master";
                 if (!includeLevel) {
                     return name;
                 }
-                Potion potion = getPotion(damage);
-                if (potion == null || potion.getLevel() <= 1) {
+                Potion potion = Objects.requireNonNull(getPotion(potionId));
+                if (potion.getLevel() <= 1) {
                     return name;
                 }
                 return name + " " + potion.getRomanLevel();
             }
             default: {
-                Potion potion = getPotion(damage);
+                Potion potion = getPotion(potionId);
                 String finalName = potion != null ? potion.getPotionTypeName() : "";
                 if (finalName.isEmpty()) {
                     finalName = type;

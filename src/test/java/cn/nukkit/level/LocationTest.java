@@ -62,6 +62,18 @@ class LocationTest {
     }
 
     @Test
+    void constructorYawPitchHeadYaw() {
+        Location location = new Location(X, Y, Z, YAW, PITCH, HEAD_YAW);
+        assertEquals(X, location.x);
+        assertEquals(Y, location.y);
+        assertEquals(Z, location.z);
+        assertNull(location.level);
+        assertEquals(YAW, location.yaw);
+        assertEquals(PITCH, location.pitch);
+        assertEquals(HEAD_YAW, location.headYaw);
+    }
+
+    @Test
     void constructorYawPitchHeadYawLevel() {
         Location location = new Location(X, Y, Z, YAW, PITCH, HEAD_YAW, level);
         assertEquals(X, location.x);

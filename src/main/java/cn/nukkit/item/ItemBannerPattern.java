@@ -81,7 +81,7 @@ public class ItemBannerPattern extends Item {
         if (getId() != BANNER_PATTERN) {
             return;
         }
-        switch (super.meta % 7) {
+        switch (super.meta) {
             case PATTERN_CREEPER_CHARGE:
                 name = "Creeper Charge Banner Pattern";
                 return;

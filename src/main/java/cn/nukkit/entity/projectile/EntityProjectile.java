@@ -147,7 +147,7 @@ public abstract class EntityProjectile extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        if (this.noAge) {
+        if (!this.noAge) {
             this.namedTag.putShort("Age", this.age);
         }
     }
