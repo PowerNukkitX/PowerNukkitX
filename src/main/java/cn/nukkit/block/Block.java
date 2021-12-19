@@ -98,31 +98,31 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.getLightLevel() or Block.getLightLevel(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
     public static int[] light = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN", 
             replaceWith = "Block.getLightFilter() or Block.getLightFilter(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
     public static int[] lightFilter = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isSolid() or Block.isSolid(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
     public static boolean[] solid = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.getHardness() or Block.getHardness(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
     public static double[] hardness = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isTransparent() or Block.isTransparent(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
     public static boolean[] transparent = null;
 
     private static boolean[] diffusesSkyLight = null;

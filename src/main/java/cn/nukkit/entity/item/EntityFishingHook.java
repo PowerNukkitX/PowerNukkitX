@@ -48,6 +48,7 @@ public class EntityFishingHook extends EntityProjectile {
     public int attractTimer = 0;
     public boolean caught = false;
     public int caughtTimer = 0;
+    @SuppressWarnings("java:S1845")
     public boolean canCollide = true;
 
     public Vector3 fish = null;

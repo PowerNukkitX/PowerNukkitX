@@ -41,6 +41,9 @@ public class EntityThrownTrident extends EntityProjectile {
     public static final int NETWORK_ID = 73;
     private static final String TAG_PICKUP = "pickup";
     private static final String TAG_TRIDENT = "Trident";
+    private static final String TAG_FAVORED_SLOT = "favoredSlot";
+    private static final String TAG_CREATIVE = "isCreative";
+    private static final String TAG_PLAYER = "player";
     private static final String NAME_TRIDENT = "Trident";
 
     protected Item trident;
@@ -137,9 +140,9 @@ public class EntityThrownTrident extends EntityProjectile {
 
         this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
         this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 8;
-        this.favoredSlot = namedTag.contains("favoredSlot") ? namedTag.getInt("favoredSlot") : -1;
-        this.isCreative = namedTag.contains("isCreative") && namedTag.getBoolean("isCreative");
-        this.player = !namedTag.contains("player") || namedTag.getBoolean("player");
+        this.favoredSlot = namedTag.contains(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
+        this.isCreative = namedTag.contains(TAG_CREATIVE) && namedTag.getBoolean(TAG_CREATIVE);
+        this.player = !namedTag.contains(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
 
         if (namedTag.contains(TAG_TRIDENT)) {
             this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
@@ -186,9 +189,9 @@ public class EntityThrownTrident extends EntityProjectile {
             .add(new IntTag("1", this.stuckToBlockPos.y))
             .add(new IntTag("2", this.stuckToBlockPos.z))
         );
-        this.namedTag.putInt("favoredSlot", this.favoredSlot);
-        this.namedTag.putBoolean("isCreative", this.isCreative);
-        this.namedTag.putBoolean("player", this.player);
+        this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
+        this.namedTag.putBoolean(TAG_CREATIVE, this.isCreative);
+        this.namedTag.putBoolean(TAG_PLAYER, this.player);
     }
 
     public Item getItem() {

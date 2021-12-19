@@ -1451,6 +1451,12 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
+    /**
+     * Allows the item to execute code when the player releases the item after long clicking it.
+     * @param player The player who released the click button
+     * @param ticksUsed How many ticks the item was held.
+     * @return If an inventory contents update should be sent to the player
+     */
     public boolean onRelease(Player player, int ticksUsed) {
         return false;
     }

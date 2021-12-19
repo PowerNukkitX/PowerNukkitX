@@ -46,6 +46,11 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         super(entity, cause, modifiers);
         if (enchantments != null) {
             enchantments = enchantments.length == 0 ? Enchantment.EMPTY_ARRAY : enchantments.clone();
+            for (Enchantment enchantment : enchantments) {
+                if (enchantment != null) {
+                    addSideEffects(enchantment.getAttackSideEffects(damager, entity));
+                }
+            }
         }
         this.damager = damager;
         this.knockBack = knockBack;

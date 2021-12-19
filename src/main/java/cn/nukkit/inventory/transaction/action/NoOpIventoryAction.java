@@ -12,7 +12,9 @@ import cn.nukkit.item.Item;
 @PowerNukkitOnly
 @Since("FUTURE")
 public abstract class NoOpIventoryAction extends InventoryAction {
-    public NoOpIventoryAction(Item sourceItem, Item targetItem) {
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    protected NoOpIventoryAction(Item sourceItem, Item targetItem) {
         super(sourceItem, targetItem);
     }
 

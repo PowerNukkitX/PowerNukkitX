@@ -299,7 +299,7 @@ public abstract class EntityProjectile extends Entity {
             by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "getHasAge",
             toBeRemovedAt = "1.7.0.0-PN")
     public boolean hasAge() {
-        return !noAge;
+        return getHasAge();
     }
 
     @PowerNukkitOnly
@@ -309,7 +309,7 @@ public abstract class EntityProjectile extends Entity {
             by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "setHasAge",
             toBeRemovedAt = "1.7.0.0-PN")
     public void setAge(boolean hasAge) {
-        this.noAge = !hasAge;
+        setHasAge(hasAge);
     }
 
     @PowerNukkitOnly

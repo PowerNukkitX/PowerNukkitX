@@ -48,6 +48,7 @@ public class ItemTrident extends ItemTool {
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
+    @SuppressWarnings("java:S3516")
     public boolean onRelease(Player player, int ticksUsed) {
         if (this.hasEnchantment(Enchantment.ID_TRIDENT_RIPTIDE)) {
             return true;
