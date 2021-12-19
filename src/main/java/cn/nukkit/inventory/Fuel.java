@@ -42,7 +42,7 @@ public abstract class Fuel {
         addItem(ItemID.BUCKET, (short) 20000);
         addBlock(BlockID.LADDER, (short) 300);
         addItem(ItemID.BOW, (short) 200);
-        addItem(ItemID.BOWL, (short) 200);
+        addItem(ItemID.BOWL, (short) 100);
         addBlock(BlockID.WOOD2, (short) 300);
         addBlock(BlockID.WOODEN_PRESSURE_PLATE, (short) 300);
         addBlock(BlockID.ACACIA_WOOD_STAIRS, (short) 300);
@@ -75,6 +75,7 @@ public abstract class Fuel {
         addItem(ItemID.DARK_OAK_SIGN, (short) 200);
         addItem(ItemID.JUNGLE_SIGN, (short) 200);
         addBlock(BlockID.DRIED_KELP_BLOCK, (short) 4000);
+        addItem(ItemID.CROSSBOW, (short) 200);
     }
 
     private static void addItem(int itemID, short fuelDuration) {

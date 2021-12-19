@@ -49,10 +49,11 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_SHEARS = dynamic(239);
     public static final int DURABILITY_BOW = dynamic(385);
     public static final int DURABILITY_TRIDENT = dynamic(251);
-    public static final int DURABILITY_FISHING_ROD = dynamic(65);
-    @Since("1.4.0.0-PN") public static final int DURABILITY_CROSSBOW = dynamic(465);
-    @Since("future") public static final int DURABILITY_CARROT_ON_A_STICK = dynamic(25);
-    @Since("future") public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(100);
+    public static final int DURABILITY_FISHING_ROD = dynamic(384);
+    @Since("1.4.0.0-PN") public static final int DURABILITY_CROSSBOW = dynamic(464);
+    @Since("FUTURE") public static final int DURABILITY_CARROT_ON_A_STICK = dynamic(26);
+    @Since("FUTURE") public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = dynamic(101);
+    @Since("FUTURE") @PowerNukkitOnly public static final int DURABILITY_SHIELD = dynamic(337);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

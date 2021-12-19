@@ -14,6 +14,22 @@ public class ItemPotionSplash extends ProjectileItem {
 
     public ItemPotionSplash(Integer meta, int count) {
         super(SPLASH_POTION, meta, count, "Splash Potion");
+        updateName();
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        int damage = getDamage();
+        if (damage == 0) {
+            name = "Splash Water Bottle";
+        } else {
+            name = ItemPotion.buildName(damage, "Splash Potion", true);
+        }
     }
 
     @Override

@@ -10,9 +10,9 @@ import java.util.Arrays;
 public enum DyeColor {
 
 
-    BLACK(0, 15, 16, "Black", "Ink Sack", BlockColor.BLACK_BLOCK_COLOR, new BlockColor(0x1D1D21)),
-    RED(1, 14, 1, "Red", "Rose Red", BlockColor.RED_BLOCK_COLOR, new BlockColor(0xB02E26)),
-    GREEN(2, 13, 2, "Green", "Cactus Green", BlockColor.GREEN_BLOCK_COLOR, new BlockColor(0x5E7C16)),
+    BLACK(0, 15, 16, "Black", "Ink Sac", BlockColor.BLACK_BLOCK_COLOR, new BlockColor(0x1D1D21)),
+    RED(1, 14, 1, "Red", "Red Dye", BlockColor.RED_BLOCK_COLOR, new BlockColor(0xB02E26)),
+    GREEN(2, 13, 2, "Green", "Green Dye", BlockColor.GREEN_BLOCK_COLOR, new BlockColor(0x5E7C16)),
     BROWN(3, 12, 17, "Brown", "Cocoa Beans", BlockColor.BROWN_BLOCK_COLOR, new BlockColor(0x835432)),
     BLUE(4, 11, 18, "Blue", "Lapis Lazuli", BlockColor.BLUE_BLOCK_COLOR, new BlockColor(0x3C44AA)),
     PURPLE(5, 10, 5, "Purple", BlockColor.PURPLE_BLOCK_COLOR, new BlockColor(0x8932B8)),
@@ -21,7 +21,7 @@ public enum DyeColor {
     GRAY(8, 7, 8, "Gray", BlockColor.GRAY_BLOCK_COLOR, new BlockColor(0x474F52)),
     PINK(9, 6, 9, "Pink", BlockColor.PINK_BLOCK_COLOR, new BlockColor(0xF38BAA)),
     LIME(10, 5, 10, "Lime", BlockColor.LIME_BLOCK_COLOR, new BlockColor(0x80C71F)),
-    YELLOW(11, 4, 11, "Yellow", "Dandelion Yellow", BlockColor.YELLOW_BLOCK_COLOR, new BlockColor(0xFED83D)),
+    YELLOW(11, 4, 11, "Yellow", "Yellow Dye", BlockColor.YELLOW_BLOCK_COLOR, new BlockColor(0xFED83D)),
     LIGHT_BLUE(12, 3, 12, "Light Blue", BlockColor.LIGHT_BLUE_BLOCK_COLOR, new BlockColor(0x3AB3DA)),
     MAGENTA(13, 2, 13, "Magenta", BlockColor.MAGENTA_BLOCK_COLOR, new BlockColor(0xC74EBD)),
     ORANGE(14, 1, 14, "Orange", BlockColor.ORANGE_BLOCK_COLOR, new BlockColor(0xFF9801)),

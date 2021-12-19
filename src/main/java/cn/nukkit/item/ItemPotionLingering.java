@@ -15,6 +15,22 @@ public class ItemPotionLingering extends ProjectileItem {
 
     public ItemPotionLingering(Integer meta, int count) {
         super(LINGERING_POTION, meta, count, "Lingering Potion");
+        updateName();
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        int damage = getDamage();
+        if (damage == 0) {
+            name = "Lingering Water Bottle";
+        } else {
+            name = ItemPotion.buildName(damage, "Lingering Potion", true);
+        }
     }
     
     @Override

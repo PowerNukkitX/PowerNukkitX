@@ -15,6 +15,7 @@ public class ItemRecordStal extends ItemRecord {
 
     public ItemRecordStal(Integer meta, int count) {
         super(RECORD_STAL, meta, count);
+        name = "Music Disc Stal";
     }
 
     @Override

@@ -24,6 +24,10 @@ public class ItemBannerPattern extends Item {
     @PowerNukkitOnly
     public static final int PATTERN_BORDURE_INDENTED = 5;
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final int PATTERN_SNOUT = 6;
+
     public ItemBannerPattern() {
         this(0, 1);
     }
@@ -68,6 +72,7 @@ public class ItemBannerPattern extends Item {
             case PATTERN_THING: return BannerPattern.Type.PATTERN_MOJANG;
             case PATTERN_FIELD_MASONED: return BannerPattern.Type.PATTERN_BRICK; 
             case PATTERN_BORDURE_INDENTED: return BannerPattern.Type.PATTERN_CURLY_BORDER;
+            case PATTERN_SNOUT: return BannerPattern.Type.PATTERN_SNOUT;
         }
     }
 
@@ -76,7 +81,7 @@ public class ItemBannerPattern extends Item {
         if (getId() != BANNER_PATTERN) {
             return;
         }
-        switch (super.meta % 6) {
+        switch (super.meta % 7) {
             case PATTERN_CREEPER_CHARGE:
                 name = "Creeper Charge Banner Pattern";
                 return;
@@ -93,7 +98,10 @@ public class ItemBannerPattern extends Item {
                 name = "Field Banner Pattern";
                 return;
             case PATTERN_BORDURE_INDENTED:
-                name = "Bordure Idented Banner Pattern";
+                name = "Bordure Indented Banner Pattern";
+                return;
+            case PATTERN_SNOUT:
+                name = "Snout Banner Pattern";
                 return;
             default:
                 name = "Banner Pattern";

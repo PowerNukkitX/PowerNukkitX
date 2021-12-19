@@ -37,11 +37,6 @@ public class ItemTrident extends ItemTool {
     }
 
     @Override
-    public boolean isSword() {
-        return true;
-    }
-
-    @Override
     public int getAttackDamage() {
         return 9;
     }
