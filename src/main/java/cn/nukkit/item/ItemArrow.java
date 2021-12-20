@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
  */
 public class ItemArrow extends Item {
 
+    private static final String GENERIC_NAME = "Arrow";
+
     public ItemArrow() {
         this(0, 1);
     }
@@ -21,7 +23,7 @@ public class ItemArrow extends Item {
     }
 
     public ItemArrow(Integer meta, int count) {
-        super(ARROW, meta, count, "Arrow");
+        super(ARROW, meta, count, GENERIC_NAME);
         updateName();
     }
 
@@ -34,7 +36,7 @@ public class ItemArrow extends Item {
     private void updateName() {
         final int type = getDamage();
         if (type <= 0) {
-            name = "Arrow";
+            name = GENERIC_NAME;
             return;
         }
 
@@ -50,7 +52,7 @@ public class ItemArrow extends Item {
                 name = "Tipped Arrow";
                 return;
             default:
-                name = ItemPotion.buildName(potionId, "Arrow", false);
+                name = ItemPotion.buildName(potionId, GENERIC_NAME, false);
         }
     }
 

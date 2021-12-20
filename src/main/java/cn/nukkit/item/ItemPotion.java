@@ -73,7 +73,7 @@ public class ItemPotion extends Item {
     private void updateName() {
         int potionId = getDamage();
         if (potionId == Potion.WATER) {
-            name = "Water Bottle";
+            name = buildName(potionId, "Water", true);
         } else {
             name = buildName(potionId, "Potion", true);
         }

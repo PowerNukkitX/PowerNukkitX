@@ -198,8 +198,8 @@ public class EntityFallingBlock extends Entity {
 
                             Entity[] e = level.getCollidingEntities(this.getBoundingBox(), this);
                             for (Entity entity : e) {
-                                if (entity instanceof EntityLiving && highestPosition > y) {
-                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.CONTACT, (float) Math.min(40, Math.max(0, (highestPosition - y) * 2))));
+                                if (entity instanceof EntityLiving && fallDistance > 0) {
+                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.FALLING_BLOCK, Math.min(40f, Math.max(0f, fallDistance * 2f))));
                                 }
                             }
                         }

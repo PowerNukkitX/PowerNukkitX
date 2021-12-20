@@ -60,9 +60,6 @@ public final class Fishing {
         putSelector(TREASURES, treasureChance);
         putSelector(JUNKS, junkChance);
         Object result = selectFrom(ROOT_FISHING);
-        if (result instanceof Item) {
-            return (Item) result;
-        }
-        return null;
+        return (Item) result;
     }
 }

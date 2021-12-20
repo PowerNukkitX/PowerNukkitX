@@ -26,6 +26,7 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.InvalidBlockDamageException;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
@@ -56,6 +57,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
 
     //<editor-fold desc="static fields" defaultstate="collapsed">
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
@@ -68,6 +70,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     public static final int DATA_BITS = dynamic(4);
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It's not a constant value, it may be changed on major updates and" +
             " plugins will have to be recompiled in order to update this value in the binary files, " +
@@ -85,44 +88,51 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not encapsulated, easy to break", 
             replaceWith = "Block.get(int).getClass(), to register new blocks use registerBlockImplementation()")
-    @SuppressWarnings({"java:S1444", "java:S2386", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static Class<? extends Block>[] list = null;
     
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", 
             replaceWith = "To register/override implementations use registerBlockImplementation(), " +
                     "to get the block with a given state use BlockState.of and than BlockState.getBlock()")
     @Deprecated
-    @SuppressWarnings({"java:S1444", "java:S2386", "java:S1123", "java:S1133", "DeprecatedIsStillUsed", "MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "java:S1123", "java:S1133", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static Block[] fullList = null;
     
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.getLightLevel() or Block.getLightLevel(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static int[] light = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN", 
             replaceWith = "Block.getLightFilter() or Block.getLightFilter(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static int[] lightFilter = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isSolid() or Block.isSolid(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static boolean[] solid = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.getHardness() or Block.getHardness(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static double[] hardness = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
             replaceWith = "Block.isTransparent() or Block.isTransparent(int)")
-    @SuppressWarnings({"java:S1444", "java:S2386", "spotbugs:MS_PKGPROTECT"})
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static boolean[] transparent = null;
 
     private static boolean[] diffusesSkyLight = null;
@@ -810,7 +820,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Since("FUTURE")
     @SuppressWarnings("java:S1874")
     public static double getHardness(int blockId) {
-        if (blockId < 0 || blockId >= light.length) {
+        if (blockId < 0 || blockId >= hardness.length) {
             return Double.MAX_VALUE;
         }
         return hardness[blockId];
