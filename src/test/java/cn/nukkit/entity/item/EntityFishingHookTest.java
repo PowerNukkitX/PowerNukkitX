@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
+import org.powernukkit.tests.api.MockPlayer;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +39,9 @@ class EntityFishingHookTest {
 
     @MockEntity(type = EntityPig.class)
     EntityPig pig;
+
+    @MockPlayer
+    Player player;
 
     EntityFishingHook fishingHook;
 
@@ -75,7 +79,7 @@ class EntityFishingHookTest {
 
     @Test
     void spawnPacket() {
-        Player player = mock(Player.class);
+        player.usedChunks.put(Level.chunkHash(0, 0), true);
         fishingHook.spawnTo(player);
         verify(player).dataPacket(any(AddEntityPacket.class));
     }
