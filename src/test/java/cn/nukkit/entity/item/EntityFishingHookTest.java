@@ -1,20 +1,25 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityPig;
+import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +52,36 @@ class EntityFishingHookTest {
 
     @BeforeEach
     void setUp() {
-        level.setBlockStateAt(0, 63, 0, BlockState.of(BlockID.STILL_WATER));
+        level.setBlock(0, 63, 0, BlockState.of(BlockID.STILL_WATER).getBlock(), true, false);
         fishingHook = new EntityFishingHook(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)));
+    }
+
+    @Test
+    void onUpdateCollidedInWater() {
+        fishingHook = new CollidedFishingHook(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)), true);
+        int attempts = 0;
+        while (true) {
+            if (attempts++ == 1_000) {
+                fail();
+            }
+            if (fishingHook.attracted) {
+                if (fishingHook.caughtTimer == 1 && fishingHook.caught) {
+                    fishingHook.onUpdate(fishingHook.lastUpdate + 1);
+                    assertFalse(fishingHook.attracted);
+                    assertFalse(fishingHook.caught);
+                    break;
+                }
+            }
+            fishingHook.onUpdate(fishingHook.lastUpdate + 1);
+        }
+    }
+
+    @Test
+    void onUpdateCollidedNotInWater() {
+        fishingHook = new CollidedFishingHook(level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)), false);
+        fishingHook.onUpdate(fishingHook.lastUpdate + 1);
+        final PluginManager pluginManager = Server.getInstance().getPluginManager();
+        verify(pluginManager, atLeastOnce()).callEvent(any(ProjectileHitEvent.class));
     }
 
     @Test
@@ -150,5 +183,31 @@ class EntityFishingHookTest {
         fishingHook.level = mock(Level.class);
         fishingHook.fishBites();
         verify(fishingHook.level, times(5)).addParticle(any(BubbleParticle.class));
+    }
+
+    static class CollidedFishingHook extends EntityFishingHook {
+        final boolean inWater;
+        public CollidedFishingHook(FullChunk chunk, CompoundTag nbt, boolean inWater) {
+            super(chunk, nbt);
+            this.inWater = inWater;
+        }
+
+        @Override
+        public boolean move(double dx, double dy, double dz) {
+            hadCollision = false;
+            isCollided = true;
+            isCollidedVertically = true;
+            return true;
+        }
+
+        @Override
+        public boolean entityBaseTick() {
+            return false;
+        }
+
+        @Override
+        public boolean isInsideOfWater() {
+            return inWater;
+        }
     }
 }
