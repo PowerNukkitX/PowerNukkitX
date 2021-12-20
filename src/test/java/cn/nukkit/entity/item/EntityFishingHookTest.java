@@ -1,5 +1,6 @@
 package cn.nukkit.entity.item;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -10,7 +11,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.particle.BubbleParticle;
+import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.AddEntityPacket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +23,7 @@ import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author joserobjr
@@ -63,6 +68,37 @@ class EntityFishingHookTest {
         fishingHook.setTarget(1);
         assertEquals(1L, fishingHook.getDataPropertyLong(Entity.DATA_TARGET_EID));
         assertFalse(fishingHook.canCollide);
+        fishingHook.setTarget(0);
+        assertEquals(0L, fishingHook.getDataPropertyLong(Entity.DATA_TARGET_EID));
+        assertTrue(fishingHook.canCollide);
+    }
+
+    @Test
+    void spawnPacket() {
+        Player player = mock(Player.class);
+        fishingHook.spawnTo(player);
+        verify(player).dataPacket(any(AddEntityPacket.class));
+    }
+
+    @Test
+    void spawnFish() {
+        assertNull(fishingHook.fish);
+        fishingHook.spawnFish();
+        assertNotNull(fishingHook.fish);
+    }
+
+    @Test
+    void attractFish() {
+        fishingHook.level = mock(Level.class);
+        fishingHook.fish = new Vector3(100, fishingHook.y, 100);
+        int attempts = 0;
+        do {
+            if (attempts++ == 1000) {
+                fail();
+            }
+        } while (!fishingHook.attractFish());
+
+        verify(fishingHook.level, atLeastOnce()).addParticle(any(WaterParticle.class));
     }
 
     @Test
@@ -103,5 +139,12 @@ class EntityFishingHookTest {
         assertNotEquals(0, pig.getId());
         fishingHook.onCollideWithEntity(pig);
         assertEquals(pig.getId(), fishingHook.getDataPropertyLong(Entity.DATA_TARGET_EID));
+    }
+
+    @Test
+    void fishBites() {
+        fishingHook.level = mock(Level.class);
+        fishingHook.fishBites();
+        verify(fishingHook.level, times(5)).addParticle(any(BubbleParticle.class));
     }
 }
