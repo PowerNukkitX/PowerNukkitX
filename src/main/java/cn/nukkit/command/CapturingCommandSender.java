@@ -43,14 +43,14 @@ public class CapturingCommandSender implements CommandSender {
     @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp) {
         this.name = name;
-        this.isOp = true;
+        this.isOp = isOp;
         this.perms = new PermissibleBase(this);
     }
 
     @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp, @NonNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
-        this.isOp = true;
+        this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
 
