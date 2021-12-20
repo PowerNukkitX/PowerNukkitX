@@ -1,13 +1,19 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.Since;
+
+/**
+ * @author Kevims
+ */
+@Since("FUTURE")
 public enum BossBarColor {
 
-    PINK,
-    BLUE,
-    RED,
-    GREEN,
-    YELLOW,
-    PURPLE,
-    WHITE
+    @Since("FUTURE") PINK,
+    @Since("FUTURE") BLUE,
+    @Since("FUTURE") RED,
+    @Since("FUTURE") GREEN,
+    @Since("FUTURE") YELLOW,
+    @Since("FUTURE") PURPLE,
+    @Since("FUTURE") WHITE
 
 }

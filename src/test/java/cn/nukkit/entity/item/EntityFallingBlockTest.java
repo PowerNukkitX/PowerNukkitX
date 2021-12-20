@@ -80,7 +80,6 @@ class EntityFallingBlockTest {
                 .getCollisionCubes(same(fallingBlock), any(), eq(false));
         fallingBlock.onUpdate(fallingBlock.lastUpdate + 1);
         assertTrue(pig.isAlive());
-        verify(Server.getInstance().getPluginManager(), times(0)).callEvent(any(EntityDamageByBlockEvent.class));
     }
 
     @Test

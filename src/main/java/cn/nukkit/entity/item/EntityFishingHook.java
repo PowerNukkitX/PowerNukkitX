@@ -31,7 +31,6 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Collection;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -206,7 +205,7 @@ public class EntityFishingHook extends EntityProjectile {
         teasePk.event = EntityEventPacket.FISH_HOOK_TEASE;
         Server.broadcastPacket(viewers, teasePk);
 
-        Random random = ThreadLocalRandom.current();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 5; i++) {
             this.level.addParticle(new BubbleParticle(this.setComponents(
                     this.x + random.nextDouble() * 0.5 - 0.25,
@@ -217,7 +216,7 @@ public class EntityFishingHook extends EntityProjectile {
     }
 
     public void spawnFish() {
-        Random random = ThreadLocalRandom.current();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         this.fish = new Vector3(
                 this.x + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1),
                 this.getWaterHeight(),

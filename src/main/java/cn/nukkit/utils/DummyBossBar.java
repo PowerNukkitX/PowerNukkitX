@@ -1,12 +1,14 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -52,6 +54,7 @@ public class DummyBossBar {
             return this;
         }
 
+        @Since("FUTURE")
         public Builder color(BossBarColor color) {
             this.color = color;
             return this;
@@ -94,13 +97,17 @@ public class DummyBossBar {
         }
     }
 
-    public void setColor(BossBarColor color) {
-        if (this.color == null || !this.color.equals(color)) {
+    @Since("FUTURE")
+    public void setColor(@Nullable BossBarColor color) {
+        final BossBarColor currentColor = this.color;
+        if (currentColor == null || !currentColor.equals(color)) {
             this.color = color;
             this.sendSetBossBarTexture();
         }
     }
 
+    @Since("FUTURE")
+    @Nullable
     public BossBarColor getColor() {
         return this.color;
     }
@@ -158,7 +165,7 @@ public class DummyBossBar {
         BossEventPacket pk = new BossEventPacket();
         pk.bossEid = this.bossBarId;
         pk.type = BossEventPacket.TYPE_TEXTURE;
-        pk.color = color.ordinal();
+        pk.color = color != null? color.ordinal() : 0;
         player.dataPacket(pk);
     }
 
