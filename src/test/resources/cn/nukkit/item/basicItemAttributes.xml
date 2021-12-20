@@ -609,5 +609,6 @@
     <item namespaced-id="minecraft:chain" numeric-id="758" name="Chain"/>
     <item namespaced-id="minecraft:music_disc_pigstep" numeric-id="759" name="Music Disc Pigstep" stack-size="1"/>
     <item namespaced-id="minecraft:nether_sprouts" numeric-id="760" name="Nether Sprouts"/>
+    <item namespaced-id="minecraft:spyglass" numeric-id="772" name="Spyglass" stack-size="1" />
     <item namespaced-id="minecraft:soul_campfire" numeric-id="801" name="Soul Campfire" stack-size="1"/>
 </items>

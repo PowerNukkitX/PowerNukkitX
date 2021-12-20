@@ -45,6 +45,7 @@ public class BasicAttributesXmlTest {
         try {
             namespaceId = item.getNamespaceId();
         } catch (IllegalArgumentException e) {
+            Item.fromString(definition.getAttribute("namespaced-id"));
             throw new IllegalArgumentException("item.getNamespaceId() failed for " + definition.getAttribute("namespaced-id") + " with damage " + definition.getAttribute("damage"), e);
         }
         final int damage = item.getDamage();
