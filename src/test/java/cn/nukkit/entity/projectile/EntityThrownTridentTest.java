@@ -35,7 +35,7 @@ class EntityThrownTridentTest {
     @MockLevel
     Level level;
 
-    @MockEntity(type = EntityPig.class, position = {0, 64, 0})
+    @MockEntity(position = {0, 64, 0})
     EntityPig pig;
 
     EntityThrownTrident trident;

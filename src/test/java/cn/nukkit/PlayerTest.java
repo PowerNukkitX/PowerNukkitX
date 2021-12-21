@@ -51,10 +51,10 @@ class PlayerTest {
     @Mock
     SourceInterface sourceInterface;
 
-    @MockEntity(type = EntityPig.class)
+    @MockEntity
     EntityPig pig;
 
-    @MockEntity(type = EntityBoat.class)
+    @MockEntity
     EntityBoat boat;
 
     Skin skin;

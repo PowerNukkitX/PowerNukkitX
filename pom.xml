@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.powernukkit</groupId>
             <artifactId>powernukkit-tests-junit5</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>

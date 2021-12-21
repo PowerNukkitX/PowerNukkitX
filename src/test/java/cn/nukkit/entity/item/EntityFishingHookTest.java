@@ -42,7 +42,7 @@ class EntityFishingHookTest {
     @MockLevel
     Level level;
 
-    @MockEntity(type = EntityPig.class)
+    @MockEntity
     EntityPig pig;
 
     @MockPlayer
