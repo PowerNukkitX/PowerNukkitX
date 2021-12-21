@@ -15,6 +15,7 @@ public class ItemRecordFar extends ItemRecord {
 
     public ItemRecordFar(Integer meta, int count) {
         super(RECORD_FAR, meta, count);
+        name = "Music Disc Far";
     }
 
     @Override

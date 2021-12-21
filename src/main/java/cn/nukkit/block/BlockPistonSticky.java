@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 
 /**
  * @author CreeperFace
@@ -27,6 +28,7 @@ public class BlockPistonSticky extends BlockPistonBase {
         return "Sticky Piston";
     }
 
+    @PowerNukkitOnly
     @Override
     public int getPistonHeadBlockId() {
         return PISTON_HEAD_STICKY;

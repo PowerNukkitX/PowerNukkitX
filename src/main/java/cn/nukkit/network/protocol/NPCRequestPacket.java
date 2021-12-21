@@ -18,8 +18,9 @@ public class NPCRequestPacket extends DataPacket {
 
     @Since("1.4.0.0-PN")
     public int actionType;
-    
-    private String sceneName;
+
+    @Since("FUTURE")
+    public String sceneName;
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
@@ -114,7 +115,6 @@ public class NPCRequestPacket extends DataPacket {
         this.putByte((byte) requestType.ordinal());
         this.putString(this.commandString);
         this.putByte((byte) this.actionType);
-        this.putString(sceneName);
+        this.putString(this.sceneName);
     }
-
 }

@@ -44,6 +44,7 @@ public class EntityZombieHorse extends EntityAnimal implements EntitySmite {
         return new Item[]{Item.get(Item.ROTTEN_FLESH, 1, 1)};
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;

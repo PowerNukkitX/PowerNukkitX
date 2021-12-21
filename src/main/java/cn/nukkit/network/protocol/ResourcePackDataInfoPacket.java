@@ -62,12 +62,14 @@ public class ResourcePackDataInfoPacket extends AbstractResourcePackDataPacket {
         return NETWORK_ID;
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public Version getPackVersion() {
         return packVersion;
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public void setPackVersion(Version packVersion) {

@@ -204,12 +204,14 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 }

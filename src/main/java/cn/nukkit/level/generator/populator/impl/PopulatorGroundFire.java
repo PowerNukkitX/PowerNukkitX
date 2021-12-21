@@ -25,7 +25,7 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
     @Override
     protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
         super.placeBlock(x, y, z, id, chunk, random);
-        chunk.setBlockLight(x, y, z, Block.light[FIRE]);
+        chunk.setBlockLight(x, y, z, Block.getLightLevel(FIRE));
     }
 
     @Override

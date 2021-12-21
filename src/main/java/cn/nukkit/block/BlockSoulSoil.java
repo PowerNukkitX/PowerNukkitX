@@ -49,6 +49,7 @@ public class BlockSoulSoil extends BlockSolid {
         return BlockColor.BROWN_BLOCK_COLOR;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

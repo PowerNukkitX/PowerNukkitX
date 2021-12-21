@@ -1,13 +1,14 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
+
+import static cn.nukkit.utils.Utils.dynamic;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -21,13 +22,7 @@ abstract public class ItemArmor extends Item implements ItemDurable {
     public static final int TIER_DIAMOND = 5;
     @Since("1.4.0.0-PN") public static final int TIER_NETHERITE = 6;
     
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", 
-            reason = "The value of this 'constant' is unstable, it may change if new tiers gets added. Refrain from using it. " +
-                    "Changes in this value will not be considered as an API breaking change and will not affect code that " +
-                    "is already compiled."
-    )
-    public static final int TIER_OTHER = 1000;
+    public static final int TIER_OTHER = dynamic(1000);
 
     public ItemArmor(int id) {
         super(id);
@@ -83,7 +78,8 @@ abstract public class ItemArmor extends Item implements ItemDurable {
         }
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            switch (this.getTier()) {
+            final int tier = this.getTier();
+            switch (tier) {
                 case TIER_CHAIN:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
                     break;
@@ -102,7 +98,6 @@ abstract public class ItemArmor extends Item implements ItemDurable {
                 case TIER_NETHERITE:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
                     break;
-                case TIER_OTHER:
                 default:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
             }

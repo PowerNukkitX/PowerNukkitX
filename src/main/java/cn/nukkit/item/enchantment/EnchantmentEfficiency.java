@@ -1,5 +1,6 @@
 package cn.nukkit.item.enchantment;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 /**
@@ -29,7 +30,8 @@ public class EnchantmentEfficiency extends Enchantment {
     public boolean canEnchant(Item item) {
         return item.isShears() || super.canEnchant(item);
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public boolean isItemAcceptable(Item item) {
         if (item.isShears()) {

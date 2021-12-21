@@ -1,10 +1,13 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 
+@PowerNukkitOnly
 public class StonecutterInventory extends FakeBlockUIComponent {
+    @PowerNukkitOnly
     public StonecutterInventory(PlayerUIInventory playerUI, Position position) {
         super(playerUI, InventoryType.STONECUTTER, 3, position);
     }

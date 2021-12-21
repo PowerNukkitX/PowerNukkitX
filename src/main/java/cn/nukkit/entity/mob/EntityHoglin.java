@@ -54,6 +54,7 @@ public class EntityHoglin extends EntityMob implements EntityAgeable {
         return "Hoglin";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isBaby() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);

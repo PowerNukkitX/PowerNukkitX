@@ -21,6 +21,7 @@ public class BlockJungleWallSign extends BlockWallSign {
         return JUNGLE_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return JUNGLE_STANDING_SIGN;

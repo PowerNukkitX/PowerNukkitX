@@ -148,7 +148,8 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 

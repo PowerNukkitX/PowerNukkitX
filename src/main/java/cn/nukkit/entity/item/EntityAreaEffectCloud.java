@@ -21,50 +21,60 @@ import cn.nukkit.potion.Potion;
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitOnly
 public class EntityAreaEffectCloud extends Entity {
 
-    public static final int NETWORK_ID = 95;
+    @PowerNukkitOnly public static final int NETWORK_ID = 95;
     
-    protected int reapplicationDelay;
-    protected int durationOnUse;
-    protected float initialRadius;
-    protected float radiusOnUse;
-    protected int nextApply;
-    public List<Effect> cloudEffects;
+    @PowerNukkitOnly protected int reapplicationDelay;
+    @PowerNukkitOnly protected int durationOnUse;
+    @PowerNukkitOnly protected float initialRadius;
+    @PowerNukkitOnly protected float radiusOnUse;
+    @PowerNukkitOnly protected int nextApply;
+    @PowerNukkitOnly public List<Effect> cloudEffects;
     private int lastAge;
-    
+
+    @PowerNukkitOnly
     public EntityAreaEffectCloud(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-    
+
+    @PowerNukkitOnly
     public int getWaitTime() {
         return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_WAITING);
     }
-    
+
+    @PowerNukkitOnly
     public void setWaitTime(int waitTime) {
         setWaitTime(waitTime, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setWaitTime(int waitTime, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_WAITING, waitTime), send);
     }
-    
+
+    @PowerNukkitOnly
     public int getPotionId() {
         return this.getDataPropertyShort(DATA_POTION_AUX_VALUE);
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionId(int potionId) {
         setPotionId(potionId, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionId(int potionId, boolean send) {
         this.setDataProperty(new ShortEntityData(DATA_POTION_AUX_VALUE, potionId & 0xFFFF), send);
     }
-    
+
+    @PowerNukkitOnly
     public void recalculatePotionColor() {
         recalculatePotionColor(true);
     }
-    
+
+    @PowerNukkitOnly
     public void recalculatePotionColor(boolean send) {
         int a;
         int r;
@@ -95,103 +105,128 @@ public class EntityAreaEffectCloud extends Entity {
     
         setPotionColor(a, r, g, b, send);
     }
-    
+
+    @PowerNukkitOnly
     public int getPotionColor() {
         return this.getDataPropertyInt(DATA_POTION_COLOR);
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionColor(int alpha, int red, int green, int blue, boolean send) {
         setPotionColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff), send);
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionColor(int argp) {
         setPotionColor(argp, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setPotionColor(int argp, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_POTION_COLOR, argp), send);
     }
-    
+
+    @PowerNukkitOnly
     public int getPickupCount() {
         return this.getDataPropertyInt(DATA_PICKUP_COUNT);
     }
-    
+
+    @PowerNukkitOnly
     public void setPickupCount(int pickupCount) {
         setPickupCount(pickupCount, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setPickupCount(int pickupCount, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, pickupCount), send);
-    } 
-    
+    }
+
+    @PowerNukkitOnly
     public float getRadiusChangeOnPickup() {
         return this.getDataPropertyFloat(DATA_CHANGE_ON_PICKUP);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup) {
         setRadiusChangeOnPickup(radiusChangeOnPickup, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadiusChangeOnPickup(float radiusChangeOnPickup, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_CHANGE_ON_PICKUP, radiusChangeOnPickup), send);
     }
-    
+
+    @PowerNukkitOnly
     public float getRadiusPerTick() {
         return this.getDataPropertyFloat(DATA_CHANGE_RATE);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadiusPerTick(float radiusPerTick) {
         setRadiusPerTick(radiusPerTick, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadiusPerTick(float radiusPerTick, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_CHANGE_RATE, radiusPerTick), send);
     }
-    
+
+    @PowerNukkitOnly
     public long getSpawnTime() {
         return this.getDataPropertyInt(DATA_SPAWN_TIME);
     }
-    
+
+    @PowerNukkitOnly
     public void setSpawnTime(long spawnTime) {
         setSpawnTime(spawnTime, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setSpawnTime(long spawnTime, boolean send) {
         this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, spawnTime), send);
     }
-    
+
+    @PowerNukkitOnly
     public int getDuration() {
         return this.getDataPropertyInt(DATA_DURATION);
     }
-    
+
+    @PowerNukkitOnly
     public void setDuration(int duration) {
         setDuration(duration, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setDuration(int duration, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_DURATION, duration), send);
     }
-    
+
+    @PowerNukkitOnly
     public float getRadius() {
         return this.getDataPropertyFloat(DATA_AREA_EFFECT_CLOUD_RADIUS);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadius(float radius) {
         setRadius(radius, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setRadius(float radius, boolean send) {
         this.setDataProperty(new FloatEntityData(DATA_AREA_EFFECT_CLOUD_RADIUS, radius), send);
     }
-    
+
+    @PowerNukkitOnly
     public int getParticleId() {
         return this.getDataPropertyInt(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID);
     }
-    
+
+    @PowerNukkitOnly
     public void setParticleId(int particleId) {
         setParticleId(particleId, true);
     }
-    
+
+    @PowerNukkitOnly
     public void setParticleId(int particleId, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, particleId), send);
     }

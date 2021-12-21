@@ -1,11 +1,16 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
+
+@PowerNukkitOnly
 public class BlockPressurePlateDarkOak extends BlockPressurePlateWood {
-    
+
+    @PowerNukkitOnly
     public BlockPressurePlateDarkOak() {
         this(0);
     }
-    
+
+    @PowerNukkitOnly
     public BlockPressurePlateDarkOak(int meta) {
         super(meta);
     }

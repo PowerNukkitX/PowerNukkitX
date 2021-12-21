@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
@@ -101,7 +102,8 @@ public class PlayerUIInventory extends BaseInventory {
                 super.onSlotChange(index, before, send);
         }
     }
-    
+
+    @PowerNukkitOnly
     public void onSlotChangeBase(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
     }

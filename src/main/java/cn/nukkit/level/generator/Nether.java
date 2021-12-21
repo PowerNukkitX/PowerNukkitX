@@ -154,6 +154,7 @@ public class Nether extends Generator {
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
     }
 
+    @Override
     public Vector3 getSpawn() {
         return new Vector3(0, 64, 0);
     }

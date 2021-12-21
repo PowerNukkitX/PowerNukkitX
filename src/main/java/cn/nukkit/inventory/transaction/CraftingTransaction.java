@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -12,6 +13,7 @@ import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.action.TakeLevelAction;
 import cn.nukkit.item.Item;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,8 +31,16 @@ public class CraftingTransaction extends InventoryTransaction {
 
     protected Item primaryOutput;
 
-    protected Recipe recipe;
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, this is set to null instead of the recipe",
+            by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
+    @Nullable
+    @Since("FUTURE")
+    protected CraftingRecipe recipe;
 
+    private Recipe transactionRecipe;
+
+    @PowerNukkitOnly
     protected int craftingType;
     
     private boolean readyToExecute;
@@ -94,19 +104,38 @@ public class CraftingTransaction extends InventoryTransaction {
         }
     }
 
-    public Recipe getRecipe() {
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
+        by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
+    @Since("FUTURE")
+    @Nullable
+    public CraftingRecipe getRecipe() {
         return recipe;
     }
 
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Recipe getTransactionRecipe() {
+        return transactionRecipe;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    protected void setTransactionRecipe(Recipe recipe) {
+        this.transactionRecipe = recipe;
+        this.recipe = (recipe instanceof CraftingRecipe)? (CraftingRecipe) recipe: null;
+    }
+
+    @Override
     public boolean canExecute() {
         CraftingManager craftingManager = source.getServer().getCraftingManager();
         Inventory inventory;
         switch (craftingType) {
             case Player.CRAFTING_STONECUTTER:
-                recipe = craftingManager.matchStonecutterRecipe(this.primaryOutput);
+                setTransactionRecipe(craftingManager.matchStonecutterRecipe(this.primaryOutput));
                 break;
             case Player.CRAFTING_CARTOGRAPHY:
-                recipe = craftingManager.matchCartographyRecipe(inputs, this.primaryOutput, this.secondaryOutputs);
+                setTransactionRecipe(craftingManager.matchCartographyRecipe(inputs, this.primaryOutput, this.secondaryOutputs));
                 break;
             case Player.CRAFTING_SMITHING:
                 inventory = source.getWindowById(Player.SMITHING_WINDOW_ID);
@@ -115,7 +144,7 @@ public class CraftingTransaction extends InventoryTransaction {
                     SmithingInventory smithingInventory = (SmithingInventory) inventory;
                     SmithingRecipe smithingRecipe = smithingInventory.matchRecipe();
                     if (smithingRecipe != null && this.primaryOutput.equals(smithingRecipe.getFinalResult(smithingInventory.getEquipment()), true, true)) {
-                        recipe = smithingRecipe;
+                        setTransactionRecipe(smithingRecipe);
                     }
                 }
                 
@@ -130,7 +159,7 @@ public class CraftingTransaction extends InventoryTransaction {
                         TakeLevelAction takeLevel = new TakeLevelAction(anvil.getLevelCost());
                         addAction(takeLevel);
                         if (takeLevel.isValid(source)) {
-                            recipe = new RepairRecipe(InventoryType.ANVIL, this.primaryOutput, this.inputs);
+                            setTransactionRecipe(new RepairRecipe(InventoryType.ANVIL, this.primaryOutput, this.inputs));
                             PlayerUIInventory uiInventory = source.getUIInventory();
                             actions.add(new DamageAnvilAction(anvil, !source.isCreative() && ThreadLocalRandom.current().nextFloat() < 0.12F, this));
                             actions.stream()
@@ -147,7 +176,7 @@ public class CraftingTransaction extends InventoryTransaction {
                         }
                     }
                 }
-                if (recipe == null) {
+                if (getTransactionRecipe() == null) {
                     source.sendExperienceLevel();
                 }
                 source.getUIInventory().setItem(AnvilInventory.RESULT, Item.get(0), false);
@@ -158,19 +187,20 @@ public class CraftingTransaction extends InventoryTransaction {
                     GrindstoneInventory grindstone = (GrindstoneInventory) inventory;
                     addInventory(grindstone);
                     if (grindstone.updateResult(false) && this.primaryOutput.equals(grindstone.getResult(), true, true)) {
-                        recipe = new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs);
+                        setTransactionRecipe(new RepairRecipe(InventoryType.GRINDSTONE, this.primaryOutput, this.inputs));
                         grindstone.setResult(Item.get(0), false);
                     }
                 }
                 break;
             default:
-                recipe = craftingManager.matchRecipe(inputs, this.primaryOutput, this.secondaryOutputs);
+                setTransactionRecipe(craftingManager.matchRecipe(inputs, this.primaryOutput, this.secondaryOutputs));
                 break;
         }
 
-        return this.recipe != null && super.canExecute();
+        return this.getTransactionRecipe() != null && super.canExecute();
     }
 
+    @Override
     protected boolean callExecuteEvent() {
         CraftItemEvent ev;
 
@@ -178,11 +208,13 @@ public class CraftingTransaction extends InventoryTransaction {
         return !ev.isCancelled();
     }
 
+    @Override
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "No longer closes the inventory")
     protected void sendInventories() {
         super.sendInventories();
     }
 
+    @Override
     public boolean execute() {
         if (super.execute()) {
             switch (this.primaryOutput.getId()) {

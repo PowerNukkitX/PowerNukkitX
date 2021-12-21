@@ -2,12 +2,14 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.NoArgsConstructor;
 import org.powernukkit.version.Version;
 
 import java.util.UUID;
 
 @PowerNukkitOnly
 @Since("1.5.2.0-PN")
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public abstract class AbstractResourcePackDataPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")

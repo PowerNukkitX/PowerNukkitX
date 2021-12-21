@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -10,6 +11,7 @@ import lombok.ToString;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @ToString
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class ItemStackResponsePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -15,6 +15,7 @@ public class ItemRecordWait extends ItemRecord {
 
     public ItemRecordWait(Integer meta, int count) {
         super(RECORD_WAIT, meta, count);
+        name = "Music Disc Wait";
     }
 
     @Override

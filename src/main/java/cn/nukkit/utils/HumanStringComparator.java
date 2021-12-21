@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
+@NoArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class HumanStringComparator implements Comparator<String> {
     private static final HumanStringComparator INSTANCE = new HumanStringComparator();
     private static final int LEFT = -1;

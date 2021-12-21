@@ -1,0 +1,30 @@
+diff --git a/pom.xml b/pom.xml
+index 9e9bea970..93ed6a857 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -267,6 +267,25 @@
+                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                 </configuration>
+             </plugin>
++            <plugin>
++                <groupId>org.projectlombok</groupId>
++                <artifactId>lombok-maven-plugin</artifactId>
++                <version>1.18.20.0</version>
++                <executions>
++                    <execution>
++                        <phase>generate-sources</phase>
++                        <goals>
++                            <goal>delombok</goal>
++                        </goals>
++                    </execution>
++                </executions>
++                <configuration>
++                    <addOutputDirectory>false</addOutputDirectory>
++                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
++                    <outputDirectory>${project.build.directory}/delombok</outputDirectory>
++                    <encoding>UTF-8</encoding>
++                </configuration>
++            </plugin>
+             <plugin>
+                 <groupId>pl.project13.maven</groupId>
+                 <artifactId>git-commit-id-plugin</artifactId>

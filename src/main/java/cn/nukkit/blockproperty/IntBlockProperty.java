@@ -65,6 +65,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return new IntBlockProperty(getName(), exportedToItem, getMaxValue(), getMinValue(), getBitSize(), getPersistenceName());
     }
 
+    @PowerNukkitOnly
     @Override
     public int getMetaForValue(@Nullable Integer value) {
         if (value == null) {
@@ -84,12 +85,14 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return value - minValue;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Integer getValueForMeta(int meta) {
         return getIntValueForMeta(meta);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValueForMeta(int meta) {
         try {
@@ -100,6 +103,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return minValue + meta;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
         return String.valueOf(getIntValueForMeta(meta));
@@ -116,6 +120,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateDirectly(@Nullable Integer value) {
         if (value == null) {
@@ -123,12 +128,13 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         }
         validateDirectly(value.intValue());
     }
-    
+
     private void validateDirectly(int newValue) {
         Preconditions.checkArgument(newValue >= minValue, "New value (%s) must be higher or equals to %s", newValue, minValue);
         Preconditions.checkArgument(maxValue >= newValue, "New value (%s) must be less or equals to %s", newValue, maxValue);
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateMetaDirectly(int meta) {
         int max = maxValue - minValue;
@@ -153,6 +159,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return minValue;
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -181,6 +188,7 @@ public class IntBlockProperty extends BlockProperty<Integer> {
         return value == null || minValue == value;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Class<Integer> getValueClass() {

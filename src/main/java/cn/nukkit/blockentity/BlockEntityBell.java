@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -11,13 +12,15 @@ import cn.nukkit.nbt.tag.IntTag;
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitOnly
 public class BlockEntityBell extends BlockEntitySpawnable {
 
     private boolean ringing;
     private int direction;
     private int ticks;
-    public final List<Player> spawnExceptions = new ArrayList<>(2);
+    @PowerNukkitOnly public final List<Player> spawnExceptions = new ArrayList<>(2);
 
+    @PowerNukkitOnly
     public BlockEntityBell(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -92,10 +95,12 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         }
     }
 
+    @PowerNukkitOnly
     public boolean isRinging() {
         return ringing;
     }
 
+    @PowerNukkitOnly
     public void setRinging(boolean ringing) {
         if (this.level != null && this.ringing != ringing) {
             this.ringing = ringing;
@@ -103,18 +108,22 @@ public class BlockEntityBell extends BlockEntitySpawnable {
         }
     }
 
+    @PowerNukkitOnly
     public int getDirection() {
         return direction;
     }
 
+    @PowerNukkitOnly
     public void setDirection(int direction) {
         this.direction = direction;
     }
 
+    @PowerNukkitOnly
     public int getTicks() {
         return ticks;
     }
 
+    @PowerNukkitOnly
     public void setTicks(int ticks) {
         this.ticks = ticks;
     }

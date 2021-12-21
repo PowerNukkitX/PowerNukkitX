@@ -25,6 +25,7 @@ public class BlockSlabCrimson extends BlockSlab {
         super(meta, CRIMSON_DOUBLE_SLAB);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Crimson";
@@ -43,6 +44,7 @@ public class BlockSlabCrimson extends BlockSlab {
         return SIMPLE_SLAB_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return getId() == slab.getId();

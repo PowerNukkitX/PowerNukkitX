@@ -46,6 +46,7 @@ public class EntityEndermite extends EntityMob implements EntityArthropod {
         return "Endermite";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

@@ -9,6 +9,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
 import cn.nukkit.utils.DyeColor;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 /**
  * @author PetteriM1
  */
@@ -25,6 +28,17 @@ public class ItemBanner extends Item {
     public ItemBanner(Integer meta, int count) {
         super(BANNER, meta, count, "Banner");
         this.block = Block.get(Block.STANDING_BANNER);
+        updateName();
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        name = getBaseDyeColor().getName() + " Banner";
     }
 
     @Override
@@ -36,8 +50,15 @@ public class ItemBanner extends Item {
         return this.getDamage() & 0x0f;
     }
 
-    public void setBaseColor(DyeColor color) {
+    public void setBaseColor(@Nonnull DyeColor color) {
         this.setDamage(color.getDyeData() & 0x0f);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    public DyeColor getBaseDyeColor() {
+        return Objects.requireNonNull(DyeColor.getByDyeData(getBaseColor()));
     }
 
     public int getType() {

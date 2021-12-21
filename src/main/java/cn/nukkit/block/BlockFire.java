@@ -41,14 +41,10 @@ public class BlockFire extends BlockFlowable {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(FIRE_AGE);
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockFire() {
         this(0);
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     public BlockFire(int meta) {
         super(meta);
     }

@@ -39,6 +39,7 @@ public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
         return allRepairs;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     public Block getResult() {
         return result;

@@ -51,6 +51,7 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
         setPropertyValue(WoodType.PROPERTY, type);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return getWoodType().getEnglishName();
@@ -76,6 +77,7 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
         return ItemTool.TYPE_AXE;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getSingleSlabId() {
         return WOOD_SLAB;
@@ -83,6 +85,7 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
 
     //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
     @Override
+    @PowerNukkitOnly
     protected boolean isCorrectTool(Item item) {
         return true;
     }

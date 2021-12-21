@@ -69,6 +69,7 @@ public class EntityCreeper extends EntityMob {
         }
     }
 
+    @Override
     public void onStruckByLightning(Entity entity) {
         this.setPowered(true);
     }
@@ -98,6 +99,7 @@ public class EntityCreeper extends EntityMob {
         return Item.EMPTY_ARRAY;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

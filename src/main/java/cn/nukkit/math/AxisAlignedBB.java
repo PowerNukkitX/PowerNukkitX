@@ -92,6 +92,7 @@ public interface AxisAlignedBB extends Cloneable {
         return this;
     }
 
+    @PowerNukkitOnly
     default AxisAlignedBB getOffsetBoundingBox(BlockFace face, double x, double y, double z) {
         return getOffsetBoundingBox(face.getXOffset() * x, face.getYOffset() * y, face.getZOffset() * z);
     }

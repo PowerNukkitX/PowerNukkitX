@@ -66,6 +66,7 @@ public class ByteMutableBlockState extends MutableBlockState {
         this(blockId, properties, (byte)0);
     }
 
+    @PowerNukkitOnly
     @Nonnegative
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
@@ -78,6 +79,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getBigDamage() {
         return storage;
     }
@@ -94,6 +96,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     @Nonnegative
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public Byte getDataStorage() {
         return storage;
     }
@@ -132,14 +135,13 @@ public class ByteMutableBlockState extends MutableBlockState {
         this.storage = (byte)storage;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     @API(definition = INTERNAL, usage = INCUBATING)
     void setDataStorageWithoutValidation(Number storage) {
         this.storage = storage.byteValue();
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
         validate(storage);
@@ -197,28 +199,33 @@ public class ByteMutableBlockState extends MutableBlockState {
         storage = (byte)properties.setIntValue(storage, propertyName, value);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValue(String propertyName) {
         return properties.getIntValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean getBooleanValue(String propertyName) {
         return properties.getBooleanValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public String getPersistenceValue(String propertyName) {
         return properties.getPersistenceValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public BlockState getCurrentState() {
@@ -232,6 +239,7 @@ public class ByteMutableBlockState extends MutableBlockState {
         return storage;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public ByteMutableBlockState copy() {

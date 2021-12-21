@@ -2,7 +2,6 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -131,6 +130,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         // Does nothing here
     }
 
+    @Override
     public void initChunk() {
         if (this.getProvider() != null && !this.isInit) {
             boolean changed = false;
@@ -207,11 +207,13 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         this.hash = Level.chunkHash(x, z);
     }
 
+    @Override
     public final void setX(int x) {
         this.x = x;
         this.hash = Level.chunkHash(x, getZ());
     }
 
+    @Override
     public final void setZ(int z) {
         this.z = z;
         this.hash = Level.chunkHash(getX(), z);
@@ -225,6 +227,10 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public void setProvider(LevelProvider provider) {
         this.provider = provider;
+
+        if(provider != null) {
+            this.providerClass = provider.getClass();
+        }
     }
 
     @Override
@@ -257,12 +263,13 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     public int recalculateHeightMapColumn(int x, int z) {
         int max = getHighestBlockAt(x, z, false);
         int y;
         for (y = max; y >= 0; --y) {
-            if (Block.lightFilter[getBlockIdAt(x, y, z)] > 1 || Block.diffusesSkyLight[getBlockIdAt(x, y, z)]) {
+            if (Block.getLightFilter(getBlockIdAt(x, y, z)) > 1 || Block.diffusesSkyLight(getBlockIdAt(x, y, z))) {
                 break;
             }
         }
@@ -332,14 +339,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                     // START of checks for the next block
                     int id = this.getBlockId(x, y, z);
 
-                    if (!Block.transparent[id]) { // if we encounter an opaque block, all the blocks under it will
+                    if (!Block.isTransparent(id)) { // if we encounter an opaque block, all the blocks under it will
                                            // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
                         nextLight = 0;
-                    } else if (Block.diffusesSkyLight[id]) {
+                    } else if (Block.diffusesSkyLight(id)) {
                         nextDecrease += 1; // skylight value decreases by one for each block under a block
                                            // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
                     } else {
-                        nextDecrease -= Block.lightFilter[id]; // blocks under a light filtering block will have a skylight value
+                        nextDecrease -= Block.getLightFilter(id); // blocks under a light filtering block will have a skylight value
                                                             // decreased by the lightFilter value of that block. The block itself
                                                             // has a value of 15 (if it's a top-most block)
                     }
@@ -567,6 +574,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return getBlockIdAt(x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getBlockIdAt(int x, int y, int z, int layer) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -584,6 +592,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -591,6 +600,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId));
@@ -598,6 +608,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId, int meta) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId, meta));
@@ -608,6 +619,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         setBlockIdAt(x, y, z, 0, id);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setBlockIdAt(int x, int y, int z, int layer, int id) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
@@ -634,7 +646,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
     @Override
-    @PowerNukkitDifference(info = "Was returning the block id instead of the data", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     public int getBlockDataAt(int x, int y, int z, int layer) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
             return getBlockData(x & 15, y, z & 15, layer);
@@ -651,6 +663,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public void setBlockDataAt(int x, int y, int z, int layer, int data) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {

@@ -214,6 +214,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }

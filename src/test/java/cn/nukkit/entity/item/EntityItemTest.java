@@ -71,6 +71,6 @@ class EntityItemTest {
     @Test
     void getNameWithItem() {
         entityItem.item = Item.get(ItemID.GOLD_SWORD);
-        assertEquals("1x Gold Sword", entityItem.getName());
+        assertEquals("1x Golden Sword", entityItem.getName());
     }
 }

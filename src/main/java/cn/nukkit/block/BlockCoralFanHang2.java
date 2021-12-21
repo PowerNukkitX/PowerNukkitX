@@ -45,6 +45,7 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getType() {
         if ((getDamage() & 0b1) == 0) {

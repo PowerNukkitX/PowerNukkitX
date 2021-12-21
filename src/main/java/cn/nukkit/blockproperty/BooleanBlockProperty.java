@@ -41,12 +41,14 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         return new BooleanBlockProperty(getName(), exportedToItem, getPersistenceName());
     }
 
+    @PowerNukkitOnly
     @Override
     public int setValue(int currentMeta, int bitOffset, @Nullable Boolean newValue) {
         boolean value = newValue != null && newValue;
         return setValue(currentMeta, bitOffset, value);
     }
 
+    @PowerNukkitOnly
     @Override
     public long setValue(long currentBigMeta, int bitOffset, @Nullable Boolean newValue) {
         boolean value = newValue != null && newValue;
@@ -68,11 +70,13 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     }
 
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public Boolean getValue(int currentMeta, int bitOffset) {
         return getBooleanValue(currentMeta, bitOffset);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Boolean getValue(long currentBigMeta, int bitOffset) {
@@ -100,6 +104,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         return mask.equals(currentHugeData.and(mask));
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValue(int currentMeta, int bitOffset) {
         return getBooleanValue(currentMeta, bitOffset)? 1 : 0;
@@ -108,6 +113,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
+    @PowerNukkitOnly
     @Override
     public int getIntValueForMeta(int meta) {
         if (meta == 1 || meta == 0) {
@@ -116,6 +122,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         throw new InvalidBlockPropertyMetaException(this, meta, meta, "Only 1 or 0 was expected");
     }
 
+    @PowerNukkitOnly
     @Override
     public int getMetaForValue(@Nullable Boolean value) {
         return Boolean.TRUE.equals(value)? 1 : 0;
@@ -125,6 +132,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public Boolean getValueForMeta(int meta) {
         return getBooleanValueForMeta(meta);
@@ -145,6 +153,7 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         }
     }
 
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -159,17 +168,20 @@ public final class BooleanBlockProperty extends BlockProperty<Boolean> {
         return value == null || Boolean.FALSE.equals(value);
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateMetaDirectly(int meta) {
         Preconditions.checkArgument(meta == 1 || meta == 0, "Must be 1 or 0");
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Class<Boolean> getValueClass() {
         return Boolean.class;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
         if (meta == 1) {

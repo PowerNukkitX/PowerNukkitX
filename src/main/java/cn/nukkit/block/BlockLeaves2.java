@@ -46,11 +46,13 @@ public class BlockLeaves2 extends BlockLeaves {
         return NEW_LEAF_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getType() {
         return getPropertyValue(NEW_LEAF_TYPE);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setType(WoodType type) {
         setPropertyValue(NEW_LEAF_TYPE, type);

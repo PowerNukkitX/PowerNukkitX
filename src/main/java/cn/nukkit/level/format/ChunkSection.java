@@ -100,6 +100,7 @@ public interface ChunkSection {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state)")
+    @PowerNukkitOnly
     boolean setFullBlockId(int x, int y, int z, int layer, int fullId);
 
     @PowerNukkitOnly

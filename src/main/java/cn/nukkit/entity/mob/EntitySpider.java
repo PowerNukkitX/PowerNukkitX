@@ -52,6 +52,7 @@ public class EntitySpider extends EntityMob implements EntityArthropod {
         return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

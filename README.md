@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.powernukkit', name: 'powernukkit', version: '1.5.2.0-PN'
+    compile group: 'org.powernukkit', name: 'powernukkit', version: '1.5.2.1-PN'
 }
 ```
 
@@ -60,7 +60,7 @@ dependencies {
     <dependency>
         <groupId>org.powernukkit</groupId>
         <artifactId>powernukkit</artifactId>
-        <version>1.5.2.0-PN</version>
+        <version>1.5.2.1-PN</version>
     </dependency>
 </dependencies>
 ```

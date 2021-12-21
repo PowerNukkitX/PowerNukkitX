@@ -25,11 +25,13 @@ public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBase {
         return POLISHED_BLACKSTONE_DOUBLE_SLAB;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getSingleSlabId() {
         return POLISHED_BLACKSTONE_SLAB;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Polished Blackstone";

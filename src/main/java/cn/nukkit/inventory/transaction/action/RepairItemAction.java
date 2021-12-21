@@ -1,11 +1,15 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
+import lombok.ToString;
 
 @Since("1.4.0.0-PN")
-public class RepairItemAction extends InventoryAction {
+@ToString(callSuper = true)
+@PowerNukkitDifference(extendsOnlyInPowerNukkit = NoOpIventoryAction.class, insteadOf = InventoryAction.class)
+public class RepairItemAction extends NoOpIventoryAction {
 
     private int type;
 
@@ -18,21 +22,6 @@ public class RepairItemAction extends InventoryAction {
     @Override
     public boolean isValid(Player source) {
         return source.getWindowById(Player.ANVIL_WINDOW_ID) != null;
-    }
-
-    @Override
-    public boolean execute(Player source) {
-        return true;
-    }
-
-    @Override
-    public void onExecuteSuccess(Player source) {
-
-    }
-
-    @Override
-    public void onExecuteFail(Player source) {
-
     }
 
     @Since("1.4.0.0-PN")

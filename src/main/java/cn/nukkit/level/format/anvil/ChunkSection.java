@@ -40,7 +40,10 @@ import java.util.function.BiPredicate;
 @ParametersAreNonnullByDefault
 public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
+    @PowerNukkitOnly
     public static final int STREAM_STORAGE_VERSION = 8;
+
+    @PowerNukkitOnly
     public static final int SAVE_STORAGE_VERSION = 7;
     
     private static final String STORAGE_TAG_NAME = "Storage";
@@ -238,6 +241,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return getBlockId(x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getBlockId(int x, int y, int z, int layer) {
         return layerStorage.getStorageOrEmpty(layer).getBlockId(x, y, z);
@@ -248,6 +252,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         setBlockId(x, y, z, 0, id);
     }
 
+    @PowerNukkitOnly
     @Override
     public synchronized void setBlockId(int x, int y, int z, int layer, int id) {
         if (id != 0) {
@@ -274,6 +279,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public synchronized boolean setFullBlockId(int x, int y, int z, int layer, int fullId) {
         if (fullId != 0) {
@@ -296,6 +302,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Deprecated
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public int getBlockData(int x, int y, int z, int layer) {
         return layerStorage.getStorageOrEmpty(layer).getBlockData(x, y, z);
@@ -310,6 +317,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Deprecated
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public synchronized void setBlockData(int x, int y, int z, int layer, int data) {
         if (data != 0) {
@@ -329,12 +337,14 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return getFullBlock(x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
         return layerStorage.getStorageOrEmpty(layer).getBlockState(x, y, z);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
     @Override
@@ -347,6 +357,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return setBlockStateAtLayer(x, y, z, 0, BlockState.of(blockId));
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId));
@@ -358,6 +369,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return getAndSetBlock(x, y, z, 0, block);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public synchronized Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
@@ -403,17 +415,20 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Deprecated
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int blockId, int meta) {
         return setBlockStateAtLayer(x, y, z, layer, BlockState.of(blockId, meta));
     }
 
+    @PowerNukkitOnly
     @Override
     public synchronized boolean setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state) {
         BlockState previous = getAndSetBlockState(x, y, z, layer, state);
         return !state.equals(previous);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getBlockChangeStateAbove(int x, int y, int z) {
         BlockStorage storage = layerStorage.getStorageOrNull(0);
@@ -660,6 +675,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return blob;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public synchronized CompoundTag toNBT() {
@@ -807,6 +823,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         return results;
     }
 
+    @Override
     @SneakyThrows(CloneNotSupportedException.class)
     @Nonnull
     public ChunkSection copy() {
@@ -820,7 +837,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                 this.hasSkyLight
         );
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public int getMaximumLayer() {
         return 1;
@@ -840,6 +858,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         this.contentVersion = contentVersion;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean hasBlocks() {
         return layerStorage.hasBlocks();

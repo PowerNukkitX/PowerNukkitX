@@ -16,6 +16,7 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
         this.entity = entity;
     }
 
+    @Override
     public EntityProjectile getEntity() {
         return (EntityProjectile) this.entity;
     }

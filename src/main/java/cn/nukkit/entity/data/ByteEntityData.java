@@ -13,10 +13,12 @@ public class ByteEntityData extends EntityData<Integer> {
         this.data = data;
     }
 
+    @Override
     public Integer getData() {
         return data;
     }
 
+    @Override
     public void setData(Integer data) {
         if (data == null) {
             this.data = 0;
@@ -28,5 +30,10 @@ public class ByteEntityData extends EntityData<Integer> {
     @Override
     public int getType() {
         return Entity.DATA_TYPE_BYTE;
+    }
+
+    @Override
+    public String toString() {
+        return data + "b";
     }
 }

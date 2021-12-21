@@ -96,7 +96,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.powernukkit.bedrock.network</groupId>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.powernukkit</groupId>
             <artifactId>powernukkit-tests-junit5</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -236,7 +236,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>7.9</version>
+            <version>9.13</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -310,8 +310,33 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>fr.inria.gforge.spoon</groupId>
+            <artifactId>spoon-core</artifactId>
+            <!-- See rendered release value at http://spoon.gforge.inria.fr/ -->
+            <version>9.1.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>4.5.2</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
-    
+
     <ciManagement>
         <url>https://builds.powernukkit.org/buildConfiguration/PowerNukkit_Snapshots</url>
     </ciManagement>

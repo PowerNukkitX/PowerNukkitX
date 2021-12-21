@@ -21,6 +21,7 @@ public class BlockBirchWallSign extends BlockWallSign {
         return BIRCH_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return BIRCH_STANDING_SIGN;

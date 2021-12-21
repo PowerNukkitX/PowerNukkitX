@@ -34,6 +34,7 @@ public abstract class BlockWoodStripped extends BlockWood {
         return PILLAR_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState getStrippedState() {
         return getCurrentState();
@@ -44,6 +45,7 @@ public abstract class BlockWoodStripped extends BlockWood {
         return "Stripped " + super.getName();
     }
 
+    @PowerNukkitOnly
     @Override
     public void setWoodType(WoodType woodType) {
         if (!woodType.equals(getWoodType())) {

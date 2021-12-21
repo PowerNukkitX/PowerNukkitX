@@ -45,6 +45,7 @@ public class BlockCoralFanHang3 extends BlockCoralFanHang {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getType() {
         return BlockCoral.TYPE_HORN;

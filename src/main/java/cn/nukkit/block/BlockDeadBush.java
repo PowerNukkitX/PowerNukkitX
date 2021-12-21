@@ -107,6 +107,7 @@ public class BlockDeadBush extends BlockFlowable {
         }
     }
 
+    @Override
     public BlockColor getColor() {
         return BlockColor.FOLIAGE_BLOCK_COLOR;
     }

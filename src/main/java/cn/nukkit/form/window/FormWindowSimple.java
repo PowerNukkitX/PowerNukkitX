@@ -49,10 +49,12 @@ public class FormWindowSimple extends FormWindow {
         this.buttons.add(button);
     }
 
+    @Override
     public FormResponseSimple getResponse() {
         return response;
     }
 
+    @Override
     public void setResponse(String data) {
         if (data.equals("null")) {
             this.closed = true;

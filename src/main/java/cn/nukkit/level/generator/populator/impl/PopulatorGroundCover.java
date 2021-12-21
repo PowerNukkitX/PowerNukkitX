@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.populator.impl;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
@@ -14,6 +15,7 @@ import cn.nukkit.math.NukkitRandom;
  * @author DaPorkchop_
  */
 public class PopulatorGroundCover extends Populator {
+    @PowerNukkitOnly
     public static final int STONE = BlockID.STONE << Block.DATA_BITS;
 
     @Override

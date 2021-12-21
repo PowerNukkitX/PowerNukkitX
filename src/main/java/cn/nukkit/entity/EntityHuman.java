@@ -377,6 +377,7 @@ public class EntityHuman extends EntityHumanType {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     protected void onBlock(Entity entity, boolean animate) {
         super.onBlock(entity, animate);

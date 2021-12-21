@@ -31,6 +31,7 @@ public class BlockStemCrimson extends BlockStem {
         return "Crimson Stem";
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState getStrippedState() {
         return getCurrentState().withBlockId(STRIPPED_CRIMSON_STEM);

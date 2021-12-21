@@ -2,6 +2,7 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import lombok.SneakyThrows;
 
 public class Vector3f implements Cloneable {
     public static final int SIDE_DOWN = 0;
@@ -43,6 +44,24 @@ public class Vector3f implements Cloneable {
 
     public float getZ() {
         return this.z;
+    }
+
+    @Since("FUTURE")
+    public Vector3f setX(float x) {
+        this.x = x;
+        return this;
+    }
+
+    @Since("FUTURE")
+    public Vector3f setY(float y) {
+        this.y = y;
+        return this;
+    }
+
+    @Since("FUTURE")
+    public Vector3f setZ(float z) {
+        this.z = z;
+        return this;
     }
 
     public int getFloorX() {
@@ -207,6 +226,11 @@ public class Vector3f implements Cloneable {
         return this.maxPlainDistance(x.x, x.z);
     }
 
+    /**
+     * Calculates the Length of this Vector
+     *
+     * @return The Length of this Vector.
+     */
     public double length() {
         return Math.sqrt(this.lengthSquared());
     }
@@ -223,10 +247,22 @@ public class Vector3f implements Cloneable {
         return new Vector3f(0, 0, 0);
     }
 
+    /**
+     * Scalar Product of this Vector and the Vector supplied.
+     *
+     * @param v Vector to calculate the scalar product to.
+     * @return Scalar Product
+     */
     public float dot(Vector3f v) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
 
+    /**
+     * Calculates the cross product of this Vector and the given Vector
+     *
+     * @param v the vector to calculate the cross product with.
+     * @return a Vector at right angle to this and other
+     */
     public Vector3f cross(Vector3f v) {
         return new Vector3f(
                 this.y * v.z - this.z * v.y,
@@ -235,9 +271,23 @@ public class Vector3f implements Cloneable {
         );
     }
 
-    /*
+    /* PowerNukkit: The Angle class was removed because it had all rights reserved copyright on it.
+     * Calculates the angle between this and the supplied Vector.
+     *
+     * @param v the Vector to calculate the angle to.
+     * @return the Angle between the two Vectors.
+     */
+    /*public Angle angleBetween(Vector3f v) {
+        return Angle.fromRadian(Math.acos(Math.min(Math.max(this.normalize().dot(v.normalize()), -1.0f), 1.0f)));
+    }*/
+
+    /**
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param x x value
+     * @return intermediate vector
      */
     public Vector3f getIntermediateWithXValue(Vector3f v, float x) {
         float xDiff = v.x - this.x;
@@ -254,9 +304,13 @@ public class Vector3f implements Cloneable {
         }
     }
 
-    /*
+    /**
      * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param y y value
+     * @return intermediate vector
      */
     public Vector3f getIntermediateWithYValue(Vector3f v, float y) {
         float xDiff = v.x - this.x;
@@ -273,9 +327,13 @@ public class Vector3f implements Cloneable {
         }
     }
 
-    /*
+    /**
      * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param z z value
+     * @return intermediate vector
      */
     public Vector3f getIntermediateWithZValue(Vector3f v, float z) {
         float xDiff = v.x - this.x;
@@ -332,13 +390,10 @@ public class Vector3f implements Cloneable {
         return super.hashCode();
     }
 
+    @SneakyThrows
     @Override
     public Vector3f clone() {
-        try {
-            return (Vector3f) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
+        return (Vector3f) super.clone();
     }
 
     public Vector3 asVector3() {

@@ -302,10 +302,12 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
         return BlockColor.SPRUCE_BLOCK_COLOR;
     }
 
+    @PowerNukkitOnly
     public boolean isExtinguished() {
         return getBooleanValue(EXTINGUISHED);
     }
 
+    @PowerNukkitOnly
     public void setExtinguished(boolean extinguished) {
         setBooleanValue(EXTINGUISHED, extinguished);
     }
@@ -349,12 +351,14 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable, Blo
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

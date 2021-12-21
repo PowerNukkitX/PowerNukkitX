@@ -1,65 +1,91 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Function;
 
 /**
  * @since 1.2.1.0-PN
  */
-@AllArgsConstructor
+@PowerNukkitOnly
+@AllArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
 public class CapturingCommandSender implements CommandSender {
     private final StringBuilder captured = new StringBuilder();
 
     @NonNull
-    @Getter
-    @Setter
     private String name;
 
-    @Getter @Setter
     private boolean isOp;
     
     @NonNull
     private final Permissible perms;
 
+    @PowerNukkitOnly
     public CapturingCommandSender() {
         this("System");
     }
-    
+
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name) {
         this.name = name;
         this.perms = new PermissibleBase(this);
     }
 
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp) {
         this.name = name;
-        this.isOp = true;
+        this.isOp = isOp;
         this.perms = new PermissibleBase(this);
     }
 
+    @PowerNukkitOnly
     public CapturingCommandSender(@NonNull String name, boolean isOp, @NonNull Function<ServerOperator, Permissible> permissibleFactory) {
         this.name = name;
-        this.isOp = true;
+        this.isOp = isOp;
         this.perms = permissibleFactory.apply(this);
     }
-    
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @PowerNukkitOnly
+    public void setName(@Nonnull String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean isOp() {
+        return isOp;
+    }
+
+    @Override
+    public void setOp(boolean op) {
+        isOp = op;
+    }
+
+    @PowerNukkitOnly
     public void resetCapture() {
         captured.setLength(0);
     }
-    
+
+    @PowerNukkitOnly
     public synchronized String getRawCapture() {
         return captured.toString();
     }
-    
+
+    @PowerNukkitOnly
     public synchronized String getCleanCapture() {
         return TextFormat.clean(captured.toString());
     }

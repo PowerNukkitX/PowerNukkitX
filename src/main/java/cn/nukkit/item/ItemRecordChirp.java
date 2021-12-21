@@ -15,6 +15,7 @@ public class ItemRecordChirp extends ItemRecord {
 
     public ItemRecordChirp(Integer meta, int count) {
         super(RECORD_CHIRP, meta, count);
+        name = "Music Disc Chirp";
     }
 
     @Override

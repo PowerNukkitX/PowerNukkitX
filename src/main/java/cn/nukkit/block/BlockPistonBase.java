@@ -340,13 +340,16 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         blockEntity.move(extending, attached);
         return true;
     }
-    
+
+    @PowerNukkitOnly
     protected BlockPistonHead createHead(int damage) {
         return (BlockPistonHead) Block.get(getPistonHeadBlockId(), damage);
     }
 
+    @PowerNukkitOnly
     public abstract int getPistonHeadBlockId();
 
+    @PowerNukkitOnly
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
         if (
                 block.getY() >= 0 && (face != BlockFace.DOWN || block.getY() != 0) &&

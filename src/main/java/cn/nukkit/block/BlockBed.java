@@ -250,7 +250,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
             level.setBlock(next, 1, next, true, false);
         }
         
-        BlockBed head = clone();
+        BlockBed head = (BlockBed) clone();
         head.setHeadPiece(true);
         level.setBlock(next, head, true, true);
         
@@ -352,20 +352,15 @@ public class BlockBed extends BlockTransparentMeta implements Faceable, BlockEnt
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
-    }
-
-    @PowerNukkitOnly("In Cloudburst Nukkit, the clone returns Object, which is a different signature!")
-    @Since("1.4.0.0-PN")
-    @Override
-    public BlockBed clone() {
-        return (BlockBed) super.clone();
     }
 
     @PowerNukkitOnly

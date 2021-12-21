@@ -66,7 +66,8 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return name + " Wall Fan";
         }
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public boolean isDead() {
         return (getDamage() & 0b10) == 0b10;
@@ -80,7 +81,8 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return super.onUpdate(type);
         }
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public int getType() {
         if ((getDamage() & 0b1) == 0) {
@@ -105,7 +107,8 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
                 return BlockFace.SOUTH;
         }
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public BlockFace getRootsFace() {
         return getBlockFace().getOpposite();

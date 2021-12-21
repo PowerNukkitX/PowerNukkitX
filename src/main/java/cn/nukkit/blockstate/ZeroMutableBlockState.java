@@ -51,13 +51,15 @@ public class ZeroMutableBlockState extends MutableBlockState {
         state = BlockState.of(blockId);
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
-    public MutableBlockState copy() {
+    public ZeroMutableBlockState copy() {
         return this;
     }
 
@@ -137,8 +139,8 @@ public class ZeroMutableBlockState extends MutableBlockState {
 
     @Unsigned
     @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
+    @PowerNukkitOnly
     public int getBigDamage() {
         return 0;
     }

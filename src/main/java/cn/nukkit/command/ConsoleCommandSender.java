@@ -73,6 +73,7 @@ public class ConsoleCommandSender implements CommandSender {
         return this.perm.getEffectivePermissions();
     }
 
+    @Override
     public boolean isPlayer() {
         return false;
     }

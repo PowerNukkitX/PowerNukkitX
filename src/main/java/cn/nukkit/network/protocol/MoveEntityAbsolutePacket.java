@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public double pitch;
     public boolean onGround;
     public boolean teleport;
+    @Since("FUTURE") public boolean forceMoveLocalEntity;
 
     @Override
     public byte pid() {
@@ -29,8 +31,9 @@ public class MoveEntityAbsolutePacket extends DataPacket {
     public void decode() {
         this.eid = this.getEntityRuntimeId();
         int flags = this.getByte();
-        teleport = (flags & 0x01) != 0;
-        onGround = (flags & 0x02) != 0;
+        onGround = (flags & 0x01) != 0;
+        teleport = (flags & 0x02) != 0;
+        forceMoveLocalEntity = (flags & 0x04) != 0;
         Vector3f v = this.getVector3f();
         this.x = v.x;
         this.y = v.y;
@@ -50,6 +53,9 @@ public class MoveEntityAbsolutePacket extends DataPacket {
         }
         if (teleport) {
             flags |= 0x02;
+        }
+        if (forceMoveLocalEntity) {
+            flags |= 0x04;
         }
         this.putByte(flags);
         this.putVector3f((float) this.x, (float) this.y, (float) this.z);

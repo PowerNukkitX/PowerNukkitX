@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
 
@@ -26,6 +27,7 @@ public final class DispenseBehaviorRegister {
         behaviors.remove(id);
     }
 
+    @PowerNukkitOnly
     public static void init() {
         registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());

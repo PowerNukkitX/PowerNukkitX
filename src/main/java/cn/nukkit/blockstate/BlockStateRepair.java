@@ -5,6 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyException;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -18,6 +20,8 @@ import java.io.Serializable;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @Value
+@AllArgsConstructor(onConstructor = @__(@PowerNukkitOnly))
+@Getter(onMethod = @__(@PowerNukkitOnly))
 public class BlockStateRepair {
     /**
      * The block ID of the block state that is being repaired.

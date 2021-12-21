@@ -32,7 +32,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public abstract String getSlabName();
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public abstract int getSingleSlabId();

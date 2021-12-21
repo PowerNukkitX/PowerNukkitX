@@ -52,6 +52,7 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

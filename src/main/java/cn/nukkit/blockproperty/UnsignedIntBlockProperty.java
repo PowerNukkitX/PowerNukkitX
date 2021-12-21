@@ -75,6 +75,7 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         return (int)(value & 0xFFFFFFFFL);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getMetaForValue(@Nullable Integer value) {
         if (value == null) {
@@ -89,12 +90,14 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         return (int) (unsigned - minValue);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Integer getValueForMeta(int meta) {
         return getIntValueForMeta(meta);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValueForMeta(int meta) {
         try {
@@ -105,6 +108,7 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         return (int) (minValue + meta);
     }
 
+    @PowerNukkitOnly
     @Override
     public String getPersistenceValueForMeta(int meta) {
         return String.valueOf(removeSign(getIntValueForMeta(meta)));
@@ -121,6 +125,7 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         }
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateDirectly(@Nullable Integer value) {
         if (value == null) {
@@ -137,12 +142,14 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         Preconditions.checkArgument(maxValue >= unsigned, "New value (%s) must be less or equals to %s", unsigned, maxValue);
     }
 
+    @PowerNukkitOnly
     @Override
     protected void validateMetaDirectly(int meta) {
         long max = maxValue - minValue;
         Preconditions.checkArgument(0 <= meta && meta <= max, "The meta %s is outside the range of 0 .. ", meta, max);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Class<Integer> getValueClass() {
@@ -161,6 +168,7 @@ public class UnsignedIntBlockProperty extends BlockProperty<Integer> {
         return minValue;
     }
 
+    @Override
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

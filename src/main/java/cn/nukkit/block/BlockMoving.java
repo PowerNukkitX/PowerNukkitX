@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
@@ -12,13 +11,15 @@ import cn.nukkit.math.BlockFace;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
+@PowerNukkitOnly
 public class BlockMoving extends BlockTransparent implements BlockEntityHolder<BlockEntityMovingBlock> {
 
+    @PowerNukkitOnly
     public BlockMoving() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockMoving(int meta) {
         super();
     }
@@ -60,7 +61,8 @@ public class BlockMoving extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

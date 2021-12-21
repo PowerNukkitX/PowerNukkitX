@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
  */
 public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
+    @PowerNukkitOnly
     protected String blockString;
     protected Block block;
 
@@ -49,6 +50,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         super.initBlockEntity();
     }
 
+    @PowerNukkitOnly
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
     public CompoundTag getBlockEntity() {
         return getMovingBlockEntityCompound();
@@ -65,14 +67,17 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         return null;
     }
 
+    @PowerNukkitOnly
     public Block getMovingBlock() {
         return this.block;
     }
 
+    @PowerNukkitOnly
     public String getMovingBlockString() {
         return this.blockString;
     }
 
+    @PowerNukkitOnly
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
         AxisAlignedBB bb = block.getBoundingBox();
 

@@ -13,6 +13,7 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
 
+@PowerNukkitOnly
 public class BlockIceFrosted extends BlockTransparentMeta {
 
     @PowerNukkitOnly
@@ -23,10 +24,12 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(AGE);
 
+    @PowerNukkitOnly
     public BlockIceFrosted() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockIceFrosted(int meta) {
         super(meta);
     }
@@ -110,6 +113,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         return false;
     }
 
+    @PowerNukkitOnly
     protected void slightlyMelt(boolean isSource) {
         int age = getDamage();
         if (age < 3) {

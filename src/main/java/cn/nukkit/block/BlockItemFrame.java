@@ -281,17 +281,18 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 
-    @PowerNukkitOnly("Will calculate the correct AABB")
-    @Since("1.3.0.0-PN")
+    @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Will calculate the correct AABB")
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {

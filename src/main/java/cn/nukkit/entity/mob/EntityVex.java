@@ -45,6 +45,7 @@ public class EntityVex extends EntityMob {
         return "Vex";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

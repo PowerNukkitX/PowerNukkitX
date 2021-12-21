@@ -21,6 +21,7 @@ public class ItemRecordPigstep extends ItemRecord {
     @Since("1.4.0.0-PN")
     public ItemRecordPigstep(Integer meta, int count) {
         super(RECORD_PIGSTEP, meta, count);
+        name = "Music Disc Pigstep";
     }
 
     @Override

@@ -3,6 +3,10 @@ package cn.nukkit.inventory.transaction;
 import cn.nukkit.Player;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.blockproperty.value.AnvilDamage;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.AnvilDamageEvent;
 import cn.nukkit.event.block.AnvilDamageEvent.DamageCause;
 import cn.nukkit.event.inventory.RepairItemEvent;
@@ -86,17 +90,15 @@ public class RepairItemTransaction extends InventoryTransaction {
             ev.setCancelled(oldDamage == newDamage);
             this.source.getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                newDamage = ev.getNewDamage();
-                if (newDamage > 2) {
+                BlockState newState = ev.getNewBlockState();
+                if (newState.getBlockId() == BlockID.AIR
+                        || newState.getBlockId() == BlockID.ANVIL && newState.getPropertyValue(BlockAnvil.DAMAGE).equals(AnvilDamage.BROKEN)) {
                     this.source.level.setBlock(block, Block.get(Block.AIR), true);
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_BREAK);
                 } else {
-                    if (newDamage < 0) {
-                        newDamage = 0;
-                    }
-                    if (newDamage != oldDamage) {
-                        block.setDamage((newDamage << 2) | (block.getDamage() & 0x3));
-                        this.source.level.setBlock(block, block, true);
+                    if (!newState.equals(ev.getOldBlockState())) {
+                        Block newBlock = newState.getBlockRepairing(block);
+                        this.source.level.setBlock(block, newBlock, true);
                     }
                     this.source.level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_USE);
                 }

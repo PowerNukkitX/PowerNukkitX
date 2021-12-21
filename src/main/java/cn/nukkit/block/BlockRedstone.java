@@ -64,6 +64,7 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -74,7 +75,6 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitOnly
     @PowerNukkitDifference(info = "Update around redstone", since = "1.4.0.0-PN")
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
@@ -86,7 +86,6 @@ public class BlockRedstone extends BlockSolidMeta implements RedstoneComponent {
     }
 
     @Override
-    @PowerNukkitOnly
     @PowerNukkitDifference(info = "Update around redstone", since = "1.4.0.0-PN")
     public boolean onBreak(Item item) {
         if (!super.onBreak(item)) {

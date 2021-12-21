@@ -227,7 +227,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         return 0;
     }
 
-    @PowerNukkitDifference(info = "Trigger observer on dispense fail (with #setDirty()).", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     public void dispense() {
         InventoryHolder blockEntity = getBlockEntity();
 
@@ -296,6 +296,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
         }
     }
 
+    @PowerNukkitOnly
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
     }
@@ -311,6 +312,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

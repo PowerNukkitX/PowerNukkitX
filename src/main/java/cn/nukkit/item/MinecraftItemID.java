@@ -953,7 +953,8 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") WATER_BUCKET,
     @PowerNukkitOnly @Since("1.4.0.0-PN") LIGHT_GRAY_DYE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") CHARCOAL,
-    @PowerNukkitOnly @Since("1.4.0.0-PN") AGENT_SPAWN_EGG(false, false, true)
+    @PowerNukkitOnly @Since("1.4.0.0-PN") AGENT_SPAWN_EGG(false, false, true),
+    @PowerNukkitOnly @Since("FUTURE") SPYGLASS
     ;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id-> 

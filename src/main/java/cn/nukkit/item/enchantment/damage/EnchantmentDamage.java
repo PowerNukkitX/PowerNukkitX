@@ -59,6 +59,7 @@ public abstract class EnchantmentDamage extends Enchantment {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isItemAcceptable(Item item) {
         if (item.isAxe()) {

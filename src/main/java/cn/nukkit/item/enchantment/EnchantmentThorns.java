@@ -1,5 +1,6 @@
 package cn.nukkit.item.enchantment;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -63,6 +64,7 @@ public class EnchantmentThorns extends Enchantment {
         return !(item instanceof ItemElytra) && super.canEnchant(item);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isItemAcceptable(Item item) {
         if (item instanceof ItemArmor) {

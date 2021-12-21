@@ -109,7 +109,8 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 }

@@ -12,9 +12,9 @@ public class ResourcePacksInfoPacket extends DataPacket {
 
     public boolean mustAccept;
     public boolean scripting;
+    @Since("FUTURE") public boolean forceServerPacks;
     public ResourcePack[] behaviourPackEntries = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackEntries = ResourcePack.EMPTY_ARRAY;
-    private boolean forcingServerPacksEnabled;
 
     @Override
     public void decode() {
@@ -24,16 +24,14 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        
         this.putBoolean(this.mustAccept);
         this.putBoolean(this.scripting);
-        this.putBoolean(this.forcingServerPacksEnabled);
-
-        encodePacks(this.behaviourPackEntries);
-        encodePacks(this.resourcePackEntries);
+        this.putBoolean(this.forceServerPacks);
+        this.encodePacks(this.behaviourPackEntries, true);
+        this.encodePacks(this.resourcePackEntries, false);
     }
 
-    private void encodePacks(ResourcePack[] packs) {
+    private void encodePacks(ResourcePack[] packs, boolean behaviour) {
         this.putLShort(packs.length);
         for (ResourcePack entry : packs) {
             this.putString(entry.getPackId().toString());
@@ -43,7 +41,9 @@ public class ResourcePacksInfoPacket extends DataPacket {
             this.putString(""); // sub-pack name
             this.putString(entry.getPackId().toString()); // content identity
             this.putBoolean(false); // scripting
-            this.putBoolean(false); // raytracing capable
+            if (!behaviour) {
+                this.putBoolean(false); // raytracing capable
+            }
         }
     }
 
@@ -103,12 +103,12 @@ public class ResourcePacksInfoPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public boolean isForcingServerPacksEnabled() {
-        return forcingServerPacksEnabled;
+        return forceServerPacks;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public void setForcingServerPacksEnabled(boolean forcingServerPacksEnabled) {
-        this.forcingServerPacksEnabled = forcingServerPacksEnabled;
+        this.forceServerPacks = forcingServerPacksEnabled;
     }
 }

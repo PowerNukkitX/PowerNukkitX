@@ -162,6 +162,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -171,6 +172,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
         return BlockColor.IRON_BLOCK_COLOR;
     }
 
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }

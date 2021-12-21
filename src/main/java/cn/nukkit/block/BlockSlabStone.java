@@ -51,17 +51,20 @@ public class BlockSlabStone extends BlockSlab {
         return PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return getSlabType().getEnglishName();
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return slab.getId() == getId() && getSlabType().equals(slab.getPropertyValue(StoneSlab1Type.PROPERTY));
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -101,7 +101,8 @@ public class BlockStructureVoid extends BlockSolid {
     }
     
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
     

@@ -51,18 +51,22 @@ abstract public class PluginBase implements Plugin {
     private PluginLogger logger;
 
 
+    @Override
     public void onLoad() {
 
     }
 
+    @Override
     public void onEnable() {
 
     }
 
+    @Override
     public void onDisable() {
 
     }
 
+    @Override
     public final boolean isEnabled() {
         return isEnabled;
     }
@@ -105,14 +109,17 @@ abstract public class PluginBase implements Plugin {
         }
     }
 
+    @Override
     public final boolean isDisabled() {
         return !isEnabled;
     }
 
+    @Override
     public final File getDataFolder() {
         return dataFolder;
     }
 
+    @Override
     public final PluginDescription getDescription() {
         return description;
     }
@@ -149,6 +156,7 @@ abstract public class PluginBase implements Plugin {
         }
     }
 
+    @Override
     public PluginLogger getLogger() {
         return logger;
     }

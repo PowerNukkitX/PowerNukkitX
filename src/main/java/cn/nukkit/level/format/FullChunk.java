@@ -172,6 +172,7 @@ public interface FullChunk extends Cloneable {
 
     void recalculateHeightMap();
 
+    @PowerNukkitOnly
     int recalculateHeightMapColumn(int chunkX, int chunkZ);
 
     void populateSkyLight();

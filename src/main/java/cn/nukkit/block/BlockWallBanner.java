@@ -72,11 +72,13 @@ public class BlockWallBanner extends BlockBanner {
         return getPropertyValue(FACING_DIRECTION);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setDirection(CompassRoseDirection direction) {
         setBlockFace(direction.getClosestBlockFace());
     }
 
+    @PowerNukkitOnly
     @Override
     public CompassRoseDirection getDirection() {
         return getBlockFace().getCompassRoseDirection();

@@ -1,5 +1,6 @@
 package cn.nukkit.entity.projectile;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.Player;
@@ -8,7 +9,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.item.EntityEndCrystal;
-import cn.nukkit.event.block.BellRingEvent;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
@@ -29,13 +29,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
+    @Since("FUTURE") public static final int PICKUP_NONE = 0;
+    @Since("FUTURE") public static final int PICKUP_ANY = 1;
+    @Since("FUTURE") public static final int PICKUP_CREATIVE = 2;
 
-    public Entity shootingEntity = null;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public boolean hasAge = true;
-    
+    public Entity shootingEntity;
+
+    /**
+     * It's inverted from {@link #getHasAge()} because of the poor architecture chosen by the original devs
+     * on the entity construction and initialization. It's impossible to set it to true before
+     * the initialization of the child classes.
+     */
+    private boolean noAge;
+
     protected double getDamage() {
         return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
     }
@@ -44,11 +50,13 @@ public abstract class EntityProjectile extends Entity {
         return 0;
     }
 
-    public boolean hadCollision = false;
+    public boolean hadCollision;
 
-    public boolean closeOnCollide = true;
+    public boolean closeOnCollide;
 
-    protected double damage = 0;
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Redundant and unused", replaceWith = "getDamage()")
+    protected double damage;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -61,6 +69,8 @@ public abstract class EntityProjectile extends Entity {
             this.setDataProperty(new LongEntityData(DATA_SHOOTER_ID, shootingEntity.getId()));
         }
     }
+    
+    
 
     @PowerNukkitOnly("Allows to modify the damage based on the entity being damaged")
     @Since("1.4.0.0-PN")
@@ -72,6 +82,7 @@ public abstract class EntityProjectile extends Entity {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
+    @Override
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
@@ -98,7 +109,7 @@ public abstract class EntityProjectile extends Entity {
 
             if (this.fireTicks > 0) {
                 EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
-                this.server.getPluginManager().callEvent(ev);
+                this.server.getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     entity.setOnFire(event.getDuration());
                 }
@@ -109,20 +120,21 @@ public abstract class EntityProjectile extends Entity {
             this.close();
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected void afterCollisionWithEntity(Entity entity) {
-        
+
     }
 
     @Override
     protected void initEntity() {
+        this.closeOnCollide = true;
         super.initEntity();
 
         this.setMaxHealth(1);
         this.setHealth(1);
-        if (this.namedTag.contains("Age") && this.hasAge) {
+        if (this.namedTag.contains("Age") && !this.noAge) {
             this.age = this.namedTag.getShort("Age");
         }
     }
@@ -135,7 +147,7 @@ public abstract class EntityProjectile extends Entity {
     @Override
     public void saveNBT() {
         super.saveNBT();
-        if (this.hasAge) {
+        if (!this.noAge) {
             this.namedTag.putShort("Age", this.age);
         }
     }
@@ -147,7 +159,7 @@ public abstract class EntityProjectile extends Entity {
         this.motionX *= 1 - this.getDrag();
         this.motionZ *= 1 - this.getDrag();
     }
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
@@ -245,12 +257,14 @@ public abstract class EntityProjectile extends Entity {
         return hasUpdate;
     }
 
+    @PowerNukkitOnly
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
         this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
         this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
     }
 
+    @PowerNukkitOnly
     public void inaccurate(float modifier) {
         Random rand = ThreadLocalRandom.current();
 
@@ -277,16 +291,34 @@ public abstract class EntityProjectile extends Entity {
     protected void addHitEffect() {
 
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "getHasAge",
+            toBeRemovedAt = "1.7.0.0-PN")
     public boolean hasAge() {
-        return hasAge;
+        return getHasAge();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit", since = "FUTURE", reason = "Bad method name", replaceWith = "setHasAge",
+            toBeRemovedAt = "1.7.0.0-PN")
     public void setAge(boolean hasAge) {
-        this.hasAge = hasAge;
+        setHasAge(hasAge);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public void setHasAge(boolean hasAge) {
+        this.noAge = !hasAge;
+    }
+
+    public boolean getHasAge() {
+        return !this.noAge;
     }
 }

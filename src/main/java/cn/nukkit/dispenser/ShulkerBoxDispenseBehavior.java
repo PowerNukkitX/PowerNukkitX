@@ -1,13 +1,21 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
+@PowerNukkitOnly
 public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public ShulkerBoxDispenseBehavior() {
+        super();
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

@@ -15,6 +15,7 @@ public class ItemRecordStrad extends ItemRecord {
 
     public ItemRecordStrad(Integer meta, int count) {
         super(RECORD_STRAD, meta, count);
+        name = "Music Disc Strad";
     }
 
     @Override

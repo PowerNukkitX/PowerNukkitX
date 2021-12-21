@@ -50,19 +50,19 @@ public class CraftingManager {
     protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = new Int2ObjectOpenHashMap<>();
 
     public final Map<Integer, FurnaceRecipe> furnaceRecipes = new Int2ObjectOpenHashMap<>();
-    public final Map<Integer, BlastFurnaceRecipe> blastFurnaceRecipes = new Int2ObjectOpenHashMap<>();
-    public final Map<Integer, SmokerRecipe> smokerRecipes = new Int2ObjectOpenHashMap<>();
-    public final Map<Integer, CampfireRecipe> campfireRecipes = new Int2ObjectOpenHashMap<>();
+    @PowerNukkitOnly public final Map<Integer, BlastFurnaceRecipe> blastFurnaceRecipes = new Int2ObjectOpenHashMap<>();
+    @PowerNukkitOnly public final Map<Integer, SmokerRecipe> smokerRecipes = new Int2ObjectOpenHashMap<>();
+    @PowerNukkitOnly public final Map<Integer, CampfireRecipe> campfireRecipes = new Int2ObjectOpenHashMap<>();
 
     @Since("1.4.0.0-PN") public final Map<UUID, MultiRecipe> multiRecipes = new HashMap<>();
 
     public final Map<Integer, BrewingRecipe> brewingRecipes = new Int2ObjectOpenHashMap<>();
     public final Map<Integer, ContainerRecipe> containerRecipes = new Int2ObjectOpenHashMap<>();
-    public final Map<Integer, StonecutterRecipe> stonecutterRecipes = new Int2ObjectOpenHashMap<>();
+    @PowerNukkitOnly public final Map<Integer, StonecutterRecipe> stonecutterRecipes = new Int2ObjectOpenHashMap<>();
 
     private static int RECIPE_COUNT = 0;
     protected final Map<Integer, Map<UUID, ShapelessRecipe>> shapelessRecipes = new Int2ObjectOpenHashMap<>();
-    protected final Map<Integer, Map<UUID, CartographyRecipe>> cartographyRecipes = new Int2ObjectOpenHashMap<>();
+    @PowerNukkitOnly protected final Map<Integer, Map<UUID, CartographyRecipe>> cartographyRecipes = new Int2ObjectOpenHashMap<>();
     
     private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipes = new Int2ObjectOpenHashMap<>();
 
@@ -518,18 +518,21 @@ public class CraftingManager {
         return recipe;
     }
 
+    @PowerNukkitOnly
     public CampfireRecipe matchCampfireRecipe(Item input) {
         CampfireRecipe recipe = this.campfireRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.campfireRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
     }
 
+    @PowerNukkitOnly
     public BlastFurnaceRecipe matchBlastFurnaceRecipe(Item input) {
         BlastFurnaceRecipe recipe = this.blastFurnaceRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.blastFurnaceRecipes.get(getItemHash(input.getId(), 0));
         return recipe;
     }
 
+    @PowerNukkitOnly
     public SmokerRecipe matchSmokerRecipe(Item input) {
         SmokerRecipe recipe = this.smokerRecipes.get(getItemHash(input));
         if (recipe == null) recipe = this.smokerRecipes.get(getItemHash(input.getId(), 0));
@@ -548,6 +551,7 @@ public class CraftingManager {
         return 31 * getItemHash(item) + item.getCount();
     }
 
+    @PowerNukkitOnly
     public void registerStonecutterRecipe(StonecutterRecipe recipe) {
         this.stonecutterRecipes.put(getItemHash(recipe.getResult()), recipe);
     }
@@ -557,17 +561,19 @@ public class CraftingManager {
         this.furnaceRecipes.put(getItemHash(input), recipe);
     }
 
-
+    @PowerNukkitOnly
     public void registerBlastFurnaceRecipe(BlastFurnaceRecipe recipe) {
         Item input = recipe.getInput();
         this.blastFurnaceRecipes.put(getItemHash(input), recipe);
     }
 
+    @PowerNukkitOnly
     public void registerSmokerRecipe(SmokerRecipe recipe) {
         Item input = recipe.getInput();
         this.smokerRecipes.put(getItemHash(input), recipe);
     }
 
+    @PowerNukkitOnly
     public void registerCampfireRecipe(CampfireRecipe recipe) {
         Item input = recipe.getInput();
         this.campfireRecipes.put(getItemHash(input), recipe);
@@ -603,7 +609,8 @@ public class CraftingManager {
 
         recipe.registerToCraftingManager(this);
     }
-    
+
+    @PowerNukkitOnly
     public void registerCartographyRecipe(CartographyRecipe recipe) {
         List<Item> list = recipe.getIngredientList();
         list.sort(recipeComparator);
@@ -744,10 +751,12 @@ public class CraftingManager {
         return this.containerRecipes.get(getContainerHash(input.getId(), potion.getId()));
     }
 
+    @PowerNukkitOnly
     public StonecutterRecipe matchStonecutterRecipe(Item output) {
         return this.stonecutterRecipes.get(getItemHash(output));
     }
 
+    @PowerNukkitOnly
     public CartographyRecipe matchCartographyRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList) {
         int outputHash = getItemHash(primaryOutput);
     

@@ -28,6 +28,7 @@ public abstract class Tag {
 
     abstract void load(NBTInputStream dis) throws IOException;
 
+    @Override
     public abstract String toString();
 
     public abstract byte getId();

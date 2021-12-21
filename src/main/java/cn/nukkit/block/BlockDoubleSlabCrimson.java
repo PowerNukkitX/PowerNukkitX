@@ -32,17 +32,20 @@ public class BlockDoubleSlabCrimson extends BlockDoubleSlabBase {
         return BlockSlab.SIMPLE_SLAB_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Crimson";
     }
 
+    @PowerNukkitOnly
     @Override
     public int getSingleSlabId() {
         return CRIMSON_SLAB;
     }
 
     //TODO Adjust or remove this when merging https://github.com/PowerNukkit/PowerNukkit/pull/370
+    @PowerNukkitOnly
     @Override
     protected boolean isCorrectTool(Item item) {
         return true;

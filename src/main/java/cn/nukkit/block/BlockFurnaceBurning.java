@@ -148,6 +148,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

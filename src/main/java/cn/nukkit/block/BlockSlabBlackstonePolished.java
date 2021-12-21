@@ -45,11 +45,13 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
         return SIMPLE_SLAB_PROPERTIES;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Polished Blackstone";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSameType(BlockSlab slab) {
         return getId() == slab.getId();

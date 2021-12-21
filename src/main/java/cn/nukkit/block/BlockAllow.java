@@ -51,6 +51,7 @@ public class BlockAllow extends BlockSolid {
         return false;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean canBePulled() {
         return false;

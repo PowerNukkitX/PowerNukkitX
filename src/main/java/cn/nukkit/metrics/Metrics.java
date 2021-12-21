@@ -5,8 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.MainLogger;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
@@ -52,7 +52,7 @@ public class Metrics {
 
     /**
      * Creates a new instance and starts submitting immediately.
-     * 
+     *
      * @param name The bStats metrics identifier.
      * @param serverUUID The unique identifier of this server.
      * @param logFailedRequests If failed submissions should be logged.
@@ -319,7 +319,7 @@ public class Metrics {
             return createAdvancedChartData(callable);
         }
     }
-    
+
     private static JSONObject createAdvancedChartData(final Callable<Map<String, Integer>> callable) throws Exception {
         JSONObject data = new JSONObject();
         JSONObject values = new JSONObject();
@@ -539,3 +539,4 @@ public class Metrics {
     }
 
 }
+

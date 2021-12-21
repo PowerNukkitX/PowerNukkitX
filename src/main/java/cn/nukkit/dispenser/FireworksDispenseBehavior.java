@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFirework;
@@ -9,8 +10,15 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+@PowerNukkitOnly
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
+    public FireworksDispenseBehavior() {
+        super();
+    }
+
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         BlockFace opposite = face.getOpposite();

@@ -27,6 +27,7 @@ import cn.nukkit.event.server.ServerStopEvent;
 import cn.nukkit.inventory.CraftingManager;
 import cn.nukkit.inventory.Recipe;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.TextContainer;
@@ -223,18 +224,21 @@ public class Server {
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
+        @Override
         public Level put(Integer key, Level value) {
             Level result = super.put(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
+        @Override
         public boolean remove(Object key, Object value) {
             boolean result = super.remove(key, value);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
             return result;
         }
 
+        @Override
         public Level remove(Object key) {
             Level result = super.remove(key);
             levelArray = levels.values().toArray(Level.EMPTY_ARRAY);
@@ -272,8 +276,6 @@ public class Server {
      * Minimal initializer for testing
      */
     @SuppressWarnings("UnstableApiUsage")
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     Server(File tempDir) throws IOException {
         if (tempDir.isFile() && !tempDir.delete()) {
             throw new IOException("Failed to delete " + tempDir);
@@ -643,10 +645,11 @@ public class Server {
 
         Block.init();
         Enchantment.init();
+        RuntimeItems.getRuntimeMapping();
+        Potion.init();
         Item.init();
         EnumBiome.values(); //load class, this also registers biomes
         Effect.init();
-        Potion.init();
         Attribute.init();
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
@@ -1487,6 +1490,7 @@ public class Server {
         return Nukkit.VERSION;
     }
 
+    @PowerNukkitOnly
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
     }
@@ -2270,10 +2274,12 @@ public class Server {
         return forceLanguage;
     }
 
+    @PowerNukkitOnly
     public boolean isRedstoneEnabled() {
         return redstoneEnabled;
     }
 
+    @PowerNukkitOnly
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
     }
@@ -2409,7 +2415,7 @@ public class Server {
     }
 
     public boolean isOp(String name) {
-        return this.operators.exists(name, true);
+        return name != null && this.operators.exists(name, true);
     }
 
     public Config getWhitelist() {

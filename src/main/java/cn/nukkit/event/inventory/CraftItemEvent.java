@@ -32,7 +32,7 @@ public class CraftItemEvent extends Event implements Cancellable {
 
         this.player = transaction.getSource();
         this.input = transaction.getInputList().toArray(Item.EMPTY_ARRAY);
-        this.recipe = transaction.getRecipe();
+        this.recipe = transaction.getTransactionRecipe();
     }
 
     public CraftItemEvent(Player player, Item[] input, Recipe recipe) {

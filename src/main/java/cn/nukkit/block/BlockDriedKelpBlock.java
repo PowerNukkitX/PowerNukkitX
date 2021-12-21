@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockDriedKelpBlock extends BlockSolid {
-    
+
+    @PowerNukkitOnly
     public BlockDriedKelpBlock() {
     }
     

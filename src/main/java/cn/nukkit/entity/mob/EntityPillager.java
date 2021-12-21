@@ -42,6 +42,7 @@ public class EntityPillager extends EntityMob {
         return "Pillager";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
