@@ -143,8 +143,8 @@ public class EntityThrownTrident extends EntityProjectile {
         this.player = !namedTag.contains(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
 
         if (namedTag.contains(TAG_CREATIVE)) {
-            if (pickupMode == EntityThrownTrident.PICKUP_ANY && namedTag.getBoolean(TAG_CREATIVE)) {
-                pickupMode = EntityThrownTrident.PICKUP_CREATIVE;
+            if (pickupMode == PICKUP_ANY && namedTag.getBoolean(TAG_CREATIVE)) {
+                pickupMode = PICKUP_CREATIVE;
             }
             namedTag.remove(TAG_CREATIVE);
         }
@@ -429,9 +429,6 @@ public class EntityThrownTrident extends EntityProjectile {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "getPickupMode() == EntityProjectile.PICKUP_CREATIVE",
-            reason = "Nukkit added this API in 3-states, NONE, ANY, and CREATIVE")
     public boolean isCreative() {
         return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
     }

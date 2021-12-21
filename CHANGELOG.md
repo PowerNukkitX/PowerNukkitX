@@ -18,9 +18,15 @@ This work in progress version supports Minecraft `1.18.0`.
 - [#1267] Changed Nimbus Jose JWT library from `7.9` to `9.13`
 - [#1267] Removed some deprecated APIs, check the JDiff for details.
 - [#1267] Changed the method signature to customize the boss bar color
+- [#1267] `ItemArmor.TIER_OTHER` is not a constant anymore.
 
 ### Depreciation
 - [#1266] Some APIs become deprecated, check the JDiff for details.
+- [#1266] `ItemTrident.setCreative` and `getCreative` are now deprecated.
+
+### Added
+- [#1266] API to get the potion names, level in roman string and tipped arrow potion.
+- [#1266] API for the banner pattern snout (Piglin)
 
 ### Changed
 - [#1258] Changed supported version to Minecraft Bedrock Edition `1.18.0`.
@@ -32,6 +38,8 @@ This work in progress version supports Minecraft `1.18.0`.
 - [#1267] Boats placed by dispenser could have the wrong wood type
 - [#1267] Falling anvil was not dealing damage to the entities correctly
 - [#1267] Some randomizers could pick the same number over and over again.
+- [#1267] Bowl and Crossbow fuel time
+- [#1267] The durability of some items
 
 ### Documentation
 - [#1267] Added all missing `@PowerNukkitOnly` annotations
