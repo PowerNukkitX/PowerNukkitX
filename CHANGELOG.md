@@ -9,6 +9,11 @@ Nukkit 1.X and 2.X.
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
 
+## [1.5.2.1-PN] - 2021-12-21 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/30?closed=1))
+
+### CRITICAL SECURITY FIX
+- [#1266], [#1270] Changed Log4J library from `2.13.3` to `2.17.0`
+
 ## [1.5.2.0-PN] - 2021-12-01 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
 This new version add protocol support for Minecraft `1.17.40` as if it was `1.16.221` with some new features and fixes.
 
@@ -763,7 +768,8 @@ Fixes several anvil issues.
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
 [discord guild]: https://powernukkit.org/discord
 
-[Unreleased 1.6.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.0-PN...bleeding
+[Unreleased 1.6.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.1-PN...bleeding
+[1.5.2.1-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.0-PN...v1.5.2.1-PN
 [1.5.2.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.1.0-PN...v1.5.2.0-PN
 [1.5.1.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.0.0-PN...v1.5.1.0-PN
 [1.5.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.4.0.0-PN...v1.5.0.0-PN
@@ -957,3 +963,5 @@ Fixes several anvil issues.
 [#1233]: https://github.com/PowerNukkit/PowerNukkit/issues/1233
 [#1244]: https://github.com/PowerNukkit/PowerNukkit/issues/1244
 [#1216]: https://github.com/PowerNukkit/PowerNukkit/issues/1216
+[#1266]: https://github.com/PowerNukkit/PowerNukkit/issues/1266
+[#1270]: https://github.com/PowerNukkit/PowerNukkit/issues/1270
