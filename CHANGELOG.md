@@ -12,11 +12,12 @@ Click the link above to see the future.
 This work in progress version supports Minecraft `1.18.0`.
 
 ### CRITICAL SECURITY FIX
-- [#1266] Changed Log4J library from `2.13.3` to `2.15.0`
+- [#1266] Changed Log4J library from `2.13.3` to `2.17.0`
 
 ### Breaking changes
 - [#1267] Changed Nimbus Jose JWT library from `7.9` to `9.13`
 - [#1267] Removed some deprecated APIs, check the JDiff for details.
+- [#1267] Changed the method signature to customize the boss bar color
 
 ### Depreciation
 - [#1266] Some APIs become deprecated, check the JDiff for details.
@@ -27,6 +28,10 @@ This work in progress version supports Minecraft `1.18.0`.
 ### Fixes
 - [#267] Regression of: Fishing hooks without players, loaded from the level save.
 - [#1267] Network decoding of the `MoveEntityDeltaPacket`
+- [#1267] `isOp` param of the `CapturingCommandSender` constructors were not being used
+- [#1267] Boats placed by dispenser could have the wrong wood type
+- [#1267] Falling anvil was not dealing damage to the entities correctly
+- [#1267] Some randomizers could pick the same number over and over again.
 
 ### Documentation
 - [#1267] Added all missing `@PowerNukkitOnly` annotations

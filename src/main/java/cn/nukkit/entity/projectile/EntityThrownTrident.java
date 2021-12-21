@@ -1,6 +1,7 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -53,8 +54,6 @@ public class EntityThrownTrident extends EntityProjectile {
     private BlockVector3 stuckToBlockPos;
 
     private int favoredSlot;
-
-    private boolean isCreative;
 
     private boolean player;
 
@@ -141,8 +140,14 @@ public class EntityThrownTrident extends EntityProjectile {
         this.pickupMode = namedTag.contains(TAG_PICKUP) ? namedTag.getByte(TAG_PICKUP) : PICKUP_ANY;
         this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 8;
         this.favoredSlot = namedTag.contains(TAG_FAVORED_SLOT) ? namedTag.getInt(TAG_FAVORED_SLOT) : -1;
-        this.isCreative = namedTag.contains(TAG_CREATIVE) && namedTag.getBoolean(TAG_CREATIVE);
         this.player = !namedTag.contains(TAG_PLAYER) || namedTag.getBoolean(TAG_PLAYER);
+
+        if (namedTag.contains(TAG_CREATIVE)) {
+            if (pickupMode == EntityThrownTrident.PICKUP_ANY && namedTag.getBoolean(TAG_CREATIVE)) {
+                pickupMode = EntityThrownTrident.PICKUP_CREATIVE;
+            }
+            namedTag.remove(TAG_CREATIVE);
+        }
 
         if (namedTag.contains(TAG_TRIDENT)) {
             this.trident = NBTIO.getItemHelper(namedTag.getCompound(TAG_TRIDENT));
@@ -190,7 +195,6 @@ public class EntityThrownTrident extends EntityProjectile {
             .add(new IntTag("2", this.stuckToBlockPos.z))
         );
         this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
-        this.namedTag.putBoolean(TAG_CREATIVE, this.isCreative);
         this.namedTag.putBoolean(TAG_PLAYER, this.player);
     }
 
@@ -425,14 +429,24 @@ public class EntityThrownTrident extends EntityProjectile {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "getPickupMode() == EntityProjectile.PICKUP_CREATIVE",
+            reason = "Nukkit added this API in 3-states, NONE, ANY, and CREATIVE")
     public boolean isCreative() {
-        return isCreative;
+        return getPickupMode() == EntityProjectile.PICKUP_CREATIVE;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", replaceWith = "setPickupMode(EntityProjectile.PICKUP_<MODE>)",
+            reason = "Nukkit added this API in 3-states, NONE, ANY, and CREATIVE")
     public void setCreative(boolean isCreative) {
-        this.isCreative = isCreative;
+        if (isCreative) {
+            setPickupMode(EntityProjectile.PICKUP_CREATIVE);
+        } else if (getPickupMode() == EntityProjectile.PICKUP_CREATIVE) {
+            setPickupMode(EntityProjectile.PICKUP_ANY);
+        }
     }
 
     @PowerNukkitOnly
