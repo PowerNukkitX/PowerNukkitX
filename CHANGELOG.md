@@ -11,9 +11,6 @@ Click the link above to see the future.
 
 This work in progress version supports Minecraft `1.18.0`.
 
-### CRITICAL SECURITY FIX
-- [#1266] Changed Log4J library from `2.13.3` to `2.17.0`
-
 ### Breaking changes
 - [#1267] Changed Nimbus Jose JWT library from `7.9` to `9.13`
 - [#1267] Removed some deprecated APIs, check the JDiff for details.
@@ -45,6 +42,11 @@ This work in progress version supports Minecraft `1.18.0`.
 - [#1267] Added all missing `@PowerNukkitOnly` annotations
 - [#1267] Added all missing `@Override` annotations
 - [#1267] Removed all incorrect `@PowerNukkitOnly` annotations
+
+## [1.5.2.1-PN] - 2021-12-21 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/30?closed=1))
+
+### CRITICAL SECURITY FIX
+- [#1266], [#1270] Changed Log4J library from `2.13.3` to `2.17.0`
 
 ## [1.5.2.0-PN] - 2021-12-01 ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
 This new version adds protocol support for Minecraft `1.17.40` as if it was `1.16.221` with some new features and fixes.
@@ -800,7 +802,8 @@ Fixes several anvil issues.
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
 [discord guild]: https://powernukkit.org/discord
 
-[Unreleased 1.6.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.0-PN...bleeding
+[Unreleased 1.6.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.1-PN...bleeding
+[1.5.2.1-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.2.0-PN...v1.5.2.1-PN
 [1.5.2.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.1.0-PN...v1.5.2.0-PN
 [1.5.1.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.5.0.0-PN...v1.5.1.0-PN
 [1.5.0.0-PN]: https://github.com/PowerNukkit/PowerNukkit/compare/v1.4.0.0-PN...v1.5.0.0-PN
@@ -997,3 +1000,4 @@ Fixes several anvil issues.
 [#1258]: https://github.com/PowerNukkit/PowerNukkit/issues/1258
 [#1266]: https://github.com/PowerNukkit/PowerNukkit/issues/1266
 [#1267]: https://github.com/PowerNukkit/PowerNukkit/issues/1267
+[#1270]: https://github.com/PowerNukkit/PowerNukkit/issues/1270
