@@ -65,10 +65,12 @@ public class FormWindowCustom extends FormWindow {
         this.icon = icon;
     }
 
+    @Override
     public FormResponseCustom getResponse() {
         return response;
     }
 
+    @Override
     public void setResponse(String data) {
         if (data.equals("null")) {
             this.closed = true;

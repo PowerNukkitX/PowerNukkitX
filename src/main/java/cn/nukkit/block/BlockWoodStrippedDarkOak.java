@@ -20,6 +20,7 @@ public class BlockWoodStrippedDarkOak extends BlockWoodStripped {
         return STRIPPED_DARK_OAK_LOG;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return WoodType.DARK_OAK;

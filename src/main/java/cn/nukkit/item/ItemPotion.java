@@ -1,9 +1,15 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Potion;
+import cn.nukkit.utils.ServerException;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ItemPotion extends Item {
 
@@ -55,6 +61,62 @@ public class ItemPotion extends Item {
 
     public ItemPotion(Integer meta, int count) {
         super(POTION, meta, count, "Potion");
+        updateName();
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        int potionId = getDamage();
+        if (potionId == Potion.WATER) {
+            name = buildName(potionId, "Bottle", true);
+        } else {
+            name = buildName(potionId, "Potion", true);
+        }
+    }
+
+    static String buildName(int potionId, String type, boolean includeLevel) {
+        switch (potionId) {
+            case Potion.WATER:
+                return "Water " + type;
+            case Potion.MUNDANE:
+            case Potion.MUNDANE_II:
+                return "Mundane " + type;
+            case Potion.THICK:
+                return "Thick " + type;
+            case Potion.AWKWARD:
+                return "Awkward " + type;
+            case Potion.TURTLE_MASTER:
+            case Potion.TURTLE_MASTER_II:
+            case Potion.TURTLE_MASTER_LONG: {
+                String name = type + " of the Turtle Master";
+                if (!includeLevel) {
+                    return name;
+                }
+                Potion potion = Objects.requireNonNull(getPotion(potionId));
+                if (potion.getLevel() <= 1) {
+                    return name;
+                }
+                return name + " " + potion.getRomanLevel();
+            }
+            default: {
+                Potion potion = getPotion(potionId);
+                String finalName = potion != null ? potion.getPotionTypeName() : "";
+                if (finalName.isEmpty()) {
+                    finalName = type;
+                } else {
+                    finalName = type + " of " + finalName;
+                }
+                if (includeLevel && potion != null && potion.getLevel() > 1) {
+                    finalName += " " + potion.getRomanLevel();
+                }
+                return finalName;
+            }
+        }
     }
 
     @Override
@@ -86,5 +148,20 @@ public class ItemPotion extends Item {
             potion.applyPotion(player);
         }
         return true;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nullable
+    public Potion getPotion() {
+        return getPotion(getDamage());
+    }
+
+    static Potion getPotion(int damage) {
+        try {
+            return Potion.getPotion(damage);
+        } catch (ServerException ignored) {
+            return null;
+        }
     }
 }

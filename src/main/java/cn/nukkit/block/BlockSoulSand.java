@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFormEvent;
 import cn.nukkit.item.ItemTool;
@@ -52,6 +53,7 @@ public class BlockSoulSand extends BlockSolid {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isSoulSpeedCompatible() {
         return true;

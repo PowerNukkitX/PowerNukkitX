@@ -505,7 +505,7 @@ public class BlockStateRegistry {
     public BlockProperties getProperties(int blockId) {
         int fullId = blockId << Block.DATA_BITS;
         Block block;
-        if (fullId >= Block.fullList.length || (block = Block.fullList[fullId]) == null) {
+        if (fullId >= Block.fullList.length || fullId < 0 || (block = Block.fullList[fullId]) == null) {
             return BlockUnknown.PROPERTIES;
         }
         return block.getProperties();

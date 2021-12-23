@@ -311,7 +311,8 @@ public class BlockEntityBeehive extends BlockEntity {
             }
         }
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public void onBreak(boolean isSilkTouch) {
         if (!isSilkTouch) {

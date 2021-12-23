@@ -35,8 +35,6 @@ public abstract class MutableBlockState implements IMutableBlockState {
         this.properties = properties;
     }
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @API(definition = INTERNAL, usage = INCUBATING)
     void setDataStorageWithoutValidation(Number storage) {
         setDataStorage(storage);
@@ -57,18 +55,21 @@ public abstract class MutableBlockState implements IMutableBlockState {
         }
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public final BlockProperties getProperties() {
         return properties;
     }
 
+    @PowerNukkitOnly
     @Nonnegative
     @Override
     public final int getBlockId() {
         return blockId;
     }
 
+    @PowerNukkitOnly
     @Override
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
@@ -79,10 +80,12 @@ public abstract class MutableBlockState implements IMutableBlockState {
     @Override
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
+    @PowerNukkitOnly
     public final long getBigId() {
         return IMutableBlockState.super.getBigId();
     }
 
+    @PowerNukkitOnly
     @Override
     public final int getBitSize() {
         return getProperties().getBitSize();

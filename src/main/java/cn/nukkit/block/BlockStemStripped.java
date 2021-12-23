@@ -17,6 +17,7 @@ public abstract class BlockStemStripped extends BlockStem {
         super(meta);
     }
 
+    @PowerNukkitOnly
     @Override
     protected BlockState getStrippedState() {
         return getCurrentState();

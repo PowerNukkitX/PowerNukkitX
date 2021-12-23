@@ -141,10 +141,12 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return true;
     }
 
+    @PowerNukkitOnly
     public boolean isInverted() {
         return false;
     }
 
+    @PowerNukkitOnly
     public void updatePower() {
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {

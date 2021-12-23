@@ -55,16 +55,19 @@ public class EntityZoglin extends EntityMob implements EntityAgeable {
         return "Zoglin";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isBaby() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);

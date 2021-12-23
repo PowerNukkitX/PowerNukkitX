@@ -45,6 +45,7 @@ public class EntityBlaze extends EntityMob {
         return "Blaze";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

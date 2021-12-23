@@ -26,6 +26,7 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.InvalidBlockDamageException;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
@@ -56,6 +57,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final Block[] EMPTY_ARRAY = new Block[0];
 
     //<editor-fold desc="static fields" defaultstate="collapsed">
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
@@ -68,6 +70,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     public static final int DATA_BITS = dynamic(4);
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It's not a constant value, it may be changed on major updates and" +
             " plugins will have to be recompiled in order to update this value in the binary files, " +
@@ -86,6 +89,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not encapsulated, easy to break", 
             replaceWith = "Block.get(int).getClass(), to register new blocks use registerBlockImplementation()")
     @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static Class<? extends Block>[] list = null;
     
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", 
@@ -93,43 +97,45 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     "to get the block with a given state use BlockState.of and than BlockState.getBlock()")
     @Deprecated
     @SuppressWarnings({"java:S1444", "java:S2386", "java:S1123", "java:S1133", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static Block[] fullList = null;
     
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getLightLevel()")
+            replaceWith = "Block.getLightLevel() or Block.getLightLevel(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static int[] light = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN", 
-            replaceWith = "Block.getLightFilter()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.getLightFilter() or Block.getLightFilter(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static int[] lightFilter = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.isSolid()")
+            replaceWith = "Block.isSolid() or Block.isSolid(int)")
     @SuppressWarnings({"java:S1444", "java:S2386"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static boolean[] solid = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.getHardness()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.getHardness() or Block.getHardness(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static double[] hardness = null;
 
     @Deprecated
     @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.isTransparent()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
+            replaceWith = "Block.isTransparent() or Block.isTransparent(int)")
+    @SuppressWarnings({"java:S1444", "java:S2386", "DeprecatedIsStillUsed"})
+    @SuppressFBWarnings(value = "MS_PKGPROTECT", justification = "Changing it would break compatibility with some regular Nukkit plugins")
     public static boolean[] transparent = null;
 
-    @Deprecated
-    @DeprecationDetails(reason = "Not encapsulated, easy to break", since = "1.4.0.0-PN",
-            replaceWith = "Block.diffusesSkyLight()")
-    @SuppressWarnings({"java:S1444", "java:S2386"})
-    public static boolean[] diffusesSkyLight = null;
+    private static boolean[] diffusesSkyLight = null;
     
     /**
      * if a block has can have variants
@@ -701,6 +707,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(id, meta, pos, 0);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     @SuppressWarnings("unchecked")
@@ -748,6 +755,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(fullId, level, x, y, z, 0);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public static Block get(int fullId, Level level, int x, int y, int z, int layer) {
@@ -788,6 +796,65 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return block;
     }
     //</editor-fold>
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
+    public static boolean isSolid(int blockId) {
+        if (blockId < 0 || blockId >= solid.length) {
+            return true;
+        }
+        return solid[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static boolean diffusesSkyLight(int blockId) {
+        if (blockId < 0 || blockId >= diffusesSkyLight.length) {
+            return false;
+        }
+        return diffusesSkyLight[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
+    public static double getHardness(int blockId) {
+        if (blockId < 0 || blockId >= hardness.length) {
+            return Double.MAX_VALUE;
+        }
+        return hardness[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
+    public static int getLightLevel(int blockId) {
+        if (blockId < 0 || blockId >= light.length) {
+            return 0;
+        }
+        return light[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
+    public static int getLightFilter(int blockId) {
+        if (blockId < 0 || blockId >= lightFilter.length) {
+            return 15;
+        }
+        return lightFilter[blockId];
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @SuppressWarnings("java:S1874")
+    public static boolean isTransparent(int blockId) {
+        if (blockId < 0 || blockId >= transparent.length) {
+            return false;
+        }
+        return transparent[blockId];
+    }
 
     /**
      * Register a new block implementation overriding the existing one.
@@ -899,8 +966,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
     
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
     @Nullable
     private MutableBlockState mutableState;
     
@@ -1042,6 +1107,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     // https://minecraft.gamepedia.com/Opacity#Lighting
+    @PowerNukkitOnly
     public boolean diffusesSkyLight() {
         return false;
     }
@@ -1055,6 +1121,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    @PowerNukkitOnly
     public final boolean canWaterloggingFlowInto() {
         return canBeFlowedInto() || getWaterloggingLevel() > 1;
     }
@@ -1075,14 +1142,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return true;
     }
 
+    @PowerNukkitOnly
     public boolean canBePulled() {
         return true;
     }
 
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return false;
     }
 
+    @PowerNukkitOnly
     public boolean sticksToPiston() {
         return true;
     }
@@ -1117,6 +1187,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     
     public abstract int getId();
 
+    @PowerNukkitOnly
     public int getItemId() {
         int id = getId();
         if (id > 255) {
@@ -1131,6 +1202,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return full id
      * @deprecated PowerNukkit: The meta is limited to 32 bits
      */
+    @Override
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public int getFullId() {
@@ -1140,6 +1212,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * The properties that fully describe all possible and valid states that this block can have. 
      */
+    @Override
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1147,6 +1220,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return CommonBlockProperties.EMPTY_PROPERTIES;
     }
     
+    @Override
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -1154,6 +1228,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return mutableState == null? BlockState.of(getId()) : mutableState.getCurrentState();
     }
     
+    @Override
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public final int getRuntimeId() {
@@ -1292,7 +1367,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         double baseTime = ((correctTool || canHarvestWithHand) ? 1.5 : 5.0) * blockHardness;
         double speed = 1.0 / baseTime;
         if (correctTool) speed *= toolBreakTimeBonus0(toolType, toolTier, blockId);
-        speed += speedBonusByEfficiencyLore0(efficiencyLoreLevel);
+        speed += correctTool ? speedBonusByEfficiencyLore0(efficiencyLoreLevel) : 0;
         speed *= speedRateByHasteLore0(hasteEffectLevel);
         if (insideOfWaterWithoutAquaAffinity) speed *= 0.2;
         if (outOfWaterButNotOnGround) speed *= 0.2;
@@ -1464,14 +1539,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getHardness() != -1;
     }
 
+    @Override
     public Block getSide(BlockFace face) {
         return getSideAtLayer(layer, face);
     }
 
+    @Override
     public Block getSide(BlockFace face, int step) {
         return getSideAtLayer(layer, face, step);
     }
 
+    @PowerNukkitOnly
     public Block getSideAtLayer(int layer, BlockFace face) {
         if (this.isValid()) {
             return this.getLevel().getBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
@@ -1479,6 +1557,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getSide(face, 1);
     }
 
+    @PowerNukkitOnly
     public Block getSideAtLayer(int layer, BlockFace face, int step) {
         if (this.isValid()) {
             if (step == 1) {
@@ -1495,74 +1574,92 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return block;
     }
 
+    @Override
     public Block up() {
         return up(1);
     }
 
+    @Override
     public Block up(int step) {
         return getSide(BlockFace.UP, step);
     }
 
+    @PowerNukkitOnly
     public Block up(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.UP, step);
     }
 
+    @Override
     public Block down() {
         return down(1);
     }
 
+    @Override
     public Block down(int step) {
         return getSide(BlockFace.DOWN, step);
     }
 
+    @PowerNukkitOnly
     public Block down(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.DOWN, step);
     }
 
+    @Override
     public Block north() {
         return north(1);
     }
 
+    @Override
     public Block north(int step) {
         return getSide(BlockFace.NORTH, step);
     }
 
+    @PowerNukkitOnly
     public Block north(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.NORTH, step);
     }
 
+    @Override
     public Block south() {
         return south(1);
     }
 
+    @Override
     public Block south(int step) {
         return getSide(BlockFace.SOUTH, step);
     }
 
+    @PowerNukkitOnly
     public Block south(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.SOUTH, step);
     }
 
+    @Override
     public Block east() {
         return east(1);
     }
 
+    @Override
     public Block east(int step) {
         return getSide(BlockFace.EAST, step);
     }
 
+    @PowerNukkitOnly
     public Block east(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.EAST, step);
     }
 
+    @Override
     public Block west() {
         return west(1);
     }
 
+    @Override
     public Block west(int step) {
         return getSide(BlockFace.WEST, step);
     }
 
+    @PowerNukkitOnly
     public Block west(int step, int layer) {
         return getSideAtLayer(layer, BlockFace.WEST, step);
     }
@@ -1632,6 +1729,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getBoundingBox();
     }
 
+    @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
         AxisAlignedBB bb = this.getBoundingBox();
         if (bb == null) {
@@ -1747,6 +1845,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
+    @Override
     public Block clone() {
         Block clone = (Block) super.clone();
         clone.mutableState = mutableState != null? mutableState.copy() : null;
@@ -1894,6 +1993,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public final ItemBlock asItemBlock() {
         return asItemBlock(1);
     }
@@ -1913,11 +2013,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public boolean mustDrop(Vector3 vector, int layer, BlockFace face, Item item, Player player) {
         return false;
     }
-    
+
+    @PowerNukkitOnly
     public Optional<Block> firstInLayers(Predicate<Block> condition) {
         return firstInLayers(0, condition);
     }
-    
+
+    @PowerNukkitOnly
     public Optional<Block> firstInLayers(int startingLayer, Predicate<Block> condition) {
         int maximumLayer = this.level.requireProvider().getMaximumLayer();
         for (int layer = startingLayer; layer <= maximumLayer; layer++) {
@@ -2164,6 +2266,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public final Block getBlock() {

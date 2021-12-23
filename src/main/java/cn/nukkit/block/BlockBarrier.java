@@ -8,8 +8,10 @@ import cn.nukkit.utils.BlockColor;
  * @author Pub4Game
  * @since 03.01.2016
  */
+@PowerNukkitOnly
 public class BlockBarrier extends BlockSolid {
 
+    @PowerNukkitOnly
     public BlockBarrier() {
     }
 

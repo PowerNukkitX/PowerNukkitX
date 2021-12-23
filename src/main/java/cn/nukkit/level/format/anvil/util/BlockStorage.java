@@ -49,8 +49,8 @@ public class BlockStorage {
     private static final int BLOCK_ID_MASK          = 0x00FF;
     private static final int BLOCK_ID_EXTRA_MASK    = 0xFF00;
     private static final int BLOCK_ID_FULL          = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
-    
-    public static final int SECTION_SIZE = 4096;
+
+    @PowerNukkitOnly public static final int SECTION_SIZE = 4096;
     
     private static final BlockState[] EMPTY = new BlockState[SECTION_SIZE];
     static {
@@ -68,7 +68,6 @@ public class BlockStorage {
         palette = new PalettedBlockStorage();
     }
 
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @API(definition = INTERNAL, usage = BLEEDING)
     BlockStorage(BlockState[] states, byte flags, PalettedBlockStorage palette, @Nullable BitSet denyStates) {
@@ -442,7 +441,6 @@ public class BlockStorage {
     }
 
     @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     public BlockStorage copy() {
         BitSet deny = denyStates;
         return new BlockStorage(states.clone(), flags, palette.copy(), (BitSet) (deny != null? deny.clone() : null));
@@ -467,14 +465,17 @@ public class BlockStorage {
         }
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockIds() {
         return getFlag(FLAG_HAS_ID);
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockIdExtras() {
         return getFlag(FLAG_HAS_ID_EXTRA);
     }
 
+    @PowerNukkitOnly
     public boolean hasBlockDataExtras() {
         return getFlag(FLAG_HAS_DATA_EXTRA);
     }

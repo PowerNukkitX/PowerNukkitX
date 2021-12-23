@@ -121,6 +121,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
         return ItemTool.TYPE_PICKAXE;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;

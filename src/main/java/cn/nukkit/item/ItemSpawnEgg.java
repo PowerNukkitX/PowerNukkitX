@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 /**
@@ -31,13 +32,31 @@ public class ItemSpawnEgg extends Item {
     }
 
     public ItemSpawnEgg(Integer meta, int count) {
-        super(SPAWN_EGG, meta, count, "Spawn EntityEgg");
+        this(SPAWN_EGG, meta, count, "Spawn Egg");
+        updateName();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected ItemSpawnEgg(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    protected void updateName() {
+        String entityName = getEntityName();
+        if (entityName == null) {
+            name = "Spawn Egg";
+        } else {
+            name = entityName + " Spawn Egg";
+        }
     }
 
     @Override
@@ -95,15 +114,29 @@ public class ItemSpawnEgg extends Item {
         return false;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    public Item getLegacySpawnEgg() {
-        return Item.get(SPAWN_EGG, getEntityNetworkId(), getCount(), getCompoundTag());
-    }
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getEntityNetworkId() {
         return this.meta;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nullable
+    public String getEntityName() {
+        String saveId = Entity.getSaveId(getEntityNetworkId());
+        if (saveId == null) {
+            return null;
+        }
+        switch (saveId) {
+            case "VillagerV1":
+                return "Villager";
+            case "ZombieVillagerV1":
+                return "Zombie Villager";
+            case "NPC":
+                return "NPC";
+            default:
+                return String.join(" ", saveId.split("(?=\\p{Lu})"));
+        }
     }
 }

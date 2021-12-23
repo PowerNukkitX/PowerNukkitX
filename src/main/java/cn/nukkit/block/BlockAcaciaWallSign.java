@@ -6,10 +6,12 @@ import cn.nukkit.item.ItemAcaciaSign;
 
 @PowerNukkitOnly
 public class BlockAcaciaWallSign extends BlockWallSign {
+    @PowerNukkitOnly
     public BlockAcaciaWallSign() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockAcaciaWallSign(int meta) {
         super(meta);
     }
@@ -19,6 +21,7 @@ public class BlockAcaciaWallSign extends BlockWallSign {
         return ACACIA_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return ACACIA_STANDING_SIGN;

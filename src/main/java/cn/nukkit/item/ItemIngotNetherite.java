@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
 @Since("1.4.0.0-PN")
@@ -19,6 +20,7 @@ public class ItemIngotNetherite extends Item {
         super(NETHERITE_INGOT, 0, count, "Netherite Ingot");
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return true;

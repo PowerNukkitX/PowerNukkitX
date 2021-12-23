@@ -36,7 +36,7 @@ public class PopulatorLava extends Populator {
                 int y = this.getHighestWorkableBlock(chunk, x, z);
                 if (y != -1 && chunk.getBlockId(x, y, z) == Block.AIR) {
                     chunk.setBlock(x, y, z, Block.LAVA);
-                    chunk.setBlockLight(x, y, z, Block.light[Block.LAVA]);
+                    chunk.setBlockLight(x, y, z, Block.getLightLevel(Block.LAVA));
                     this.lavaSpread(bx + x, y, bz + z);
                 }
             }

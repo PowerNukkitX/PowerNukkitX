@@ -56,7 +56,8 @@ public class BlockCauldronLava extends BlockCauldron {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return shrink(0.3, 0.3, 0.3);
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public void setFillLevel(int fillLevel) {
         super.setFillLevel(fillLevel);

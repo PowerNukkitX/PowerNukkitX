@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 @ToString
 public class SetTitlePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.SET_TITLE_PACKET;
-    
+
     private static final TitleAction[] TITLE_ACTIONS = TitleAction.values();
 
     public static final int TYPE_CLEAR = 0;
@@ -27,9 +27,8 @@ public class SetTitlePacket extends DataPacket {
     public int fadeInTime = 0;
     public int stayTime = 0;
     public int fadeOutTime = 0;
-    
-    private String xuid = "";
-    private String platformOnlineId = "";
+    @Since("FUTURE") public String xuid = "";
+    @Since("FUTURE") public String platformOnlineId = "";
 
     @Override
     public byte pid() {
@@ -148,7 +147,7 @@ public class SetTitlePacket extends DataPacket {
     public void setPlatformOnlineId(String platformOnlineId) {
         this.platformOnlineId = platformOnlineId;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public enum TitleAction {

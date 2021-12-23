@@ -1,6 +1,9 @@
 package cn.nukkit.potion;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
@@ -9,10 +12,15 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.potion.PotionApplyEvent;
 import cn.nukkit.utils.ServerException;
+import lombok.EqualsAndHashCode;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@PowerNukkitDifference(since = "FUTURE", info = "Implements equals() and hashcode() only in PowerNukkit")
+@EqualsAndHashCode
 public class Potion implements Cloneable {
 
     public static final int NO_EFFECTS = 0;
@@ -58,8 +66,14 @@ public class Potion implements Cloneable {
     public static final int TURTLE_MASTER_II = 39;
     public static final int SLOW_FALLING = 40;
     public static final int SLOW_FALLING_LONG = 41;
-    @Since("1.4.0.0-PN") public static final int SLOWNESS_LONG_II = 42;
-    @Since("1.4.0.0-PN") public static final int SLOWNESS_IV = 43;
+    @Since("1.4.0.0-PN") @PowerNukkitOnly public static final int SLOWNESS_IV = 42;
+
+    @Since("1.4.0.0-PN")
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason =
+            "Incorrect name, there is vanilla potion with slowness long 2, the result of potion with slowness 1 + glowstone is slowness 4",
+            replaceWith = "SLOWNESS_IV")
+    public static final int SLOWNESS_LONG_II = SLOWNESS_IV;
 
     protected static Potion[] potions;
 
@@ -108,7 +122,6 @@ public class Potion implements Cloneable {
         potions[Potion.TURTLE_MASTER_II] = new Potion(Potion.TURTLE_MASTER_II, 2);
         potions[Potion.SLOW_FALLING] = new Potion(Potion.SLOW_FALLING);
         potions[Potion.SLOW_FALLING_LONG] = new Potion(Potion.SLOW_FALLING_LONG);
-        potions[Potion.SLOWNESS_LONG_II] = new Potion(Potion.SLOWNESS_LONG_II, 2);
         potions[Potion.SLOWNESS_IV] = new Potion(Potion.SLOWNESS, 4);
     }
 
@@ -426,6 +439,139 @@ public class Potion implements Cloneable {
                     return 20;
                 default:
                     return 0;
+            }
+        }
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    public String getPotionTypeName() {
+        switch (getId()) {
+            case WATER:
+                return "Water";
+            case MUNDANE:
+            case MUNDANE_II:
+                return "Mundane";
+            case THICK:
+                return "Thick";
+            case AWKWARD:
+                return "Awkward";
+            case NIGHT_VISION_LONG:
+            case NIGHT_VISION:
+                return "Night Vision";
+            case INVISIBLE:
+            case INVISIBLE_LONG:
+                return "Invisibility";
+            case LEAPING_LONG:
+            case LEAPING_II:
+            case LEAPING:
+                return "Leaping";
+            case FIRE_RESISTANCE_LONG:
+            case FIRE_RESISTANCE:
+                return "Fire Resistance";
+            case SPEED:
+            case SPEED_LONG:
+            case SPEED_II:
+                return "Swiftness";
+            case SLOWNESS_LONG:
+            case SLOWNESS:
+            case SLOWNESS_IV:
+                return "Slowness";
+            case WATER_BREATHING_LONG:
+            case WATER_BREATHING:
+                return "Water Breathing";
+            case INSTANT_HEALTH:
+            case INSTANT_HEALTH_II:
+                return "Healing";
+            case HARMING:
+            case HARMING_II:
+                return "Harming";
+            case POISON:
+            case POISON_LONG:
+            case POISON_II:
+                return "Poison";
+            case REGENERATION:
+            case REGENERATION_LONG:
+            case REGENERATION_II:
+                return "Regeneration";
+            case STRENGTH:
+            case STRENGTH_LONG:
+            case STRENGTH_II:
+                return "Strength";
+            case WEAKNESS:
+            case WEAKNESS_LONG:
+                return "Weakness";
+            case WITHER_II:
+                return "Decay";
+            case TURTLE_MASTER:
+            case TURTLE_MASTER_LONG:
+            case TURTLE_MASTER_II:
+                return "Turtle Master";
+            case SLOW_FALLING:
+            case SLOW_FALLING_LONG:
+                return "Slow Falling";
+            default:
+                return "";
+        }
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    public String getName() {
+        String name = getPotionTypeName();
+        StringBuilder finalName = new StringBuilder(255).append("Potion");
+        if (!name.isEmpty()) {
+            int id = getId();
+            if (id >= TURTLE_MASTER && id <= TURTLE_MASTER_II) {
+                finalName.append(" of the ").append(name);
+            } else if (id <= AWKWARD) {
+                finalName.insert(0, name + " ");
+            } else {
+                finalName.append(" of ").append(name);
+            }
+        }
+
+        int currentLevel = getLevel();
+        if (currentLevel > 1) {
+            finalName.append(' ');
+            appendRoman(finalName, currentLevel);
+        }
+        return finalName.toString();
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    @Nonnull
+    public String getRomanLevel() {
+        int currentLevel = getLevel();
+        if (currentLevel == 0) {
+            return "0";
+        }
+
+        StringBuilder sb = new StringBuilder(4);
+        if (currentLevel < 0) {
+            sb.append('-');
+            currentLevel *= -1;
+        }
+
+        appendRoman(sb, currentLevel);
+        return sb.toString();
+    }
+
+    private static void appendRoman(StringBuilder sb, int num) {
+        int times;
+        String[] romans = new String[] { "I", "IV", "V", "IX", "X", "XL", "L",
+                "XC", "C", "CD", "D", "CM", "M" };
+        int[] ints = new int[] { 1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500,
+                900, 1000 };
+        for (int i = ints.length - 1; i >= 0; i--) {
+            times = num / ints[i];
+            num %= ints[i];
+            while (times > 0) {
+                sb.append(romans[i]);
+                times--;
             }
         }
     }

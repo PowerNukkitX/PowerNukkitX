@@ -3,6 +3,7 @@ package cn.nukkit.item.enchantment;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.item.enchantment.sideeffect.SideEffectCombust;
@@ -43,8 +44,11 @@ public class EnchantmentFireAspect extends Enchantment {
     @Nonnull
     @Override
     public SideEffect[] getAttackSideEffects(@Nonnull Entity attacker, @Nonnull Entity entity) {
+        if (entity instanceof Player && ((Player) entity).isCreative()) {
+            return SideEffect.EMPTY_ARRAY;
+        }
         return new SideEffect[]{
-                new SideEffectCombust(Math.max(entity.fireTicks / 20, getLevel() * 4))
+                new SideEffectCombust(Math.max(entity.fireTicks / 20, getLevel() << 2))
         };
     }
 }

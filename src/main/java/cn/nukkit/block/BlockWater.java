@@ -89,6 +89,7 @@ public class BlockWater extends BlockLiquid {
         return 5;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean usesWaterLogging() {
         return true;

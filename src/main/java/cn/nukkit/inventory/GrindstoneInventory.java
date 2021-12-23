@@ -128,6 +128,7 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
         }
     }
 
+    @PowerNukkitOnly
     public boolean updateResult(boolean send) {
         Item firstItem = getFirstItem();
         Item secondItem = getSecondItem();

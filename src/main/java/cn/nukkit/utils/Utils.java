@@ -409,6 +409,7 @@ public class Utils {
     public static void zipFolder(Path sourceFolderPath, Path zipPath) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()))) {
             Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
+                @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     zos.putNextEntry(new ZipEntry(sourceFolderPath.relativize(file).toString()));
                     Files.copy(file, zos);

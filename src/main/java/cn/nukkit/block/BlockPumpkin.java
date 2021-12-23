@@ -44,7 +44,8 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public int getId() {
         return PUMPKIN;
     }
-    
+
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public BlockProperties getProperties() {
@@ -111,12 +112,14 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
     
@@ -124,7 +127,8 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public void setBlockFace(BlockFace face) {
         setPropertyValue(DIRECTION, face);

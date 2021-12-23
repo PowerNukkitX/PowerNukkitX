@@ -23,6 +23,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
+import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.event.block.BlockExplosionPrimeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -57,7 +58,18 @@ public class BlockRespawnAnchor extends BlockMeta {
     public int getId() {
         return RESPAWN_ANCHOR;
     }
-    
+
+    @PowerNukkitOnly
+    public BlockRespawnAnchor() {
+        this(0);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public BlockRespawnAnchor(int meta) throws InvalidBlockPropertyMetaException {
+        super(meta);
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull
@@ -209,7 +221,8 @@ public class BlockRespawnAnchor extends BlockMeta {
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 

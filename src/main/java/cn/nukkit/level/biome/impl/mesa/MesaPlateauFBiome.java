@@ -1,6 +1,6 @@
 package cn.nukkit.level.biome.impl.mesa;
 
-import cn.nukkit.api.RemovedFromNewRakNet;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.generator.populator.impl.PopulatorTree;
@@ -19,8 +19,8 @@ public class MesaPlateauFBiome extends MesaPlateauBiome {
     }
 
     @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
-    @RemovedFromNewRakNet
     public int getCoverBlock() {
         if (useNewRakNetCover()) {
             return getCoverId(0,0) >> 4;

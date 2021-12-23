@@ -185,7 +185,6 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     public boolean setBlock(int x, int y, int z, int blockId, int meta) {
         return this.setBlockAtLayer(x, y, z, 0, blockId, meta);
@@ -271,6 +270,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
     @Override
+    @PowerNukkitOnly
     public int getBlockData(int x, int y, int z, int layer) {
         return this.sections[y >> 4].getBlockData(x, y & 0x0f, z, layer);
     }
@@ -284,6 +284,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     @Override
     public void setBlockData(int x, int y, int z, int layer, int data) {
         int sectionY = y >> 4;
@@ -398,11 +399,13 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return setBlockStateAtLayer(x & 0xF, y, z & 0XF, layer, state);
     }
 
+    @PowerNukkitOnly
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
         return getBlockState(x & 0xF, y, z & 0xF, layer);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isBlockChangeAllowed(int x, int y, int z) {
         for (ChunkSection section: sections) {
@@ -436,6 +439,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Nonnull
+    @PowerNukkitOnly
     @Override
     public List<Block> findBorders(int x, int z) {
         List<Block> borders = null;
@@ -455,6 +459,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return borders != null? borders : Collections.emptyList();
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isBlockedByBorder(int x, int z) {
         for (ChunkSection section : sections) {

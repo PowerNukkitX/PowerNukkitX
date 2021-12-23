@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -25,6 +26,7 @@ public abstract class ProjectileItem extends Item {
 
     abstract public float getThrowForce();
 
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
@@ -73,10 +75,12 @@ public abstract class ProjectileItem extends Item {
         return true;
     }
 
+    @PowerNukkitOnly
     protected void addThrowSound(Player player) {
         player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacketV2.SOUND_THROW, -1, "minecraft:player", false, false);
     }
 
+    @PowerNukkitOnly
     protected Entity correctProjectile(Player player, Entity projectile) {
         return projectile;
     }

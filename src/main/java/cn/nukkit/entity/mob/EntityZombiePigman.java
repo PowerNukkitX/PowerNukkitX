@@ -46,11 +46,13 @@ public class EntityZombiePigman extends EntityMob implements EntitySmite {
         return "Zombified Piglin";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return this.getDataPropertyBoolean(DATA_FLAG_ANGRY);

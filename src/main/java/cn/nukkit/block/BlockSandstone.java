@@ -7,8 +7,6 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockproperty.value.SandStoneType;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -65,6 +63,7 @@ public class BlockSandstone extends BlockSolidMeta {
         setPropertyValue(SAND_STONE_TYPE, sandStoneType);
     }
 
+    @PowerNukkitOnly
     public SandStoneType getSandstoneType() {
         return getPropertyValue(SAND_STONE_TYPE);
     }
@@ -85,6 +84,7 @@ public class BlockSandstone extends BlockSolidMeta {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

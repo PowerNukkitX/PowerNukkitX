@@ -20,6 +20,7 @@ public class BlockWoodStrippedJungle extends BlockWoodStripped {
         return STRIPPED_JUNGLE_LOG;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return WoodType.JUNGLE;

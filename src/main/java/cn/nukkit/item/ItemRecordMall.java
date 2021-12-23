@@ -15,6 +15,7 @@ public class ItemRecordMall extends ItemRecord {
 
     public ItemRecordMall(Integer meta, int count) {
         super(RECORD_MALL, meta, count);
+        name = "Music Disc Mall";
     }
 
     @Override

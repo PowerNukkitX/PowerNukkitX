@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -13,9 +14,12 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashSet;
 
+@PowerNukkitOnly
 public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer {
+    @PowerNukkitOnly
     protected ContainerInventory inventory;
 
+    @PowerNukkitOnly
     public BlockEntitySpawnableContainer(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -61,6 +65,7 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
         }
     }
 
+    @PowerNukkitOnly
     protected int getSlotIndex(int index) {
         ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (int i = 0; i < list.size(); i++) {

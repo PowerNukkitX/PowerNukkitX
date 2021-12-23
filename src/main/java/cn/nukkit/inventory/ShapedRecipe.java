@@ -212,6 +212,7 @@ public class ShapedRecipe implements CraftingRecipe {
         return this.priority;
     }
 
+    @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
         for (Item item : inputList) {

@@ -13,6 +13,7 @@ public class BlockSoulTorch extends BlockTorch {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockSoulTorch(int meta) {
         super(meta);
     }

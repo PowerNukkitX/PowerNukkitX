@@ -23,6 +23,7 @@ import static cn.nukkit.math.VectorMath.calculateFace;
  */
 @PowerNukkitDifference(info = "Implements BlockConnectable only on PowerNukkit", since = "1.3.0.0-PN")
 public class BlockFence extends BlockTransparentMeta implements BlockConnectable {
+    @PowerNukkitOnly
     public static final BlockProperties PROPERTIES = new BlockProperties(WoodType.PROPERTY);
 
     @Deprecated @DeprecationDetails(reason = "Moved to the block property system", since = "1.4.0.0-PN", replaceWith = "getWoodType()")

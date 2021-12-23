@@ -86,6 +86,7 @@ public class BlockPrismarine extends BlockSolidMeta {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

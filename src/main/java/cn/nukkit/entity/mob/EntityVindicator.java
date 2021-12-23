@@ -51,6 +51,7 @@ public class EntityVindicator extends EntityMob {
         return new Item[]{Item.get(Item.IRON_AXE)};
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

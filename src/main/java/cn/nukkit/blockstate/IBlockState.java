@@ -442,6 +442,7 @@ public interface IBlockState {
         return (getBlockId() << Block.DATA_BITS) | (getLegacyDamage() & Block.DATA_MASK);
     }
 
+    @PowerNukkitOnly
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
     default long getBigId() {

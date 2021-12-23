@@ -47,11 +47,6 @@ public class EntityBoat extends EntityVehicle {
 
     public static final int NETWORK_ID = 90;
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "Was removed because it is already defined in Entity.DATA_VARIANT",
-            replaceWith = "Entity.DATA_VARIANT")
-    @PowerNukkitOnly public static final int DATA_WOOD_ID = 20;
-    
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
 
@@ -68,9 +63,9 @@ public class EntityBoat extends EntityVehicle {
     protected boolean sinking = true;
     private int ticksInWater;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
-    
+
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
     @Since("1.4.0.0-PN") public int woodID;
 
@@ -346,6 +341,7 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdated;
     }
 
+    @Override
     public void updatePassengers() {
         updatePassengers(false);
     }
@@ -454,8 +450,8 @@ public class EntityBoat extends EntityVehicle {
 
             entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 1));
             entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 90));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_ROTATION_OFFSET, -90));
             entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1));
+            entity.setDataProperty(new FloatEntityData(DATA_RIDER_ROTATION_OFFSET, -90));
             entity.setRotation(yaw, entity.pitch);
             entity.updateMovement();
         }
@@ -588,5 +584,9 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public String getOriginalName() {
         return "Boat";
+    }
+
+    public void onInput(double x, double y, double z, double yaw) {
+        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), yaw % 360, 0);
     }
 }

@@ -42,6 +42,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public BlockProperties getProperties() {
         return PROPERTIES;
     }

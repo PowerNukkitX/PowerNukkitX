@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.network.Network;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
@@ -10,6 +11,7 @@ import com.nukkitx.network.raknet.RakNetReliability;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class DataPacket extends BinaryStream implements Cloneable {
+    @PowerNukkitOnly
     public static final DataPacket[] EMPTY_ARRAY = new DataPacket[0];
 
     public volatile boolean isEncoded = false;

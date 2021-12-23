@@ -212,7 +212,9 @@ public class CraftingDataPacket extends DataPacket {
             this.putVarInt(recipe.getIngredient().getNetworkId());
             this.putVarInt(recipe.getResult().getNetworkId());
         }
-        this.putUnsignedVarInt(0);
+
+        this.putUnsignedVarInt(0); // Material reducers size
+
         this.putBoolean(cleanRecipes);
     }
 

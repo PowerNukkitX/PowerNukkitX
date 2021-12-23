@@ -102,7 +102,6 @@ public class BlockTurtleEgg extends BlockFlowable {
         setPropertyValue(CRACK_STATE, cracks);
     }
 
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
     public double getHardness() {

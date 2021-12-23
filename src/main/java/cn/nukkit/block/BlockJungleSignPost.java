@@ -20,6 +20,7 @@ public class BlockJungleSignPost extends BlockSignPost {
         return JUNGLE_STANDING_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getWallId() {
         return JUNGLE_WALL_SIGN;

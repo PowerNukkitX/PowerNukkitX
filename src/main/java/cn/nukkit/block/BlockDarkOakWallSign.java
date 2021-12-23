@@ -21,6 +21,7 @@ public class BlockDarkOakWallSign extends BlockWallSign {
         return DARKOAK_WALL_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     protected int getPostId() {
         return DARKOAK_STANDING_SIGN;

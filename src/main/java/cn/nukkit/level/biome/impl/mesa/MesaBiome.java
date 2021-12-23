@@ -1,6 +1,5 @@
 package cn.nukkit.level.biome.impl.mesa;
 
-import cn.nukkit.api.NewRakNetOnly;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockSand;
@@ -86,7 +85,6 @@ public class MesaBiome extends CoveredBiome {
         this.moundHeight = height;
     }
 
-    @NewRakNetOnly
     @Override
     public int getSurfaceDepth(int x, int y, int z) {
         return y < (71 + Math.round((redSandNoise.noise2D(x, z, true) + 1) * 1.5f)) ? 3 : y - 66;
@@ -104,7 +102,6 @@ public class MesaBiome extends CoveredBiome {
         }
     }
 
-    @NewRakNetOnly
     @Override
     public int getGroundDepth(int x, int y, int z) {
         return y < (71 + Math.round((redSandNoise.noise2D(x, z, true) + 1) * 1.5f)) ? 2 : 0;

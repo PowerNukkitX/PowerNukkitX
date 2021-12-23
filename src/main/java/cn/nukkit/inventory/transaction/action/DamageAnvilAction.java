@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.block.BlockID;
@@ -11,13 +12,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import lombok.ToString;
 
+@PowerNukkitOnly
 @ToString(callSuper = true)
 public class DamageAnvilAction extends InventoryAction {
     
     private final AnvilInventory anvil;
     private boolean shouldDamage;
     private CraftingTransaction transaction;
-    
+
+    @PowerNukkitOnly
     public DamageAnvilAction(AnvilInventory anvil, boolean shouldDamage, CraftingTransaction transaction) {
         super(Item.get(0), Item.get(0));
         this.anvil = anvil;
@@ -43,7 +46,7 @@ public class DamageAnvilAction extends InventoryAction {
         } else {
             newState.setDamage(newState.getDamage() & (Block.DATA_MASK ^ 0b1100) | (damage << 2));
         }
-        AnvilDamageEvent ev = new AnvilDamageEvent(levelBlock, newState, source, transaction, AnvilDamageEvent.Cause.USE);
+        AnvilDamageEvent ev = new AnvilDamageEvent(levelBlock, newState, source, transaction, AnvilDamageEvent.DamageCause.USE);
         ev.setCancelled(!shouldDamage);
         source.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

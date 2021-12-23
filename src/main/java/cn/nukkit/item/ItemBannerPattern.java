@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.BannerPattern;
 
 @Since("1.2.1.0-PN")
-@PowerNukkitOnly
 public class ItemBannerPattern extends Item {
     @PowerNukkitOnly
     public static final int PATTERN_CREEPER_CHARGE = 0;
@@ -26,16 +25,17 @@ public class ItemBannerPattern extends Item {
     public static final int PATTERN_BORDURE_INDENTED = 5;
 
     @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final int PATTERN_SNOUT = 6;
+
     public ItemBannerPattern() {
         this(0, 1);
     }
 
-    @PowerNukkitOnly
     public ItemBannerPattern(Integer meta) {
         this(meta, 1);
     }
 
-    @PowerNukkitOnly
     public ItemBannerPattern(Integer meta, int count) {
         super(BANNER_PATTERN, meta, count, "Bone");
         updateName();
@@ -72,14 +72,16 @@ public class ItemBannerPattern extends Item {
             case PATTERN_THING: return BannerPattern.Type.PATTERN_MOJANG;
             case PATTERN_FIELD_MASONED: return BannerPattern.Type.PATTERN_BRICK; 
             case PATTERN_BORDURE_INDENTED: return BannerPattern.Type.PATTERN_CURLY_BORDER;
+            case PATTERN_SNOUT: return BannerPattern.Type.PATTERN_SNOUT;
         }
     }
 
+    @PowerNukkitOnly
     protected void updateName() {
         if (getId() != BANNER_PATTERN) {
             return;
         }
-        switch (super.meta % 6) {
+        switch (super.meta) {
             case PATTERN_CREEPER_CHARGE:
                 name = "Creeper Charge Banner Pattern";
                 return;
@@ -96,7 +98,10 @@ public class ItemBannerPattern extends Item {
                 name = "Field Banner Pattern";
                 return;
             case PATTERN_BORDURE_INDENTED:
-                name = "Bordure Idented Banner Pattern";
+                name = "Bordure Indented Banner Pattern";
+                return;
+            case PATTERN_SNOUT:
+                name = "Snout Banner Pattern";
                 return;
             default:
                 name = "Banner Pattern";

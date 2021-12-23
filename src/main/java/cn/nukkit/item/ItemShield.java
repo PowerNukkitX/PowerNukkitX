@@ -24,6 +24,6 @@ public class ItemShield extends ItemTool {
 
     @Override
     public int getMaxDurability() {
-        return 336;
+        return DURABILITY_SHIELD;
     }
 }

@@ -56,6 +56,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
             BlockFace.WEST, BlockFace.NORTH
     }).ordinal(true);
 
+    @PowerNukkitOnly
     protected static final BlockProperties PROPERTIES = new BlockProperties(DOOR_DIRECTION, OPEN, UPPER_BLOCK, DOOR_HINGE);
 
     @Deprecated @DeprecationDetails(reason = "Use the accessors or properties instead", since = "1.4.0.0-PN", replaceWith = "CommonBlockProperties.OPEN")
@@ -452,12 +453,14 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     }
 
     @Override
+    @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
-    public boolean sticksToPiston() {
+    @PowerNukkitOnly
+    public  boolean sticksToPiston() {
         return false;
     }
 }

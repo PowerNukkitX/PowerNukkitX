@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
@@ -24,6 +25,7 @@ public class ItemBlock extends Item {
         this.block = block;
     }
 
+    @Override
     public void setDamage(Integer meta) {
         int blockMeta;
         if (meta != null) {
@@ -65,10 +67,12 @@ public class ItemBlock extends Item {
         return block;
     }
 
+    @Override
     public Block getBlock() {
         return this.block;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isLavaResistant() {
         return block.isLavaResistant();

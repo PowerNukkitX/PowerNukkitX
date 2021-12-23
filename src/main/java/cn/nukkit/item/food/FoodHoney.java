@@ -7,6 +7,7 @@ import cn.nukkit.potion.Effect;
 
 @PowerNukkitOnly
 public class FoodHoney extends Food {
+    @PowerNukkitOnly
     public FoodHoney(int restoreFood, float restoreSaturation) {
         this.setRestoreFood(restoreFood);
         this.setRestoreSaturation(restoreSaturation);

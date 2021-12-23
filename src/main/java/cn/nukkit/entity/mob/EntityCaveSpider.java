@@ -46,6 +46,7 @@ public class EntityCaveSpider extends EntityMob implements EntityArthropod {
         return "Cave Spider";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

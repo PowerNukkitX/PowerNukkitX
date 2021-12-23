@@ -1,23 +1,32 @@
 package cn.nukkit;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.command.SimpleCommandMap;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.item.EntityBoat;
+import cn.nukkit.entity.passive.EntityPig;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
-import cn.nukkit.network.protocol.InventoryTransactionPacket;
-import cn.nukkit.network.protocol.LoginPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.internal.verification.Times;
+import org.powernukkit.tests.api.MockEntity;
 import org.powernukkit.tests.api.MockLevel;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
@@ -27,9 +36,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(PowerNukkitExtension.class)
 class PlayerTest {
@@ -43,10 +51,201 @@ class PlayerTest {
     @Mock
     SourceInterface sourceInterface;
 
+    @MockEntity
+    EntityPig pig;
+
+    @MockEntity
+    EntityBoat boat;
+
     Skin skin;
     
     Player player;
-    
+
+    private MoveEntityAbsolutePacket buildMoveEntityAbsolutePacket(long eid) {
+        MoveEntityAbsolutePacket packet = new MoveEntityAbsolutePacket();
+        packet.eid = eid;
+        packet.x = player.getX() - 1;
+        packet.y = player.getY() - 1;
+        packet.z = player.getZ() - 1;
+        packet.yaw = 2.0;
+        packet.headYaw = 2.0;
+        packet.pitch = 2.0;
+        packet.encode();
+        return packet;
+    }
+
+    @Test
+    void moveEntityAbsolutePacketRidingBoat() {
+        boat.mountEntity(player);
+        assertSame(boat, player.getRiding());
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.handleDataPacket(buildMoveEntityAbsolutePacket(boat.getId()));
+        verify(player.getServer().getPluginManager(), new Times(1)).callEvent(any(DataPacketReceiveEvent.class));
+        verify(player.getServer().getPluginManager(), new Times(1)).callEvent(any(VehicleMoveEvent.class));
+    }
+
+    @Test
+    void moveEntityAbsolutePacketRidingPig() {
+        pig.mountEntity(player);
+        assertSame(pig, player.getRiding());
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.handleDataPacket(buildMoveEntityAbsolutePacket(pig.getId()));
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(VehicleMoveEvent.class));
+    }
+
+    @Test
+    void moveEntityAbsolutePacketNotRiding() {
+        assertNull(player.getRiding());
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.handleDataPacket(buildMoveEntityAbsolutePacket(player.getId()));
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(VehicleMoveEvent.class));
+    }
+
+    @Test
+    void moveEntityAbsolutePacketNotSpawned() {
+        assertTrue(player.isAlive());
+        player.spawned = false;
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.handleDataPacket(buildMoveEntityAbsolutePacket(player.getId()));
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(VehicleMoveEvent.class));
+    }
+
+    @Test
+    void moveEntityAbsolutePacketNotAlive() {
+        player.setHealth(0);
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.handleDataPacket(buildMoveEntityAbsolutePacket(player.getId()));
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(VehicleMoveEvent.class));
+    }
+
+    @Test
+    void emotePacketNotSpawned() {
+        EmotePacket packet = new EmotePacket();
+        packet.runtimeId = player.getId();
+        packet.emoteID = "emote";
+        packet.encode();
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.spawned = false;
+        player.getViewers().put(1, player);
+        player.handleDataPacket(packet);
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(DataPacketSendEvent.class));
+    }
+
+    @Test
+    void emotePacketBadId() {
+        EmotePacket packet = new EmotePacket();
+        packet.runtimeId = player.getId() + 1;
+        packet.emoteID = "emote";
+        packet.encode();
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.getViewers().put(1, player);
+        player.handleDataPacket(packet);
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(DataPacketSendEvent.class));
+    }
+
+    @Test
+    void emotePacketOk() {
+        EmotePacket packet = new EmotePacket();
+        packet.runtimeId = player.getId();
+        packet.emoteID = "emote";
+        packet.encode();
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.getViewers().put(1, player);
+        player.handleDataPacket(packet);
+        verify(player.getServer().getPluginManager(), new Times(1)).callEvent(any(DataPacketSendEvent.class));
+    }
+
+    @Test
+    void sendCommandDataNotSpawned() {
+        player.spawned = false;
+        SimpleCommandMap filled = new SimpleCommandMap(player.getServer());
+        when(player.getServer().getCommandMap()).thenReturn(filled);
+        assertFalse(filled.getCommands().isEmpty());
+        when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+        player.setOp(true);
+        when(player.getServer().isOp(eq(player.getName()))).thenReturn(true);
+        assertTrue(player.isOp());
+        player.sendCommandData();
+        verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(DataPacketSendEvent.class));
+    }
+
+    @Test
+    void sendCommandDataZeroCommands() {
+        player.spawned = true;
+        player.connected = true;
+        SimpleCommandMap zero = new SimpleCommandMap(player.getServer());
+        zero.getCommands().clear();
+        when(player.getServer().getCommandMap()).thenReturn(zero);
+        assertTrue(zero.getCommands().isEmpty());
+        PluginManager previous = player.getServer().getPluginManager();
+        player.setOp(true);
+        when(player.getServer().isOp(eq(player.getName()))).thenReturn(true);
+        assertTrue(player.isOp());
+        try {
+            when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+            player.sendCommandData();
+            verify(player.getServer().getPluginManager(), new Times(0)).callEvent(any(DataPacketSendEvent.class));
+        } finally {
+            lenient().when(player.getServer().getPluginManager()).thenReturn(previous);
+        }
+    }
+
+    @Test
+    void sendCommandDataSpawned() {
+        player.spawned = true;
+        player.connected = true;
+        SimpleCommandMap filled = new SimpleCommandMap(player.getServer());
+        when(player.getServer().getCommandMap()).thenReturn(filled);
+        assertFalse(filled.getCommands().isEmpty());
+        PluginManager previous = player.getServer().getPluginManager();
+        player.setOp(true);
+        when(player.getServer().isOp(eq(player.getName()))).thenReturn(true);
+        assertTrue(player.isOp());
+        try {
+            when(player.getServer().getPluginManager()).thenReturn(mock(PluginManager.class));
+            player.sendCommandData();
+            verify(player.getServer().getPluginManager(), new Times(1)).callEvent(any(DataPacketSendEvent.class));
+        } finally {
+            lenient().when(player.getServer().getPluginManager()).thenReturn(previous);
+        }
+    }
+
+    @Test
+    void setButtonText() {
+        player.setButtonText("button.text");
+        assertEquals("button.text", player.getDataPropertyString(Entity.DATA_INTERACTIVE_TAG));
+        assertEquals("button.text", player.getButtonText());
+    }
+
+    @Test
+    void tooManyFailedLoginAttempts() {
+        PluginManager pluginManager = mock(PluginManager.class);
+        when(player.getServer().getPluginManager()).thenReturn(pluginManager);
+        Player player = new Player(sourceInterface, clientId, clientIp, clientPort);
+
+        FilterTextPacket packet = new FilterTextPacket();
+        packet.text = "asd";
+        packet.fromServer = false;
+
+        Network network = new Network(Server.getInstance());
+        when(Server.getInstance().getNetwork()).thenReturn(network);
+
+        player.handleDataPacket(packet);
+        verify(pluginManager, times(0)).callEvent(any());
+
+        packet.encode();
+        player.handleDataPacket(packet.compress(2));
+        verify(pluginManager, times(1)).callEvent(any());
+
+        for (int i = 2; i <= 100; i++) {
+            player.handleDataPacket(packet);
+            assertFalse(player.closed);
+        }
+
+        player.handleDataPacket(packet);
+        assertTrue(player.closed);
+    }
+
     @Test
     void armorDamage() {
         player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.FALL, 1));

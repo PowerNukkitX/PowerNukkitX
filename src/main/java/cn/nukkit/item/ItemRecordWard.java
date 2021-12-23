@@ -15,6 +15,7 @@ public class ItemRecordWard extends ItemRecord {
 
     public ItemRecordWard(Integer meta, int count) {
         super(RECORD_WARD, meta, count);
+        name = "Music Disc Ward";
     }
 
     @Override

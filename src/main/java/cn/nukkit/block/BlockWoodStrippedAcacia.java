@@ -21,6 +21,7 @@ public class BlockWoodStrippedAcacia extends BlockWoodStripped {
         return STRIPPED_ACACIA_LOG;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return WoodType.ACACIA;

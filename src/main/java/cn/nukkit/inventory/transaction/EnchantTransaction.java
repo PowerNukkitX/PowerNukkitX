@@ -10,13 +10,9 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
 @Since("1.3.1.0-PN")
 public class EnchantTransaction extends InventoryTransaction {
     private Item inputItem;
@@ -112,5 +108,35 @@ public class EnchantTransaction extends InventoryTransaction {
             if (action instanceof EnchantingAction) return true;
         }
         return false;
+    }
+
+    @Since("1.3.1.0-PN")
+    public Item getInputItem() {
+        return inputItem;
+    }
+
+    @Since("1.3.1.0-PN")
+    public void setInputItem(Item inputItem) {
+        this.inputItem = inputItem;
+    }
+
+    @Since("1.3.1.0-PN")
+    public Item getOutputItem() {
+        return outputItem;
+    }
+
+    @Since("1.3.1.0-PN")
+    public void setOutputItem(Item outputItem) {
+        this.outputItem = outputItem;
+    }
+
+    @Since("1.3.1.0-PN")
+    public int getCost() {
+        return cost;
+    }
+
+    @Since("1.3.1.0-PN")
+    public void setCost(int cost) {
+        this.cost = cost;
     }
 }

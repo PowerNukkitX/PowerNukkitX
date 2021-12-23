@@ -1,12 +1,16 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockTrapdoorDarkOak extends BlockTrapdoor {
+    @PowerNukkitOnly
     public BlockTrapdoorDarkOak() {
         this(0);
     }
-    
+
+    @PowerNukkitOnly
     public BlockTrapdoorDarkOak(int meta) {
         super(meta);
     }

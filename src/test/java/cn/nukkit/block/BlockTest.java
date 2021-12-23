@@ -444,7 +444,51 @@ class BlockTest {
     private MutableBlockState getDirectMutableState(Block b) {
         return (MutableBlockState) MUTABLE_STATE.get(b);
     }
-    
+
+    @Test
+    void isSolid() {
+        assertTrue(Block.isSolid(-1));
+        assertTrue(Block.isSolid(100000000));
+        assertTrue(Block.isSolid(BlockID.STONE));
+        assertFalse(Block.isSolid(BlockID.DOOR_BLOCK));
+    }
+
+    @Test
+    void diffusesSkyLight() {
+        assertFalse(Block.diffusesSkyLight(-1));
+        assertFalse(Block.diffusesSkyLight(100000000));
+        assertFalse(Block.diffusesSkyLight(BlockID.STONE));
+        assertTrue(Block.diffusesSkyLight(BlockID.LEAVES));
+    }
+
+    @Test
+    void getHardness() {
+        assertEquals(Double.MAX_VALUE, Block.getHardness(-1));
+        assertEquals(Double.MAX_VALUE, Block.getHardness(100000000));
+        assertEquals(1.5, Block.getHardness(BlockID.STONE));
+    }
+
+    @Test
+    void getLightLevel() {
+        assertEquals(0, Block.getLightLevel(-1));
+        assertEquals(0, Block.getLightLevel(100000000));
+        assertEquals(14, Block.getLightLevel(BlockID.TORCH));
+    }
+
+    @Test
+    void getLightFilter() {
+        assertEquals(15, Block.getLightFilter(-1));
+        assertEquals(15, Block.getLightFilter(100000000));
+        assertEquals(1, Block.getLightFilter(BlockID.GLASS));
+    }
+
+    @Test
+    void isTransparent() {
+        assertFalse(Block.isTransparent(-1));
+        assertFalse(Block.isTransparent(100000000));
+        assertTrue(Block.isTransparent(BlockID.GLASS));
+    }
+
     public static class BlockTestBlock extends BlockMeta {
         public static BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TOGGLE, REDSTONE_SIGNAL, HUGE);
         

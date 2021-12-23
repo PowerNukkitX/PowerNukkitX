@@ -44,6 +44,7 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite {
         return new Item[]{Item.get(Item.BONE)};
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;

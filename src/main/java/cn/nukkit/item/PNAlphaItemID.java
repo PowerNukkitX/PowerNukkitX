@@ -24,7 +24,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -39,7 +38,6 @@ import lombok.RequiredArgsConstructor;
         "This interface was created to map item ids which were used in v1.4.0.0-PN-ALPHA.1, v1.4.0.0-PN-ALPHA.2 and v1.4.0.0-PN-ALPHA.1 " +
         "and will no longer be used because Nukkit took an other way and we will follow it to keep plugin compatibility in future.")
 @RequiredArgsConstructor
-@Getter
 public enum PNAlphaItemID {
     @Since("1.4.0.0-PN") @PowerNukkitOnly COD_BUCKET(802, MinecraftItemID.COD_BUCKET),
     @Since("1.4.0.0-PN") @PowerNukkitOnly GHAST_SPAWN_EGG(803, MinecraftItemID.GHAST_SPAWN_EGG),
@@ -162,5 +160,17 @@ public enum PNAlphaItemID {
     @Since("1.4.0.0-PN")
     public static PNAlphaItemID getBadAlphaId(int id) {
         return byId.get(id);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public int getBadItemId() {
+        return badItemId;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public MinecraftItemID getMinecraftItemId() {
+        return minecraftItemId;
     }
 }

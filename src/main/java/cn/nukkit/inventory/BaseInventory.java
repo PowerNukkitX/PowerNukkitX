@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -579,6 +580,7 @@ public abstract class BaseInventory implements Inventory {
         this.sendSlot(index, players.toArray(Player.EMPTY_ARRAY));
     }
 
+    @PowerNukkitOnly
     @Override
     public void addListener(InventoryListener listener) {
         if (this.listeners == null) {
@@ -588,6 +590,7 @@ public abstract class BaseInventory implements Inventory {
         this.listeners.add(listener);
     }
 
+    @PowerNukkitOnly
     @Override
     public void removeListener(InventoryListener listener) {
         if (this.listeners != null) {

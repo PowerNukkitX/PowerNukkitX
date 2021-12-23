@@ -1,5 +1,6 @@
 package cn.nukkit.event.entity;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
@@ -27,6 +28,7 @@ public class CreatureSpawnEvent extends Event implements Cancellable {
         this.compoundTag = nbt;
     }
 
+    @PowerNukkitOnly
     public CreatureSpawnEvent(int networkId, Position position, SpawnReason reason) {
         this.reason = reason;
         this.entityNetworkId = networkId;

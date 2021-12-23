@@ -175,6 +175,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }
@@ -205,7 +206,8 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
     }
 
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
 
@@ -229,6 +231,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
 
+    @PowerNukkitOnly
     @Nullable
     @Override
     public BlockEntityEnderChest getBlockEntity() {

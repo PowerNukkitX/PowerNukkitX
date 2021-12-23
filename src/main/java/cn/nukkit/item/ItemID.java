@@ -202,7 +202,7 @@ public interface ItemID {
     int DARK_OAK_DOOR = 431;
     int CHORUS_FRUIT = 432;
     int POPPED_CHORUS_FRUIT = 433;
-    @Since("1.2.1.0-PN") @PowerNukkitOnly int BANNER_PATTERN = 434;
+    @Since("1.2.1.0-PN") int BANNER_PATTERN = 434;
 
     int DRAGON_BREATH = 437;
     int SPLASH_POTION = 438;
@@ -214,7 +214,7 @@ public interface ItemID {
     int SHULKER_SHELL = 445;
     int BANNER = 446;
     int TOTEM = 450;
-    
+
     int IRON_NUGGET = 452;
 
     int TRIDENT = 455;
@@ -260,8 +260,8 @@ public interface ItemID {
 
     @PowerNukkitOnly int CAMPFIRE = 720;
 
-    @PowerNukkitOnly int SUSPICIOUS_STEW = 734;
-    
+    int SUSPICIOUS_STEW = 734;
+
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 
@@ -287,8 +287,10 @@ public interface ItemID {
     @Since("1.4.0.0-PN") int RECORD_PIGSTEP = 759;
     @Since("1.4.0.0-PN") @PowerNukkitOnly int NETHER_SPROUTS = 760;
 
+    @Since("FUTURE") int SPYGLASS = 772;
+
     @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
 
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
-    
+
 }

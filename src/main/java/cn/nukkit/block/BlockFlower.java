@@ -148,7 +148,7 @@ public class BlockFlower extends BlockFlowable {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
+    @PowerNukkitOnly
     public boolean canPlantOn(Block block) {
         return isSupportValid(block);
     }

@@ -13,6 +13,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
         super(baseHeightIn, extraRandomHeight, woodMetadata, leavesMetadata);
     }
 
+    @Override
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
         int height = this.getHeight(rand);
 

@@ -1,19 +1,25 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemFlintSteel;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 
+@PowerNukkitOnly
 public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
+
+    @PowerNukkitOnly
+    public FlintAndSteelDispenseBehavior() {
+        super();
+    }
 
     @Override
     @PowerNukkitDifference(info = "Reduce flint and steel usage instead of clearing.", since = "1.4.0.0-PN")
-    public Item dispense(BlockDispenser block, BlockFace face, Item item) {
+    public @PowerNukkitOnly Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         item = item.clone();
 

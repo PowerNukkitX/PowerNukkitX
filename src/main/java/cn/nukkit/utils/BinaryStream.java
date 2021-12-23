@@ -7,10 +7,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.RuntimeItems;
+import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -320,6 +317,7 @@ public class BinaryStream {
                 this.putString(color);
             }
         }
+
         this.putBoolean(skin.isPremium());
         this.putBoolean(skin.isPersona());
         this.putBoolean(skin.isCapeOnClassic());
@@ -371,6 +369,7 @@ public class BinaryStream {
             }
             skin.getTintColors().add(new PersonaPieceTint(pieceType, colors));
         }
+
         skin.setPremium(this.getBoolean());
         skin.setPersona(this.getBoolean());
         skin.setCapeOnClassic(this.getBoolean());
@@ -814,10 +813,10 @@ public class BinaryStream {
     }
 
     public void putGameRules(GameRules gameRules) {
-        // LinkedHashMap gives mutability and is faster in iteration 
+        // LinkedHashMap gives mutability and is faster in iteration
         val rules = new LinkedHashMap<>(gameRules.getGameRules());
         rules.keySet().removeIf(GameRule::isDeprecated);
-        
+
         this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
             this.putString(gameRule.getName().toLowerCase());

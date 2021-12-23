@@ -1,0 +1,66 @@
+<!ELEMENT minecraft-attributes (items)>
+
+<!ELEMENT items (item*)>
+
+<!ELEMENT item (item-state*)>
+        <!ATTLIST item
+                namespaced-id ID #REQUIRED
+                numeric-id CDATA #REQUIRED
+                name CDATA #REQUIRED
+                stack-size CDATA "64"
+                durability CDATA #IMPLIED
+                fuel-time CDATA #IMPLIED
+                tool (true|false) #IMPLIED
+                tier (none|leather|chain|other|wood|gold|stone|iron|diamond|netherite) "none"
+                axe (true|false) "false"
+                pickaxe (true|false) "false"
+                shovel (true|false) "false"
+                hoe (true|false) "false"
+                sword (true|false) "false"
+                shears (true|false) "false"
+                armor (true|false) #IMPLIED
+                helmet (true|false) "false"
+                chestplate (true|false) "false"
+                leggings (true|false) "false"
+                boots (true|false) "false"
+                enchantability CDATA #IMPLIED
+                attack-damage CDATA "1"
+                armor-points CDATA "0"
+                toughness CDATA "0"
+                unbreakable (true|false) "false"
+                lava-resistant (true|false) "false"
+                fertilizer (true|false) "false"
+                food CDATA ""
+                saturation CDATA ""
+        >
+
+<!ELEMENT item-state EMPTY>
+        <!ATTLIST item-state
+                namespaced-id ID #IMPLIED
+                numeric-id CDATA #IMPLIED
+                damage CDATA #REQUIRED
+                name CDATA #IMPLIED
+                stack-size CDATA #IMPLIED
+                durability CDATA #IMPLIED
+                fuel-time CDATA #IMPLIED
+                tool (true|false) #IMPLIED
+                tier (wooden|leather|gold|stone|iron|diamond|netherite) #IMPLIED
+                axe (true|false) #IMPLIED
+                pickaxe (true|false) #IMPLIED
+                shovel (true|false) #IMPLIED
+                hoe (true|false) #IMPLIED
+                sword (true|false) #IMPLIED
+                shears (true|false) #IMPLIED
+                armor (true|false) #IMPLIED
+                helmet (true|false) #IMPLIED
+                chestplate (true|false) #IMPLIED
+                leggings (true|false) #IMPLIED
+                boots (true|false) #IMPLIED
+                enchantability CDATA #IMPLIED
+                attack-damage CDATA #IMPLIED
+                armor-points CDATA #IMPLIED
+                toughness CDATA #IMPLIED
+                unbreakable (true|false) #IMPLIED
+                lava-resistant (true|false) #IMPLIED
+                fertilizer (true|false) #IMPLIED
+        >

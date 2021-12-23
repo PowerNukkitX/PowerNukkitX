@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
@@ -10,6 +11,7 @@ import cn.nukkit.math.BlockFace;
  */
 public class EmptyBucketDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);

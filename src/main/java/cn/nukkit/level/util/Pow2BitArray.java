@@ -36,6 +36,7 @@ public class Pow2BitArray implements BitArray {
     /**
      * Sets the entry at the given location to the given value
      */
+    @Override
     public void set(int index, int value) {
         Preconditions.checkElementIndex(index, this.size);
         Preconditions.checkArgument(value >= 0 && value <= this.version.maxEntryValue,
@@ -49,6 +50,7 @@ public class Pow2BitArray implements BitArray {
     /**
      * Gets the entry at the given index
      */
+    @Override
     public int get(int index) {
         Preconditions.checkElementIndex(index, this.size);
         int bitIndex = index * this.version.bits;
@@ -60,6 +62,7 @@ public class Pow2BitArray implements BitArray {
     /**
      * Gets the long array that is used to store the data in this BitArray. This is useful for sending packet data.
      */
+    @Override
     public int size() {
         return this.size;
     }
@@ -74,6 +77,7 @@ public class Pow2BitArray implements BitArray {
         return this.words;
     }
 
+    @Override
     public BitArrayVersion getVersion() {
         return version;
     }

@@ -35,16 +35,26 @@ public class ItemMap extends Item {
 
     public ItemMap(Integer meta, int count) {
         super(MAP, meta, count, "Map");
-        switch (meta) {
-            case 3: this.name = "Ocean Explorer Map"; break;
-            case 4: this.name = "Woodland Explorer Map"; break;
-            case 5: this.name = "Treasure Map"; break;
-        }
-
+        updateName();
         if (!hasCompoundTag() || !getNamedTag().contains("map_uuid")) {
             CompoundTag tag = new CompoundTag();
             tag.putLong("map_uuid", mapCount++);
             this.setNamedTag(tag);
+        }
+    }
+
+    @Override
+    public void setDamage(Integer meta) {
+        super.setDamage(meta);
+        updateName();
+    }
+
+    private void updateName() {
+        switch (meta) {
+            case 3: this.name = "Ocean Explorer Map"; break;
+            case 4: this.name = "Woodland Explorer Map"; break;
+            case 5: this.name = "Treasure Map"; break;
+            default: this.name = "Map"; break;
         }
     }
 

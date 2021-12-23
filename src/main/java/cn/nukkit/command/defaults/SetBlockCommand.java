@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.CommandSender;
@@ -14,7 +15,9 @@ import cn.nukkit.math.BlockFace;
 
 import java.util.Arrays;
 
+@PowerNukkitOnly
 public class SetBlockCommand extends VanillaCommand {
+    @PowerNukkitOnly
     public SetBlockCommand(String name) {
         super(name, "%nukkit.command.setblock.description", "%nukkit.command.setblock.usage");
         this.setPermission("nukkit.command.setblock");

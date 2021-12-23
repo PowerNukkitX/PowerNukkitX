@@ -18,29 +18,24 @@
 
 package cn.nukkit.item;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 
 /**
  * @author joserobjr
  * @since 2021-02-16
  */
-@PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class ItemWarpedFungusOnAStick extends ItemTool {
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ItemWarpedFungusOnAStick() {
         this(0, 1);
     }
 
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ItemWarpedFungusOnAStick(Integer meta) {
         this(meta, 1);
     }
 
-    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ItemWarpedFungusOnAStick(Integer meta, int count) {
         super(WARPED_FUNGUS_ON_A_STICK, meta, count, "Warped Fungus on a Stick");
@@ -53,11 +48,11 @@ public class ItemWarpedFungusOnAStick extends ItemTool {
 
     @Override
     public int getMaxDurability() {
-        return 100;
+        return ItemTool.DURABILITY_WARPED_FUNGUS_ON_A_STICK;
     }
 
     @Override
-    public boolean damageWhenBreaking() {
-        return false;
+    public boolean noDamageOnBreak() {
+        return true;
     }
 }

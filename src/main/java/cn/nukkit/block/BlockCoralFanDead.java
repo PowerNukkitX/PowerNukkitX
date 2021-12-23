@@ -30,7 +30,8 @@ public class BlockCoralFanDead extends BlockCoralFan {
     public BlockColor getColor() {
         return BlockColor.GRAY_BLOCK_COLOR;
     }
-    
+
+    @PowerNukkitOnly
     @Override
     public boolean isDead() {
         return true;

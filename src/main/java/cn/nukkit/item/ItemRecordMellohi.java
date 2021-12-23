@@ -15,6 +15,7 @@ public class ItemRecordMellohi extends ItemRecord {
 
     public ItemRecordMellohi(Integer meta, int count) {
         super(RECORD_MELLOHI, meta, count);
+        name = "Music Disc Mellohi";
     }
 
     @Override

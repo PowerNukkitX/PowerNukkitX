@@ -25,6 +25,7 @@ public class BlockCrimsonSignPost extends BlockSignPost {
         return CRIMSON_STANDING_SIGN;
     }
 
+    @PowerNukkitOnly
     @Override
     public int getWallId() {
         return CRIMSON_WALL_SIGN;

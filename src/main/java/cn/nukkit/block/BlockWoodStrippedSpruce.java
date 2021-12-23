@@ -20,6 +20,7 @@ public class BlockWoodStrippedSpruce extends BlockWoodStripped {
         return STRIPPED_SPRUCE_LOG;
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return WoodType.SPRUCE;

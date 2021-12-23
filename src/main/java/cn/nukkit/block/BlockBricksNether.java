@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.item.Item;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -30,6 +30,7 @@ public class BlockBricksNether extends BlockSolid {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

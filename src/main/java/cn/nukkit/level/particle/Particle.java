@@ -23,7 +23,7 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_EXPLODE = dynamic(6);
     public static final int TYPE_EVAPORATION = dynamic(7);
     public static final int TYPE_FLAME = dynamic(8);
-    @PowerNukkitOnly @Since("1.5.2.0-PN") public static final int TYPE_CANDLE_FLAME = dynamic(9);
+    @Since("1.5.2.0-PN") public static final int TYPE_CANDLE_FLAME = dynamic(9);
     public static final int TYPE_LAVA = dynamic(10);
     public static final int TYPE_LARGE_SMOKE = dynamic(11);
     public static final int TYPE_REDSTONE = dynamic(12);
@@ -40,7 +40,7 @@ public abstract class Particle extends Vector3 {
     @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_TOWN_AURA",
             replaceWith = "TYPE_TOWN_AURA")
     public static final int TYPE_SUSPENDED_TOWN = TYPE_TOWN_AURA;
-    
+
     public static final int TYPE_PORTAL = dynamic(22);
     @PowerNukkitOnly @Since("1.5.2.0-PN") public static final int TYPE_MOB_PORTAL = dynamic(23);
     public static final int TYPE_SPLASH = dynamic(24);
@@ -48,7 +48,7 @@ public abstract class Particle extends Vector3 {
     @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_SPLASH",
             replaceWith = "TYPE_SPLASH")
     public static final int TYPE_WATER_SPLASH = TYPE_SPLASH;
-    
+
     @Since("1.4.0.0-PN") public static final int TYPE_WATER_SPLASH_MANUAL = dynamic(25);
     public static final int TYPE_WATER_WAKE = dynamic(26);
     public static final int TYPE_DRIP_WATER = dynamic(27);
@@ -57,11 +57,11 @@ public abstract class Particle extends Vector3 {
     @Since("1.4.0.0-PN") public static final int TYPE_STALACTITE_DRIP_WATER = dynamic(30);
     @Since("1.4.0.0-PN") public static final int TYPE_STALACTITE_DRIP_LAVA = dynamic(31);
     public static final int TYPE_FALLING_DUST = dynamic(32);
-    
+
     @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", by = "PowerNukkit", reason = "Same as TYPE_FALLING_DUST",
             replaceWith = "TYPE_FALLING_DUST")
     public static final int TYPE_DUST = TYPE_FALLING_DUST;
-    
+
     public static final int TYPE_MOB_SPELL = dynamic(33);
     public static final int TYPE_MOB_SPELL_AMBIENT = dynamic(34);
     public static final int TYPE_MOB_SPELL_INSTANTANEOUS = dynamic(35);
@@ -73,11 +73,6 @@ public abstract class Particle extends Vector3 {
     public static final int TYPE_ENCHANTMENT_TABLE = dynamic(41);
     public static final int TYPE_TRACKING_EMITTER = dynamic(42);
     public static final int TYPE_NOTE = dynamic(43);
-    
-    @PowerNukkitOnly("Backward compatibility")
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "NukkitX", reason = "Removed from Nukkit")
-    public static final int TYPE_NOTE_AND_DUST = TYPE_NOTE;
-    
     public static final int TYPE_WITCH_SPELL = dynamic(44);
     public static final int TYPE_CARROT = dynamic(45);
     @Since("1.4.0.0-PN") public static final int TYPE_MOB_APPEARANCE  = dynamic(46);

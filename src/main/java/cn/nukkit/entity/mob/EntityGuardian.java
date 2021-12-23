@@ -45,6 +45,7 @@ public class EntityGuardian extends EntityMob {
         return 0.85f;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

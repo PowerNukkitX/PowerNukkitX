@@ -85,6 +85,7 @@ public final class BitArray256 {
         return toRaw(new int[256]);
     }
 
+    @Override
     public BitArray256 clone() {
         return new BitArray256(this);
     }

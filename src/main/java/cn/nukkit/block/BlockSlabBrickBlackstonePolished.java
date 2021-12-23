@@ -29,6 +29,7 @@ public class BlockSlabBrickBlackstonePolished extends BlockSlabBlackstonePolishe
         return POLISHED_BLACKSTONE_BRICK_SLAB;
     }
 
+    @PowerNukkitOnly
     @Override
     public String getSlabName() {
         return "Polished Blackstone Brick";

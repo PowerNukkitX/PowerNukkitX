@@ -18,5 +18,4 @@ public class ItemSuspiciousStew extends ItemEdible {
     public int getMaxStackSize() {
         return 1;
     }
-    
 }

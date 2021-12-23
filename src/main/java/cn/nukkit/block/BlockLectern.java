@@ -200,7 +200,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         }
     }
 
-    @PowerNukkitDifference(info = "Down side is strongly powered.", since = "1.4.0.0-PN")
+    @PowerNukkitOnly
     public void executeRedstonePulse() {
         if (isActivated()) {
             level.cancelSheduledUpdate(this, this);

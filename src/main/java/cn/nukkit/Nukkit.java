@@ -1,5 +1,6 @@
 package cn.nukkit;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.ServerKiller;
@@ -53,7 +54,7 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    public final static String GIT_COMMIT = getGitCommit();
+    @PowerNukkitOnly public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.13");
     public final static String CODENAME = dynamic("PowerNukkit");
     @Deprecated
@@ -79,7 +80,7 @@ public class Nukkit {
                 if (disableSentry.get()) {
                     return null;
                 }
-                
+
                 try {
                     Server sv = Server.getInstance();
                     event.setExtra("players", sv.getOnlinePlayers().size());
@@ -98,7 +99,7 @@ public class Nukkit {
                     double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
                     double maxMB = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
                     double usage = usedMB / maxMB * 100;
-                    
+
                     event.setExtra("memTotal", totalMB);
                     event.setExtra("memUsed", usedMB);
                     event.setExtra("memMax", maxMB);
@@ -106,12 +107,12 @@ public class Nukkit {
                 } catch (Exception e) {
                     log.debug("Failed to add memory information", e);
                 }
-                
+
                 try {
                     event.setModules(
                             Server.getInstance().getPluginManager().getPlugins().entrySet().stream()
                                     .map(entry -> new SimpleEntry<>(
-                                            entry.getKey(), 
+                                            entry.getKey(),
                                             entry.getValue().getDescription().getVersion()
                                     )).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                     );
@@ -121,7 +122,7 @@ public class Nukkit {
                 return event;
             });
         });
-        
+
         disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
         Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
         if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
@@ -137,7 +138,7 @@ public class Nukkit {
                 log.error("Failed to load server.properties to check disable-auto-bug-report.", e);
             }
         }
-        
+
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack" , "true");
         System.setProperty("log4j.skipJansi", "false");
@@ -244,7 +245,7 @@ public class Nukkit {
         }
         return properties;
     }
-    
+
     private static String getVersion() {
         InputStream resourceAsStream = Nukkit.class.getClassLoader().getResourceAsStream("VERSION.txt");
         if (resourceAsStream == null) {

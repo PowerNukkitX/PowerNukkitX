@@ -13,6 +13,7 @@ public class ObjectSavannaTree extends TreeGenerator {
     private static final Block TRUNK = Block.get(BlockID.WOOD2, BlockWood2.ACACIA);
     private static final Block LEAF = Block.get(BlockID.LEAVES2, BlockLeaves2.ACACIA);
 
+    @Override
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
         int i = rand.nextBoundedInt(3) + rand.nextBoundedInt(3) + 5;
         boolean flag = true;

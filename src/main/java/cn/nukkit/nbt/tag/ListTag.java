@@ -62,6 +62,7 @@ public class ListTag<T extends Tag> extends Tag {
         return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner.toString() + "\n}";
     }
 
+    @Override
     public void print(String prefix, PrintStream out) {
         super.print(prefix, out);
 

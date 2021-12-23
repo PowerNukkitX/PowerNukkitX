@@ -27,11 +27,13 @@ public class BlockFungusWarped extends BlockFungus {
         return "Warped Fungus";
     }
 
+    @PowerNukkitOnly
     @Override
     protected boolean canGrowOn(Block support) {
         return support.getId() == WARPED_NYLIUM;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean grow(@Nullable Player cause) {
         // TODO Make it grow

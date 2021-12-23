@@ -47,11 +47,13 @@ public class EntityZombie extends EntityMob implements EntitySmite {
         return "Zombie";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isUndead() {
         return true;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

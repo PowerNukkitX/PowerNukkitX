@@ -17,6 +17,7 @@ public class MesaBiomeUpdater implements Updater {
         this.section = section;
     }
 
+    @PowerNukkitOnly
     @SuppressWarnings("deprecation")
     @Override
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {

@@ -62,6 +62,7 @@ public class CommandEnum {
         return values;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }

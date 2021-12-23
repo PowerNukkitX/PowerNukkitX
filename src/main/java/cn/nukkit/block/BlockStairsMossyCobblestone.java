@@ -1,13 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitOnly
 public class BlockStairsMossyCobblestone extends BlockStairs {
+    @PowerNukkitOnly
     public BlockStairsMossyCobblestone() {
         this(0);
     }
 
+    @PowerNukkitOnly
     public BlockStairsMossyCobblestone(int meta) {
         super(meta);
     }
@@ -33,6 +37,7 @@ public class BlockStairsMossyCobblestone extends BlockStairs {
     }
 
     @Override
+    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_WOODEN;
     }

@@ -15,6 +15,7 @@ public class ItemRecordBlocks extends ItemRecord {
 
     public ItemRecordBlocks(Integer meta, int count) {
         super(RECORD_BLOCKS, meta, count);
+        name = "Music Disc Blocks";
     }
 
     @Override

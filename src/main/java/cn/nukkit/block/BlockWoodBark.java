@@ -54,11 +54,13 @@ public class BlockWoodBark extends BlockWood {
         return (isStripped()? "Stripped ": "") + getWoodType().getEnglishName() + " Wood";
     }
 
+    @PowerNukkitOnly
     @Override
     public WoodType getWoodType() {
         return getPropertyValue(WoodType.PROPERTY);
     }
 
+    @PowerNukkitOnly
     @Override
     public void setWoodType(WoodType woodType) {
         setPropertyValue(WoodType.PROPERTY, woodType);

@@ -45,6 +45,7 @@ public class EntityEvoker extends EntityMob {
         return "Evoker";
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;

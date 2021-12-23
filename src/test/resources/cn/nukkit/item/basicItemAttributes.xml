@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE items SYSTEM "basicAttributes.dtd">
+<items>
+    <item namespaced-id="minecraft:iron_shovel" numeric-id="256" name="Iron Shovel" tool="true" shovel="true" tier="iron" durability="251" stack-size="1" />
+    <item namespaced-id="minecraft:iron_pickaxe" numeric-id="257" name="Iron Pickaxe" tool="true" pickaxe="true" tier="iron" durability="251" stack-size="1"/>
+    <item namespaced-id="minecraft:iron_axe" numeric-id="258" name="Iron Axe" tool="true" axe="true" tier="iron" durability="251" stack-size="1"/>
+    <item namespaced-id="minecraft:flint_and_steel" numeric-id="259" name="Flint and Steel" tool="true" stack-size="1" durability="65"/>
+    <item namespaced-id="minecraft:apple" numeric-id="260" name="Apple" food="4" saturation="2.4"/>
+    <item namespaced-id="minecraft:bow" numeric-id="261" name="Bow" tool="true" stack-size="1" durability="385" enchantability="1" fuel-time="200"/>
+    <item namespaced-id="minecraft:arrow" numeric-id="262" name="Arrow">
+        <item-state damage="1" name="Arrow of Splashing" />
+        <item-state damage="2" name="Tipped Arrow" />
+        <item-state damage="3" name="Tipped Arrow" />
+        <item-state damage="4" name="Tipped Arrow" />
+        <item-state damage="5" name="Tipped Arrow" />
+        <item-state damage="6" name="Arrow of Night Vision" />
+        <item-state damage="7" name="Arrow of Night Vision" />
+        <item-state damage="8" name="Arrow of Invisibility" />
+        <item-state damage="9" name="Arrow of Invisibility" />
+        <item-state damage="10" name="Arrow of Leaping" />
+        <item-state damage="11" name="Arrow of Leaping" />
+        <item-state damage="12" name="Arrow of Leaping" />
+        <item-state damage="13" name="Arrow of Fire Resistance" />
+        <item-state damage="14" name="Arrow of Fire Resistance" />
+        <item-state damage="15" name="Arrow of Swiftness" />
+        <item-state damage="16" name="Arrow of Swiftness" />
+        <item-state damage="17" name="Arrow of Swiftness" />
+        <item-state damage="18" name="Arrow of Slowness" />
+        <item-state damage="19" name="Arrow of Slowness" />
+        <item-state damage="43" name="Arrow of Slowness" />
+        <item-state damage="20" name="Arrow of Water Breathing" />
+        <item-state damage="21" name="Arrow of Water Breathing" />
+        <item-state damage="22" name="Arrow of Healing" />
+        <item-state damage="23" name="Arrow of Healing" />
+        <item-state damage="24" name="Arrow of Harming" />
+        <item-state damage="25" name="Arrow of Harming" />
+        <item-state damage="26" name="Arrow of Poison" />
+        <item-state damage="27" name="Arrow of Poison" />
+        <item-state damage="28" name="Arrow of Poison" />
+        <item-state damage="29" name="Arrow of Regeneration" />
+        <item-state damage="30" name="Arrow of Regeneration" />
+        <item-state damage="31" name="Arrow of Regeneration" />
+        <item-state damage="32" name="Arrow of Strength" />
+        <item-state damage="33" name="Arrow of Strength" />
+        <item-state damage="34" name="Arrow of Strength" />
+        <item-state damage="35" name="Arrow of Weakness" />
+        <item-state damage="36" name="Arrow of Weakness" />
+        <item-state damage="37" name="Arrow of Decay" />
+        <item-state damage="38" name="Arrow of the Turtle Master" />
+        <item-state damage="39" name="Arrow of the Turtle Master" />
+        <item-state damage="40" name="Arrow of the Turtle Master" />
+        <item-state damage="41" name="Arrow of Slow Falling" />
+        <item-state damage="42" name="Arrow of Slow Falling" />
+    </item>
+    <item namespaced-id="minecraft:coal" numeric-id="263" name="Coal" fuel-time="1600">
+        <item-state namespaced-id="minecraft:charcoal" damage="1" name="Charcoal"/>
+    </item>
+    <item namespaced-id="minecraft:diamond" numeric-id="264" name="Diamond"/>
+    <item namespaced-id="minecraft:iron_ingot" numeric-id="265" name="Iron Ingot"/>
+    <item namespaced-id="minecraft:gold_ingot" numeric-id="266" name="Gold Ingot"/>
+    <item namespaced-id="minecraft:iron_sword" numeric-id="267"  name="Iron Sword" tool="true" sword="true" tier="iron" durability="251" stack-size="1"/>
+    <item namespaced-id="minecraft:wooden_sword" numeric-id="268" name="Wooden Sword" tool="true" sword="true" tier="wood" durability="60" stack-size="1"  fuel-time="200"/>
+    <item namespaced-id="minecraft:wooden_shovel" numeric-id="269" name="Wooden Shovel" tool="true" shovel="true" tier="wood" durability="60" stack-size="1" fuel-time="200"/>
+    <item namespaced-id="minecraft:wooden_pickaxe" numeric-id="270" name="Wooden Pickaxe" tool="true" pickaxe="true" tier="wood" durability="60" stack-size="1" fuel-time="200"/>
+    <item namespaced-id="minecraft:wooden_axe" numeric-id="271" name="Wooden Axe" tool="true" axe="true" tier="wood" durability="60" stack-size="1" fuel-time="200"/>
+    <item namespaced-id="minecraft:stone_sword" numeric-id="272" name="Stone Sword" tool="true" sword="true" tier="stone" durability="132" stack-size="1"/>
+    <item namespaced-id="minecraft:stone_shovel" numeric-id="273" name="Stone Shovel" tool="true" shovel="true" tier="stone" durability="132" stack-size="1"/>
+    <item namespaced-id="minecraft:stone_pickaxe" numeric-id="274" name="Stone Pickaxe" tool="true" pickaxe="true" tier="stone" durability="132" stack-size="1"/>
+    <item namespaced-id="minecraft:stone_axe" numeric-id="275" name="Stone Axe" tool="true" axe="true" tier="stone" durability="132" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_sword" numeric-id="276" name="Diamond Sword" tool="true" sword="true" tier="diamond" durability="1562" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_shovel" numeric-id="277" name="Diamond Shovel" tool="true" shovel="true" tier="diamond" durability="1562" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_pickaxe" numeric-id="278" name="Diamond Pickaxe" tool="true" pickaxe="true" tier="diamond" durability="1562" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_axe" numeric-id="279" name="Diamond Axe" tool="true" axe="true" tier="diamond" durability="1562" stack-size="1"/>
+    <item namespaced-id="minecraft:stick" numeric-id="280" name="Stick" fuel-time="100"/>
+    <item namespaced-id="minecraft:bowl" numeric-id="281" name="Bowl" fuel-time="100"/>
+    <item namespaced-id="minecraft:mushroom_stew" numeric-id="282" name="Mushroom Stew" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_sword" numeric-id="283" name="Golden Sword" tool="true" sword="true" tier="gold" durability="33" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_shovel" numeric-id="284" name="Golden Shovel" tool="true" shovel="true" tier="gold" durability="33" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_pickaxe" numeric-id="285" name="Golden Pickaxe" tool="true" pickaxe="true" tier="gold" durability="33" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_axe" numeric-id="286" name="Golden Axe" tool="true" axe="true" tier="gold" durability="33" stack-size="1"/>
+    <item namespaced-id="minecraft:string" numeric-id="287" name="String"/>
+    <item namespaced-id="minecraft:feather" numeric-id="288" name="Feather"/>
+    <item namespaced-id="minecraft:gunpowder" numeric-id="289" name="Gunpowder"/>
+    <item namespaced-id="minecraft:wooden_hoe" numeric-id="290" name="Wooden Hoe" tool="true" hoe="true" tier="wood" durability="60" stack-size="1" fuel-time="200"/>
+    <item namespaced-id="minecraft:stone_hoe" numeric-id="291" name="Stone Hoe" tool="true" hoe="true" tier="stone" durability="132" stack-size="1"/>
+    <item namespaced-id="minecraft:iron_hoe" numeric-id="292" name="Iron Hoe" tool="true" hoe="true" tier="iron" durability="251" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_hoe" numeric-id="293" name="Diamond Hoe" tool="true" hoe="true" tier="diamond" durability="1562" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_hoe" numeric-id="294" name="Golden Hoe" tool="true" hoe="true" tier="gold" durability="33" stack-size="1"/>
+    <item namespaced-id="minecraft:wheat_seeds" numeric-id="295" name="Wheat Seeds"/>
+    <item namespaced-id="minecraft:wheat" numeric-id="296" name="Wheat"/>
+    <item namespaced-id="minecraft:bread" numeric-id="297" name="Bread"/>
+    <item namespaced-id="minecraft:leather_helmet" numeric-id="298" name="Leather Cap" armor="true" tier="leather" helmet="true" durability="56" stack-size="1" />
+    <item namespaced-id="minecraft:leather_chestplate" numeric-id="299" name="Leather Tunic" armor="true" durability="81" tier="leather" chestplate="true" stack-size="1"/>
+    <item namespaced-id="minecraft:leather_leggings" numeric-id="300" name="Leather Pants" armor="true" tier="leather" leggings="true" stack-size="1" durability="76"/>
+    <item namespaced-id="minecraft:leather_boots" numeric-id="301" name="Leather Boots" armor="true" boots="true" tier="leather" stack-size="1" durability="66"/>
+    <item namespaced-id="minecraft:chainmail_helmet" numeric-id="302" name="Chainmail Helmet" armor="true" helmet="true" tier="chain" durability="166" stack-size="1"/>
+    <item namespaced-id="minecraft:chainmail_chestplate" numeric-id="303" name="Chainmail Chestplate" armor="true" chestplate="true" tier="chain" durability="241" stack-size="1"/>
+    <item namespaced-id="minecraft:chainmail_leggings" numeric-id="304" name="Chainmail Leggings" armor="true" tier="chain" leggings="true" stack-size="1" durability="226"/>
+    <item namespaced-id="minecraft:chainmail_boots" numeric-id="305" name="Chainmail Boots" armor="true" tier="chain" boots="true" stack-size="1" durability="196"/>
+    <item namespaced-id="minecraft:iron_helmet" numeric-id="306" name="Iron Helmet" armor="true" tier="iron" durability="166" stack-size="1" helmet="true"/>
+    <item namespaced-id="minecraft:iron_chestplate" numeric-id="307" name="Iron Chestplate" armor="true" tier="iron" durability="241" stack-size="1" chestplate="true"/>
+    <item namespaced-id="minecraft:iron_leggings" numeric-id="308" name="Iron Leggings" armor="true" tier="iron" stack-size="1" durability="226" leggings="true"/>
+    <item namespaced-id="minecraft:iron_boots" numeric-id="309" name="Iron Boots" armor="true" tier="iron" stack-size="1" durability="196" boots="true"/>
+    <item namespaced-id="minecraft:diamond_helmet" numeric-id="310" name="Diamond Helmet" armor="true" tier="diamond" helmet="true" durability="364" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_chestplate" numeric-id="311" name="Diamond Chestplate" armor="true" tier="diamond" chestplate="true" durability="529" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_leggings" numeric-id="312" name="Diamond Leggings" armor="true" tier="diamond" stack-size="1" leggings="true" durability="496"/>
+    <item namespaced-id="minecraft:diamond_boots" numeric-id="313" name="Diamond Boots" armor="true" tier="diamond" stack-size="1" durability="430" boots="true"/>
+    <item namespaced-id="minecraft:golden_helmet" numeric-id="314" name="Golden Helmet" armor="true" tier="gold" durability="78" stack-size="1" helmet="true"/>
+    <item namespaced-id="minecraft:golden_chestplate" numeric-id="315" name="Golden Chestplate" armor="true" tier="gold" durability="113" stack-size="1" chestplate="true"/>
+    <item namespaced-id="minecraft:golden_leggings" numeric-id="316" name="Golden Leggings" armor="true" tier="gold" stack-size="1" durability="106" leggings="true"/>
+    <item namespaced-id="minecraft:golden_boots" numeric-id="317" name="Golden Boots" armor="true" tier="gold" stack-size="1" durability="92" boots="true"/>
+    <item namespaced-id="minecraft:flint" numeric-id="318" name="Flint"/>
+    <item namespaced-id="minecraft:porkchop" numeric-id="319" name="Raw Porkchop"/>
+    <item namespaced-id="minecraft:cooked_porkchop" numeric-id="320" name="Cooked Porkchop"/>
+    <item namespaced-id="minecraft:painting" numeric-id="321" name="Painting"/>
+    <item namespaced-id="minecraft:golden_apple" numeric-id="322" name="Golden Apple"/>
+    <item namespaced-id="minecraft:oak_sign" numeric-id="323" name="Oak Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:wooden_door" numeric-id="324" name="Oak Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:bucket" numeric-id="325" name="Bucket" stack-size="16">
+        <item-state namespaced-id="minecraft:milk_bucket" damage="1" name="Milk" stack-size="1"/>
+        <item-state namespaced-id="minecraft:cod_bucket" damage="2" name="Bucket of Cod" stack-size="1"/>
+        <item-state namespaced-id="minecraft:salmon_bucket" damage="3" name="Bucket of Salmon" stack-size="1"/>
+        <item-state namespaced-id="minecraft:tropical_fish_bucket" damage="4" name="Bucket of Tropical Fish" stack-size="1"/>
+        <item-state namespaced-id="minecraft:pufferfish_bucket" damage="5" name="Bucket of Pufferfish" stack-size="1"/>
+        <item-state namespaced-id="minecraft:water_bucket" damage="8" name="Water Bucket" stack-size="1"/>
+        <item-state namespaced-id="minecraft:lava_bucket" damage="10" name="Lava Bucket" fuel-time="20000" stack-size="1"/>
+        <!-- TODO Implement axolotl_bucket and tadpole_bucket
+        <item-state namespaced-id="minecraft:axolotl_bucket" damage="12" name="Bucket of Axolotl" stack-size="1"/>
+        <item-state namespaced-id="minecraft:tadpole_bucket" damage="13" name="Bucket of Tadpole" stack-size="1"/>
+        -->
+    </item>
+    <item namespaced-id="minecraft:minecart" numeric-id="328" name="Minecart" stack-size="1"/>
+    <item namespaced-id="minecraft:saddle" numeric-id="329" name="Saddle" stack-size="1"/>
+    <item namespaced-id="minecraft:iron_door" numeric-id="330" name="Iron Door"/>
+    <item namespaced-id="minecraft:redstone" numeric-id="331" name="Redstone Dust"/>
+    <item namespaced-id="minecraft:snowball" numeric-id="332" name="Snowball" stack-size="16"/>
+    <item namespaced-id="minecraft:boat" numeric-id="333" name="Boat" fuel-time="1200" stack-size="1">
+        <item-state namespaced-id="minecraft:oak_boat" damage="0" name="Oak Boat"/>
+        <item-state namespaced-id="minecraft:spruce_boat" damage="1" name="Spruce Boat"/>
+        <item-state namespaced-id="minecraft:birch_boat" damage="2" name="Birch Boat"/>
+        <item-state namespaced-id="minecraft:jungle_boat" damage="3" name="Jungle Boat"/>
+        <item-state namespaced-id="minecraft:acacia_boat" damage="4" name="Acacia Boat"/>
+        <item-state namespaced-id="minecraft:dark_oak_boat" damage="5" name="Dark Oak Boat"/>
+    </item>
+    <item namespaced-id="minecraft:leather" numeric-id="334" name="Leather"/>
+    <item namespaced-id="minecraft:kelp" numeric-id="335" name="Kelp"/>
+    <item namespaced-id="minecraft:brick" numeric-id="336" name="Brick"/>
+    <item namespaced-id="minecraft:clay_ball" numeric-id="337" name="Clay Ball"/>
+    <item namespaced-id="minecraft:sugar_cane" numeric-id="338" name="Sugar Cane"/>
+    <item namespaced-id="minecraft:paper" numeric-id="339" name="Paper"/>
+    <item namespaced-id="minecraft:book" numeric-id="340" name="Book"/>
+    <item namespaced-id="minecraft:slime_ball" numeric-id="341" name="Slimeball"/>
+    <item namespaced-id="minecraft:chest_minecart" numeric-id="342" name="Minecart with Chest" stack-size="1"/>
+    <item namespaced-id="minecraft:egg" numeric-id="344" name="Egg" stack-size="16"/>
+    <item namespaced-id="minecraft:compass" numeric-id="345" name="Compass"/>
+    <item namespaced-id="minecraft:fishing_rod" numeric-id="346" name="Fishing Rod" fuel-time="300" tool="true" stack-size="1" durability="384"/>
+    <item namespaced-id="minecraft:clock" numeric-id="347" name="Clock"/>
+    <item namespaced-id="minecraft:glowstone_dust" numeric-id="348" name="Glowstone Dust"/>
+    <item namespaced-id="minecraft:cod" numeric-id="349" name="Cod"/>
+    <item namespaced-id="minecraft:cooked_cod" numeric-id="350" name="Cooked Cod"/>
+    <item namespaced-id="minecraft:dye" numeric-id="351" name="Dye">
+        <item-state namespaced-id="minecraft:ink_sac" damage="0" name="Ink Sac"/>
+        <item-state namespaced-id="minecraft:red_dye" damage="1" name="Red Dye"/>
+        <item-state namespaced-id="minecraft:green_dye" damage="2" name="Green Dye"/>
+        <item-state namespaced-id="minecraft:cocoa_beans" damage="3" name="Cocoa Beans"/>
+        <item-state namespaced-id="minecraft:lapis_lazuli" damage="4" name="Lapis Lazuli"/>
+        <item-state namespaced-id="minecraft:purple_dye" damage="5" name="Purple Dye"/>
+        <item-state namespaced-id="minecraft:cyan_dye" damage="6" name="Cyan Dye"/>
+        <item-state namespaced-id="minecraft:light_gray_dye" damage="7" name="Light Gray Dye"/>
+        <item-state namespaced-id="minecraft:gray_dye" damage="8" name="Gray Dye"/>
+        <item-state namespaced-id="minecraft:pink_dye" damage="9" name="Pink Dye"/>
+        <item-state namespaced-id="minecraft:lime_dye" damage="10" name="Lime Dye"/>
+        <item-state namespaced-id="minecraft:yellow_dye" damage="11" name="Yellow Dye"/>
+        <item-state namespaced-id="minecraft:light_blue_dye" damage="12" name="Light Blue Dye"/>
+        <item-state namespaced-id="minecraft:magenta_dye" damage="13" name="Magenta Dye"/>
+        <item-state namespaced-id="minecraft:orange_dye" damage="14" name="Orange Dye"/>
+        <item-state namespaced-id="minecraft:bone_meal" damage="15" name="Bone Meal"/>
+        <item-state namespaced-id="minecraft:black_dye" damage="16" name="Black Dye"/>
+        <item-state namespaced-id="minecraft:brown_dye" damage="17" name="Brown Dye"/>
+        <item-state namespaced-id="minecraft:blue_dye" damage="18" name="Blue Dye"/>
+        <item-state namespaced-id="minecraft:white_dye" damage="19" name="White Dye"/>
+    </item>
+    <item namespaced-id="minecraft:bone" numeric-id="352" name="Bone"/>
+    <item namespaced-id="minecraft:sugar" numeric-id="353" name="Sugar"/>
+    <item namespaced-id="minecraft:cake" numeric-id="354" name="Cake"/>
+    <item namespaced-id="minecraft:bed" numeric-id="355" name="Bed" stack-size="1">
+        <item-state damage="0" name="White Bed"/>
+        <item-state damage="1" name="Orange Bed"/>
+        <item-state damage="2" name="Magenta Bed"/>
+        <item-state damage="3" name="Light Blue Bed"/>
+        <item-state damage="4" name="Yellow Bed"/>
+        <item-state damage="5" name="Lime Bed"/>
+        <item-state damage="6" name="Pink Bed"/>
+        <item-state damage="7" name="Gray Bed"/>
+        <item-state damage="8" name="Light Gray Bed"/>
+        <item-state damage="9" name="Cyan Bed"/>
+        <item-state damage="10" name="Purple Bed"/>
+        <item-state damage="11" name="Blue Bed"/>
+        <item-state damage="12" name="Brown Bed"/>
+        <item-state damage="13" name="Green Bed"/>
+        <item-state damage="14" name="Red Bed"/>
+        <item-state damage="15" name="Black Bed"/>
+    </item>
+    <item namespaced-id="minecraft:repeater" numeric-id="356" name="Redstone Repeater"/>
+    <item namespaced-id="minecraft:cookie" numeric-id="357" name="Cookie"/>
+    <item namespaced-id="minecraft:filled_map" numeric-id="358" name="Map" stack-size="1">
+        <item-state damage="3" name="Ocean Explorer Map"/>
+        <item-state damage="4" name="Woodland Explorer Map"/>
+        <item-state damage="5" name="Treasure Map"/>
+    </item>
+    <item namespaced-id="minecraft:shears" numeric-id="359" name="Shears" stack-size="1" durability="239" tool="true" shears="true"/>
+    <item namespaced-id="minecraft:melon_slice" numeric-id="360" name="Melon Slice"/>
+    <item namespaced-id="minecraft:pumpkin_seeds" numeric-id="361" name="Pumpkin Seeds"/>
+    <item namespaced-id="minecraft:melon_seeds" numeric-id="362" name="Melon Seeds"/>
+    <item namespaced-id="minecraft:beef" numeric-id="363" name="Raw Beef"/>
+    <item namespaced-id="minecraft:cooked_beef" numeric-id="364" name="Steak"/>
+    <item namespaced-id="minecraft:chicken" numeric-id="365" name="Raw Chicken"/>
+    <item namespaced-id="minecraft:cooked_chicken" numeric-id="366" name="Cooked Chicken"/>
+    <item namespaced-id="minecraft:rotten_flesh" numeric-id="367" name="Rotten Flesh"/>
+    <item namespaced-id="minecraft:ender_pearl" numeric-id="368" name="Ender Pearl" stack-size="16"/>
+    <item namespaced-id="minecraft:blaze_rod" numeric-id="369" name="Blaze Rod" fuel-time="2400"/>
+    <item namespaced-id="minecraft:ghast_tear" numeric-id="370" name="Ghast Tear"/>
+    <item namespaced-id="minecraft:gold_nugget" numeric-id="371" name="Gold Nugget"/>
+    <item namespaced-id="minecraft:nether_wart" numeric-id="372" name="Nether Wart"/>
+    <item namespaced-id="minecraft:potion" numeric-id="373" name="Potion" stack-size="1">
+        <item-state damage="0" name="Water Bottle" />
+        <item-state damage="1" name="Mundane Potion" />
+        <item-state damage="2" name="Mundane Potion" />
+        <item-state damage="3" name="Thick Potion" />
+        <item-state damage="4" name="Awkward Potion" />
+        <item-state damage="5" name="Potion of Night Vision" />
+        <item-state damage="6" name="Potion of Night Vision" />
+        <item-state damage="7" name="Potion of Invisibility" />
+        <item-state damage="8" name="Potion of Invisibility" />
+        <item-state damage="9" name="Potion of Leaping" />
+        <item-state damage="10" name="Potion of Leaping" />
+        <item-state damage="11" name="Potion of Leaping II" />
+        <item-state damage="12" name="Potion of Fire Resistance" />
+        <item-state damage="13" name="Potion of Fire Resistance" />
+        <item-state damage="14" name="Potion of Swiftness" />
+        <item-state damage="15" name="Potion of Swiftness" />
+        <item-state damage="16" name="Potion of Swiftness II" />
+        <item-state damage="17" name="Potion of Slowness" />
+        <item-state damage="18" name="Potion of Slowness" />
+        <item-state damage="42" name="Potion of Slowness IV" />
+        <item-state damage="19" name="Potion of Water Breathing" />
+        <item-state damage="20" name="Potion of Water Breathing" />
+        <item-state damage="21" name="Potion of Healing" />
+        <item-state damage="22" name="Potion of Healing II" />
+        <item-state damage="23" name="Potion of Harming" />
+        <item-state damage="24" name="Potion of Harming II" />
+        <item-state damage="25" name="Potion of Poison" />
+        <item-state damage="26" name="Potion of Poison" />
+        <item-state damage="27" name="Potion of Poison II" />
+        <item-state damage="28" name="Potion of Regeneration" />
+        <item-state damage="29" name="Potion of Regeneration" />
+        <item-state damage="30" name="Potion of Regeneration II" />
+        <item-state damage="31" name="Potion of Strength" />
+        <item-state damage="32" name="Potion of Strength" />
+        <item-state damage="33" name="Potion of Strength II" />
+        <item-state damage="34" name="Potion of Weakness" />
+        <item-state damage="35" name="Potion of Weakness" />
+        <item-state damage="36" name="Potion of Decay II" />
+        <item-state damage="37" name="Potion of the Turtle Master" />
+        <item-state damage="38" name="Potion of the Turtle Master" />
+        <item-state damage="39" name="Potion of the Turtle Master II" />
+        <item-state damage="40" name="Potion of Slow Falling" />
+        <item-state damage="41" name="Potion of Slow Falling" />
+    </item>
+    <item namespaced-id="minecraft:glass_bottle" numeric-id="374" name="Glass Bottle"/>
+    <item namespaced-id="minecraft:spider_eye" numeric-id="375" name="Spider Eye"/>
+    <item namespaced-id="minecraft:fermented_spider_eye" numeric-id="376" name="Fermented Spider Eye"/>
+    <item namespaced-id="minecraft:blaze_powder" numeric-id="377" name="Blaze Powder"/>
+    <item namespaced-id="minecraft:magma_cream" numeric-id="378" name="Magma Cream"/>
+    <item namespaced-id="minecraft:brewing_stand" numeric-id="379" name="Brewing Stand"/>
+    <item namespaced-id="minecraft:cauldron" numeric-id="380" name="Cauldron"/>
+    <item namespaced-id="minecraft:ender_eye" numeric-id="381" name="Ender Eye"/>
+    <item namespaced-id="minecraft:glistering_melon_slice" numeric-id="382" name="Glistering Melon Slice"/>
+    <item namespaced-id="minecraft:spawn_egg" numeric-id="383" name="Spawn Egg">
+        <item-state namespaced-id="minecraft:chicken_spawn_egg" damage="10" name="Chicken Spawn Egg"/>
+        <item-state namespaced-id="minecraft:cow_spawn_egg" damage="11" name="Cow Spawn Egg"/>
+        <item-state namespaced-id="minecraft:pig_spawn_egg" damage="12" name="Pig Spawn Egg"/>
+        <item-state namespaced-id="minecraft:sheep_spawn_egg" damage="13" name="Sheep Spawn Egg"/>
+        <item-state namespaced-id="minecraft:wolf_spawn_egg" damage="14" name="Wolf Spawn Egg"/>
+        <item-state namespaced-id="minecraft:villager_spawn_egg" damage="15" name="Villager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:mooshroom_spawn_egg" damage="16" name="Mooshroom Spawn Egg"/>
+        <item-state namespaced-id="minecraft:squid_spawn_egg" damage="17" name="Squid Spawn Egg"/>
+        <item-state namespaced-id="minecraft:rabbit_spawn_egg" damage="18" name="Rabbit Spawn Egg"/>
+        <item-state namespaced-id="minecraft:bat_spawn_egg" damage="19" name="Bat Spawn Egg"/>
+        <item-state namespaced-id="minecraft:ocelot_spawn_egg" damage="22" name="Ocelot Spawn Egg"/>
+        <item-state namespaced-id="minecraft:horse_spawn_egg" damage="23" name="Horse Spawn Egg"/>
+        <item-state namespaced-id="minecraft:donkey_spawn_egg" damage="24" name="Donkey Spawn Egg"/>
+        <item-state namespaced-id="minecraft:mule_spawn_egg" damage="25" name="Mule Spawn Egg"/>
+        <item-state namespaced-id="minecraft:skeleton_horse_spawn_egg" damage="26" name="Skeleton Horse Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zombie_horse_spawn_egg" damage="27" name="Zombie Horse Spawn Egg"/>
+        <item-state namespaced-id="minecraft:polar_bear_spawn_egg" damage="28" name="Polar Bear Spawn Egg"/>
+        <item-state namespaced-id="minecraft:llama_spawn_egg" damage="29" name="Llama Spawn Egg"/>
+        <item-state namespaced-id="minecraft:parrot_spawn_egg" damage="30" name="Parrot Spawn Egg"/>
+        <item-state namespaced-id="minecraft:dolphin_spawn_egg" damage="31" name="Dolphin Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zombie_spawn_egg" damage="32" name="Zombie Spawn Egg"/>
+        <item-state namespaced-id="minecraft:creeper_spawn_egg" damage="33" name="Creeper Spawn Egg"/>
+        <item-state namespaced-id="minecraft:skeleton_spawn_egg" damage="34" name="Skeleton Spawn Egg"/>
+        <item-state namespaced-id="minecraft:spider_spawn_egg" damage="35" name="Spider Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zombie_pigman_spawn_egg" damage="36" name="Zombie Pigman Spawn Egg"/>
+        <item-state namespaced-id="minecraft:slime_spawn_egg" damage="37" name="Slime Spawn Egg"/>
+        <item-state namespaced-id="minecraft:enderman_spawn_egg" damage="38" name="Enderman Spawn Egg"/>
+        <item-state namespaced-id="minecraft:silverfish_spawn_egg" damage="39" name="Silverfish Spawn Egg"/>
+        <item-state namespaced-id="minecraft:cave_spider_spawn_egg" damage="40" name="Cave Spider Spawn Egg"/>
+        <item-state namespaced-id="minecraft:ghast_spawn_egg" damage="41" name="Ghast Spawn Egg"/>
+        <item-state namespaced-id="minecraft:magma_cube_spawn_egg" damage="42" name="Magma Cube Spawn Egg"/>
+        <item-state namespaced-id="minecraft:blaze_spawn_egg" damage="43" name="Blaze Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zombie_villager_spawn_egg" damage="44" name="Zombie Villager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:witch_spawn_egg" damage="45" name="Witch Spawn Egg"/>
+        <item-state namespaced-id="minecraft:stray_spawn_egg" damage="46" name="Stray Spawn Egg"/>
+        <item-state namespaced-id="minecraft:husk_spawn_egg" damage="47" name="Husk Spawn Egg"/>
+        <item-state namespaced-id="minecraft:wither_skeleton_spawn_egg" damage="48" name="Wither Skeleton Spawn Egg"/>
+        <item-state namespaced-id="minecraft:guardian_spawn_egg" damage="49" name="Guardian Spawn Egg"/>
+        <item-state namespaced-id="minecraft:elder_guardian_spawn_egg" damage="50" name="Elder Guardian Spawn Egg"/>
+        <item-state namespaced-id="minecraft:npc_spawn_egg" damage="51" name="NPC Spawn Egg"/>
+        <item-state namespaced-id="minecraft:shulker_spawn_egg" damage="54" name="Shulker Spawn Egg"/>
+        <item-state namespaced-id="minecraft:endermite_spawn_egg" damage="55" name="Endermite Spawn Egg"/>
+        <!-- TODO Implement
+        <item-state namespaced-id="minecraft:agent_spawn_egg" damage="56" name="Agent Spawn Egg"/>
+        -->
+        <item-state namespaced-id="minecraft:vindicator_spawn_egg" damage="57" name="Vindicator Spawn Egg"/>
+        <item-state namespaced-id="minecraft:phantom_spawn_egg" damage="58" name="Phantom Spawn Egg"/>
+        <item-state namespaced-id="minecraft:ravager_spawn_egg" damage="59" name="Ravager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:turtle_spawn_egg" damage="74" name="Turtle Spawn Egg"/>
+        <item-state namespaced-id="minecraft:cat_spawn_egg" damage="75" name="Cat Spawn Egg"/>
+        <item-state namespaced-id="minecraft:evoker_spawn_egg" damage="104" name="Evoker Spawn Egg"/>
+        <item-state namespaced-id="minecraft:vex_spawn_egg" damage="105" name="Vex Spawn Egg"/>
+        <item-state namespaced-id="minecraft:pufferfish_spawn_egg" damage="108" name="Pufferfish Spawn Egg"/>
+        <item-state namespaced-id="minecraft:salmon_spawn_egg" damage="109" name="Salmon Spawn Egg"/>
+        <item-state namespaced-id="minecraft:drowned_spawn_egg" damage="110" name="Drowned Spawn Egg"/>
+        <item-state namespaced-id="minecraft:tropical_fish_spawn_egg" damage="111" name="Tropical Fish Spawn Egg"/>
+        <item-state namespaced-id="minecraft:cod_spawn_egg" damage="112" name="Cod Spawn Egg"/>
+        <item-state namespaced-id="minecraft:panda_spawn_egg" damage="113" name="Panda Spawn Egg"/>
+        <item-state namespaced-id="minecraft:pillager_spawn_egg" damage="114" name="Pillager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:wandering_trader_spawn_egg" damage="118" name="Wandering Trader Spawn Egg"/>
+        <item-state namespaced-id="minecraft:fox_spawn_egg" damage="121" name="Fox Spawn Egg"/>
+        <item-state namespaced-id="minecraft:bee_spawn_egg" damage="122" name="Bee Spawn Egg"/>
+        <item-state namespaced-id="minecraft:piglin_spawn_egg" damage="123" name="Piglin Spawn Egg"/>
+        <item-state namespaced-id="minecraft:hoglin_spawn_egg" damage="124" name="Hoglin Spawn Egg"/>
+        <item-state namespaced-id="minecraft:strider_spawn_egg" damage="125" name="Strider Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zoglin_spawn_egg" damage="126" name="Zoglin Spawn Egg"/>
+        <item-state namespaced-id="minecraft:piglin_brute_spawn_egg" damage="127" name="Piglin Brute Spawn Egg"/>
+        <!-- TODO Implement
+        <item-state namespaced-id="minecraft:goat_spawn_egg" damage="128" name="Goat Spawn Egg"/>
+        <item-state namespaced-id="minecraft:glow_squid_spawn_egg" damage="129" name="Glow Squid Spawn Egg"/>
+        <item-state namespaced-id="minecraft:axolotl_spawn_egg" damage="130" name="Axolotl Spawn Egg"/>
+        -->
+    </item>
+    <item namespaced-id="minecraft:experience_bottle" numeric-id="384" name="Bottle o' Enchanting"/>
+    <item namespaced-id="minecraft:fire_charge" numeric-id="385" name="Fire Charge"/>
+    <item namespaced-id="minecraft:writable_book" numeric-id="386" name="Book &#0038; Quill" stack-size="1"/>
+    <item namespaced-id="minecraft:written_book" numeric-id="387" name="Written Book" stack-size="16"/>
+    <item namespaced-id="minecraft:emerald" numeric-id="388" name="Emerald"/>
+    <item namespaced-id="minecraft:frame" numeric-id="389" name="Item Frame"/>
+    <item namespaced-id="minecraft:flower_pot" numeric-id="390" name="Flower Pot"/>
+    <item namespaced-id="minecraft:carrot" numeric-id="391" name="Carrot"/>
+    <item namespaced-id="minecraft:potato" numeric-id="392" name="Potato"/>
+    <item namespaced-id="minecraft:baked_potato" numeric-id="393" name="Baked Potato"/>
+    <item namespaced-id="minecraft:poisonous_potato" numeric-id="394" name="Poisonous Potato"/>
+    <item namespaced-id="minecraft:empty_map" numeric-id="395" name="Empty Map">
+        <item-state damage="2" name="Empty Locator Map"/>
+    </item>
+    <item namespaced-id="minecraft:golden_carrot" numeric-id="396" name="Golden Carrot"/>
+    <item namespaced-id="minecraft:skull" numeric-id="397" name="Skull">
+        <item-state damage="0" name="Skeleton Skull" />
+        <item-state damage="1" name="Wither Skeleton Skull" />
+        <item-state damage="2" name="Zombie Head" />
+        <item-state damage="3" name="Head" />
+        <item-state damage="4" name="Creeper Head" />
+        <item-state damage="5" name="Dragon Head" />
+    </item>
+    <item namespaced-id="minecraft:carrot_on_a_stick" numeric-id="398" name="Carrot on a Stick" stack-size="1" durability="26" tool="true"/>
+    <item namespaced-id="minecraft:nether_star" numeric-id="399" name="Nether Star"/>
+    <item namespaced-id="minecraft:pumpkin_pie" numeric-id="400" name="Pumpkin Pie"/>
+    <item namespaced-id="minecraft:firework_rocket" numeric-id="401" name="Firework Rocket"/>
+    <item namespaced-id="minecraft:firework_star" numeric-id="402" name="Firework Star"/>
+    <item namespaced-id="minecraft:enchanted_book" numeric-id="403" name="Enchanted Book" stack-size="1"/>
+    <item namespaced-id="minecraft:comparator" numeric-id="404" name="Redstone Comparator"/>
+    <item namespaced-id="minecraft:netherbrick" numeric-id="405" name="Nether Brick"/>
+    <item namespaced-id="minecraft:quartz" numeric-id="406" name="Nether Quartz"/>
+    <item namespaced-id="minecraft:tnt_minecart" numeric-id="407" name="Minecart with TNT" stack-size="1"/>
+    <item namespaced-id="minecraft:hopper_minecart" numeric-id="408" name="Minecart with Hopper" stack-size="1"/>
+    <item namespaced-id="minecraft:prismarine_shard" numeric-id="409" name="Prismarine Shard"/>
+    <item namespaced-id="minecraft:hopper" numeric-id="410" name="Hopper"/>
+    <item namespaced-id="minecraft:rabbit" numeric-id="411" name="Raw Rabbit"/>
+    <item namespaced-id="minecraft:cooked_rabbit" numeric-id="412" name="Cooked Rabbit"/>
+    <item namespaced-id="minecraft:rabbit_stew" numeric-id="413" name="Rabbit Stew" stack-size="1"/>
+    <item namespaced-id="minecraft:rabbit_foot" numeric-id="414" name="Rabbit Foot"/>
+    <item namespaced-id="minecraft:rabbit_hide" numeric-id="415" name="Rabbit Hide"/>
+    <item namespaced-id="minecraft:leather_horse_armor" numeric-id="416" name="Leather Horse Armor" stack-size="1"/>
+    <item namespaced-id="minecraft:iron_horse_armor" numeric-id="417" name="Iron Horse Armor" stack-size="1"/>
+    <item namespaced-id="minecraft:golden_horse_armor" numeric-id="418" name="Golden Horse Armor" stack-size="1"/>
+    <item namespaced-id="minecraft:diamond_horse_armor" numeric-id="419" name="Diamond Horse Armor" stack-size="1"/>
+    <item namespaced-id="minecraft:lead" numeric-id="420" name="Lead"/>
+    <item namespaced-id="minecraft:name_tag" numeric-id="421" name="Name Tag"/>
+    <item namespaced-id="minecraft:prismarine_crystals" numeric-id="422" name="Prismarine Crystals"/>
+    <item namespaced-id="minecraft:mutton" numeric-id="423" name="Raw Mutton"/>
+    <item namespaced-id="minecraft:cooked_mutton" numeric-id="424" name="Cooked Mutton"/>
+    <item namespaced-id="minecraft:armor_stand" numeric-id="425" name="Armor Stand"/>
+    <item namespaced-id="minecraft:end_crystal" numeric-id="426" name="End Crystal"/>
+    <item namespaced-id="minecraft:spruce_door" numeric-id="427" name="Spruce Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:birch_door" numeric-id="428" name="Birch Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:jungle_door" numeric-id="429" name="Jungle Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:acacia_door" numeric-id="430" name="Acacia Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:dark_oak_door" numeric-id="431" name="Dark Oak Door" fuel-time="200"/>
+    <item namespaced-id="minecraft:chorus_fruit" numeric-id="432" name="Chorus Fruit"/>
+    <item namespaced-id="minecraft:popped_chorus_fruit" numeric-id="433" name="Popped Chorus Fruit"/>
+    <item namespaced-id="minecraft:banner_pattern" numeric-id="434" name="Banner Pattern" stack-size="1">
+        <item-state namespaced-id="minecraft:creeper_banner_pattern" damage="0" name="Creeper Charge Banner Pattern"/>
+        <item-state namespaced-id="minecraft:skull_banner_pattern" damage="1" name="Skull Charge Banner Pattern"/>
+        <item-state namespaced-id="minecraft:flower_banner_pattern" damage="2" name="Flower Charge Banner Pattern"/>
+        <item-state namespaced-id="minecraft:mojang_banner_pattern" damage="3" name="Thing Banner Pattern"/>
+        <item-state namespaced-id="minecraft:field_masoned_banner_pattern" damage="4" name="Field Banner Pattern"/>
+        <item-state namespaced-id="minecraft:bordure_indented_banner_pattern" damage="5" name="Bordure Indented Banner Pattern"/>
+        <item-state namespaced-id="minecraft:piglin_banner_pattern" damage="6" name="Snout Banner Pattern"/>
+    </item>
+    <item namespaced-id="minecraft:dragon_breath" numeric-id="437" name="Dragon's Breath"/>
+    <item namespaced-id="minecraft:splash_potion" numeric-id="438" name="Splash Potion" stack-size="1">
+        <item-state damage="0" name="Splash Water Bottle" />
+        <item-state damage="1" name="Mundane Splash Potion" />
+        <item-state damage="2" name="Mundane Splash Potion" />
+        <item-state damage="3" name="Thick Splash Potion" />
+        <item-state damage="4" name="Awkward Splash Potion" />
+        <item-state damage="5" name="Splash Potion of Night Vision" />
+        <item-state damage="6" name="Splash Potion of Night Vision" />
+        <item-state damage="7" name="Splash Potion of Invisibility" />
+        <item-state damage="8" name="Splash Potion of Invisibility" />
+        <item-state damage="9" name="Splash Potion of Leaping" />
+        <item-state damage="10" name="Splash Potion of Leaping" />
+        <item-state damage="11" name="Splash Potion of Leaping II" />
+        <item-state damage="12" name="Splash Potion of Fire Resistance" />
+        <item-state damage="13" name="Splash Potion of Fire Resistance" />
+        <item-state damage="14" name="Splash Potion of Swiftness" />
+        <item-state damage="15" name="Splash Potion of Swiftness" />
+        <item-state damage="16" name="Splash Potion of Swiftness II" />
+        <item-state damage="17" name="Splash Potion of Slowness" />
+        <item-state damage="18" name="Splash Potion of Slowness" />
+        <item-state damage="42" name="Splash Potion of Slowness IV" />
+        <item-state damage="19" name="Splash Potion of Water Breathing" />
+        <item-state damage="20" name="Splash Potion of Water Breathing" />
+        <item-state damage="21" name="Splash Potion of Healing" />
+        <item-state damage="22" name="Splash Potion of Healing II" />
+        <item-state damage="23" name="Splash Potion of Harming" />
+        <item-state damage="24" name="Splash Potion of Harming II" />
+        <item-state damage="25" name="Splash Potion of Poison" />
+        <item-state damage="26" name="Splash Potion of Poison" />
+        <item-state damage="27" name="Splash Potion of Poison II" />
+        <item-state damage="28" name="Splash Potion of Regeneration" />
+        <item-state damage="29" name="Splash Potion of Regeneration" />
+        <item-state damage="30" name="Splash Potion of Regeneration II" />
+        <item-state damage="31" name="Splash Potion of Strength" />
+        <item-state damage="32" name="Splash Potion of Strength" />
+        <item-state damage="33" name="Splash Potion of Strength II" />
+        <item-state damage="34" name="Splash Potion of Weakness" />
+        <item-state damage="35" name="Splash Potion of Weakness" />
+        <item-state damage="36" name="Splash Potion of Decay II" />
+        <item-state damage="37" name="Splash Potion of the Turtle Master" />
+        <item-state damage="38" name="Splash Potion of the Turtle Master" />
+        <item-state damage="39" name="Splash Potion of the Turtle Master II" />
+        <item-state damage="40" name="Splash Potion of Slow Falling" />
+        <item-state damage="41" name="Splash Potion of Slow Falling" />
+    </item>
+    <item namespaced-id="minecraft:lingering_potion" numeric-id="441" name="Lingering Potion" stack-size="1">
+        <item-state damage="0" name="Lingering Water Bottle" />
+        <item-state damage="1" name="Mundane Lingering Potion" />
+        <item-state damage="2" name="Mundane Lingering Potion" />
+        <item-state damage="3" name="Thick Lingering Potion" />
+        <item-state damage="4" name="Awkward Lingering Potion" />
+        <item-state damage="5" name="Lingering Potion of Night Vision" />
+        <item-state damage="6" name="Lingering Potion of Night Vision" />
+        <item-state damage="7" name="Lingering Potion of Invisibility" />
+        <item-state damage="8" name="Lingering Potion of Invisibility" />
+        <item-state damage="9" name="Lingering Potion of Leaping" />
+        <item-state damage="10" name="Lingering Potion of Leaping" />
+        <item-state damage="11" name="Lingering Potion of Leaping II" />
+        <item-state damage="12" name="Lingering Potion of Fire Resistance" />
+        <item-state damage="13" name="Lingering Potion of Fire Resistance" />
+        <item-state damage="14" name="Lingering Potion of Swiftness" />
+        <item-state damage="15" name="Lingering Potion of Swiftness" />
+        <item-state damage="16" name="Lingering Potion of Swiftness II" />
+        <item-state damage="17" name="Lingering Potion of Slowness" />
+        <item-state damage="18" name="Lingering Potion of Slowness" />
+        <item-state damage="42" name="Lingering Potion of Slowness IV" />
+        <item-state damage="19" name="Lingering Potion of Water Breathing" />
+        <item-state damage="20" name="Lingering Potion of Water Breathing" />
+        <item-state damage="21" name="Lingering Potion of Healing" />
+        <item-state damage="22" name="Lingering Potion of Healing II" />
+        <item-state damage="23" name="Lingering Potion of Harming" />
+        <item-state damage="24" name="Lingering Potion of Harming II" />
+        <item-state damage="25" name="Lingering Potion of Poison" />
+        <item-state damage="26" name="Lingering Potion of Poison" />
+        <item-state damage="27" name="Lingering Potion of Poison II" />
+        <item-state damage="28" name="Lingering Potion of Regeneration" />
+        <item-state damage="29" name="Lingering Potion of Regeneration" />
+        <item-state damage="30" name="Lingering Potion of Regeneration II" />
+        <item-state damage="31" name="Lingering Potion of Strength" />
+        <item-state damage="32" name="Lingering Potion of Strength" />
+        <item-state damage="33" name="Lingering Potion of Strength II" />
+        <item-state damage="34" name="Lingering Potion of Weakness" />
+        <item-state damage="35" name="Lingering Potion of Weakness" />
+        <item-state damage="36" name="Lingering Potion of Decay II" />
+        <item-state damage="37" name="Lingering Potion of the Turtle Master" />
+        <item-state damage="38" name="Lingering Potion of the Turtle Master" />
+        <item-state damage="39" name="Lingering Potion of the Turtle Master II" />
+        <item-state damage="40" name="Lingering Potion of Slow Falling" />
+        <item-state damage="41" name="Lingering Potion of Slow Falling" />
+    </item>
+    <!-- TODO Implement
+    <item namespaced-id="minecraft:sparkler" numeric-id="442" name="Sparkler"/>
+    <item namespaced-id="minecraft:command_block_minecart" numeric-id="443" name="Command Block Minecart" stack-size="1"/>
+    -->
+    <item namespaced-id="minecraft:elytra" numeric-id="444" name="Elytra" stack-size="1" durability="433" armor="true" chestplate="true"/>
+    <item namespaced-id="minecraft:shulker_shell" numeric-id="445" name="Shulker Shell"/>
+    <item namespaced-id="minecraft:banner" numeric-id="446" name="Banner" stack-size="16" fuel-time="300">
+        <item-state damage="0" name="Black Banner" />
+        <item-state damage="1" name="Red Banner" />
+        <item-state damage="2" name="Green Banner" />
+        <item-state damage="3" name="Brown Banner" />
+        <item-state damage="4" name="Blue Banner" />
+        <item-state damage="5" name="Purple Banner" />
+        <item-state damage="6" name="Cyan Banner" />
+        <item-state damage="7" name="Light Gray Banner" />
+        <item-state damage="8" name="Gray Banner" />
+        <item-state damage="9" name="Pink Banner" />
+        <item-state damage="10" name="Lime Banner" />
+        <item-state damage="11" name="Yellow Banner" />
+        <item-state damage="12" name="Light Blue Banner" />
+        <item-state damage="13" name="Magenta Banner" />
+        <item-state damage="14" name="Orange Banner" />
+        <item-state damage="15" name="White Banner" />
+    </item>
+    <!-- TODO Implement
+    <item namespaced-id="minecraft:medicine" numeric-id="447" name="Medicine"/>
+    <item namespaced-id="minecraft:balloon" numeric-id="448" name="Balloon"/>
+    <item namespaced-id="minecraft:rapid_fertilizer" numeric-id="449" name="Rapid Fertilizer"/>
+    -->
+    <item namespaced-id="minecraft:totem_of_undying" numeric-id="450" name="Totem of Undying" stack-size="1"/>
+    <!-- TODO Implement
+    <item namespaced-id="minecraft:bleach" numeric-id="451" name="Bleach"/>
+    -->
+    <item namespaced-id="minecraft:iron_nugget" numeric-id="452" name="Iron Nugget"/>
+    <!-- TODO Implement
+    <item namespaced-id="minecraft:ice_bomb" numeric-id="453" name="Ice Bomb"/>
+    -->
+    <item namespaced-id="minecraft:trident" numeric-id="455" name="Trident" tool="true" stack-size="1" durability="251"/>
+    <item namespaced-id="minecraft:beetroot" numeric-id="457" name="Beetroot"/>
+    <item namespaced-id="minecraft:beetroot_seeds" numeric-id="458" name="Beetroot Seeds"/>
+    <item namespaced-id="minecraft:beetroot_soup" numeric-id="459" name="Beetroot Soup"/>
+    <item namespaced-id="minecraft:salmon" numeric-id="460" name="Raw Salmon"/>
+    <item namespaced-id="minecraft:tropical_fish" numeric-id="461" name="Tropical Fish"/>
+    <item namespaced-id="minecraft:pufferfish" numeric-id="462" name="Pufferfish"/>
+    <item namespaced-id="minecraft:cooked_salmon" numeric-id="463" name="Cooked Salmon"/>
+    <item namespaced-id="minecraft:dried_kelp" numeric-id="464" name="Dried Kelp"/>
+    <item namespaced-id="minecraft:nautilus_shell" numeric-id="465" name="Nautilus Shell"/>
+    <item namespaced-id="minecraft:enchanted_golden_apple" numeric-id="466" name="Enchanted Golden Apple"/>
+    <item namespaced-id="minecraft:heart_of_the_sea" numeric-id="467" name="Heart Of The Sea"/>
+    <item namespaced-id="minecraft:scute" numeric-id="468" name="Scute"/>
+    <item namespaced-id="minecraft:turtle_helmet" numeric-id="469" name="Turtle Shell" armor="true" tier="other" durability="276" stack-size="1" helmet="true"/>
+    <item namespaced-id="minecraft:phantom_membrane" numeric-id="470" name="Phantom Membrane"/>
+    <item namespaced-id="minecraft:crossbow" numeric-id="471" name="Crossbow" fuel-time="200" stack-size="1" durability="464" tool="true"/>
+    <item namespaced-id="minecraft:spruce_sign" numeric-id="472" name="Spruce Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:birch_sign" numeric-id="473" name="Birch Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:jungle_sign" numeric-id="474" name="Jungle Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:acacia_sign" numeric-id="475" name="Acacia Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:dark_oak_sign" numeric-id="476" name="Dark Oak Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:sweet_berries" numeric-id="477" name="Sweet Berries"/>
+    <!-- TODO Implement
+    <item namespaced-id="minecraft:camera" numeric-id="498" name="Camera"/>
+    <item namespaced-id="minecraft:compound" numeric-id="499" name="Compound"/>
+    -->
+    <item namespaced-id="minecraft:music_disc_13" numeric-id="500" name="Music Disc 13" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_cat" numeric-id="501" name="Music Disc Cat" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_blocks" numeric-id="502" name="Music Disc Blocks" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_chirp" numeric-id="503" name="Music Disc Chirp" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_far" numeric-id="504" name="Music Disc Far" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_mall" numeric-id="505" name="Music Disc Mall" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_mellohi" numeric-id="506" name="Music Disc Mellohi" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_stal" numeric-id="507" name="Music Disc Stal" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_strad" numeric-id="508" name="Music Disc Strad" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_ward" numeric-id="509" name="Music Disc Ward" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_11" numeric-id="510" name="Music Disc 11" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_wait" numeric-id="511" name="Music Disc Wait" stack-size="1"/>
+    <item namespaced-id="minecraft:shield" numeric-id="513" name="Shield" stack-size="1" durability="337" tool="true"/>
+    <item namespaced-id="minecraft:campfire" numeric-id="720" name="Campfire" stack-size="1"/>
+    <item namespaced-id="minecraft:suspicious_stew" numeric-id="734" name="Suspicious Stew" stack-size="1"/>
+    <item namespaced-id="minecraft:honeycomb" numeric-id="736" name="Honeycomb"/>
+    <item namespaced-id="minecraft:honey_bottle" numeric-id="737" name="Honey Bottle" stack-size="16"/>
+    <item namespaced-id="minecraft:lodestone_compass" numeric-id="741" name="Lodestone Compass" stack-size="1"/>
+    <item namespaced-id="minecraft:netherite_ingot" numeric-id="742" name="Netherite Ingot" lava-resistant="true"/>
+    <item namespaced-id="minecraft:netherite_sword" numeric-id="743" name="Netherite Sword" tool="true" tier="netherite" sword="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_shovel" numeric-id="744" name="Netherite Shovel" tool="true" tier="netherite" shovel="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_pickaxe" numeric-id="745" name="Netherite Pickaxe" tool="true" tier="netherite" pickaxe="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_axe" numeric-id="746" name="Netherite Axe" tool="true" tier="netherite" axe="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_hoe" numeric-id="747" name="Netherite Hoe" tool="true" tier="netherite" hoe="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_helmet" numeric-id="748" name="Netherite Helmet" armor="true" tier="netherite" helmet="true" lava-resistant="true" stack-size="1" durability="407"/>
+    <item namespaced-id="minecraft:netherite_chestplate" numeric-id="749" name="Netherite Chestplate" armor="true" tier="netherite" chestplate="true" lava-resistant="true" stack-size="1" durability="592"/>
+    <item namespaced-id="minecraft:netherite_leggings" numeric-id="750" name="Netherite Leggings" armor="true" tier="netherite" leggings="true" lava-resistant="true" stack-size="1" durability="555"/>
+    <item namespaced-id="minecraft:netherite_boots" numeric-id="751" name="Netherite Boots" armor="true" tier="netherite" boots="true" lava-resistant="true" stack-size="1" durability="481"/>
+    <item namespaced-id="minecraft:netherite_scrap" numeric-id="752" name="Netherite Scrap"/>
+    <item namespaced-id="minecraft:crimson_sign" numeric-id="753" name="Crimson Sign" stack-size="16"/>
+    <item namespaced-id="minecraft:warped_sign" numeric-id="754" name="Warped Sign" stack-size="16"/>
+    <item namespaced-id="minecraft:crimson_door" numeric-id="755" name="Crimson Door"/>
+    <item namespaced-id="minecraft:warped_door" numeric-id="756" name="Warped Door"/>
+    <item namespaced-id="minecraft:warped_fungus_on_a_stick" numeric-id="757" name="Warped Fungus on a Stick" stack-size="1" durability="101" tool="true"/>
+    <item namespaced-id="minecraft:chain" numeric-id="758" name="Chain"/>
+    <item namespaced-id="minecraft:music_disc_pigstep" numeric-id="759" name="Music Disc Pigstep" stack-size="1"/>
+    <item namespaced-id="minecraft:nether_sprouts" numeric-id="760" name="Nether Sprouts"/>
+    <item namespaced-id="minecraft:spyglass" numeric-id="772" name="Spyglass" stack-size="1" />
+    <item namespaced-id="minecraft:soul_campfire" numeric-id="801" name="Soul Campfire" stack-size="1"/>
+</items>

@@ -1,5 +1,6 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBucket;
@@ -11,6 +12,7 @@ import cn.nukkit.math.BlockFace;
  */
 public class BucketDispenseBehavior extends DefaultDispenseBehavior {
 
+    @PowerNukkitOnly
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         if (!(item instanceof ItemBucket)) {

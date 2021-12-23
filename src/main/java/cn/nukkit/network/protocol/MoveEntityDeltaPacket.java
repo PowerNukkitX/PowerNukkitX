@@ -1,44 +1,30 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.math.NukkitMath;
 import lombok.ToString;
 
 @ToString
 public class MoveEntityDeltaPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.MOVE_ENTITY_DELTA_PACKET;
 
-    public static final int FLAG_HAS_X = 0b1;
-    public static final int FLAG_HAS_Y = 0b10;
-    public static final int FLAG_HAS_Z = 0b100;
-    public static final int FLAG_HAS_YAW = 0b1000;
-    public static final int FLAG_HAS_HEAD_YAW = 0b10000;
-    public static final int FLAG_HAS_PITCH = 0b100000;
+    public static final int FLAG_HAS_X = 0B1;
+    public static final int FLAG_HAS_Y = 0B10;
+    public static final int FLAG_HAS_Z = 0B100;
+    public static final int FLAG_HAS_PITCH = 0B1000;
+    public static final int FLAG_HAS_YAW = 0B10000;
+    public static final int FLAG_HAS_HEAD_YAW = 0B100000;
+    @Since("FUTURE") public static final int FLAG_ON_GROUND = 0B1000000;
+    @Since("FUTURE") public static final int FLAG_TELEPORTING = 0B10000000;
+    @Since("FUTURE") public static final int FLAG_FORCE_MOVE_LOCAL_ENTITY = 0B100000000;
 
+    @Since("FUTURE") public long runtimeEntityId;
     public int flags = 0;
     @Since("1.4.0.0-PN") public float x = 0;
     @Since("1.4.0.0-PN") public float y = 0;
     @Since("1.4.0.0-PN") public float z = 0;
-
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Changed to float", replaceWith = "x")
-    @PowerNukkitOnly("Re-added for backward-compatibility")
-    public int xDelta = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Changed to float", replaceWith = "y")
-    @PowerNukkitOnly("Re-added for backward-compatibility")
-    public int yDelta = 0;
-    @PowerNukkitOnly("Re-added for backward-compatibility")
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Changed to float", replaceWith = "z")
-    public int zDelta = 0;
-    
-    private int xDecoded;
-    private int yDecoded;
-    private int zDecoded;
-    
-    public double yawDelta = 0;
-    public double headYawDelta = 0;
-    public double pitchDelta = 0;
+    @Since("FUTURE") public float pitch = 0;
+    @Since("FUTURE") public float yaw = 0;
+    @Since("FUTURE") public float headYaw = 0;
 
     @Override
     public byte pid() {
@@ -47,61 +33,71 @@ public class MoveEntityDeltaPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.flags = this.getByte();
-        this.x = getCoordinate(FLAG_HAS_X);
-        this.y = getCoordinate(FLAG_HAS_Y);
-        this.z = getCoordinate(FLAG_HAS_Z);
-        this.yawDelta = getRotation(FLAG_HAS_YAW);
-        this.headYawDelta = getRotation(FLAG_HAS_HEAD_YAW);
-        this.pitchDelta = getRotation(FLAG_HAS_PITCH);
-        
-        this.xDelta = this.xDecoded = NukkitMath.floorFloat(x);
-        this.yDelta = this.yDecoded = NukkitMath.floorFloat(y);
-        this.zDelta = this.zDecoded = NukkitMath.floorFloat(z);
+        this.runtimeEntityId = this.getEntityRuntimeId();
+        this.flags = this.getLShort();
+        if ((this.flags & FLAG_HAS_X) != 0) {
+            this.x = this.getCoordinate();
+        }
+        if ((this.flags & FLAG_HAS_Y) != 0) {
+            this.y = this.getCoordinate();
+        }
+        if ((this.flags & FLAG_HAS_Z) != 0) {
+            this.z = this.getCoordinate();
+        }
+        if ((this.flags & FLAG_HAS_PITCH) != 0) {
+            this.pitch = this.getRotation();
+        }
+        if ((this.flags & FLAG_HAS_YAW) != 0) {
+            this.yaw = this.getRotation();
+        }
+        if ((this.flags & FLAG_HAS_HEAD_YAW) != 0) {
+            this.headYaw = this.getRotation();
+        }
     }
 
     @Override
     public void encode() {
-        this.putByte((byte) flags);
-        float x = this.x;
-        float y = this.y;
-        float z = this.z;
-        if (xDelta != xDecoded || yDelta != yDecoded || zDelta != zDecoded) {
-            x = xDelta;
-            y = yDelta;
-            z = zDelta;
+        this.reset();
+        this.putEntityRuntimeId(this.runtimeEntityId);
+        this.putLShort(this.flags);
+        if ((this.flags & FLAG_HAS_X) != 0) {
+            this.putCoordinate(this.x);
         }
-        putCoordinate(FLAG_HAS_X, x);
-        putCoordinate(FLAG_HAS_Y, y);
-        putCoordinate(FLAG_HAS_Z, z);
-        putRotation(FLAG_HAS_YAW, this.yawDelta);
-        putRotation(FLAG_HAS_HEAD_YAW, this.headYawDelta);
-        putRotation(FLAG_HAS_PITCH, this.pitchDelta);
-    }
-
-    private float getCoordinate(int flag) {
-        if ((flags & flag) != 0) {
-            return this.getLFloat();
+        if ((this.flags & FLAG_HAS_Y) != 0) {
+            this.putCoordinate(this.y);
         }
-        return 0;
-    }
-
-    private double getRotation(int flag) {
-        if ((flags & flag) != 0) {
-            return this.getByte() * (360d / 256d);
+        if ((this.flags & FLAG_HAS_Z) != 0) {
+            this.putCoordinate(this.z);
         }
-        return 0d;
-    }
-
-    private void putCoordinate(int flag, float value) {
-        if ((flags & flag) != 0) {
-            this.putLFloat(value);
+        if ((this.flags & FLAG_HAS_PITCH) != 0) {
+            this.putRotation(this.pitch);
+        }
+        if ((this.flags & FLAG_HAS_YAW) != 0) {
+            this.putRotation(this.yaw);
+        }
+        if ((this.flags & FLAG_HAS_HEAD_YAW) != 0) {
+            this.putRotation(this.headYaw);
         }
     }
 
-    private void putRotation(int flag, double value) {
-        if ((flags & flag) != 0) {
-            this.putByte((byte) (value / (360d / 256d)));
-        }
+    private float getCoordinate() {
+        return this.getLFloat();
+    }
+
+    private void putCoordinate(float value) {
+        this.putLFloat(value);
+    }
+
+    private float getRotation() {
+        return this.getByte() * (360F / 256F);
+    }
+
+    private void putRotation(float value) {
+        this.putByte((byte) (value / (360F / 256F)));
+    }
+
+    @Since("FUTURE")
+    public boolean hasFlag(int flag) {
+        return (this.flags & flag) != 0;
     }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 import java.util.Collection;
@@ -98,7 +99,9 @@ public interface Inventory {
 
     void onSlotChange(int index, Item before, boolean send);
 
+    @PowerNukkitOnly
     void addListener(InventoryListener listener);
 
+    @PowerNukkitOnly
     void removeListener(InventoryListener listener);
 }

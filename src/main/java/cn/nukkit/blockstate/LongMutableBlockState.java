@@ -74,13 +74,12 @@ public class LongMutableBlockState extends MutableBlockState {
         this.storage = state;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @Override
     void setDataStorageWithoutValidation(Number storage) {
         this.storage = storage.longValue();
     }
 
+    @PowerNukkitOnly
     @Override
     public void validate() {
         validate(storage);
@@ -116,6 +115,7 @@ public class LongMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getLegacyDamage() {
         return (int) (storage & Block.DATA_MASK);
     }
@@ -124,6 +124,7 @@ public class LongMutableBlockState extends MutableBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
+    @PowerNukkitOnly
     public int getBigDamage() {
         return (int) (storage & BlockStateRegistry.BIG_META_MASK);
     }
@@ -150,6 +151,7 @@ public class LongMutableBlockState extends MutableBlockState {
     @Nonnegative
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public Number getDataStorage() {
         return storage;
     }
@@ -182,22 +184,26 @@ public class LongMutableBlockState extends MutableBlockState {
         storage = properties.setIntValue(storage, propertyName, value);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public Serializable getPropertyValue(String propertyName) {
         return properties.getValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public int getIntValue(String propertyName) {
         return properties.getIntValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean getBooleanValue(String propertyName) {
         return properties.getBooleanValue(storage, propertyName);
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public String getPersistenceValue(String propertyName) {
@@ -206,6 +212,7 @@ public class LongMutableBlockState extends MutableBlockState {
 
     @Nonnull
     @Override
+    @PowerNukkitOnly
     public BlockState getCurrentState() {
         return BlockState.of(blockId, storage);
     }
@@ -221,6 +228,7 @@ public class LongMutableBlockState extends MutableBlockState {
         return (int) storage;
     }
 
+    @PowerNukkitOnly
     @Nonnull
     @Override
     public LongMutableBlockState copy() {

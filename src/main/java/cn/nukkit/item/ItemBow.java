@@ -71,7 +71,7 @@ public class ItemBow extends ItemTool {
 
         Enchantment bowDamage = this.getEnchantment(Enchantment.ID_BOW_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
-            damage += 0.25 * (bowDamage.getLevel() + 1);
+            damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
         }
 
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
@@ -118,7 +118,7 @@ public class ItemBow extends ItemTool {
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
-                ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);
+                ((EntityArrow) projectile).setPickupMode(EntityProjectile.PICKUP_CREATIVE);
             }
             if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {

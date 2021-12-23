@@ -74,7 +74,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         }
         return true;
     }
-    
+
+    @PowerNukkitOnly
     protected boolean isSupportValid(Block support) {
         return BlockLever.isSupportValid(support, BlockFace.UP) || support instanceof BlockCauldron;
     }
@@ -216,10 +217,12 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
         return 15;
     }
 
+    @Override
     public int getStrongPower(BlockFace side) {
         return getWeakPower(side);
     }
 
+    @Override
     public int getWeakPower(BlockFace side) {
         return !this.isPowered() ? 0 : (getFacing() == side ? this.getRedstoneSignal() : 0);
     }

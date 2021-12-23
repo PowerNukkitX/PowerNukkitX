@@ -21,6 +21,7 @@ class FrameUpdater implements Updater {
         this.section = section;
     }
 
+    @PowerNukkitOnly
     @Override
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {
         if (state.getBlockId() != BlockID.ITEM_FRAME_BLOCK) {

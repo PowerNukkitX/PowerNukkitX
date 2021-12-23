@@ -90,6 +90,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         this.namedTag.putFloat("ItemDropChance", chance);
     }
 
+    @Override
     public void setDirty() {
         this.spawnToAll();
         super.setDirty();

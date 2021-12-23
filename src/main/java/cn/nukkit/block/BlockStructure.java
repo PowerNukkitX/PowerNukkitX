@@ -122,7 +122,8 @@ public class BlockStructure extends BlockSolidMeta {
     }
     
     @Override
-    public boolean canBePulled() {
+    @PowerNukkitOnly
+    public  boolean canBePulled() {
         return false;
     }
     

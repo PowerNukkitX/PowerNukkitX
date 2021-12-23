@@ -50,21 +50,25 @@ public class EntityBee extends EntityAnimal {
         return 0.5f;
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public boolean getHasNectar() {
         return false;
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setHasNectar(boolean hasNectar) {
     
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public boolean isAngry() {
         return false;
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(boolean angry) {
     
@@ -107,16 +111,19 @@ public class EntityBee extends EntityAnimal {
         this.setMaxHealth(10);
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void nectarDelivered(BlockEntityBeehive blockEntityBeehive) {
 
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
     
     }
 
+    @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(Player player) {
     

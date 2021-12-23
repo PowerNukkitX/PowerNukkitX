@@ -4697,5 +4697,10 @@
     "name": "minecraft:end_crystal",
     "id": 630,
     "oldId": 426
+  },
+  {
+    "name": "minecraft:spyglass",
+    "id": 625,
+    "oldId": 772
   }
 ]
