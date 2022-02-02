@@ -205,6 +205,12 @@ public class BiomeSelector {
                         } else {
                             biome = EnumBiome.SWAMP;
                         }
+                    } else if (rainfall > 0.065f && rainfall <= 0.1f) {
+                        if (hills < 0f)  {
+                            biome = EnumBiome.BAMBOO_JUNGLE_HILLS;
+                        } else {
+                            biome = EnumBiome.BAMBOO_JUNGLE;
+                        } // TODO: 2022/2/2 修复与原版行为不一致的竹林生成
                     } else if (rainfall > 0.1f) {
                         if (noiseOcean < 0.155f)  {
                             biome = EnumBiome.JUNGLE_M;
