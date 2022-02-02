@@ -21,6 +21,7 @@ public final class PopulatorHelpers implements BlockID {
         nonSolidBlocks.add(LEAVES);
         nonSolidBlocks.add(LEAVES2);
         nonSolidBlocks.add(SNOW_LAYER);
+        nonSolidBlocks.add(TALL_GRASS);
     }
     
     private static final HashSet<BlockState> nonOceanSolidBlocks = new HashSet<BlockState>(3);

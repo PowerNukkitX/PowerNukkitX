@@ -121,7 +121,8 @@ public enum EnumBiome {
     MESA_BRYCE(165, new MesaBryceBiome()),
     MESA_PLATEAU_F_M(166, new MesaPlateauFMBiome()),
     MESA_PLATEAU_M(167, new MesaPlateauMBiome()),
-
+    BAMBOO_JUNGLE(168, new BambooJungleBiome()),
+    BAMBOO_JUNGLE_HILLS(169, new BambooJungleHillsBiome()),
     SOUL_SAND_VALLEY(178, new SoulSandValleyBiome()),
     CRIMSON_FOREST(179, new CrimsonForestBiome()),
     WARPED_FOREST(180, new WarpedForestBiome()),
