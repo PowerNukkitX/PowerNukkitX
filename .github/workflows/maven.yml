@@ -25,10 +25,10 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
       - name: Rename artifacts
-        run: mv target/powernukkit-*-shaded.jar target/powernukkit.jar
+        run: mv target/powernukkitx-*-shaded.jar target/powernukkitx.jar
       - name: Archive artifacts
         uses: actions/upload-artifact@v1
         if: success()
         with:
           name: PowerNukkit
-          path: target/powernukkit.jar
+          path: target/powernukkitx.jar
