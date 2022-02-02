@@ -11,9 +11,10 @@ import cn.nukkit.math.NukkitRandom;
  * @author DaPorkchop_ (Nukkit Project)
  */
 public class PopulatorDoublePlant extends PopulatorSurfaceBlock {
+
     private int type;
 
-    public PopulatorDoublePlant(int type)    {
+    public PopulatorDoublePlant(int type) {
         this.type = type;
     }
 
@@ -30,6 +31,8 @@ public class PopulatorDoublePlant extends PopulatorSurfaceBlock {
     @Override
     protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
         super.placeBlock(x, y, z, id, chunk, random);
-        chunk.setFullBlockId(x, y + 1, z, 8 | id);
+        if (y < 255) {
+            chunk.setFullBlockId(x, y + 1, z, 8 | id);
+        }
     }
 }

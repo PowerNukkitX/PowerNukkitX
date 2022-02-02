@@ -11,6 +11,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -2448,8 +2449,38 @@ public abstract class Entity extends Location implements Metadatable {
         if (endPortal) {
             if (!inEndPortal) {
                 inEndPortal = true;
-                EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
-                getServer().getPluginManager().callEvent(ev);
+                if (this.getRiding() == null && this.getPassengers().isEmpty() && !(this instanceof EntityEnderDragon)) {
+                    EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
+                    getServer().getPluginManager().callEvent(ev);
+                    
+                    if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.THE_END.getLevel())) {
+                        final Position newPos = EnumLevel.moveToTheEnd(this);
+                        if (newPos != null) {
+                            if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+                                if (teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                        @Override
+                                        public void onRun(int currentTick) {
+                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            teleport(newPos.add(0.5, 1, 0.5), PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                                            BlockEndPortal.spawnObsidianPlatform(newPos);
+                                        }
+                                    }, 5);
+                                }
+                            } else {
+                                if (teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                        @Override
+                                        public void onRun(int currentTick) {
+                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                                        }
+                                    }, 5);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         } else {
             inEndPortal = false;
@@ -2933,5 +2964,11 @@ public abstract class Entity extends Location implements Metadatable {
     public void setNoClip(boolean noClip) {
         this.noClip = noClip;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, noClip);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isBoss() {
+        return false;
     }
 }

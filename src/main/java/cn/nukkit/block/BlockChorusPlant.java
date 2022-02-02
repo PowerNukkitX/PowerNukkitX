@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockChorusPlant extends BlockTransparent {
 
     public BlockChorusPlant() {
+        // Nothing
     }
 
     @Override
@@ -40,7 +41,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_NONE;
+        return ItemTool.TYPE_AXE;
     }
 
     private boolean isPositionValid() {
@@ -75,7 +76,6 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isPositionValid()) {
                 level.scheduleUpdate(this, 1);
@@ -99,7 +99,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public Item[] getDrops(Item item) {
-        return ThreadLocalRandom.current().nextBoolean() ? new Item[]{Item.get(ItemID.CHORUS_FRUIT, 0, 1)} : Item.EMPTY_ARRAY;
+        return ThreadLocalRandom.current().nextBoolean() ? new Item[]{ Item.get(ItemID.CHORUS_FRUIT, 0, 1) } : Item.EMPTY_ARRAY;
     }
 
     @Override

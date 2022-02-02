@@ -1,49 +1,40 @@
 ---
-name: "\U0001F41E I found a bug"
-about: Create a report to help us improve
+name: "\U0001F41E 错误汇报"
+about: 创建一个错误报告来啊帮助我们更好地解决问题
 title: ''
 labels: 'Type: bug'
 assignees: ''
 
 ---
 
-# 🐞 I found a bug
+# 🐞 错误汇报
 <!-- 
-👉 This template is helpful, but you may erase everything if you can express the issue clearly
-      Feel free to ask questions or start related discussion 
+👉 尽可能详实地描述错误信息
 -->
 
-### 📸 Screenshots / Videos
-<!-- ✍ If applicable, add screenshots or video recordings to help explain your problem -->
+### 📸 截图或视频
+<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
 
 
-### ▶ Steps to Reproduce
-<!--- ✍ Reliable steps which someone can use to reproduce the issue. -->
-1. Run command '...'
-2. Click on '....'
-3. Put '....' at '...'
-4. See error
+### ▶ 复现步骤
+<!--- ✍ 详细描述此问题的复现步骤 -->
 
 
-### ✔ Expected Behavior
-<!-- ✍ What would you expect to happen -->
+### ✔ 预期行为
+<!-- ✍ 正常情况下应该发生什么 -->
 
 
-### ❌ Actual Behavior
-<!-- ✍ What actually happened -->
+### ❌ 实际行为
+<!-- ✍ 但是实际上发生了什么不该发生的 -->
 
 
 ### 📋 Debug information
-<!-- Use the 'debugpaste upload' and 'timings paste' command in PowerNukkit -->
-<!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
-* PowerNukkit version: ✍
-* Debug link: ✍
-* Timings link (if relevant): ✍ 
+<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
 
-### 💢 Crash Dump, Stack Trace and Other Files
-<!-- ✍ Use https://hastebin.com for big logs or dumps -->
+### 💢 错误堆栈或崩溃日志
+<!-- ✍ 最好使用 https://hastebin.com -->
 
 
-### 💬 Anything else we should know?
-<!-- ✍ This is the perfect place to add any additional details -->
+### 💬 其他信息
+<!-- ✍ 其他可能有助于解决此问题的信息 -->
 

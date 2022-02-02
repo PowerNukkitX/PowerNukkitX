@@ -101,9 +101,27 @@ public class BiomeSelector {
                 }
             } else {
                 if (rainfall < 0f)  {
-                    biome = EnumBiome.OCEAN;
+                    if (temperature < -0.4f) {
+                        biome = EnumBiome.FROZEN_OCEAN;
+                    } else if (temperature < 0f) {
+                        biome = EnumBiome.COLD_OCEAN;
+                    } else if (temperature < 0.35f) {
+                        biome = EnumBiome.OCEAN;
+                    } else if (temperature < 0.6f) {
+                        biome = EnumBiome.LUKEWARM_OCEAN;
+                    } else {
+                        biome = EnumBiome.WARM_OCEAN;
+                    }
                 } else {
-                    biome = EnumBiome.DEEP_OCEAN;
+                    if (temperature < -0.4f) {
+                        biome = EnumBiome.DEEP_FROZEN_OCEAN;
+                    } else if (temperature < 0f) {
+                        biome = EnumBiome.DEEP_COLD_OCEAN;
+                    } else if (temperature < 0.4f) {
+                        biome = EnumBiome.DEEP_OCEAN;
+                    } else {
+                        biome = EnumBiome.DEEP_LUKEWARM_OCEAN;
+                    }
                 }
             }
         } else if (Math.abs(noiseRiver) < 0.04f) {
@@ -187,6 +205,12 @@ public class BiomeSelector {
                         } else {
                             biome = EnumBiome.SWAMP;
                         }
+                    } else if (rainfall > 0.065f && rainfall <= 0.1f) {
+                        if (hills < 0f)  {
+                            biome = EnumBiome.BAMBOO_JUNGLE_HILLS;
+                        } else {
+                            biome = EnumBiome.BAMBOO_JUNGLE;
+                        } // TODO: 2022/2/2 修复与原版行为不一致的竹林生成
                     } else if (rainfall > 0.1f) {
                         if (noiseOcean < 0.155f)  {
                             biome = EnumBiome.JUNGLE_M;

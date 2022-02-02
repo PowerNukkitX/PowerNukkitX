@@ -1,7 +1,7 @@
 package cn.nukkit.level.biome.impl.jungle;
 
 import cn.nukkit.level.biome.type.GrassyBiome;
-import cn.nukkit.level.generator.populator.impl.PopulatorMelon;
+import cn.nukkit.level.generator.populator.impl.PopulatorVines;
 import cn.nukkit.level.generator.populator.impl.tree.JungleBigTreePopulator;
 import cn.nukkit.level.generator.populator.impl.tree.JungleTreePopulator;
 
@@ -9,6 +9,7 @@ import cn.nukkit.level.generator.populator.impl.tree.JungleTreePopulator;
  * @author DaPorkchop_
  */
 public class JungleBiome extends GrassyBiome {
+
     public JungleBiome() {
         super();
 
@@ -19,11 +20,11 @@ public class JungleBiome extends GrassyBiome {
         JungleBigTreePopulator bigTrees = new JungleBigTreePopulator();
         bigTrees.setBaseAmount(6);
         this.addPopulator(bigTrees);
-
-        PopulatorMelon melon = new PopulatorMelon();
-        melon.setBaseAmount(-65);
-        melon.setRandomAmount(70);
-        this.addPopulator(melon);
+        
+        PopulatorVines vines = new PopulatorVines();
+        vines.setBaseAmount(5);
+        vines.setRandomAmount(3);
+        this.addPopulator(vines);
     }
 
     @Override

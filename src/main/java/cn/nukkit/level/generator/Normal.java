@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.block.*;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeSelector;
@@ -9,10 +10,7 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.vanilla.f.NoiseGeneratorOctavesF;
 import cn.nukkit.level.generator.noise.vanilla.f.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.object.ore.OreType;
-import cn.nukkit.level.generator.populator.impl.PopulatorBedrock;
-import cn.nukkit.level.generator.populator.impl.PopulatorCaves;
-import cn.nukkit.level.generator.populator.impl.PopulatorGroundCover;
-import cn.nukkit.level.generator.populator.impl.PopulatorOre;
+import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitRandom;
@@ -206,8 +204,10 @@ public class Normal extends Generator {
                         new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 0, 80),
                         new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 0, 80)
                 }),
-                new PopulatorCaves()//,
+                new PopulatorCaves(),
                 //new PopulatorRavines()
+                new PopulatorSpring(BlockState.of(BlockID.WATER), ImmutableList.of(BlockState.of(BlockID.STONE)), 50, 8, 255),
+                new PopulatorSpring(BlockState.of(BlockID.LAVA), ImmutableList.of(BlockState.of(BlockID.STONE)), 20, 16, 255)
         );
     }
 
