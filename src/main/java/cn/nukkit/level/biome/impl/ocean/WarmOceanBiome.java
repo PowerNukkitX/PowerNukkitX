@@ -1,21 +1,19 @@
 package cn.nukkit.level.biome.impl.ocean;
 
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.biome.type.WateryBiome;
 import cn.nukkit.level.generator.populator.impl.PopulatorDisk;
-import cn.nukkit.level.generator.populator.impl.PopulatorKelp;
 import cn.nukkit.level.generator.populator.impl.PopulatorSeagrass;
 
 import java.util.Arrays;
 
 /**
- * @author MagicDroidX (Nukkit Project)
+ * @author GoodLucky777
  */
-public class OceanBiome extends WateryBiome {
+public class WarmOceanBiome extends OceanBiome {
 
-    public OceanBiome() {
+    private static final BlockState STATE_SAND = BlockState.of(SAND);
+    
+    public WarmOceanBiome() {
         PopulatorDisk populatorDiskSand = new PopulatorDisk(1.0, BlockState.of(SAND), 2, 4, 2, Arrays.asList(BlockState.of(GRASS), BlockState.of(DIRT)));
         populatorDiskSand.setBaseAmount(3);
         this.addPopulator(populatorDiskSand);
@@ -28,32 +26,26 @@ public class OceanBiome extends WateryBiome {
         populatorDiskGravel.setBaseAmount(1);
         this.addPopulator(populatorDiskGravel);
         
-        PopulatorKelp populatorKelp = new PopulatorKelp();
-        populatorKelp.setBaseAmount(-135);
-        populatorKelp.setRandomAmount(180);
-        this.addPopulator(populatorKelp);
-        
         PopulatorSeagrass populatorSeagrass = new PopulatorSeagrass(0.3);
-        populatorSeagrass.setBaseAmount(24);
-        populatorSeagrass.setRandomAmount(24);
+        populatorSeagrass.setBaseAmount(40);
+        populatorSeagrass.setBaseAmount(40);
         this.addPopulator(populatorSeagrass);
         
         this.setBaseHeight(-1f);
         this.setHeightVariation(0.1f);
     }
-
+    
     @Override
     public String getName() {
-        return "Ocean";
+        return "Warm Ocean";
     }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
+    
+    public BlockState getGroundState(int x, int y, int z) {
+        return STATE_SAND;
+    }
+    
     @Override
-    public int getGroundBlock(int y) {
-        if (useNewRakNetGround()) {
-            return getGroundId(0, y, 0) >> 4;
-        }
-        return GRAVEL;
+    public int getGroundDepth(int x, int y, int z) {
+        return 1;
     }
 }
