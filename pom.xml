@@ -2,35 +2,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>PowerNukkit</name>
-    <description>A Minecraft Bedrock Edition server software implementation made in Java from scratch which supports all new features.</description>
-    <url>https://powernukkit.org</url>
+    <name>PowerNukkitX</name>
+    <description>A fork of PowerNukkit</description>
 
-    <groupId>org.powernukkit</groupId>
-    <artifactId>powernukkit</artifactId>
-    <!--
-    Version Convention: upstream.major.minor.patch-PN
-    Based on https://semver.org/ but with upstream on front
-    Upstream is the NukkitX major version
-    PN is a indicator that software is running PowerNukkit, it must be present both in releases and snapshot versions
-    -->
-    <version>1.6.0.0-PN-SNAPSHOT</version>
+    <groupId>com.blocklynukkit</groupId>
+    <artifactId>powernukkitx</artifactId>
+    <version>1.6.0.0-PNX-SNAPSHOT</version>
 
-    <inceptionYear>2020</inceptionYear>
+    <inceptionYear>2022</inceptionYear>
     <organization>
-        <name>PowerNukkit</name>
-        <url>https://powernukkit.org</url>
+        <name>BlocklyNukkit</name>
+        <url>https://github.com/BlocklyNukkit</url>
     </organization>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/PowerNukkit/PowerNukkit/issues</url>
+        <url>https://github.com/BlocklyNukkit/PowerNukkitX/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/PowerNukkit/PowerNukkit.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:PowerNukkit/PowerNukkit.git</developerConnection>
-        <url>https://github.com/PowerNukkit/PowerNukkit</url>
+        <connection>scm:git:https://github.com/BlocklyNukkit/PowerNukkitX.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:BlocklyNukkit/PowerNukkitX.git</developerConnection>
+        <url>https://github.com/BlocklyNukkit/PowerNukkitX</url>
     </scm>
 
     <licenses>
@@ -42,6 +35,12 @@
     </licenses>
 
     <developers>
+        <developer>
+            <id>BlocklyNukkit</id>
+            <url>https://github.com/BlocklyNukkit</url>
+            <organization>BlocklyNukkit</organization>
+            <organizationUrl>https://github.com/BlocklyNukkit</organizationUrl>
+        </developer>
         <developer>
             <id>PowerNukkit</id>
             <url>https://powernukkit.org</url>
@@ -79,23 +78,7 @@
         <jline.version>3.9.0</jline.version>
         <skipTests>true</skipTests>
         <skipGpg>true</skipGpg>
-        <sonar.projectKey>PowerNukkit_PowerNukkit</sonar.projectKey>
-        <sonar.organization>powernukkit</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>powernukkit-releases</id>
-            <name>powernukkit-releases</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>powernukkit-snapshots</id>
-            <name>powernukkit-snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -337,10 +320,6 @@
         </dependency>
     </dependencies>
 
-    <ciManagement>
-        <url>https://builds.powernukkit.org/buildConfiguration/PowerNukkit_Snapshots</url>
-    </ciManagement>
-
     <build>
         <resources>
             <resource>
@@ -448,44 +427,6 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>1.18.20.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>delombok</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <addOutputDirectory>false</addOutputDirectory>
-                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-                    <outputDirectory>${project.build.directory}/delombok</outputDirectory>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration> <!-- add this to disable checking -->
-                    <source>8</source>
-                    <doclint>none</doclint>
-                    <quiet>true</quiet>
-                    <sourcepath>${project.build.directory}/delombok</sourcepath>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -637,57 +578,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <!-- Copy the readme file to the site source files so that a page is generated from it. -->
-                        <id>copy-readme</id>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-site/markdown</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}</directory>
-                                    <includes>
-                                        <include>README.md</include>
-                                        <include>CHANGELOG.md</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <source>8</source>
-                    <doclint>none</doclint>
-                    <quiet>true</quiet>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>html</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
