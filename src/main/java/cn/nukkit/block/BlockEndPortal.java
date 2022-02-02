@@ -1,18 +1,28 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityEndPortal;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class BlockEndPortal extends BlockFlowable {
+public class BlockEndPortal extends BlockFlowable implements BlockEntityHolder<BlockEntityEndPortal> {
+
+    private static final BlockState STATE_OBSIDIAN = BlockState.of(OBSIDIAN);
 
     public BlockEndPortal() {
         this(0);
@@ -32,6 +42,27 @@ public class BlockEndPortal extends BlockFlowable {
         return END_PORTAL;
     }
 
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Nonnull
+    @Override
+    public Class<? extends BlockEntityEndPortal> getBlockEntityClass() {
+        return BlockEntityEndPortal.class;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Nonnull
+    @Override
+    public String getBlockEntityType() {
+        return BlockEntity.END_PORTAL;
+    }
+
+    @Override
+    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull
@@ -42,7 +73,7 @@ public class BlockEndPortal extends BlockFlowable {
 
     @Override
     public boolean canPassThrough() {
-        return true;
+        return false;
     }
 
     @Override
@@ -94,5 +125,38 @@ public class BlockEndPortal extends BlockFlowable {
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
+    public double getMaxY() {
+        return getY() + (12.0 / 16.0);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static void spawnObsidianPlatform(Position position) {
+        Level level = position.getLevel();
+        int x = position.getFloorX();
+        int y = position.getFloorY();
+        int z = position.getFloorZ();
+
+        for (int blockX = x - 2; blockX <= x + 2; blockX++) {
+            for (int blockZ = z - 2; blockZ <= z + 2; blockZ++) {
+                level.setBlockStateAt(blockX, y - 1, blockZ, STATE_OBSIDIAN);
+                for (int blockY = y; blockY <= y + 3; blockY++) {
+                    level.setBlockStateAt(blockX, blockY, blockZ, BlockState.AIR);
+                }
+            }
+        }
     }
 }

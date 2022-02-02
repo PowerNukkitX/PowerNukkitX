@@ -4,11 +4,15 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
+import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.data.IntPositionEntityData;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -74,7 +78,13 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         if (!super.attack(source)) {
             return false;
         }
-
+        
+        if (source instanceof EntityDamageByEntityEvent) {
+            if (((EntityDamageByEntityEvent) source).getDamager() instanceof EntityEnderDragon) {
+                return false;
+            }
+        }
+        
         explode();
 
         return true;
@@ -109,8 +119,19 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
     public void setShowBase(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
     }
-
-
+    
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Vector3 getBeamTarget() {
+        return this.getDataPropertyPos(DATA_BLOCK_TARGET);
+    }
+    
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public void setBeamTarget(Vector3 beamTarget) {
+        this.setDataProperty(new IntPositionEntityData(DATA_BLOCK_TARGET, beamTarget));
+    }
+    
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override

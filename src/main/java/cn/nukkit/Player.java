@@ -69,6 +69,7 @@ import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
@@ -304,6 +305,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
+    private boolean showingCredits;
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean hasSeenCredits;
+    
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -1528,8 +1535,36 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (endPortal) {
             if (!inEndPortal) {
                 inEndPortal = true;
-                EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
-                getServer().getPluginManager().callEvent(ev);
+                if (this.getRiding() == null && this.getPassengers().isEmpty()) {
+                    EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
+                    getServer().getPluginManager().callEvent(ev);
+                    
+                    if (!ev.isCancelled() && (this.getLevel() == EnumLevel.OVERWORLD.getLevel() || this.getLevel() == EnumLevel.THE_END.getLevel())) {
+                        final Position newPos = EnumLevel.moveToTheEnd(this);
+                        if (newPos != null) {
+                            if (newPos.getLevel().getDimension() == Level.DIMENSION_THE_END) {
+                                if (teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL)) {
+                                    server.getScheduler().scheduleDelayedTask(new Task() {
+                                        @Override
+                                        public void onRun(int currentTick) {
+                                            // dirty hack to make sure chunks are loaded and generated before spawning player
+                                            teleport(newPos, PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                                            BlockEndPortal.spawnObsidianPlatform(newPos);
+                                        }
+                                    }, 5);
+                                }
+                            } else {
+                                if (!this.hasSeenCredits && !this.showingCredits) {
+                                    PlayerShowCreditsEvent playerShowCreditsEvent = new PlayerShowCreditsEvent(this);
+                                    this.getServer().getPluginManager().callEvent(playerShowCreditsEvent);
+                                    if (!playerShowCreditsEvent.isCancelled()) {
+                                        this.showCredits();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         } else {
             inEndPortal = false;
@@ -2215,7 +2250,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.namedTag.putInt("TimeSinceRest", 0);
         }
         this.timeSinceRest = this.namedTag.getInt("TimeSinceRest");
-
+        
+        if (!this.namedTag.contains("HasSeenCredits")) {
+            this.namedTag.putBoolean("HasSeenCredits", false);
+        }
+        this.hasSeenCredits = this.namedTag.getBoolean("HasSeenCredits");
+        
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
         }
@@ -4111,6 +4151,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     notFound.setAction(PositionTrackingDBServerBroadcastPacket.Action.NOT_FOUND);
                     notFound.setTrackingId(posTrackReq.getTrackingId());
                     dataPacket(notFound);
+                    break;
+                case ProtocolInfo.SHOW_CREDITS_PACKET:
+                    ShowCreditsPacket showCreditsPacket = (ShowCreditsPacket) packet;
+                    if (showCreditsPacket.status == ShowCreditsPacket.STATUS_END_CREDITS) {
+                        if (this.showingCredits) {
+                            this.setShowingCredits(false);
+                            this.teleport(this.getSpawn(), PlayerTeleportEvent.TeleportCause.END_PORTAL);
+                        }
+                    }
                     break;
                 case ProtocolInfo.TICK_SYNC_PACKET:
                     TickSyncPacket tickSyncPacket = (TickSyncPacket) packet;
@@ -6171,6 +6220,42 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isShowingCredits() {
+        return showingCredits;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public void setShowingCredits(boolean showingCredits) {
+        this.showingCredits = showingCredits;
+        if (showingCredits) {
+            ShowCreditsPacket pk = new ShowCreditsPacket();
+            pk.eid = this.getId();
+            pk.status = ShowCreditsPacket.STATUS_START_CREDITS;
+            this.dataPacket(pk);
+        }
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public void showCredits() {
+        this.setShowingCredits(true);
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean hasSeenCredits() {
+        return showingCredits;
+    }
+    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public void setHasSeenCredits(boolean hasSeenCredits) {
+        this.hasSeenCredits = hasSeenCredits;
+    }
+    
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean dataPacketImmediately(DataPacket packet) {
