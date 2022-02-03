@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.populator.impl;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
-import cn.nukkit.level.generator.object.end.ObjectEndIsland;
 import cn.nukkit.level.generator.object.end.ObjectEndSpike;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;

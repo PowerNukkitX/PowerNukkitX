@@ -11,6 +11,7 @@ import cn.nukkit.level.generator.noise.vanilla.d.NoiseGeneratorSimplexD;
 import cn.nukkit.level.generator.populator.impl.PopulatorChorusTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndGateway;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndIsland;
+import cn.nukkit.level.generator.populator.impl.PopulatorEndSpike;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
@@ -142,7 +143,8 @@ public class TheEnd extends Generator {
         this.populators = ImmutableList.of(
                 new PopulatorEndIsland(this),
                 new PopulatorChorusTree(this),
-                new PopulatorEndGateway(this));
+                new PopulatorEndGateway(this),
+                new PopulatorEndSpike(this));
     }
 
     @Override
