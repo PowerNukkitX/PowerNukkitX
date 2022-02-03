@@ -2,7 +2,7 @@ package cn.nukkit.level.biome.type;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockDoublePlant;
+import cn.nukkit.blockproperty.value.DoublePlantType;
 import cn.nukkit.level.generator.populator.impl.PopulatorDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorGrass;
 import cn.nukkit.level.generator.populator.impl.PopulatorMelon;
@@ -18,7 +18,7 @@ public abstract class GrassyBiome extends CoveredBiome {
         grass.setBaseAmount(30);
         this.addPopulator(grass);
 
-        PopulatorDoublePlant tallGrass = new PopulatorDoublePlant(BlockDoublePlant.TALL_GRASS);
+        PopulatorDoublePlant tallGrass = new PopulatorDoublePlant(DoublePlantType.GRASS.ordinal());
         tallGrass.setBaseAmount(5);
         this.addPopulator(tallGrass);
         
