@@ -18,6 +18,8 @@ public class PopulatorEndSpike extends Populator {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (chunkX < 25 || chunkZ < 25)
+            return;
         final int r = 3 + random.nextBoundedInt(4);
         final int h = 49 + 9 * r;
         final int randH = random.nextBoundedInt(3);
