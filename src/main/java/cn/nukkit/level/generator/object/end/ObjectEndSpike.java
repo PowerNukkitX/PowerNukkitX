@@ -14,6 +14,7 @@ import cn.nukkit.math.Vector3;
 import static cn.nukkit.block.BlockID.BEDROCK;
 import static cn.nukkit.block.BlockID.OBSIDIAN;
 import static cn.nukkit.block.BlockID.IRON_BARS;
+import static cn.nukkit.block.BlockID.STONE;
 
 /**
  * @author GoodLucky777
@@ -21,7 +22,7 @@ import static cn.nukkit.block.BlockID.IRON_BARS;
 public class ObjectEndSpike extends BasicGenerator {
 
     private static final BlockState STATE_BEDROCK_INFINIBURN = BlockState.of(BEDROCK, 1);
-    private static final BlockState STATE_OBSIDIAN = BlockState.of(OBSIDIAN);
+    private static final BlockState STATE_OBSIDIAN = BlockState.of(STONE); // For debug
     private static final BlockState STATE_IRON_BARS = BlockState.of(IRON_BARS);
 
     private Vector3 position;
@@ -46,28 +47,23 @@ public class ObjectEndSpike extends BasicGenerator {
     public boolean generate(ChunkManager level, NukkitRandom rand) {
         // Generate an End Spike
         for (int y = 0; y <= height + 10; y++) {
-            for (int x = position.getFloorX() - radius; x <= position.getFloorX() + radius; x++) {
-                for (int z = position.getFloorZ() - radius; z <= position.getFloorZ() + radius; z++) {
-                    if (y < height && tempPosition.setComponents(x, y, z).distanceSquared((double) position.getFloorX(),
-                            (double) position.getFloorY(), (double) position.getFloorZ()) <= Math.pow(radius, 2) + 1) {
-                        boolean succeed = level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
-                        // assert succeed : "Block place failed!";
-                    } else if (y > 65) { // To remove end stones if this is lower than ground-height
-                        level.setBlockStateAt(x, y, z, BlockState.AIR);
-                    }
+            for (int tx = -radius; tx <= radius; ++tx) {
+                for (int tz = -radius; tz <= radius; ++tz) {
+                    int x = position.getFloorX() + tx, z = position.getFloorZ() + tz;
+                    if (tx * tx + tz * tz <= radius * radius)
+                        level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
                 }
             }
         }
 
         // Generate an iron bars if hasIronBars is true
         if (hasIronBars) {
-            for (int y = height; y <= 3; y++) {
-                for (int x = position.getFloorX() - 2; x <= position.getFloorX() + 2; x++) {
-                    for (int z = position.getFloorZ() - 2; z <= position.getFloorZ() + 2; z++) {
-                        if (y == 3 || (Math.abs(x) == 2 || Math.abs(z) == 2)) {
-                            boolean succeed = level.setBlockStateAt(x, y, z, STATE_IRON_BARS);
-                            assert succeed : "Non-Succeed!";
-                        }
+            for (int y = height; y <= height + 10; y++) {
+                for (int tx = -radius; tx <= radius; ++tx) {
+                    for (int tz = -radius; tz <= radius; ++tz) {
+                        int x = position.getFloorX() + tx, z = position.getFloorZ() + tz;
+                        if (tx * tx + tz * tz <= radius * radius)
+                            level.setBlockStateAt(x, y, z, STATE_IRON_BARS);
                     }
                 }
             }
