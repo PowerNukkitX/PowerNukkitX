@@ -1,49 +1,48 @@
 [<img alt="PowerNukkit" width="838" src="https://raw.githubusercontent.com/PowerNukkit/PowerNukkit/master/.github/images/banner.png" />](https://powernukkit.org)
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![PowerNukkit v1.X](https://github.com/PowerNukkit/PowerNukkit/workflows/PowerNukkit%20v1.X/badge.svg?branch=master)](https://builds.powernukkit.org/buildConfiguration/PowerNukkit_Releases#all-projects)
-[![TeamCity Build Status](https://builds.powernukkit.org/app/rest/builds/buildType:(id:PowerNukkit_Snapshots)/statusIcon)](https://builds.powernukkit.org/buildConfiguration/PowerNukkit_Snapshots)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PowerNukkit_PowerNukkit&metric=coverage)](https://sonarcloud.io/dashboard?id=PowerNukkit_PowerNukkit)
-[![Discord](https://img.shields.io/discord/728280425255927879)](https://powernukkit.org/discord)
 
-Introduction
--------------
+<h2>多语言文档</h2>
 
-Nukkit is nuclear-powered server software for Minecraft: Pocket Edition.
-It has a few key advantages over other server software:
+---
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
+[![English](https://img.shields.io/badge/English-todo-red)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 
-* Written in Java, Nukkit is faster and more stable.
-* Having a friendly structure, it's easy to contribute to Nukkit's development and rewrite plugins from other platforms into Nukkit plugins.
+---
+🤔什么是PowerNukkitX ？
+---
+[PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一个分支版本，由[BlocklyNukkit](https://github.com/BlocklyNukkit)小组负责开发维护，如遇任何问题可提交[Issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues)反馈。
 
-Nukkit is **under improvement** yet, we welcome contributions.
+---
 
-**PowerNukkit** is a modified version of Nukkit that adds support to a huge amount of features like water-logging, all new blocks, more plugin events, offhand slot, bug fixes and many more.
+🧾 关于Nukkit核心
 
-Please note that PowerNukkit is not handled by Cloudburst's staff and is provided with love but without warranty. If you find any issue while running PowerNukkit you should [create a new issue](https://github.com/PowerNukkit/PowerNukkit/issues) in this repository first.
+[Nukkit](https://github.com/Nukkit/Nukkit)是一款为Minecraft: Pocket Edition而生的服务端，有着如下优势:
 
-It's also advisable to have a backup schedule set up, use plugins that are made for PowerNukkit and use only stable PowerNukkit versions.
+* 基于Java开发，速度更快，更稳定，高性能。
+* 具有友好的架构，您可简单快速的上手为其开发插件等。
+* Nukkit正在**不断优化改进中**，同时我们欢迎您为我们的开发做出贡献。
+---
+声明
+---
 
-Most Cloudburst Nukkit plugins are supported but they may not understand the new blocks and items and the new stuff that you can do with PowerNukkit.
 
-Links
---------------------
+**PowerNukkitX**是基于PowerNukkit和Nukkit的修改优化版本，修复了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)插件兼容（TODO）等。
 
-- __[🌐 PowerNukkit Website](https://powernukkit.org/)__
-- __[👩🏽‍💻 PowerNukkit Website for Plugin Developers](https://devs.powernukkit.org/)__
-- __[💬 PowerNukkit Forum and Guides](https://discuss.powernukkit.org/)__
-- __[💬 PowerNukkit Discord](https://powernukkit.org/discord)__
-- __[💾 Download PowerNukkit Recommended Build](https://powernukkit.org/recommended)__
-- __[💾 Download PowerNukkit Releases](https://powernukkit.org/releases)__
-- __[💾 Download PowerNukkit Snapshots](https://powernukkit.org/snapshots)__
-- __[🔌 Cloudburst Nukkit Plugins](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
-- __[🔌 PowerNukkit Plugins](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
-- __[🧩 PowerNukkit Plugin Requests](https://discuss.powernukkit.org/c/plugins/plugin-requests/13)__
+* 请注意**PowerNukkitX**非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues)。
 
-Creating Plugins
-----------------
-Add PowerNukkit as dependency, it's hosted by maven central and jcenter, so you don't need to specify a custom repository.
+* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkit](https://github.com/powernukkit/powernukkit)或[PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)制作的插件，并使用[稳定版](https://github.com/BlocklyNukkit/PowerNukkitX/releases)进行部署。
 
-[Click here to see the full gradle example](https://github.com/PowerNukkit/ExamplePlugin-Gradle)
+* 大多数[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在该服务端上兼容使用，但在运行时可能会出一些错误等或不支持PowerNukkitX添加的新内容
+
+---
+
+创建插件
+---
+* 添加PowerNukkit至您的依赖项中（它由Maven Central 和 jcenter 托管，因此您无需指定自定义存储库）。
+* Tips：若您需要导入PowerNukkitX至您的依赖项中，那您目前需要手动指定存储库。
+
+[点此查看完整的gradle示例](https://github.com/PowerNukkit/ExamplePlugin-Gradle)
 ```groovy
 repositories {
     mavenCentral()
@@ -54,7 +53,7 @@ dependencies {
 }
 ```
 
-[Click here to see the full maven example](https://github.com/PowerNukkit/ExamplePlugin-Maven)
+[点此查看完整的Maven示例](https://github.com/PowerNukkit/ExamplePlugin-Maven)
 ```xml
 <dependencies>
     <dependency>
@@ -64,147 +63,51 @@ dependencies {
     </dependency>
 </dependencies>
 ```
+---
 
-Build JAR file
--------------
-- `git clone https://github.com/PowerNukkit/PowerNukkit`
-- `cd PowerNukkit`
+构建JAR核心文件
+---
+- `git clone https://github.com/BlocklyNukkit/PowerNukkitX`
+- `cd PowerNukkitX`
 - `git submodule update --init`
 - `./mvnw clean package`
 
-The compiled JAR can be found in the `target/` directory.
+* 编译后的JAR文件可在 `target/` 目录中找到。
 
-Use the JAR that ends with `-shaded` to run your server.
+* 在编译完成的JAR文件后添加启动参数 `-shaded` 即可开始亦可赛艇 :D
 
-Running
+部署运行
 -------------
-Simply run `java -jar powernukkit-<version>-shaded.jar` **in an empty folder**.
+* **在任意一个空文件夹**内放入编译完成的核心文件，并使用终端输入 `java -jar powernukkitx-<version>-shaded.jar` 即可开始部署运行。
 
-But to get the best performance on larger public servers, this longer command will be better:
+* 但为了获得更好的性能，我们推荐您使用以下命令用于部署。
 ```sh
 java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar powernukkit-<version>-shaded.jar
 ```
 
-Adjust the -Xmx and -Xms settings and the jar name in the end of the command as needed.
+* 请酌情根据您的服务器配置调节 `-Xmx` (JVM可以调用的最大内存) 和 `-Xms` (JVM的初始内存)，同时根据您编译的JAR核心名称手动调整 `powernukkit-<version>-shaded.jar`中的内容。
 
-Check [this page](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/) for information about the arguments above.
+* 您可在此[文章](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/)中获取更多有关信息。
 
-Docker
--------------
-Running PowerNukkit in [Docker](https://www.docker.com/):
-
-Run these commands in terminal or cmd: (copy & paste everything at once may work)
-```sh
-mkdir my-server
-cd my-server
-curl -sSL https://raw.githubusercontent.com/PowerNukkit/PowerNukkit/master/docker-compose.yml > docker-compose.yml
-```
-
-If you want to keep your server always updated when it restarts, run with:   
-(edit the docker-compose.yml file to choose the base version you want)
-```sh
-docker-compose run --rm --service-ports --name powernukkit server
-```
-
-But if you want to keep using the same version and update, use this command to create a fixed container
-
-```sh
-docker-compose run --service-ports --name powernukkit server
-```
-
-<b>To return to the terminal and keep the server running:</b>  
-Keep holding <kbd>CTRL</kbd>, press <kbd>P</kbd>, release <kbd>P</kbd>, press <kbd>Q</kbd>, release <kbd>Q</kbd>, and release <kbd>CTRL</kbd>
-
-
-Managing your server after the docker installation:  
-(these commands only works if you created a fixed container)
-```sh
-# Starts your server, use CTRL+P+Q to detach without stopping
-docker start powernukkit -i
-# Attach a detached server
-docker attach powernukkit
-# Stops your server with system signal
-docker stop powernukkit
-# Uninstall the container (keeps the data), useful to update your server
-docker rm powernukkit
-```
-
-Check the [docker-compose.yml](docker-compose.yml) file for more details.
-
-### Supported tags
-* _bleeding_ (⚠️ **use with care, may contain unstable code!** ⚠️)
-* 1.5.2.0, 1.5.2, 1.5, 1, latest
-* 1.5.1.0, 1.5.1
-* 1.5.0.0, 1.5.0
-* 1.4.0.0, 1.4.0, 1.4
-* 1.3.1.5, 1.3.1, 1.3
-* 1.3.1.4
-* 1.3.1.3
-* 1.3.1.2
-* 1.3.1.1
-* 1.3.0.1, 1.3.0
-* 1.2.1.0, 1.2.1, 1.2
-* 1.2.0.2, 1.2.0
-* 1.1.1.1, 1.1.1, 1.1
-* 1.1.1.0
-
-Kubernetes & Helm
--------------
-
-Validate the chart:
-
-`helm lint charts/nukkit`
-
-Dry run and print out rendered YAML:
-
-`helm install --dry-run --debug nukkit charts/nukkit`
-
-Install the chart:
-
-`helm install nukkit charts/nukkit`
-
-Or, with some different values:
-
-```
-helm install nukkit \
-  --set image.tag="arm64" \
-  --set service.type="LoadBalancer" \
-    charts/nukkit
-```
-
-Or, the same but with a custom values from a file:
-
-```
-helm install nukkit \
-  -f helm-values.local.yaml \
-    charts/nukkit
-```
-
-Upgrade the chart:
-
-`helm upgrade nukkit charts/nukkit`
-
-Testing after deployment:
-
-`helm test nukkit`
-
-Completely remove the chart:
-
-`helm uninstall nukkit`
-
-
-Contributing
+🧐 贡献一份力量
 ------------
-Please read the [CONTRIBUTING](CONTRIBUTING.md) guide before submitting any issue. Issues with insufficient information or in the wrong format will be closed and will not be reviewed.
+您在提交任何问题或代码上传合并等请求时，请先阅读[贡献帮助指南](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CONTRIBUTING.md)后再进行提问或其它操作，信息不足或格式错误等我们将不会回复您并关闭您的请求。
 
----------
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=PowerNukkit_PowerNukkit)
+---
 
----------
+友情链接
+--------------------
 
-![](https://www.yourkit.com/images/yklogo.png)  
-YourKit supports open source projects with innovative and intelligent tools
-for monitoring and profiling Java and .NET applications.  
-YourKit is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/),
-[YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/),
-and [YourKit YouMonitor](https://www.yourkit.com/youmonitor/).
+- __[🌐 PowerNukkit官网](https://powernukkit.org/)__
+- __[👩🏽‍💻 PowerNukkit插件开发文档库](https://devs.powernukkit.org/)__
+- __[💬 PowerNukkit官方论坛](https://discuss.powernukkit.org/)__
+- __[💬 PowerNukkit Discord](https://powernukkit.org/discord)__
+- __[💾 下载测试版PowerNukkit](https://powernukkit.org/recommended)__
+- __[💾 下载正式版PowerNukkit](https://powernukkit.org/releases)__
+- __[💾 下载快照版PowerNukkit](https://powernukkit.org/snapshots)__
+- __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
+- __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
+- __[🧩 PowerNukkit 插件请求](https://discuss.powernukkit.org/c/plugins/plugin-requests/13)__
+
+---
+2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com)
