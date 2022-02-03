@@ -50,8 +50,9 @@ public class ObjectEndSpike extends BasicGenerator {
                 for (int z = position.getFloorZ() - radius; z <= position.getFloorZ() + radius; z++) {
                     if (y < height && tempPosition.setComponents(x, y, z).distanceSquared((double) position.getFloorX(),
                             (double) position.getFloorY(), (double) position.getFloorZ()) <= Math.pow(radius, 2) + 1) {
-                        level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
-                    } else if (y > 65) { // To remove end stones if this is lower than ground height
+                        boolean succeed = level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
+                        // assert succeed : "Block place failed!";
+                    } else if (y > 65) { // To remove end stones if this is lower than ground-height
                         level.setBlockStateAt(x, y, z, BlockState.AIR);
                     }
                 }
@@ -64,7 +65,8 @@ public class ObjectEndSpike extends BasicGenerator {
                 for (int x = position.getFloorX() - 2; x <= position.getFloorX() + 2; x++) {
                     for (int z = position.getFloorZ() - 2; z <= position.getFloorZ() + 2; z++) {
                         if (y == 3 || (Math.abs(x) == 2 || Math.abs(z) == 2)) {
-                            level.setBlockStateAt(x, y, z, STATE_IRON_BARS);
+                            boolean succeed = level.setBlockStateAt(x, y, z, STATE_IRON_BARS);
+                            assert succeed : "Non-Succeed!";
                         }
                     }
                 }
