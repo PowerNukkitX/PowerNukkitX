@@ -79,6 +79,7 @@ public class ObjectEndSpike extends BasicGenerator {
                 }
         }
         level.setBlockStateAt(position.getFloorX(), height, position.getFloorZ(), STATE_BEDROCK_INFINIBURN);
+
         // TODO: Generate Ender Crystal
         return true;
     }

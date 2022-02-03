@@ -3401,58 +3401,87 @@ public class Level implements ChunkManager, Metadatable {
         Vector3 spawn = this.requireProvider().getSpawn();
         return Math.abs(X - (spawn.getFloorX() >> 4)) <= 1 && Math.abs(Z - (spawn.getFloorZ() >> 4)) <= 1;
     }
-
-    public Position getSafeSpawn() {
-        return this.getSafeSpawn(null);
+    public Position getSafeSpawn(){
+        return getSafeSpawn(null);
     }
 
-    public Position getSafeSpawn(Vector3 spawn) {
+    public Position getSafeSpawn(Vector3 spawn){
+        return getSafeSpawn(spawn,16);
+    }
+
+    public Position getSafeSpawn(Vector3 spawn,int horizontalMaxOffset){
+        return getSafeSpawn(spawn,horizontalMaxOffset,true);
+    }
+
+    public Position getSafeSpawn(Vector3 spawn,int horizontalMaxOffset,boolean allowWaterUnder){
         if (spawn == null || spawn.y < 1) {
             spawn = this.getFuzzySpawnLocation();
         }
 
-        if (spawn != null) {
-            Vector3 v = spawn.floor();
-            FullChunk chunk = this.getChunk((int) v.x >> 4, (int) v.z >> 4, false);
-            int x = (int) v.x & 0x0f;
-            int z = (int) v.z & 0x0f;
-            if (chunk != null && chunk.isGenerated()) {
-                int y = (int) NukkitMath.clamp(v.y, 1, 254);
-                boolean wasAir = chunk.getBlockId(x, y - 1, z) == 0;
-                for (; y > 0; --y) {
-                    BlockState state = chunk.getBlockState(x, y, z);
-                    Block block = state.getBlockRepairing(this, x, y, z);
-                    if (this.isFullBlock(block)) {
-                        if (wasAir) {
-                            y++;
-                            break;
-                        }
-                    } else {
-                        wasAir = true;
-                    }
-                }
+        if (spawn == null)
+            return null;
 
-                for (; y >= 0 && y < 255; y++) {
-                    BlockState state = chunk.getBlockState(x, y + 1, z);
-                    Block block = state.getBlockRepairing(this, x, y + 1, z);
-                    if (!this.isFullBlock(block)) {
-                        state = chunk.getBlockState(x, y, z);
-                        block = state.getBlockRepairing(this, x, y, z);
-                        if (!this.isFullBlock(block)) {
-                            return new Position(spawn.x, y == (int) spawn.y ? spawn.y : y, spawn.z, this);
-                        }
-                    } else {
-                        ++y;
-                    }
-                }
+        if (allowWaterUnder) {
+            if (standable(spawn, true))
+                return Position.fromObject(spawn,this);
 
-                v.y = y;
+            for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
+                for (int y = 255;y> 0; y--) {
+                    Position pos = Position.fromObject(spawn,this);
+                    pos.setY(y);
+                    Position newSpawn;
+                    if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), true))
+                        return newSpawn;
+                    if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), true))
+                        return newSpawn;
+                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), true))
+                        return newSpawn;
+                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), true))
+                        return newSpawn;
+                }
             }
-
-            return new Position(spawn.x, v.y, spawn.z, this);
         }
 
-        return null;
+        if (standable(spawn))
+            return Position.fromObject(spawn,this);
+
+        for (int horizontalOffset = 0;horizontalOffset <= horizontalMaxOffset;horizontalOffset++){
+            for(int y = 255;y > 0;y--){
+                Position pos = Position.fromObject(spawn,this);
+                pos.setY(y);
+                Position newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset,0,horizontalOffset)))return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset,0,-horizontalOffset)))return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset,0,horizontalOffset)))return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset,0,-horizontalOffset)))return newSpawn;
+            }
+        }
+
+        Server.getInstance().getLogger().warning("cannot find a safe spawn around position" + spawn.toString() + "!");
+        return Position.fromObject(spawn,this);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean standable(Vector3 vec){
+        return standable(vec,false);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean standable(Vector3 vec,boolean allowWaterUnder){
+        Position pos = Position.fromObject(vec,this);
+        Block blockUnder = pos.add(0,-1,0).getLevelBlock();
+        Block block = pos.getLevelBlock();
+        Block blockUpper = pos.add(0,1,0).getLevelBlock();
+        if (!allowWaterUnder)
+            return blockUnder.isSolid()
+                    && block.getId() == BlockID.AIR
+                    && blockUpper.getId() == BlockID.AIR;
+        else
+            return (blockUnder.isSolid() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
+                    && block.getId() == BlockID.AIR
+                    && blockUpper.getId() == BlockID.AIR;
     }
 
     public int getTime() {
