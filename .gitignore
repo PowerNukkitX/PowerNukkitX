@@ -251,3 +251,6 @@ data/*
 __pycache__
 *.pyo
 /release-script/release_config_local.py
+
+test
+test/*
