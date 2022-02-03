@@ -4,7 +4,7 @@
 <h2>多语言文档</h2>
 
 ---
-[![简体中文](https://img.shields.io/badge/简体中文-100%-green)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/zh-cn/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/zh-cn/README.md)
 [![English](https://img.shields.io/badge/English-todo-red)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 
