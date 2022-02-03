@@ -2299,7 +2299,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
         startGamePacket.seed = -1;
-        startGamePacket.dimension = /*(byte) (this.level.getDimension() & 0xff)*/0;
+        startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();
         startGamePacket.spawnX = spawnPosition.getFloorX();
@@ -2313,8 +2313,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.gameRules = getLevel().getGameRules();
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
-        startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
-        startGamePacket.dimension = (byte) getLevel().getDimension();
+        startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         //startGamePacket.isInventoryServerAuthoritative = true;
 
         this.dataPacketImmediately(startGamePacket);
