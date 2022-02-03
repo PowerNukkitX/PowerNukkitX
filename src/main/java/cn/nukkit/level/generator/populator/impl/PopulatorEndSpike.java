@@ -19,15 +19,13 @@ public class PopulatorEndSpike extends Populator {
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         return;
-        /*
-         * final int r = 3 + random.nextBoundedInt(4);
-         * final int h = 49 + 9 * r;
-         * final int randH = random.nextBoundedInt(3);
-         * ObjectEndSpike objectEndSpike = new ObjectEndSpike(new Vector3(chunkX << 4,
-         * chunkZ << 4), r, h + randH * 3,
-         * r == 3 && randH != 0);
-         * objectEndSpike.generate(level, random);
-         */
+/*
+        final int r = 3 + random.nextBoundedInt(4);
+        final int h = 49 + 9 * r;
+        final int randH = random.nextBoundedInt(3);
+        ObjectEndSpike objectEndSpike = new ObjectEndSpike(new Vector3(chunkX << 4, chunkZ << 4), r, h + randH * 3,
+                r == 3 && randH != 0);
+        objectEndSpike.generate(level, random);
     }
-
+*/
 }
