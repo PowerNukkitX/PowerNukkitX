@@ -14,16 +14,20 @@ import cn.nukkit.math.Vector3;
 import static cn.nukkit.block.BlockID.BEDROCK;
 import static cn.nukkit.block.BlockID.OBSIDIAN;
 import static cn.nukkit.block.BlockID.IRON_BARS;
-import static cn.nukkit.block.BlockID.STONE;
+import static cn.nukkit.block.BlockID.AIR;
+import static java.lang.Math.abs;
 
 /**
- * @author GoodLucky777
+ * @author Mojang AB
+ *         -- Ported from Minecraft JE
+ *         -- by AsgoreDream(HelloworldSB)
  */
 public class ObjectEndSpike extends BasicGenerator {
 
     private static final BlockState STATE_BEDROCK_INFINIBURN = BlockState.of(BEDROCK, 1);
-    private static final BlockState STATE_OBSIDIAN = BlockState.of(STONE); // For debug
+    private static final BlockState STATE_OBSIDIAN = BlockState.of(OBSIDIAN);
     private static final BlockState STATE_IRON_BARS = BlockState.of(IRON_BARS);
+    private static final BlockState STATE_AIR = BlockState.of(AIR);
 
     private Vector3 position;
     private int radius;
@@ -45,40 +49,37 @@ public class ObjectEndSpike extends BasicGenerator {
     }
 
     public boolean generate(ChunkManager level, NukkitRandom rand) {
-        // Generate an End Spike
-        for (int y = 0; y <= height + 10; y++) {
-            for (int tx = -radius; tx <= radius; ++tx) {
-                for (int tz = -radius; tz <= radius; ++tz) {
-                    int x = position.getFloorX() + tx, z = position.getFloorZ() + tz;
-                    if (tx * tx + tz * tz <= radius * radius)
+        while (position.getY() > 5
+                && level.getBlockIdAt(position.getFloorX(), position.getFloorY(), position.getFloorZ()) == AIR)
+            position.down();
+        for (int z = position.getFloorZ() - radius; z <= position.getFloorZ() + radius; ++z)
+            for (int y = position.getFloorY() - radius; y < height; ++y)
+                for (int x = position.getFloorX() - radius; x <= position.getFloorX() + radius; ++x) {
+                    double d0 = position.getX() - x, d2 = position.getZ() - z;
+                    if (d0 * d0 + d2 * d2 <= this.radius * this.radius + 1 && y < height)
                         level.setBlockStateAt(x, y, z, STATE_OBSIDIAN);
-                }
-            }
-        }
+                    else if (y > 65)
+                        level.setBlockStateAt(x, y, z, STATE_AIR);
 
-        // Generate an iron bars if hasIronBars is true
+                }
         if (hasIronBars) {
-            for (int y = height; y <= height + 10; y++) {
-                for (int tx = -radius; tx <= radius; ++tx) {
-                    for (int tz = -radius; tz <= radius; ++tz) {
-                        int x = position.getFloorX() + tx, z = position.getFloorZ() + tz;
-                        if (tx * tx + tz * tz <= radius * radius)
-                            level.setBlockStateAt(x, y, z, STATE_IRON_BARS);
+            for (int a = -2; a <= 2; ++a)
+                for (int b = -2; b <= 2; ++b) {
+                    level.setBlockStateAt(a + position.getFloorX(), height + 3, b + position.getFloorZ(),
+                            STATE_IRON_BARS);
+                    if (abs(a) == 2 || abs(b) == 2) {
+                        level.setBlockStateAt(a + position.getFloorX(), height, b + position.getFloorZ(),
+                                STATE_IRON_BARS);
+                        level.setBlockStateAt(a + position.getFloorX(), height + 1, b + position.getFloorZ(),
+                                STATE_IRON_BARS);
+                        level.setBlockStateAt(a + position.getFloorX(), height + 2, b + position.getFloorZ(),
+                                STATE_IRON_BARS);
                     }
+
                 }
-            }
         }
-
-        // Generate a bedrock and an end crystal
         level.setBlockStateAt(position.getFloorX(), height, position.getFloorZ(), STATE_BEDROCK_INFINIBURN);
-
-        Entity endCrystal = Entity.createEntity(EntityEndCrystal.NETWORK_ID,
-                new Position(position.getFloorX() + 0.5, height + 1, position.getFloorZ() + 0.5));
-
-        assert level != null && position != null : "Could not got level or position";
-
-        // level.getChunk(position.getFloorX() >> 4, position.getFloorZ() >>
-        // 4).addEntity(endCrystal);
+        // TODO: Generate Ender Crystal
         return true;
     }
 }
