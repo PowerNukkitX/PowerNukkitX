@@ -1,56 +1,48 @@
-# Contributing Guidelines
+# 贡献帮助指南
+ Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/blocklynukkit/powernukkitx)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
 
-Thank you for showing interest in the development of PowerNukkit We aim to provide a good collaborating environment for everyone involved, and as such have decided to list some of the most important things to keep in mind in the process. The guidelines below have been chosen based on past experience.
+ 但您需注意，这些规则本身不是"**官方规则**"，但您若遵循它们将帮助参与者们提高处理效率。
 
-These are not "official rules" *per se*, but following them will help everyone deal with things in the most efficient manner.
+## 目录
 
-## Table of contents
+1. <a href="#目录-问题#1">我想提交一个问题!</a>
+2. <a href="#目录-问题#2">我想提交拉取申请!</a>
 
-1. [I would like to submit an issue!](#i-would-like-to-submit-an-issue)
-2. [I would like to submit a pull request!](#i-would-like-to-submit-a-pull-request)
+## <a id="目录-问题#1"></a>我想提交一个问题!
 
-## I would like to submit an issue!
+ 我们随时欢迎您提出任何问题，错误报告和功能建议，但请记住，如果该问题在可预期的时间点内被认定为不重要，无法解决等，我们也会将其忽略，因此Issues页面可能会出现长时间未解决或彻底关闭的问题反馈将会是正常情况。
 
-Issues, bug reports and feature suggestions are welcomed, though please keep in mind that at any point in time, hundreds of issues are open, which vary in severity and the amount of time needed to address them. As such it's not uncommon for issues to remain unresolved for a long time or even closed outright if they are deemed not important enough to fix in the foreseeable future.
+* **在提交问题报告前，请您搜索现有问题列表。**
 
-* **Before submitting an issue, try searching existing issues first.**
+  出于管理目的，我们会关闭与先前就存在的问题反馈，避免产生重复，推荐您先通过自行搜索的方式查询是否存在类似问题。
 
-  For housekeeping purposes, we close issues that overlap with or duplicate other pre-existing issues - you can help us not to have to do that by searching existing issues yourself first. The issue search box, as well as the issue tag system, are tools you can use to check if an issue has been reported before.
+* **在提交问题报告时请尽可能的尝试提供更多详细信息。**
 
-* **When submitting a bug report, please try to include as much detail as possible.**
+ 由于产生的错误信息各不相同，其中一部分错误在几乎所有设备上都能遇到，而有一部分是因为某些特定情况甚至是硬件本身导致，所以我们推荐您在提交问题时提供尽可能多且详细的信息，以下为示例模板：
 
-  Bugs are not equal - some of them will be reproducible every time on pretty much all hardware, while others will be hard to track down due to being specific to particular hardware or even somewhat random in nature. As such, providing as much detail as possible when reporting a bug is hugely appreciated. A good starting set of information consists of:
-
-  * the server logs (when avaliable), which can be obtained with:
+  * 服务器的日志文件（若服务器可用时），您则可用通过以下方式获取日志文件：
     * `/debugpaste upload`
-    * `[Server path]/logs/latest.log`
-  * your system specifications (including the operating system and platform you are playing on),
-  * a reproduction scenario (list of steps you have performed leading up to the occurrence of the bug),
-  * a video or picture of the bug, if at all possible.
+    * `[您的服务端所在文件夹]/logs/latest.log`
+  * 你的设备规格参数 (包括您客户端的类型，操作系统平台，服务器硬件参数等),
+  * 重现步骤 (您在遇到BUG之前进行了什么操作等),
+  * 如果可以的话，请提供视频或截图加以辅助。
 
-* **Provide more information when asked to do so.**
+* **当被要求提供更多有关信息时。**
 
   Sometimes when a bug is more elusive or complicated, none of the information listed above will pinpoint a concrete cause of the problem. In this case we will most likely ask you for additional info. Providing that information is beneficial to both parties - we can track down the problem better, and hopefully fix it for you at some point once we know where it is!
 
-* **When submitting a feature proposal, please describe it in the most understandable way you can.**
+* **提交改进意见时，请以简单易懂的方式描述它。**
 
-  Communicating your idea for a feature can often be hard, and we would like to avoid any misunderstandings. As such, please try to explain your idea in a short, but understandable manner.
+  有时传达您对某个功能的想法通常很困难，我们希望避免产生任何误解，因此，您在提交改进建议时，尽量使用简洁易懂的话语或方式描述您的想法。
 
-* **Refrain from posting "+1" comments.**
+* **避免发布"+1"重复问题。**
 
-  If an issue has already been created, saying that you also experience it without providing any additional details doesn't really help us in any way. To express support for a proposal or indicate that you are also affected by a particular bug, you can use comment reactions instead.
+  如果问题已经产生，并且你也遇到过但无法提供任何对我们有帮助的问题细节的话，那您可在相关问题下评论留言。
 
-* **Refrain from asking if an issue has been resolved yet.**
 
-  As mentioned above, the issue tracker has hundreds of issues open at any given time. Currently PowerNukkit is being worked on by two members of the core team, and a handful of outside contributors who offer their free time to help out. As such, it can happen that an issue gets placed on the backburner due to being less important; generally posting a comment demanding its resolution some months or years after it is reported is not very likely to increase its priority.
+## <a id="目录-问题#2"></a>我想提交拉取申请!
 
-* **Avoid long discussions about non-development topics.**
-
-  GitHub is mostly a developer space, and as such isn't really fit for lengthened discussions about gameplay mechanics (which might not even be in any way confirmed for the final release) and similar non-technical matters. Such matters are probably best addressed at the PowerNukkit forums.
-
-## I would like to submit a pull request!
-
-We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/powernukkit/powernukkit/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/powernukkit/powernukkit/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
+We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/blocklynukkit/powernukkitx/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/blocklynukkit/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
 
 Here are some key things to note before jumping in:
 
@@ -117,3 +109,11 @@ Here are some key things to note before jumping in:
   If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [development Discord server](https://www.powernukkit.org/discord). We will try to help you as much as we can.
 
   When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
+
+---
+Need to switch languages? 
+
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CONTRIBUTING.md)
+[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
