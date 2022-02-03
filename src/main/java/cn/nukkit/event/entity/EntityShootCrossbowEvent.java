@@ -21,7 +21,7 @@ public class EntityShootCrossbowEvent extends EntityEvent implements Cancellable
 
     private EntityProjectile[] projectiles;
 
-    public EntityShootCrossbowEvent(EntityLiving shooter, Item crossbow, EntityProjectile[] projectiles) {
+    public EntityShootCrossbowEvent(EntityLiving shooter, Item crossbow, EntityProjectile... projectiles) {
         this.entity = shooter;
         this.crossbow = crossbow;
         this.projectiles = projectiles;
