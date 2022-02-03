@@ -79,7 +79,8 @@ public class ObjectEndSpike extends BasicGenerator {
 
         assert level != null && position != null : "Could not got level or position";
 
-        level.getChunk(position.getFloorX() >> 4, position.getFloorZ() >> 4).addEntity(endCrystal);
+        // level.getChunk(position.getFloorX() >> 4, position.getFloorZ() >>
+        // 4).addEntity(endCrystal);
         return true;
     }
 }
