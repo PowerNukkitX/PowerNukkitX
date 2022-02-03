@@ -3401,60 +3401,6 @@ public class Level implements ChunkManager, Metadatable {
         Vector3 spawn = this.requireProvider().getSpawn();
         return Math.abs(X - (spawn.getFloorX() >> 4)) <= 1 && Math.abs(Z - (spawn.getFloorZ() >> 4)) <= 1;
     }
-
-//    public Position getSafeSpawn() {
-//        return this.getSafeSpawn(null);
-//    }
-//
-//    public Position getSafeSpawn(Vector3 spawn) {//spawn is the pos that the player stand last time,if the player is new to this level,spawn will be null
-//        if (spawn == null || spawn.y < 1) {
-//            spawn = this.getFuzzySpawnLocation();
-//        }
-//
-//        if (spawn != null) {
-//            Vector3 v = spawn.floor();
-//            FullChunk chunk = this.getChunk((int) v.x >> 4, (int) v.z >> 4, false);
-//            int x = (int) v.x & 0x0f;
-//            int z = (int) v.z & 0x0f;
-//            if (chunk != null && chunk.isGenerated()) {
-//                int y = (int) NukkitMath.clamp(v.y, 1, 254);
-//                boolean wasAir = chunk.getBlockId(x, y - 1, z) == 0;
-//                for (; y > 0; --y) {
-//                    BlockState state = chunk.getBlockState(x, y, z);
-//                    Block block = state.getBlockRepairing(this, x, y, z);
-//                    if (this.isFullBlock(block)) {
-//                        if (wasAir) {
-//                            y++;
-//                            break;
-//                        }
-//                    } else {
-//                        wasAir = true;
-//                    }
-//                }
-//
-//                for (; y >= 0 && y < 255; y++) {
-//                    BlockState state = chunk.getBlockState(x, y + 1, z);
-//                    Block block = state.getBlockRepairing(this, x, y + 1, z);
-//                    if (!this.isFullBlock(block)) {
-//                        state = chunk.getBlockState(x, y, z);
-//                        block = state.getBlockRepairing(this, x, y, z);
-//                        if (!this.isFullBlock(block)) {
-//                            return new Position(spawn.x, y == (int) spawn.y ? spawn.y : y, spawn.z, this);
-//                        }
-//                    } else {
-//                        ++y;
-//                    }
-//                }
-//
-//                v.y = y;
-//            }
-//
-//            return new Position(spawn.x, v.y, spawn.z, this);
-//        }
-//
-//        return null;
-//    }
-
     public Position getSafeSpawn(){
         return getSafeSpawn(null);
     }
@@ -3516,11 +3462,13 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec){
         return standable(vec,false);
     }
 
     @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec,boolean allowWaterUnder){
         Position pos = Position.fromObject(vec,this);
         Block blockUnder = pos.add(0,-1,0).getLevelBlock();
