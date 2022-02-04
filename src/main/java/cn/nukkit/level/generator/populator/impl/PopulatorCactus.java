@@ -17,9 +17,15 @@ public class PopulatorCactus extends PopulatorSurfaceBlock {
         int x = random.nextBoundedInt(16);
         int z = random.nextBoundedInt(16);
         int y = getHighestWorkableBlock(level, x, z, chunk);
-        int i1 = random.nextRange(0, 2);
+        int height = 0;
+        int range = random.nextRange(0, 17);
+        if (range >= 16) {
+            height = 2;
+        }else if (range >= 11) {
+            height = 1;
+        }
         if (y > 0) {
-            for (int i = 0; i < i1; i++) {
+            for (int i = 0; i < height; i++) {
                 y += i;
                 if (canStay(x, y, z, chunk)) {
                     placeBlock(x, y, z, getBlockId(x, z, random, chunk), chunk, random);
