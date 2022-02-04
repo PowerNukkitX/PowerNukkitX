@@ -30,8 +30,11 @@ public class PopulatorBamboo extends PopulatorCount {
     }
     private static final Block BLOCK_BAMBOO_LEAF_LARGE_AGED = BLOCK_BAMBOO_LEAF_LARGE.clone();
     static { ((BlockBamboo) BLOCK_BAMBOO_LEAF_LARGE_AGED).setAge(1); }
-    
-    private double podzolProbability = 0.2;
+
+    /**
+     * 灰化土生成概率
+     */
+    private double podzolProbability = 0.6;
     
     private boolean canStay(int x, int y, int z, FullChunk chunk) {
         return EnsureCover.ensureCover(x, y, z, chunk) && (EnsureGrassBelow.ensureGrassBelow(x, y, z, chunk) || EnsureBelow.ensureBelow(x, y, z, DIRT, chunk) || EnsureBelow.ensureBelow(x, y, z, PODZOL, chunk));
