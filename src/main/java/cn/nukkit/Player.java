@@ -5366,10 +5366,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window) {
-        if(this.formWindowCount > 10){
-            this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
-            return;
-        }
         return showFormWindow(window, this.formWindowCount++);
     }
 
@@ -5382,6 +5378,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
+        if(this.formWindowCount > 10){
+            this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
+            return;
+        }
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = id;
         packet.data = window.getJSONData();
