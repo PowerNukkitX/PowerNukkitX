@@ -5380,7 +5380,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public int showFormWindow(FormWindow window, int id) {
         if(this.formWindowCount > 10){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
-            return;
+            return id;
         }
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = id;
