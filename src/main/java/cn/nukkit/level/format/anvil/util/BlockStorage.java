@@ -79,8 +79,8 @@ public class BlockStorage {
 
     private static int getIndex(int x, int y, int z) {
         checkArg(x, "x");
-        checkArg(x, "y");
-        checkArg(x, "z");
+        checkArg(y, "y");
+        checkArg(z, "z");
         int index = (x << 8) + (z << 4) + y; // XZY = Bedrock format
         Preconditions.checkArgument(index >= 0 && index < SECTION_SIZE, "Invalid index");
         return index;

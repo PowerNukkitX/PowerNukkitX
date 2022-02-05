@@ -1,8 +1,6 @@
 package cn.nukkit.level.biome.impl.jungle;
 
-import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.generator.populator.impl.PopulatorBamboo;
-import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorVines;
 import cn.nukkit.level.generator.populator.impl.tree.JungleBigTreePopulator;
 
@@ -13,8 +11,8 @@ public class BambooJungleBiome extends JungleBiome {
 
     public BambooJungleBiome() {
         PopulatorBamboo bamboo = new PopulatorBamboo();
-        bamboo.setBaseAmount(40);
-        bamboo.setRandomAmount(15);
+        bamboo.setBaseAmount(80);
+        bamboo.setRandomAmount(30);
         this.addPopulator(bamboo);
         
         JungleBigTreePopulator jungleBigTrees = new JungleBigTreePopulator();
@@ -22,10 +20,10 @@ public class BambooJungleBiome extends JungleBiome {
         jungleBigTrees.setRandomAmount(2);
         this.addPopulator(jungleBigTrees);
         
-        PopulatorVines vines = new PopulatorVines();
+        /*PopulatorVines vines = new PopulatorVines();
         vines.setBaseAmount(7);
         vines.setRandomAmount(4);
-        this.addPopulator(vines);
+        this.addPopulator(vines);*/
     }
     
     @Override

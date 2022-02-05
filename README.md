@@ -4,9 +4,10 @@
 <h2>多语言文档</h2>
 
 ---
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
-[![English](https://img.shields.io/badge/English-todo-red)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
+[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
 
 ---
 🤔什么是PowerNukkitX ？
@@ -23,7 +24,7 @@
 * 具有友好的架构，您可简单快速的上手为其开发插件等。
 * Nukkit正在**不断优化改进中**，同时我们欢迎您为我们的开发做出贡献。
 
-声明
+📌 声明
 ---
 
 
@@ -37,7 +38,7 @@
 
 ---
 
-创建插件
+🛠 创建插件
 ---
 * 添加PowerNukkit至您的依赖项中（它由Maven Central 和 jcenter 托管，因此您无需指定自定义存储库）。
 * Tips：若您需要导入PowerNukkitX至您的依赖项中，那您目前需要手动指定存储库。
@@ -65,7 +66,7 @@ dependencies {
 ```
 ---
 
-构建JAR核心文件
+🛠 构建JAR核心文件
 ---
 - `git clone https://github.com/BlocklyNukkit/PowerNukkitX`
 - `cd PowerNukkitX`
@@ -76,7 +77,7 @@ dependencies {
 
 * 在编译完成的JAR文件后添加启动参数 `-shaded` 即可开始亦可赛艇 :D
 
-部署运行
+🛠 部署运行
 -------------
 * **在任意一个空文件夹**内放入编译完成的核心文件，并使用终端输入 `java -jar powernukkitx-<version>-shaded.jar` 即可开始部署运行。
 
@@ -90,13 +91,13 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 * 您可在此[文章](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/)中获取更多有关信息。
 
 🧐 贡献一份力量
-------------
+---
 您在提交任何问题或代码上传合并等请求时，请先阅读[贡献帮助指南](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CONTRIBUTING.md)后再进行提问或其它操作，信息不足或格式错误等我们将不会回复您并关闭您的请求。
 
 ---
 
-友情链接
---------------------
+🌐 友情链接
+---
 
 - __[🌐 PowerNukkit官网](https://powernukkit.org/)__
 - __[👩🏽‍💻 PowerNukkit插件开发文档库](https://devs.powernukkit.org/)__
@@ -109,5 +110,12 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
 - __[🧩 PowerNukkit 插件请求](https://discuss.powernukkit.org/c/plugins/plugin-requests/13)__
 
+🎨  数据统计
 ---
+
+[![Issues](https://img.shields.io/github/issues/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/issues)
+[![Issues-Closed](https://img.shields.io/github/issues-closed/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/issues?q=is%3Aissue+is%3Aclosed)
+[![Pull-pr](https://img.shields.io/github/issues-pr/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/pulls)
+[![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
+
 2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com)
