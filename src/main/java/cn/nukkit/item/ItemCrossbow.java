@@ -72,6 +72,9 @@ public class ItemCrossbow extends ItemTool {
             }
 
             if (!this.isLoaded()) {
+                itemArrow = itemArrow.clone();
+                itemArrow.setCount(1);
+
                 if (!player.isCreative()) {
                     if (!this.isUnbreakable()) {
                         Enchantment durability = this.getEnchantment(17);
