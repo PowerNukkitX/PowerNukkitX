@@ -12,12 +12,14 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.utils.Utils;
 
 import java.util.Random;
 
 @Since("1.6.0.0-PNX")
 public class ItemCrossbow extends ItemTool {
-    private static final Random RANDOM = new Random();
+
     private int loadTick;
 
     @Since("1.4.0.0-PN")
@@ -77,8 +79,8 @@ public class ItemCrossbow extends ItemTool {
 
                 if (!player.isCreative()) {
                     if (!this.isUnbreakable()) {
-                        Enchantment durability = this.getEnchantment(17);
-                        if (durability == null || durability.getLevel() <= 0 || 100 / (durability.getLevel() + 1) > RANDOM.nextInt(100)) {
+                        Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
+                        if (durability == null || durability.getLevel() <= 0 || 100 / (durability.getLevel() + 1) > Utils.random.nextInt(100)) {
                             this.setDamage(this.getDamage() + 2);
                             if (this.getDamage() >= 385) {
                                 --this.count;
@@ -101,8 +103,8 @@ public class ItemCrossbow extends ItemTool {
     @Since("1.6.0.0-PNX")
     protected boolean canLoad(Item item) {
         switch(item.getId()) {
-            case 262:
-            case 401:
+            case Item.ARROW:
+            case Item.FIREWORKS:
                 return true;
             default:
                 return false;
@@ -156,11 +158,11 @@ public class ItemCrossbow extends ItemTool {
             double mZ;
             CompoundTag nbt = (new CompoundTag()).putList((new ListTag<>("Pos")).add(new DoubleTag("", player.x)).add(new DoubleTag("", player.y + (double)player.getEyeHeight())).add(new DoubleTag("", player.z))).putList((new ListTag("Motion")).add(new DoubleTag("", mX = -Math.sin(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mY = -Math.sin(player.pitch / 180.0D * 3.141592653589793D))).add(new DoubleTag("", mZ = Math.cos(player.yaw / 180.0D * 3.141592653589793D) * Math.cos(player.pitch / 180.0D * 3.141592653589793D)))).putList((new ListTag("Rotation")).add(new FloatTag("", (float)(player.yaw > 180.0D ? 360 : 0) - (float)player.yaw)).add(new FloatTag("", (float)(-player.pitch))));
             Item item = Item.fromString(this.getNamedTag().getCompound("chargedItem").getString("Name"));
-            if (item.getId() == 401) {
+            if (item.getId() == Item.FIREWORKS) {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();
-                player.getLevel().addLevelSoundEvent(player, 248);
+                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
                 this.useArrow(player);
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, false);
@@ -179,7 +181,7 @@ public class ItemCrossbow extends ItemTool {
                             proj.close();
                         } else {
                             proj.spawnToAll();
-                            player.getLevel().addLevelSoundEvent(player, 248);
+                            player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
                             this.useArrow(player);
                         }
                     }
