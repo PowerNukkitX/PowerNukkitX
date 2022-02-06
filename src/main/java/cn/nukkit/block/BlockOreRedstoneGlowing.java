@@ -1,9 +1,7 @@
 package cn.nukkit.block;
 
-import cn.nukkit.event.block.BlockFadeEvent;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.Level;
 
 //和pm源码有点出入，这里参考了wiki
 
@@ -11,7 +9,8 @@ import cn.nukkit.level.Level;
  * @author xtypr
  * @since 2015/12/6
  */
-public class BlockOreRedstoneGlowing extends BlockOreRedstone {
+@PowerNukkitDifference(since = "FUTURE", info = "Implements IBlockOreRedstoneGlowing only in PowerNukkit")
+public class BlockOreRedstoneGlowing extends BlockOreRedstone implements IBlockOreRedstoneGlowing {
 
     public BlockOreRedstoneGlowing() {
     }
@@ -23,7 +22,7 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     @Override
     public int getId() {
-        return GLOWING_REDSTONE_ORE;
+        return LIT_REDSTONE_ORE;
     }
 
     @Override
@@ -33,31 +32,11 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(Block.get(BlockID.REDSTONE_ORE));
+        return IBlockOreRedstoneGlowing.super.toItem();
     }
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {
-            BlockFadeEvent event = new BlockFadeEvent(this, get(REDSTONE_ORE));
-            level.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                level.setBlock(this, event.getNewState(), false, true);
-            }
-
-            return Level.BLOCK_UPDATE_WEAK;
-        }
-
-        return 0;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+        return IBlockOreRedstoneGlowing.super.onUpdate(type);
     }
 }

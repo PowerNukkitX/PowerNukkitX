@@ -69,7 +69,7 @@ public class StartGamePacket extends DataPacket {
     public boolean isWorldTemplateOptionLocked = false;
     public boolean isOnlySpawningV1Villagers = false;
 
-    public String vanillaVersion = "1.17.40";
+    public String vanillaVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
     //HACK: For now we can specify this version, since the new chunk changes are not relevant for our Anvil format.
     //However, it could be that Microsoft will prevent this in a new update.
 

@@ -23,7 +23,7 @@ public class BlockGlowstone extends BlockTransparent {
 
     @Override
     public int getId() {
-        return GLOWSTONE_BLOCK;
+        return GLOWSTONE;
     }
 
     @Override

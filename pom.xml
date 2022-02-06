@@ -72,7 +72,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
         <mockito.version>3.11.2</mockito.version>
-        <log4j2.version>2.17.0</log4j2.version>
+        <log4j2.version>2.17.1</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jline.version>3.9.0</jline.version>
@@ -104,10 +104,14 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.powernukkit.fastutil</groupId>
-            <artifactId>fastutil-lite</artifactId>
-            <version>8.1.1</version>
-            <scope>compile</scope>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil-core</artifactId>
+            <version>8.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>it.unimi.dsi</groupId>
+            <artifactId>fastutil-extra</artifactId>
+            <version>8.5.4</version>
         </dependency>
         <dependency>
             <groupId>org.powernukkit</groupId>

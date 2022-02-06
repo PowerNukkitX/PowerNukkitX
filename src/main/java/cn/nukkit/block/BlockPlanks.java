@@ -35,7 +35,7 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return WOODEN_PLANKS;
+        return PLANKS;
     }
 
     @Since("1.4.0.0-PN")

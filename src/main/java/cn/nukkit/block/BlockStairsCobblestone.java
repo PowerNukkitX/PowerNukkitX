@@ -19,7 +19,7 @@ public class BlockStairsCobblestone extends BlockStairs {
 
     @Override
     public int getId() {
-        return COBBLESTONE_STAIRS;
+        return STONE_STAIRS;
     }
 
     @Override

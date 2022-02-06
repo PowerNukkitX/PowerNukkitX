@@ -44,7 +44,7 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Override
     public int getId() {
-        return WATER_LILY;
+        return WATERLILY;
     }
 
     @Override

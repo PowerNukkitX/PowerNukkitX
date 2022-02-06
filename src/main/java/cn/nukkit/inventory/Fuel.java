@@ -15,8 +15,8 @@ public abstract class Fuel {
     static {
         addItem(ItemID.COAL, (short) 1600);
         addBlock(BlockID.COAL_BLOCK, (short) 16000);
-        addBlock(BlockID.TRUNK, (short) 300);
-        addBlock(BlockID.WOODEN_PLANKS, (short) 300);
+        addBlock(BlockID.LOG, (short) 300);
+        addBlock(BlockID.PLANKS, (short) 300);
         addBlock(BlockID.SAPLING, (short) 100);
         addItem(ItemID.WOODEN_AXE, (short) 200);
         addItem(ItemID.WOODEN_PICKAXE, (short) 200);
@@ -31,12 +31,12 @@ public abstract class Fuel {
         addBlock(BlockID.FENCE_GATE_JUNGLE, (short) 300);
         addBlock(BlockID.FENCE_GATE_ACACIA, (short) 300);
         addBlock(BlockID.FENCE_GATE_DARK_OAK, (short) 300);
-        addBlock(BlockID.WOODEN_STAIRS, (short) 300);
-        addBlock(BlockID.SPRUCE_WOOD_STAIRS, (short) 300);
-        addBlock(BlockID.BIRCH_WOOD_STAIRS, (short) 300);
-        addBlock(BlockID.JUNGLE_WOOD_STAIRS, (short) 300);
+        addBlock(BlockID.OAK_STAIRS, (short) 300);
+        addBlock(BlockID.SPRUCE_STAIRS, (short) 300);
+        addBlock(BlockID.BIRCH_STAIRS, (short) 300);
+        addBlock(BlockID.JUNGLE_STAIRS, (short) 300);
         addBlock(BlockID.TRAPDOOR, (short) 300);
-        addBlock(BlockID.WORKBENCH, (short) 300);
+        addBlock(BlockID.CRAFTING_TABLE, (short) 300);
         addBlock(BlockID.BOOKSHELF, (short) 300);
         addBlock(BlockID.CHEST, (short) 300);
         addItem(ItemID.BUCKET, (short) 20000);

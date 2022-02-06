@@ -160,7 +160,7 @@ public class PopulatorRavines extends Populator {
                             continue;
                         if (localY < this.worldHeightCap) {
                             int materialAtPosition = generatingChunkBuffer.getBlockId(localX, localY, localZ);
-                            if (materialAtPosition == Block.WATER
+                            if (materialAtPosition == Block.FLOWING_WATER
                                     || materialAtPosition == Block.STILL_WATER) {
                                 i4 = 1;
                             }
@@ -184,7 +184,7 @@ public class PopulatorRavines extends Populator {
                                 int material = generatingChunkBuffer.getBlockId(localX, localY, localZ);
                                 if (material == Block.GRASS) {
                                     if (localY - 1 < 10) {
-                                        generatingChunkBuffer.setBlock(localX, localY, localZ, Block.LAVA);
+                                        generatingChunkBuffer.setBlock(localX, localY, localZ, Block.FLOWING_LAVA);
                                     } else {
                                         generatingChunkBuffer.setBlock(localX, localY, localZ, Block.AIR);
                                     }
