@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
@@ -23,7 +22,6 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 
@@ -158,7 +156,7 @@ public class Anvil extends BaseLevelProvider {
                 break;
             }
         }
-        // 垫64层空气，只有主世界才支持384世界，我们需要这么做
+        // 垫64层空气，只有主世界才支持384世界，我们才需要这么做
         if (super.level.getDimension() == 0)
             for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
                 stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
@@ -167,13 +165,13 @@ public class Anvil extends BaseLevelProvider {
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }
-        // TODO: 2022/2/6 修复生物群系数据
+
         final byte[] biomeData = serializeBiome(chunk);
         for (int i = 0; i < 25; i++) {
             stream.put(biomeData);
         }
-        stream.putByte((byte) 0); // Border blocks - Edu edition only
-        stream.putUnsignedVarInt(0); // extra data length, 0 for now
+        stream.putByte((byte) 0); // 教育版边界方块数据，这里用0b表示无此数据
+        stream.putUnsignedVarInt(0); // 一个不知道作用的8字节，貌似全写0就可以
         stream.put(blockEntities);
 
         this.getLevel().chunkRequestCallback(timestamp, x, z, count, stream.getBuffer());
@@ -183,20 +181,19 @@ public class Anvil extends BaseLevelProvider {
 
     private byte[] serializeBiome(Chunk chunk) {
         final BinaryStream stream = new BinaryStream();
-//        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
-//        for (int x = 0; x < 16; x++) {
-//            for (int z = 0; z < 16; z++) {
-//                for (int y = 0; y < 16; y++) {
-//                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
-//                }
-//            }
-//        }
-//        blockStorage.writeTo(stream);
-        PalettedBlockStorage blockStorage = new PalettedBlockStorage(SingletonBitArray.INSTANCE, new IntArrayList(0));
+        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
+        // 这个神奇的palette默认值害得我花了巨量世界调试
+        // 务必清除默认值再进行群系操作
+        blockStorage.palette.clear();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 16; y++) {
+                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+                }
+            }
+        }
         blockStorage.writeTo(stream);
-        final byte[] buffer = stream.getBuffer();
-        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
-        return buffer;
+        return stream.getBuffer();
     }
 
     static class SingletonBitArray implements BitArray {
