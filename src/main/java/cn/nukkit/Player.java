@@ -48,6 +48,7 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.math.*;
@@ -812,6 +813,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         level.unregisterChunkLoader(this, x, z);
         this.loadQueue.remove(index);
+    }
+
+    public boolean isInOverWorld() {
+        return this.getLevel().getDimension() == 0;
     }
 
     public Position getSpawn() {

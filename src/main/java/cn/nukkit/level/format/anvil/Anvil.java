@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
@@ -11,6 +12,8 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.util.BitArray;
+import cn.nukkit.level.util.BitArrayVersion;
 import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -20,6 +23,7 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,10 +41,15 @@ import java.util.regex.Pattern;
 @Log4j2
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final int LOWER_PADDING_SIZE = 4;
     static private final byte[] PAD_256 = new byte[256];
+    private final boolean isOverWorld;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
+        this.isOverWorld = level.getDimension() == 0;
     }
 
     public static String getProviderName() {
@@ -153,7 +162,12 @@ public class Anvil extends BaseLevelProvider {
                 break;
             }
         }
-
+        // 垫64层空气，只有主世界才支持384世界，我们需要这么做
+        if (isOverWorld)
+            for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
+                stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
+                stream.putByte((byte) 0);
+            }
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }
@@ -172,19 +186,63 @@ public class Anvil extends BaseLevelProvider {
     }
 
     private byte[] serializeBiome(Chunk chunk) {
-        final BinaryStream stream = new BinaryStream(new byte[4096]);
-        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < 16; y++) {
-                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
-                }
-            }
-        }
+        final BinaryStream stream = new BinaryStream();
+//        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
+//        for (int x = 0; x < 16; x++) {
+//            for (int z = 0; z < 16; z++) {
+//                for (int y = 0; y < 16; y++) {
+//                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+//                }
+//            }
+//        }
+//        blockStorage.writeTo(stream);
+//        final byte[] buffer = stream.getBuffer();
+//        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
+        PalettedBlockStorage blockStorage = new PalettedBlockStorage(SingletonBitArray.INSTANCE, new IntArrayList(0));
         blockStorage.writeTo(stream);
-        final byte[] buffer = stream.getBuffer();
-        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
-        return buffer;
+        return stream.getBuffer();
+    }
+
+    static class SingletonBitArray implements BitArray {
+        public static final SingletonBitArray INSTANCE = new SingletonBitArray();
+
+        private static final int[] EMPTY_ARRAY = new int[0];
+
+        public SingletonBitArray() {
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int get(int index) {
+            return 0;
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        public void writeSizeToNetwork(BinaryStream stream, int size) {
+            // no-op - size is fixed
+        }
+
+        @Override
+        public int[] getWords() {
+            return EMPTY_ARRAY;
+        }
+
+        @Override
+        public BitArrayVersion getVersion() {
+            return BitArrayVersion.V0;
+        }
+
+        @Override
+        public SingletonBitArray copy() {
+            return new SingletonBitArray();
+        }
     }
 
     private int lastPosition = 0;
