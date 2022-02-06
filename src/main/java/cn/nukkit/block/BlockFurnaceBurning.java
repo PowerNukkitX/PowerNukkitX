@@ -42,7 +42,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable, Blo
 
     @Override
     public int getId() {
-        return BURNING_FURNACE;
+        return LIT_FURNACE;
     }
 
     @Since("1.4.0.0-PN")

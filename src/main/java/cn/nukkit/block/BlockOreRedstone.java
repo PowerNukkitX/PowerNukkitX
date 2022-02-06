@@ -1,21 +1,28 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstone;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.NukkitRandom;
 
+import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockOreRedstone extends BlockSolid {
+@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+public class BlockOreRedstone extends BlockOre {
 
     public BlockOreRedstone() {
+        // Does nothing
     }
 
     @Override
@@ -24,22 +31,6 @@ public class BlockOreRedstone extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }
@@ -70,7 +61,7 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, Block.get(BlockID.GLOWING_REDSTONE_ORE), false, true);
+            this.getLevel().setBlock(this, getLitState().getBlock(), false, true);
 
             return Level.BLOCK_UPDATE_WEAK;
         }
@@ -78,18 +69,28 @@ public class BlockOreRedstone extends BlockSolid {
         return 0;
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
+    @Override
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.REDSTONE;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public BlockState getLitState() {
+        return BlockState.of(BlockID.LIT_REDSTONE_ORE);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public BlockState getUnlitState() {
+        return BlockState.of(BlockID.REDSTONE_ORE);
+    }
+
     @Override
     public int getDropExp() {
-        return new NukkitRandom().nextRange(1, 5);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+        return ThreadLocalRandom.current().nextInt(1, 6);
     }
 }

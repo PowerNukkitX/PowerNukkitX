@@ -399,12 +399,21 @@ public class BinaryStream {
         int count = getLShort();
         int damage = (int) getUnsignedVarInt();
 
-        int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(fullId);
+        Integer id = null;
+        String stringId = null;
+        try {
+            int fullId = RuntimeItems.getRuntimeMapping().getLegacyFullId(networkId);
+            id = RuntimeItems.getId(fullId);
 
-        boolean hasData = RuntimeItems.hasData(fullId);
-        if (hasData) {
-            damage = RuntimeItems.getData(fullId);
+            boolean hasData = RuntimeItems.hasData(fullId);
+            if (hasData) {
+                damage = RuntimeItems.getData(fullId);
+            }
+        } catch (IllegalArgumentException unknownMapping) {
+            stringId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(networkId);
+            if (stringId == null) {
+                throw unknownMapping;
+            }
         }
 
         if (getBoolean()) { // hasNetId
@@ -464,7 +473,7 @@ public class BinaryStream {
                 canBreak[i] = stream.readUTF();
             }
 
-            if (id == ItemID.SHIELD) {
+            if (id != null && id == ItemID.SHIELD) {
                 stream.readLong();
             }
         } catch (IOException e) {
@@ -614,7 +623,7 @@ public class BinaryStream {
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
             if (data != 0) {
-                byte[] nbt = item.getCompoundTag();
+                byte[] nbt = item.getCustomCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {
                     tag = new CompoundTag();
@@ -628,10 +637,10 @@ public class BinaryStream {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
                 stream.write(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
-            } else if (item.hasCompoundTag()) {
+            } else if (item.hasCustomCompoundTag()) {
                 stream.writeShort(-1);
                 stream.writeByte(1); // Hardcoded in current version
-                stream.write(item.getCompoundTag());
+                stream.write(item.getCustomCompoundTag());
             } else {
                 userDataBuf.writeShortLE(0);
             }

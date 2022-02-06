@@ -35,7 +35,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int getId() {
-        return LAVA;
+        return FLOWING_LAVA;
     }
 
     @Override
@@ -148,7 +148,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public BlockLiquid getBlock(int meta) {
-        return (BlockLiquid) Block.get(BlockID.LAVA, meta);
+        return (BlockLiquid) Block.get(BlockID.FLOWING_LAVA, meta);
     }
 
     @Override

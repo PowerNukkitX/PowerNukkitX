@@ -11,20 +11,22 @@ public class PalettedBlockStorage {
 
     private static final int SIZE = 4096;
 
-    private final IntList palette;
-    private BitArray bitArray;
+    public final IntList palette;
+    public BitArray bitArray;
 
-    public PalettedBlockStorage() {
+    public  PalettedBlockStorage() {
         this(BitArrayVersion.V2);
     }
 
     public PalettedBlockStorage(BitArrayVersion version) {
         this.bitArray = version.createPalette(SIZE);
         this.palette = new IntArrayList(16);
-        this.palette.add(GlobalBlockPalette.getOrCreateRuntimeId(0)); // Air is at the start of every palette.
+        // Air is at the start of every palette.
+        // Except biome palette !!!
+        this.palette.add(GlobalBlockPalette.getOrCreateRuntimeId(0));
     }
 
-    private PalettedBlockStorage(BitArray bitArray, IntList palette) {
+    public PalettedBlockStorage(BitArray bitArray, IntList palette) {
         this.palette = palette;
         this.bitArray = bitArray;
     }

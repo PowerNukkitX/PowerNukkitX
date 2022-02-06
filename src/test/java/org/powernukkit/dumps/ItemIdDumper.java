@@ -57,7 +57,7 @@ public class ItemIdDumper {
         
         for (JsonElement element : array) {
             JsonObject object = (JsonObject) element;
-            int itemId;
+            Integer itemId;
             if (!object.has("oldId")) {
                 itemId = object.get("id").getAsInt();
                 log.warn("{} don't have oldId!", object.get("name").getAsString());

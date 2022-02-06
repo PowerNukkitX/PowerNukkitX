@@ -36,7 +36,7 @@ public class BlockDandelion extends BlockFlower {
 
     @Override
     protected Block getUncommonFlower() {
-        return get(POPPY);
+        return get(RED_FLOWER);
     }
 
     @Since("1.4.0.0-PN")

@@ -8,7 +8,8 @@ public enum BitArrayVersion {
     V4(4, 8, V5),
     V3(3, 10, V4), // 2 bit padding
     V2(2, 16, V3),
-    V1(1, 32, V2);
+    V1(1, 32, V2),
+    V0(0, 0, V1);
 
     final byte bits;
     final byte entriesPerWord;

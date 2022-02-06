@@ -21,7 +21,7 @@ public class BlockBricksNether extends BlockSolid {
 
     @Override
     public int getId() {
-        return NETHER_BRICKS;
+        return NETHER_BRICK_BLOCK;
     }
 
     @Override

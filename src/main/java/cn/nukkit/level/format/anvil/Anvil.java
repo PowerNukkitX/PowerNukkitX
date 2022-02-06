@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
@@ -10,6 +11,7 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -23,10 +25,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -35,6 +34,9 @@ import java.util.regex.Pattern;
 @Log4j2
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final int LOWER_PADDING_SIZE = 4;
     static private final byte[] PAD_256 = new byte[256];
 
     public Anvil(Level level, String path) throws IOException {
@@ -56,7 +58,8 @@ public class Anvil extends BaseLevelProvider {
     public static boolean isValid(String path) {
         boolean isValid = (new File(path + "/level.dat").exists()) && new File(path + "/region/").isDirectory();
         if (isValid) {
-            for (File file : new File(path + "/region/").listFiles((dir, name) -> Pattern.matches("^.+\\.mc[r|a]$", name))) {
+            for (File file : Objects.requireNonNull(
+                    new File(path + "/region/").listFiles((dir, name) -> Pattern.matches("^.+\\.mc[r|a]$", name)))) {
                 if (!file.getName().endsWith(".mca")) {
                     isValid = false;
                     break;
@@ -74,7 +77,7 @@ public class Anvil extends BaseLevelProvider {
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
         File regionDir = new File(path + "/region");
         if (!regionDir.exists() && !regionDir.mkdirs()) {
-            throw new IOException("Could not create the directory "+regionDir);
+            throw new IOException("Could not create the directory " + regionDir);
         }
 
         CompoundTag levelData = new CompoundTag("Data")
@@ -102,7 +105,7 @@ public class Anvil extends BaseLevelProvider {
                 .putLong("SizeOnDisk", 0);
 
         Utils.safeWrite(new File(path, "level.dat"), file -> {
-            try(FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+            try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
                 NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), out, ByteOrder.BIG_ENDIAN);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -151,18 +154,44 @@ public class Anvil extends BaseLevelProvider {
                 break;
             }
         }
-
+        // 垫64层空气，只有主世界才支持384世界，我们才需要这么做
+        if (super.level.getDimension() == 0)
+            for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
+                stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
+                stream.putByte((byte) 0);
+            }
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }
 
-        stream.put(chunk.getBiomeIdArray());
-        stream.putByte((byte) 0); // Border blocks
+        final byte[] biomeData = serializeBiome(chunk);
+        for (int i = 0; i < 25; i++) {
+            stream.put(biomeData);
+        }
+        stream.putByte((byte) 0); // 教育版边界方块数据，这里用0b表示无此数据
+        stream.putUnsignedVarInt(0); // 一个不知道作用的8字节，貌似全写0就可以
         stream.put(blockEntities);
 
         this.getLevel().chunkRequestCallback(timestamp, x, z, count, stream.getBuffer());
 
         return null;
+    }
+
+    private byte[] serializeBiome(Chunk chunk) {
+        final BinaryStream stream = new BinaryStream();
+        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
+        // 这个神奇的palette默认值害得我花了巨量世界调试
+        // 务必清除默认值再进行群系操作
+        blockStorage.palette.clear();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 16; y++) {
+                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+                }
+            }
+        }
+        blockStorage.writeTo(stream);
+        return stream.getBuffer();
     }
 
     private int lastPosition = 0;

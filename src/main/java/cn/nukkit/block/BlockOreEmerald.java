@@ -1,21 +1,26 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemEmerald;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author xtypr
  * @since 2015/12/1
  */
-public class BlockOreEmerald extends BlockSolid {
+@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+public class BlockOreEmerald extends BlockOre {
 
     public BlockOreEmerald() {
+        // Does nothing
     }
 
     @Override
@@ -29,24 +34,16 @@ public class BlockOreEmerald extends BlockSolid {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    @PowerNukkitOnly
     public int getToolTier() {
         return ItemTool.TIER_IRON;
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
     @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.EMERALD;
     }
 
     @Override
@@ -74,16 +71,6 @@ public class BlockOreEmerald extends BlockSolid {
 
     @Override
     public int getDropExp() {
-        return new NukkitRandom().nextRange(3, 7);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+        return ThreadLocalRandom.current().nextInt(3, 8);
     }
 }

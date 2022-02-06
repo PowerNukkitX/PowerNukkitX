@@ -5,16 +5,19 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nullable;
 
 /**
  * @author good777LUCKY
  */
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class BlockOreGoldNether extends BlockSolid {
+public class BlockOreGoldNether extends BlockOreGold {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -28,18 +31,8 @@ public class BlockOreGoldNether extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 3;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    public int getToolTier() {
+        return ItemTool.TIER_WOODEN;
     }
 
     @Override
@@ -86,16 +79,14 @@ public class BlockOreGoldNether extends BlockSolid {
         return new Item[]{ Item.get(ItemID.GOLD_NUGGET, 0, count) };
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.GOLD_NUGGET;
     }
-    
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.NETHERRACK_BLOCK_COLOR;

@@ -19,6 +19,6 @@ public class PopulatorLilyPad extends PopulatorSurfaceBlock {
 
     @Override
     protected int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk) {
-        return WATER_LILY << Block.DATA_BITS;
+        return WATERLILY << Block.DATA_BITS;
     }
 }
