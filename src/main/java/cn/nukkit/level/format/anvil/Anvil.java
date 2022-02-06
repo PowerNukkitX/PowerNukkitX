@@ -29,10 +29,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -45,11 +42,9 @@ public class Anvil extends BaseLevelProvider {
     @Since("1.6.0.0-PNX")
     public static final int LOWER_PADDING_SIZE = 4;
     static private final byte[] PAD_256 = new byte[256];
-    private final boolean isOverWorld;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
-        this.isOverWorld = level.getDimension() == 0;
     }
 
     public static String getProviderName() {
@@ -67,7 +62,8 @@ public class Anvil extends BaseLevelProvider {
     public static boolean isValid(String path) {
         boolean isValid = (new File(path + "/level.dat").exists()) && new File(path + "/region/").isDirectory();
         if (isValid) {
-            for (File file : new File(path + "/region/").listFiles((dir, name) -> Pattern.matches("^.+\\.mc[r|a]$", name))) {
+            for (File file : Objects.requireNonNull(
+                    new File(path + "/region/").listFiles((dir, name) -> Pattern.matches("^.+\\.mc[r|a]$", name)))) {
                 if (!file.getName().endsWith(".mca")) {
                     isValid = false;
                     break;
@@ -163,7 +159,7 @@ public class Anvil extends BaseLevelProvider {
             }
         }
         // 垫64层空气，只有主世界才支持384世界，我们需要这么做
-        if (isOverWorld)
+        if (super.level.getDimension() == 0)
             for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
                 stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
                 stream.putByte((byte) 0);
@@ -196,11 +192,11 @@ public class Anvil extends BaseLevelProvider {
 //            }
 //        }
 //        blockStorage.writeTo(stream);
-//        final byte[] buffer = stream.getBuffer();
-//        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
         PalettedBlockStorage blockStorage = new PalettedBlockStorage(SingletonBitArray.INSTANCE, new IntArrayList(0));
         blockStorage.writeTo(stream);
-        return stream.getBuffer();
+        final byte[] buffer = stream.getBuffer();
+        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
+        return buffer;
     }
 
     static class SingletonBitArray implements BitArray {
