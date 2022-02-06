@@ -159,6 +159,5 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(""); // Server Engine
         this.putLLong(0L); // BlockRegistryChecksum
-        System.out.println(this);
     }
 }

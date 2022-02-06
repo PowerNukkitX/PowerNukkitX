@@ -14,7 +14,6 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
-import cn.nukkit.item.RuntimeItemMapping.RuntimeEntry;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.Level;
@@ -1660,12 +1659,6 @@ public class Item implements Cloneable, BlockID, ItemID {
         } catch (CloneNotSupportedException e) {
             return null;
         }
-    }
-
-    @Since("FUTURE")
-    public final RuntimeEntry getRuntimeEntry() {
-        //TODO Implement
-        throw new UnsupportedOperationException();
     }
 
     @Since("1.4.0.0-PN")
