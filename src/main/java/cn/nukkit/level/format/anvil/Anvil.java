@@ -11,8 +11,6 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.util.BitArray;
-import cn.nukkit.level.util.BitArrayVersion;
 import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -194,48 +192,6 @@ public class Anvil extends BaseLevelProvider {
         }
         blockStorage.writeTo(stream);
         return stream.getBuffer();
-    }
-
-    static class SingletonBitArray implements BitArray {
-        public static final SingletonBitArray INSTANCE = new SingletonBitArray();
-
-        private static final int[] EMPTY_ARRAY = new int[0];
-
-        public SingletonBitArray() {
-        }
-
-        @Override
-        public void set(int index, int value) {
-        }
-
-        @Override
-        public int get(int index) {
-            return 0;
-        }
-
-        @Override
-        public int size() {
-            return 1;
-        }
-
-        public void writeSizeToNetwork(BinaryStream stream, int size) {
-            // no-op - size is fixed
-        }
-
-        @Override
-        public int[] getWords() {
-            return EMPTY_ARRAY;
-        }
-
-        @Override
-        public BitArrayVersion getVersion() {
-            return BitArrayVersion.V0;
-        }
-
-        @Override
-        public SingletonBitArray copy() {
-            return new SingletonBitArray();
-        }
     }
 
     private int lastPosition = 0;
