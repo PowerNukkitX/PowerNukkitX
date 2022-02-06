@@ -57,14 +57,14 @@ public class BlockIce extends BlockTransparent {
             return super.onBreak(item);
         }
         
-        return level.setBlock(this, Block.get(BlockID.WATER), true);
+        return level.setBlock(this, Block.get(BlockID.FLOWING_WATER), true);
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (level.getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 12) {
-                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(WATER));
+                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(FLOWING_WATER));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);

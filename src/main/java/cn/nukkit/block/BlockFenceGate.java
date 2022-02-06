@@ -56,7 +56,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
     @Override
     public int getId() {
-        return FENCE_GATE_OAK;
+        return FENCE_GATE;
     }
 
     @Since("1.4.0.0-PN")

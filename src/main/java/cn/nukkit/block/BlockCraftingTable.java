@@ -24,7 +24,7 @@ public class BlockCraftingTable extends BlockSolid {
 
     @Override
     public int getId() {
-        return WORKBENCH;
+        return CRAFTING_TABLE;
     }
 
     @Override

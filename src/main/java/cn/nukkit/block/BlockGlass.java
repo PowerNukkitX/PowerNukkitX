@@ -23,7 +23,7 @@ public class BlockGlass extends BlockTransparent {
 
     @Override
     public double getResistance() {
-        return 1.5;
+        return 0.3;
     }
 
     @Override

@@ -1,41 +1,30 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCoal;
+import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class BlockOreCoal extends BlockSolid {
+@PowerNukkitDifference(since = "FUTURE", info = "Extends BlockOre instead of BlockSolid only in PowerNukkit")
+public class BlockOreCoal extends BlockOre {
 
     public BlockOreCoal() {
+        // Does nothing
     }
 
     @Override
     public int getId() {
         return COAL_ORE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 3;
-    }
-
-    @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -49,42 +38,17 @@ public class BlockOreCoal extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    @Nullable
     @Override
-    public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= getToolTier()) {
-            int count = 1;
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-            if (fortune != null && fortune.getLevel() >= 1) {
-                int i = ThreadLocalRandom.current().nextInt(fortune.getLevel() + 2) - 1;
-
-                if (i < 0) {
-                    i = 0;
-                }
-
-                count = i + 1;
-            }
-
-            return new Item[]{
-                    new ItemCoal(0, count)
-            };
-        } else {
-            return Item.EMPTY_ARRAY;
-        }
+    protected MinecraftItemID getRawMaterial() {
+        return MinecraftItemID.COAL;
     }
 
     @Override
     public int getDropExp() {
-        return new NukkitRandom().nextRange(0, 2);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+        return ThreadLocalRandom.current().nextInt(3);
     }
 
     @Override
