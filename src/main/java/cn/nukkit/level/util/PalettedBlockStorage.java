@@ -14,7 +14,7 @@ public class PalettedBlockStorage {
     private final IntList palette;
     private BitArray bitArray;
 
-    public PalettedBlockStorage() {
+    public  PalettedBlockStorage() {
         this(BitArrayVersion.V2);
     }
 

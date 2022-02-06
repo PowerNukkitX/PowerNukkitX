@@ -6,10 +6,12 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -74,7 +76,7 @@ public class Anvil extends BaseLevelProvider {
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
         File regionDir = new File(path + "/region");
         if (!regionDir.exists() && !regionDir.mkdirs()) {
-            throw new IOException("Could not create the directory "+regionDir);
+            throw new IOException("Could not create the directory " + regionDir);
         }
 
         CompoundTag levelData = new CompoundTag("Data")
@@ -102,7 +104,7 @@ public class Anvil extends BaseLevelProvider {
                 .putLong("SizeOnDisk", 0);
 
         Utils.safeWrite(new File(path, "level.dat"), file -> {
-            try(FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+            try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
                 NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), out, ByteOrder.BIG_ENDIAN);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -155,14 +157,34 @@ public class Anvil extends BaseLevelProvider {
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }
-
-        stream.put(chunk.getBiomeIdArray());
-        stream.putByte((byte) 0); // Border blocks
+        // TODO: 2022/2/6 修复生物群系数据
+        final byte[] biomeData = serializeBiome(chunk);
+        for (int i = 0; i < 25; i++) {
+            stream.put(biomeData);
+        }
+        stream.putByte((byte) 0); // Border blocks - Edu edition only
+        stream.putUnsignedVarInt(0); // extra data length, 0 for now
         stream.put(blockEntities);
 
         this.getLevel().chunkRequestCallback(timestamp, x, z, count, stream.getBuffer());
 
         return null;
+    }
+
+    private byte[] serializeBiome(Chunk chunk) {
+        final BinaryStream stream = new BinaryStream(new byte[4096]);
+        final PalettedBlockStorage blockStorage = new PalettedBlockStorage();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 16; y++) {
+                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+                }
+            }
+        }
+        blockStorage.writeTo(stream);
+        final byte[] buffer = stream.getBuffer();
+        System.out.println("已发送区块 " + chunk.getX() + "," + chunk.getZ() + " -> " + buffer.length);
+        return buffer;
     }
 
     private int lastPosition = 0;
