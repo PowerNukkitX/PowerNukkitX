@@ -14,6 +14,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.Level;
@@ -568,6 +569,37 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         item.setCompoundTag(nbtBytes);
         return item;
+    }
+
+    private static final HashMap<Integer, Class<? extends Item>> customItems = new HashMap<>();
+
+    public static boolean registerCustomItem(int id, Class<? extends ItemCustom> c) {
+        if (id < 10000 || id > 65535) {
+            //Below 10000 is reserved for vanilla items
+            throw new IllegalArgumentException("Custom item id cannot be less than 10000 or greater than 65535");
+        }
+
+        customItems.put(id, c);
+        list[id] = c;
+
+        ItemCustom item = (ItemCustom) get(id);
+        //TODO 在RuntimeItems中添加相关内容
+        addCreativeItem(item);
+        return true;
+    }
+
+    public static boolean deleteCustomItem(int id) {
+        if (customItems.containsKey(id)) {
+            removeCreativeItem(get(id));
+            customItems.remove(id);
+            list[id] = null;
+
+            ItemCustom item = (ItemCustom) get(id);
+            //TODO 在RuntimeItems中删除相关内容
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public static void clearCreativeItems() {
