@@ -27,24 +27,35 @@ import java.util.function.BiPredicate;
 public class EmptyChunkSection implements ChunkSection {
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
+    @SuppressWarnings("java:S2386")
+    public static final EmptyChunkSection[] EMPTY24 = new EmptyChunkSection[24];
     private static final String MODIFICATION_ERROR_MESSAGE = "Tried to modify an empty Chunk";
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
             EMPTY[y] = new EmptyChunkSection(y);
         }
+        for (int y = 0; y < EMPTY24.length; y++) {
+            EMPTY24[y] = new EmptyChunkSection(y);
+        }
     }
-    
+
     private static final byte[] EMPTY_2KB = new byte[2048];
     public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2KB;
     public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048]; // Filled with 0xFF
+
     static {
         Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);
     }
-    
-    @Since("1.4.0.0-PN") @PowerNukkitOnly public static final byte[] EMPTY_ID_ARRAY = new byte[4096];
-    @Since("1.4.0.0-PN") @PowerNukkitOnly public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final byte[] EMPTY_ID_ARRAY = new byte[4096];
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
     private static final byte[] EMPTY_CHUNK_DATA;
+
     static {
         BinaryStream stream = new BinaryStream();
         stream.putByte((byte) cn.nukkit.level.format.anvil.ChunkSection.STREAM_STORAGE_VERSION);
@@ -107,7 +118,7 @@ public class EmptyChunkSection implements ChunkSection {
         if (block.getId() != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
         return Block.get(0);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull

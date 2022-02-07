@@ -267,4 +267,28 @@ public interface FullChunk extends Cloneable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     boolean isBlockedByBorder(int x, int z);
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default int getChunkSectionCount() {
+        return getProvider().isOverWorld() ? 24 : 16;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isOverWorld() {
+        return getProvider().isOverWorld();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isNether() {
+        return getProvider().isNether();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isTheEnd() {
+        return getProvider().isTheEnd();
+    }
 }

@@ -33,7 +33,8 @@ import java.util.regex.Pattern;
  */
 @Log4j2
 public class Anvil extends BaseLevelProvider {
-    public static final int VERSION = 19133;
+    @PowerNukkitDifference(info = "1.18 new chunk support", since = "1.6.0.0-PNX")
+    public static final int VERSION = 19134;
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public static final int LOWER_PADDING_SIZE = 4;
@@ -155,11 +156,11 @@ public class Anvil extends BaseLevelProvider {
             }
         }
         // 垫64层空气，只有主世界才支持384世界，我们才需要这么做
-        if (super.level.getDimension() == 0)
-            for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
-                stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
-                stream.putByte((byte) 0);
-            }
+//        if (this.isOverWorld())
+//            for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
+//                stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
+//                stream.putByte((byte) 0);
+//            }
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }

@@ -1,6 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -117,5 +118,29 @@ public interface LevelProvider {
     @PowerNukkitOnly
     default int getMaximumLayer() {
         return 0;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default int getDimension() {
+        return getLevel().getDimension();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isOverWorld() {
+        return getDimension() == 0;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isNether() {
+        return getDimension() == 1;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isTheEnd() {
+        return getDimension() == 2;
     }
 }
