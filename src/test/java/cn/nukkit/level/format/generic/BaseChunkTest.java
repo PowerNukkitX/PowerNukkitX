@@ -32,6 +32,7 @@ class BaseChunkTest {
     void setup() {
         chunk.setPaletteUpdatesDelayed(true);
         chunk.sections = new ChunkSection[16];
+        chunk.sectionLength = 16;
         System.arraycopy(EmptyChunkSection.EMPTY, 0, chunk.sections, 0, 16);
         chunk.setProvider(anvil);
         chunk.providerClass = Anvil.class;

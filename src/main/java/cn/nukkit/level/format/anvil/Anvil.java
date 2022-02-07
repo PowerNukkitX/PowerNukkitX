@@ -6,6 +6,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
+import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
@@ -33,14 +35,22 @@ import java.util.regex.Pattern;
  */
 @Log4j2
 public class Anvil extends BaseLevelProvider {
-    public static final int VERSION = 19133;
+    @PowerNukkitDifference(info = "pre-1.17 old chunk version", since = "1.6.0.0-PNX")
+    public static final int OLD_VERSION = 19133;
+    @PowerNukkitDifference(info = "1.18 new chunk support version", since = "1.6.0.0-PNX")
+    public static final int VERSION = 19134;
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public static final int LOWER_PADDING_SIZE = 4;
     static private final byte[] PAD_256 = new byte[256];
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private final boolean isOldAnvil;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
+        isOldAnvil = getLevelData().getInt("version") == OLD_VERSION;
+        getLevelData().putInt("version", VERSION);
     }
 
     public static String getProviderName() {
@@ -53,6 +63,10 @@ public class Anvil extends BaseLevelProvider {
 
     public static boolean usesChunkSection() {
         return true;
+    }
+
+    public boolean isOldAnvil() {
+        return isOldAnvil;
     }
 
     public static boolean isValid(String path) {
@@ -154,12 +168,7 @@ public class Anvil extends BaseLevelProvider {
                 break;
             }
         }
-        // 垫64层空气，只有主世界才支持384世界，我们才需要这么做
-        if (super.level.getDimension() == 0)
-            for (int i = 0; i < LOWER_PADDING_SIZE; i++) {
-                stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
-                stream.putByte((byte) 0);
-            }
+
         for (int i = 0; i < count; i++) {
             sections[i].writeTo(stream);
         }
@@ -186,7 +195,12 @@ public class Anvil extends BaseLevelProvider {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for (int y = 0; y < 16; y++) {
-                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+                    final int bid = chunk.getBiomeId(x, z);
+                    if (BiomeLegacyId2StringIdMap.INSTANCE.legacy2String(bid) == null) {
+                        blockStorage.setBlock((x << 8) | (z << 4) | y, 0); //回退到0群系，防止客户端崩溃
+                    } else {
+                        blockStorage.setBlock((x << 8) | (z << 4) | y, bid);
+                    }
                 }
             }
         }

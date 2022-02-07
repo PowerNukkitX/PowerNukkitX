@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
@@ -60,8 +61,10 @@ public class Chunk extends BaseChunk {
             this.providerClass = level.getClass();
         }
 
-        this.sections = new cn.nukkit.level.format.ChunkSection[16];
-        System.arraycopy(EmptyChunkSection.EMPTY, 0, this.sections, 0, 16);
+        this.sections = new cn.nukkit.level.format.ChunkSection[getChunkSectionCount()];
+        this.sectionLength = getChunkSectionCount();
+        System.arraycopy(getChunkSectionCount() == 24 ? EmptyChunkSection.EMPTY24 : EmptyChunkSection.EMPTY,
+                0, this.sections, 0, getChunkSectionCount());
         if (nbt == null) {
             this.biomes = new byte[16 * 16];
             this.heightMap = new byte[256];
@@ -73,8 +76,8 @@ public class Chunk extends BaseChunk {
         for (Tag section : nbt.getList("Sections").getAll()) {
             if (section instanceof CompoundTag) {
                 int y = ((CompoundTag) section).getByte("Y");
-                if (y < 16) {
-                    ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
+                if (y < getChunkSectionCount()) {
+                    final ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
                     if (chunkSection.hasBlocks()) {
                         sections[y] = chunkSection;
                     } else {
@@ -96,7 +99,7 @@ public class Chunk extends BaseChunk {
         }
 
         this.setPosition(nbt.getInt("xPos"), nbt.getInt("zPos"));
-        if (sections.length > SECTION_COUNT) {
+        if (sections.length > getChunkSectionCount()) {
             throw new ChunkException("Invalid amount of chunks");
         }
 
@@ -105,8 +108,8 @@ public class Chunk extends BaseChunk {
             int[] biomeColors = nbt.getIntArray("BiomeColors");
             if (biomeColors != null && biomeColors.length == 256) {
                 BiomePalette palette = new BiomePalette(biomeColors);
-                for (int x = 0; x < 16; x++)    {
-                    for (int z = 0; z < 16; z++)    {
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
                         this.biomes[(x << 4) | z] = (byte) (palette.get(x, z) >> 24);
                     }
                 }
@@ -441,7 +444,7 @@ public class Chunk extends BaseChunk {
 
     @Override
     public int getBlockSkyLight(int x, int y, int z) {
-        cn.nukkit.level.format.ChunkSection section = this.sections[y >> 4];
+        cn.nukkit.level.format.ChunkSection section = this.sections[toSectionY(y)];
         if (section instanceof cn.nukkit.level.format.anvil.ChunkSection) {
             cn.nukkit.level.format.anvil.ChunkSection anvilSection = (cn.nukkit.level.format.anvil.ChunkSection) section;
             if (anvilSection.skyLight != null) {
@@ -465,7 +468,7 @@ public class Chunk extends BaseChunk {
 
     @Override
     public int getBlockLight(int x, int y, int z) {
-        cn.nukkit.level.format.ChunkSection section = this.sections[y >> 4];
+        cn.nukkit.level.format.ChunkSection section = this.sections[toSectionY(y)];
         if (section instanceof cn.nukkit.level.format.anvil.ChunkSection) {
             cn.nukkit.level.format.anvil.ChunkSection anvilSection = (cn.nukkit.level.format.anvil.ChunkSection) section;
             if (anvilSection.blockLight != null) {
@@ -502,6 +505,7 @@ public class Chunk extends BaseChunk {
 //            chunk.lightPopulated = false;
             return chunk;
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
