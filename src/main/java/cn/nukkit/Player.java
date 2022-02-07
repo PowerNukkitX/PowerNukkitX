@@ -42,6 +42,7 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.TextContainer;
@@ -1042,6 +1043,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.respawn();
         } else {
             updateTrackingPositions(false);
+        }
+
+        //TODO
+        ArrayList<Integer> customItems = new ArrayList<>();/*RuntimeItems.getRuntimeMapping().getCustomItems();*/
+        if (!customItems.isEmpty()) {
+            ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+            ItemComponentPacket.Entry[] entries = new ItemComponentPacket.Entry[customItems.size()];
+
+            int i = 0;
+            for (Integer id : customItems) {
+                Item item = Item.get(id);
+                if (!(item instanceof ItemCustom)) {
+                    continue;
+                }
+
+                ItemCustom itemCustom = (ItemCustom) item;
+                CompoundTag data = itemCustom.getComponentsData();
+                data.putShort("minecraft:identifier", i);
+
+                entries[i] = new ItemComponentPacket.Entry(("customitem:" + item.getName()).toLowerCase(), data);
+
+                i++;
+            }
+            itemComponentPacket.setEntries(entries);
+
+            this.dataPacket(itemComponentPacket);
         }
     }
 
