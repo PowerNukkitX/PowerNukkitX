@@ -421,7 +421,7 @@ public class BinaryStream {
         }
 
         int blockRuntimeId = getVarInt();
-        if (id <= 255 && id != FALLBACK_ID) {
+        if (id != null && id <= 255 && id != FALLBACK_ID) {
             BlockState blockStateByRuntimeId = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
             if (blockStateByRuntimeId != null) {
                 damage = blockStateByRuntimeId.asItemBlock().getDamage();
@@ -482,7 +482,16 @@ public class BinaryStream {
             buf.release();
         }
 
-        Item item = readUnknownItem(Item.get(id, damage, count, nbt));
+        Item item = null;
+        if(id != null) {
+            item = readUnknownItem(Item.get(id, damage, count, nbt));
+        }else if(stringId != null) {
+            final Item tmp = Item.fromString(stringId);
+            tmp.setDamage(damage);
+            tmp.setCount(count);
+            tmp.setCompoundTag(nbt);
+            item = readUnknownItem(tmp);
+        }
 
         if (canBreak.length > 0 || canPlace.length > 0) {
             CompoundTag namedTag = item.getNamedTag();

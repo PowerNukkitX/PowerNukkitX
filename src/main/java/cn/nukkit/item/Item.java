@@ -503,9 +503,6 @@ public class Item implements Cloneable, BlockID, ItemID {
             // TODO Remove this when the support is added to these blocks
             if (Stream.of(
                     "minecraft:candle",
-                    "minecraft:deepslate",
-                    "minecraft:cracked_deepslate_bricks",
-                    "minecraft:cracked_deepslate_tiles",
                     "minecraft:smooth_basalt"
             ).anyMatch(blockStateId::startsWith)) {
                 return null;

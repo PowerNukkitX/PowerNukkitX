@@ -3168,13 +3168,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     AnimatePacket animatePacket = (AnimatePacket) packet;
+                    AnimatePacket.Action animation = animatePacket.action;
+                    
+                    // prevent client send illegal packet to server and broadcast to other client and make other client crash
+                    if(animation == null // illegal action id
+                            || animation == AnimatePacket.Action.WAKE_UP // these actions are only for server to client
+                            || animation == AnimatePacket.Action.CRITICAL_HIT
+                            || animation == AnimatePacket.Action.MAGIC_CRITICAL_HIT) {
+                        break;
+                    }
+                    
                     PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(this, animatePacket);
                     this.server.getPluginManager().callEvent(animationEvent);
                     if (animationEvent.isCancelled()) {
                         break;
                     }
-
-                    AnimatePacket.Action animation = animationEvent.getAnimationType();
+                    animation = animationEvent.getAnimationType();
 
                     switch (animation) {
                         case ROW_RIGHT:

@@ -5250,19 +5250,23 @@
   },
   {
     "name": "minecraft:glow_frame",
-    "id": 621
+    "id": 621,
+    "oldId": 850
   },
   {
     "name": "minecraft:goat_horn",
-    "id": 622
+    "id": 622,
+    "oldId": 761
   },
   {
     "name": "minecraft:amethyst_shard",
-    "id": 623
+    "id": 623,
+    "oldId": 771
   },
   {
     "name": "minecraft:spyglass",
-    "id": 624
+    "id": 624,
+    "oldId": 772
   },
   {
     "name": "minecraft:boat",
