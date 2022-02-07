@@ -6,6 +6,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
+import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
@@ -193,7 +195,12 @@ public class Anvil extends BaseLevelProvider {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for (int y = 0; y < 16; y++) {
-                    blockStorage.setBlock((x << 8) | (z << 4) | y, chunk.getBiomeId(x, z));
+                    final int bid = chunk.getBiomeId(x, z);
+                    if (BiomeLegacyId2StringIdMap.INSTANCE.legacy2String(bid) == null) {
+                        blockStorage.setBlock((x << 8) | (z << 4) | y, 0); //回退到0群系，防止客户端崩溃
+                    } else {
+                        blockStorage.setBlock((x << 8) | (z << 4) | y, bid);
+                    }
                 }
             }
         }
