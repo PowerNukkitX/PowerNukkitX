@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
@@ -77,18 +78,10 @@ public class Chunk extends BaseChunk {
                 int y = ((CompoundTag) section).getByte("Y");
                 if (y < getChunkSectionCount()) {
                     final ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
-                    if (level != null && isOverWorld() && level instanceof Anvil && ((Anvil) level).isOldAnvil()) {
-                        if (chunkSection.hasBlocks()) {
-                            sections[y + 4] = chunkSection;
-                        } else {
-                            sections[y + 4] = EmptyChunkSection.EMPTY[y];
-                        }
+                    if (chunkSection.hasBlocks()) {
+                        sections[y] = chunkSection;
                     } else {
-                        if (chunkSection.hasBlocks()) {
-                            sections[y] = chunkSection;
-                        } else {
-                            sections[y] = EmptyChunkSection.EMPTY[y];
-                        }
+                        sections[y] = EmptyChunkSection.EMPTY[y];
                     }
                 }
             }
