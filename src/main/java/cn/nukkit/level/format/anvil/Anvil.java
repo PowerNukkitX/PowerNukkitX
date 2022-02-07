@@ -174,8 +174,13 @@ public class Anvil extends BaseLevelProvider {
         }
 
         final byte[] biomeData = serializeBiome(chunk);
+        final int selectionCount = isOverWorld() ? 24 : 16;
         for (int i = 0; i < 25; i++) {
-            stream.put(biomeData);
+            if (i > selectionCount) {
+                stream.putByte((byte) ((127 << 1) | 1));
+            } else {
+                stream.put(biomeData);
+            }
         }
         stream.putByte((byte) 0); // 教育版边界方块数据，这里用0b表示无此数据
         stream.putUnsignedVarInt(0); // 一个不知道作用的8字节，貌似全写0就可以
