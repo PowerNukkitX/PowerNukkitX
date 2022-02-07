@@ -3168,7 +3168,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     AnimatePacket animatePacket = (AnimatePacket) packet;
-                    AnimatePacket.Action animation = animationEvent.getAnimationType();
+                    AnimatePacket.Action animation = animatePacket.action;
                     
                     // prevent client send illegal packet to server and broadcast to other client and make other client crash
                     if(animation == null // illegal action id
@@ -3183,6 +3183,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (animationEvent.isCancelled()) {
                         break;
                     }
+                    animation = animationEvent.getAnimationType();
 
                     switch (animation) {
                         case ROW_RIGHT:
