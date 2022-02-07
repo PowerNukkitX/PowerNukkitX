@@ -3446,7 +3446,7 @@ public class Level implements ChunkManager, Metadatable {
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
         if (spawn == null) {
             spawn = this.getFuzzySpawnLocation();
-        } else {
+        }else{
             return Position.fromObject(spawn, this);
         }
 
@@ -3455,7 +3455,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (allowWaterUnder) {
             for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-                for (int y = isOverWorld() ? 319 : 255; y > (isOverWorld() ? -64 : 0); y--) {
+                for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
                     Position pos = Position.fromObject(spawn, this);
                     pos.setY(y);
                     Position newSpawn;
@@ -3471,9 +3471,9 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        for (int horizontalOffset = 0;horizontalOffset <= horizontalMaxOffset;horizontalOffset++){
-            for(int y = isOverWorld() ? 319 : 255;y > (isOverWorld() ? -64 : 0);y--){
-                Position pos = Position.fromObject(spawn,this);
+        for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
+            for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
+                Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
                 if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset))) return newSpawn;
