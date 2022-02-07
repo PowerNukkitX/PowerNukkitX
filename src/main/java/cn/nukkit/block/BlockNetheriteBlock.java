@@ -7,7 +7,7 @@ import cn.nukkit.utils.BlockColor;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class BlockNetheriteBlock extends BlockSolid{
+public class BlockNetheriteBlock extends BlockSolid {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockNetheriteBlock() {

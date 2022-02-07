@@ -25,7 +25,7 @@ public class BlockDoorWood extends BlockDoor {
 
     @Override
     public int getId() {
-        return WOOD_DOOR_BLOCK;
+        return OAK_DOOR_BLOCK;
     }
 
     @Override

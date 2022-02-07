@@ -18,7 +18,7 @@ public class BlockStairsJungle extends BlockStairsWood {
 
     @Override
     public int getId() {
-        return JUNGLE_WOOD_STAIRS;
+        return JUNGLE_STAIRS;
     }
 
     @Override

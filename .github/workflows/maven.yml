@@ -1,12 +1,34 @@
-name: PowerNukkit v1.X
+name: PowerNukkitX
 
 on: [push,pull_request]
 
 jobs:
-  build:
-
+  check-files:
+    name: 检查仓库文件
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    outputs:
+      changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+
+    steps:
+      - name: 检出仓库内容
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: 检查文件改动情况
+        id: check-changed-files
+        uses: tj-actions/changed-files@v11.4
+        with:
+          since_last_remote_commit: 'true'
+
+      - name: 输出更改文件列表
+        run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
+
+  build:
+    name: 构建PNX服务端
+    runs-on: ubuntu-latest
+    needs: check-files
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || (github.event_name == 'push' && contains(github.event.commits[0].message, '+b')))
 
     steps:
       - uses: actions/checkout@v1
@@ -30,5 +52,5 @@ jobs:
         uses: actions/upload-artifact@v1
         if: success()
         with:
-          name: PowerNukkit
+          name: PowerNukkitX
           path: target/powernukkitx.jar

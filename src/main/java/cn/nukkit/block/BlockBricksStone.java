@@ -50,7 +50,7 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return STONE_BRICKS;
+        return STONEBRICK;
     }
 
     @PowerNukkitOnly

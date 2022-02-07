@@ -125,17 +125,17 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
                 return Instrument.SQUARE_WAVE;
             case HAY_BALE:
                 return Instrument.BANJO;
-            case GLOWSTONE_BLOCK:
+            case GLOWSTONE:
                 return Instrument.ELECTRIC_PIANO;
             case LOG:
             case LOG2:
             case PLANKS:
             case DOUBLE_WOODEN_SLAB:
             case WOODEN_SLAB:
-            case WOOD_STAIRS:
-            case SPRUCE_WOOD_STAIRS:
-            case BIRCH_WOOD_STAIRS:
-            case JUNGLE_WOOD_STAIRS:
+            case OAK_STAIRS:
+            case SPRUCE_STAIRS:
+            case BIRCH_STAIRS:
+            case JUNGLE_STAIRS:
             case ACACIA_WOOD_STAIRS:
             case DARK_OAK_WOOD_STAIRS:
             case CRIMSON_STAIRS:
@@ -149,7 +149,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case FENCE_GATE_ACACIA:
             case CRIMSON_FENCE_GATE:
             case WARPED_FENCE_GATE:
-            case DOOR_BLOCK:
+            case OAK_DOOR_BLOCK:
             case SPRUCE_DOOR_BLOCK:
             case BIRCH_DOOR_BLOCK:
             case JUNGLE_DOOR_BLOCK:
@@ -179,7 +179,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case CONCRETE_POWDER:
                 return Instrument.DRUM;
             case GLASS:
-            case GLASS_PANEL:
+            case GLASS_PANE:
             case STAINED_GLASS_PANE:
             case STAINED_GLASS:
             case BEACON:
@@ -189,17 +189,17 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case SANDSTONE:
             case RED_SANDSTONE:
             case COBBLESTONE:
-            case MOSSY_STONE:
-            case BRICKS:
-            case STONE_BRICKS:
+            case MOSSY_COBBLESTONE:
+            case BRICKS_BLOCK:
+            case STONEBRICK:
             case NETHER_BRICK_BLOCK:
             case RED_NETHER_BRICK:
             case QUARTZ_BLOCK:
-            case DOUBLE_SLAB:
-            case SLAB:
+            case DOUBLE_STONE_SLAB:
+            case STONE_SLAB:
             case DOUBLE_RED_SANDSTONE_SLAB:
             case RED_SANDSTONE_SLAB:
-            case COBBLE_STAIRS:
+            case STONE_STAIRS:
             case BRICK_STAIRS:
             case STONE_BRICK_STAIRS:
             case NETHER_BRICKS_STAIRS:
@@ -216,15 +216,15 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
             case LAPIS_ORE:
             case DIAMOND_ORE:
             case REDSTONE_ORE:
-            case GLOWING_REDSTONE_ORE:
+            case LIT_REDSTONE_ORE:
             case EMERALD_ORE:
             case DROPPER:
             case DISPENSER:
             case FURNACE:
-            case BURNING_FURNACE:
+            case LIT_FURNACE:
             case OBSIDIAN:
             case GLOWING_OBSIDIAN:
-            case MONSTER_SPAWNER:
+            case MOB_SPAWNER:
             case STONE_PRESSURE_PLATE:
             case NETHERRACK:
             case QUARTZ_ORE:

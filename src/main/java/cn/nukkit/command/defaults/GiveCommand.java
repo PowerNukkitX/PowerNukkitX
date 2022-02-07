@@ -128,7 +128,7 @@ public class GiveCommand extends VanillaCommand {
         
         Command.broadcastCommandMessage(sender, new TranslationContainer(
                 "%commands.give.success",
-                item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
+                item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0? ":" + item.getDamage():"") + ")",
                 String.valueOf(item.getCount()),
                 player.getName()));
         return true;

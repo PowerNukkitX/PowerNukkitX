@@ -138,7 +138,7 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[BlockID.LEAVES2] = true;
         randomTickBlocks[BlockID.SNOW_LAYER] = true;
         randomTickBlocks[BlockID.ICE] = true;
-        randomTickBlocks[BlockID.LAVA] = true;
+        randomTickBlocks[BlockID.FLOWING_LAVA] = true;
         randomTickBlocks[BlockID.STILL_LAVA] = true;
         randomTickBlocks[BlockID.CACTUS] = true;
         randomTickBlocks[BlockID.BEETROOT_BLOCK] = true;
@@ -147,13 +147,13 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[BlockID.MELON_STEM] = true;
         randomTickBlocks[BlockID.PUMPKIN_STEM] = true;
         randomTickBlocks[BlockID.WHEAT_BLOCK] = true;
-        randomTickBlocks[BlockID.SUGARCANE_BLOCK] = true;
+        randomTickBlocks[BlockID.REEDS] = true;
         randomTickBlocks[BlockID.RED_MUSHROOM] = true;
         randomTickBlocks[BlockID.BROWN_MUSHROOM] = true;
         randomTickBlocks[BlockID.NETHER_WART_BLOCK] = true;
         randomTickBlocks[BlockID.FIRE] = true;
-        randomTickBlocks[BlockID.GLOWING_REDSTONE_ORE] = true;
-        randomTickBlocks[BlockID.COCOA_BLOCK] = true;
+        randomTickBlocks[BlockID.LIT_REDSTONE_ORE] = true;
+        randomTickBlocks[BlockID.COCOA] = true;
         randomTickBlocks[BlockID.VINE] = true;
         randomTickBlocks[BlockID.CORAL_FAN] = true;
         randomTickBlocks[BlockID.CORAL_FAN_DEAD] = true;
@@ -166,6 +166,22 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[BlockID.WARPED_NYLIUM] = true;
         randomTickBlocks[BlockID.TWISTING_VINES] = true;
         randomTickBlocks[BlockID.CHORUS_FLOWER] = true;
+        randomTickBlocks[BlockID.COPPER_BLOCK] = true;
+        randomTickBlocks[BlockID.EXPOSED_COPPER] = true;
+        randomTickBlocks[BlockID.WEATHERED_COPPER] = true;
+        randomTickBlocks[BlockID.WAXED_COPPER] = true;
+        randomTickBlocks[BlockID.CUT_COPPER] = true;
+        randomTickBlocks[BlockID.EXPOSED_CUT_COPPER] = true;
+        randomTickBlocks[BlockID.WEATHERED_CUT_COPPER] = true;
+        randomTickBlocks[BlockID.CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[BlockID.EXPOSED_CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[BlockID.WEATHERED_CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[BlockID.CUT_COPPER_SLAB] = true;
+        randomTickBlocks[BlockID.EXPOSED_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[BlockID.WEATHERED_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[BlockID.DOUBLE_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[BlockID.EXPOSED_DOUBLE_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[BlockID.WEATHERED_DOUBLE_CUT_COPPER_SLAB] = true;
     }
     
     @PowerNukkitOnly
@@ -1047,7 +1063,7 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             int bId = this.getBlockIdAt(vector.getFloorX(), vector.getFloorY(), vector.getFloorZ());
-            if (bId != Block.TALL_GRASS && bId != Block.WATER)
+            if (bId != Block.TALL_GRASS && bId != Block.FLOWING_WATER)
                 vector.y += 1;
             CompoundTag nbt = new CompoundTag()
                     .putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", vector.x))

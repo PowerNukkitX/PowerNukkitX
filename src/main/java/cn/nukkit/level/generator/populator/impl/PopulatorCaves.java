@@ -159,7 +159,7 @@ public class PopulatorCaves extends Populator {
                     for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
                         if (yy >= 0 && yy < this.worldHeightCap) {
                             int block = chunk.getBlockId(xx, yy, zz);
-                            if (block == Block.WATER || block == Block.STILL_WATER) {
+                            if (block == Block.FLOWING_WATER || block == Block.STILL_WATER) {
                                 waterFound = true;
                             }
                             if ((yy != yFrom - 1) && (xx != xFrom) && (xx != xTo - 1) && (zz != zFrom) && (zz != zTo - 1))
@@ -198,7 +198,7 @@ public class PopulatorCaves extends Populator {
 //								if (this.isSuitableBlock(material, materialAbove, biome))
                                 {
                                     if (yy - 1 < 10) {
-                                        chunk.setBlock(xx, yy, zz, Block.LAVA);
+                                        chunk.setBlock(xx, yy, zz, Block.FLOWING_LAVA);
                                     } else {
                                         chunk.setBlock(xx, yy, zz, Block.AIR);
 

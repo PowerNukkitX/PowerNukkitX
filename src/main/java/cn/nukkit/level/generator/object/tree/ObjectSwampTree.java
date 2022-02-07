@@ -88,7 +88,7 @@ public class ObjectSwampTree extends TreeGenerator {
                         BlockVector3 up = position.up(l1);
                         int id = worldIn.getBlockIdAt(up.x, up.y, up.z);
 
-                        if (id == Block.AIR || id == Block.LEAVES || id == Block.WATER || id == Block.STILL_WATER) {
+                        if (id == Block.AIR || id == Block.LEAVES || id == Block.FLOWING_WATER || id == Block.STILL_WATER) {
                             this.setBlockAndNotifyAdequately(worldIn, up, this.metaWood);
                         }
                     }

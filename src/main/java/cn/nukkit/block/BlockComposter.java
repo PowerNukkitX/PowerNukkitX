@@ -11,7 +11,10 @@ import cn.nukkit.event.block.ComposterFillEvent;
 import cn.nukkit.item.*;
 import cn.nukkit.level.Sound;
 import cn.nukkit.utils.DyeColor;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +23,8 @@ import java.util.Random;
 @PowerNukkitOnly
 public class BlockComposter extends BlockSolidMeta implements ItemID {
 
-    private static Int2IntOpenHashMap compostableItems = new Int2IntOpenHashMap();
+    private static Int2IntMap compostableItems = new Int2IntOpenHashMap();
+    private static Object2IntMap<String> compostableStringItems = new Object2IntOpenHashMap<>();
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final IntBlockProperty COMPOSTER_FILL_LEVEL = new IntBlockProperty("composter_fill_level", false, 8);
@@ -189,12 +193,29 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
     @PowerNukkitOnly
+    @Since("FUTURE")
+    public static void registerItem(int chance, @Nonnull MinecraftItemID itemId) {
+        compostableStringItems.put(itemId.getItemFormNamespaceId(), chance);
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static void registerItems(int chance, @Nonnull MinecraftItemID... itemId) {
+        for (MinecraftItemID minecraftItemID : itemId) {
+            registerItem(chance, minecraftItemID);
+        }
+    }
+    
+    @PowerNukkitOnly
     public static void registerItem(int chance, int itemId) {
         registerItem(chance, itemId, 0);
     }
 
     @PowerNukkitOnly
     public static void registerItem(int chance, int itemId, int meta) {
+        if (itemId == 255) {
+            throw new UnsupportedOperationException("Cannot register string identified items using this method.");
+        }
         compostableItems.put(itemId << 6 | meta & 0x3F, chance);
     }
 
@@ -232,26 +253,35 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
 
     @PowerNukkitOnly
     public static int getChance(Item item) {
-        int chance = compostableItems.get(item.getId() << 6 | item.getDamage());
-        if (chance == 0) {
+        if (item.getId() != ItemID.STRING_IDENTIFIED_ITEM) {
+            int chance = compostableItems.get(item.getId() << 6 | item.getDamage());
+            if (chance != 0) {
+                return chance;
+            }
             chance = compostableItems.get(item.getId() << 6);
+            if (chance != 0) {
+                return chance;
+            }
         }
-        return chance;
+        return compostableStringItems.getInt(item.getNamespaceId());
     }
 
     private static void registerDefaults() {
-        registerItems(30, KELP, BEETROOT_SEEDS, DRIED_KELP, MELON_SEEDS, PUMPKIN_SEEDS, SWEET_BERRIES, WHEAT_SEEDS);
-        registerItems(50, MELON_SLICE, SUGAR_CANE, NETHER_SPROUTS);
+        registerItems(30, KELP, BEETROOT_SEEDS, DRIED_KELP, MELON_SEEDS, PUMPKIN_SEEDS, SWEET_BERRIES, 
+                                 WHEAT_SEEDS, MOSS_CARPET, HANGING_ROOTS, SMALL_DRIPLEAF_BLOCK);
+        registerItems(30, MinecraftItemID.GLOW_BERRIES);
+        registerItems(50, MELON_SLICE, SUGAR_CANE, NETHER_SPROUTS, GLOW_LICHEN);
         registerItems(65, APPLE, BEETROOT, CARROT, COCOA, POTATO, WHEAT);
         registerItems(85, BAKED_POTATOES, BREAD, COOKIE);
         registerItems(100, CAKE, PUMPKIN_PIE);
 
-        registerBlocks(30, BLOCK_KELP, LEAVES, LEAVES2, SAPLINGS, SEAGRASS, SWEET_BERRY_BUSH);
-        registerBlocks(50, GRASS, CACTUS, DRIED_KELP_BLOCK, VINES, NETHER_SPROUTS_BLOCK, 
+        registerBlocks(30, BLOCK_KELP, LEAVES, LEAVES2, SAPLING, SEAGRASS, SWEET_BERRY_BUSH);
+        registerBlocks(50, GRASS, CACTUS, DRIED_KELP_BLOCK, VINE, NETHER_SPROUTS_BLOCK, 
                                   TWISTING_VINES, WEEPING_VINES);
-        registerBlocks(65, DANDELION, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, LILY_PAD, MELON_BLOCK,
+        registerBlocks(65, DANDELION, RED_FLOWER, DOUBLE_PLANT, WITHER_ROSE, WATERLILY, MELON_BLOCK,
                                   PUMPKIN, CARVED_PUMPKIN, SEA_PICKLE, BROWN_MUSHROOM, RED_MUSHROOM, 
-                                  WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT);
+                                  WARPED_ROOTS, CRIMSON_ROOTS, SHROOMLIGHT, AZALEA, BIG_DRIPLEAF, MOSS_BLOCK,
+                                  SPORE_BLOSSOM);
         registerBlocks(85, HAY_BALE, BROWN_MUSHROOM_BLOCK, RED_MUSHROOM_BLOCK, MUSHROOM_STEW);
         registerBlocks(100, CAKE_BLOCK);
 
