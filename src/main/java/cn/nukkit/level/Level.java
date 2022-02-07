@@ -3455,7 +3455,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (allowWaterUnder) {
             for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-                for (int y = isOverWorld() ? 319 : 255; y > 0; y--) {
+                for (int y = isOverWorld() ? 319 : 255; y > (isOverWorld() ? -64 : 0); y--) {
                     Position pos = Position.fromObject(spawn, this);
                     pos.setY(y);
                     Position newSpawn;
@@ -3472,7 +3472,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         for (int horizontalOffset = 0;horizontalOffset <= horizontalMaxOffset;horizontalOffset++){
-            for(int y = isOverWorld() ? 319 : 255;y > 0;y--){
+            for(int y = isOverWorld() ? 319 : 255;y > (isOverWorld() ? -64 : 0);y--){
                 Position pos = Position.fromObject(spawn,this);
                 pos.setY(y);
                 Position newSpawn;

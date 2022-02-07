@@ -76,11 +76,19 @@ public class Chunk extends BaseChunk {
             if (section instanceof CompoundTag) {
                 int y = ((CompoundTag) section).getByte("Y");
                 if (y < getChunkSectionCount()) {
-                    ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
-                    if (chunkSection.hasBlocks()) {
-                        sections[y] = chunkSection;
+                    final ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
+                    if (isOverWorld() && level instanceof Anvil && ((Anvil) level).isOldAnvil()) {
+                        if (chunkSection.hasBlocks()) {
+                            sections[y + 4] = chunkSection;
+                        } else {
+                            sections[y + 4] = EmptyChunkSection.EMPTY[y];
+                        }
                     } else {
-                        sections[y] = EmptyChunkSection.EMPTY[y];
+                        if (chunkSection.hasBlocks()) {
+                            sections[y] = chunkSection;
+                        } else {
+                            sections[y] = EmptyChunkSection.EMPTY[y];
+                        }
                     }
                 }
             }
