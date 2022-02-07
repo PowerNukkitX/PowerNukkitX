@@ -77,7 +77,7 @@ public class Chunk extends BaseChunk {
                 int y = ((CompoundTag) section).getByte("Y");
                 if (y < getChunkSectionCount()) {
                     final ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
-                    if (isOverWorld() && level instanceof Anvil && ((Anvil) level).isOldAnvil()) {
+                    if (level != null && isOverWorld() && level instanceof Anvil && ((Anvil) level).isOldAnvil()) {
                         if (chunkSection.hasBlocks()) {
                             sections[y + 4] = chunkSection;
                         } else {
