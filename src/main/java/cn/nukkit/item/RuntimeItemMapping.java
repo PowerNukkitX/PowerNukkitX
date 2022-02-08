@@ -1,10 +1,11 @@
 package cn.nukkit.item;
 
-import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -17,6 +18,8 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Verify.verify;
 
 /**
  * Responsible for mapping item full ids, item network ids and item namespaced ids between each other.
@@ -33,16 +36,18 @@ import java.util.stream.Collectors;
 @Since("1.4.0.0-PN")
 public class RuntimeItemMapping {
 
+    private final Collection<RuntimeItems.Entry> entries;
+
     private final Int2IntMap legacyNetworkMap;
     private final Int2IntMap networkLegacyMap;
-    private final byte[] itemDataPalette;
+    private byte[] itemDataPalette;
 
     private final Map<String, OptionalInt> namespaceNetworkMap;
     private final Int2ObjectMap<String> networkNamespaceMap;
 
     private final Map<String, Supplier<Item>> namespacedIdItem = new LinkedHashMap<>();
 
-    @Since("1.4.0.0-PN")
+    /*@Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public RuntimeItemMapping(byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap) {
         this.itemDataPalette = itemDataPalette;
@@ -69,6 +74,56 @@ public class RuntimeItemMapping {
         this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
                 .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }*/
+
+    public RuntimeItemMapping(Collection<RuntimeItems.Entry> entries) {
+        this.entries = entries;
+
+        this.legacyNetworkMap = new Int2IntOpenHashMap();
+        this.networkLegacyMap = new Int2IntOpenHashMap();
+        LinkedHashMap<String, OptionalInt> namespaceNetworkMap = new LinkedHashMap<>();
+        this.networkNamespaceMap = new Int2ObjectOpenHashMap<>();
+
+        for (RuntimeItems.Entry entry : entries) {
+            namespaceNetworkMap.put(entry.name, OptionalInt.of(entry.id));
+            networkNamespaceMap.put(entry.id, entry.name);
+            if (entry.oldId != null) {
+                boolean hasData = entry.oldData != null;
+                int fullId = RuntimeItems.getFullId(entry.oldId, hasData ? entry.oldData : 0);
+                if (entry.deprecated != Boolean.TRUE) {
+                    verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
+                            "Conflict while registering an item runtime id!"
+                    );
+                }
+                verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
+                        "Conflict while registering an item runtime id!"
+                );
+            }
+        }
+
+        this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
+                .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        this.legacyNetworkMap.defaultReturnValue(-1);
+        this.networkLegacyMap.defaultReturnValue(-1);
+
+        this.generatePalette();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private void generatePalette() {
+        BinaryStream paletteBuffer = new BinaryStream();
+        paletteBuffer.putUnsignedVarInt(entries.size());
+
+        for (RuntimeItems.Entry entry : entries) {
+            paletteBuffer.putString(entry.name.replace("minecraft:", ""));
+            paletteBuffer.putLShort(entry.id);
+            paletteBuffer.putBoolean(entry.isComponentItem); // Component item
+        }
+
+        this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
     /**

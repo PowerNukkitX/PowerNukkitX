@@ -52,7 +52,9 @@ public class RuntimeItems {
             throw new UncheckedIOException(e);
         }
 
-        BinaryStream paletteBuffer = new BinaryStream();
+        itemPalette = new RuntimeItemMapping(entries);
+
+        /*BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(entries.size());
 
         Int2IntMap legacyNetworkMap = new Int2IntOpenHashMap();
@@ -81,7 +83,7 @@ public class RuntimeItems {
 
         byte[] itemDataPalette = paletteBuffer.getBuffer();
         itemPalette = new RuntimeItemMapping(itemDataPalette, legacyNetworkMap, networkLegacyMap, 
-                namespaceNetworkMap, networkNamespaceMap);
+                namespaceNetworkMap, networkNamespaceMap);*/
     }
 
     @PowerNukkitOnly
@@ -122,7 +124,7 @@ public class RuntimeItems {
 
     @ToString
     @RequiredArgsConstructor
-    static class Entry {
+    public static class Entry {
         String name;
         int id;
         Integer oldId;
@@ -130,5 +132,8 @@ public class RuntimeItems {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         Boolean deprecated;
+        @PowerNukkitOnly
+        @Since("1.6.0.0-PNX")
+        boolean isComponentItem = false;
     }
 }
