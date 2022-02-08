@@ -2499,6 +2499,7 @@ public class Server {
         Entity.registerEntity("EnderPearl", EntityEnderPearl.class);
         Entity.registerEntity("FallingSand", EntityFallingBlock.class);
         Entity.registerEntity("Firework", EntityFirework.class);
+        Entity.registerEntity("ElytraFirework", EntityElytraFirework.class);
         Entity.registerEntity("Item", EntityItem.class);
         Entity.registerEntity("Painting", EntityPainting.class);
         Entity.registerEntity("PrimedTnt", EntityPrimedTNT.class);
