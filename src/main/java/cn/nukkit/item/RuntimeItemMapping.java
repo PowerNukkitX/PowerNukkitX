@@ -143,8 +143,8 @@ public class RuntimeItemMapping {
 
         int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
 
-        namespaceNetworkMap.put(itemCustom.name, OptionalInt.of(itemCustom.id));
-        networkNamespaceMap.put(itemCustom.id, itemCustom.name);
+        namespaceNetworkMap.put(itemCustom.name.toLowerCase(), OptionalInt.of(itemCustom.id));
+        networkNamespaceMap.put(itemCustom.id, itemCustom.name.toLowerCase());
         //TODO
         /*if (entry.oldId != null) {
             boolean hasData = entry.oldData != null;
@@ -169,7 +169,7 @@ public class RuntimeItemMapping {
             return false;
         }
 
-        namespaceNetworkMap.remove(itemCustom.name);
+        namespaceNetworkMap.remove(itemCustom.name.toLowerCase());
         networkNamespaceMap.remove(itemCustom.id);
 
         this.generatePalette();
