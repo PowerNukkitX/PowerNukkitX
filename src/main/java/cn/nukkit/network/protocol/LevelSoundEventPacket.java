@@ -163,7 +163,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_IMITATE_ELDER_GUARDIAN = 148;
     public static final int SOUND_IMITATE_ENDER_DRAGON = 149;
     public static final int SOUND_IMITATE_ENDERMAN = 150;
-
+    public static final int SOUND_IMITATE_ENDERMITE = 151;
     public static final int SOUND_IMITATE_EVOCATION_ILLAGER = 152;
     public static final int SOUND_IMITATE_GHAST = 153;
     public static final int SOUND_IMITATE_HUSK = 154;
@@ -199,7 +199,7 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_ITEM_TRIDENT_THUNDER = 184;
     public static final int SOUND_ITEM_TRIDENT_HIT_GROUND = 185;
     public static final int SOUND_DEFAULT = 186;
-
+    public static final int SOUND_BLOCK_FLETCHING_TABLE_USE = 187;
     public static final int SOUND_ELEMCONSTRUCT_OPEN = 188;
     public static final int SOUND_ICEBOMB_HIT = 189;
     public static final int SOUND_BALLOONPOP = 190;
@@ -207,7 +207,10 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_LT_REACTION_BLEACH = 192;
     public static final int SOUND_LT_REACTION_EPASTE = 193;
     public static final int SOUND_LT_REACTION_EPASTE2 = 194;
-
+    public static final int SOUND_LT_REACTION_GLOW_STICK = 195;
+    public static final int SOUND_LT_REACTION_GLOW_STICK_2 = 196;
+    public static final int SOUND_LT_REACTION_LUMINOL = 197;
+    public static final int SOUND_LT_REACTION_SALT = 198;
     public static final int SOUND_LT_REACTION_FERTILIZER = 199;
     public static final int SOUND_LT_REACTION_FIREBALL = 200;
     public static final int SOUND_LT_REACTION_MGSALT = 201;
