@@ -76,13 +76,6 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_POINT_CLOUD = 2024;
     public static final int EVENT_PARTICLE_EXPLOSION = 2025;
     public static final int EVENT_PARTICLE_BLOCK_EXPLOSION = 2026;
-    public static final int EVENT_PARTICLE_VIBRATION_SIGNAL = 2027;
-    public static final int EVENT_PARTICLE_DRIPSTONE_DRIP = 2028;
-    public static final int EVENT_PARTICLE_FIZZ_EFFECT = 2029;
-    public static final int EVENT_PARTICLE_WAX_ON = 2030;
-    public static final int EVENT_PARTICLE_WAX_OFF = 2031;
-    public static final int EVENT_PARTICLE_SCRAPE = 2032;
-    public static final int EVENT_PARTICLE_ELECTRIC_SPARK = 2033;
     public static final int EVENT_PARTICLE_TURTLE_EGG = 2034;
     public static final int EVENT_PARTICLE_SCULK_SHRIEK = 2035;
     public static final int EVENT_PARTICLE_SCULK_CATALYST_BLOOM = 2036;

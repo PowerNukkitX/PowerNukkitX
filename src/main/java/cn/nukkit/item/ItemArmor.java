@@ -98,7 +98,6 @@ abstract public class ItemArmor extends Item implements ItemDurable {
                 case TIER_NETHERITE:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
                     break;
-                case TIER_OTHER:
                 default:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
             }

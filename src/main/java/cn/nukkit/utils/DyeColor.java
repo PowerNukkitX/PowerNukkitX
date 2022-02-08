@@ -28,13 +28,13 @@ public enum DyeColor {
     WHITE(15, 0, 19, "White", "Bone Meal", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0));
 
 
-    private int dyeColorMeta;
-    private int itemDyeMeta;
-    private int woolColorMeta;
-    private String colorName;
-    private String dyeName;
-    private BlockColor blockColor;
-    private BlockColor leatherColor;
+    private final int dyeColorMeta;
+    private final int itemDyeMeta;
+    private final int woolColorMeta;
+    private final String colorName;
+    private final String dyeName;
+    private final BlockColor blockColor;
+    private final BlockColor leatherColor;
     private final BlockColor signColor;
 
 
@@ -42,19 +42,19 @@ public enum DyeColor {
     private final static DyeColor[] BY_DYE_DATA;
 
     DyeColor(int dyeColorMeta, int woolColorMeta, String colorName, BlockColor blockColor, BlockColor signColor) {
-        this(dyeColorMeta, woolColorMeta, woolColorMeta, colorName, colorName + " Dye", blockColor, signColor);
+        this(dyeColorMeta, woolColorMeta, woolColorMeta, colorName, colorName + " Dye", blockColor, signColor, blockColor);
     }
 
     DyeColor(int dyeColorMeta, int woolColorMeta, int itemDyeMeta, String colorName, BlockColor blockColor) {
-        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, blockColor, blockColor);
+        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, colorName + " Dye", blockColor, blockColor, blockColor);
     }
 
-    DyeColor(int dyeColorMeta, int woolColorMeta, int itemDyeMeta, String colorName, BlockColor blockColor, BlockColor leatherColor) {
-        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, colorName + " Dye", blockColor, leatherColor);
+    DyeColor(int dyeColorMeta, int woolColorMeta, int itemDyeMeta, String colorName, BlockColor blockColor, BlockColor leatherColor, BlockColor signColor) {
+        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, colorName + " Dye", blockColor, leatherColor, signColor);
     }
 
     DyeColor(int dyeColorMeta, int woolColorMeta, int itemDyeMeta, String colorName, String dyeName, BlockColor blockColor) {
-        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, blockColor, blockColor, blockColor);
+        this(dyeColorMeta, woolColorMeta, itemDyeMeta, colorName, dyeName, blockColor, blockColor, blockColor);
     }
 
     DyeColor(int dyeColorMeta, int woolColorMeta, int itemDyeMeta, String colorName, String dyeName, BlockColor blockColor, BlockColor leatherColor, BlockColor signColor) {

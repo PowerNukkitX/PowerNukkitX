@@ -13,6 +13,7 @@ import cn.nukkit.inventory.SmeltingRecipe;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -294,7 +295,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
             if (this.crackledTime-- <= 0) {
                 this.crackledTime = ThreadLocalRandom.current().nextInt(20, 100);
-                this.getLevel().addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_BLOCK_FURNACE_LIT);
+                this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_FURNACE_LIT);
             }
 
             if (smelt != null && canSmelt) {
