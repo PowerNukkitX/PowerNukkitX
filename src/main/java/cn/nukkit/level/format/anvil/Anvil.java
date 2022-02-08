@@ -177,7 +177,7 @@ public class Anvil extends BaseLevelProvider {
         final int selectionCount = isOverWorld() ? 24 : 16;
         for (int i = 0; i < 25; i++) {
             if (i > selectionCount) {
-                stream.putByte((byte) ((127 << 1) | 1));
+                stream.putByte((byte) ((127 << 1) | 1)); //255
             } else {
                 stream.put(biomeData);
             }
