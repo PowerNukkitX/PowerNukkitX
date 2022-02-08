@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Nukkit;
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityElytraFirework;
 import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -13,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.ArrayList;
@@ -63,13 +67,13 @@ public class ItemFirework extends Item {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.getInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
-            this.spawnFirework(player.getLevel(), player);
-
+            //this.spawnFirework(player.getLevel(), player);
             player.setMotion(new Vector3(
                     -Math.sin(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2,
                     -Math.sin(Math.toRadians(player.pitch)) * 2,
                     Math.cos(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2));
 
+            spawnElytraFirework(player.getLevel(), player, player);
             if (!player.isCreative()) {
                 this.count--;
             }
@@ -128,6 +132,27 @@ public class ItemFirework extends Item {
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
         EntityFirework entity = (EntityFirework) Entity.createEntity("Firework", level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        if (entity != null) {
+            entity.spawnToAll();
+        }
+    }
+
+    private void spawnElytraFirework(Level level, Vector3 pos, Player player) {
+        CompoundTag nbt = new CompoundTag()
+                .putList(new ListTag<DoubleTag>("Pos")
+                        .add(new DoubleTag("", pos.x + 0.5))
+                        .add(new DoubleTag("", pos.y + 0.5))
+                        .add(new DoubleTag("", pos.z + 0.5)))
+                .putList(new ListTag<DoubleTag>("Motion")
+                        .add(new DoubleTag("", 0))
+                        .add(new DoubleTag("", 0))
+                        .add(new DoubleTag("", 0)))
+                .putList(new ListTag<FloatTag>("Rotation")
+                        .add(new FloatTag("", 0))
+                        .add(new FloatTag("", 0)))
+                .putCompound("FireworkItem", NBTIO.putItemHelper(this));
+
+        EntityElytraFirework entity = new EntityElytraFirework(player.getChunk(), nbt, player);
         if (entity != null) {
             entity.spawnToAll();
         }
