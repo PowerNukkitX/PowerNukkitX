@@ -506,7 +506,6 @@ public class Level implements ChunkManager, Metadatable {
     /**
      * Returns the level provider if it exists. Tries to close and unregister the level and then throw an exception if it doesn't.
      *
-     *
      * @throws LevelException If the level is already closed
      */
     @PowerNukkitOnly
@@ -1305,7 +1304,8 @@ public class Level implements ChunkManager, Metadatable {
 
                                     BlockState state = section.getBlockState(x, y, z);
                                     if (randomTickBlocks[state.getBlockId()]) {
-                                        Block block = state.getBlockRepairing(this, chunkX * 16 + x, (Y << 4) + y, chunkZ * 16 + z);
+                                        Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
+                                                << 4) + y, chunkZ * 16 + z);
                                         block.onUpdate(BLOCK_UPDATE_RANDOM);
                                     }
                                 }
@@ -1323,7 +1323,8 @@ public class Level implements ChunkManager, Metadatable {
                                 BlockState state = chunk.getBlockState(x, y + (Y << 4), z);
                                 blockTest = blockTest || !state.equals(BlockState.AIR);
                                 if (Level.randomTickBlocks[state.getBlockId()]) {
-                                    Block block = state.getBlockRepairing(this, x, y + (Y << 4), z);
+                                    Block block = state.getBlockRepairing(this, x, y + ((Y - (isOverWorld() ? 4 : 0))
+                                            << 4), z);
                                     block.onUpdate(BLOCK_UPDATE_RANDOM);
                                 }
                             }
@@ -3446,7 +3447,7 @@ public class Level implements ChunkManager, Metadatable {
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
         if (spawn == null) {
             spawn = this.getFuzzySpawnLocation();
-        }else{
+        } else {
             return Position.fromObject(spawn, this);
         }
 
