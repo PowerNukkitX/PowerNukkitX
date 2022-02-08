@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -46,6 +47,8 @@ public class RuntimeItemMapping {
     private final Int2ObjectMap<String> networkNamespaceMap;
 
     private final Map<String, Supplier<Item>> namespacedIdItem = new LinkedHashMap<>();
+
+    private final ArrayList<Integer> customItems = new ArrayList<>();
 
     /*@Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -115,15 +118,67 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     private void generatePalette() {
         BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(entries.size());
+        paletteBuffer.putUnsignedVarInt(this.entries.size() + this.customItems.size());
 
-        for (RuntimeItems.Entry entry : entries) {
+        for (RuntimeItems.Entry entry : this.entries) {
             paletteBuffer.putString(entry.name.replace("minecraft:", ""));
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(entry.isComponentItem); // Component item
         }
+        for (int id : this.customItems) {
+            Item item = Item.get(id);
+            paletteBuffer.putString(item.name.replace("minecraft:", ""));
+            paletteBuffer.putLShort(item.id);
+            paletteBuffer.putBoolean(true); // Component item
+        }
 
         this.itemDataPalette = paletteBuffer.getBuffer();
+    }
+
+    synchronized boolean registerCustomItem(ItemCustom itemCustom) {
+        if (this.customItems.contains(itemCustom.getId())) {
+            return false;
+        }
+        this.customItems.add(itemCustom.getId());
+
+        int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
+
+        namespaceNetworkMap.put(itemCustom.name, OptionalInt.of(itemCustom.id));
+        networkNamespaceMap.put(itemCustom.id, itemCustom.name);
+        //TODO
+        /*if (entry.oldId != null) {
+            boolean hasData = entry.oldData != null;
+            int fullId = RuntimeItems.getFullId(entry.oldId, hasData ? entry.oldData : 0);
+            if (entry.deprecated != Boolean.TRUE) {
+                verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
+                        "Conflict while registering an item runtime id!"
+                );
+            }
+            verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
+                    "Conflict while registering an item runtime id!"
+            );
+        }*/
+
+        this.generatePalette();
+
+        return true;
+    }
+
+    synchronized boolean deleteCustomItem(ItemCustom itemCustom) {
+        if (!this.customItems.contains(itemCustom.getId())) {
+            return false;
+        }
+
+        namespaceNetworkMap.remove(itemCustom.name);
+        networkNamespaceMap.remove(itemCustom.id);
+
+        this.generatePalette();
+
+        return true;
+    }
+
+    public ArrayList<Integer> getCustomItems() {
+        return new ArrayList<>(customItems);
     }
 
     /**

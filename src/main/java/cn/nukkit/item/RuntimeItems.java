@@ -134,6 +134,6 @@ public class RuntimeItems {
         Boolean deprecated;
         @PowerNukkitOnly
         @Since("1.6.0.0-PNX")
-        boolean isComponentItem = false;
+        Boolean isComponentItem = false;
     }
 }

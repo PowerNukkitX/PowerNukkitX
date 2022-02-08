@@ -583,8 +583,9 @@ public class Item implements Cloneable, BlockID, ItemID {
         list[id] = c;
 
         ItemCustom item = (ItemCustom) get(id);
-        //TODO 在RuntimeItems中添加相关内容
-        addCreativeItem(item);
+        if (RuntimeItems.getRuntimeMapping().registerCustomItem(item)) {
+            addCreativeItem(item);
+        }
         return true;
     }
 
@@ -595,8 +596,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[id] = null;
 
             ItemCustom item = (ItemCustom) get(id);
-            //TODO 在RuntimeItems中删除相关内容
-            return true;
+            return RuntimeItems.getRuntimeMapping().deleteCustomItem(item);
         }else {
             return false;
         }
