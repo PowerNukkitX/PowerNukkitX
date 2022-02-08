@@ -75,7 +75,7 @@ public class RegionLoader extends BaseRegionLoader {
             Chunk chunk = this.unserializeChunk(data);
             if (chunk != null) {
                 //更新256世界到384世界
-                if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil()) {
+                if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil() && !chunk.isNew384World) {
                     for (int dx = 0; dx < 16; dx++) {
                         for (int dz = 0; dz < 16; dz++) {
                             for (int dy = 255; dy >= -64; --dy) {
@@ -87,6 +87,7 @@ public class RegionLoader extends BaseRegionLoader {
                         }
                     }
                     chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
+                    chunk.isNew384World = true;
                 }
                 return chunk;
             } else {
