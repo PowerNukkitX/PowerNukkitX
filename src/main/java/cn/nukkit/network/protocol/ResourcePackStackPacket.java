@@ -1,7 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.resourcepacks.ResourcePack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
+import lombok.Value;
+
+import java.util.List;
 
 @ToString
 public class ResourcePackStackPacket extends DataPacket {
@@ -11,7 +15,7 @@ public class ResourcePackStackPacket extends DataPacket {
     public boolean mustAccept = false;
     public ResourcePack[] behaviourPackStack = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
-    public boolean isExperimental = false;
+    public final List<ExperimentData> experiments = new ObjectArrayList<>();
     public String gameVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
 
     @Override
@@ -39,12 +43,22 @@ public class ResourcePackStackPacket extends DataPacket {
         }
 
         this.putString(this.gameVersion);
-        this.putLInt(0); // Experiments length
+        this.putLInt(this.experiments.size()); // Experiments length
+        for (ExperimentData experimentData : this.experiments) {
+            this.putString(experimentData.getName());
+            this.putBoolean(experimentData.isEnabled());
+        }
         this.putBoolean(false); // Were experiments previously toggled
     }
 
     @Override
     public byte pid() {
         return NETWORK_ID;
+    }
+
+    @Value
+    public static class ExperimentData {
+        String name;
+        boolean enabled;
     }
 }
