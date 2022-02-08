@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
