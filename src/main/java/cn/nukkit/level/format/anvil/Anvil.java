@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
-import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
@@ -174,9 +173,8 @@ public class Anvil extends BaseLevelProvider {
         }
 
         final byte[] biomeData = serializeBiome(chunk);
-        final int selectionCount = isOverWorld() ? 24 : 16;
         for (int i = 0; i < 25; i++) {
-            if (i > selectionCount) {
+            if (i >= count) {
                 stream.putByte((byte) ((127 << 1) | 1)); //255
             } else {
                 stream.put(biomeData);
