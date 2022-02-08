@@ -313,7 +313,7 @@ public class BlockFire extends BlockFlowable {
             if (block instanceof BlockStairs ) {
 
                 return false;
-            } else if (block instanceof BlockSlab) {
+            } else if (block instanceof BlockSlab && !((BlockSlab) block).isOnTop()) {
 
                 return false;
             } else if (block instanceof BlockSnowLayer &&
