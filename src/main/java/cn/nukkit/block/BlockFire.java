@@ -316,8 +316,7 @@ public class BlockFire extends BlockFlowable {
             } else if (block instanceof BlockSlab && !((BlockSlab) block).isOnTop()) {
 
                 return false;
-            } else if (block instanceof BlockSnowLayer &&
-                    ((BlockSnowLayer) block).getSnowHeight()!=BlockSnowLayer.SNOW_HEIGHT.getMaxValue()) {
+            } else if (block instanceof BlockSnowLayer) {
 
                 return false;
             }else if (block instanceof BlockFenceGate){
