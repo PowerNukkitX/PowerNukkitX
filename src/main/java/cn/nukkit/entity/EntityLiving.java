@@ -37,6 +37,12 @@ import java.util.Map;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
+    /**
+     * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private static final double PRECISION = 0.00001d;
 
     public EntityLiving(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -76,6 +82,63 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         this.health = this.namedTag.getFloat("Health");
+    }
+
+    @Override
+    @PowerNukkitDifference(info = "Adapt entity ai.", since = "1.6.0.0-PNX")
+    public boolean onUpdate(int currentTick) {
+        this.move(this.motionX, this.motionY, this.motionZ);
+        // 处理重力
+        if (!this.isOnGround())
+            this.motionY -= this.getGravity();
+        return super.onUpdate(currentTick);
+    }
+
+    /**
+     * 增减motionXZ向量的长度
+     * @param reduce motionXZ增减大小
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    protected final void reduceMotionXZAbs(final double reduce) {
+        if (Math.abs(motionZ) < PRECISION && Math.abs(motionX) < PRECISION) {
+            return;
+        }
+        final double angle = StrictMath.atan2(motionZ, motionX);
+        double tmp = (StrictMath.cos(angle) * reduce * 0.25);
+        if (this.motionX > PRECISION) {
+            this.motionX -= tmp;
+            if (this.motionX < PRECISION) {
+                this.motionX = 0;
+            }
+        } else if (this.motionX < -PRECISION) {
+            this.motionX -= tmp;
+            if (this.motionX > -PRECISION) {
+                this.motionX = 0;
+            }
+        } else {
+            this.motionX = 0;
+        }
+        tmp = (StrictMath.sin(angle) * reduce * 0.25);
+        if (this.motionZ > PRECISION) {
+            this.motionZ -= tmp;
+            if (this.motionZ < PRECISION) {
+                this.motionZ = 0;
+            }
+        } else if (this.motionZ < -PRECISION) {
+            this.motionZ -= tmp;
+            if (this.motionZ > -PRECISION) {
+                this.motionZ = 0;
+            }
+        } else {
+            this.motionZ = 0;
+        }
+    }
+
+    @Override
+    public void updateMovement() {
+        reduceMotionXZAbs(getMovementSpeed());
+        super.updateMovement();
     }
 
     @Override
@@ -230,7 +293,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 isBreathing = true;
             }
         }
-        
+
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, isBreathing);
 
         boolean hasUpdate = super.entityBaseTick(tickDiff);
@@ -464,7 +527,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void setBlocking(boolean value) {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isPersistent() {
