@@ -87,10 +87,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     @PowerNukkitDifference(info = "Adapt entity ai.", since = "1.6.0.0-PNX")
     public boolean onUpdate(int currentTick) {
-        this.move(this.motionX, this.motionY, this.motionZ);
-        // 处理重力
-        if (!this.isOnGround())
-            this.motionY -= this.getGravity();
         return super.onUpdate(currentTick);
     }
 
@@ -105,7 +101,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return;
         }
         final double angle = StrictMath.atan2(motionZ, motionX);
-        double tmp = (StrictMath.cos(angle) * reduce * 0.25);
+        double tmp = (StrictMath.cos(angle) * reduce);
         if (this.motionX > PRECISION) {
             this.motionX -= tmp;
             if (this.motionX < PRECISION) {
@@ -119,7 +115,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         } else {
             this.motionX = 0;
         }
-        tmp = (StrictMath.sin(angle) * reduce * 0.25);
+        tmp = (StrictMath.sin(angle) * reduce);
         if (this.motionZ > PRECISION) {
             this.motionZ -= tmp;
             if (this.motionZ < PRECISION) {
@@ -136,8 +132,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
+    @PowerNukkitDifference(info = "Adapt entity ai.", since = "1.6.0.0-PNX")
     public void updateMovement() {
-        reduceMotionXZAbs(getMovementSpeed());
+        this.move(this.motionX, this.motionY, this.motionZ);
+        // 处理重力
+        if (!this.isOnGround())
+            this.motionY -= this.getGravity();
+        // 减少移动向量
+        reduceMotionXZAbs(getMovementSpeed() * 0.25);
         super.updateMovement();
     }
 
