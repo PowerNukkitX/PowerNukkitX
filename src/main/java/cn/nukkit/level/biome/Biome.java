@@ -24,6 +24,17 @@ public abstract class Biome implements BlockID {
     private float baseHeight = 0.1f;
     private float heightVariation = 0.3f;
 
+    public static String getBiomeNameFromId(int biomeId) {
+        return BiomeLegacyId2StringIdMap.INSTANCE.legacy2String(biomeId);
+    }
+
+    public static int getBiomeIdOrCorrect(int biomeId) {
+        if (BiomeLegacyId2StringIdMap.INSTANCE.legacy2String(biomeId) == null) {
+            return EnumBiome.OCEAN.id;
+        }
+        return biomeId;
+    }
+
     protected static void register(int id, Biome biome) {
         biome.setId(id);
         biomes[id] = biome;
