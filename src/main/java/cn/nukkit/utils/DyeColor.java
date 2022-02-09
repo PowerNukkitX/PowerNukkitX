@@ -26,7 +26,7 @@ public enum DyeColor {
     MAGENTA(13, 2, 13, "Magenta", BlockColor.MAGENTA_BLOCK_COLOR, new BlockColor(0xC74EBD), new BlockColor(0xc7, 0x4e, 0xbd)),
     ORANGE(14, 1, 14, "Orange", BlockColor.ORANGE_BLOCK_COLOR, new BlockColor(0xFF9801), new BlockColor(0xf9, 0x80, 0x1d)),
     WHITE(15, 0, 19, "White", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0)),
-    BONE_MEAL(16, 0, 15, "White", "Bone Meal", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0));
+    BONE_MEAL(15, 0, 15, "White", "Bone Meal", BlockColor.WHITE_BLOCK_COLOR, new BlockColor(0xF0F0F0), new BlockColor(0xf0, 0xf0, 0xf0));
 
 
     private final int dyeColorMeta;
