@@ -25,7 +25,7 @@ public class PopulatorGlowStone extends Populator {
                     int spawnX = x + random.nextBoundedInt(8) - random.nextBoundedInt(8);
                     int spawnY = y - random.nextBoundedInt(5);
                     int spawnZ = z + random.nextBoundedInt(8) - random.nextBoundedInt(8);
-                    if (cyclesNum > 64 && (cyclesNum & 7) == 0) {
+                    if (cyclesNum >= 128 && (cyclesNum & cyclesNum-1) == 0) {
                         level.setBlockAt(x + random.nextRange(-3, 3), y - random.nextBoundedInt(4), z + random.nextRange(-3, 3), GLOWSTONE);
                         count--;
                     }
