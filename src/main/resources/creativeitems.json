@@ -10,19 +10,10 @@
       "blockState": "minecraft:planks;wood_type=birch"
     },
     {
-      "blockState": "minecraft:planks;wood_type=jungle"
-    },
-    {
-      "blockState": "minecraft:planks;wood_type=acacia"
-    },
-    {
-      "blockState": "minecraft:planks;wood_type=dark_oak"
-    },
-    {
       "blockState": "minecraft:crimson_planks"
     },
     {
-      "blockState": "minecraft:warped_planks"
+      "blockState": "minecraft:warped_pressure_plate;redstone_signal=1"
     },
     {
       "blockState": "minecraft:cobblestone_wall"
@@ -70,22 +61,22 @@
       "blockState": "minecraft:blackstone_wall"
     },
     {
-      "blockState": "minecraft:polished_blackstone_wall"
+      "blockState": "minecraft:polished_blackstone_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:polished_blackstone_brick_wall"
+      "blockState": "minecraft:polished_blackstone_brick_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:cobbled_deepslate_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+      "blockState": "minecraft:cobbled_deepslate_wall"
     },
     {
-      "blockState": "minecraft:deepslate_tile_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+      "blockState": "minecraft:deepslate_tile_wall"
     },
     {
-      "blockState": "minecraft:polished_deepslate_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+      "blockState": "minecraft:polished_deepslate_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:deepslate_brick_wall;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=none;wall_connection_type_west=none;wall_post_bit=0"
+      "blockState": "minecraft:deepslate_brick_wall"
     },
     {
       "blockState": "minecraft:fence"
@@ -106,25 +97,25 @@
       "blockState": "minecraft:fence;wood_type=dark_oak"
     },
     {
-      "blockState": "minecraft:nether_brick_fence"
+      "blockState": "minecraft:nether_brick"
     },
     {
       "blockState": "minecraft:crimson_fence"
     },
     {
-      "blockState": "minecraft:warped_fence"
+      "blockState": "minecraft:warped_fence_gate;direction=1"
     },
     {
       "blockState": "minecraft:fence_gate"
     },
     {
-      "blockState": "minecraft:spruce_fence_gate"
+      "blockState": "minecraft:spruce_fence_gate;direction=3"
     },
     {
       "blockState": "minecraft:birch_fence_gate"
     },
     {
-      "blockState": "minecraft:jungle_fence_gate"
+      "blockState": "minecraft:jungle_door;direction=3;door_hinge_bit=1;open_bit=1;upper_block_bit=1"
     },
     {
       "blockState": "minecraft:acacia_fence_gate"
@@ -136,28 +127,25 @@
       "blockState": "minecraft:crimson_fence_gate"
     },
     {
-      "blockState": "minecraft:warped_fence_gate"
+      "blockState": "minecraft:warped_fence_gate;direction=2"
     },
     {
-      "blockState": "minecraft:normal_stone_stairs"
+      "blockState": "minecraft:stone_stairs;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:stone_stairs"
+      "blockState": "minecraft:mossy_cobblestone"
     },
     {
-      "blockState": "minecraft:mossy_cobblestone_stairs"
+      "blockState": "minecraft:noteblock"
     },
     {
-      "blockState": "minecraft:oak_stairs"
-    },
-    {
-      "blockState": "minecraft:spruce_stairs"
+      "blockState": "minecraft:spruce_stairs;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:birch_stairs"
     },
     {
-      "blockState": "minecraft:jungle_stairs"
+      "blockState": "minecraft:jungle_pressure_plate;redstone_signal=15"
     },
     {
       "blockState": "minecraft:acacia_stairs"
@@ -166,121 +154,121 @@
       "blockState": "minecraft:dark_oak_stairs"
     },
     {
-      "blockState": "minecraft:stone_brick_stairs"
+      "blockState": "minecraft:stone_brick_stairs;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:mossy_stone_brick_stairs"
+      "blockState": "minecraft:mossy_cobblestone_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:sandstone_stairs"
+      "blockState": "minecraft:sandstone;sand_stone_type=heiroglyphs"
     },
     {
-      "blockState": "minecraft:smooth_sandstone_stairs"
+      "blockState": "minecraft:smooth_sandstone_stairs;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:red_sandstone_stairs"
+      "blockState": "minecraft:red_sandstone;sand_stone_type=heiroglyphs"
     },
     {
-      "blockState": "minecraft:smooth_red_sandstone_stairs"
+      "blockState": "minecraft:smooth_red_sandstone_stairs;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:granite_stairs"
+      "blockState": "minecraft:golden_rail;rail_data_bit=1;rail_direction=5"
     },
     {
-      "blockState": "minecraft:polished_granite_stairs"
+      "blockState": "minecraft:polished_diorite_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
       "blockState": "minecraft:diorite_stairs"
     },
     {
-      "blockState": "minecraft:polished_diorite_stairs"
+      "blockState": "minecraft:polished_deepslate_wall;wall_connection_type_east=tall;wall_connection_type_north=short;wall_connection_type_south=tall;wall_connection_type_west=tall;wall_post_bit=1"
     },
     {
       "blockState": "minecraft:andesite_stairs"
     },
     {
-      "blockState": "minecraft:polished_andesite_stairs"
+      "blockState": "minecraft:pointed_dripstone;dripstone_thickness=middle;hanging=1"
     },
     {
       "blockState": "minecraft:brick_stairs"
     },
     {
-      "blockState": "minecraft:nether_brick_stairs"
+      "blockState": "minecraft:nether_brick_fence"
     },
     {
-      "blockState": "minecraft:red_nether_brick_stairs"
+      "blockState": "minecraft:red_mushroom_block;huge_mushroom_bits=14"
     },
     {
       "blockState": "minecraft:end_brick_stairs"
     },
     {
-      "blockState": "minecraft:quartz_stairs"
+      "blockState": "minecraft:quartz_block;chisel_type=smooth;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:smooth_quartz_stairs"
+      "blockState": "minecraft:smooth_quartz_stairs;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:purpur_stairs"
+      "blockState": "minecraft:purpur_block;chisel_type=chiseled;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:prismarine_stairs"
+      "blockState": "minecraft:prismarine_bricks_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
       "blockState": "minecraft:dark_prismarine_stairs"
     },
     {
-      "blockState": "minecraft:prismarine_bricks_stairs"
+      "blockState": "minecraft:prismarine"
     },
     {
       "blockState": "minecraft:crimson_stairs"
     },
     {
-      "blockState": "minecraft:warped_stairs"
+      "blockState": "minecraft:warped_stairs;weirdo_direction=2"
     },
     {
       "blockState": "minecraft:blackstone_stairs"
     },
     {
-      "blockState": "minecraft:polished_blackstone_stairs"
+      "blockState": "minecraft:polished_blackstone_pressure_plate;redstone_signal=15"
     },
     {
-      "blockState": "minecraft:polished_blackstone_brick_stairs"
+      "blockState": "minecraft:polished_blackstone_brick_double_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:exposed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:exposed_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:weathered_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:weathered_cut_copper_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:oxidized_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:oxidized_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:waxed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:waxed_cut_copper_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:waxed_exposed_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:waxed_exposed_cut_copper_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:waxed_weathered_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:waxed_weathered_cut_copper_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:waxed_oxidized_cut_copper_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:waxed_oxidized_cut_copper_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:cobbled_deepslate_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:cobbled_deepslate_stairs"
     },
     {
-      "blockState": "minecraft:deepslate_tile_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:deepslate_tile_stairs"
     },
     {
-      "blockState": "minecraft:polished_deepslate_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:polished_deepslate_double_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:deepslate_brick_stairs;upside_down_bit=0;weirdo_direction=0"
+      "blockState": "minecraft:deepslate_brick_stairs"
     },
     {
       "id": "minecraft:wooden_door"
@@ -310,16 +298,16 @@
       "id": "minecraft:warped_door"
     },
     {
-      "blockState": "minecraft:trapdoor"
+      "blockState": "minecraft:trapdoor;direction=3"
     },
     {
-      "blockState": "minecraft:spruce_trapdoor"
+      "blockState": "minecraft:spruce_trapdoor;direction=3"
     },
     {
       "blockState": "minecraft:birch_trapdoor"
     },
     {
-      "blockState": "minecraft:jungle_trapdoor"
+      "blockState": "minecraft:jungle_standing_sign;ground_sign_direction=15"
     },
     {
       "blockState": "minecraft:acacia_trapdoor"
@@ -328,52 +316,16 @@
       "blockState": "minecraft:dark_oak_trapdoor"
     },
     {
-      "blockState": "minecraft:iron_trapdoor"
+      "blockState": "minecraft:iron_ore"
     },
     {
       "blockState": "minecraft:crimson_trapdoor"
     },
     {
-      "blockState": "minecraft:warped_trapdoor"
+      "blockState": "minecraft:warped_trapdoor;direction=2"
     },
     {
-      "blockState": "minecraft:iron_bars"
-    },
-    {
-      "blockState": "minecraft:glass"
-    },
-    {
-      "blockState": "minecraft:stained_glass"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=silver"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=gray"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=black"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=brown"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=red"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=orange"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=yellow"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=lime"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=green"
-    },
-    {
-      "blockState": "minecraft:stained_glass;color=cyan"
+      "blockState": "minecraft:gilded_blackstone"
     },
     {
       "blockState": "minecraft:stained_glass;color=light_blue"
@@ -385,49 +337,49 @@
       "blockState": "minecraft:stained_glass;color=purple"
     },
     {
-      "blockState": "minecraft:stained_glass;color=magenta"
+      "blockState": "minecraft:stained_glass_pane;color=magenta"
     },
     {
-      "blockState": "minecraft:stained_glass;color=pink"
-    },
-    {
-      "blockState": "minecraft:tinted_glass"
-    },
-    {
-      "blockState": "minecraft:glass_pane"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane;color=silver"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane;color=gray"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane;color=black"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane;color=brown"
-    },
-    {
-      "blockState": "minecraft:stained_glass_pane;color=red"
+      "blockState": "minecraft:stained_glass;color=black"
     },
     {
       "blockState": "minecraft:stained_glass_pane;color=orange"
     },
     {
-      "blockState": "minecraft:stained_glass_pane;color=yellow"
+      "blockState": "minecraft:stained_glass;color=yellow"
     },
     {
-      "blockState": "minecraft:stained_glass_pane;color=lime"
+      "blockState": "minecraft:stained_glass;color=gray"
     },
     {
-      "blockState": "minecraft:stained_glass_pane;color=green"
+      "blockState": "minecraft:stained_glass;color=silver"
     },
     {
-      "blockState": "minecraft:stained_glass_pane;color=cyan"
+      "blockState": "minecraft:stained_glass_pane"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=brown"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=pink"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=red"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=green"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=lime"
+    },
+    {
+      "blockState": "minecraft:stained_glass;color=cyan"
+    },
+    {
+      "blockState": "minecraft:tnt;allow_underwater_bit=1"
+    },
+    {
+      "blockState": "minecraft:glass"
     },
     {
       "blockState": "minecraft:stained_glass_pane;color=light_blue"
@@ -439,34 +391,61 @@
       "blockState": "minecraft:stained_glass_pane;color=purple"
     },
     {
-      "blockState": "minecraft:stained_glass_pane;color=magenta"
+      "blockState": "minecraft:stained_hardened_clay;color=magenta"
+    },
+    {
+      "blockState": "minecraft:stained_glass_pane;color=black"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=orange"
+    },
+    {
+      "blockState": "minecraft:stained_glass_pane;color=yellow"
+    },
+    {
+      "blockState": "minecraft:stained_glass_pane;color=gray"
+    },
+    {
+      "blockState": "minecraft:stained_glass_pane;color=silver"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay"
+    },
+    {
+      "blockState": "minecraft:stained_glass_pane;color=brown"
     },
     {
       "blockState": "minecraft:stained_glass_pane;color=pink"
     },
     {
-      "blockState": "minecraft:ladder"
+      "blockState": "minecraft:stained_glass_pane;color=red"
     },
     {
-      "blockState": "minecraft:scaffolding"
+      "blockState": "minecraft:stained_glass_pane;color=green"
     },
     {
-      "blockState": "minecraft:stone_slab"
+      "blockState": "minecraft:stained_glass_pane;color=lime"
     },
     {
-      "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone"
+      "blockState": "minecraft:stained_glass_pane;color=cyan"
+    },
+    {
+      "blockState": "minecraft:kelp;kelp_age=25"
+    },
+    {
+      "blockState": "minecraft:sapling;age_bit=1;sapling_type=jungle"
     },
     {
       "blockState": "minecraft:stone_slab;stone_slab_type=cobblestone"
     },
     {
-      "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone"
+      "blockState": "minecraft:stone_slab4;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:wooden_slab"
+      "blockState": "minecraft:stone_slab;stone_slab_type=quartz"
     },
     {
-      "blockState": "minecraft:wooden_slab;wood_type=spruce"
+      "blockState": "minecraft:stone_slab2;top_slot_bit=1"
     },
     {
       "blockState": "minecraft:wooden_slab;wood_type=birch"
@@ -481,127 +460,133 @@
       "blockState": "minecraft:wooden_slab;wood_type=dark_oak"
     },
     {
-      "blockState": "minecraft:stone_slab;stone_slab_type=stone_brick"
+      "blockState": "minecraft:wooden_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:stone_slab4"
+      "blockState": "minecraft:wooden_slab;top_slot_bit=1;wood_type=spruce"
     },
     {
-      "blockState": "minecraft:stone_slab;stone_slab_type=sandstone"
+      "blockState": "minecraft:stone_slab;top_slot_bit=1"
     },
     {
       "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_sandstone"
     },
     {
-      "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone"
-    },
-    {
-      "blockState": "minecraft:stone_slab2"
-    },
-    {
-      "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_red_sandstone"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite"
-    },
-    {
-      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite"
-    },
-    {
       "blockState": "minecraft:stone_slab;stone_slab_type=brick"
     },
     {
-      "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick"
+      "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick"
-    },
-    {
-      "blockState": "minecraft:stone_slab3"
-    },
-    {
-      "blockState": "minecraft:stone_slab;stone_slab_type=quartz"
-    },
-    {
-      "blockState": "minecraft:stone_slab4;stone_slab_type_4=smooth_quartz"
-    },
-    {
-      "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur"
-    },
-    {
-      "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough"
+      "blockState": "minecraft:stone_slab2;stone_slab_type_2=purpur;top_slot_bit=1"
     },
     {
       "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_dark"
     },
     {
+      "blockState": "minecraft:stone_slab4;stone_slab_type_4=stone;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=diorite"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=smooth_red_sandstone;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_andesite;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_granite"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=granite"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=polished_diorite"
+    },
+    {
+      "blockState": "minecraft:stone_slab;stone_slab_type=nether_brick"
+    },
+    {
+      "blockState": "minecraft:stone_slab;stone_slab_type=wood;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_rough;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab3;stone_slab_type_3=andesite"
+    },
+    {
+      "blockState": "minecraft:stone_slab;stone_slab_type=sandstone;top_slot_bit=1"
+    },
+    {
+      "blockState": "minecraft:stone_slab4;stone_slab_type_4=cut_red_sandstone"
+    },
+    {
       "blockState": "minecraft:stone_slab2;stone_slab_type_2=prismarine_brick"
+    },
+    {
+      "blockState": "minecraft:stone_slab2;stone_slab_type_2=mossy_cobblestone"
+    },
+    {
+      "blockState": "minecraft:stone_slab2;stone_slab_type_2=smooth_sandstone"
+    },
+    {
+      "blockState": "minecraft:stone_slab2;stone_slab_type_2=red_nether_brick"
     },
     {
       "blockState": "minecraft:crimson_slab"
     },
     {
-      "blockState": "minecraft:warped_slab"
+      "blockState": "minecraft:warped_stairs"
     },
     {
       "blockState": "minecraft:blackstone_slab"
     },
     {
-      "blockState": "minecraft:polished_blackstone_slab"
+      "blockState": "minecraft:polished_blackstone_pressure_plate;redstone_signal=13"
     },
     {
-      "blockState": "minecraft:polished_blackstone_brick_slab"
+      "blockState": "minecraft:polished_blackstone"
     },
     {
-      "blockState": "minecraft:cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:cut_copper_slab"
     },
     {
-      "blockState": "minecraft:exposed_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:exposed_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:weathered_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:weathered_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:oxidized_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:oxidized_copper"
     },
     {
-      "blockState": "minecraft:waxed_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:waxed_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:waxed_exposed_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:waxed_exposed_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:waxed_weathered_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:waxed_weathered_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:waxed_oxidized_cut_copper_slab;top_slot_bit=0"
+      "blockState": "minecraft:waxed_oxidized_cut_copper_stairs"
     },
     {
-      "blockState": "minecraft:cobbled_deepslate_slab;top_slot_bit=0"
+      "blockState": "minecraft:cobbled_deepslate_slab"
     },
     {
-      "blockState": "minecraft:polished_deepslate_slab;top_slot_bit=0"
+      "blockState": "minecraft:polished_deepslate"
     },
     {
-      "blockState": "minecraft:deepslate_tile_slab;top_slot_bit=0"
+      "blockState": "minecraft:deepslate_tile_slab"
     },
     {
-      "blockState": "minecraft:deepslate_brick_slab;top_slot_bit=0"
+      "blockState": "minecraft:deepslate_brick_slab"
     },
     {
       "blockState": "minecraft:brick_block"
@@ -613,34 +598,31 @@
       "blockState": "minecraft:cracked_nether_bricks"
     },
     {
-      "blockState": "minecraft:quartz_bricks"
-    },
-    {
-      "blockState": "minecraft:stonebrick"
-    },
-    {
-      "blockState": "minecraft:stonebrick;stone_brick_type=mossy"
-    },
-    {
-      "blockState": "minecraft:stonebrick;stone_brick_type=cracked"
+      "blockState": "minecraft:quartz_block;chisel_type=chiseled;pillar_axis=z"
     },
     {
       "blockState": "minecraft:stonebrick;stone_brick_type=chiseled"
     },
     {
+      "blockState": "minecraft:stonebrick;stone_brick_type=smooth"
+    },
+    {
+      "blockState": "minecraft:stonecutter_block"
+    },
+    {
       "blockState": "minecraft:end_bricks"
     },
     {
-      "blockState": "minecraft:prismarine;prismarine_block_type=bricks"
+      "blockState": "minecraft:powered_repeater;direction=3;repeater_delay=3"
     },
     {
-      "blockState": "minecraft:polished_blackstone_bricks"
+      "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=tall;wall_connection_type_north=short;wall_connection_type_south=tall;wall_connection_type_west=tall;wall_post_bit=1"
     },
     {
       "blockState": "minecraft:cracked_polished_blackstone_bricks"
     },
     {
-      "blockState": "minecraft:gilded_blackstone"
+      "blockState": "minecraft:furnace;facing_direction=5"
     },
     {
       "blockState": "minecraft:chiseled_polished_blackstone"
@@ -664,37 +646,37 @@
       "blockState": "minecraft:cobblestone"
     },
     {
-      "blockState": "minecraft:mossy_cobblestone"
+      "blockState": "minecraft:moss_carpet"
     },
     {
       "blockState": "minecraft:cobbled_deepslate"
     },
     {
-      "blockState": "minecraft:smooth_stone"
+      "blockState": "minecraft:snow_layer;height=1"
+    },
+    {
+      "blockState": "minecraft:respawn_anchor;respawn_anchor_charge=4"
+    },
+    {
+      "blockState": "minecraft:sand"
+    },
+    {
+      "blockState": "minecraft:sand;sand_type=red"
     },
     {
       "blockState": "minecraft:sandstone"
     },
     {
-      "blockState": "minecraft:sandstone;sand_stone_type=heiroglyphs"
+      "blockState": "minecraft:red_nether_brick_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:sandstone;sand_stone_type=cut"
+      "blockState": "minecraft:red_nether_brick_stairs;upside_down_bit=1;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:sandstone;sand_stone_type=smooth"
+      "blockState": "minecraft:red_nether_brick_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:red_sandstone"
-    },
-    {
-      "blockState": "minecraft:red_sandstone;sand_stone_type=heiroglyphs"
-    },
-    {
-      "blockState": "minecraft:red_sandstone;sand_stone_type=cut"
-    },
-    {
-      "blockState": "minecraft:red_sandstone;sand_stone_type=smooth"
     },
     {
       "blockState": "minecraft:coal_block"
@@ -703,10 +685,10 @@
       "blockState": "minecraft:dried_kelp_block"
     },
     {
-      "blockState": "minecraft:gold_block"
+      "blockState": "minecraft:glowstone"
     },
     {
-      "blockState": "minecraft:iron_block"
+      "blockState": "minecraft:iron_bars"
     },
     {
       "blockState": "minecraft:copper_block"
@@ -715,22 +697,22 @@
       "blockState": "minecraft:exposed_copper"
     },
     {
-      "blockState": "minecraft:weathered_copper"
+      "blockState": "minecraft:weathered_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:oxidized_copper"
+      "blockState": "minecraft:orange_glazed_terracotta;facing_direction=4"
     },
     {
-      "blockState": "minecraft:waxed_copper"
+      "blockState": "minecraft:waxed_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:waxed_exposed_copper"
+      "blockState": "minecraft:waxed_exposed_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:waxed_weathered_copper"
+      "blockState": "minecraft:waxed_weathered_cut_copper_slab"
     },
     {
-      "blockState": "minecraft:waxed_oxidized_copper"
+      "blockState": "minecraft:waxed_oxidized_cut_copper_slab"
     },
     {
       "blockState": "minecraft:cut_copper"
@@ -739,22 +721,22 @@
       "blockState": "minecraft:exposed_cut_copper"
     },
     {
-      "blockState": "minecraft:weathered_cut_copper"
+      "blockState": "minecraft:weathered_cut_copper_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:oxidized_cut_copper"
+      "blockState": "minecraft:orange_glazed_terracotta;facing_direction=5"
     },
     {
-      "blockState": "minecraft:waxed_cut_copper"
+      "blockState": "minecraft:waxed_cut_copper_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:waxed_exposed_cut_copper"
+      "blockState": "minecraft:waxed_exposed_cut_copper_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:waxed_weathered_cut_copper"
+      "blockState": "minecraft:waxed_weathered_cut_copper_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:waxed_oxidized_cut_copper"
+      "blockState": "minecraft:waxed_oxidized_cut_copper_slab;top_slot_bit=1"
     },
     {
       "blockState": "minecraft:emerald_block"
@@ -763,67 +745,85 @@
       "blockState": "minecraft:diamond_block"
     },
     {
-      "blockState": "minecraft:lapis_block"
+      "blockState": "minecraft:lantern;hanging=1"
     },
     {
-      "blockState": "minecraft:raw_iron_block"
+      "blockState": "minecraft:rail;rail_direction=9"
     },
     {
-      "blockState": "minecraft:raw_copper_block"
+      "blockState": "minecraft:rail;rail_direction=7"
     },
     {
-      "blockState": "minecraft:raw_gold_block"
+      "blockState": "minecraft:rail;rail_direction=8"
+    },
+    {
+      "blockState": "minecraft:purpur_stairs;upside_down_bit=1;weirdo_direction=1"
+    },
+    {
+      "blockState": "minecraft:purpur_stairs;upside_down_bit=1;weirdo_direction=3"
+    },
+    {
+      "blockState": "minecraft:purpur_stairs;upside_down_bit=1;weirdo_direction=2"
     },
     {
       "blockState": "minecraft:quartz_block"
     },
     {
-      "blockState": "minecraft:quartz_block;chisel_type=lines"
+      "blockState": "minecraft:powered_repeater;direction=1;repeater_delay=3"
     },
     {
-      "blockState": "minecraft:quartz_block;chisel_type=chiseled"
+      "blockState": "minecraft:powered_repeater;direction=2;repeater_delay=3"
     },
     {
-      "blockState": "minecraft:quartz_block;chisel_type=smooth"
+      "blockState": "minecraft:small_amethyst_bud;facing_direction=2"
     },
     {
-      "blockState": "minecraft:prismarine"
-    },
-    {
-      "blockState": "minecraft:prismarine;prismarine_block_type=dark"
-    },
-    {
-      "blockState": "minecraft:slime"
+      "blockState": "minecraft:heavy_weighted_pressure_plate;redstone_signal=15"
     },
     {
       "blockState": "minecraft:honey_block"
     },
     {
-      "blockState": "minecraft:honeycomb_block"
-    },
-    {
-      "blockState": "minecraft:hay_block"
+      "blockState": "minecraft:hardened_clay"
     },
     {
       "blockState": "minecraft:bone_block"
     },
     {
-      "blockState": "minecraft:nether_brick"
+      "blockState": "minecraft:mysterious_frame_slot"
     },
     {
-      "blockState": "minecraft:red_nether_brick"
+      "blockState": "minecraft:red_mushroom_block;huge_mushroom_bits=13"
     },
     {
-      "blockState": "minecraft:netherite_block"
+      "blockState": "minecraft:nether_wart_block"
     },
     {
-      "blockState": "minecraft:lodestone"
+      "blockState": "minecraft:lit_smoker;facing_direction=5"
     },
     {
-      "blockState": "minecraft:wool"
+      "blockState": "minecraft:wool;color=magenta"
     },
     {
-      "blockState": "minecraft:wool;color=silver"
+      "blockState": "minecraft:wool;color=purple"
+    },
+    {
+      "blockState": "minecraft:wool;color=cyan"
+    },
+    {
+      "blockState": "minecraft:yellow_candle;candles=1;lit=0"
+    },
+    {
+      "blockState": "minecraft:wool;color=red"
+    },
+    {
+      "blockState": "minecraft:yellow_candle;candles=0;lit=0"
+    },
+    {
+      "blockState": "minecraft:wool;color=light_blue"
+    },
+    {
+      "blockState": "minecraft:wool;color=pink"
     },
     {
       "blockState": "minecraft:wool;color=gray"
@@ -832,16 +832,7 @@
       "blockState": "minecraft:wool;color=black"
     },
     {
-      "blockState": "minecraft:wool;color=brown"
-    },
-    {
-      "blockState": "minecraft:wool;color=red"
-    },
-    {
-      "blockState": "minecraft:wool;color=orange"
-    },
-    {
-      "blockState": "minecraft:wool;color=yellow"
+      "blockState": "minecraft:wool;color=blue"
     },
     {
       "blockState": "minecraft:wool;color=lime"
@@ -850,22 +841,13 @@
       "blockState": "minecraft:wool;color=green"
     },
     {
-      "blockState": "minecraft:wool;color=cyan"
+      "blockState": "minecraft:wool;color=brown"
     },
     {
-      "blockState": "minecraft:wool;color=light_blue"
+      "blockState": "minecraft:wool;color=yellow"
     },
     {
-      "blockState": "minecraft:wool;color=blue"
-    },
-    {
-      "blockState": "minecraft:wool;color=purple"
-    },
-    {
-      "blockState": "minecraft:wool;color=magenta"
-    },
-    {
-      "blockState": "minecraft:wool;color=pink"
+      "blockState": "minecraft:wool;color=silver"
     },
     {
       "blockState": "minecraft:carpet"
@@ -1015,42 +997,6 @@
       "blockState": "minecraft:clay"
     },
     {
-      "blockState": "minecraft:hardened_clay"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=silver"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=gray"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=black"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=brown"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=red"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=orange"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=yellow"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=lime"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=green"
-    },
-    {
-      "blockState": "minecraft:stained_hardened_clay;color=cyan"
-    },
-    {
       "blockState": "minecraft:stained_hardened_clay;color=light_blue"
     },
     {
@@ -1060,19 +1006,52 @@
       "blockState": "minecraft:stained_hardened_clay;color=purple"
     },
     {
-      "blockState": "minecraft:stained_hardened_clay;color=magenta"
+      "blockState": "minecraft:standing_banner;ground_sign_direction=2"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=black"
+    },
+    {
+      "blockState": "minecraft:standing_banner;ground_sign_direction=1"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=yellow"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=gray"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=silver"
+    },
+    {
+      "blockState": "minecraft:standing_banner"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=brown"
     },
     {
       "blockState": "minecraft:stained_hardened_clay;color=pink"
     },
     {
-      "blockState": "minecraft:white_glazed_terracotta"
+      "blockState": "minecraft:stained_hardened_clay;color=red"
     },
     {
-      "blockState": "minecraft:silver_glazed_terracotta"
+      "blockState": "minecraft:stained_hardened_clay;color=green"
     },
     {
-      "blockState": "minecraft:gray_glazed_terracotta"
+      "blockState": "minecraft:stained_hardened_clay;color=lime"
+    },
+    {
+      "blockState": "minecraft:stained_hardened_clay;color=cyan"
+    },
+    {
+      "blockState": "minecraft:white_glazed_terracotta;facing_direction=2"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=green"
+    },
+    {
+      "blockState": "minecraft:gray_candle_cake;lit=1"
     },
     {
       "blockState": "minecraft:black_glazed_terracotta"
@@ -1081,70 +1060,70 @@
       "blockState": "minecraft:brown_glazed_terracotta"
     },
     {
-      "blockState": "minecraft:red_glazed_terracotta"
+      "blockState": "minecraft:red_flower;flower_type=oxeye"
     },
     {
-      "blockState": "minecraft:orange_glazed_terracotta"
+      "blockState": "minecraft:orange_candle_cake;lit=0"
     },
     {
-      "blockState": "minecraft:yellow_glazed_terracotta"
+      "blockState": "minecraft:yellow_glazed_terracotta;facing_direction=2"
     },
     {
-      "blockState": "minecraft:lime_glazed_terracotta"
+      "blockState": "minecraft:lime_candle_cake;lit=1"
     },
     {
-      "blockState": "minecraft:green_glazed_terracotta"
+      "blockState": "minecraft:green_candle_cake;lit=1"
     },
     {
       "blockState": "minecraft:cyan_glazed_terracotta"
     },
     {
-      "blockState": "minecraft:light_blue_glazed_terracotta"
+      "blockState": "minecraft:light_blue_candle_cake;lit=1"
     },
     {
       "blockState": "minecraft:blue_glazed_terracotta"
     },
     {
-      "blockState": "minecraft:purple_glazed_terracotta"
+      "blockState": "minecraft:purple_candle;candles=3;lit=1"
     },
     {
-      "blockState": "minecraft:magenta_glazed_terracotta"
+      "blockState": "minecraft:magenta_candle_cake;lit=1"
     },
     {
-      "blockState": "minecraft:pink_glazed_terracotta"
+      "blockState": "minecraft:pink_candle;candles=3;lit=1"
     },
     {
-      "blockState": "minecraft:purpur_block"
+      "blockState": "minecraft:purple_glazed_terracotta;facing_direction=3"
     },
     {
-      "blockState": "minecraft:purpur_block;chisel_type=lines"
+      "blockState": "minecraft:purple_glazed_terracotta;facing_direction=5"
     },
     {
-      "blockState": "minecraft:nether_wart_block"
+      "blockState": "minecraft:nether_wart;age=3"
     },
     {
-      "blockState": "minecraft:warped_wart_block"
+      "blockState": "minecraft:water;liquid_depth=1"
     },
     {
-      "blockState": "minecraft:shroomlight"
+      "blockState": "minecraft:seagrass;sea_grass_type=double_top"
     },
     {
       "blockState": "minecraft:crimson_nylium"
     },
     {
-      "blockState": "minecraft:warped_nylium"
+      "blockState": "minecraft:warped_pressure_plate"
     },
     {
       "blockState": "minecraft:basalt"
     },
     {
-      "blockState": "minecraft:polished_basalt"
+      "blockState": "minecraft:polished_andesite_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:smooth_basalt"
+      "blockState": "minecraft:smooth_quartz_stairs;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:soul_soil"
+      "blockState": "minecraft:soul_torch;torch_facing_direction=east"
     },
     {
       "blockState": "minecraft:dirt"
@@ -1156,34 +1135,31 @@
       "blockState": "minecraft:farmland"
     },
     {
+      "blockState": "minecraft:granite_stairs;upside_down_bit=1;weirdo_direction=3"
+    },
+    {
       "blockState": "minecraft:grass"
     },
     {
-      "blockState": "minecraft:grass_path"
+      "blockState": "minecraft:planks;wood_type=jungle"
     },
     {
-      "blockState": "minecraft:podzol"
+      "blockState": "minecraft:stone;stone_type=diorite"
     },
     {
-      "blockState": "minecraft:mycelium"
+      "blockState": "minecraft:iron_door;direction=3;door_hinge_bit=1;open_bit=1;upper_block_bit=1"
     },
     {
-      "blockState": "minecraft:stone"
-    },
-    {
-      "blockState": "minecraft:iron_ore"
-    },
-    {
-      "blockState": "minecraft:gold_ore"
+      "blockState": "minecraft:gold_block"
     },
     {
       "blockState": "minecraft:diamond_ore"
     },
     {
-      "blockState": "minecraft:lapis_ore"
+      "blockState": "minecraft:lapis_block"
     },
     {
-      "blockState": "minecraft:redstone_ore"
+      "blockState": "minecraft:red_sandstone_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:coal_ore"
@@ -1195,10 +1171,10 @@
       "blockState": "minecraft:emerald_ore"
     },
     {
-      "blockState": "minecraft:quartz_ore"
+      "blockState": "minecraft:quartz_block;chisel_type=lines;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:nether_gold_ore"
+      "blockState": "minecraft:nether_brick_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:ancient_debris"
@@ -1228,25 +1204,7 @@
       "blockState": "minecraft:deepslate_copper_ore"
     },
     {
-      "blockState": "minecraft:gravel"
-    },
-    {
-      "blockState": "minecraft:stone;stone_type=granite"
-    },
-    {
-      "blockState": "minecraft:stone;stone_type=diorite"
-    },
-    {
-      "blockState": "minecraft:stone;stone_type=andesite"
-    },
-    {
-      "blockState": "minecraft:blackstone"
-    },
-    {
-      "blockState": "minecraft:deepslate;pillar_axis=y"
-    },
-    {
-      "blockState": "minecraft:stone;stone_type=granite_smooth"
+      "blockState": "minecraft:grass_path"
     },
     {
       "blockState": "minecraft:stone;stone_type=diorite_smooth"
@@ -1255,79 +1213,82 @@
       "blockState": "minecraft:stone;stone_type=andesite_smooth"
     },
     {
-      "blockState": "minecraft:polished_blackstone"
+      "blockState": "minecraft:stone_brick_stairs;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:polished_deepslate"
+      "blockState": "minecraft:blackstone"
     },
     {
-      "blockState": "minecraft:sand"
+      "blockState": "minecraft:stone;stone_type=andesite"
     },
     {
-      "blockState": "minecraft:sand;sand_type=red"
+      "blockState": "minecraft:stone_brick_stairs"
+    },
+    {
+      "blockState": "minecraft:stone_brick_stairs;weirdo_direction=2"
+    },
+    {
+      "blockState": "minecraft:polished_basalt"
+    },
+    {
+      "blockState": "minecraft:polished_blackstone_wall;wall_connection_type_east=tall;wall_connection_type_north=short;wall_connection_type_south=tall;wall_connection_type_west=tall;wall_post_bit=1"
+    },
+    {
+      "blockState": "minecraft:respawn_anchor;respawn_anchor_charge=2"
+    },
+    {
+      "blockState": "minecraft:respawn_anchor;respawn_anchor_charge=3"
     },
     {
       "blockState": "minecraft:cactus"
     },
     {
-      "blockState": "minecraft:log"
-    },
-    {
-      "blockState": "minecraft:stripped_oak_log"
-    },
-    {
-      "blockState": "minecraft:log;old_log_type=spruce"
+      "blockState": "minecraft:lodestone"
     },
     {
       "blockState": "minecraft:stripped_spruce_log"
     },
     {
+      "blockState": "minecraft:log"
+    },
+    {
+      "blockState": "minecraft:stripped_warped_hyphae"
+    },
+    {
+      "blockState": "minecraft:log;old_log_type=spruce"
+    },
+    {
+      "blockState": "minecraft:stripped_crimson_hyphae"
+    },
+    {
       "blockState": "minecraft:log;old_log_type=birch"
+    },
+    {
+      "blockState": "minecraft:stripped_oak_log"
+    },
+    {
+      "blockState": "minecraft:log;old_log_type=jungle;pillar_axis=z"
     },
     {
       "blockState": "minecraft:stripped_birch_log"
     },
     {
-      "blockState": "minecraft:log;old_log_type=jungle"
+      "blockState": "minecraft:log2"
     },
     {
       "blockState": "minecraft:stripped_jungle_log"
     },
     {
-      "blockState": "minecraft:log2"
-    },
-    {
-      "blockState": "minecraft:stripped_acacia_log"
-    },
-    {
-      "blockState": "minecraft:log2;new_log_type=dark_oak"
+      "blockState": "minecraft:crimson_stem"
     },
     {
       "blockState": "minecraft:stripped_dark_oak_log"
     },
     {
-      "blockState": "minecraft:crimson_stem"
+      "blockState": "minecraft:warped_stem;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:stripped_crimson_stem"
-    },
-    {
-      "blockState": "minecraft:warped_stem"
-    },
-    {
-      "blockState": "minecraft:stripped_warped_stem"
-    },
-    {
-      "blockState": "minecraft:wood"
-    },
-    {
-      "blockState": "minecraft:wood;stripped_bit=1"
-    },
-    {
-      "blockState": "minecraft:wood;wood_type=spruce"
-    },
-    {
-      "blockState": "minecraft:wood;stripped_bit=1;wood_type=spruce"
+      "blockState": "minecraft:structure_block;structure_block_type=data"
     },
     {
       "blockState": "minecraft:wood;wood_type=birch"
@@ -1354,16 +1315,31 @@
       "blockState": "minecraft:wood;stripped_bit=1;wood_type=dark_oak"
     },
     {
+      "blockState": "minecraft:wood;stripped_bit=1"
+    },
+    {
+      "blockState": "minecraft:wood;pillar_axis=x"
+    },
+    {
+      "blockState": "minecraft:wood;stripped_bit=1;wood_type=spruce"
+    },
+    {
+      "blockState": "minecraft:wood;pillar_axis=x;wood_type=spruce"
+    },
+    {
       "blockState": "minecraft:crimson_hyphae"
     },
     {
-      "blockState": "minecraft:stripped_crimson_hyphae"
+      "blockState": "minecraft:stripped_crimson_stem"
     },
     {
-      "blockState": "minecraft:warped_hyphae"
+      "blockState": "minecraft:warped_hyphae;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:stripped_warped_hyphae"
+      "blockState": "minecraft:stripped_warped_stem"
+    },
+    {
+      "blockState": "minecraft:lava_cauldron;cauldron_liquid=powder_snow;fill_level=6"
     },
     {
       "blockState": "minecraft:leaves"
@@ -1375,19 +1351,25 @@
       "blockState": "minecraft:leaves;old_leaf_type=birch"
     },
     {
-      "blockState": "minecraft:leaves;old_leaf_type=jungle"
+      "blockState": "minecraft:leaves;old_leaf_type=jungle;persistent_bit=1;update_bit=1"
     },
     {
       "blockState": "minecraft:leaves2"
-    },
-    {
-      "blockState": "minecraft:leaves2;new_leaf_type=dark_oak"
     },
     {
       "blockState": "minecraft:azalea_leaves;persistent_bit=0;update_bit=0"
     },
     {
       "blockState": "minecraft:azalea_leaves_flowered;persistent_bit=0;update_bit=0"
+    },
+    {
+      "blockState": "minecraft:sandstone_stairs;upside_down_bit=1;weirdo_direction=1"
+    },
+    {
+      "blockState": "minecraft:sandstone_stairs;upside_down_bit=1;weirdo_direction=2"
+    },
+    {
+      "blockState": "minecraft:sandstone_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:sapling"
@@ -1397,15 +1379,6 @@
     },
     {
       "blockState": "minecraft:sapling;sapling_type=birch"
-    },
-    {
-      "blockState": "minecraft:sapling;sapling_type=jungle"
-    },
-    {
-      "blockState": "minecraft:sapling;sapling_type=acacia"
-    },
-    {
-      "blockState": "minecraft:sapling;sapling_type=dark_oak"
     },
     {
       "blockState": "minecraft:bee_nest"
@@ -1450,7 +1423,7 @@
       "id": "minecraft:enchanted_golden_apple"
     },
     {
-      "blockState": "minecraft:melon_block"
+      "blockState": "minecraft:medium_amethyst_bud;facing_direction=5"
     },
     {
       "id": "minecraft:melon_slice"
@@ -1465,25 +1438,25 @@
       "id": "minecraft:glow_berries"
     },
     {
-      "blockState": "minecraft:pumpkin"
+      "blockState": "minecraft:prismarine_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
       "blockState": "minecraft:carved_pumpkin"
     },
     {
-      "blockState": "minecraft:lit_pumpkin"
+      "blockState": "minecraft:lit_furnace;facing_direction=5"
     },
     {
       "id": "minecraft:honeycomb"
     },
     {
-      "blockState": "minecraft:tallgrass;tall_grass_type=fern"
+      "blockState": "minecraft:tinted_glass"
     },
     {
       "blockState": "minecraft:double_plant;double_plant_type=fern"
     },
     {
-      "blockState": "minecraft:tallgrass;tall_grass_type=tall"
+      "blockState": "minecraft:target"
     },
     {
       "blockState": "minecraft:double_plant;double_plant_type=grass"
@@ -1555,16 +1528,25 @@
       "id": "minecraft:kelp"
     },
     {
-      "blockState": "minecraft:seagrass"
+      "blockState": "minecraft:sea_pickle;cluster_count=1;dead_bit=1"
     },
     {
       "blockState": "minecraft:crimson_roots"
     },
     {
-      "blockState": "minecraft:warped_roots"
+      "blockState": "minecraft:warped_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:yellow_flower"
+      "blockState": "minecraft:yellow_glazed_terracotta;facing_direction=1"
+    },
+    {
+      "blockState": "minecraft:red_candle;candles=3;lit=1"
+    },
+    {
+      "blockState": "minecraft:red_candle_cake;lit=0"
+    },
+    {
+      "blockState": "minecraft:red_candle_cake;lit=1"
     },
     {
       "blockState": "minecraft:red_flower"
@@ -1591,15 +1573,6 @@
       "blockState": "minecraft:red_flower;flower_type=tulip_pink"
     },
     {
-      "blockState": "minecraft:red_flower;flower_type=oxeye"
-    },
-    {
-      "blockState": "minecraft:red_flower;flower_type=cornflower"
-    },
-    {
-      "blockState": "minecraft:red_flower;flower_type=lily_of_the_valley"
-    },
-    {
       "blockState": "minecraft:double_plant"
     },
     {
@@ -1612,7 +1585,7 @@
       "blockState": "minecraft:double_plant;double_plant_type=paeonia"
     },
     {
-      "blockState": "minecraft:wither_rose"
+      "blockState": "minecraft:wood;wood_type=spruce"
     },
     {
       "id": "minecraft:white_dye"
@@ -1678,16 +1651,16 @@
       "id": "minecraft:bone_meal"
     },
     {
-      "blockState": "minecraft:vine"
+      "blockState": "minecraft:vine;vine_direction_bits=2"
     },
     {
-      "blockState": "minecraft:weeping_vines"
+      "blockState": "minecraft:weeping_vines;weeping_vines_age=2"
     },
     {
-      "blockState": "minecraft:twisting_vines"
+      "blockState": "minecraft:twisting_vines;twisting_vines_age=3"
     },
     {
-      "blockState": "minecraft:waterlily"
+      "blockState": "minecraft:waxed_cut_copper"
     },
     {
       "blockState": "minecraft:deadbush"
@@ -1696,46 +1669,46 @@
       "blockState": "minecraft:bamboo"
     },
     {
-      "blockState": "minecraft:snow"
+      "blockState": "minecraft:snow_layer;height=2"
     },
     {
-      "blockState": "minecraft:ice"
+      "blockState": "minecraft:hopper;facing_direction=5;toggle_bit=1"
     },
     {
-      "blockState": "minecraft:packed_ice"
+      "blockState": "minecraft:oxidized_double_cut_copper_slab"
     },
     {
       "blockState": "minecraft:blue_ice"
     },
     {
-      "blockState": "minecraft:snow_layer"
+      "blockState": "minecraft:snow_layer;height=3"
     },
     {
-      "blockState": "minecraft:pointed_dripstone;dripstone_thickness=tip;hanging=1"
+      "blockState": "minecraft:pointed_dripstone;dripstone_thickness=middle;hanging=0"
     },
     {
       "blockState": "minecraft:dripstone_block"
     },
     {
-      "blockState": "minecraft:moss_carpet"
+      "blockState": "minecraft:moss_block"
     },
     {
-      "blockState": "minecraft:moss_block"
+      "blockState": "minecraft:monster_egg;monster_egg_stone_type=chiseled_stone_brick"
     },
     {
       "blockState": "minecraft:dirt_with_roots"
     },
     {
-      "blockState": "minecraft:hanging_roots"
+      "blockState": "minecraft:grindstone;attachment=multiple;direction=3"
     },
     {
       "blockState": "minecraft:big_dripleaf;big_dripleaf_head=1;big_dripleaf_tilt=none;direction=0"
     },
     {
-      "blockState": "minecraft:small_dripleaf_block;direction=3;upper_block_bit=1"
+      "blockState": "minecraft:smoker;facing_direction=1"
     },
     {
-      "blockState": "minecraft:spore_blossom"
+      "blockState": "minecraft:spruce_button;facing_direction=2"
     },
     {
       "blockState": "minecraft:azalea"
@@ -1744,7 +1717,7 @@
       "blockState": "minecraft:flowering_azalea"
     },
     {
-      "blockState": "minecraft:glow_lichen;multi_face_direction_bits=63"
+      "blockState": "minecraft:glow_lichen;multi_face_direction_bits=62"
     },
     {
       "blockState": "minecraft:amethyst_block"
@@ -1756,16 +1729,16 @@
       "blockState": "minecraft:amethyst_cluster;facing_direction=0"
     },
     {
-      "blockState": "minecraft:large_amethyst_bud;facing_direction=0"
+      "blockState": "minecraft:lapis_ore"
     },
     {
-      "blockState": "minecraft:medium_amethyst_bud;facing_direction=0"
+      "blockState": "minecraft:magma"
     },
     {
-      "blockState": "minecraft:small_amethyst_bud;facing_direction=0"
+      "blockState": "minecraft:small_amethyst_bud;facing_direction=3"
     },
     {
-      "blockState": "minecraft:tuff"
+      "blockState": "minecraft:turtle_egg;turtle_egg_count=three_egg"
     },
     {
       "blockState": "minecraft:calcite"
@@ -1801,19 +1774,19 @@
       "blockState": "minecraft:brown_mushroom"
     },
     {
-      "blockState": "minecraft:red_mushroom"
+      "blockState": "minecraft:red_glazed_terracotta;facing_direction=3"
     },
     {
       "blockState": "minecraft:crimson_fungus"
     },
     {
-      "blockState": "minecraft:warped_fungus"
+      "blockState": "minecraft:warped_hyphae;pillar_axis=x"
     },
     {
       "blockState": "minecraft:brown_mushroom_block;huge_mushroom_bits=14"
     },
     {
-      "blockState": "minecraft:red_mushroom_block;huge_mushroom_bits=14"
+      "blockState": "minecraft:red_mushroom_block;huge_mushroom_bits=11"
     },
     {
       "blockState": "minecraft:brown_mushroom_block;huge_mushroom_bits=15"
@@ -1837,10 +1810,13 @@
       "id": "minecraft:bone"
     },
     {
-      "blockState": "minecraft:web"
+      "blockState": "minecraft:weeping_vines;weeping_vines_age=1"
     },
     {
       "id": "minecraft:spider_eye"
+    },
+    {
+      "blockState": "minecraft:melon_stem;facing_direction=5;growth=7"
     },
     {
       "blockState": "minecraft:mob_spawner"
@@ -1861,16 +1837,13 @@
       "blockState": "minecraft:monster_egg;monster_egg_stone_type=cracked_stone_brick"
     },
     {
-      "blockState": "minecraft:monster_egg;monster_egg_stone_type=chiseled_stone_brick"
-    },
-    {
-      "blockState": "minecraft:infested_deepslate;pillar_axis=y"
+      "blockState": "minecraft:ice"
     },
     {
       "blockState": "minecraft:dragon_egg"
     },
     {
-      "blockState": "minecraft:turtle_egg"
+      "blockState": "minecraft:turtle_egg;turtle_egg_count=four_egg"
     },
     {
       "id": "minecraft:chicken_spawn_egg"
@@ -2071,7 +2044,7 @@
       "id": "minecraft:ravager_spawn_egg"
     },
     {
-      "blockState": "minecraft:obsidian"
+      "blockState": "minecraft:observer;facing_direction=5;powered_bit=1"
     },
     {
       "blockState": "minecraft:crying_obsidian"
@@ -2080,13 +2053,13 @@
       "blockState": "minecraft:bedrock"
     },
     {
-      "blockState": "minecraft:soul_sand"
+      "blockState": "minecraft:soul_torch;torch_facing_direction=west"
     },
     {
-      "blockState": "minecraft:netherrack"
+      "blockState": "minecraft:netherite_block"
     },
     {
-      "blockState": "minecraft:magma"
+      "blockState": "minecraft:magenta_glazed_terracotta;facing_direction=5"
     },
     {
       "id": "minecraft:nether_wart"
@@ -2107,10 +2080,10 @@
       "id": "minecraft:popped_chorus_fruit"
     },
     {
-      "blockState": "minecraft:sponge"
+      "blockState": "minecraft:spruce_button"
     },
     {
-      "blockState": "minecraft:sponge;sponge_type=wet"
+      "blockState": "minecraft:spruce_button;facing_direction=1"
     },
     {
       "blockState": "minecraft:coral_block"
@@ -3166,55 +3139,55 @@
       "damage": 6
     },
     {
-      "blockState": "minecraft:torch"
+      "blockState": "minecraft:torch;torch_facing_direction=north"
     },
     {
-      "blockState": "minecraft:soul_torch"
+      "blockState": "minecraft:soul_torch;torch_facing_direction=north"
     },
     {
-      "blockState": "minecraft:sea_pickle"
+      "blockState": "minecraft:sculk_vein;multi_face_direction_bits=61"
     },
     {
-      "blockState": "minecraft:lantern"
+      "blockState": "minecraft:ladder;facing_direction=5"
     },
     {
-      "blockState": "minecraft:soul_lantern"
+      "blockState": "minecraft:soul_soil"
     },
     {
       "blockState": "minecraft:candle;candles=0;lit=0"
     },
     {
-      "blockState": "minecraft:white_candle;candles=0;lit=0"
+      "blockState": "minecraft:white_candle;candles=2;lit=0"
     },
     {
-      "blockState": "minecraft:orange_candle;candles=0;lit=0"
+      "blockState": "minecraft:obsidian"
     },
     {
-      "blockState": "minecraft:magenta_candle;candles=0;lit=0"
+      "blockState": "minecraft:loom;direction=3"
     },
     {
-      "blockState": "minecraft:light_blue_candle;candles=0;lit=0"
+      "blockState": "minecraft:light_block;block_light_level=15"
     },
     {
-      "blockState": "minecraft:yellow_candle;candles=0;lit=0"
+      "blockState": "minecraft:yellow_candle;candles=2;lit=0"
     },
     {
-      "blockState": "minecraft:lime_candle;candles=0;lit=0"
+      "blockState": "minecraft:lightning_rod;facing_direction=5"
     },
     {
-      "blockState": "minecraft:pink_candle;candles=0;lit=0"
+      "blockState": "minecraft:oxidized_double_cut_copper_slab;top_slot_bit=1"
     },
     {
-      "blockState": "minecraft:gray_candle;candles=0;lit=0"
+      "blockState": "minecraft:gravel"
     },
     {
-      "blockState": "minecraft:light_gray_candle;candles=0;lit=0"
+      "blockState": "minecraft:light_blue_glazed_terracotta;facing_direction=5"
     },
     {
       "blockState": "minecraft:cyan_candle;candles=0;lit=0"
     },
     {
-      "blockState": "minecraft:purple_candle;candles=0;lit=0"
+      "blockState": "minecraft:pumpkin_stem;facing_direction=5;growth=5"
     },
     {
       "blockState": "minecraft:blue_candle;candles=0;lit=0"
@@ -3223,10 +3196,10 @@
       "blockState": "minecraft:brown_candle;candles=0;lit=0"
     },
     {
-      "blockState": "minecraft:green_candle;candles=0;lit=0"
+      "blockState": "minecraft:gray_glazed_terracotta;facing_direction=5"
     },
     {
-      "blockState": "minecraft:red_candle;candles=0;lit=0"
+      "blockState": "minecraft:raw_copper_block"
     },
     {
       "blockState": "minecraft:black_candle;candles=0;lit=0"
@@ -3241,7 +3214,7 @@
       "blockState": "minecraft:fletching_table"
     },
     {
-      "blockState": "minecraft:smithing_table"
+      "blockState": "minecraft:smoker;facing_direction=2"
     },
     {
       "blockState": "minecraft:beehive"
@@ -3253,16 +3226,13 @@
       "id": "minecraft:soul_campfire"
     },
     {
-      "blockState": "minecraft:furnace"
+      "blockState": "minecraft:frosted_ice;age=3"
     },
     {
       "blockState": "minecraft:blast_furnace"
     },
     {
-      "blockState": "minecraft:smoker"
-    },
-    {
-      "blockState": "minecraft:respawn_anchor"
+      "blockState": "minecraft:smoker;facing_direction=3"
     },
     {
       "id": "minecraft:brewing_stand"
@@ -3277,7 +3247,7 @@
       "blockState": "minecraft:anvil;damage=very_damaged"
     },
     {
-      "blockState": "minecraft:grindstone"
+      "blockState": "minecraft:green_glazed_terracotta;facing_direction=5"
     },
     {
       "blockState": "minecraft:enchanting_table"
@@ -3286,7 +3256,7 @@
       "blockState": "minecraft:bookshelf"
     },
     {
-      "blockState": "minecraft:lectern"
+      "blockState": "minecraft:leaves2;new_leaf_type=dark_oak;persistent_bit=1;update_bit=1"
     },
     {
       "id": "minecraft:cauldron"
@@ -3298,7 +3268,7 @@
       "blockState": "minecraft:chest"
     },
     {
-      "blockState": "minecraft:trapped_chest"
+      "blockState": "minecraft:trapped_chest;facing_direction=3"
     },
     {
       "blockState": "minecraft:ender_chest"
@@ -3307,7 +3277,40 @@
       "blockState": "minecraft:barrel"
     },
     {
-      "blockState": "minecraft:undyed_shulker_box"
+      "blockState": "minecraft:unlit_redstone_torch;torch_facing_direction=west"
+    },
+    {
+      "blockState": "minecraft:seagrass;sea_grass_type=double_bot"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=lime"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=yellow"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=brown"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=cyan"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=blue"
+    },
+    {
+      "blockState": "minecraft:sealantern"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=orange"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=magenta"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=purple"
+    },
+    {
+      "blockState": "minecraft:shulker_box;color=pink"
     },
     {
       "blockState": "minecraft:shulker_box"
@@ -3319,52 +3322,19 @@
       "blockState": "minecraft:shulker_box;color=gray"
     },
     {
-      "blockState": "minecraft:shulker_box;color=black"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=brown"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=red"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=orange"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=yellow"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=lime"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=green"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=cyan"
+      "blockState": "minecraft:shroomlight"
     },
     {
       "blockState": "minecraft:shulker_box;color=light_blue"
     },
     {
-      "blockState": "minecraft:shulker_box;color=blue"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=purple"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=magenta"
-    },
-    {
-      "blockState": "minecraft:shulker_box;color=pink"
-    },
-    {
       "id": "minecraft:armor_stand"
     },
     {
-      "blockState": "minecraft:noteblock"
+      "blockState": "minecraft:normal_stone_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
-      "blockState": "minecraft:jukebox"
+      "blockState": "minecraft:jigsaw;facing_direction=5;rotation=3"
     },
     {
       "id": "minecraft:music_disc_13"
@@ -3412,13 +3382,13 @@
       "id": "minecraft:glowstone_dust"
     },
     {
-      "blockState": "minecraft:glowstone"
+      "blockState": "minecraft:glowingobsidian"
     },
     {
-      "blockState": "minecraft:redstone_lamp"
+      "blockState": "minecraft:red_sandstone_stairs;upside_down_bit=1;weirdo_direction=2"
     },
     {
-      "blockState": "minecraft:sealantern"
+      "blockState": "minecraft:seagrass"
     },
     {
       "id": "minecraft:oak_sign"
@@ -3451,7 +3421,7 @@
       "id": "minecraft:frame"
     },
     {
-      "blockState": "minecraft:glow_frame"
+      "id": "minecraft:glow_frame"
     },
     {
       "id": "minecraft:honey_bottle"
@@ -3525,7 +3495,7 @@
       "blockState": "minecraft:conduit"
     },
     {
-      "blockState": "minecraft:stonecutter_block"
+      "blockState": "minecraft:stonecutter_block;facing_direction=3"
     },
     {
       "blockState": "minecraft:end_portal_frame"
@@ -3666,7 +3636,7 @@
       "blockState": "minecraft:end_rod"
     },
     {
-      "blockState": "minecraft:lightning_rod;facing_direction=0"
+      "blockState": "minecraft:light_weighted_pressure_plate;redstone_signal=15"
     },
     {
       "id": "minecraft:end_crystal"
@@ -4127,10 +4097,10 @@
       "id": "minecraft:dark_oak_boat"
     },
     {
-      "blockState": "minecraft:rail"
+      "blockState": "minecraft:quartz_stairs;upside_down_bit=1;weirdo_direction=1"
     },
     {
-      "blockState": "minecraft:golden_rail"
+      "blockState": "minecraft:gold_ore"
     },
     {
       "blockState": "minecraft:detector_rail"
@@ -4154,25 +4124,25 @@
       "id": "minecraft:redstone"
     },
     {
+      "blockState": "minecraft:red_sandstone_stairs;upside_down_bit=1;weirdo_direction=1"
+    },
+    {
       "blockState": "minecraft:redstone_block"
     },
     {
-      "blockState": "minecraft:redstone_torch"
+      "blockState": "minecraft:lectern;direction=3;powered_bit=1"
     },
     {
-      "blockState": "minecraft:lever"
+      "blockState": "minecraft:wooden_button;facing_direction=2"
     },
     {
-      "blockState": "minecraft:wooden_button"
-    },
-    {
-      "blockState": "minecraft:spruce_button"
+      "blockState": "minecraft:spruce_button;facing_direction=3"
     },
     {
       "blockState": "minecraft:birch_button"
     },
     {
-      "blockState": "minecraft:jungle_button"
+      "blockState": "minecraft:jukebox"
     },
     {
       "blockState": "minecraft:acacia_button"
@@ -4181,31 +4151,31 @@
       "blockState": "minecraft:dark_oak_button"
     },
     {
-      "blockState": "minecraft:stone_button"
+      "blockState": "minecraft:stone_button;facing_direction=3"
     },
     {
       "blockState": "minecraft:crimson_button"
     },
     {
-      "blockState": "minecraft:warped_button"
+      "blockState": "minecraft:warped_button;facing_direction=2"
     },
     {
-      "blockState": "minecraft:polished_blackstone_button"
+      "blockState": "minecraft:polished_blackstone_brick_wall;wall_connection_type_east=tall;wall_connection_type_north=tall;wall_connection_type_south=tall;wall_connection_type_west=tall"
     },
     {
-      "blockState": "minecraft:tripwire_hook"
+      "blockState": "minecraft:tripwire_hook;direction=3"
     },
     {
-      "blockState": "minecraft:wooden_pressure_plate"
+      "blockState": "minecraft:wooden_pressure_plate;redstone_signal=2"
     },
     {
-      "blockState": "minecraft:spruce_pressure_plate"
+      "blockState": "minecraft:spruce_pressure_plate;redstone_signal=3"
     },
     {
       "blockState": "minecraft:birch_pressure_plate"
     },
     {
-      "blockState": "minecraft:jungle_pressure_plate"
+      "blockState": "minecraft:jungle_fence_gate;direction=3;in_wall_bit=1;open_bit=1"
     },
     {
       "blockState": "minecraft:acacia_pressure_plate"
@@ -4217,22 +4187,22 @@
       "blockState": "minecraft:crimson_pressure_plate"
     },
     {
-      "blockState": "minecraft:warped_pressure_plate"
+      "blockState": "minecraft:warped_pressure_plate;redstone_signal=2"
     },
     {
-      "blockState": "minecraft:stone_pressure_plate"
+      "blockState": "minecraft:stone_pressure_plate;redstone_signal=3"
     },
     {
-      "blockState": "minecraft:light_weighted_pressure_plate"
+      "blockState": "minecraft:light_gray_candle_cake;lit=1"
     },
     {
-      "blockState": "minecraft:heavy_weighted_pressure_plate"
+      "blockState": "minecraft:hay_block;deprecated=3;pillar_axis=z"
     },
     {
-      "blockState": "minecraft:polished_blackstone_pressure_plate"
+      "blockState": "minecraft:polished_blackstone_button;button_pressed_bit=1;facing_direction=5"
     },
     {
-      "blockState": "minecraft:observer"
+      "blockState": "minecraft:oak_stairs;upside_down_bit=1;weirdo_direction=3"
     },
     {
       "blockState": "minecraft:daylight_detector"
@@ -4253,19 +4223,19 @@
       "blockState": "minecraft:dispenser;facing_direction=3"
     },
     {
-      "blockState": "minecraft:piston;facing_direction=1"
+      "blockState": "minecraft:pink_glazed_terracotta;facing_direction=4"
     },
     {
-      "blockState": "minecraft:sticky_piston;facing_direction=1"
+      "blockState": "minecraft:sticky_piston;facing_direction=4"
     },
     {
-      "blockState": "minecraft:tnt"
+      "blockState": "minecraft:tnt;allow_underwater_bit=1;explode_bit=1"
     },
     {
       "id": "minecraft:name_tag"
     },
     {
-      "blockState": "minecraft:loom"
+      "blockState": "minecraft:log2;new_log_type=dark_oak;pillar_axis=z"
     },
     {
       "id": "minecraft:banner"
@@ -4507,7 +4477,7 @@
       "id": "minecraft:chain"
     },
     {
-      "blockState": "minecraft:target"
+      "blockState": "minecraft:tnt;explode_bit=1"
     },
     {
       "id": "minecraft:lodestone_compass"
