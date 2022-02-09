@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.customitem.ItemCustom;
@@ -37,6 +38,8 @@ import static com.google.common.base.Verify.verify;
 @Since("1.4.0.0-PN")
 public class RuntimeItemMapping {
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     private final Collection<RuntimeItems.Entry> entries;
 
     private final Int2IntMap legacyNetworkMap;
@@ -48,11 +51,15 @@ public class RuntimeItemMapping {
 
     private final Map<String, Supplier<Item>> namespacedIdItem = new LinkedHashMap<>();
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     private final ArrayList<Integer> customItems = new ArrayList<>();
 
-    /*@Since("1.4.0.0-PN")
+    @Since("1.4.0.0-PN")
     @PowerNukkitOnly
+    @Deprecated
     public RuntimeItemMapping(byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap) {
+        this.entries = null;
         this.itemDataPalette = itemDataPalette;
         this.legacyNetworkMap = legacyNetworkMap;
         this.networkLegacyMap = networkLegacyMap;
@@ -65,9 +72,11 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @API(definition = API.Definition.INTERNAL, usage = API.Usage.BLEEDING)
+    @Deprecated
     public RuntimeItemMapping(
             byte[] itemDataPalette, Int2IntMap legacyNetworkMap, Int2IntMap networkLegacyMap,
             Map<String, Integer> namespaceNetworkMap, Int2ObjectMap<String> networkNamespaceMap) {
+        this.entries = null;
         this.itemDataPalette = itemDataPalette;
         this.legacyNetworkMap = legacyNetworkMap;
         this.networkLegacyMap = networkLegacyMap;
@@ -77,8 +86,10 @@ public class RuntimeItemMapping {
         this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
                 .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }*/
+    }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public RuntimeItemMapping(Collection<RuntimeItems.Entry> entries) {
         this.entries = entries;
 
@@ -117,6 +128,9 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     private void generatePalette() {
+        if (this.entries == null) {
+            return;
+        }
         BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(this.entries.size() + this.customItems.size());
 
@@ -135,6 +149,8 @@ public class RuntimeItemMapping {
         this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     synchronized boolean registerCustomItem(ItemCustom itemCustom) {
         if (this.customItems.contains(itemCustom.getId())) {
             return false;
@@ -164,6 +180,8 @@ public class RuntimeItemMapping {
         return true;
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     synchronized boolean deleteCustomItem(ItemCustom itemCustom) {
         if (!this.customItems.contains(itemCustom.getId())) {
             return false;
@@ -177,6 +195,8 @@ public class RuntimeItemMapping {
         return true;
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public ArrayList<Integer> getCustomItems() {
         return new ArrayList<>(customItems);
     }
