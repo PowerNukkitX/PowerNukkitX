@@ -20,12 +20,12 @@ public class PopulatorGlowStone extends Populator {
                 int count = NukkitMath.randomRange(random, 40, 60);
                 level.setBlockAt(x, y, z, GLOWSTONE);
                 int cyclesNum = 0;
-                while (!(count == 0)) {
+                while (count != 0) {
                     if (cyclesNum == 1500) break;
                     int spawnX = x + random.nextBoundedInt(8) - random.nextBoundedInt(8);
                     int spawnY = y - random.nextBoundedInt(5);
                     int spawnZ = z + random.nextBoundedInt(8) - random.nextBoundedInt(8);
-                    if (cyclesNum % 100 == 0 && cyclesNum != 0) {
+                    if (cyclesNum > 64 && (cyclesNum & 7) == 0) {
                         level.setBlockAt(x + random.nextRange(-3, 3), y - random.nextBoundedInt(4), z + random.nextRange(-3, 3), GLOWSTONE);
                         count--;
                     }
