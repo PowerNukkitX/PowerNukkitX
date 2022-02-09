@@ -138,8 +138,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         // 处理重力
         if (!this.isOnGround())
             this.motionY -= this.getGravity();
-        // 减少移动向量
-        reduceMotionXZAbs(getMovementSpeed() * 0.25);
+        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
+        final double friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+        reduceMotionXZAbs(getMovementSpeed() * (1 - friction * 0.7) * 0.43);
         super.updateMovement();
     }
 
