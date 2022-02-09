@@ -178,6 +178,7 @@ public class BlockComposter extends BlockSolidMeta implements ItemID {
     }
 
     @PowerNukkitOnly
+    @PowerNukkitDifference
     public Item empty(@Nullable Item item, @Nullable Player player) {
         ComposterEmptyEvent event = new ComposterEmptyEvent(this, player, item, new ItemDye(DyeColor.BONE_MEAL), 0);
         this.level.getServer().getPluginManager().callEvent(event);

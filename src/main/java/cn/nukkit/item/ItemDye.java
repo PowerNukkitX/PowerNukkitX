@@ -44,7 +44,9 @@ public class ItemDye extends Item {
     public static final int RED = DyeColor.RED.getDyeData();
     @Deprecated
     public static final int BLACK = DyeColor.BLACK.getDyeData();
-
+    @Deprecated
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public static final int BONE_MEAL = DyeColor.BONE_MEAL.getDyeData();
 
     public ItemDye() {
