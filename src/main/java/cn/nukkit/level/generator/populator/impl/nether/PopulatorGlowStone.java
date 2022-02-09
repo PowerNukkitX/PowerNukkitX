@@ -12,25 +12,25 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorGlowStone extends Populator {
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if(random.nextBoundedInt(10) == 0) {
+        if (random.nextBoundedInt(10) == 0) {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             int y = this.getHighestWorkableBlock(chunk, x & 0xF, z & 0xF);
             if (y != -1 && level.getBlockIdAt(x, y, z) != NETHERRACK) {
                 int count = NukkitMath.randomRange(random, 40, 60);
-                level.setBlockAt(x,y,z,GLOWSTONE);
-                int cyclesNum=0;
-                while(!(count==0)){
-                    if (cyclesNum==1500) break;
+                level.setBlockAt(x, y, z, GLOWSTONE);
+                int cyclesNum = 0;
+                while (!(count == 0)) {
+                    if (cyclesNum == 1500) break;
                     int spawnX = x + random.nextBoundedInt(8) - random.nextBoundedInt(8);
-                    int spawnY = y -random.nextBoundedInt(5);
+                    int spawnY = y - random.nextBoundedInt(5);
                     int spawnZ = z + random.nextBoundedInt(8) - random.nextBoundedInt(8);
-                    if (cyclesNum%100==0 && cyclesNum!=0){
-                        level.setBlockAt(x+random.nextRange(-3,3),y-random.nextBoundedInt(4),z+random.nextRange(-3,3),GLOWSTONE);
+                    if (cyclesNum % 100 == 0 && cyclesNum != 0) {
+                        level.setBlockAt(x + random.nextRange(-3, 3), y - random.nextBoundedInt(4), z + random.nextRange(-3, 3), GLOWSTONE);
                         count--;
                     }
-                    if(checkAroundBlock(spawnX,spawnY,spawnZ,level)){
-                        level.setBlockAt(spawnX,spawnY,spawnZ,GLOWSTONE);
+                    if (checkAroundBlock(spawnX, spawnY, spawnZ, level)) {
+                        level.setBlockAt(spawnX, spawnY, spawnZ, GLOWSTONE);
                         count--;
                     }
                     cyclesNum++;
@@ -51,9 +51,9 @@ public class PopulatorGlowStone extends Populator {
         return y == 0 ? -1 : y;
     }
 
-    private boolean checkAroundBlock(int x,int y,int z,ChunkManager level){
-        for (BlockFace i : BlockFace.values()){
-            if(level.getBlockIdAt(x+i.getXOffset(),y+i.getYOffset(),z+i.getZOffset())==BlockID.GLOWSTONE){
+    private boolean checkAroundBlock(int x, int y, int z, ChunkManager level) {
+        for (BlockFace i : BlockFace.values()) {
+            if (level.getBlockIdAt(x + i.getXOffset(), y + i.getYOffset(), z + i.getZOffset()) == BlockID.GLOWSTONE) {
                 return true;
             }
         }
