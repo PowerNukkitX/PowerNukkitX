@@ -35,6 +35,7 @@ public class Chunk extends BaseChunk {
     protected long inhabitedTime;
     protected boolean terrainPopulated;
     protected boolean terrainGenerated;
+    protected boolean isNew384World = false;
 
     @Override
     public Chunk clone() {
@@ -173,6 +174,9 @@ public class Chunk extends BaseChunk {
         this.inhabitedTime = nbt.getLong("InhabitedTime");
         this.terrainPopulated = nbt.getBoolean("TerrainPopulated");
         this.terrainGenerated = nbt.getBoolean("TerrainGenerated");
+        if (nbt.contains("isNew384World")) {
+            this.isNew384World = nbt.getBoolean("isNew384World");
+        }
     }
 
     @Override
@@ -221,6 +225,7 @@ public class Chunk extends BaseChunk {
 
         tag.put("TerrainGenerated", new ByteTag("TerrainGenerated", (byte) (isGenerated() ? 1 : 0)));
         tag.put("TerrainPopulated", new ByteTag("TerrainPopulated", (byte) (isPopulated() ? 1 : 0)));
+        tag.putBoolean("isNew384World", this.isNew384World);
 
         return tag;
     }
