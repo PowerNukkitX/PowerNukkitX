@@ -14,7 +14,7 @@ public class PalettedBlockStorage {
     public final IntList palette;
     public BitArray bitArray;
 
-    public  PalettedBlockStorage() {
+    public PalettedBlockStorage() {
         this(BitArrayVersion.V2);
     }
 
@@ -29,6 +29,25 @@ public class PalettedBlockStorage {
     public PalettedBlockStorage(BitArray bitArray, IntList palette) {
         this.palette = palette;
         this.bitArray = bitArray;
+    }
+
+    private PalettedBlockStorage(BitArrayVersion version, int defaultState) {
+        this.bitArray = version.createPalette(SIZE);
+        this.palette = new IntArrayList(16);
+        this.palette.add(defaultState);
+    }
+
+    public static PalettedBlockStorage createFromBlockPalette(BitArrayVersion version) {
+        int runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(0); // Air is first
+        return new PalettedBlockStorage(version, runtimeId);
+    }
+
+    public static PalettedBlockStorage createWithDefaultState(int defaultState) {
+        return createWithDefaultState(BitArrayVersion.V2, defaultState);
+    }
+
+    public static PalettedBlockStorage createWithDefaultState(BitArrayVersion version, int defaultState) {
+        return new PalettedBlockStorage(version, defaultState);
     }
 
     private int getPaletteHeader(BitArrayVersion version, boolean runtime) {
@@ -96,5 +115,9 @@ public class PalettedBlockStorage {
 
     public PalettedBlockStorage copy() {
         return new PalettedBlockStorage(this.bitArray.copy(), new IntArrayList(this.palette));
+    }
+
+    public void setBlock(int x, int y, int z, int runtimeId) {
+        this.setBlock((x << 8) | (z << 4) | y, runtimeId);
     }
 }

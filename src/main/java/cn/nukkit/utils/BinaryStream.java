@@ -631,7 +631,7 @@ public class BinaryStream {
 
         ByteBuf userDataBuf = ByteBufAllocator.DEFAULT.ioBuffer();
         try (LittleEndianByteBufOutputStream stream = new LittleEndianByteBufOutputStream(userDataBuf)) {
-            if (data != 0) {
+            if ((item instanceof ItemDurable && data != 0) || block != null && block.getDamage() > 0) {
                 byte[] nbt = item.getCustomCompoundTag();
                 CompoundTag tag;
                 if (nbt == null || nbt.length == 0) {
