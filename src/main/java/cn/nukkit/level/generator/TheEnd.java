@@ -143,8 +143,7 @@ public class TheEnd extends Generator {
         this.populators = ImmutableList.of(
                 new PopulatorEndIsland(this),
                 new PopulatorChorusTree(this),
-                new PopulatorEndGateway(this),
-                new PopulatorEndSpike(this));
+                new PopulatorEndGateway(this));
     }
 
     @Override

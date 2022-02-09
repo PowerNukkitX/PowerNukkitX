@@ -24,10 +24,13 @@ public class BossEventPacket extends DataPacket {
     public static final int TYPE_HEALTH_PERCENT = 4;
     /* S2C: Sets title of the bar. */
     public static final int TYPE_TITLE = 5;
-    /* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
-    public static final int TYPE_UNKNOWN_6 = 6;
+    /* S2C: Update a player's bossbar properties. */
+    public static final int TYPE_UPDATE_PROPERTIES = 6;
+    public static final int TYPE_UNKNOWN_6 = TYPE_UPDATE_PROPERTIES;
     /* S2C: Sets color and overlay of the bar. */
     public static final int TYPE_TEXTURE = 7;
+    /* S2C: Get a player's bossbar information. TODO: 2022/2/9 implement query packet. */
+    public static final int TYPE_QUERY = 8;
 
     public long bossEid;
     public int type;
@@ -55,7 +58,7 @@ public class BossEventPacket extends DataPacket {
             case TYPE_SHOW:
                 this.title = this.getString();
                 this.healthPercent = this.getLFloat();
-            case TYPE_UNKNOWN_6:
+            case TYPE_UPDATE_PROPERTIES:
                 this.unknown = (short) this.getShort();
             case TYPE_TEXTURE:
                 this.color = (int) this.getUnsignedVarInt();

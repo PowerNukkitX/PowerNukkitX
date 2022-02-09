@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
@@ -46,7 +47,7 @@ public class RegionLoader extends BaseRegionLoader {
         try {
             int[] table = this.primitiveLocationTable.get(index);
             RandomAccessFile raf = this.getRandomAccessFile();
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             int length = raf.readInt();
             byte compression = raf.readByte();
             if (length <= 0 || length >= MAX_SECTOR_LENGTH) {
@@ -58,7 +59,7 @@ public class RegionLoader extends BaseRegionLoader {
                 }
                 return null;
             }
-    
+
             if (length > (table[1] << 12)) {
                 log.error("Corrupted bigger chunk detected");
                 table[1] = length >> 12;
@@ -68,11 +69,26 @@ public class RegionLoader extends BaseRegionLoader {
                 log.error("Invalid compression type");
                 return null;
             }
-    
+
             byte[] data = new byte[length - 1];
             raf.readFully(data);
             Chunk chunk = this.unserializeChunk(data);
             if (chunk != null) {
+                //更新256世界到384世界
+                if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil() && !chunk.isNew384World) {
+                    for (int dx = 0; dx < 16; dx++) {
+                        for (int dz = 0; dz < 16; dz++) {
+                            for (int dy = 255; dy >= -64; --dy) {
+                                chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
+                                chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
+                                chunk.setBlockState(dx, dy, dz, BlockState.AIR);
+                                chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                            }
+                        }
+                    }
+                    chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
+                    chunk.isNew384World = true;
+                }
                 return chunk;
             } else {
                 log.error("Corrupted chunk detected at ({}, {}) in {}", x, z, levelProvider.getName());
@@ -119,7 +135,7 @@ public class RegionLoader extends BaseRegionLoader {
 
         this.primitiveLocationTable.put(index, table);
         RandomAccessFile raf = this.getRandomAccessFile();
-        raf.seek((long)table[0] << 12L);
+        raf.seek((long) table[0] << 12L);
 
         BinaryStream stream = new BinaryStream();
         stream.put(Binary.writeInt(length));
@@ -174,7 +190,7 @@ public class RegionLoader extends BaseRegionLoader {
             if (table[0] == 0 || table[1] == 0) {
                 continue;
             }
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             byte[] chunk = new byte[table[1] << 12];
             raf.readFully(chunk);
             int length = Binary.readInt(Arrays.copyOfRange(chunk, 0, 3));
@@ -199,7 +215,7 @@ public class RegionLoader extends BaseRegionLoader {
                 this.lastSector += sectors;
                 this.primitiveLocationTable.put(i, table);
             }
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             byte[] bytes = new byte[sectors << 12];
             ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
             buffer1.put(chunk);
@@ -271,10 +287,10 @@ public class RegionLoader extends BaseRegionLoader {
                 shift += sector - lastSector - 1;
             }
             if (shift > 0) {
-                raf.seek((long)sector << 12L);
+                raf.seek((long) sector << 12L);
                 byte[] old = new byte[4096];
                 raf.readFully(old);
-                raf.seek((long)(sector - shift) << 12L);
+                raf.seek((long) (sector - shift) << 12L);
                 raf.write(old);
             }
             int[] v = this.primitiveLocationTable.get(index);

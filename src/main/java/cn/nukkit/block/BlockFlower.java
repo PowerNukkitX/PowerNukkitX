@@ -44,7 +44,7 @@ public class BlockFlower extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(RED_FLOWER_TYPE);
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value. Use FlowerType instead")
     public static final int TYPE_POPPY = 0;
@@ -80,6 +80,8 @@ public class BlockFlower extends BlockFlowable {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value. Use FlowerType instead")
     public static final int TYPE_OXEYE_DAISY = 8;
+    public static final int TYPE_CORNFLOWER = 9;
+    public static final int TYPE_LILY_OF_THE_VALLEY = 10;
 
     public BlockFlower() {
         this(0);
@@ -106,7 +108,7 @@ public class BlockFlower extends BlockFlowable {
     public String getName() {
         return getFlowerType().getEnglishName();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public SmallFlowerType getFlowerType() {
@@ -133,7 +135,7 @@ public class BlockFlower extends BlockFlowable {
     public void setFlowerType(SmallFlowerType flowerType) {
         setPropertyValue(RED_FLOWER_TYPE, flowerType);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean isSupportValid(Block block) {

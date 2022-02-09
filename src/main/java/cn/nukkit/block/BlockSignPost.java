@@ -10,6 +10,7 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSign;
 import cn.nukkit.item.ItemTool;
@@ -19,7 +20,9 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.CompassRoseDirection;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,15 +41,15 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[] {
-            SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST, 
-            WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST, 
+            SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
+            WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
             NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
             EAST, EAST_SOUTH_EAST, SOUTH_EAST, SOUTH_SOUTH_EAST
     }).ordinal(true);
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(GROUND_SIGN_DIRECTION); 
+    public static final BlockProperties PROPERTIES = new BlockProperties(GROUND_SIGN_DIRECTION);
 
     public BlockSignPost() {
         this(0);
@@ -138,10 +141,10 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
         if (face == BlockFace.DOWN) {
             return false;
         }
-        
+
         Block layer0 = level.getBlock(this, 0);
         Block layer1 = level.getBlock(this, 1);
-        
+
         CompoundTag nbt = new CompoundTag()
                 .putString("Text1", "")
                 .putString("Text2", "")
@@ -169,7 +172,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
                 nbt.put(aTag.getName(), aTag);
             }
         }
-        
+
         try {
             createBlockEntity(nbt);
             return true;
@@ -208,19 +211,19 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public CompassRoseDirection getSignDirection() {
         return getPropertyValue(GROUND_SIGN_DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setSignDirection(CompassRoseDirection direction) {
         setPropertyValue(GROUND_SIGN_DIRECTION, direction);
     }
-    
+
     @PowerNukkitDifference(info = "Was returning the wrong face, it now return the closest face, or the left face if even", since = "1.4.0.0-PN")
     @Override
     public BlockFace getBlockFace() {
@@ -238,5 +241,50 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
     @PowerNukkitOnly
     public boolean breaksWhenMoved() {
         return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, Player player) {
+        if (item.getId() == Item.DYE && item.getDamage() != DyeColor.BLACK.getDyeData()) {
+            BlockEntity blockEntity = this.level.getBlockEntity(this);
+            if (!(blockEntity instanceof BlockEntitySign)) {
+                return false;
+            }
+            BlockEntitySign sign = (BlockEntitySign) blockEntity;
+
+            BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
+            if (color.equals(sign.getColor())) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            sign.setColor(color);
+            sign.spawnToAll();
+
+            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+
+            if (player != null && (player.getGamemode() & 0x01) == 0) {
+                item.count--;
+            }
+
+            return true;
+        }
+        return false;
     }
 }

@@ -1660,6 +1660,14 @@ public class Server {
         return this.difficulty;
     }
 
+    public void setDifficulty(int difficulty) {
+        int value = difficulty;
+        if (value < 0) value = 0;
+        if (value > 3) value = 3;
+        this.difficulty = value;
+        this.setPropertyInt("difficulty", value);
+    }
+
     public boolean hasWhitelist() {
         return this.getPropertyBoolean("white-list", false);
     }
@@ -2266,8 +2274,14 @@ public class Server {
             return false;
         }
 
-        String path = this.getDataPath() + "worlds/" + name + "/";
         if (this.getLevelByName(name) == null) {
+            String path;
+
+            if (name.contains("/") || name.contains("\\")) {
+                path = name;
+            } else {
+                path = this.getDataPath() + "worlds/" + name + "/";
+            }
 
             return LevelProviderManager.getProvider(path) != null;
         }
