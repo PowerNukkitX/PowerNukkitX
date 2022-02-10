@@ -1,4 +1,4 @@
 [submodule "src/main/resources/lang"]
 	path = src/main/resources/lang
-	url = https://github.com/PowerNukkit/PowerNukkit-Languages.git
+	url = https://github.com/BlocklyNukkit/PowerNukkit-Languages.git
 	branch = master
