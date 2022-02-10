@@ -1,11 +1,17 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.utils.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.EOFException;
@@ -21,6 +27,13 @@ import java.util.TreeMap;
  */
 @Log4j2
 public class RegionLoader extends BaseRegionLoader {
+    /**
+     * 记录已经被更新过的旧区块，默认情况下应该保持null
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private static LongSet chunkUpdated = null;
+
     public RegionLoader(LevelProvider level, int regionX, int regionZ) throws IOException {
         super(level, regionX, regionZ, "mca");
     }
@@ -76,18 +89,26 @@ public class RegionLoader extends BaseRegionLoader {
             if (chunk != null) {
                 //更新256世界到384世界
                 if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil() && !chunk.isNew384World) {
-                    for (int dx = 0; dx < 16; dx++) {
-                        for (int dz = 0; dz < 16; dz++) {
-                            for (int dy = 255; dy >= -64; --dy) {
-                                chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
-                                chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
-                                chunk.setBlockState(dx, dy, dz, BlockState.AIR);
-                                chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                    //检查重复更新情况
+                    if (chunkUpdated == null) {
+                        chunkUpdated = LongSets.synchronize(new LongArraySet());
+                    }
+                    final long chunkHash = Level.chunkHash(chunk.getX(), chunk.getZ());
+                    if (!chunkUpdated.contains(chunkHash)) {
+                        chunkUpdated.add(chunkHash);
+                        for (int dx = 0; dx < 16; dx++) {
+                            for (int dz = 0; dz < 16; dz++) {
+                                for (int dy = 255; dy >= -64; --dy) {
+                                    chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
+                                    chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
+                                    chunk.setBlockState(dx, dy, dz, BlockState.AIR);
+                                    chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                                }
                             }
                         }
+                        chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
+                        chunk.isNew384World = true; //这可以在大部分情况下避免区块重复更新，但是对多线程造成的重复更新仍然无效，所以需要一个set来检查
                     }
-                    chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
-                    chunk.isNew384World = true;
                 }
                 return chunk;
             } else {
