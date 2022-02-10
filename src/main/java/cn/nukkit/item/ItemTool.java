@@ -115,8 +115,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
                 block.getToolType() == ItemTool.TYPE_AXE && this.isAxe() ||
                 block.getToolType() == ItemTool.TYPE_HOE && this.isHoe() ||
                 block.getToolType() == ItemTool.TYPE_SWORD && this.isSword() ||
-                block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears() ||
-                block.getToolType() == ItemTool.TYPE_HOE && this.isHoe()
+                block.getToolType() == ItemTool.TYPE_SHEARS && this.isShears()
                 ) {
             this.meta++;
         } else if (!this.isShears() && block.calculateBreakTime(this) > 0) {
