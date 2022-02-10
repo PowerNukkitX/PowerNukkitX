@@ -1,12 +1,10 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -18,6 +16,8 @@ import cn.nukkit.utils.Utils;
 /**
  * @author lt_name
  */
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
 
     public static final int TIER_WOODEN = ItemTool.TIER_WOODEN;

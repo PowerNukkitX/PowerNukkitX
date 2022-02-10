@@ -1,6 +1,8 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.level.Sound;
@@ -13,6 +15,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 /**
  * @author lt_name
  */
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable {
 
     public static final int TIER_LEATHER = 1;

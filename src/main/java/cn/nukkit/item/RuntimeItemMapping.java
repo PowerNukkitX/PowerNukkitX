@@ -159,21 +159,10 @@ public class RuntimeItemMapping {
 
         int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
 
+        legacyNetworkMap.put(fullId, (itemCustom.id << 1));
+        networkLegacyMap.put(itemCustom.id, fullId);
         namespaceNetworkMap.put(itemCustom.name.toLowerCase(), OptionalInt.of(itemCustom.id));
         networkNamespaceMap.put(itemCustom.id, itemCustom.name.toLowerCase());
-        //TODO
-        /*if (entry.oldId != null) {
-            boolean hasData = entry.oldData != null;
-            int fullId = RuntimeItems.getFullId(entry.oldId, hasData ? entry.oldData : 0);
-            if (entry.deprecated != Boolean.TRUE) {
-                verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
-                        "Conflict while registering an item runtime id!"
-                );
-            }
-            verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
-                    "Conflict while registering an item runtime id!"
-            );
-        }*/
 
         this.generatePalette();
 
@@ -187,6 +176,8 @@ public class RuntimeItemMapping {
             return false;
         }
 
+        legacyNetworkMap.remove(RuntimeItems.getFullId(itemCustom.getId(), 0));
+        networkLegacyMap.remove(itemCustom.id);
         namespaceNetworkMap.remove(itemCustom.name.toLowerCase());
         networkNamespaceMap.remove(itemCustom.id);
 

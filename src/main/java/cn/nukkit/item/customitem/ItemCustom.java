@@ -1,15 +1,17 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * @author lt_name
  */
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public abstract class ItemCustom extends Item {
 
     @Setter

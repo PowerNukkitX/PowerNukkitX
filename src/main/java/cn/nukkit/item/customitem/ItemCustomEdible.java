@@ -1,17 +1,20 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.CompletedUsingItemPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
 
 /**
  * @author lt_name
  */
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public abstract class ItemCustomEdible extends ItemCustom {
 
     public ItemCustomEdible(int id) {
