@@ -141,7 +141,7 @@ public class RuntimeItemMapping {
         }
         for (int id : this.customItems) {
             Item item = Item.get(id);
-            paletteBuffer.putString(item.name.replace("minecraft:", ""));
+            paletteBuffer.putString(("customitem:" + item.getName()).toLowerCase());
             paletteBuffer.putLShort(item.id);
             paletteBuffer.putBoolean(true); // Component item
         }
