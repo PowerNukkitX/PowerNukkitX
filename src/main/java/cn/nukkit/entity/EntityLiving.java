@@ -85,8 +85,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable,
         }
 
         this.health = this.namedTag.getFloat("Health");
-
-        calculateOffsetBoundingBox();
     }
 
     @PowerNukkitOnly
