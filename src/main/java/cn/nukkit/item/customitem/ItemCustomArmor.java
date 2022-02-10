@@ -162,27 +162,28 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
         }
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            switch (this.getTier()) {
+            final int tier = this.getTier();
+            switch (tier) {
                 case TIER_CHAIN:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_CHAIN);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
                     break;
                 case TIER_DIAMOND:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_DIAMOND);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
                     break;
                 case TIER_GOLD:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GOLD);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
                     break;
                 case TIER_IRON:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_IRON);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
                     break;
                 case TIER_LEATHER:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_LEATHER);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
                     break;
                 case TIER_NETHERITE:
                     player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
-                case TIER_OTHER:
+                    break;
                 default:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC);
+                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
             }
         }
 
@@ -195,6 +196,7 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
             case TIER_CHAIN:
                 return 12;
             case TIER_LEATHER:
+            case TIER_NETHERITE:
                 return 15;
             case TIER_DIAMOND:
                 return 10;
@@ -202,8 +204,6 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
                 return 25;
             case TIER_IRON:
                 return 9;
-            case TIER_NETHERITE:
-                return 10; //TODO
         }
 
         return 0;
