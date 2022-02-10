@@ -6,6 +6,7 @@ import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 
 /**
@@ -62,7 +63,14 @@ public abstract class ItemCustomEdible extends ItemCustom {
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (ticksUsed < this.getEatTick()) return false;
+        if (player.isSpectator()) {
+            player.getInventory().sendContents(player);
+            return false;
+        }
+
+        if (ticksUsed < this.getEatTick()) {
+            return false;
+        }
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
 
         player.getServer().getPluginManager().callEvent(consumeEvent);
@@ -72,6 +80,7 @@ public abstract class ItemCustomEdible extends ItemCustom {
 
         Food food = Food.getByRelative(this);
         if (food != null && food.eatenBy(player)) {
+            player.completeUsingItem(this.getNetworkId(), CompletedUsingItemPacket.ACTION_EAT);
             player.getLevel().addSound(player, Sound.RANDOM_BURP);
             if (!player.isCreative() && !player.isSpectator()) {
                 --this.count;

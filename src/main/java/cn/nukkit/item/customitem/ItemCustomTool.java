@@ -1,8 +1,12 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -15,6 +19,21 @@ import cn.nukkit.utils.Utils;
  * @author lt_name
  */
 public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
+
+    public static final int TIER_WOODEN = ItemTool.TIER_WOODEN;
+    public static final int TIER_GOLD = ItemTool.TIER_GOLD;
+    public static final int TIER_STONE = ItemTool.TIER_STONE;
+    public static final int TIER_IRON = ItemTool.TIER_IRON;
+    public static final int TIER_DIAMOND = ItemTool.TIER_DIAMOND;
+    public static final int TIER_NETHERITE =  ItemTool.TIER_NETHERITE;
+
+    public static final int TYPE_NONE =  ItemTool.TYPE_NONE;
+    public static final int TYPE_SWORD =  ItemTool.TYPE_SWORD;
+    public static final int TYPE_SHOVEL =  ItemTool.TYPE_SHOVEL;
+    public static final int TYPE_PICKAXE =  ItemTool.TYPE_PICKAXE;
+    public static final int TYPE_AXE =  ItemTool.TYPE_AXE;
+    public static final int TYPE_SHEARS =  ItemTool.TYPE_SHEARS;
+    public static final int TYPE_HOE =  ItemTool.TYPE_HOE;
 
     public static final int DURABILITY_WOODEN = ItemTool.DURABILITY_WOODEN;
     public static final int DURABILITY_GOLD = ItemTool.DURABILITY_GOLD;
@@ -163,21 +182,22 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
 
     @Override
     public int getEnchantAbility() {
-        switch (this.getTier()) {
-            case ItemTool.TIER_STONE:
+        int tier = this.getTier();
+        switch (tier) {
+            case TIER_STONE:
                 return 5;
-            case ItemTool.TIER_WOODEN:
-                return 15;
-            case ItemTool.TIER_DIAMOND:
+            case TIER_WOODEN:
+            case TIER_DIAMOND:
                 return 10;
-            case ItemTool.TIER_GOLD:
+            case TIER_GOLD:
                 return 22;
-            case ItemTool.TIER_IRON:
+            case TIER_IRON:
                 return 14;
-            case ItemTool.TIER_NETHERITE:
-                return 10; //TODO
         }
 
+        if (tier == TIER_NETHERITE) {
+            return 15;
+        }
         return 0;
     }
 
