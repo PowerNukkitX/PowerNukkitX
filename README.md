@@ -3,16 +3,20 @@
 
 <h2>多语言文档</h2>
 
----
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
 [![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
 
----
 🤔什么是PowerNukkitX ？
 ---
 [PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一个分支版本，由[BlocklyNukkit](https://github.com/BlocklyNukkit)小组负责开发维护，如遇任何问题可提交[Issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues)反馈。
+
+PowerNukkitX的优势：
+
+* 原生支持384限高（目前仅限主世界，其余则为256格限高）。
+* 原生支持地狱世界，无需另外安装插件补丁等。
+* Todo...
 
 ---
 
@@ -26,7 +30,6 @@
 
 📌 声明
 ---
-
 
 **PowerNukkitX**是基于PowerNukkit和Nukkit的修改优化版本，修复了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)插件兼容（TODO）等。
 
