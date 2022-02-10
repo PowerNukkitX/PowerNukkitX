@@ -432,7 +432,7 @@ public class EntityAreaEffectCloud extends Entity {
     }
     
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0;
     }
     

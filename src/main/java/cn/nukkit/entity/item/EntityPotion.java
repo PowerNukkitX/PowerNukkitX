@@ -76,7 +76,7 @@ public class EntityPotion extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.05f;
     }
 

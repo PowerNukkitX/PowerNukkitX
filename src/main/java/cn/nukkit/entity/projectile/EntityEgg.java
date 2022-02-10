@@ -38,7 +38,7 @@ public class EntityEgg extends EntityProjectile {
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.03f;
     }
 

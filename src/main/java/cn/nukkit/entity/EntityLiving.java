@@ -8,6 +8,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.movement.DefaultFrictionMovement;
+import cn.nukkit.entity.movement.DefaultGravityMovement;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -36,20 +38,14 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityLiving extends Entity implements EntityDamageable {
-    /**
-     * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
-     */
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
-    private static final double PRECISION = 0.00001d;
+public abstract class EntityLiving extends Entity implements EntityDamageable, DefaultGravityMovement, DefaultFrictionMovement {
 
     public EntityLiving(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.08f;
     }
 
@@ -68,6 +64,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     protected int turtleTicks = 0;
 
+    protected int fallingTick = 0;
+
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -84,14 +82,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.health = this.namedTag.getFloat("Health");
     }
 
+    @PowerNukkitDifference(since = "1.6.0.0-PNX")
+    @Override
+    public void resetFallDistance() {
+        this.fallingTick = 0;
+        super.resetFallDistance();
+    }
+
     @Override
     @PowerNukkitDifference(info = "Adapt entity ai.", since = "1.6.0.0-PNX")
     public boolean onUpdate(int currentTick) {
+        // 记录最大高度，用于计算坠落伤害
+        if (!this.onGround && this.y > highestPosition) {
+            this.highestPosition = this.y;
+        }
         return super.onUpdate(currentTick);
     }
 
     /**
      * 增减motionXZ向量的长度
+     *
      * @param reduce motionXZ增减大小
      */
     @PowerNukkitOnly
@@ -134,14 +144,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     @PowerNukkitDifference(info = "Adapt entity ai.", since = "1.6.0.0-PNX")
     public void updateMovement() {
-        this.move(this.motionX, this.motionY, this.motionZ);
-        // 处理重力
-        if (!this.isOnGround())
-            this.motionY -= this.getGravity();
-        // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
-        reduceMotionXZAbs(getMovementSpeed() * (1 - friction * 0.7) * 0.43);
+        // 检测自由落体时间
+        if (!this.onGround && this.y < this.highestPosition) {
+            this.fallingTick++;
+        }
         super.updateMovement();
+        this.move(this.motionX, this.motionY, this.motionZ);
+    }
+
+    @Override
+    public EntityLiving getSelf() {
+        return this;
+    }
+
+    @Override
+    public int getFallingTick() {
+        return this.fallingTick;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.04f;
     }
 

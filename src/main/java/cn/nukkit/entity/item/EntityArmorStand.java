@@ -87,7 +87,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.04f;
     }
 

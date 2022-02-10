@@ -120,7 +120,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    protected float getGravity() {
+    public float getGravity() {
         return 0.03999999910593033F;
     }
 
