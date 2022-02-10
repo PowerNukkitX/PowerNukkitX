@@ -10,6 +10,7 @@ import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.movement.DefaultFrictionMovement;
 import cn.nukkit.entity.movement.DefaultGravityMovement;
+import cn.nukkit.entity.movement.DefaultLiquidMovement;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
@@ -20,6 +21,8 @@ import cn.nukkit.item.ItemTurtleShell;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -38,7 +41,8 @@ import java.util.Map;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityLiving extends Entity implements EntityDamageable, DefaultGravityMovement, DefaultFrictionMovement {
+public abstract class EntityLiving extends Entity implements EntityDamageable,
+        DefaultGravityMovement, DefaultFrictionMovement, DefaultLiquidMovement {
 
     public EntityLiving(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -65,6 +69,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable, D
     protected int turtleTicks = 0;
 
     protected int fallingTick = 0;
+    protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     @Override
     protected void initEntity() {
@@ -80,6 +85,27 @@ public abstract class EntityLiving extends Entity implements EntityDamageable, D
         }
 
         this.health = this.namedTag.getFloat("Health");
+
+        calculateOffsetBoundingBox();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    protected void calculateOffsetBoundingBox() {
+        final double dx = this.getWidth() * 0.5;
+        final double dz = this.getHeight() * 0.5;
+        this.offsetBoundingBox.setMinX(this.x - dx);
+        this.offsetBoundingBox.setMaxX(this.x + dz);
+        this.offsetBoundingBox.setMinY(this.y);
+        this.offsetBoundingBox.setMaxY(this.y + this.getHeight());
+        this.offsetBoundingBox.setMinZ(this.z - dz);
+        this.offsetBoundingBox.setMaxZ(this.z + dz);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public AxisAlignedBB getOffsetBoundingBox() {
+        return this.offsetBoundingBox;
     }
 
     @PowerNukkitDifference(since = "1.6.0.0-PNX")
@@ -96,6 +122,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable, D
         if (!this.onGround && this.y > highestPosition) {
             this.highestPosition = this.y;
         }
+        // 重新计算绝对位置碰撞箱
+        this.calculateOffsetBoundingBox();
         return super.onUpdate(currentTick);
     }
 
