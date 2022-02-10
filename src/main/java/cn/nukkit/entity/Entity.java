@@ -1667,6 +1667,9 @@ public abstract class Entity extends Location implements Metadatable {
             return null;
         }
 
+        //未知错误导致地狱传送至主世界地点上移64格，临时作此修正等待进一步修复
+        if (currentPos.level.getDimension()==Level.DIMENSION_OVERWORLD) nearestPortal.y = (double) nearestPortal.getFloorY()-64;
+
         return nearestPortal;
     }
 
