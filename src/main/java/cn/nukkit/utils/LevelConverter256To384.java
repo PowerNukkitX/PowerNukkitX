@@ -1,12 +1,16 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Server;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.anvil.RegionLoader;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -81,7 +85,7 @@ public class LevelConverter256To384 {
                     MainLogger.getLogger().logException(e);
                 }
 
-                log.info("Fixing... " + NukkitMath.round((processed / regions.length) * 100, 2) + "% done");
+                log.info("转换中... 已完成: " + NukkitMath.round((processed / regions.length) * 100, 2) + "%");
 
                 if (!fast) {
                     long sleep = NukkitMath.floorDouble((System.currentTimeMillis() - start) * 0.25);
