@@ -5416,7 +5416,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindowCount > 10){
+        if(this.formWindows.size() > 10){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
