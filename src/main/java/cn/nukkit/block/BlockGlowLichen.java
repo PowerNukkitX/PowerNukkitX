@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 public class BlockGlowLichen extends BlockTransparent {
 
     public static final IntBlockProperty MULTI_FACE_DIRECTION_BITS = new IntBlockProperty("multi_face_direction_bits", false, 63, 0, 6);
+    public static final NukkitRandom RANDOM = new NukkitRandom();
 
     @PowerNukkitOnly
     @Since("FUTURE")
@@ -54,17 +55,24 @@ public class BlockGlowLichen extends BlockTransparent {
     }
 
     public BlockFace[] getGrowthSides() {
-        Stream<BlockFace>returns = Arrays.stream(BlockFace.values()).filter(this::isGrowthToSide);
+        Stream<BlockFace> returns = Arrays.stream(BlockFace.values()).filter(this::isGrowthToSide);
         return returns.toArray(BlockFace[]::new);
     }
 
     public boolean isGrowthToSide(@Nonnull BlockFace side) {
-        return ((getPropertyValue(MULTI_FACE_DIRECTION_BITS) >> side.getIndex()) & 0x1) > 0;
+        return ((getPropertyValue(MULTI_FACE_DIRECTION_BITS) >> side.getDUSWNEIndex()) & 0x1) > 0;
     }
 
     public void growToSide(BlockFace side) {
         if (!isGrowthToSide(side)) {
-            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << side.getIndex()));
+            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << side.getDUSWNEIndex()));
+            getLevel().setBlock(this, this, true, true);
+        }
+    }
+
+    public void witherAtSide(BlockFace side) {
+        if (isGrowthToSide(side)) {
+            setPropertyValue(MULTI_FACE_DIRECTION_BITS, getPropertyValue(MULTI_FACE_DIRECTION_BITS) ^ (0b000001 << side.getDUSWNEIndex()));
             getLevel().setBlock(this, this, true, true);
         }
     }
@@ -81,7 +89,7 @@ public class BlockGlowLichen extends BlockTransparent {
             currentMeta = block.getPropertyValue(MULTI_FACE_DIRECTION_BITS);
         }
 
-        setPropertyValue(MULTI_FACE_DIRECTION_BITS, currentMeta | (0b0001 << face.getOpposite().getIndex()));
+        setPropertyValue(MULTI_FACE_DIRECTION_BITS, currentMeta | (0b000001 << face.getOpposite().getDUSWNEIndex()));
 
         if (getPropertyValue(MULTI_FACE_DIRECTION_BITS) == currentMeta) {
             BlockFace[] sides = BlockFace.values();
@@ -119,7 +127,7 @@ public class BlockGlowLichen extends BlockTransparent {
         Set<Block> keySet = candidates.keySet();
         List<Block> keyList = new ArrayList<>(keySet);
 
-        int rand = new NukkitRandom().nextRange(0, candidates.size() - 1);
+        int rand = RANDOM.nextRange(0, candidates.size() - 1);
 
         Block random = keyList.get(rand);
         Block newLichen;
@@ -130,7 +138,7 @@ public class BlockGlowLichen extends BlockTransparent {
             newLichen = Block.get(GLOW_LICHEN);
         }
 
-        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b0001 << candidates.get(random).getIndex()));
+        newLichen.setPropertyValue(MULTI_FACE_DIRECTION_BITS, newLichen.getPropertyValue(MULTI_FACE_DIRECTION_BITS) | (0b000001 << candidates.get(random).getDUSWNEIndex()));
 
         getLevel().setBlock(random, newLichen, true, true);
 
@@ -167,6 +175,22 @@ public class BlockGlowLichen extends BlockTransparent {
             }
         }
         return candidates;
+    }
+
+    @Override
+    public boolean isTransparent() {
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        for (BlockFace side : BlockFace.values()) {
+            final Block support = this.getSide(side);
+            if (isGrowthToSide(side) && support != null && !support.isSolid()) {
+                this.witherAtSide(side);
+            }
+        }
+        return super.onUpdate(type);
     }
 
     private boolean isSupportNeighborAdded(@Nonnull Map<Block, BlockFace> candidates, @Nonnull BlockFace side, @Nonnull Block supportNeighbor) {

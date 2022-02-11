@@ -142,6 +142,56 @@ public enum BlockFace {
     }
 
     /**
+     * Get the index of this BlockFace (0-5). The order is D-U-N-E-S-W
+     *
+     * @return index
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getDUNESWIndex() {
+        switch (getIndex()) {
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+            case 3:
+                return 4;
+            case 4:
+                return 5;
+            case 5:
+                return 3;
+            case 0:
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Get the index of this BlockFace (0-5). The order is D-U-S-W-N-E
+     *
+     * @return index
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getDUSWNEIndex() {
+        switch (getIndex()) {
+            case 1:
+                return 1;
+            case 2:
+                return 4;
+            case 3:
+                return 2;
+            case 4:
+                return 3;
+            case 5:
+                return 5;
+            case 0:
+            default:
+                return 0;
+        }
+    }
+
+    /**
      * Get the horizontal index of this BlockFace (0-3). The order is S-W-N-E
      *
      * @return horizontal index
@@ -270,7 +320,7 @@ public enum BlockFace {
                 throw new RuntimeException("Unable to get counter-clockwise Y-rotated face of " + this);
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public CompassRoseDirection getCompassRoseDirection() {
@@ -297,7 +347,7 @@ public enum BlockFace {
             return blockFaces;
         }
         Collections.addAll(blockFaces, Plane.VERTICAL.faces);
-        Axis edgeAxis = axis == Axis.X? Axis.Z: Axis.X;
+        Axis edgeAxis = axis == Axis.X ? Axis.Z : Axis.X;
         blockFaces.add(fromAxis(AxisDirection.NEGATIVE, edgeAxis));
         blockFaces.add(fromAxis(AxisDirection.POSITIVE, edgeAxis));
         return blockFaces;
@@ -393,7 +443,7 @@ public enum BlockFace {
         public BlockFace random() {
             return faces[ThreadLocalRandom.current().nextInt(faces.length)];
         }
-        
+
         public BlockFace random(NukkitRandom rand) {
             return faces[rand.nextBoundedInt(faces.length)];
         }
