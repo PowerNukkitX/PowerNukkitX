@@ -294,6 +294,7 @@ public interface ItemID {
 
     @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
 
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_ITEM_FRAME = 850;
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
 
 }
