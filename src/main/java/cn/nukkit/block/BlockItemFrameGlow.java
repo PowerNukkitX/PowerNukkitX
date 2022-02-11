@@ -2,24 +2,25 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemItemFrameGlow;
 
 /**
  * @author LoboMetalurgico
  * @since 13/06/2021
  */
 
-// TODO: This is a basic implementation just to allow for use, fixes must be made
 @PowerNukkitOnly
-@Since("FUTURE")
+@Since("1.6.0.0-PNX")
 public class BlockItemFrameGlow extends BlockItemFrame {
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public BlockItemFrameGlow() {
         this(0);
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public BlockItemFrameGlow(int meta) {
         super(meta);
     }
@@ -32,5 +33,10 @@ public class BlockItemFrameGlow extends BlockItemFrame {
     @Override
     public int getId() {
         return GLOW_FRAME;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemItemFrameGlow();
     }
 }
