@@ -5301,7 +5301,8 @@
   },
   {
     "name": "minecraft:black_candle",
-    "id": -428
+    "id": -428,
+    "oldId": -428
   },
   {
     "name": "minecraft:black_candle_cake",
@@ -5309,7 +5310,8 @@
   },
   {
     "name": "minecraft:blue_candle",
-    "id": -424
+    "id": -424,
+    "oldId": -424
   },
   {
     "name": "minecraft:blue_candle_cake",
@@ -5317,7 +5319,8 @@
   },
   {
     "name": "minecraft:brown_candle",
-    "id": -425
+    "id": -425,
+    "oldId": -425
   },
   {
     "name": "minecraft:brown_candle_cake",
@@ -5325,7 +5328,8 @@
   },
   {
     "name": "minecraft:candle",
-    "id": -412
+    "id": -412,
+    "oldId": -412
   },
   {
     "name": "minecraft:candle_cake",
@@ -5337,7 +5341,8 @@
   },
   {
     "name": "minecraft:cyan_candle",
-    "id": -422
+    "id": -422,
+    "oldId": -422
   },
   {
     "name": "minecraft:cyan_candle_cake",
@@ -5361,7 +5366,8 @@
   },
   {
     "name": "minecraft:gray_candle",
-    "id": -420
+    "id": -420,
+    "oldId": -420
   },
   {
     "name": "minecraft:gray_candle_cake",
@@ -5369,7 +5375,8 @@
   },
   {
     "name": "minecraft:green_candle",
-    "id": -426
+    "id": -426,
+    "oldId": -426
   },
   {
     "name": "minecraft:green_candle_cake",
@@ -5377,7 +5384,8 @@
   },
   {
     "name": "minecraft:light_blue_candle",
-    "id": -416
+    "id": -416,
+    "oldId": -416
   },
   {
     "name": "minecraft:light_blue_candle_cake",
@@ -5385,7 +5393,8 @@
   },
   {
     "name": "minecraft:light_gray_candle",
-    "id": -421
+    "id": -421,
+    "oldId": -421
   },
   {
     "name": "minecraft:light_gray_candle_cake",
@@ -5393,7 +5402,8 @@
   },
   {
     "name": "minecraft:lime_candle",
-    "id": -418
+    "id": -418,
+    "oldId": -418
   },
   {
     "name": "minecraft:lime_candle_cake",
@@ -5401,7 +5411,8 @@
   },
   {
     "name": "minecraft:magenta_candle",
-    "id": -415
+    "id": -415,
+    "oldId": -415
   },
   {
     "name": "minecraft:magenta_candle_cake",
@@ -5425,7 +5436,8 @@
   },
   {
     "name": "minecraft:orange_candle",
-    "id": -414
+    "id": -414,
+    "oldId": -414
   },
   {
     "name": "minecraft:orange_candle_cake",
@@ -5437,7 +5449,8 @@
   },
   {
     "name": "minecraft:pink_candle",
-    "id": -419
+    "id": -419,
+    "oldId": -419
   },
   {
     "name": "minecraft:pink_candle_cake",
@@ -5445,7 +5458,8 @@
   },
   {
     "name": "minecraft:purple_candle",
-    "id": -423
+    "id": -423,
+    "oldId": -423
   },
   {
     "name": "minecraft:purple_candle_cake",
@@ -5453,7 +5467,8 @@
   },
   {
     "name": "minecraft:red_candle",
-    "id": -427
+    "id": -427,
+    "oldId": -427
   },
   {
     "name": "minecraft:red_candle_cake",
@@ -5489,7 +5504,8 @@
   },
   {
     "name": "minecraft:white_candle",
-    "id": -413
+    "id": -413,
+    "oldId": -413
   },
   {
     "name": "minecraft:white_candle_cake",
@@ -5497,7 +5513,8 @@
   },
   {
     "name": "minecraft:yellow_candle",
-    "id": -417
+    "id": -417,
+    "oldId": -417
   },
   {
     "name": "minecraft:yellow_candle_cake",

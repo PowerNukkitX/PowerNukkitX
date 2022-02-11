@@ -752,7 +752,24 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_TILES = 664;
     @Since("FUTURE") @PowerNukkitOnly int CRACKED_DEEPSLATE_BRICKS = 665;
     @Since("FUTURE") @PowerNukkitOnly int GLOW_LICHEN = 666;
-    // Unused 667 - 700
+    @Since("FUTURE") @PowerNukkitOnly int CANDLE = 667;
+    @Since("FUTURE") @PowerNukkitOnly int WHITE_CANDLE = 668;
+    @Since("FUTURE") @PowerNukkitOnly int ORANGE_CANDLE = 669;
+    @Since("FUTURE") @PowerNukkitOnly int MAGENTA_CANDLE = 670;
+    @Since("FUTURE") @PowerNukkitOnly int LIGHT_BLUE_CANDLE = 671;
+    @Since("FUTURE") @PowerNukkitOnly int YELLOW_CANDLE = 672;
+    @Since("FUTURE") @PowerNukkitOnly int LIME_CANDLE = 673;
+    @Since("FUTURE") @PowerNukkitOnly int PINK_CANDLE = 674;
+    @Since("FUTURE") @PowerNukkitOnly int GRAY_CANDLE = 675;
+    @Since("FUTURE") @PowerNukkitOnly int LIGHT_GRAY_CANDLE = 676;
+    @Since("FUTURE") @PowerNukkitOnly int CYAN_CANDLE = 677;
+    @Since("FUTURE") @PowerNukkitOnly int PURPLE_CANDLE = 678;
+    @Since("FUTURE") @PowerNukkitOnly int BLUE_CANDLE = 679;
+    @Since("FUTURE") @PowerNukkitOnly int BROWN_CANDLE = 680;
+    @Since("FUTURE") @PowerNukkitOnly int GREEN_CANDLE = 681;
+    @Since("FUTURE") @PowerNukkitOnly int RED_CANDLE = 682;
+    @Since("FUTURE") @PowerNukkitOnly int BLACK_CANDLE = 683;
+    // Unused 684 - 700
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_COPPER = 701;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER = 702;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;
