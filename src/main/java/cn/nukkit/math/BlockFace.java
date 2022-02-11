@@ -4,8 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.Iterators;
 
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
@@ -287,6 +286,21 @@ public enum BlockFace {
             default:
                 return null;
         }
+    }
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    public Set<BlockFace> getEdges() {
+        EnumSet<BlockFace> blockFaces = EnumSet.noneOf(BlockFace.class);
+        if (axis.isVertical()) {
+            Collections.addAll(blockFaces, Plane.HORIZONTAL.faces);
+            return blockFaces;
+        }
+        Collections.addAll(blockFaces, Plane.VERTICAL.faces);
+        Axis edgeAxis = axis == Axis.X? Axis.Z: Axis.X;
+        blockFaces.add(fromAxis(AxisDirection.NEGATIVE, edgeAxis));
+        blockFaces.add(fromAxis(AxisDirection.POSITIVE, edgeAxis));
+        return blockFaces;
     }
 
     @Override
