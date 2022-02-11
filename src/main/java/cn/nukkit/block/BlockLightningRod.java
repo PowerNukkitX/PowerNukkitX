@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
@@ -84,5 +85,10 @@ public class BlockLightningRod extends BlockTransparentMeta implements Faceable 
     @Override
     public void setBlockFace(BlockFace face) {
         this.setPropertyValue(FACING_DIRECTION, face);
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }
