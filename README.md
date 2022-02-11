@@ -1,10 +1,9 @@
-[<img alt="PowerNukkit" width="838" src="https://raw.githubusercontent.com/PowerNukkit/PowerNukkit/master/.github/images/banner.png" />](https://powernukkit.org)
-
+[<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/BlocklyNukkit/PowerNukkitX/master/blob/images/banner.png" />](https://www.powernukkitx.com)
 
 <h2>多语言文档</h2>
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
-[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![English](https://img.shields.io/badge/English-20%-yellow?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
 
@@ -14,6 +13,7 @@
 
 PowerNukkitX的优势：
 
+* 支持1.18.10协议（完善中）。
 * 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 * 原生支持地狱世界，无需另外安装插件补丁等。
 * Todo...
@@ -35,7 +35,7 @@ PowerNukkitX的优势：
 
 * 请注意**PowerNukkitX**非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues)（同时请注意阅读[贡献帮助指南](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CONTRIBUTING.md)中的规定）。
 
-* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkit](https://github.com/powernukkit/powernukkit)或[PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)制作的插件，并使用[稳定版](https://github.com/BlocklyNukkit/PowerNukkitX/releases)进行部署。
+* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkit](https://github.com/powernukkit/powernukkit)或[PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)制作的插件，并使用[稳定版PNX](https://github.com/BlocklyNukkit/PowerNukkitX/releases)进行部署。
 
 * 大多数[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在该服务端上兼容使用，但在运行时可能会出一些错误等或不支持PowerNukkitX添加的新内容。
 
@@ -46,7 +46,7 @@ PowerNukkitX的优势：
 * 添加PowerNukkit至您的依赖项中（它由Maven Central 和 jcenter 托管，因此您无需指定自定义存储库）。
 * Tips：若您需要导入PowerNukkitX至您的依赖项中，那您目前需要手动指定存储库。
 
-[点此查看完整的gradle示例](https://github.com/PowerNukkit/ExamplePlugin-Gradle)
+[点此查看完整的Gradle示例](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
 ```groovy
 repositories {
     mavenCentral()
@@ -57,7 +57,7 @@ dependencies {
 }
 ```
 
-[点此查看完整的Maven示例](https://github.com/PowerNukkit/ExamplePlugin-Maven)
+[点此查看完整的Maven示例](https://github.com/PowerNukkitX/ExamplePlugin-Maven)
 ```xml
 <dependencies>
     <dependency>
@@ -121,4 +121,4 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 [![Pull-pr](https://img.shields.io/github/issues-pr/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/pulls)
 [![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/Blocklynukkit/PowerNukkitX?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
 
-2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com)
+2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkit X](https://www.powernukkitx.com)
