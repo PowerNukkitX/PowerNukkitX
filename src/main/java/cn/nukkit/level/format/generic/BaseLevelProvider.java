@@ -501,4 +501,5 @@ public abstract class BaseLevelProvider implements LevelProvider {
         BaseRegionLoader region = this.getRegion(chunkX >> 5, chunkZ >> 5);
         return region != null && region.chunkExists(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32) && this.getChunk(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32, true).isGenerated();
     }
+
 }

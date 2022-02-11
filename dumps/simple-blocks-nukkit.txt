@@ -343,6 +343,7 @@ minecraft:flowering_azalea
 minecraft:flowing_lava
 minecraft:flowing_water
 minecraft:frame
+minecraft:frog_egg
 minecraft:frosted_ice
 minecraft:furnace
 minecraft:gilded_blackstone
@@ -464,6 +465,7 @@ minecraft:noteblock
 minecraft:oak_stairs
 minecraft:observer
 minecraft:obsidian
+minecraft:ochre_froglight
 minecraft:orange_candle
 minecraft:orange_candle_cake
 minecraft:orange_glazed_terracotta
@@ -473,6 +475,7 @@ minecraft:oxidized_cut_copper_slab
 minecraft:oxidized_cut_copper_stairs
 minecraft:oxidized_double_cut_copper_slab
 minecraft:packed_ice
+minecraft:pearlescent_froglight
 minecraft:pink_candle
 minecraft:pink_candle_cake
 minecraft:pink_glazed_terracotta
@@ -639,6 +642,7 @@ minecraft:unknown
 minecraft:unlit_redstone_torch
 minecraft:unpowered_comparator
 minecraft:unpowered_repeater
+minecraft:verdant_froglight
 minecraft:vine
 minecraft:wall_banner
 minecraft:wall_sign

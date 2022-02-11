@@ -80,23 +80,23 @@ public class BlockColor  {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor CRIMSON_STEM_BLOCK_COLOR = new BlockColor(0x94, 0x3F, 0x61);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor CRIMSON_HYPHAE_BLOCK_COLOR = new BlockColor(0x5C, 0x19, 0x1D);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_NYLIUM_BLOCK_COLOR = new BlockColor(0x16, 0x7E, 0x86);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_STEM_BLOCK_COLOR = new BlockColor(0x3A, 0x8E, 0x8C);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_HYPHAE_BLOCK_COLOR = new BlockColor(0x56, 0x2C, 0x3E);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
@@ -112,10 +112,10 @@ public class BlockColor  {
     private int alpha;
 
     public BlockColor(int red, int green, int blue, int alpha) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
+        this.red = red & 0xff;
+        this.green = green & 0xff;
+        this.blue = blue & 0xff;
+        this.alpha = alpha & 0xff;
     }
 
     public BlockColor(int red, int green, int blue) {
@@ -123,10 +123,14 @@ public class BlockColor  {
     }
 
     public BlockColor(int rgb) {
+        this(rgb, false);
+    }
+
+    public BlockColor(int rgb, boolean hasAlpha) {
         this.red = (rgb >> 16) & 0xff;
         this.green = (rgb >> 8) & 0xff;
         this.blue = rgb & 0xff;
-        this.alpha = 0xff;
+        this.alpha = hasAlpha ? (rgb >> 24) & 0xff : 0xff;
     }
 
     @Override
@@ -164,8 +168,6 @@ public class BlockColor  {
         return (this.red << 16 | this.green << 8 | this.blue) & 0xffffff;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public int getARGB() {
         return this.alpha << 24 | this.red << 16 | this.green << 8 | this.blue;
     }

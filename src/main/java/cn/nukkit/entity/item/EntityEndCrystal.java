@@ -84,7 +84,6 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
                 return false;
             }
         }
-        
         explode();
 
         return true;
@@ -102,6 +101,8 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
 
             if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explode.explodeA();
+                explode.explodeB();
+            }else {
                 explode.explodeB();
             }
         }

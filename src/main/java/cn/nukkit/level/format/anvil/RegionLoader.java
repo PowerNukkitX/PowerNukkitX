@@ -1,10 +1,18 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.utils.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.EOFException;
@@ -20,6 +28,13 @@ import java.util.TreeMap;
  */
 @Log4j2
 public class RegionLoader extends BaseRegionLoader {
+    /**
+     * 记录已经被更新过的旧区块，默认情况下应该保持null
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private static LongSet chunkUpdated = null;
+
     public RegionLoader(LevelProvider level, int regionX, int regionZ) throws IOException {
         super(level, regionX, regionZ, "mca");
     }
@@ -46,7 +61,7 @@ public class RegionLoader extends BaseRegionLoader {
         try {
             int[] table = this.primitiveLocationTable.get(index);
             RandomAccessFile raf = this.getRandomAccessFile();
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             int length = raf.readInt();
             byte compression = raf.readByte();
             if (length <= 0 || length >= MAX_SECTOR_LENGTH) {
@@ -58,7 +73,7 @@ public class RegionLoader extends BaseRegionLoader {
                 }
                 return null;
             }
-    
+
             if (length > (table[1] << 12)) {
                 log.error("Corrupted bigger chunk detected");
                 table[1] = length >> 12;
@@ -68,11 +83,35 @@ public class RegionLoader extends BaseRegionLoader {
                 log.error("Invalid compression type");
                 return null;
             }
-    
+
             byte[] data = new byte[length - 1];
             raf.readFully(data);
             Chunk chunk = this.unserializeChunk(data);
             if (chunk != null) {
+                //更新256世界到384世界
+                if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil() && !chunk.isNew384World) {
+                    //检查重复更新情况
+                    if (chunkUpdated == null) {
+                        chunkUpdated = LongSets.synchronize(new LongArraySet());
+                    }
+                    final long chunkHash = Level.chunkHash(chunk.getX(), chunk.getZ());
+                    if (!chunkUpdated.contains(chunkHash)) {
+                        chunkUpdated.add(chunkHash);
+                        chunk.isNew384World = true; //这可以在大部分情况下避免区块重复更新，但是对多线程造成的重复更新仍然无效，所以需要一个set来检查
+                        log.info(Server.getInstance().getLanguage().translateString("nukkit.anvil.converter.update-chunk", levelProvider.getLevel().getName(), chunk.getX() << 4, chunk.getZ() << 4));
+                        for (int dx = 0; dx < 16; dx++) {
+                            for (int dz = 0; dz < 16; dz++) {
+                                for (int dy = 255; dy >= -64; --dy) {
+                                    chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
+                                    chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
+                                    chunk.setBlockState(dx, dy, dz, BlockState.AIR);
+                                    chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                                }
+                            }
+                        }
+                        chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
+                    }
+                }
                 return chunk;
             } else {
                 log.error("Corrupted chunk detected at ({}, {}) in {}", x, z, levelProvider.getName());
@@ -119,7 +158,7 @@ public class RegionLoader extends BaseRegionLoader {
 
         this.primitiveLocationTable.put(index, table);
         RandomAccessFile raf = this.getRandomAccessFile();
-        raf.seek((long)table[0] << 12L);
+        raf.seek((long) table[0] << 12L);
 
         BinaryStream stream = new BinaryStream();
         stream.put(Binary.writeInt(length));
@@ -174,7 +213,7 @@ public class RegionLoader extends BaseRegionLoader {
             if (table[0] == 0 || table[1] == 0) {
                 continue;
             }
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             byte[] chunk = new byte[table[1] << 12];
             raf.readFully(chunk);
             int length = Binary.readInt(Arrays.copyOfRange(chunk, 0, 3));
@@ -199,7 +238,7 @@ public class RegionLoader extends BaseRegionLoader {
                 this.lastSector += sectors;
                 this.primitiveLocationTable.put(i, table);
             }
-            raf.seek((long)table[0] << 12L);
+            raf.seek((long) table[0] << 12L);
             byte[] bytes = new byte[sectors << 12];
             ByteBuffer buffer1 = ByteBuffer.wrap(bytes);
             buffer1.put(chunk);
@@ -271,10 +310,10 @@ public class RegionLoader extends BaseRegionLoader {
                 shift += sector - lastSector - 1;
             }
             if (shift > 0) {
-                raf.seek((long)sector << 12L);
+                raf.seek((long) sector << 12L);
                 byte[] old = new byte[4096];
                 raf.readFully(old);
-                raf.seek((long)(sector - shift) << 12L);
+                raf.seek((long) (sector - shift) << 12L);
                 raf.write(old);
             }
             int[] v = this.primitiveLocationTable.get(index);

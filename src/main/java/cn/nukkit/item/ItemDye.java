@@ -44,6 +44,10 @@ public class ItemDye extends Item {
     public static final int RED = DyeColor.RED.getDyeData();
     @Deprecated
     public static final int BLACK = DyeColor.BLACK.getDyeData();
+    @Deprecated
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final int BONE_MEAL = DyeColor.BONE_MEAL.getDyeData();
 
     public ItemDye() {
         this(0, 1);
@@ -62,7 +66,7 @@ public class ItemDye extends Item {
     }
 
     public ItemDye(Integer meta, int amount) {
-        super(DYE, meta, amount, meta <= 15? DyeColor.getByDyeData(meta).getDyeName() : DyeColor.getByDyeData(meta).getName() + " Dye");
+        super(DYE, meta, amount, meta <= 15 ? DyeColor.getByDyeData(meta).getDyeName() : DyeColor.getByDyeData(meta).getName() + " Dye");
 
         if (this.meta == DyeColor.BROWN.getDyeData()) {
             this.block = Block.get(BlockID.COCOA);
@@ -79,9 +83,9 @@ public class ItemDye extends Item {
     @PowerNukkitOnly
     @Override
     public boolean isFertilizer() {
-        return getId() == DYE && getDyeColor().equals(DyeColor.WHITE);
+        return getId() == DYE && getDyeColor().equals(DyeColor.BONE_MEAL);
     }
-    
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public boolean isLapisLazuli() {

@@ -78,7 +78,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
 
     @Override
     public int getLightLevel() {
-        return 12;
+        return 7;
     }
 
     @Override

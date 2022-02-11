@@ -1,18 +1,19 @@
 # 贡献帮助指南
- Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/blocklynukkit/powernukkitx)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
+ 👋 Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/blocklynukkit/powernukkitx)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
 
  但您需注意，这些规则本身不是"**官方规则**"，但您若遵循它们将帮助参与者们提高处理效率。
 
 ## 目录
 
-1. <a href="#目录-问题#1">我想提交一个问题!</a>
-2. <a href="#目录-问题#2">我想提交拉取申请!</a>
+1. <a href="#目录-问题#1">🧾 我想提交一个问题!</a>
+2. <a href="#目录-问题#2">💡 我想提交拉取申请!</a>
+3. <a href="#目录-多语言文档">🌐 切换语言 / Switch Languages</a>
 
-## <a id="目录-问题#1"></a>我想提交一个问题!
+## <a id="目录-问题#1"></a>🧾 我想提交一个问题!
 
  我们随时欢迎您提出任何问题，错误报告和功能建议，但请记住，如果该问题在可预期的时间点内被认定为不重要，无法解决等，我们也会将其忽略，因此Issues页面可能会出现长时间未解决或彻底关闭的问题反馈将会是正常情况。
 
-* **在提交问题报告前，请您搜索现有问题列表。**
+* **在提交问题报告前，请您先搜索现有问题列表。**
 
   出于管理目的，我们会关闭与先前就存在的问题反馈，避免产生重复，推荐您先通过自行搜索的方式查询是否存在类似问题。
 
@@ -29,7 +30,7 @@
 
 * **当被要求提供更多有关信息时。**
 
-  Sometimes when a bug is more elusive or complicated, none of the information listed above will pinpoint a concrete cause of the problem. In this case we will most likely ask you for additional info. Providing that information is beneficial to both parties - we can track down the problem better, and hopefully fix it for you at some point once we know where it is!
+  在某些情况下，某个错误可能会难以复现等，当上面反馈的信息都不能很好的帮助我们追踪问题时，在这种情况下，我们可能会要求您提供额外的信息以便更好的帮助追踪问题，并且我们一旦知道问题所在时，就会着手开始修复并与您取得联系。
 
 * **提交改进意见时，请以简单易懂的方式描述它。**
 
@@ -42,15 +43,15 @@
 
 ## <a id="目录-问题#2"></a>我想提交拉取申请!
 
-We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/blocklynukkit/powernukkitx/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/blocklynukkit/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
+同时我们也欢迎各位开发者们对该项目作出您的贡献，您可在[问题追踪器](https://github.com/blocklynukkit/powernukkitx/issues)页面发表您可以解决的问题等，同时我们也会使用[`Good First issue`](https://github.com/blocklynukkit/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)标签标记出我们认为对新人有帮助的问题解答等。
 
-Here are some key things to note before jumping in:
+⚠ 若您想参与该项目，则您需要注意一些事项：
 
-* **Make sure you are comfortable with Java and your development environment.**
+* **确保您对Java编程有一定的基础的同时，还需熟悉对IDE工具的使用等。**
 
-  While we are accepting of all kinds of contributions, we also have a certain quality standard we'd like to uphold and limited time to review your code. Therefore, we would like to avoid providing entry-level advice, and as such if you're not very familiar with Java as a programming language, we'd recommend that you start off with a few personal projects to get acquainted with the language's syntax, toolchain and principles of object-oriented programming first.
+  虽然我们接受各种类型的贡献，但我们也有一定的代码质量要求，但我们审查您提交的代码时间是有限的，因此，我们希望避免提供入门建议等，如果您对Java编程不是很熟悉，我们建议您从一些个人项目开始，并熟悉语法，工具链等。
 
-* **Make sure you are familiar with git and the pull request workflow.**
+* **您需熟悉Git和Pull Request工作流程**
 
   [git](https://git-scm.com/) is a distributed version control system that might not be very intuitive at the beginning if you're not familiar with version control. In particular, projects using git have a particular workflow for submitting code changes, which is called the pull request workflow.
 
@@ -78,7 +79,7 @@ Here are some key things to note before jumping in:
 
   Draft pull requests are an option, but use them sparingly and within reason. They are best suited to discuss code changes that cannot be easily described in natural language or have a potential large impact on the future direction of the project. When in doubt, don't open drafts unless a maintainer asks you to do so.
 
-* **Only push code when it's ready.**
+* **只有当代码准备好了才推送。**
 
   As an extension of the above, when making changes to an already-open PR, please try to only push changes you are reasonably certain of. Pushing after every commit causes the continuous integration build queue to grow in size, slowing down work and taking up time that could be spent verifying other changes.
 
@@ -109,6 +110,8 @@ Here are some key things to note before jumping in:
   If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [development Discord server](https://www.powernukkit.org/discord). We will try to help you as much as we can.
 
   When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
+
+## <a id="目录-多语言文档"></a>🌐 多语言文档
 
 ---
 Need to switch languages? 

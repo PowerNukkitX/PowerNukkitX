@@ -311,7 +311,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
                 int y;
 
-                for (y = 255; y > top; --y) {
+                for (y = isOverWorld() ? 319 : 255; y > top; --y) {
                     // all the blocks above & including the top-most block in a column are exposed to sun and
                     // thus have a skylight value of 15
                     this.setBlockSkyLight(x, y, z, 15);
@@ -369,7 +369,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 return h;
             }
         }
-        for (int y = 255; y >= 0; --y) {
+        for (int y = isOverWorld() ? 319 : 255; y >= 0; --y) {
             if (getBlockId(x, y, z) != 0x00) {
                 this.setHeightMap(x, z, y);
                 return y;
@@ -712,14 +712,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         BlockVector3 current = new BlockVector3();
 
         int minX = Math.max(0, min.x - offsetX);
-        int minY = Math.max(0, min.y);
+        int minY = Math.max(isOverWorld() ? 0 : -64, min.y);
         int minZ = Math.max(0, min.z - offsetZ);
         
         for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
             current.x = offsetX + x;
             for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
                 current.z = offsetZ + z;
-                for (int y = Math.min(max.y, 255); y >= minY; y--) {
+                for (int y = Math.min(max.y, isOverWorld() ? 319 : 255); y >= minY; y--) {
                     current.y = y;
                     BlockState state = getBlockState(x, y, z);
                     if (condition.test(current, state)) {

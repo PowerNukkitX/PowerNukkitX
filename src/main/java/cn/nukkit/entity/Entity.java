@@ -1534,7 +1534,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
         if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
-            ((EntityRideable) riding).mountEntity(this);
+            ((EntityRideable) riding).dismountEntity(this);
         }
 
         updatePassengers();
@@ -1556,7 +1556,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         this.checkBlockCollision();
 
-        if (this.y <= -16 && this.isAlive()) {
+        if (this.y < -82 && this.isAlive()) {
             if (this instanceof Player) {
                 Player player = (Player) this;
                 if (!player.isCreative()) this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
@@ -1765,7 +1765,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * Mount or Dismounts an Entity from a/into vehicle
+     * Mount an Entity from a/into vehicle
      *
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
@@ -1773,42 +1773,50 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean mountEntity(Entity entity, byte mode) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
-        if (entity.riding != null) {
-            dismountEntity(entity);
-        } else {
-            if (isPassenger(entity)) {
-                return false;
-            }
-
-            // Entity entering a vehicle
-            EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
-            server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            broadcastLinkPacket(entity, mode);
-
-            // Add variables to entity
-            entity.riding = this;
-            entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
-            passengers.add(entity);
-
-            entity.setSeatPosition(getMountedOffset(entity));
-            updatePassengerPosition(entity);
+        if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
+            return false;
         }
-        return true;
-    }
 
-    public boolean dismountEntity(Entity entity) {
-        // Run the events
-        EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
+        // Entity entering a vehicle
+        EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
         server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return false;
         }
 
-        broadcastLinkPacket(entity, TYPE_REMOVE);
+        broadcastLinkPacket(entity, mode);
+
+        // Add variables to entity
+        entity.riding = this;
+        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
+        passengers.add(entity);
+
+        entity.setSeatPosition(getMountedOffset(entity));
+        updatePassengerPosition(entity);
+        return true;
+    }
+
+    public boolean dismountEntity(Entity entity) {
+        return this.dismountEntity(entity, true);
+    }
+
+    public boolean dismountEntity(Entity entity, boolean sendLinks) {
+        // Run the events
+        EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
+        server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            int seatIndex = this.passengers.indexOf(entity);
+            if (seatIndex == 0) {
+                this.broadcastLinkPacket(entity, TYPE_RIDE);
+            } else if (seatIndex != -1) {
+                this.broadcastLinkPacket(entity, TYPE_PASSENGER);
+            }
+            return false;
+        }
+
+        if (sendLinks) {
+            broadcastLinkPacket(entity, TYPE_REMOVE);
+        }
 
         // Refurbish the entity
         entity.riding = null;
@@ -2452,7 +2460,7 @@ public abstract class Entity extends Location implements Metadatable {
                 if (this.getRiding() == null && this.getPassengers().isEmpty() && !(this instanceof EntityEnderDragon)) {
                     EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
                     getServer().getPluginManager().callEvent(ev);
-                    
+
                     if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.THE_END.getLevel())) {
                         final Position newPos = EnumLevel.moveToTheEnd(this);
                         if (newPos != null) {
@@ -2675,7 +2683,7 @@ public abstract class Entity extends Location implements Metadatable {
             to = ev.getTo();
         }
 
-        Entity currentRide = getRiding();
+        final Entity currentRide = getRiding();
         if (currentRide != null && !currentRide.dismountEntity(this)) {
             return false;
         }
@@ -2790,14 +2798,20 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean setDataProperty(EntityData data, boolean send) {
-        if (!Objects.equals(data, this.getDataProperties().get(data.getId()))) {
-            this.getDataProperties().put(data);
-            if (send) {
-                this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), new EntityMetadata().put(this.dataProperties.get(data.getId())));
-            }
-            return true;
+        if (Objects.equals(data, this.getDataProperties().get(data.getId()))) {
+            return false;
         }
-        return false;
+
+        this.getDataProperties().put(data);
+        if (send) {
+            EntityMetadata metadata = new EntityMetadata();
+            metadata.put(this.dataProperties.get(data.getId()));
+            if (data.getId() == DATA_FLAGS_EXTENDED) {
+                metadata.put(this.dataProperties.get(DATA_FLAGS));
+            }
+            this.sendData(this.hasSpawned.values().toArray(new Player[0]), metadata);
+        }
+        return true;
     }
 
     public EntityMetadata getDataProperties() {
@@ -2965,7 +2979,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.noClip = noClip;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, noClip);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isBoss() {

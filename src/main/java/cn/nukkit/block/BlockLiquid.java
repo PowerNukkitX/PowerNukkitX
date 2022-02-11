@@ -374,7 +374,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             } else if (j == 3) {
                 ++z;
             }
-            long hash = Level.blockHash(x, y, z);
+            long hash = Level.blockHash(x, y, z, this.getLevel());
             if (!this.flowCostVisited.containsKey(hash)) {
                 Block blockSide = this.level.getBlock(x, y, z);
                 if (!this.canFlowInto(blockSide)) {
@@ -437,14 +437,14 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             }
             Block block = this.level.getBlock(x, y, z);
             if (!this.canFlowInto(block)) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), BLOCKED);
+                this.flowCostVisited.put(Level.blockHash(x, y, z, this.getLevel()), BLOCKED);
             } else if (usesWaterLogging()?
                     this.level.getBlock(x, y - 1, z).canWaterloggingFlowInto():
                     this.level.getBlock(x, y - 1, z).canBeFlowedInto()) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), CAN_FLOW_DOWN);
+                this.flowCostVisited.put(Level.blockHash(x, y, z, this.getLevel()), CAN_FLOW_DOWN);
                 flowCost[j] = maxCost = 0;
             } else if (maxCost > 0) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), CAN_FLOW);
+                this.flowCostVisited.put(Level.blockHash(x, y, z, this.getLevel()), CAN_FLOW);
                 flowCost[j] = this.calculateFlowCost(x, y, z, 1, maxCost, j ^ 0x01, j ^ 0x01);
                 maxCost = Math.min(maxCost, flowCost[j]);
             }

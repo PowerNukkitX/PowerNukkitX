@@ -75,6 +75,7 @@ public class BlockDeadBush extends BlockFlowable {
             case STAINED_TERRACOTTA:
             case DIRT:
             case PODZOL:
+            case MYCELIUM:
                 return true;
             default:
                 return false;

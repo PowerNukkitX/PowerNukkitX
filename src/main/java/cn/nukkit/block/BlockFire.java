@@ -310,23 +310,23 @@ public class BlockFire extends BlockFlowable {
 
     public boolean isBlockTopFacingSurfaceSolid(Block block) {
         if (block != null) {
-            if (block.isSolid()) {
-                return true;
-            } else {
-                if (block instanceof BlockStairs &&
-                        (block.getDamage() & 4) == 4) {
+            if (block instanceof BlockStairs ) {
 
-                    return true;
-                } else if (block instanceof BlockSlab &&
-                        (block.getDamage() & 8) == 8) {
+                return false;
+            } else if (block instanceof BlockSlab && !((BlockSlab) block).isOnTop()) {
 
-                    return true;
-                } else if (block instanceof BlockSnowLayer &&
-                        (block.getDamage() & 7) == 7) {
+                return false;
+            } else if (block instanceof BlockSnowLayer) {
 
-                    return true;
-                }
+                return false;
+            }else if (block instanceof BlockFenceGate){
+
+                return false;
+            }else if (block instanceof BlockTrapdoor){
+
+                return false;
             }
+            else return block.isSolid();
         }
 
         return false;
