@@ -2,10 +2,15 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nonnull;
+
+import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
 /**
  * @author LoboMetalurgico
@@ -15,6 +20,10 @@ import cn.nukkit.utils.BlockColor;
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockDeepslate extends BlockSolid {
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final BlockProperties PROPERTIES = new BlockProperties(PILLAR_AXIS);
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public BlockDeepslate() {
@@ -75,5 +84,13 @@ public class BlockDeepslate extends BlockSolid {
     @Override
     public BlockColor getColor() {
         return BlockColor.DEEPSLATE_GRAY;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Nonnull
+    @Override
+    public BlockProperties getProperties() {
+        return PROPERTIES;
     }
 }
