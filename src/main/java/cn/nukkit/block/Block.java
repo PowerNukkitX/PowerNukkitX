@@ -616,7 +616,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             // 564 (unused)
             // 565 (unused)
             list[COPPER_ORE] = BlockOreCopper.class; //566
-            //@Since("FUTURE") @PowerNukkitOnly int LIGHTNING_ROD = 567;
+            list[LIGHTNING_ROD] = BlockLightningRod.class; //567
             // 568 (unused)
             // 569 (unused)
             // 570 (unused)
