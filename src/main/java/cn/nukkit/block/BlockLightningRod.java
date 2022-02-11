@@ -7,10 +7,8 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
@@ -22,7 +20,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 @PowerNukkitOnly
 public class BlockLightningRod extends BlockTransparentMeta implements Faceable, RedstoneComponent {
 
-    protected boolean isPowered = false;
+    private boolean isPowered;
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PN")

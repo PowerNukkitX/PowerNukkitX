@@ -65,16 +65,17 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
         for (Block b : getAroundBlocks(this.getLocation(), 32, 32)) {
             if (b.getId() == BlockID.LIGHTNING_ROD) {
-                this.teleport(b);
+                this.teleport(b.subtract(0.5, 0, 0.5));
                 BlockLightningRod lightningRod = (BlockLightningRod) b;
                 lightningRod.setPowered(true);
+                this.level.scheduleUpdate(b, 8);
                 if (this.level.getServer().isRedstoneEnabled()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(lightningRod, 0, 15));
 
                     lightningRod.updateAroundRedstone();
-                    this.level.scheduleUpdate(b, 8);
-                    RedstoneComponent.updateAroundRedstone(getSide(lightningRod.getFacing().getOpposite()), lightningRod.getFacing());
+                    RedstoneComponent.updateAroundRedstone(lightningRod.getSide(lightningRod.getFacing().getOpposite()), lightningRod.getFacing());
                 }
+                break;
             }
         }
         if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
