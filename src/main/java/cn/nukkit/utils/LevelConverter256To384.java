@@ -71,7 +71,7 @@ public class LevelConverter256To384 {
                             BaseFullChunk chunk = loader.readChunk(chunkX, chunkZ);
 
                             if (chunk == null) continue;
-                            chunk.initChunk();
+                            //chunk.initChunk();
 
                             //TODO 把格式转换放到这里，只在开服时候转换需要转换的
 
