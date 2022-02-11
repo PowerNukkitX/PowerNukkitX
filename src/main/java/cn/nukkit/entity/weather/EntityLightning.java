@@ -65,6 +65,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
         for (Block b : getAroundBlocks(this.getLocation(), 32, 32)) {
             if (b.getId() == BlockID.LIGHTNING_ROD) {
+                this.teleport(b);
                 BlockLightningRod lightningRod = (BlockLightningRod) b;
                 lightningRod.setPowered(true);
                 if (this.level.getServer().isRedstoneEnabled()) {
