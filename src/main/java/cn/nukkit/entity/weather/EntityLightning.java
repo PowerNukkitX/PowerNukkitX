@@ -8,8 +8,10 @@ import cn.nukkit.blockproperty.value.OxidizationLevel;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent;
+import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -17,9 +19,12 @@ import cn.nukkit.level.particle.ElectricSparkParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntConsumer;
@@ -58,6 +63,19 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         this.state = 2;
         this.liveTime = ThreadLocalRandom.current().nextInt(3) + 1;
 
+        for (Block b : getAroundBlocks(this.getLocation(), 32, 32)) {
+            if (b.getId() == BlockID.LIGHTNING_ROD) {
+                BlockLightningRod lightningRod = (BlockLightningRod) b;
+                lightningRod.setPowered(true);
+                if (this.level.getServer().isRedstoneEnabled()) {
+                    this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(lightningRod, 0, 15));
+
+                    lightningRod.updateAroundRedstone();
+                    this.level.scheduleUpdate(b, 8);
+                    RedstoneComponent.updateAroundRedstone(getSide(lightningRod.getFacing().getOpposite()), lightningRod.getFacing());
+                }
+            }
+        }
         if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
             Block block = this.getLevelBlock();
             if (block.getId() == 0 || block.getId() == Block.TALL_GRASS) {
@@ -231,5 +249,19 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     @Override
     public String getOriginalName() {
         return "Lightning Bolt";
+    }
+
+
+    private static List<Block> getAroundBlocks(Location location, int horizontalRadius, int verticalHeight) {
+        List<Block> blocks = new ArrayList<>();
+        for(int x = location.getFloorX() - horizontalRadius; x <= location.getFloorX() + horizontalRadius; x++) {
+            for(int y = location.getFloorY() - verticalHeight; y <= location.getFloorY() + verticalHeight; y++) {
+                for(int z = location.getFloorZ() - horizontalRadius; z <= location.getFloorZ() + horizontalRadius; z++) {
+                    Block block = location.getLevel().getBlock(x, y, z);
+                    blocks.add(block);
+                }
+            }
+        }
+        return blocks;
     }
 }
