@@ -3451,7 +3451,7 @@
       "id": "minecraft:frame"
     },
     {
-      "blockState": "minecraft:glow_frame"
+      "id": "minecraft:glow_frame"
     },
     {
       "id": "minecraft:honey_bottle"
