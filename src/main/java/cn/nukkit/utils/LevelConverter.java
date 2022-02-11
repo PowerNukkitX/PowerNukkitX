@@ -1,16 +1,13 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.Server;
-import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.anvil.RegionLoader;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import it.unimi.dsi.fastutil.longs.LongArraySet;
-import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -22,15 +19,21 @@ import java.util.regex.Pattern;
 /**
  * @author LT_Name
  */
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 @Log4j2
-public class LevelConverter256To384 {
+public class LevelConverter {
+
+    private LevelConverter() {
+        throw new RuntimeException();
+    }
 
     /**
      * 参考文件 https://github.com/Creeperface01/WorldFixer/blob/master/src/main/java/com/creeperface/nukkitx/worldfixer/LevelConverter.java
      * @param level 要转换的世界
      * @param fast 是否快速转换
      */
-    public static void convert(Level level, boolean fast) {
+    public static void convert256To384(Level level, boolean fast) {
         LevelProvider provider = level.getProvider();
 
         Pattern pattern = Pattern.compile("-?\\d+");
