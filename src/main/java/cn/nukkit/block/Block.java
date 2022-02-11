@@ -681,7 +681,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWeatheredWaxed.class; //629
             //list[CAVE_VINES_BODY_WITH_BERRIES] = .class; //630
             //list[CAVE_VINES_HEAD_WITH_BERRIES] = .class; //631
-            //list[SMOOTH_BASALT] = .class; //632
+            list[SMOOTH_BASALT] = BlockSmoothBasalt.class; //632
             list[DEEPSLATE] = BlockDeepslate.class; //633
             list[COBBLED_DEEPSLATE] = BlockDeepslateCobbled.class; //634
             list[COBBLED_DEEPSLATE_SLAB] = BlockSlabDeepslateCobbled.class; //635
