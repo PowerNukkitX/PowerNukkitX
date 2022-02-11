@@ -770,6 +770,21 @@ public class Server {
             return;
         }
 
+        //遍历所有世界，转换区块
+        ArrayList<String> worlds = new ArrayList<>();
+        File[] files = new File(this.getFilePath() + "/worlds").listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    this.loadLevel(file.getName());
+                    Level level = this.getLevelByName(file.getName());
+                    if (level != null && level.getProvider().isOverWorld() && level.getProvider() instanceof Anvil && ((Anvil) level.getProvider()).isOldAnvil()) {
+                        LevelConverter256To384.convert(level, true);
+                    }
+                }
+            }
+        }
+
         EnumLevel.initLevels();
 
         if (this.getConfig("ticks-per.autosave", 6000) > 0) {
