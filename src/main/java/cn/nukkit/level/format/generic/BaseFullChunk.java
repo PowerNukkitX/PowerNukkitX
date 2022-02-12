@@ -369,13 +369,36 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 return h;
             }
         }
-        for (int y = isOverWorld() ? 319 : 255; y >= 0; --y) {
+        for (int y = isOverWorld() ? 319 : 255; y >= (isOverWorld() ? -64 : 0); --y) {
             if (getBlockId(x, y, z) != 0x00) {
                 this.setHeightMap(x, z, y);
                 return y;
             }
         }
         return 0;
+    }
+
+    /**
+     * 模糊搜索区块中最高的方块，不保证返回精确值
+     * @param x 区块x [0, 15]
+     * @param z 区块y [0, 15]
+     * @return 最高方块y坐标（模糊）
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int fastHighestBlockAt(final int x, final int z) {
+        int cur = 70;
+        int high = isOverWorld() ? 319 : 255;
+        int low = isOverWorld() ? -64 : 0;
+        while (low < high - 2) {
+            if(getBlockId(x, cur, z) != 0) {
+                low = cur;
+            } else {
+                high = cur;
+            }
+            cur = (low + high) / 2;
+        }
+        return high;
     }
 
     @Override

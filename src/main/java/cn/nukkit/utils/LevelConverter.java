@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.RegionLoader;
@@ -12,17 +13,21 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author LT_Name
+ * @author Superice666
  */
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
 @Log4j2
 public class LevelConverter {
+    private static final Pattern PATTERN = Pattern.compile("-?\\d+");
 
     private LevelConverter() {
         throw new RuntimeException();
@@ -30,77 +35,62 @@ public class LevelConverter {
 
     /**
      * 参考文件 https://github.com/Creeperface01/WorldFixer/blob/master/src/main/java/com/creeperface/nukkitx/worldfixer/LevelConverter.java
+     *
      * @param level 要转换的世界
-     * @param fast 是否快速转换
      */
-    public static void convert256To384(Level level, boolean fast) {
-        LevelProvider provider = level.getProvider();
-
-        Pattern pattern = Pattern.compile("-?\\d+");
-        File[] regions = new File(level.getServer().getDataPath() + "worlds/" + level.getFolderName() + "/region").listFiles(
+    public static void convert256To384(final Level level) {
+        final LevelProvider provider = level.getProvider();
+        final File[] regions = new File(level.getServer().getDataPath() + "worlds/" + level.getFolderName() + "/region").listFiles(
                 (f) -> f.isFile() && f.getName().endsWith(".mca")
         );
 
         if (regions != null && regions.length > 0) {
-            double processed = 0;
-            int blocks = 0;
-            int blockEntities = 0;
+            final AtomicInteger processed = new AtomicInteger();
             long time = System.currentTimeMillis();
             log.info("开始转换世界： '" + level.getName() + "'");
 
-            List<Vector3> chests = new ArrayList<>();
-
-            for (File region : regions) {
-                Matcher m = pattern.matcher(region.getName());
+            Arrays.stream(regions).parallel().forEach(region -> {
+                final Matcher m = PATTERN.matcher(region.getName());
                 int regionX, regionZ;
                 try {
                     if (m.find()) {
                         regionX = Integer.parseInt(m.group());
-                    } else continue;
+                    } else return;
                     if (m.find()) {
                         regionZ = Integer.parseInt(m.group());
-                    } else continue;
+                    } else return;
                 } catch (NumberFormatException e) {
-                    continue;
+                    return;
                 }
-
-                long start = System.currentTimeMillis();
-
                 try {
-                    RegionLoader loader = new RegionLoader(provider, regionX, regionZ);
-
-                    for (int chunkX = 0; chunkX < 32; chunkX++) {
-                        for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
-                            BaseFullChunk chunk = loader.readChunk(chunkX, chunkZ);
-
+                    final RegionLoader loader = new RegionLoader(provider, regionX, regionZ);
+                    BaseFullChunk chunk;
+                    for (int chunkX = 0; chunkX < 32; chunkX += 16) {
+                        for (int chunkZ = 0; chunkZ < 32; chunkZ += 16) {
+                            chunk = loader.readChunk(chunkX, chunkZ);
                             if (chunk == null) continue;
-                            //chunk.initChunk();
-
-                            //TODO 把格式转换放到这里，只在开服时候转换需要转换的
-
+                            for (int dx = 0; dx < 16; dx++) {
+                                for (int dz = 0; dz < 16; dz++) {
+                                    for (int dy = chunk.fastHighestBlockAt(dx, dz); dy >= -64; --dy) {
+                                        chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
+                                        chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
+                                        chunk.setBlockState(dx, dy, dz, BlockState.AIR);
+                                        chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                                    }
+                                }
+                            }
+                            chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
                             loader.writeChunk(chunk);
                         }
                     }
-
-                    processed++;
+                    processed.incrementAndGet();
                     loader.close();
                 } catch (Exception e) {
                     MainLogger.getLogger().logException(e);
                 }
 
-                log.info("转换中... 已完成: " + NukkitMath.round((processed / regions.length) * 100, 2) + "%");
-
-                if (!fast) {
-                    long sleep = NukkitMath.floorDouble((System.currentTimeMillis() - start) * 0.25);
-
-                    try {
-                        Thread.sleep(sleep);
-                    } catch (InterruptedException e) {
-                        log.info("Main thread was interrupted and world fixing process could not be completed.");
-                        return;
-                    }
-                }
-            }
+                log.info("转换中... 已完成: " + NukkitMath.round(((double) processed.get() / regions.length) * 100, 2) + "%");
+            });
 
             log.info("世界 " + level.getName() + " 成功转换，耗时： " + (System.currentTimeMillis() - time) / 1000 + "秒。");
         }

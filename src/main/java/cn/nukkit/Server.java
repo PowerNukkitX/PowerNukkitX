@@ -779,7 +779,7 @@ public class Server {
                     this.loadLevel(file.getName());
                     Level level = this.getLevelByName(file.getName());
                     if (level != null && level.getProvider().isOverWorld() && level.getProvider() instanceof Anvil && ((Anvil) level.getProvider()).isOldAnvil()) {
-                        LevelConverter.convert256To384(level, true);
+                        LevelConverter.convert256To384(level);
                     }
                 }
             }
