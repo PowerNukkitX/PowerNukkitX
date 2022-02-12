@@ -3886,11 +3886,15 @@
   },
   {
     "name": "minecraft:powder_snow_bucket",
-    "id": 368
+    "id": 368,
+    "oldId": 325,
+    "oldData": 11
   },
   {
     "name": "minecraft:axolotl_bucket",
-    "id": 369
+    "id": 369,
+    "oldId": 325,
+    "oldData": 12
   },
   {
     "name": "minecraft:minecart",
