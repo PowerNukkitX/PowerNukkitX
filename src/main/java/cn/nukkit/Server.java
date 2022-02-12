@@ -2156,6 +2156,8 @@ public class Server {
         return loadLevel(name, true);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public boolean loadLevel(String name, boolean init) {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
