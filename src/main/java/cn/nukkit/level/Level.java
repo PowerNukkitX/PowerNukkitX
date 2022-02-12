@@ -317,7 +317,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private long levelCurrentTick = 0;
 
-    private int dimension;
+    public int dimension;
 
     public GameRules gameRules;
 

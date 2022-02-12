@@ -717,6 +717,11 @@ public class Server {
                         LevelConverter.convert256To384(level);
                     }
                     if (level != null) {
+                        // 不这么做会造成NPE
+                        Generator generator = level.getGenerator();
+                        level.dimension = generator.getDimension();
+                        level.gameRules = level.requireProvider().getGamerules();
+                        level.setTickRate(this.baseTickRate);
                         this.unloadLevel(level, true);
                     }
                 }
