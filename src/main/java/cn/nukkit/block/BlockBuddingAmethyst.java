@@ -9,6 +9,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 
@@ -83,15 +84,25 @@ public class BlockBuddingAmethyst extends BlockSolid {
         if (time > 6) {
             return;
         }
-        final Block side = this.getSide(BlockFace.fromIndex(RANDOM.nextRange(6)));
+        final BlockFace face = BlockFace.fromIndex(RANDOM.nextRange(6));
+        final Block side = this.getSide(face);
+        BlockAmethystBud tmp;
         if (side.canBeReplaced()) {
-            this.getLevel().setBlock(side, new BlockSmallAmethystBud(), true, true);
+            tmp = new BlockSmallAmethystBud();
+            tmp.setBlockFace(face);
+            this.getLevel().setBlock(side, tmp, true, true);
         } else if (side instanceof BlockSmallAmethystBud) {
-            this.getLevel().setBlock(side, new BlockMediumAmethystBud(), true, true);
+            tmp = new BlockMediumAmethystBud();
+            tmp.setBlockFace(face);
+            this.getLevel().setBlock(side, tmp, true, true);
         } else if (side instanceof BlockMediumAmethystBud) {
-            this.getLevel().setBlock(side, new BlockLargeAmethystBud(), true, true);
+            tmp = new BlockLargeAmethystBud();
+            tmp.setBlockFace(face);
+            this.getLevel().setBlock(side, tmp, true, true);
         } else if (side instanceof BlockLargeAmethystBud) {
-            this.getLevel().setBlock(side, new BlockAmethystCluster(), true, true);
+            tmp = new BlockAmethystCluster();
+            tmp.setBlockFace(face);
+            this.getLevel().setBlock(side, tmp, true, true);
         } else {
             tryGrow(time + 1);
         }
