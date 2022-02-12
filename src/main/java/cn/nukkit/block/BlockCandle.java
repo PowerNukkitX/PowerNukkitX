@@ -43,8 +43,16 @@ public class BlockCandle extends BlockFlowable {
         super(meta);
     }
 
+    protected Block toCakeForm() {
+        return new BlockCandleCake();
+    }
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (target.getId() == BlockID.CAKE_BLOCK) {
+            target.getLevel().setBlock(target, toCakeForm(), true, true);
+            return true;
+        }
         if(target.up().getId() == getId()) {
             target = target.up();
         }

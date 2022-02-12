@@ -733,6 +733,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[GREEN_CANDLE] = BlockCandleGreen.class; //681
             list[RED_CANDLE] = BlockCandleRed.class; //682
             list[BLACK_CANDLE] = BlockCandleBlack.class; //683
+            list[CANDLE_CAKE] = BlockCandleCake.class; //684
             // Unused 684 - 700
             list[WAXED_OXIDIZED_COPPER] = BlockCopperOxidizedWaxed.class; //701
             list[WAXED_OXIDIZED_CUT_COPPER] = BlockCopperCutOxidizedWaxed.class; //702

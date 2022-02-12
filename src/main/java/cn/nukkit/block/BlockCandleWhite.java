@@ -20,4 +20,9 @@ public class BlockCandleWhite extends BlockCandle {
     public int getId() {
         return BlockID.WHITE_CANDLE;
     }
+
+    @Override
+    protected Block toCakeForm() {
+        return new BlockCandleCakeWhite();
+    }
 }

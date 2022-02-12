@@ -16,4 +16,9 @@ public class BlockCandleLime extends BlockCandle {
     public int getId() {
         return BlockID.LIME_CANDLE;
     }
+
+    @Override
+    protected Block toCakeForm() {
+        return new BlockCandleCakeLime();
+    }
 }

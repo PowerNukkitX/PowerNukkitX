@@ -769,7 +769,23 @@ public interface BlockID {
     @Since("FUTURE") @PowerNukkitOnly int GREEN_CANDLE = 681;
     @Since("FUTURE") @PowerNukkitOnly int RED_CANDLE = 682;
     @Since("FUTURE") @PowerNukkitOnly int BLACK_CANDLE = 683;
-    // Unused 684 - 700
+    @Since("FUTURE") @PowerNukkitOnly int CANDLE_CAKE = 684;
+    @Since("FUTURE") @PowerNukkitOnly int WHITE_CANDLE_CAKE = 685;
+    @Since("FUTURE") @PowerNukkitOnly int ORANGE_CANDLE_CAKE = 686;
+    @Since("FUTURE") @PowerNukkitOnly int MAGENTA_CANDLE_CAKE = 687;
+    @Since("FUTURE") @PowerNukkitOnly int LIGHT_BLUE_CANDLE_CAKE = 688;
+    @Since("FUTURE") @PowerNukkitOnly int YELLOW_CANDLE_CAKE = 689;
+    @Since("FUTURE") @PowerNukkitOnly int LIME_CANDLE_CAKE = 690;
+    @Since("FUTURE") @PowerNukkitOnly int PINK_CANDLE_CAKE = 691;
+    @Since("FUTURE") @PowerNukkitOnly int GRAY_CANDLE_CAKE = 692;
+    @Since("FUTURE") @PowerNukkitOnly int LIGHT_GRAY_CANDLE_CAKE = 693;
+    @Since("FUTURE") @PowerNukkitOnly int CYAN_CANDLE_CAKE = 694;
+    @Since("FUTURE") @PowerNukkitOnly int PURPLE_CANDLE_CAKE = 695;
+    @Since("FUTURE") @PowerNukkitOnly int BLUE_CANDLE_CAKE = 696;
+    @Since("FUTURE") @PowerNukkitOnly int BROWN_CANDLE_CAKE = 697;
+    @Since("FUTURE") @PowerNukkitOnly int GREEN_CANDLE_CAKE = 698;
+    @Since("FUTURE") @PowerNukkitOnly int RED_CANDLE_CAKE = 699;
+    @Since("FUTURE") @PowerNukkitOnly int BLACK_CANDLE_CAKE = 700;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_COPPER = 701;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER = 702;
     @Since("FUTURE") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;

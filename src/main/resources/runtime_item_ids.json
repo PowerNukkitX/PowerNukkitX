@@ -5310,7 +5310,8 @@
   },
   {
     "name": "minecraft:black_candle_cake",
-    "id": -445
+    "id": -445,
+    "oldId": -445
   },
   {
     "name": "minecraft:blue_candle",
@@ -5319,7 +5320,8 @@
   },
   {
     "name": "minecraft:blue_candle_cake",
-    "id": -441
+    "id": -441,
+    "oldId": -441
   },
   {
     "name": "minecraft:brown_candle",
@@ -5328,7 +5330,8 @@
   },
   {
     "name": "minecraft:brown_candle_cake",
-    "id": -442
+    "id": -442,
+    "oldId": -442
   },
   {
     "name": "minecraft:candle",
@@ -5337,7 +5340,8 @@
   },
   {
     "name": "minecraft:candle_cake",
-    "id": -429
+    "id": -429,
+    "oldId": -429
   },
   {
     "name": "minecraft:client_request_placeholder_block",
@@ -5350,7 +5354,8 @@
   },
   {
     "name": "minecraft:cyan_candle_cake",
-    "id": -439
+    "id": -439,
+    "oldId": -439
   },
   {
     "name": "minecraft:firefly_spawn_egg",
@@ -5375,7 +5380,8 @@
   },
   {
     "name": "minecraft:gray_candle_cake",
-    "id": -437
+    "id": -437,
+    "oldId": -437
   },
   {
     "name": "minecraft:green_candle",
@@ -5384,7 +5390,8 @@
   },
   {
     "name": "minecraft:green_candle_cake",
-    "id": -443
+    "id": -443,
+    "oldId": -443
   },
   {
     "name": "minecraft:light_blue_candle",
@@ -5393,7 +5400,8 @@
   },
   {
     "name": "minecraft:light_blue_candle_cake",
-    "id": -433
+    "id": -433,
+    "oldId": -433
   },
   {
     "name": "minecraft:light_gray_candle",
@@ -5402,7 +5410,8 @@
   },
   {
     "name": "minecraft:light_gray_candle_cake",
-    "id": -438
+    "id": -438,
+    "oldId": -438
   },
   {
     "name": "minecraft:lime_candle",
@@ -5411,7 +5420,8 @@
   },
   {
     "name": "minecraft:lime_candle_cake",
-    "id": -435
+    "id": -435,
+    "oldId": -435
   },
   {
     "name": "minecraft:magenta_candle",
@@ -5420,7 +5430,8 @@
   },
   {
     "name": "minecraft:magenta_candle_cake",
-    "id": -432
+    "id": -432,
+    "oldId": -432
   },
   {
     "name": "minecraft:music_disc_otherside",
@@ -5445,7 +5456,8 @@
   },
   {
     "name": "minecraft:orange_candle_cake",
-    "id": -431
+    "id": -431,
+    "oldId": -431
   },
   {
     "name": "minecraft:pearlescent_froglight",
@@ -5458,7 +5470,8 @@
   },
   {
     "name": "minecraft:pink_candle_cake",
-    "id": -436
+    "id": -436,
+    "oldId": -436
   },
   {
     "name": "minecraft:purple_candle",
@@ -5467,7 +5480,8 @@
   },
   {
     "name": "minecraft:purple_candle_cake",
-    "id": -440
+    "id": -440,
+    "oldId": -440
   },
   {
     "name": "minecraft:red_candle",
@@ -5476,7 +5490,8 @@
   },
   {
     "name": "minecraft:red_candle_cake",
-    "id": -444
+    "id": -444,
+    "oldId": -444
   },
   {
     "name": "minecraft:sculk",
@@ -5513,7 +5528,8 @@
   },
   {
     "name": "minecraft:white_candle_cake",
-    "id": -430
+    "id": -430,
+    "oldId": -430
   },
   {
     "name": "minecraft:yellow_candle",
@@ -5522,6 +5538,7 @@
   },
   {
     "name": "minecraft:yellow_candle_cake",
-    "id": -434
+    "id": -434,
+    "oldId": -434
   }
 ]

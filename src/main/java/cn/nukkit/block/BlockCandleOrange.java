@@ -20,4 +20,9 @@ public class BlockCandleOrange extends BlockCandle {
     public int getId() {
         return BlockID.ORANGE_CANDLE;
     }
+
+    @Override
+    protected Block toCakeForm() {
+        return new BlockCandleCakeOrange();
+    }
 }

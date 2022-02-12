@@ -7,46 +7,50 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCake;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * @author Nukkit Project Team
- */
-public class BlockCake extends BlockTransparentMeta {
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
+public class BlockCandleCake extends BlockTransparentMeta {
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    private static final IntBlockProperty LIT = new IntBlockProperty("lit", false, 1, 0, 1);
 
     @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final IntBlockProperty BITES = new IntBlockProperty("bite_counter", false, 6);
+    @Since("1.6.0.0-PNX")
+    public static final BlockProperties PROPERTIES = new BlockProperties(LIT);
 
-    @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(BITES);
-
-    public BlockCake(int meta) {
+    public BlockCandleCake(int meta) {
         super(meta);
     }
 
-    public BlockCake() {
+    public BlockCandleCake() {
         this(0);
     }
 
     @Override
     public String getName() {
-        return "Cake Block";
+        return "Cake Block With " + getColorName() + " Candle";
+    }
+
+    protected String getColorName() {
+        return "Simple";
     }
 
     @Override
     public int getId() {
-        return CAKE_BLOCK;
+        return CANDLE_CAKE;
     }
 
-    @Since("1.4.0.0-PN")
+    @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     @Nonnull
     @Override
@@ -77,7 +81,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return this.x + (1 + getDamage() * 2) / 16;
+        return this.x + (1 + getDamage() * 2) / 16d;
     }
 
     @Override
@@ -109,7 +113,6 @@ public class BlockCake extends BlockTransparentMeta {
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         if (down().getId() != Block.AIR) {
             getLevel().setBlock(block, this, true, true);
-
             return true;
         }
         return false;
@@ -120,7 +123,6 @@ public class BlockCake extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().getId() == Block.AIR) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
@@ -128,9 +130,13 @@ public class BlockCake extends BlockTransparentMeta {
         return 0;
     }
 
+    protected BlockCandle toCandleForm() {
+        return new BlockCandle();
+    }
+
     @Override
     public Item[] getDrops(Item item) {
-        return Item.EMPTY_ARRAY;
+        return new Item[]{toCandleForm().toItem()};
     }
 
     @Override
@@ -138,20 +144,24 @@ public class BlockCake extends BlockTransparentMeta {
         return new ItemCake();
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
-        if (item.getId() >= BlockID.CANDLE && item.getId() <= BlockID.BLACK_CANDLE) {
-            return false;
-        }
-        if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
-            if (getDamage() <= 0x06) setDamage(getDamage() + 1);
-            if (getDamage() >= 0x06) {
-                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-            } else {
-                Food.getByRelative(this).eatenBy(player);
-                getLevel().setBlock(this, this, true);
-            }
+        if (getPropertyValue(LIT) == 1 && item.getId() != ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, 0);
+            getLevel().addSound(this, Sound.RANDOM_FIZZ);
+            getLevel().setBlock(this, this, true, true);
             return true;
+        } else if (getPropertyValue(LIT) == 0 && item.getId() == ItemID.FLINT_AND_STEEL) {
+            setPropertyValue(LIT, 1);
+            getLevel().addSound(this, Sound.FIRE_IGNITE);
+            getLevel().setBlock(this, this, true, true);
+            return true;
+        } else if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
+            final Block cake = new BlockCake();
+            this.getLevel().setBlock(this, cake, true, true);
+            this.getLevel().dropItem(this.add(0.5, 0.5, 0.5), getDrops(null)[0]);
+            return this.getLevel().getBlock(this).onActivate(item, player);
         }
         return false;
     }
@@ -163,7 +173,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public int getComparatorInputOverride() {
-        return (7 - this.getDamage()) * 2;
+        return 14;
     }
 
     @Override
