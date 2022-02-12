@@ -1,13 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockProperty;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
@@ -16,21 +12,14 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.generator.object.BasicGenerator;
-import cn.nukkit.level.generator.object.tree.NewJungleTree;
 import cn.nukkit.level.generator.object.tree.ObjectAzaleaTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import org.graalvm.compiler.loop.MathUtil;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
