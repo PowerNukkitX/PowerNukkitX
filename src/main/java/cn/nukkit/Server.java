@@ -717,9 +717,7 @@ public class Server {
                         LevelConverter.convert256To384(level);
                     }
                     if (level != null) {
-                        level.initLevel();
-                        this.getPluginManager().callEvent(new LevelLoadEvent(level));
-                        level.setTickRate(this.baseTickRate);
+                        this.unloadLevel(level, true);
                     }
                 }
             }
