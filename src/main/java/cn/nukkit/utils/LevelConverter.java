@@ -65,13 +65,14 @@ public class LevelConverter {
                 try {
                     final RegionLoader loader = new RegionLoader(provider, regionX, regionZ);
                     BaseFullChunk chunk;
-                    for (int chunkX = 0; chunkX < 32; chunkX += 16) {
-                        for (int chunkZ = 0; chunkZ < 32; chunkZ += 16) {
+                    for (int chunkX = 0; chunkX < 32; chunkX++) {
+                        for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                             chunk = loader.readChunk(chunkX, chunkZ);
                             if (chunk == null) continue;
+                            chunk.initChunk();
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
-                                    for (int dy = chunk.fastHighestBlockAt(dx, dz); dy >= -64; --dy) {
+                                    for (int dy = chunk.getHighestBlockAt(dx, dz, false); dy >= -64; --dy) {
                                         chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
                                         chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
                                         chunk.setBlockState(dx, dy, dz, BlockState.AIR);
@@ -83,16 +84,14 @@ public class LevelConverter {
                             loader.writeChunk(chunk);
                         }
                     }
-                    processed.incrementAndGet();
+                    log.info(String.format("转换中... 已完成: %.2f%%", ((double) processed.incrementAndGet() / regions.length) * 100));
                     loader.close();
                 } catch (Exception e) {
                     MainLogger.getLogger().logException(e);
                 }
-
-                log.info("转换中... 已完成: " + NukkitMath.round(((double) processed.get() / regions.length) * 100, 2) + "%");
             });
 
-            log.info("世界 " + level.getName() + " 成功转换，耗时： " + (System.currentTimeMillis() - time) / 1000 + "秒。");
+            log.info(String.format("世界 %s 成功转换，耗时： %.2f秒。", level.getName(), (System.currentTimeMillis() - time) / 1000f));
         }
     }
 
