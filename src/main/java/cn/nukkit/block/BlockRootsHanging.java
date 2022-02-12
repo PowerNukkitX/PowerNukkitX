@@ -1,7 +1,12 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author LoboMetalurgico
@@ -24,5 +29,18 @@ public class BlockRootsHanging extends BlockRoots {
     @Override
     public int getId() {
         return HANGING_ROOTS;
+    }
+
+    @Override
+    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+        return isSupportValid() && super.place(item, block, target, face, fx, fy, fz, player);
+    }
+
+    @Override
+    protected boolean isSupportValid() {
+        if (this.up().getBlock() instanceof BlockSolid) {
+            return true;
+        }
+        return false;
     }
 }
