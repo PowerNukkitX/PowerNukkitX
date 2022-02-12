@@ -628,8 +628,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             //list[SPORE_BLOSSOM] = .class; //576
             //list[CAVE_VINES] = .class; //577
             //list[BIG_DRIPLEAF] = .class; //578
-            //list[AZALEA_LEAVES] = .class; //579
-            //list[AZALEA_LEAVES_FLOWERED] = .class; //580
+            list[AZALEA_LEAVES] = BlockAzaleaLeaves.class; //579
+            list[AZALEA_LEAVES_FLOWERED] = BlockAzaleaLeavesFlowered.class; //580
             list[CALCITE] = BlockCalcite.class; //581
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
             list[BUDDING_AMETHYST] = BlockBuddingAmethyst.class; //583
