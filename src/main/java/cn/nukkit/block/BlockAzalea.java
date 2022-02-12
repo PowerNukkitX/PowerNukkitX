@@ -1,14 +1,37 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.api.DeprecationDetails;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.BlockProperty;
+import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.blockproperty.value.WoodType;
+import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.ListChunkManager;
+import cn.nukkit.level.Sound;
+import cn.nukkit.level.generator.object.BasicGenerator;
+import cn.nukkit.level.generator.object.tree.NewJungleTree;
+import cn.nukkit.level.generator.object.tree.ObjectAzaleaTree;
+import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
+import org.graalvm.compiler.loop.MathUtil;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author LoboMetalurgico
@@ -17,15 +40,22 @@ import javax.annotation.Nonnull;
 
 @PowerNukkitOnly
 @Since("FUTURE")
-public class BlockAzalea extends BlockTransparent {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+public class BlockAzalea extends BlockFlowable {
+
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockAzalea() {
+        this(0);
     }
+
+
+    @PowerNukkitOnly
+    public BlockAzalea(int meta) {
+        super(meta);
+    }
+
 
     @PowerNukkitOnly
     @Since("FUTURE")
@@ -43,6 +73,12 @@ public class BlockAzalea extends BlockTransparent {
     @Override
     public int getId() {
         return AZALEA;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
     }
 
     @Override
@@ -65,19 +101,58 @@ public class BlockAzalea extends BlockTransparent {
         return true;
     }
 
+
     @Override
-    public boolean canPassThrough() {
-        return true;
+    public boolean onActivate(@Nonnull Item item, Player player) {
+        if (item.isFertilizer()) { // BoneMeal
+            if (player != null && !player.isCreative()) {
+                item.count--;
+            }
+
+            this.level.addParticle(new BoneMealParticle(this));
+            if (ThreadLocalRandom.current().nextFloat() >= 0.6) {
+                return true;
+            }
+
+            this.grow();
+
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public boolean canBeReplaced() {
-        return true;
+    public int onUpdate(int type) {
+        double chance = ThreadLocalRandom.current().nextDouble();
+        boolean aged = chance > 0.8;
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!BlockFlower.isSupportValid(down())) {
+                this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
+            if (ThreadLocalRandom.current().nextInt(1, 8) == 1 && getLevel().getFullLight(add(0, 1, 0)) >= BlockCrops.MINIMUM_LIGHT_LEVEL) {
+                if (aged) {
+                    this.grow();
+                } else {
+                    this.getLevel().setBlock(this, this, true);
+                    return Level.BLOCK_UPDATE_RANDOM;
+                }
+            } else {
+                return Level.BLOCK_UPDATE_RANDOM;
+            }
+        }
+        return Level.BLOCK_UPDATE_NORMAL;
     }
 
     @Override
-    public boolean canBeClimbed() {
-        return true;
+    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (BlockFlower.isSupportValid(down())) {
+            this.getLevel().setBlock(block, this, true, true);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -97,6 +172,60 @@ public class BlockAzalea extends BlockTransparent {
 
     @Override
     public Item[] getDrops(Item item) {
-            return Item.EMPTY_ARRAY;
+        int dropOdds;
+        Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
+
+        switch (fortune) {
+            case 0:
+                dropOdds = 16;
+                break;
+            case 1:
+                dropOdds = 12;
+                break;
+            case 2:
+                dropOdds = 10;
+                break;
+            default:
+                dropOdds = 20;
+                break;
+        }
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        if (random.nextInt(dropOdds) == 0) {
+            return new Item[]{toItem()};
+        }
+
+        return Item.EMPTY_ARRAY;
+
+    }
+
+
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public boolean isSameType(Vector3 pos, WoodType type) {
+        Block block = this.level.getBlock(pos);
+        return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
+    }
+
+    private void grow() {
+        BasicGenerator generator = null;
+        Vector3 vector3 = new Vector3();
+
+        generator = new ObjectAzaleaTree();
+        vector3 = this.add(0,0,0);
+
+
+        ListChunkManager chunkManager = new ListChunkManager(this.level);
+        boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
+        StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
+        this.level.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled() || !success) {
+            return;
+        }
+        for(Block block : ev.getBlockList()) {
+            this.level.setBlock(block, block);
+        }
     }
 }
