@@ -632,11 +632,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             //list[AZALEA_LEAVES_FLOWERED] = .class; //580
             list[CALCITE] = BlockCalcite.class; //581
             list[AMETHYST_BLOCK] = BlockAmethyst.class; //582
-            //list[BUDDING_AMETHYST] = .class; //583
-            //list[AMETHYST_CLUSTER] = .class; //584
-            //list[LARGE_AMETHYST_BUD] = .class; //585
-            //list[MEDIUM_AMETHYST_BUD] = .class; //586
-            //list[SMALL_AMETHYST_BUD] = .class; //587
+            list[BUDDING_AMETHYST] = BlockBuddingAmethyst.class; //583
+            list[AMETHYST_CLUSTER] = BlockAmethystCluster.class; //584
+            list[LARGE_AMETHYST_BUD] = BlockLargeAmethystBud.class; //585
+            list[MEDIUM_AMETHYST_BUD] = BlockMediumAmethystBud.class; //586
+            list[SMALL_AMETHYST_BUD] = BlockSmallAmethystBud.class; //587
             list[TUFF] = BlockTuff.class; //588
             list[TINTED_GLASS] = BlockGlassTinted.class; //589
             list[MOSS_CARPET] = BlockMossCarpet.class; //590
