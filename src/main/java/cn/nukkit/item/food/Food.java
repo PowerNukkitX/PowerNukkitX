@@ -122,7 +122,7 @@ public abstract class Food {
     @PowerNukkitOnly
     public static final Food suspicious_stew_wither = registerDefaultFood(new FoodEffectiveInBow(6, 7.2F)
             .addEffect(Effect.getEffect(Effect.WITHER).setAmplifier(1).setDuration(6 * 20)).addRelative(Item.SUSPICIOUS_STEW, 9));
-    
+
     @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Was added in Cloudburst Nukkit with another name", replaceWith = "honey_bottle")
     @PowerNukkitOnly
     public static final Food honey = registerDefaultFood(new FoodHoney(6, 1.2F).addRelative(Item.HONEY_BOTTLE));
@@ -130,6 +130,10 @@ public abstract class Food {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "PowerNukkit uses FoodHoney instead of FoodNormal")
     @Since("1.4.0.0-PN")
     public static final Food honey_bottle = honey;
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.GLOW_BERRIES));
 
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {

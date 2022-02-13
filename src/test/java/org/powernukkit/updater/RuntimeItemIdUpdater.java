@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.powernukkit.tools;
+package org.powernukkit.updater;
 
 import cn.nukkit.Server;
 import com.google.gson.Gson;

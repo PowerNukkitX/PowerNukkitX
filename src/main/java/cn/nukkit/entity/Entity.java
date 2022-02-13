@@ -337,6 +337,8 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.5.0.0-PN") public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
     @Since("FUTURE") public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
     @Since("FUTURE") public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
+    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_CROAKING = dynamic(100);
+    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_EAT_MOB = dynamic(101);
 
     public static long entityCount = 1;
 
@@ -1598,7 +1600,7 @@ public abstract class Entity extends Location implements Metadatable {
             getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.NETHER.getLevel())) {
-                Position newPos = EnumLevel.moveToNether(this);
+                Position newPos = EnumLevel.convertPosBetweenNetherAndOverworld(this);
                 if (newPos != null) {
                     /*for (int x = -1; x < 2; x++) {
                         for (int z = -1; z < 2; z++) {
@@ -1641,8 +1643,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     private Position getNearestValidPortal(Position currentPos) {
         AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(
-                new Vector3(currentPos.getFloorX() - 128.0, 1.0, currentPos.getFloorZ() - 128.0),
-                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER? 128 : 256, currentPos.getFloorZ() + 128.0));
+                new Vector3(currentPos.getFloorX() - 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 0 : -64, currentPos.getFloorZ() - 128.0),
+                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER? 128 : 320, currentPos.getFloorZ() + 128.0));
         BiPredicate<BlockVector3, BlockState> condition = (pos, state) -> state.getBlockId() == BlockID.NETHER_PORTAL;
         List<Block> blocks = currentPos.level.scanBlocks(axisAlignedBB, condition);
 
@@ -1756,6 +1758,12 @@ public abstract class Entity extends Location implements Metadatable {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         this.updateMovement();
+
+        if (this.getLevelBlock() instanceof BlockBigDripleaf){
+            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+            if (block.isHead())
+                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+        }
 
         return hasUpdate;
     }

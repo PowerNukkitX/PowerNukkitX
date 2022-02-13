@@ -140,6 +140,9 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
+        if (item.getId() >= BlockID.CANDLE && item.getId() <= BlockID.BLACK_CANDLE) {
+            return false;
+        }
         if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
             if (getDamage() <= 0x06) setDamage(getDamage() + 1);
             if (getDamage() >= 0x06) {
@@ -176,7 +179,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }
