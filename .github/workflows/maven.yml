@@ -1,4 +1,4 @@
-name: PowerNukkitX-17
+name: PowerNukkitX
 
 on: [push,pull_request]
 
