@@ -79,4 +79,40 @@ public class AddVolumeEntityPacket extends DataPacket {
     public void setData(CompoundTag data) {
         this.data = data;
     }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getEngineVersion() {
+        return engineVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setEngineVersion(String engineVersion) {
+        this.engineVersion = engineVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
 }

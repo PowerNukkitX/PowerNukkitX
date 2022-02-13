@@ -39,6 +39,9 @@ class AddVolumeEntityPacketTest {
         val packet = new AddVolumeEntityPacket();
         packet.setId(1L);
         packet.setData(new CompoundTag("A"));
+        packet.setEngineVersion("1.18.10");
+        packet.setIdentifier("");
+        packet.setInstanceName("");
         packet.encode();
         
         val packet2 = new AddVolumeEntityPacket();

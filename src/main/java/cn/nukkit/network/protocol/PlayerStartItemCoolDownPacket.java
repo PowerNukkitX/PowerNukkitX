@@ -25,4 +25,20 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
         putString(itemCategory);
         putInt(coolDownDuration);
     }
+
+    public String getItemCategory() {
+        return itemCategory;
+    }
+
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
+    }
+
+    public int getCoolDownDuration() {
+        return coolDownDuration;
+    }
+
+    public void setCoolDownDuration(int coolDownDuration) {
+        this.coolDownDuration = coolDownDuration;
+    }
 }

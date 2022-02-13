@@ -25,4 +25,20 @@ public class ScriptMessagePacket extends DataPacket {
         putString(channel);
         putString(message);
     }
+
+    public String _getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
