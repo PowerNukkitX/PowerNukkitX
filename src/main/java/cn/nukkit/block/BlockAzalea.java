@@ -32,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockAzalea extends BlockFlowable {
 
 
+
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly

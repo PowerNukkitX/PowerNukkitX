@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWood2;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
@@ -9,6 +10,8 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
 public class ObjectAzaleaTree extends TreeGenerator {
+
+    private static final Block OAK_LOG = Block.get(BlockID.WOOD2, BlockWood2.OAK);
 
     @Override
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
@@ -20,11 +23,9 @@ public class ObjectAzaleaTree extends TreeGenerator {
         int i2 = k + i;
 
         if (k >= -63 && k + i + 1 < 320) {
-            Vector3 trackLocation = position.clone();
             Vector3 blockpos = position.down();
             for (int il = 0; il < i + 1; il++) {
-                placeLogAt(level, trackLocation.getFloorX(), trackLocation.getFloorY(), trackLocation.getFloorZ());
-                trackLocation.up();
+                placeLogAt(level, j, il + k, l);
             }
             this.setDirtAt(level, blockpos);
 
@@ -83,7 +84,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
 
         if (material == Block.AIR || material == Block.AZALEA_LEAVES || material == Block.AZALEA_LEAVES_FLOWERED) {
-            this.setBlockAndNotifyAdequately(worldIn, blockpos, Block.get(BlockID.LOG));
+            this.setBlockAndNotifyAdequately(worldIn, blockpos, OAK_LOG);
         }
     }
 
