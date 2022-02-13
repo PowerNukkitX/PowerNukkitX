@@ -6,7 +6,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
@@ -20,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
-    public Boolean tilting = false;
-    public Boolean recovering = false;
+    public AtomicBoolean tilting = new AtomicBoolean(false);
+    public AtomicBoolean recovering = new AtomicBoolean(false);
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
@@ -110,6 +109,14 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             this.level.setBlock(block,blockBigDripleafTop,true,true);
             return true;
         }
+        if (block.getSide(BlockFace.DOWN) instanceof BlockBigDripleaf) {
+            BlockBigDripleaf blockDown = (BlockBigDripleaf) this.level.getBlock(block.getSide(BlockFace.DOWN));
+            blockDown.setHead(false);
+            blockBigDripleafTop.setBlockFace(((BlockBigDripleaf) block.getSide(BlockFace.DOWN)).getBlockFace());
+            this.level.setBlock(blockDown,blockDown,true,true);
+            this.level.setBlock(block,blockBigDripleafTop,true,true);
+            return true;
+        }
         return false;
     }
 
@@ -140,6 +147,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return true;
     }
 
+
+
     @Override
     public int onUpdate(int type) {
         if (!canKeepAlive(this)) {
@@ -153,41 +162,46 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     hasEntityOn.set(true);
             });
             if (hasEntityOn.get()){
-                if (!tilting && this.getTilt() == Tilt.NONE){
-                    tilting = true;
+                if (!tilting.get() && this.getTilt() == Tilt.NONE){
+                    tilting.set(true);
                     Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (!(this.getBlock() instanceof BlockBigDripleaf) || !(((BlockBigDripleaf)this.getBlock()).getTilt() == this.getTilt()))
+                        if (isBlockChanged())
                             return;
                         this.setTilt(Tilt.PARTIAL_TILT);
-                        this.level.setBlockStateAt(this.getFloorX(),this.getFloorY(),this.getFloorZ(),this.getCurrentState());
+                        this.level.setBlock(this,this,true,true);
                     }, 15);
                     Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (!(this.getBlock() instanceof BlockBigDripleaf) || !(((BlockBigDripleaf)this.getBlock()).getTilt() == this.getTilt())) {
-                            tilting = false;
+                        if (isBlockChanged()){
+                            tilting.set(false);
                             return;
                         }
                         this.setTilt(Tilt.FULL_TILT);
-                        this.level.setBlockStateAt(this.getFloorX(),this.getFloorY(),this.getFloorZ(),this.getCurrentState());
-                        tilting = false;
+                        this.level.setBlock(this,this,true,true);
+                        tilting.set(false);
                         this.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                        this.level.scheduleUpdate(this,20);//make sure that the block is updated
                     }, 30);
                 }
             }else {
-                if (!recovering && this.getTilt() != Tilt.NONE) {
-                    recovering = true;
+                if (!recovering.get() && this.getTilt() != Tilt.NONE) {
+                    recovering.set(true);
                     Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (!(this.getBlock() instanceof BlockBigDripleaf) || !(((BlockBigDripleaf)this.getBlock()).getTilt() == this.getTilt())) {
-                            recovering = false;
+                        if (isBlockChanged()) {
+                            recovering.set(false);
                             return;
                         }
                         this.setTilt(Tilt.NONE);
-                        this.level.setBlockStateAt(this.getFloorX(),this.getFloorY(),this.getFloorZ(),this.getCurrentState());
-                        recovering = false;
+                        this.level.setBlock(this,this,true,true);
+                        recovering.set(false);
                     },100);
                 }
             }
         }
         return super.onUpdate(type);
+    }
+
+    public boolean isBlockChanged() {
+        return !(this.getLevelBlock() instanceof BlockBigDripleaf) || !(((BlockBigDripleaf) this.getLevelBlock()).getTilt() == this.getTilt());
     }
 
     public boolean canKeepAlive(Position pos){
