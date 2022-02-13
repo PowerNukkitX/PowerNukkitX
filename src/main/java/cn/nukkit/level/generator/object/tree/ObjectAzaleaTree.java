@@ -23,7 +23,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
             Vector3 trackLocation = position.clone();
             Vector3 blockpos = position.down();
             for (int il = 0; il < i + 1; il++) {
-                placeLogAt(level, trackLocation);
+                placeLogAt(level, trackLocation.getFloorX(), trackLocation.getFloorY(), trackLocation.getFloorZ());
                 trackLocation.up();
             }
             this.setDirtAt(level, blockpos);
@@ -31,7 +31,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
 
             for (int i3 = -2; i3 <= 1; ++i3) {
                 for (int l3 = -2; l3 <= 1; ++l3) {
-                    int k4 = 0;
+                    int k4 = 1;
                     int offsetX = rand.nextRange(0, 1);
                     int offsetY = rand.nextRange(0, 1);
                     int offsetZ = rand.nextRange(0, 1);
@@ -77,11 +77,13 @@ public class ObjectAzaleaTree extends TreeGenerator {
         }
     }
 
-    private void placeLogAt(ChunkManager worldIn, Vector3 pos) {
-        int material = worldIn.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    private void placeLogAt(ChunkManager worldIn, int x, int y, int z) {
+        Vector3 blockpos = new Vector3(x, y, z);
+        int material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
+
 
         if (material == Block.AIR || material == Block.AZALEA_LEAVES || material == Block.AZALEA_LEAVES_FLOWERED) {
-            this.setBlockAndNotifyAdequately(worldIn, pos, Block.get(BlockID.LOG));
+            this.setBlockAndNotifyAdequately(worldIn, blockpos, Block.get(BlockID.LOG));
         }
     }
 
