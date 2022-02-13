@@ -261,6 +261,9 @@ public interface ItemID {
 
     int SHIELD = 513;
 
+
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;
+
     @PowerNukkitOnly int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;

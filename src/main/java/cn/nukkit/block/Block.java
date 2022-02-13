@@ -612,7 +612,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             // 560 Special block: minecraft:unknown
             list[POWDER_SNOW] = BlockPowderSnow.class; //561
             //list[SCULK_SENSOR] = .class; //562
-            //list[POINTED_DRIPSTONE] = .class; //563
+            list[POINTED_DRIPSTONE] = BlockPointedDripstone.class; //563
             // 564 (unused)
             // 565 (unused)
             list[COPPER_ORE] = BlockOreCopper.class; //566
@@ -626,8 +626,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[HANGING_ROOTS] = BlockRootsHanging.class; //574
             list[MOSS_BLOCK] = BlockMoss.class; //575
             list[SPORE_BLOSSOM] = BlockSporeBlossom.class; //576
-            //list[CAVE_VINES] = .class; //577
-            //list[BIG_DRIPLEAF] = .class; //578
+            list[CAVE_VINES] = BlockCaveVines.class; //577
+            list[BIG_DRIPLEAF] = BlockBigDripleaf.class; //578
             list[AZALEA_LEAVES] = BlockAzaleaLeaves.class; //579
             list[AZALEA_LEAVES_FLOWERED] = BlockAzaleaLeavesFlowered.class; //580
             list[CALCITE] = BlockCalcite.class; //581
@@ -640,7 +640,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[TUFF] = BlockTuff.class; //588
             list[TINTED_GLASS] = BlockGlassTinted.class; //589
             list[MOSS_CARPET] = BlockMossCarpet.class; //590
-            //list[SMALL_DRIPLEAF_BLOCK] = .class; //591
+            list[SMALL_DRIPLEAF_BLOCK] = BlockSmallDripleaf.class; //591
             list[AZALEA] = BlockAzalea.class; //592
             list[FLOWERING_AZALEA] = BlockAzaleaFlowering.class; //593
             list[GLOW_FRAME] = BlockItemFrameGlow.class; //594
@@ -679,8 +679,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[WAXED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWaxed.class; //627
             list[WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutExposedWaxed.class; //628
             list[WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB] = BlockDoubleSlabCopperCutWeatheredWaxed.class; //629
-            //list[CAVE_VINES_BODY_WITH_BERRIES] = .class; //630
-            //list[CAVE_VINES_HEAD_WITH_BERRIES] = .class; //631
+            list[CAVE_VINES_BODY_WITH_BERRIES] = BlockCaveVinesBodyWithBerries.class; //630
+            list[CAVE_VINES_HEAD_WITH_BERRIES] = BlockCaveVinesHeadWithBerries.class; //631
             list[SMOOTH_BASALT] = BlockSmoothBasalt.class; //632
             list[DEEPSLATE] = BlockDeepslate.class; //633
             list[COBBLED_DEEPSLATE] = BlockDeepslateCobbled.class; //634
