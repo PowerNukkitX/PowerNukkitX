@@ -612,7 +612,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             // 560 Special block: minecraft:unknown
             list[POWDER_SNOW] = BlockPowderSnow.class; //561
             //list[SCULK_SENSOR] = .class; //562
-            //list[POINTED_DRIPSTONE] = .class; //563
+            list[POINTED_DRIPSTONE] = BlockPointedDripstone.class; //563
             // 564 (unused)
             // 565 (unused)
             list[COPPER_ORE] = BlockOreCopper.class; //566
