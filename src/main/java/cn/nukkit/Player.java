@@ -19,6 +19,7 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
+import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.LecternPageChangeEvent;
 import cn.nukkit.event.block.WaterFrostEvent;
 import cn.nukkit.event.entity.*;
@@ -1985,6 +1986,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         PlayerFood foodData = getFoodData();
         if (this.ticksLived % 40 == 0 && foodData != null) {
             foodData.sendFoodLevel();
+        }
+
+        if (this.getLevelBlock() instanceof BlockBigDripleaf){
+            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+            if (block.isHead())
+                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
         }
 
         return true;
@@ -5416,7 +5423,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindowCount > 10){
+        if(this.formWindows.size() > 10){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }

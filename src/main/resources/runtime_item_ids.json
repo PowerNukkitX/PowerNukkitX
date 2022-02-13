@@ -5297,7 +5297,8 @@
   },
   {
     "name": "minecraft:glow_berries",
-    "id": 638
+    "id": 638,
+    "oldId": 638
   },
   {
     "name": "minecraft:allay_spawn_egg",

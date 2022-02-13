@@ -798,9 +798,9 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             return Collections.emptyList();
         }
         
-        List<Block> results = new ArrayList<>();
-        BlockVector3 current = new BlockVector3();
-
+        final List<Block> results = new ArrayList<>();
+        final BlockVector3 current = new BlockVector3();
+        final boolean isOverWorld = provider.isOverWorld();
         int offsetY = getY() << 4;
         int minX = Math.max(0, min.x - offsetX);
         int minY = Math.max(0, min.y - offsetY);
@@ -814,7 +814,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                     current.y = offsetY + y;
                     BlockState state = storage.getBlockState(x, y, z);
                     if (condition.test(current, state)) {
-                        results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                        if(isOverWorld) {
+                            current.y -= 64;
+                            results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                            current.y += 64;
+                        } else {
+                            results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                        }
                     }
                 }
             }
