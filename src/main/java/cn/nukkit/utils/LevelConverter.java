@@ -7,14 +7,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.RegionLoader;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.Vector3;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,6 +65,7 @@ public class LevelConverter {
                         for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                             chunk = loader.readChunk(chunkX, chunkZ);
                             if (chunk == null) continue;
+                            chunk.backwardCompatibilityUpdate(level);
                             chunk.initChunk();
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
