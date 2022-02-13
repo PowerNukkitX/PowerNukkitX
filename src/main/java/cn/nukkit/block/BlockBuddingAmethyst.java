@@ -9,7 +9,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 
