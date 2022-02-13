@@ -95,7 +95,7 @@ public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[]{Item.get(ItemID.SMALL_DRIPLEAF, 0, 1)};
+            return new Item[]{toItem()};
         }else{
             return Item.EMPTY_ARRAY;
         }

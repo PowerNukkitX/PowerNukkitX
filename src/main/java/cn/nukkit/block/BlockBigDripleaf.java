@@ -231,7 +231,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{Item.get(ItemID.SMALL_DRIPLEAF, 0, 1)};
+        return new Item[]{new BlockSmallDripleaf().toItem()};
     }
 
     public enum Tilt{

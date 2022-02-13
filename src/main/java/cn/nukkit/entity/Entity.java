@@ -1602,6 +1602,15 @@ public abstract class Entity extends Location implements Metadatable {
             if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.NETHER.getLevel())) {
                 Position newPos = EnumLevel.convertPosBetweenNetherAndOverworld(this);
                 if (newPos != null) {
+                    /*for (int x = -1; x < 2; x++) {
+                        for (int z = -1; z < 2; z++) {
+                            int chunkX = (newPos.getFloorX() >> 4) + x, chunkZ = (newPos.getFloorZ() >> 4) + z;
+                            FullChunk chunk = newPos.level.getChunk(chunkX, chunkZ, false);
+                            if (chunk == null || !(chunk.isGenerated() || chunk.isPopulated())) {
+                                newPos.level.generateChunk(chunkX, chunkZ, true);
+                            }
+                        }
+                    }*/
                     Position nearestPortal = getNearestValidPortal(newPos);
                     if (nearestPortal != null) {
                         teleport(nearestPortal.add(0.5, 0, 0.5), PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);
