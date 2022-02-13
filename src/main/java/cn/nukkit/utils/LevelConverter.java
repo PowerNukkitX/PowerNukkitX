@@ -65,7 +65,6 @@ public class LevelConverter {
                         for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                             chunk = loader.readChunk(chunkX, chunkZ);
                             if (chunk == null) continue;
-                            chunk.backwardCompatibilityUpdate(level);
                             chunk.initChunk();
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
@@ -77,7 +76,6 @@ public class LevelConverter {
                                     }
                                 }
                             }
-                            chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
                             loader.writeChunk(chunk);
                         }
                     }
