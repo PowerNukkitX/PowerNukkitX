@@ -99,20 +99,17 @@ public class BlockAzalea extends BlockFlowable {
             }
 
             this.level.addParticle(new BoneMealParticle(this));
-            if (ThreadLocalRandom.current().nextFloat() >= 0.6) {
+            if (ThreadLocalRandom.current().nextInt(4) == 0) {
+                this.grow();
                 return true;
             }
-
-            this.grow();
-
-            return true;
         }
         return false;
     }
 
     @Override
     public int onUpdate(int type) {
-        double chance = ThreadLocalRandom.current().nextDouble();
+        double chance = ThreadLocalRandom.current().nextDouble(1);
         boolean aged = chance > 0.8;
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!BlockFlower.isSupportValid(down())) {
@@ -189,7 +186,10 @@ public class BlockAzalea extends BlockFlowable {
 
     }
 
-
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -205,7 +205,6 @@ public class BlockAzalea extends BlockFlowable {
         generator = new ObjectAzaleaTree();
         vector3 = this.add(0,0,0);
 
-
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
         StructureGrowEvent ev = new StructureGrowEvent(this, chunkManager.getBlocks());
@@ -213,6 +212,7 @@ public class BlockAzalea extends BlockFlowable {
         if (ev.isCancelled() || !success) {
             return;
         }
+        this.level.setBlock(this.getLocation(), Block.get(BlockID.AIR));
         for(Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }

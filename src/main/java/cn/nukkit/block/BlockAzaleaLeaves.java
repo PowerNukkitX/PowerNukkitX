@@ -166,4 +166,26 @@ public class BlockAzaleaLeaves extends BlockTransparentMeta{
         setBooleanValue(PERSISTENT, persistent);
     }
 
+    @Override
+    public int getBurnChance() {
+        return 30;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public int getWaterloggingLevel() {
+        return 1;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 60;
+    }
+
+    @Override
+    @PowerNukkitOnly
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
 }
