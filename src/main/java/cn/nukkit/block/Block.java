@@ -627,7 +627,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[MOSS_BLOCK] = BlockMoss.class; //575
             list[SPORE_BLOSSOM] = BlockSporeBlossom.class; //576
             list[CAVE_VINES] = BlockCaveVines.class; //577
-            //list[BIG_DRIPLEAF] = .class; //578
+            list[BIG_DRIPLEAF] = BlockBigDripleaf.class; //578
             list[AZALEA_LEAVES] = BlockAzaleaLeaves.class; //579
             list[AZALEA_LEAVES_FLOWERED] = BlockAzaleaLeavesFlowered.class; //580
             list[CALCITE] = BlockCalcite.class; //581
@@ -640,7 +640,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[TUFF] = BlockTuff.class; //588
             list[TINTED_GLASS] = BlockGlassTinted.class; //589
             list[MOSS_CARPET] = BlockMossCarpet.class; //590
-            //list[SMALL_DRIPLEAF_BLOCK] = .class; //591
+            list[SMALL_DRIPLEAF_BLOCK] = BlockSmallDripleaf.class; //591
             list[AZALEA] = BlockAzalea.class; //592
             list[FLOWERING_AZALEA] = BlockAzaleaFlowering.class; //593
             list[GLOW_FRAME] = BlockItemFrameGlow.class; //594
