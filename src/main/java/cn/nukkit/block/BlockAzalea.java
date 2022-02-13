@@ -213,7 +213,7 @@ public class BlockAzalea extends BlockFlowable {
         if (ev.isCancelled() || !success) {
             return;
         }
-        this.level.setBlock(this.getLocation(), Block.get(BlockID.AIR));
+
         for(Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
