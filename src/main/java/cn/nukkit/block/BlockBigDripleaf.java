@@ -214,7 +214,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         int maxHeightIncreased = 0;
         Block blockUp = block.getBlock();
         for(int i = 1;i<=heightIncreased;i++){
-            if ((blockUp = blockUp.getSide(BlockFace.UP)) instanceof BlockAir)
+            if ((blockUp = blockUp.getSide(BlockFace.UP)) instanceof BlockAir && blockUp.getY() < 320)
                 maxHeightIncreased++;
         }
         BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
