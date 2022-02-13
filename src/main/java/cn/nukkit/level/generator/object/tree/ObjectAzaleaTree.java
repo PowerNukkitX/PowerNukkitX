@@ -82,7 +82,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
         int material = worldIn.getBlockIdAt(blockpos.getFloorX(), blockpos.getFloorY(), blockpos.getFloorZ());
 
 
-        if (material == Block.AIR || material == Block.AZALEA_LEAVES || material == Block.AZALEA_LEAVES_FLOWERED) {
+        if (material == Block.AIR || material == Block.AZALEA_LEAVES || material == Block.AZALEA_LEAVES_FLOWERED || material == Block.AZALEA || material == Block.FLOWERING_AZALEA) {
             this.setBlockAndNotifyAdequately(worldIn, blockpos, OAK_LOG);
         }
     }
