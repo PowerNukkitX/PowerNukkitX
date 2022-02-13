@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.item.Item;
-import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
