@@ -190,6 +190,9 @@ public interface ProtocolInfo {
     @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "REMOVE_VOLUME_ENTITY_PACKET") byte REMOVE_VOLUME_ENTITY = REMOVE_VOLUME_ENTITY_PACKET;
     @Since("1.5.2.0-PN") @PowerNukkitOnly byte SIMULATION_TYPE_PACKET = (byte) 0xa8;
     @Since("1.5.2.0-PN") @PowerNukkitOnly byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte SCRIPT_MESSAGE_PACKET = (byte) 0xb1;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte CODE_BUILDER_SOURCE_PACKET = (byte) 0xb2;
 
     byte BATCH_PACKET = (byte) 0xff;
 }

@@ -19489,7 +19489,7 @@ blockId=199
 runtimeId=4871
 
 minecraft:frog_egg
-blockId=-1
+blockId=725
 runtimeId=4872
 
 minecraft:frosted_ice;age=0
@@ -22957,7 +22957,7 @@ blockId=49
 runtimeId=5738
 
 minecraft:ochre_froglight
-blockId=-1
+blockId=726
 runtimeId=5739
 
 minecraft:orange_candle;lit=0;candles=0
@@ -23085,7 +23085,7 @@ blockId=174
 runtimeId=5770
 
 minecraft:pearlescent_froglight
-blockId=-1
+blockId=727
 runtimeId=5771
 
 minecraft:pink_candle;lit=0;candles=0
@@ -29997,7 +29997,7 @@ blockId=93
 runtimeId=7498
 
 minecraft:verdant_froglight
-blockId=-1
+blockId=728
 runtimeId=7499
 
 minecraft:vine;vine_direction_bits=0

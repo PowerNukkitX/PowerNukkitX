@@ -13,6 +13,18 @@ public class AddVolumeEntityPacket extends DataPacket {
 
     private long id;
     private CompoundTag data;
+    /**
+     * @since v465
+     */
+    private String engineVersion;
+    /**
+     * @since v485
+     */
+    private String identifier;
+    /**
+     * @since v485
+     */
+    private String instanceName;
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
@@ -29,6 +41,9 @@ public class AddVolumeEntityPacket extends DataPacket {
     public void decode() {
         id = getUnsignedVarInt();
         data = getTag();
+        engineVersion = getString();
+        identifier = getString();
+        instanceName = getString();
     }
 
     @Override
@@ -36,6 +51,9 @@ public class AddVolumeEntityPacket extends DataPacket {
         reset();
         putUnsignedVarInt(id);
         putTag(data);
+        putString(engineVersion);
+        putString(identifier);
+        putString(instanceName);
     }
 
     @PowerNukkitOnly
@@ -60,5 +78,41 @@ public class AddVolumeEntityPacket extends DataPacket {
     @Since("1.5.0.0-PN")
     public void setData(CompoundTag data) {
         this.data = data;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getEngineVersion() {
+        return engineVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setEngineVersion(String engineVersion) {
+        this.engineVersion = engineVersion;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
     }
 }
