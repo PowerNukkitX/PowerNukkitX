@@ -625,7 +625,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[DIRT_WITH_ROOTS] = BlockDirtWithRoots.class; //573
             list[HANGING_ROOTS] = BlockRootsHanging.class; //574
             list[MOSS_BLOCK] = BlockMoss.class; //575
-            //list[SPORE_BLOSSOM] = .class; //576
+            list[SPORE_BLOSSOM] = BlockSporeBlossom.class; //576
             //list[CAVE_VINES] = .class; //577
             //list[BIG_DRIPLEAF] = .class; //578
             list[AZALEA_LEAVES] = BlockAzaleaLeaves.class; //579
