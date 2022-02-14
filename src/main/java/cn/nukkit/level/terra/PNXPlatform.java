@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
-import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.terra.delegate.PNXBiomeDelegate;
 import cn.nukkit.level.terra.handles.PNXItemHandle;
 import cn.nukkit.level.terra.handles.PNXWorldHandle;
@@ -55,7 +54,7 @@ public class PNXPlatform extends AbstractPlatform {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(PNXWorldHandle.ok);
+        System.out.println(PNXWorldHandle.finish);
         System.err.println(PNXWorldHandle.err);
         INSTANCE = platform;
         return platform;
