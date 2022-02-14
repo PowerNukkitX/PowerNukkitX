@@ -80,6 +80,20 @@
         <skipGpg>true</skipGpg>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>powernukkitx-terra-binary-maven</id>
+            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.powernukkit.bedrock.network</groupId>
@@ -321,6 +335,16 @@
             <artifactId>spotbugs-annotations</artifactId>
             <version>4.5.2</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra</artifactId>
+            <version>6.0.0-BETA</version>
         </dependency>
     </dependencies>
 

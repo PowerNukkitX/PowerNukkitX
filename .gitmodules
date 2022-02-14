@@ -2,6 +2,3 @@
 	path = src/main/resources/lang
 	url = https://github.com/BlocklyNukkit/PowerNukkit-Languages.git
 	branch = pnx
-[submodule "lib/terra"]
-	path = lib/terra
-	url = https://github.com/PowerNukkitX/Terra-Binary.git
