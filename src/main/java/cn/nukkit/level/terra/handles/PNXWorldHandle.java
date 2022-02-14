@@ -12,27 +12,21 @@ import cn.nukkit.utils.Config;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
-import com.google.common.base.Splitter;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static Config jeBlockMappingConfig;
-    public static Map<State,Object> jeBlockMapping = new HashMap<>();
+    public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
 
-    static{
+    static {
         jeBlockMappingConfig = new Config(Config.JSON);
         jeBlockMappingConfig.load(PNXWorldHandle.class.getClassLoader().getResourceAsStream("jeBlocksMapping.json"));
-        jeBlockMappingConfig.getAll().forEach((k,v)->{
-            jeBlockMapping.put(new State(k),v);
-        });
+        jeBlockMappingConfig.getAll().forEach((k, v) -> jeBlockMapping.put(new State(k), (Map<String, Object>) v));
     }
 
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
@@ -43,18 +37,18 @@ public class PNXWorldHandle implements WorldHandle {
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
         State jeBlockStateData = new State(s);
-        Map<String,Object> mappedData = (Map<String, Object>) jeBlockMapping.get(jeBlockStateData);
+        Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
         if (mappedData == null) {
             jeBlockStateData.equalsIgnoreAttributes = true;
-            mappedData = (Map<String, Object>) jeBlockMapping.get(jeBlockStateData);
+            mappedData = jeBlockMapping.get(jeBlockStateData);
         }
         if (mappedData == null) {
             return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(BlockID.AIR));
         }
         boolean hasStates = false;
-        Map<String,Object> states = (Map<String, Object>) mappedData.get("bedrock_states");
-        Map<String,Object> statesConverted = new HashMap<>();
-        if (states != null){
+        Map<String, Object> states = (Map<String, Object>) mappedData.get("bedrock_states");
+        Map<String, Object> statesConverted = new HashMap<>();
+        if (states != null) {
             hasStates = true;
             states.forEach((k, v) -> {
                 if (v instanceof Boolean) {
@@ -65,20 +59,20 @@ public class PNXWorldHandle implements WorldHandle {
                     }
                     return;
                 }
-                if (v instanceof Number){
+                if (v instanceof Number) {
                     statesConverted.put(k, ((Number) v).intValue());
                     return;
                 }
                 statesConverted.put(k, v);
             });
         }
-        String identifier = (String) mappedData.get("bedrock_identifier");
+        var identifier = (String) mappedData.get("bedrock_identifier");
         if (identifier.equals("minecraft:concretePowder"))
             identifier = "minecraft:concretepowder";
-        StringBuilder data = new StringBuilder();
+        var data = new StringBuilder();
         data.append(identifier);
-        if (hasStates){
-            statesConverted.forEach((k,v) -> data.append(";").append(k).append("=").append(v));
+        if (hasStates) {
+            statesConverted.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
         }
         try {
             finish++;
@@ -102,34 +96,31 @@ public class PNXWorldHandle implements WorldHandle {
         return new PNXEntityType(Entity.createEntity(s, new Position(0, 0, 0, Server.getInstance().getDefaultLevel())));
     }
 
-    private static class State{
+    private static class State {
 
         public boolean equalsIgnoreAttributes = false;
-        private String identifier;
-        private Map<String,Object> attributes = new HashMap<>();
+        private final String identifier;
+        private final Map<String, Object> attributes = new HashMap<>();
 
         public State(String str) {
-            String[] strs = str.replaceAll("\\[",",").replaceAll("]",",").split(",");
-            identifier = strs[0];
-            if (strs.length>1) {
-                for (int i = 1; i < strs.length; i++) {
-                    attributes.put(strs[i].split("=")[0], strs[i].split("=")[1]);
+            var strings = str.replace("[", ",").replace("]", ",").split(",");
+            identifier = strings[0];
+            if (strings.length > 1) {
+                for (int i = 1; i < strings.length; i++) {
+                    final var tmp = strings[i];
+                    final var index = tmp.indexOf("=");
+                    attributes.put(tmp.substring(0, index), tmp.substring(index + 1));
                 }
             }
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof State) {
-                State state = (State) obj;
+            if (obj instanceof State state) {
                 if (!equalsIgnoreAttributes) {
-                    if (state.identifier.equals(identifier) && state.attributes.equals(attributes)) {
-                        return true;
-                    }
-                }else{
-                    if (state.identifier.equals(identifier)) {
-                        return true;
-                    }
+                    return state.identifier.equals(identifier) && state.attributes.equals(attributes);
+                } else {
+                    return state.identifier.equals(identifier);
                 }
             }
             return false;
