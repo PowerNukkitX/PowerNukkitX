@@ -32,12 +32,13 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
 public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull> {
     @PowerNukkitOnly
-    @Since("1.5.0.0-PN")
+    @Deprecated
+    @Since("1.6.0.0-PNX")
     public static final BooleanBlockProperty NO_DROP = new BooleanBlockProperty("no_drop_bit", false);
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, NO_DROP);
+    public static final BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION);
 
     public BlockSkull() {
         this(0);

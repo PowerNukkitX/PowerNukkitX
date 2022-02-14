@@ -8,6 +8,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
@@ -16,7 +17,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
-import lombok.var;
 import org.powernukkit.dumps.ItemIdDumper;
 import org.powernukkit.dumps.RuntimeBlockStateDumper;
 
@@ -58,6 +58,7 @@ public class AllResourceUpdater {
 
     @SneakyThrows
     private void execute() {
+        Potion.init();
         ItemIdDumper.main(EmptyArrays.EMPTY_STRINGS);
         RuntimeBlockStateDumper.main(EmptyArrays.EMPTY_STRINGS);
         init();

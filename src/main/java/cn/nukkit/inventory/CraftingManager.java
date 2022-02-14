@@ -20,7 +20,6 @@ import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
-import lombok.var;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
