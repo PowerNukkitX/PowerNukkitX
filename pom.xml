@@ -505,7 +505,6 @@
                         </transformer>
                     </transformers>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <createSourcesJar>true</createSourcesJar>
                 </configuration>
             </plugin>
             <plugin>
