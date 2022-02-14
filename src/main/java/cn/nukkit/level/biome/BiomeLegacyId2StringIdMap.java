@@ -46,6 +46,6 @@ public final class BiomeLegacyId2StringIdMap {
     }
 
     public int string2Legacy(String stringBiomeID) {
-        return string2LegacyMap.getInt(stringBiomeID);
+        return string2LegacyMap.getOrDefault(stringBiomeID, -1);
     }
 }
