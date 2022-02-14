@@ -344,7 +344,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.0.0-BETA</version>
+            <version>6.0.1-bukkit</version>
         </dependency>
     </dependencies>
 
@@ -496,6 +496,7 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
+                                <exclude>META-INF/services/org.slf4j.spi.SLF4JServiceProvider</exclude>
                             </excludes>
                         </filter>
                     </filters>
