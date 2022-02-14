@@ -73,6 +73,8 @@ public class PNXWorldHandle implements WorldHandle {
             });
         }
         String identifier = (String) mappedData.get("bedrock_identifier");
+        if (identifier.equals("minecraft:concretePowder"))
+            identifier = "minecraft:concretepowder";
         StringBuilder data = new StringBuilder();
         data.append(identifier);
         if (hasStates){
@@ -82,7 +84,7 @@ public class PNXWorldHandle implements WorldHandle {
             finish++;
             return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(data.toString()));
         } catch (Exception e) {
-            err++;//todo: java.util.NoSuchElementException: Block minecraft:concretePowder not found.
+            err++;
             return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(BlockID.AIR));
         }
     }
