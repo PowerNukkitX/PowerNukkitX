@@ -38,9 +38,11 @@ public class PNXWorldHandle implements WorldHandle {
     BlockState createBlockState(@NotNull String s) {
         State jeBlockStateData = new State(s);
         Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
+        boolean toDefaultState = false;
         if (mappedData == null) {
             jeBlockStateData.equalsIgnoreAttributes = true;
             mappedData = jeBlockMapping.get(jeBlockStateData);
+            toDefaultState = true;
         }
         if (mappedData == null) {
             return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(BlockID.AIR));
@@ -48,7 +50,7 @@ public class PNXWorldHandle implements WorldHandle {
         boolean hasStates = false;
         Map<String, Object> states = (Map<String, Object>) mappedData.get("bedrock_states");
         Map<String, Object> statesConverted = new HashMap<>();
-        if (states != null) {
+        if (states != null && !toDefaultState) {
             hasStates = true;
             states.forEach((k, v) -> {
                 if (v instanceof Boolean) {
