@@ -65,6 +65,9 @@ public class LevelConverter {
                         for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                             chunk = loader.readChunk(chunkX, chunkZ);
                             if (chunk == null) continue;
+                            chunk.backwardCompatibilityUpdate(level);
+                            //TODO: 查找BlockEntityCauldron报错原因
+                            chunk.initChunk();
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
                                     for (int dy = chunk.getHighestBlockAt(dx, dz, false); dy >= -64; --dy) {
