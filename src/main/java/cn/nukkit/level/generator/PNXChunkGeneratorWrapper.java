@@ -26,6 +26,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
 
+    private final WorldProperties worldProperties;
+
     public PNXChunkGeneratorWrapper() {
         this(createGenerator(), createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR));
     }
@@ -42,6 +44,27 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         } catch (Exception e) {
             e.printStackTrace();
         }
+        worldProperties = new WorldProperties() {
+            @Override
+            public long getSeed() {
+                return chunkManager.getSeed();
+            }
+
+            @Override
+            public int getMaxHeight() {
+                return 320;
+            }
+
+            @Override
+            public int getMinHeight() {
+                return -64;
+            }
+
+            @Override
+            public Object getHandle() {
+                return null;
+            }
+        };
     }
 
     private static ConfigPack createConfigPack() {
@@ -70,6 +93,27 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.delegate = delegate;
         this.pack = pack;
         this.air = air;
+        worldProperties = new WorldProperties() {
+            @Override
+            public long getSeed() {
+                return chunkManager.getSeed();
+            }
+
+            @Override
+            public int getMaxHeight() {
+                return 320;
+            }
+
+            @Override
+            public int getMinHeight() {
+                return -64;
+            }
+
+            @Override
+            public Object getHandle() {
+                return null;
+            }
+        };
     }
 
     public void setDelegate(ChunkGenerator delegate) {
@@ -94,27 +138,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
-        delegate.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), new WorldProperties() {
-            @Override
-            public long getSeed() {
-                return chunkManager.getSeed();
-            }
-
-            @Override
-            public int getMaxHeight() {
-                return 320;
-            }
-
-            @Override
-            public int getMinHeight() {
-                return -64;
-            }
-
-            @Override
-            public Object getHandle() {
-                return null;
-            }
-        }, biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider, chunkX, chunkZ);
+        delegate.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
+                biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider, chunkX, chunkZ);
     }
 
     @Override
