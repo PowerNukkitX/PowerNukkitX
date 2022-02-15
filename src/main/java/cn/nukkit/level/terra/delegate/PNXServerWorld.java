@@ -27,7 +27,7 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return null;
+        return new PNXBlockStateDelegate(chunkManager.getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -72,6 +72,6 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1));
+        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1), chunkManager, chunkGenerator, configPack);
     }
 }

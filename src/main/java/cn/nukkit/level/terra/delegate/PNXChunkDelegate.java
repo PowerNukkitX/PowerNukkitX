@@ -1,13 +1,16 @@
 package cn.nukkit.level.terra.delegate;
 
+import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import com.dfsek.terra.api.block.state.BlockState;
+import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.chunk.Chunk;
+import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoChunk;
 import org.jetbrains.annotations.NotNull;
 
-public record PNXChunkDelegate(BaseFullChunk chunk) implements Chunk {
+public record PNXChunkDelegate(BaseFullChunk chunk, ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements Chunk {
     @Override
     public void setBlock(int i, int i1, int i2, BlockState blockState, boolean b) {
         setBlock(i, i1, i2, blockState);
@@ -36,7 +39,7 @@ public record PNXChunkDelegate(BaseFullChunk chunk) implements Chunk {
 
     @Override
     public ServerWorld getWorld() {
-        return null;
+        return new PNXServerWorld(chunkManager, chunkGenerator, configPack);
     }
 
     @Override
