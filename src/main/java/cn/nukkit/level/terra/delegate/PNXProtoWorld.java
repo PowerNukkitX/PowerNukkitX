@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -12,15 +13,15 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider) implements ProtoWorld {
+public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider,int centerChunkX,int centerChunkZ) implements ProtoWorld {
     @Override
     public int centerChunkX() {
-        return 0;
+        return centerChunkX;
     }
 
     @Override
     public int centerChunkZ() {
-        return 0;
+        return centerChunkZ;
     }
 
     @Override
