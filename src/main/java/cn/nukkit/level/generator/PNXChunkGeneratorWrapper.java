@@ -144,7 +144,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider);
+        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? biomeProvider = pack.getBiomeProvider().caching() : biomeProvider);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
