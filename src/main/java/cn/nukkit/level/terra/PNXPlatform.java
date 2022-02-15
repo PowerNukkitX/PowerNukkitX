@@ -10,6 +10,7 @@ import cn.nukkit.level.terra.handles.PNXItemHandle;
 import cn.nukkit.level.terra.handles.PNXWorldHandle;
 import com.dfsek.tectonic.api.TypeRegistry;
 import com.dfsek.terra.AbstractPlatform;
+import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.event.events.platform.PlatformInitializationEvent;
 import com.dfsek.terra.api.handle.ItemHandle;
 import com.dfsek.terra.api.handle.WorldHandle;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.zip.ZipFile;
 
 @Log4j2
@@ -29,6 +31,9 @@ import java.util.zip.ZipFile;
 public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;
     private static PNXPlatform INSTANCE = null;
+
+    private static PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
+    private static PNXItemHandle pnxItemHandle = new PNXItemHandle();
 
     static {
         DATA_PATH = new File("./terra");
@@ -47,15 +52,24 @@ public class PNXPlatform extends AbstractPlatform {
         platform.load();
         platform.getEventManager().callEvent(new PlatformInitializationEvent());
         final var configRegistry = platform.getConfigRegistry();
-        try {
-            final var configFile = new ZipFile(new File("./terra/packs/default.zip"));
-            final var configPack = new ConfigPackImpl(configFile, platform);
-            configRegistry.register(RegistryKey.of("Terra", "DEFAULT"), configPack);
-        } catch (IOException e) {
-            e.printStackTrace();
+        final var packsDir = new File("./terra/packs");
+        for (final var each : Objects.requireNonNull(packsDir.listFiles())) {
+            if (each.isFile() && each.getName().endsWith(".zip")) {
+                try {
+                    final var configFile = new ZipFile(each);
+                    final var configPack = new ConfigPackImpl(configFile, platform);
+                    var packName = each.getName();
+                    packName = packName.substring(Math.max(packName.lastIndexOf("/"), packName.lastIndexOf("\\")) + 1,
+                            packName.lastIndexOf("."));
+                    configRegistry.register(RegistryKey.of("Terra", packName), configPack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        System.out.println(PNXWorldHandle.finish);
-        System.err.println(PNXWorldHandle.err);
+        if (PNXWorldHandle.err != 0) {
+            log.warn("Fail to load {} terra block states.", PNXWorldHandle.err);
+        }
         INSTANCE = platform;
         return platform;
     }
@@ -82,7 +96,7 @@ public class PNXPlatform extends AbstractPlatform {
     @Override
     public @NotNull
     WorldHandle getWorldHandle() {
-        return new PNXWorldHandle();
+        return pnxWorldHandle;
     }
 
     @Override
@@ -94,7 +108,7 @@ public class PNXPlatform extends AbstractPlatform {
     @Override
     public @NotNull
     ItemHandle getItemHandle() {
-        return new PNXItemHandle();
+        return pnxItemHandle;
     }
 
     @Override
@@ -106,7 +120,8 @@ public class PNXPlatform extends AbstractPlatform {
     @Override
     public void register(TypeRegistry registry) {
         super.register(registry);
-        registry.registerLoader(PlatformBiome.class, (type, o, loader, depthTracker) -> parseBiome((String) o));
+        registry.registerLoader(PlatformBiome.class, (type, o, loader, depthTracker) -> parseBiome((String) o))
+                .registerLoader(BlockState.class, (type, o, loader, depthTracker) -> pnxWorldHandle.createBlockState((String) o));
     }
 
     private static PNXBiomeDelegate parseBiome(String str) {

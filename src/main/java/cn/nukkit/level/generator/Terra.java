@@ -28,24 +28,39 @@ public class Terra extends Generator implements GeneratorWrapper {
         this(createGenerator(), createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR));
     }
 
-    public Terra(Map<String, Object> ignore) {
+    public Terra(Map<String, Object> option) {
+        var packName = option.containsKey("present") ? option.get("present").toString() : "default";
+        if(packName == null || packName.strip().length() == 0) {
+            packName = "default";
+        }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         try {
-            this.delegate = createGenerator();
-            this.pack = createConfigPack();
+            this.delegate = createGenerator(packName);
+            this.pack = createConfigPack(packName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static ConfigPack createConfigPack() {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID("DEFAULT").orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("Terra:DEFAULT").orElseThrow()
+        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("Terra:default").orElseThrow()
+        );
+    }
+
+    private static ConfigPack createConfigPack(final String packName) {
+        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("Terra:" + packName).orElseThrow()
         );
     }
 
     private static ChunkGenerator createGenerator() {
         var config = createConfigPack();
+        return config.getGeneratorProvider().newInstance(config);
+    }
+
+    private static ChunkGenerator createGenerator(final String packName) {
+        var config = createConfigPack(packName);
         return config.getGeneratorProvider().newInstance(config);
     }
 

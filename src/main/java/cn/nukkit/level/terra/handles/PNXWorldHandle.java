@@ -30,7 +30,6 @@ public class PNXWorldHandle implements WorldHandle {
     }
 
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-    public static int finish = 0;//todo: remove these when complete
     public static int err = 0;
 
     @Override
@@ -71,13 +70,12 @@ public class PNXWorldHandle implements WorldHandle {
         var identifier = (String) mappedData.get("bedrock_identifier");
         if (identifier.equals("minecraft:concretePowder"))
             identifier = "minecraft:concretepowder";
-        var data = new StringBuilder();
+        final var data = new StringBuilder();
         data.append(identifier);
         if (hasStates) {
             statesConverted.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
         }
         try {
-            finish++;
             return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(data.toString()));
         } catch (Exception e) {
             err++;
