@@ -40,7 +40,7 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return null;
+        return new PNXBlockStateDelegate(chunkManager.getBlockStateAt(i, i1, i2));
     }
 
     @Override

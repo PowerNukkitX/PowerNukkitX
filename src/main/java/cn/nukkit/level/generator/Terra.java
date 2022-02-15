@@ -106,8 +106,8 @@ public class Terra extends Generator implements GeneratorWrapper {
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
-            } catch (Exception ignore) {
-                // TODO: 2022/2/14 修复这些神必的报错
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
