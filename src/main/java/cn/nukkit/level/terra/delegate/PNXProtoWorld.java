@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
@@ -11,7 +12,7 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ProtoWorld {
+public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider) implements ProtoWorld {
     @Override
     public int centerChunkX() {
         return 0;
@@ -24,12 +25,14 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public ServerWorld getWorld() {
-        return new PNXServerWorld(chunkManager, chunkGenerator, configPack);
+        return new PNXServerWorld(chunkManager, chunkGenerator, configPack, biomeProvider);
     }
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        chunkManager.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
+        if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
+            chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+        }
     }
 
     @Override
@@ -40,7 +43,7 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return new PNXBlockStateDelegate(chunkManager.getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(chunkManager.getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -55,7 +58,7 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public BiomeProvider getBiomeProvider() {
-        return configPack.getBiomeProvider().caching();
+        return biomeProvider;
     }
 
     @Override

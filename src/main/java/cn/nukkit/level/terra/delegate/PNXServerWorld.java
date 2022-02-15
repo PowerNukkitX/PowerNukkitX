@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
@@ -12,7 +13,7 @@ import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ServerWorld {
+public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
@@ -22,16 +23,18 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         // TODO: 2022/2/14 暂不支持实体
+        System.err.println("Unsupported spawnEntity!");
         return null;
     }
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return new PNXBlockStateDelegate(chunkManager.getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(chunkManager.getBlockStateAt(i, i1, i2));
     }
 
     @Override
     public BlockEntity getBlockEntity(int i, int i1, int i2) {
+        System.err.println("Unsupported getBlockEntity!");
         return null;
     }
 
@@ -42,7 +45,7 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public BiomeProvider getBiomeProvider() {
-        return configPack.getBiomeProvider().caching();
+        return biomeProvider;
     }
 
     @Override
@@ -72,6 +75,6 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1), chunkManager, chunkGenerator, configPack);
+        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1), chunkManager, chunkGenerator, configPack, biomeProvider);
     }
 }

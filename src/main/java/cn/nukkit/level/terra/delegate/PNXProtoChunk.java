@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.world.chunk.generation.ProtoChunk;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
     @Override
     public @NotNull
     BlockState getBlock(int i, int i1, int i2) {
-        return new PNXBlockStateDelegate(chunk.getBlockState(i, i1, i2));
+        return PNXAdapter.adapt(chunk.getBlockState(i, i1, i2));
     }
 
     @Override

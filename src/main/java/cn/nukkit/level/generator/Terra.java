@@ -9,6 +9,7 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
+import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
@@ -20,6 +21,7 @@ public class Terra extends Generator implements GeneratorWrapper {
     private ChunkGenerator delegate;
     private ConfigPack pack;
     private final BlockState air;
+    private BiomeProvider biomeProvider = null;
 
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
@@ -112,12 +114,12 @@ public class Terra extends Generator implements GeneratorWrapper {
             public Object getHandle() {
                 return null;
             }
-        }, pack.getBiomeProvider().caching(), chunkX, chunkZ);
+        }, biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider, chunkX, chunkZ);
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, delegate, pack);
+        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);

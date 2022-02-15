@@ -3,15 +3,16 @@ package cn.nukkit.level.terra.handles;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXEntityType;
 import cn.nukkit.utils.Config;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -20,11 +21,10 @@ import java.util.Map;
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
-    public static Config jeBlockMappingConfig;
     public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
 
     static {
-        jeBlockMappingConfig = new Config(Config.JSON);
+        final var jeBlockMappingConfig = new Config(Config.JSON);
         jeBlockMappingConfig.load(PNXWorldHandle.class.getClassLoader().getResourceAsStream("jeBlocksMapping.json"));
         jeBlockMappingConfig.getAll().forEach((k, v) -> jeBlockMapping.put(new State(k), (Map<String, Object>) v));
     }
@@ -37,14 +37,14 @@ public class PNXWorldHandle implements WorldHandle {
     BlockState createBlockState(@NotNull String s) {
         State jeBlockStateData = new State(s);
         Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
-        boolean toDefaultState = false;
+        var toDefaultState = false;
         if (mappedData == null) {
             jeBlockStateData.equalsIgnoreAttributes = true;
             mappedData = jeBlockMapping.get(jeBlockStateData);
             toDefaultState = true;
         }
         if (mappedData == null) {
-            return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(BlockID.AIR));
+            return AIR;
         }
         boolean hasStates = false;
         Map<String, Object> states = (Map<String, Object>) mappedData.get("bedrock_states");
@@ -76,10 +76,10 @@ public class PNXWorldHandle implements WorldHandle {
             statesConverted.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
         }
         try {
-            return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(data.toString()));
+            return PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
         } catch (Exception e) {
             err++;
-            return new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.of(BlockID.AIR));
+            return AIR;
         }
     }
 
@@ -100,7 +100,7 @@ public class PNXWorldHandle implements WorldHandle {
 
         public boolean equalsIgnoreAttributes = false;
         private final String identifier;
-        private final Map<String, Object> attributes = new HashMap<>();
+        private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
 
         public State(String str) {
             var strings = str.replace("[", ",").replace("]", ",").split(",");
