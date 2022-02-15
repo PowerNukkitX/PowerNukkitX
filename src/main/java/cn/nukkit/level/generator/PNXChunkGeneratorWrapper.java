@@ -17,7 +17,7 @@ import com.dfsek.terra.api.world.info.WorldProperties;
 import java.util.Collections;
 import java.util.Map;
 
-public class Terra extends Generator implements GeneratorWrapper {
+public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
     private ChunkGenerator delegate;
     private ConfigPack pack;
     private final BlockState air;
@@ -26,11 +26,11 @@ public class Terra extends Generator implements GeneratorWrapper {
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
 
-    public Terra() {
+    public PNXChunkGeneratorWrapper() {
         this(createGenerator(), createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR));
     }
 
-    public Terra(Map<String, Object> option) {
+    public PNXChunkGeneratorWrapper(Map<String, Object> option) {
         var packName = option.containsKey("present") ? option.get("present").toString() : "default";
         if(packName == null || packName.strip().length() == 0) {
             packName = "default";
@@ -46,13 +46,13 @@ public class Terra extends Generator implements GeneratorWrapper {
 
     private static ConfigPack createConfigPack() {
         return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("Terra:default").orElseThrow()
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow()
         );
     }
 
     private static ConfigPack createConfigPack(final String packName) {
         return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("Terra:" + packName).orElseThrow()
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow()
         );
     }
 
@@ -66,7 +66,7 @@ public class Terra extends Generator implements GeneratorWrapper {
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    public Terra(ChunkGenerator delegate, ConfigPack pack, BlockState air) {
+    public PNXChunkGeneratorWrapper(ChunkGenerator delegate, ConfigPack pack, BlockState air) {
         this.delegate = delegate;
         this.pack = pack;
         this.air = air;
@@ -136,7 +136,7 @@ public class Terra extends Generator implements GeneratorWrapper {
 
     @Override
     public String getName() {
-        return "Terra";
+        return "terra";
     }
 
     @Override

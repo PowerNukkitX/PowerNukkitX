@@ -61,7 +61,7 @@ public class PNXPlatform extends AbstractPlatform {
                     var packName = each.getName();
                     packName = packName.substring(Math.max(packName.lastIndexOf("/"), packName.lastIndexOf("\\")) + 1,
                             packName.lastIndexOf("."));
-                    configRegistry.register(RegistryKey.of("Terra", packName), configPack);
+                    configRegistry.register(RegistryKey.of("PNXChunkGeneratorWrapper", packName), configPack);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
