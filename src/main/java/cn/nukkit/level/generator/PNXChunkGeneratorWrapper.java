@@ -2,6 +2,7 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.terra.PNXPlatform;
+import cn.nukkit.level.terra.delegate.PNXBiomeProviderDelegate;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.terra.delegate.PNXProtoWorld;
@@ -21,7 +22,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private ChunkGenerator delegate;
     private ConfigPack pack;
     private final BlockState air;
-    private BiomeProvider biomeProvider = null;
+    private PNXBiomeProviderDelegate biomeProvider = null;
 
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
@@ -139,12 +140,13 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
         delegate.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
-                biomeProvider == null ? pack.getBiomeProvider().caching() : biomeProvider, chunkX, chunkZ);
+                biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider, chunkX, chunkZ);
+        biomeProvider.optimize();
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? biomeProvider = pack.getBiomeProvider().caching() : biomeProvider,chunkX,chunkZ);
+        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider,chunkX,chunkZ);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
@@ -152,6 +154,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
                 e.printStackTrace();
             }
         }
+        biomeProvider.optimize();
     }
 
     @Override
