@@ -15,11 +15,12 @@ import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
 public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
-    private ChunkGenerator delegate;
+    private WeakReference<ChunkGenerator> delegate;
     private ConfigPack pack;
     private final BlockState air;
     private PNXBiomeProviderDelegate biomeProvider = null;
@@ -40,7 +41,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         try {
-            this.delegate = createGenerator(packName);
+            this.delegate = new WeakReference<>(createGenerator(packName));
             this.pack = createConfigPack(packName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,13 +86,17 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         return config.getGeneratorProvider().newInstance(config);
     }
 
+    private static ChunkGenerator createGenerator(ConfigPack config) {
+        return config.getGeneratorProvider().newInstance(config);
+    }
+
     private static ChunkGenerator createGenerator(final String packName) {
         var config = createConfigPack(packName);
         return config.getGeneratorProvider().newInstance(config);
     }
 
     public PNXChunkGeneratorWrapper(ChunkGenerator delegate, ConfigPack pack, BlockState air) {
-        this.delegate = delegate;
+        this.delegate = new WeakReference<>(delegate);
         this.pack = pack;
         this.air = air;
         worldProperties = new WorldProperties() {
@@ -118,12 +123,22 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     }
 
     public void setDelegate(ChunkGenerator delegate) {
-        this.delegate = delegate;
+        this.delegate = new WeakReference<>(delegate);
     }
 
     public void setPack(ConfigPack pack) {
         this.pack = pack;
         setDelegate(pack.getGeneratorProvider().newInstance(pack));
+    }
+
+    private ChunkGenerator getChunkGeneratorDelegate() {
+        final var gen = delegate.get();
+        if(gen != null){
+            return gen;
+        }
+        final var newGen = createGenerator(this.pack);
+        delegate = new WeakReference<>(newGen);
+        return newGen;
     }
 
     @Override
@@ -139,14 +154,13 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
-        delegate.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
+        getChunkGeneratorDelegate().generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
                 biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider, chunkX, chunkZ);
-        biomeProvider.optimize();
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, delegate, pack, biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider,chunkX,chunkZ);
+        var tmp = new PNXProtoWorld(chunkManager, getChunkGeneratorDelegate(), pack, biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider,chunkX,chunkZ);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
@@ -154,7 +168,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
                 e.printStackTrace();
             }
         }
-        biomeProvider.optimize();
     }
 
     @Override
@@ -179,6 +192,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public ChunkGenerator getHandle() {
-        return delegate;
+        return getChunkGeneratorDelegate();
     }
 }
