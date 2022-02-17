@@ -14,6 +14,7 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -23,7 +24,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private WeakReference<ChunkGenerator> delegate;
     private ConfigPack pack;
     private final BlockState air;
-    private PNXBiomeProviderDelegate biomeProvider = null;
+    @NotNull
+    private WeakReference<PNXBiomeProviderDelegate> biomeProvider = new WeakReference<>(null);
 
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
@@ -36,7 +38,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     public PNXChunkGeneratorWrapper(Map<String, Object> option) {
         var packName = option.containsKey("present") ? option.get("present").toString() : "default";
-        if(packName == null || packName.strip().length() == 0) {
+        if (packName == null || packName.strip().length() == 0) {
             packName = "default";
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
@@ -133,12 +135,22 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     private ChunkGenerator getChunkGeneratorDelegate() {
         final var gen = delegate.get();
-        if(gen != null){
+        if (gen != null) {
             return gen;
         }
         final var newGen = createGenerator(this.pack);
         delegate = new WeakReference<>(newGen);
         return newGen;
+    }
+
+    private BiomeProvider getBiomeProviderDelegate() {
+        final var provider = biomeProvider.get();
+        if(provider != null) {
+            return provider;
+        }
+        final var newProvider = pack.getBiomeProvider();
+        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider));
+        return newProvider;
     }
 
     @Override
@@ -155,12 +167,12 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
         getChunkGeneratorDelegate().generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
-                biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider, chunkX, chunkZ);
+                getBiomeProviderDelegate(), chunkX, chunkZ);
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, getChunkGeneratorDelegate(), pack, biomeProvider == null ? biomeProvider = new PNXBiomeProviderDelegate(pack.getBiomeProvider()) : biomeProvider,chunkX,chunkZ);
+        var tmp = new PNXProtoWorld(chunkManager, getChunkGeneratorDelegate(), pack, getBiomeProviderDelegate(), chunkX, chunkZ);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
@@ -168,6 +180,12 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
                 e.printStackTrace();
             }
         }
+        // 释放掉旧的区块生成器代理以释放内存
+        delegate.clear();
+        // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露
+        var chunk = chunkManager.getChunk(chunkX, chunkZ);
+        chunk.populateSkyLight();
+        chunk.setLightPopulated(true);
     }
 
     @Override
