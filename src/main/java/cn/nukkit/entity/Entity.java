@@ -12,7 +12,6 @@ import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.mob.EntityEnderDragon;
-import cn.nukkit.entity.movement.Movement;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -107,47 +106,32 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_DISPLAY_ITEM = dynamic(16); //int (id | (data << 16))
     public static final int DATA_DISPLAY_OFFSET = dynamic(17); //int
     public static final int DATA_HAS_DISPLAY = dynamic(18); //byte (must be 1 for minecart to show block inside)
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SWELL = dynamic(19);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_OLD_SWELL = dynamic(20);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SWELL_DIR = dynamic(21);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_CHARGE_AMOUNT = dynamic(22);
+    @Since("1.2.0.0-PN") public static final int DATA_SWELL = dynamic(19);
+    @Since("1.2.0.0-PN") public static final int DATA_OLD_SWELL = dynamic(20);
+    @Since("1.2.0.0-PN") public static final int DATA_SWELL_DIR = dynamic(21);
+    @Since("1.2.0.0-PN") public static final int DATA_CHARGE_AMOUNT = dynamic(22);
     public static final int DATA_ENDERMAN_HELD_RUNTIME_ID = dynamic(23); //short
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
+    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
 
-    @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
+    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Apparently this the ID 24 was reused to represent CLIENT_EVENT but Cloudburst Nukkit is still mapping it as age")
     public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
 
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static final int DATA_USING_ITEM = dynamic(25); //byte
+    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int DATA_USING_ITEM = dynamic(25); //byte
     public static final int DATA_PLAYER_FLAGS = dynamic(26); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_PLAYER_INDEX = dynamic(27);
+    @Since("1.2.0.0-PN") public static final int DATA_PLAYER_INDEX = dynamic(27);
     public static final int DATA_PLAYER_BED_POSITION = dynamic(28); //block coords
     public static final int DATA_FIREBALL_POWER_X = dynamic(29); //float
     public static final int DATA_FIREBALL_POWER_Y = dynamic(30); //float
     public static final int DATA_FIREBALL_POWER_Z = dynamic(31); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_AUX_POWER = dynamic(32); //???
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FISH_X = dynamic(33); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FISH_Z = dynamic(34); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FISH_ANGLE = dynamic(35); //float
+    @Since("1.2.0.0-PN") public static final int DATA_AUX_POWER = dynamic(32); //???
+    @Since("1.2.0.0-PN") public static final int DATA_FISH_X = dynamic(33); //float
+    @Since("1.2.0.0-PN") public static final int DATA_FISH_Z = dynamic(34); //float
+    @Since("1.2.0.0-PN") public static final int DATA_FISH_ANGLE = dynamic(35); //float
     public static final int DATA_POTION_AUX_VALUE = dynamic(36); //short
     public static final int DATA_LEAD_HOLDER_EID = dynamic(37); //long
     public static final int DATA_SCALE = dynamic(38); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
+    @Since("1.2.0.0-PN") public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
     public static final int DATA_NPC_SKIN_ID = dynamic(40); //string
     public static final int DATA_URL_TAG = dynamic(41); //string
     public static final int DATA_MAX_AIR = dynamic(42); //short
@@ -160,8 +144,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_WITHER_TARGET_1 = dynamic(49); //long
     public static final int DATA_WITHER_TARGET_2 = dynamic(50); //long
     public static final int DATA_WITHER_TARGET_3 = dynamic(51); //long
-    @Since("1.2.0.0-PN")
-    public static final int DATA_AERIAL_ATTACK = dynamic(52);
+    @Since("1.2.0.0-PN") public static final int DATA_AERIAL_ATTACK = dynamic(52);
     public static final int DATA_BOUNDING_BOX_WIDTH = dynamic(53); //float
     public static final int DATA_BOUNDING_BOX_HEIGHT = dynamic(54); //float
     public static final int DATA_FUSE_LENGTH = dynamic(55); //int
@@ -169,68 +152,47 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_RIDER_ROTATION_LOCKED = dynamic(57); //byte
     public static final int DATA_RIDER_MAX_ROTATION = dynamic(58); //float
     public static final int DATA_RIDER_MIN_ROTATION = dynamic(59); //float
-    @Since("1.4.0.0-PN")
-    public static final int DATA_RIDER_ROTATION_OFFSET = dynamic(60);
+    @Since("1.4.0.0-PN") public static final int DATA_RIDER_ROTATION_OFFSET = dynamic(60);
     public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = dynamic(61); //float
     public static final int DATA_AREA_EFFECT_CLOUD_WAITING = dynamic(62); //int
     public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = dynamic(63); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SHULKER_PEEK_ID = dynamic(64); //int
+    @Since("1.2.0.0-PN") public static final int DATA_SHULKER_PEEK_ID = dynamic(64); //int
     public static final int DATA_SHULKER_ATTACH_FACE = dynamic(65); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SHULKER_ATTACHED = dynamic(66); //short
+    @Since("1.2.0.0-PN") public static final int DATA_SHULKER_ATTACHED = dynamic(66); //short
     public static final int DATA_SHULKER_ATTACH_POS = dynamic(67); //block coords
     public static final int DATA_TRADING_PLAYER_EID = dynamic(68); //long
-    @Since("1.2.0.0-PN")
-    public static final int DATA_TRADING_CAREER = dynamic(69);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_HAS_COMMAND_BLOCK = dynamic(70); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_COMMAND_BLOCK_COMMAND = dynamic(71); //string
+    @Since("1.2.0.0-PN") public static final int DATA_TRADING_CAREER = dynamic(69);
+    @Since("1.2.0.0-PN") public static final int DATA_HAS_COMMAND_BLOCK = dynamic(70); //byte
+    @Since("1.2.0.0-PN") public static final int DATA_COMMAND_BLOCK_COMMAND = dynamic(71); //string
     public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = dynamic(72); //string
     public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = dynamic(73); //byte
     public static final int DATA_CONTROLLING_RIDER_SEAT_NUMBER = dynamic(74); //byte
     public static final int DATA_STRENGTH = dynamic(75); //int
     public static final int DATA_MAX_STRENGTH = dynamic(76); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SPELL_CASTING_COLOR = dynamic(77); //int
+    @Since("1.2.0.0-PN") public static final int DATA_SPELL_CASTING_COLOR = dynamic(77); //int
     public static final int DATA_LIMITED_LIFE = dynamic(78); //int
     public static final int DATA_ARMOR_STAND_POSE_INDEX = dynamic(79); //int
     public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = dynamic(80); //int
     public static final int DATA_ALWAYS_SHOW_NAMETAG = dynamic(81); //byte
     public static final int DATA_COLOR_2 = dynamic(82); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_NAME_AUTHOR = dynamic(83);
+    @Since("1.2.0.0-PN") public static final int DATA_NAME_AUTHOR = dynamic(83);
     public static final int DATA_SCORE_TAG = dynamic(84); //String
     public static final int DATA_BALLOON_ATTACHED_ENTITY = dynamic(85); //long
     public static final int DATA_PUFFERFISH_SIZE = dynamic(86); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_BUBBLE_TIME = dynamic(87); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_AGENT = dynamic(88); //long
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SITTING_AMOUNT = dynamic(89); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SITTING_AMOUNT_PREVIOUS = dynamic(90); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_EATING_COUNTER = dynamic(91); //int
+    @Since("1.2.0.0-PN") public static final int DATA_BUBBLE_TIME = dynamic(87); //int
+    @Since("1.2.0.0-PN") public static final int DATA_AGENT = dynamic(88); //long
+    @Since("1.2.0.0-PN") public static final int DATA_SITTING_AMOUNT = dynamic(89); //??
+    @Since("1.2.0.0-PN") public static final int DATA_SITTING_AMOUNT_PREVIOUS = dynamic(90); //??
+    @Since("1.2.0.0-PN") public static final int DATA_EATING_COUNTER = dynamic(91); //int
     public static final int DATA_FLAGS_EXTENDED = dynamic(92); //flags
-    @Since("1.2.0.0-PN")
-    public static final int DATA_LAYING_AMOUNT = dynamic(93); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_LAYING_AMOUNT_PREVIOUS = dynamic(94); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_DURATION = dynamic(95); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SPAWN_TIME = dynamic(96); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_CHANGE_RATE = dynamic(97); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_CHANGE_ON_PICKUP = dynamic(98); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_PICKUP_COUNT = dynamic(99); //int
-    @Since("1.4.0.0-PN")
-    public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
+    @Since("1.2.0.0-PN") public static final int DATA_LAYING_AMOUNT = dynamic(93); //??
+    @Since("1.2.0.0-PN") public static final int DATA_LAYING_AMOUNT_PREVIOUS = dynamic(94); //??
+    @Since("1.2.0.0-PN") public static final int DATA_DURATION = dynamic(95); //int
+    @Since("1.2.0.0-PN") public static final int DATA_SPAWN_TIME = dynamic(96); //int
+    @Since("1.2.0.0-PN") public static final int DATA_CHANGE_RATE = dynamic(97); //float
+    @Since("1.2.0.0-PN") public static final int DATA_CHANGE_ON_PICKUP = dynamic(98); //float
+    @Since("1.2.0.0-PN") public static final int DATA_PICKUP_COUNT = dynamic(99); //int
+    @Since("1.4.0.0-PN") public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
 
     @PowerNukkitOnly("Removed from Cloudburst Nukkit")
     @Deprecated
@@ -240,50 +202,28 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static final int DATA_TRADE_TIER = dynamic(101); //int
     public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int
-    @Since("1.1.1.0-PN")
-    public static final int DATA_SKIN_ID = dynamic(104); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_SPAWNING_FRAMES = dynamic(105); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = dynamic(106); //int
-    @Since("1.2.0.0-PN")
-    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = dynamic(107); //byte
-    @Since("1.2.0.0-PN")
-    public static final int DATA_AMBIENT_SOUND_INTERVAL = dynamic(108); //float
-    @Since("1.3.0.0-PN")
-    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = dynamic(109); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = dynamic(110); //string
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FALL_DAMAGE_MULTIPLIER = dynamic(111); //float
-    @Since("1.2.0.0-PN")
-    public static final int DATA_NAME_RAW_TEXT = dynamic(112); //??
-    @Since("1.2.0.0-PN")
-    public static final int DATA_CAN_RIDE_TARGET = dynamic(113); //byte
-    @Since("1.3.0.0-PN")
-    public static final int DATA_LOW_TIER_CURED_DISCOUNT = dynamic(114); //int
-    @Since("1.3.0.0-PN")
-    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = dynamic(115); //int
-    @Since("1.3.0.0-PN")
-    public static final int DATA_NEARBY_CURED_DISCOUNT = dynamic(116); //int
-    @Since("1.3.0.0-PN")
-    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
-    @Since("1.3.0.0-PN")
-    public static final int DATA_HITBOX = dynamic(118); //NBT
-    @Since("1.3.0.0-PN")
-    public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.5.0.0-PN")
-    public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
-    @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
-    @Since("1.3.0.0-PN")
-    public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
-    @Since("1.4.0.0-PN")
-    public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
-    @Since("1.5.0.0-PN")
-    public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
+    @Since("1.2.0.0-PN") public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int
+    @Since("1.1.1.0-PN") public static final int DATA_SKIN_ID = dynamic(104); //int
+    @Since("1.2.0.0-PN") public static final int DATA_SPAWNING_FRAMES = dynamic(105); //??
+    @Since("1.2.0.0-PN") public static final int DATA_COMMAND_BLOCK_TICK_DELAY = dynamic(106); //int
+    @Since("1.2.0.0-PN") public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = dynamic(107); //byte
+    @Since("1.2.0.0-PN") public static final int DATA_AMBIENT_SOUND_INTERVAL = dynamic(108); //float
+    @Since("1.3.0.0-PN") public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = dynamic(109); //float
+    @Since("1.2.0.0-PN") public static final int DATA_AMBIENT_SOUND_EVENT_NAME = dynamic(110); //string
+    @Since("1.2.0.0-PN") public static final int DATA_FALL_DAMAGE_MULTIPLIER = dynamic(111); //float
+    @Since("1.2.0.0-PN") public static final int DATA_NAME_RAW_TEXT = dynamic(112); //??
+    @Since("1.2.0.0-PN") public static final int DATA_CAN_RIDE_TARGET = dynamic(113); //byte
+    @Since("1.3.0.0-PN") public static final int DATA_LOW_TIER_CURED_DISCOUNT = dynamic(114); //int
+    @Since("1.3.0.0-PN") public static final int DATA_HIGH_TIER_CURED_DISCOUNT = dynamic(115); //int
+    @Since("1.3.0.0-PN") public static final int DATA_NEARBY_CURED_DISCOUNT = dynamic(116); //int
+    @Since("1.3.0.0-PN") public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = dynamic(117); //int
+    @Since("1.3.0.0-PN") public static final int DATA_HITBOX = dynamic(118); //NBT
+    @Since("1.3.0.0-PN") public static final int DATA_IS_BUOYANT = dynamic(119); //byte
+    @Since("1.5.0.0-PN") public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
+    @Since("1.4.0.0-PN") public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
+    @Since("1.3.0.0-PN") public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
+    @Since("1.4.0.0-PN") public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
+    @Since("1.5.0.0-PN") public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
 
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
@@ -341,30 +281,24 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_ENCHANTED = dynamic(51);
     public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(52); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
     public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(53); //inventory is private, doesn't drop contents when killed if true
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(54);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(54);
     public static final int DATA_FLAG_SPIN_ATTACK = dynamic(55);
     public static final int DATA_FLAG_SWIMMING = dynamic(56);
     public static final int DATA_FLAG_BRIBED = dynamic(57); //dolphins have this set when they go to find treasure for the player
     public static final int DATA_FLAG_PREGNANT = dynamic(58);
     public static final int DATA_FLAG_LAYING_EGG = dynamic(59);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(60);
-    @PowerNukkitOnly
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(61); // PowerNukkit but without typo
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(60);
+    @PowerNukkitOnly @Since("1.2.0.0-PN") public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(61); // PowerNukkit but without typo
 
     /**
-     * @see #DATA_FLAG_TRANSITION_SITTING
      * @deprecated This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.
+     * @see #DATA_FLAG_TRANSITION_SITTING
      */
-    @Deprecated
-    @DeprecationDetails(
+    @Deprecated @DeprecationDetails(
             reason = "This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.",
             since = "1.2.0.0-PN",
             replaceWith = "DATA_FLAG_TRANSITION_SITTING")
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
 
     public static final int DATA_FLAG_EATING = dynamic(62);
     public static final int DATA_FLAG_LAYING_DOWN = dynamic(63);
@@ -403,8 +337,6 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.5.0.0-PN") public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
     @Since("FUTURE") public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
     @Since("FUTURE") public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
-    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_CROAKING = dynamic(100);
-    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_EAT_MOB = dynamic(101);
 
     public static long entityCount = 1;
 
@@ -453,16 +385,12 @@ public abstract class Entity extends Location implements Metadatable {
     public double lastMotionZ;
 
     public double lastPitch;
-    @Since("FUTURE")
-    public double lastYaw;
-    @Since("FUTURE")
-    public double lastHeadYaw;
+    @Since("FUTURE") public double lastYaw;
+    @Since("FUTURE") public double lastHeadYaw;
 
     public double pitchDelta;
-    @Since("FUTURE")
-    public double yawDelta;
-    @Since("FUTURE")
-    public double headYawDelta;
+    @Since("FUTURE") public double yawDelta;
+    @Since("FUTURE") public double headYawDelta;
 
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
@@ -557,8 +485,7 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX")
-    public float getGravity() {
+    protected float getGravity() {
         return 0;
     }
 
@@ -598,7 +525,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (this.namedTag.contains("CustomNameVisible")) {
                 this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
             }
-            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
+            if(this.namedTag.contains("CustomNameAlwaysVisible")){
                 this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
             }
         }
@@ -706,7 +633,7 @@ public abstract class Entity extends Location implements Metadatable {
             } else {
                 this.scheduleUpdate();
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             this.close(false);
             throw e;
         }
@@ -1037,13 +964,13 @@ public abstract class Entity extends Location implements Metadatable {
             }
 
             if (entity == null) {
-                Exception cause = new IllegalArgumentException("Could not create an entity of type " + name, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
+                Exception cause = new IllegalArgumentException("Could not create an entity of type "+name, exceptions != null && exceptions.size() > 0? exceptions.get(0) : null);
                 if (exceptions != null && exceptions.size() > 1) {
                     for (int i = 1; i < exceptions.size(); i++) {
                         cause.addSuppressed(exceptions.get(i));
                     }
                 }
-                log.debug("Could not create an entity of type {} with {} args", name, args == null ? 0 : args.length, cause);
+                log.debug("Could not create an entity of type {} with {} args", name, args == null? 0 : args.length, cause);
             }
         } else {
             log.debug("Entity type {} is unknown", name);
@@ -1415,7 +1342,7 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
         }
-        Entity attacker = source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null;
+        Entity attacker = source instanceof EntityDamageByEntityEvent? ((EntityDamageByEntityEvent) source).getDamager() : null;
         for (SideEffect sideEffect : source.getSideEffects()) {
             sideEffect.doPreHealthChange(this, source, attacker);
         }
@@ -1714,8 +1641,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     private Position getNearestValidPortal(Position currentPos) {
         AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(
-                new Vector3(currentPos.getFloorX() - 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 0 : -64, currentPos.getFloorZ() - 128.0),
-                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER? 128 : 320, currentPos.getFloorZ() + 128.0));
+                new Vector3(currentPos.getFloorX() - 128.0, 1.0, currentPos.getFloorZ() - 128.0),
+                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER? 128 : 256, currentPos.getFloorZ() + 128.0));
         BiPredicate<BlockVector3, BlockState> condition = (pos, state) -> state.getBlockId() == BlockID.NETHER_PORTAL;
         List<Block> blocks = currentPos.level.scanBlocks(axisAlignedBB, condition);
 
@@ -1726,13 +1653,13 @@ public abstract class Entity extends Location implements Metadatable {
         final Vector2 currentPosV2 = new Vector2(currentPos.getFloorX(), currentPos.getFloorZ());
         final double by = currentPos.getFloorY();
         Comparator<Block> euclideanDistance = Comparator.comparingDouble(block -> currentPosV2.distanceSquared(block.getFloorX(), block.getFloorZ()));
-        Comparator<Block> heightDistance = Comparator.comparingDouble(block -> {
+        Comparator<Block> heightDistance = Comparator.comparingDouble(block-> {
             double ey = by - block.y;
             return ey * ey;
         });
 
         Block nearestPortal = blocks.stream()
-                .filter(block -> block.down().getId() != BlockID.NETHER_PORTAL)
+                .filter(block-> block.down().getId() != BlockID.NETHER_PORTAL)
                 .min(euclideanDistance.thenComparing(heightDistance))
                 .orElse(null);
 
@@ -1744,15 +1671,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void updateMovement() {
-        // 检测实现的移动类
-        if (this instanceof Movement) {
-            final Movement movement = (Movement) this;
-            movement.handleAIMovement();
-            movement.handleLiquidMovement();
-            movement.handleGravityMovement();
-            movement.handleFrictionMovement();
-        }
-
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
         double diffRotation = (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
@@ -1838,12 +1756,6 @@ public abstract class Entity extends Location implements Metadatable {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         this.updateMovement();
-
-        if (this.getLevelBlock() instanceof BlockBigDripleaf){
-            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
-            if (block.isHead())
-                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-        }
 
         return hasUpdate;
     }
@@ -2016,9 +1928,8 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX")
     public void resetFallDistance() {
-        this.highestPosition = this.y;
+        this.highestPosition = 0;
     }
 
     protected void updateFallState(boolean onGround) {
@@ -2048,10 +1959,10 @@ public abstract class Entity extends Location implements Metadatable {
         Block down = this.level.getBlock(floorLocation.down());
 
         if (!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) {
-            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
             float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
-            if (down instanceof BlockHayBale || down instanceof BlockHoney) {
+            if(down instanceof BlockHayBale || down instanceof BlockHoney) {
                 damage *= 0.2F;
             }
 
@@ -2228,7 +2139,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (!(block instanceof BlockBubbleColumn) && (
                 block instanceof BlockWater
                         || (layer1 = block.getLevelBlockAtLayer(1) instanceof BlockWater))) {
-            BlockWater water = (BlockWater) (layer1 ? block.getLevelBlockAtLayer(1) : block);
+            BlockWater water = (BlockWater) (layer1? block.getLevelBlockAtLayer(1) : block);
             double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
             return y < f;
         }
@@ -2263,9 +2174,9 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public <T extends Block> boolean collideWithBlock(Class<T> classType) {
-        for (Block block : this.getCollisionBlocks()) {
-            if (classType.isInstance(block)) {
+    public <T extends Block> boolean collideWithBlock(Class<T> classType){
+        for(Block block : this.getCollisionBlocks()){
+            if(classType.isInstance(block)){
                 return true;
             }
         }
@@ -2539,7 +2450,7 @@ public abstract class Entity extends Location implements Metadatable {
         Block[] scaffoldingUnder = level.getCollisionBlocks(
                 scanBoundingBox,
                 true, true,
-                b -> b.getId() == BlockID.SCAFFOLDING
+                b-> b.getId() == BlockID.SCAFFOLDING
         );
         setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, scaffoldingUnder.length > 0);
 
