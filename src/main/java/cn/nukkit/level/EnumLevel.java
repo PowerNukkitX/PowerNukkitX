@@ -78,7 +78,7 @@ public enum EnumLevel {
         }
     }
 
-    public static Position moveToNether(Position current)   {
+    public static Position convertPosBetweenNetherAndOverworld(Position current)   {
         if (NETHER.level == null) {
             return null;
         } else {

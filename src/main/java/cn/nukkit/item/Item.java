@@ -387,6 +387,8 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[SHIELD] = ItemShield.class; //513
 
+            list[GLOW_BERRIES] = ItemGlowBerries.class; //638
+
             list[CAMPFIRE] = ItemCampfire.class; //720
 
             list[SUSPICIOUS_STEW] = ItemSuspiciousStew.class; //734
@@ -415,10 +417,12 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[RECORD_PIGSTEP] = ItemRecordPigstep.class; //759
             list[NETHER_SPROUTS] = ItemNetherSprouts.class; //760
 
+            list[AMETHYST_SHARD] = ItemAmethystShard.class; //771
             list[SPYGLASS] = ItemSpyglass.class; //772
 
             list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
 
+            list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //850
             for (int i = 0; i < 256; ++i) {
                 if (Block.list[i] != null) {
                     list[i] = Block.list[i];
@@ -511,7 +515,7 @@ public class Item implements Cloneable, BlockID, ItemID {
                 // TODO Remove this when the support is added to these blocks
                 String[] stateParts = blockStateId.split(";", 2);
                 Integer blockId = BlockStateRegistry.getBlockId(stateParts[0]);
-                if (blockId != null && blockId > BlockID.QUARTZ_BRICKS) {
+                if (blockId != null && blockId > BlockID.INFESTED_DEEPSLATE) {
                     return Item.getBlock(BlockID.AIR);
                 }
 

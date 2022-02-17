@@ -40,13 +40,13 @@ public class BlockSapling extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty AGED = new BooleanBlockProperty("age_bit", false);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(SAPLING_TYPE, AGED);
-    
+
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.OAK", by = "PowerNukkit", 
+    @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.OAK", by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int OAK = 0;
 
@@ -59,7 +59,7 @@ public class BlockSapling extends BlockFlowable {
     @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "WoodType.BIRCH", by = "PowerNukkit",
             reason = "Use the new BlockProperty system instead")
     public static final int BIRCH = 2;
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN",
             by = "PowerNukkit", replaceWith = "ObjectTree.growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType.BIRCH, true)",
@@ -101,7 +101,7 @@ public class BlockSapling extends BlockFlowable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {
@@ -140,7 +140,7 @@ public class BlockSapling extends BlockFlowable {
 
         return false;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -193,7 +193,11 @@ public class BlockSapling extends BlockFlowable {
         BasicGenerator generator = null;
         boolean bigTree = false;
 
-        Vector3 vector3 = new Vector3();
+        Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
+
+        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+        }
 
         switch (getWoodType()) {
             case JUNGLE:
@@ -206,12 +210,12 @@ public class BlockSapling extends BlockFlowable {
 
                 if (!bigTree) {
                     generator = new NewJungleTree(4, 7);
-                    vector3 = this.add(0,0,0);
+                    vector3 = this.add(0, 0, 0);
                 }
                 break;
             case ACACIA:
                 generator = new ObjectSavannaTree();
-                vector3 = this.add(0,0,0);
+                vector3 = this.add(0, 0, 0);
                 break;
             case DARK_OAK:
                 if ((vector2 = this.findSaplings(WoodType.DARK_OAK)) != null) {
@@ -233,7 +237,7 @@ public class BlockSapling extends BlockFlowable {
                 if (ev.isCancelled()) {
                     return;
                 }
-                for(Block block : ev.getBlockList()) {
+                for (Block block : ev.getBlockList()) {
                     this.level.setBlock(block, block);
                 }
                 return;
@@ -263,7 +267,8 @@ public class BlockSapling extends BlockFlowable {
             }
             return;
         }
-        for(Block block : ev.getBlockList()) {
+
+        for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
     }
@@ -274,19 +279,19 @@ public class BlockSapling extends BlockFlowable {
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, -1), new Vector2(-1, -1)));
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(1, -1)));
         validVectorsList.add(Arrays.asList(new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, 1), new Vector2(-1, 1)));
-        for(List<Vector2> validVectors : validVectorsList) {
+        for (List<Vector2> validVectors : validVectorsList) {
             boolean correct = true;
-            for(Vector2 vector2 : validVectors) {
-                if(!this.isSameType(this.add(vector2.x, 0, vector2.y), type))
+            for (Vector2 vector2 : validVectors) {
+                if (!this.isSameType(this.add(vector2.x, 0, vector2.y), type))
                     correct = false;
             }
-            if(correct) {
+            if (correct) {
                 int lowestX = 0;
                 int lowestZ = 0;
-                for(Vector2 vector2 : validVectors) {
-                    if(vector2.getFloorX() < lowestX)
+                for (Vector2 vector2 : validVectors) {
+                    if (vector2.getFloorX() < lowestX)
                         lowestX = vector2.getFloorX();
-                    if(vector2.getFloorY() < lowestZ)
+                    if (vector2.getFloorY() < lowestZ)
                         lowestZ = vector2.getFloorY();
                 }
                 return new Vector2(lowestX, lowestZ);
@@ -297,7 +302,7 @@ public class BlockSapling extends BlockFlowable {
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Checking magic value directly is depreacated",
-        replaceWith = "isSameType(Vector3,WoodType)")
+            replaceWith = "isSameType(Vector3,WoodType)")
     public boolean isSameType(Vector3 pos, int type) {
         Block block = this.level.getBlock(pos);
         return block.getId() == this.getId() && (block.getDamage() & 0x07) == (type & 0x07);
@@ -307,7 +312,7 @@ public class BlockSapling extends BlockFlowable {
     @Since("1.4.0.0-PN")
     public boolean isSameType(Vector3 pos, WoodType type) {
         Block block = this.level.getBlock(pos);
-        return block.getId() == this.getId() && ((BlockSapling)block).getWoodType() == type;
+        return block.getId() == this.getId() && ((BlockSapling) block).getWoodType() == type;
     }
 
     @Override

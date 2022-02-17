@@ -507,6 +507,8 @@ public class Chunk extends BaseChunk {
             chunk.inhabitedTime = 0;
             chunk.terrainGenerated = false;
             chunk.terrainPopulated = false;
+            if (provider != null)
+                chunk.isNew384World = provider.isOverWorld();
 //            chunk.lightPopulated = false;
             return chunk;
         } catch (Exception e) {

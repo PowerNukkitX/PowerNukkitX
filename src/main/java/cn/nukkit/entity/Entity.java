@@ -376,60 +376,35 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(69);
     public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(70);
     public static final int DATA_FLAG_BLOCKING = dynamic(71); //shield
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(72);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(73);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(74);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_SLEEPING = dynamic(75);
-    @Since("FUTURE")
-    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(76);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(77);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(78);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(79);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_OPENER = dynamic(80);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(81);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STUNNED = dynamic(82);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_ROARING = dynamic(83);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(84);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(85);
-    @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(86);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(87);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(88);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_IN_UI = dynamic(89);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STALKING = dynamic(90);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_EMOTING = dynamic(91);
-    @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING = dynamic(92);
-    @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_ADMIRING = dynamic(93);
-    @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
-    @Since("1.4.0.0-PN")
-    public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
-    @Since("1.5.0.0-PN")
-    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
-    @Since("FUTURE")
-    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
-    @Since("FUTURE")
-    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(72);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(73);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(74);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_SLEEPING = dynamic(75);
+    @Since("FUTURE") public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(76);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_TRADE_INTEREST = dynamic(77);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_DOOR_BREAKER = dynamic(78);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(79);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_DOOR_OPENER = dynamic(80);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(81);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_STUNNED = dynamic(82);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_ROARING = dynamic(83);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(84);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(85);
+    @Since("1.3.0.0-PN") public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(86);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(87);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(88);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_IS_IN_UI = dynamic(89);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_STALKING = dynamic(90);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_EMOTING = dynamic(91);
+    @Since("1.2.0.0-PN") public static final int DATA_FLAG_CELEBRATING = dynamic(92);
+    @Since("1.3.0.0-PN") public static final int DATA_FLAG_ADMIRING = dynamic(93);
+    @Since("1.3.0.0-PN") public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
+    @Since("1.4.0.0-PN") public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
+    @Since("1.5.0.0-PN") public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
+    @Since("FUTURE") public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
+    @Since("FUTURE") public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
+    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_CROAKING = dynamic(100);
+    @Since("1.6.0.0-PNX") public static final int DATA_FLAG_EAT_MOB = dynamic(101);
 
     public static long entityCount = 1;
 
@@ -1696,7 +1671,7 @@ public abstract class Entity extends Location implements Metadatable {
             getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled() && (level == EnumLevel.OVERWORLD.getLevel() || level == EnumLevel.NETHER.getLevel())) {
-                Position newPos = EnumLevel.moveToNether(this);
+                Position newPos = EnumLevel.convertPosBetweenNetherAndOverworld(this);
                 if (newPos != null) {
                     /*for (int x = -1; x < 2; x++) {
                         for (int z = -1; z < 2; z++) {
@@ -1739,8 +1714,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     private Position getNearestValidPortal(Position currentPos) {
         AxisAlignedBB axisAlignedBB = new SimpleAxisAlignedBB(
-                new Vector3(currentPos.getFloorX() - 128.0, 1.0, currentPos.getFloorZ() - 128.0),
-                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 128 : 256, currentPos.getFloorZ() + 128.0));
+                new Vector3(currentPos.getFloorX() - 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER ? 0 : -64, currentPos.getFloorZ() - 128.0),
+                new Vector3(currentPos.getFloorX() + 128.0, currentPos.level.getDimension() == Level.DIMENSION_NETHER? 128 : 320, currentPos.getFloorZ() + 128.0));
         BiPredicate<BlockVector3, BlockState> condition = (pos, state) -> state.getBlockId() == BlockID.NETHER_PORTAL;
         List<Block> blocks = currentPos.level.scanBlocks(axisAlignedBB, condition);
 
@@ -1863,6 +1838,12 @@ public abstract class Entity extends Location implements Metadatable {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         this.updateMovement();
+
+        if (this.getLevelBlock() instanceof BlockBigDripleaf){
+            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+            if (block.isHead())
+                block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+        }
 
         return hasUpdate;
     }
