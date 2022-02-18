@@ -238,11 +238,11 @@ public class Level implements ChunkManager, Metadatable {
     private Vector3 mutableBlock;
 
     // Avoid OOM, gc'd references result in whole chunk being sent (possibly higher cpu)
-    private final Long2ObjectOpenHashMap<SoftReference<Map<Character, Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectOpenHashMap<SoftReference<Int2ObjectOpenHashMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
     // Storing the vector is redundant
     private final Object changeBlocksPresent = new Object();
     // Storing extra blocks past 512 is redundant
-    private final Map<Character, Object> changeBlocksFullMap = new HashMap<Character, Object>() {
+    private final Int2ObjectOpenHashMap<Object> changeBlocksFullMap = new Int2ObjectOpenHashMap<>() {
         @Override
         public int size() {
             return Character.MAX_VALUE;
@@ -425,18 +425,16 @@ public class Level implements ChunkManager, Metadatable {
         return (((long) x & (long) 0xFFFFFFF) << 36) | ((long) (level.ensureY(y)) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
-    // TODO: 2022/2/18 修改blockHash到32位以适应384世界
-    public static char localBlockHash(double x, double y, double z) {
+    public static int localBlockHash(double x, double y, double z, Level level) {
         byte hi = (byte) (((int) x & 15) + (((int) z & 15) << 4));
-        byte lo = (byte) y;
-        return (char) (((hi & 0xFF) << 8) | (lo & 0xFF));
+        short lo = (short) y;
+        return (hi & 0xFF) << 16 | level.ensureY(lo);
     }
 
-    // TODO: 2022/2/18 修改blockHash到32位以适应384世界
-    public static Vector3 getBlockXYZ(long chunkHash, char blockHash) {
-        int hi = (byte) (blockHash >>> 8);
-        int lo = (byte) blockHash;
-        int y = lo & 0xFF;
+    public static Vector3 getBlockXYZ(long chunkHash, int blockHash, Level level) {
+        int hi = (byte) (blockHash >>> 16);
+        int lo = (short) blockHash;
+        int y = level.ensureY(lo);
         int x = (hi & 0xF) + (getHashX(chunkHash) << 4);
         int z = ((hi >> 4) & 0xF) + (getHashZ(chunkHash) << 4);
         return new Vector3(x, y, z);
@@ -1003,11 +1001,11 @@ public class Level implements ChunkManager, Metadatable {
         synchronized (changedBlocks) {
             if (!this.changedBlocks.isEmpty()) {
                 if (!this.players.isEmpty()) {
-                    ObjectIterator<Long2ObjectMap.Entry<SoftReference<Map<Character, Object>>>> iter = changedBlocks.long2ObjectEntrySet().fastIterator();
+                    var iter = changedBlocks.long2ObjectEntrySet().fastIterator();
                     while (iter.hasNext()) {
-                        Long2ObjectMap.Entry<SoftReference<Map<Character, Object>>> entry = iter.next();
+                        var entry = iter.next();
                         long index = entry.getLongKey();
-                        Map<Character, Object> blocks = entry.getValue().get();
+                        var blocks = entry.getValue().get();
                         int chunkX = Level.getHashX(index);
                         int chunkZ = Level.getHashZ(index);
                         if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
@@ -1020,8 +1018,8 @@ public class Level implements ChunkManager, Metadatable {
                             Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
                             Vector3[] blocksArray = new Vector3[blocks.size()];
                             int i = 0;
-                            for (char blockHash : blocks.keySet()) {
-                                Vector3 hash = getBlockXYZ(index, blockHash);
+                            for (int blockHash : blocks.keySet()) {
+                                Vector3 hash = getBlockXYZ(index, blockHash, this);
                                 blocksArray[i++] = hash;
                             }
                             this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
@@ -1853,7 +1851,7 @@ public class Level implements ChunkManager, Metadatable {
         return maxValue;
     }
 
-    public void updateBlockLight(Map<Long, Map<Character, Object>> map) {
+    public void updateBlockLight(Map<Long, Map<Integer, Object>> map) {
         int size = map.size();
         if (size == 0) {
             return;
@@ -1863,20 +1861,20 @@ public class Level implements ChunkManager, Metadatable {
         Long2ObjectOpenHashMap<Object> visited = new Long2ObjectOpenHashMap<>();
         Long2ObjectOpenHashMap<Object> removalVisited = new Long2ObjectOpenHashMap<>();
 
-        Iterator<Map.Entry<Long, Map<Character, Object>>> iter = map.entrySet().iterator();
+        var iter = map.entrySet().iterator();
         while (iter.hasNext() && size-- > 0) {
-            Map.Entry<Long, Map<Character, Object>> entry = iter.next();
+            var entry = iter.next();
             iter.remove();
             long index = entry.getKey();
-            Map<Character, Object> blocks = entry.getValue();
+            var blocks = entry.getValue();
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             int bx = chunkX << 4;
             int bz = chunkZ << 4;
-            for (char blockHash : blocks.keySet()) {
-                int hi = (byte) (blockHash >>> 8);
-                int lo = (byte) blockHash; // TODO: 2022/2/18 修改blockHash到32位以适应384世界
-                int y = lo & 0xFF;
+            for (int blockHash : blocks.keySet()) {
+                int hi = (byte) (blockHash >>> 16);
+                int lo = (short) blockHash;
+                int y = ensureY(lo);
                 int x = (hi & 0xF) + bx;
                 int z = ((hi >> 4) & 0xF) + bz;
                 BaseFullChunk chunk = getChunk(x >> 4, z >> 4, false);
@@ -1980,16 +1978,16 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    private Map<Long, Map<Character, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private Map<Long, Map<Integer, Object>> lightQueue = new ConcurrentHashMap<>(8, 0.9f, 1);
 
     public void addLightUpdate(int x, int y, int z) {
         long index = chunkHash(x >> 4, z >> 4);
-        Map<Character, Object> currentMap = lightQueue.get(index);
+        var currentMap = lightQueue.get(index);
         if (currentMap == null) {
             currentMap = new ConcurrentHashMap<>(8, 0.9f, 1);
             this.lightQueue.put(index, currentMap);
         }
-        currentMap.put(Level.localBlockHash(x, y, z), changeBlocksPresent);
+        currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
     }
 
     @Deprecated
@@ -2104,13 +2102,13 @@ public class Level implements ChunkManager, Metadatable {
 
     private void addBlockChange(long index, int x, int y, int z) {
         synchronized (changedBlocks) {
-            SoftReference<Map<Character, Object>> current = changedBlocks.computeIfAbsent(index, k -> new SoftReference<>(new HashMap<>()));
-            Map<Character, Object> currentMap = current.get();
+            SoftReference<Int2ObjectOpenHashMap<Object>> current = changedBlocks.computeIfAbsent(index, k -> new SoftReference<>(new Int2ObjectOpenHashMap<>()));
+            var currentMap = current.get();
             if (currentMap != changeBlocksFullMap && currentMap != null) {
                 if (currentMap.size() > MAX_BLOCK_CACHE) {
                     this.changedBlocks.put(index, new SoftReference<>(changeBlocksFullMap));
                 } else {
-                    currentMap.put(Level.localBlockHash(x, y, z), changeBlocksPresent);
+                    currentMap.put(Level.localBlockHash(x, y, z, this), changeBlocksPresent);
                 }
             }
         }
