@@ -39,6 +39,10 @@ public class PNXWorldHandle implements WorldHandle {
         Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
         var toDefaultState = false;
         if (mappedData == null) {
+            jeBlockStateData.equalsIgnoreWaterlogged = true;
+            mappedData = jeBlockMapping.get(jeBlockStateData);
+        }
+        if (mappedData == null) {
             jeBlockStateData.equalsIgnoreAttributes = true;
             mappedData = jeBlockMapping.get(jeBlockStateData);
             toDefaultState = true;
@@ -99,11 +103,12 @@ public class PNXWorldHandle implements WorldHandle {
     private static class State {
 
         public boolean equalsIgnoreAttributes = false;
+        public boolean equalsIgnoreWaterlogged = false;
         private final String identifier;
         private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
 
         public State(String str) {
-            var strings = str.replace("[", ",").replace("]", ",").split(",");
+            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ","").split(",");
             identifier = strings[0];
             if (strings.length > 1) {
                 for (int i = 1; i < strings.length; i++) {
@@ -117,11 +122,19 @@ public class PNXWorldHandle implements WorldHandle {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof State state) {
-                if (!equalsIgnoreAttributes) {
-                    return state.identifier.equals(identifier) && state.attributes.equals(attributes);
-                } else {
-                    return state.identifier.equals(identifier);
+                if(equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
+                    if (state.identifier.equals(identifier)) return true;
                 }
+                if (equalsIgnoreWaterlogged || state.equalsIgnoreWaterlogged) {
+                    Map m1 = new Object2ObjectArrayMap(attributes);
+                    Map m2 = new Object2ObjectArrayMap(state.attributes);
+                    if (m1.containsKey("waterlogged"))
+                        m1.remove("waterlogged");
+                    if (m2.containsKey("waterlogged"))
+                        m2.remove("waterlogged");
+                    if(state.identifier.equals(identifier) && m1.equals(m2)) return true;
+                }
+                return state.identifier.equals(identifier) && attributes.equals(state.attributes);
             }
             return false;
         }

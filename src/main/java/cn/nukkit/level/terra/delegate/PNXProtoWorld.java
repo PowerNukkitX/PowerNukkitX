@@ -1,5 +1,6 @@
 package cn.nukkit.level.terra.delegate;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.terra.PNXAdapter;
@@ -32,7 +33,9 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
         if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
-            chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+            if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
+                chunkManager.setBlockStateAt(i, i1, i2,1, ((PNXBlockStateDelegate) blockState).getHandle());
+            chunkManager.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
         }
     }
 
