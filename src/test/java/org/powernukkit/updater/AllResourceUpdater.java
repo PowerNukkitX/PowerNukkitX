@@ -17,7 +17,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import io.netty.util.internal.EmptyArrays;
 import lombok.SneakyThrows;
-import lombok.var;
 import org.powernukkit.dumps.ItemIdDumper;
 import org.powernukkit.dumps.RuntimeBlockStateDumper;
 

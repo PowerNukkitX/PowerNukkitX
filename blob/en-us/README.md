@@ -1,15 +1,21 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/BlocklyNukkit/PowerNukkitX/master/blob/images/banner.png" />](https://www.powernukkitx.com)
 
-<h2>Need to switch languages?</h2>
+<h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
-[![English](https://img.shields.io/badge/English-20%25-yellow?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![English](https://img.shields.io/badge/English-30%25-yellow?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
+[![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/wiki/FAQ)
+
 
 🤔What is PowerNukkitX ?
 ---
 [PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX) is a branch version based on [PowerNukkit](https://github.com/PowerNukkit/PowerNukkit), developed and maintained by [BlocklyNukkit](https://github.com/BlocklyNukkit), any problems can be submitted to [Issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues) feedback.
+
+Attention:
+
+*  PowerNukkitX requires a minimum Java version of 17
 
 What's new in PowerNukkitX? Let's See：
 
@@ -30,12 +36,14 @@ What's new in PowerNukkitX? Let's See：
 
 📌 Statement
 ---
-<!--待翻译-->
-**PowerNukkitX**是基于PowerNukkit和Nukkit的修改优化版本，修复了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)插件兼容（TODO）等。
+<!-- Just Do it :-D -->
+<!--使用DeepL暴力翻译-->
+**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit) Plugin compatibility (TODO), etc.
 
-* 请注意**PowerNukkitX**非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues)（同时请注意阅读[贡献帮助指南](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)中的规定）。
+* Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should first [create an issue](https://github.com/BlocklyNukkit/PowerNukkitX/issues) in this repository (please also note to read the rules in the [Contribution Help Guide](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
 
-* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkit](https://github.com/powernukkit/powernukkit)或[PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX)制作的插件，并使用[稳定版](https://github.com/BlocklyNukkit/PowerNukkitX/releases)进行部署。
+* We also recommend that you perform regular backups and other operations, and use the plug-ins made for [PowerNukkit](https://github.com/powernukkit/powernukkit) or [PowerNukkitX](https://github.com/BlocklyNukkit/PowerNukkitX) and use [stable version](https://github.com/BlocklyNukkit/PowerNukkitX/releases) for deployment.
+<!--结束-->
 
 * Most [Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit) plugins are supported but they may not understand the new blocks and items and the new stuff that you can do with PowerNukkitX.
 
@@ -87,8 +95,9 @@ dependencies {
 ```sh
 java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar powernukkitx-<version>-shaded.jar
 ```
-<!--待翻译中-->
-* 请酌情根据您的服务器配置调节 `-Xmx` (JVM可以调用的最大内存) 和 `-Xms` (JVM的初始内存)，同时根据您编译的JAR核心名称手动调整 `powernukkitx-<version>-shaded.jar`中的内容。 
+<!--使用Deepl暴力翻译-->
+* Please adjust `-Xmx` (the maximum memory the JVM can call) and `-Xms` (the initial memory of the JVM) as appropriate for your server configuration, and manually adjust the contents of `powernukkitx-<version>-shaded.jar` according to the name of the JAR core you are compiling. 
+<!--结束-->
 
 * Check [this page](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/) for information about the arguments above.
 
