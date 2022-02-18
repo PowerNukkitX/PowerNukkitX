@@ -195,10 +195,6 @@ public class BlockSapling extends BlockFlowable {
 
         Vector3 vector3 = new Vector3(this.x, this.y - 1, this.z);
 
-        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
-            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
-        }
-
         switch (getWoodType()) {
             case JUNGLE:
                 Vector2 vector2;
@@ -237,6 +233,9 @@ public class BlockSapling extends BlockFlowable {
                 if (ev.isCancelled()) {
                     return;
                 }
+                if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+                    this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+                }
                 for (Block block : ev.getBlockList()) {
                     this.level.setBlock(block, block);
                 }
@@ -268,6 +267,9 @@ public class BlockSapling extends BlockFlowable {
             return;
         }
 
+        if (this.level.getBlock(vector3).getId() == BlockID.DIRT_WITH_ROOTS) {
+            this.level.setBlock(vector3, Block.get(BlockID.DIRT));
+        }
         for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
