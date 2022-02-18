@@ -110,7 +110,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
             return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             // Check limit
-            if (this.up().getId() == AIR && this.up().getY() < 256) {
+            if (this.up().getId() == AIR && this.up().getY() < level.getMaxHeight()) {
                 if (!isFullyAged()) {
                     boolean growUp = false; // Grow upward?
                     boolean ground = false; // Is on the ground directly?

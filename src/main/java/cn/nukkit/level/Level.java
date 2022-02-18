@@ -3995,6 +3995,24 @@ public class Level implements ChunkManager, Metadatable {
         return this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()) < pos.getY();
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getMinHeight() {
+        if (this.getDimension() == 0) {
+            return -64;
+        }
+        return 0;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getMaxHeight() {
+        if (this.getDimension() == 0) {
+            return 320;
+        }
+        return 256;
+    }
+
     public int getStrongPower(Vector3 pos, BlockFace direction) {
         return this.getBlock(pos).getStrongPower(direction);
     }

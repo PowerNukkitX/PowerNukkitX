@@ -162,7 +162,7 @@ public class Explosion {
                             vBlock.x = pointerX >= x ? x : x - 1;
                             vBlock.y = pointerY >= y ? y : y - 1;
                             vBlock.z = pointerZ >= z ? z : z - 1;
-                            if (vBlock.y < 0 || vBlock.y > 255) {
+                            if (!this.level.isYInRange((int) (vBlock.y - 1))) {
                                 break;
                             }
                             Block block = this.level.getBlock(vBlock);

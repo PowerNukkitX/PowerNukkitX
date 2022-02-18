@@ -162,7 +162,7 @@ public class BlockKelp extends BlockFlowable {
         if (item.isFertilizer()) {
             int x = (int) this.x;
             int z = (int) this.z;
-            for (int y = (int) this.y + 1; y < 255; y++) {
+            for (int y = (int) this.y + 1; y < this.level.getMaxHeight() - 1; y++) {
                 BlockState blockStateAbove = getLevel().getBlockStateAt(x, y, z);
                 int blockIdAbove = blockStateAbove.getBlockId();
                 if (blockIdAbove != BLOCK_KELP) {
