@@ -149,7 +149,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
             return provider;
         }
         final var newProvider = pack.getBiomeProvider();
-        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider));
+        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider,chunkManager));
         return newProvider;
     }
 
