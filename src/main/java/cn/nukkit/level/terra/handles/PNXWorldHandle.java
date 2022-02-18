@@ -130,5 +130,12 @@ public class PNXWorldHandle implements WorldHandle {
         public int hashCode() {
             return identifier.hashCode();
         }
+
+        @Override
+        public String toString() {
+            StringBuilder ret = new StringBuilder(identifier).append(";");
+            attributes.forEach((k,v) -> ret.append(k).append("=").append(v).append(";"));
+            return ret.toString();
+        }
     }
 }
