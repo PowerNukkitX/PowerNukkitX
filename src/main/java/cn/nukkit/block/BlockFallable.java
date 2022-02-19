@@ -27,13 +27,17 @@ public abstract class BlockFallable extends BlockSolid {
                     return type;
                 }
 
-                this.level.setBlock(this, Block.get(Block.AIR), true, true);
-                EntityFallingBlock fall = createFallingEntity(new CompoundTag());
-
-                fall.spawnToAll();
+                drop(new CompoundTag());
             }
         }
         return type;
+    }
+
+    public void drop(CompoundTag customNbt) {
+        this.level.setBlock(this, Block.get(Block.AIR), true, true);
+        EntityFallingBlock fall = createFallingEntity(customNbt);
+
+        fall.spawnToAll();
     }
 
     @PowerNukkitOnly

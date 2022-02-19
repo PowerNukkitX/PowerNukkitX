@@ -18,6 +18,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -67,6 +68,7 @@ public class EntityFallingBlock extends Entity {
     protected int blockId;
     protected int damage;
     protected @PowerNukkitOnly boolean breakOnLava;
+    protected @PowerNukkitOnly boolean breakOnGround;
 
     public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -90,6 +92,7 @@ public class EntityFallingBlock extends Entity {
         }
 
         breakOnLava = namedTag.getBoolean("BreakOnLava");
+        breakOnGround = namedTag.getBoolean("BreakOnGround");
 
         if (blockId == 0) {
             close();
@@ -191,12 +194,29 @@ public class EntityFallingBlock extends Entity {
                     EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, block, Block.get(getBlock(), getDamage()));
                     server.getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
-                        getLevel().setBlock(pos, event.getTo(), true);
+                        if (!breakOnGround)
+                            getLevel().setBlock(pos, event.getTo(), true);
+                        else{
+                            if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                                getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
+                            }
+                            level.addParticle(new DestroyBlockParticle(pos, Block.get(getBlock(), getDamage())));
+                        }
 
                         if (event.getTo().getId() == Item.ANVIL) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
                             Entity[] e = level.getCollidingEntities(this.getBoundingBox(), this);
+                            for (Entity entity : e) {
+                                if (entity instanceof EntityLiving && fallDistance > 0) {
+                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.FALLING_BLOCK, Math.min(40f, Math.max(0f, fallDistance * 2f))));
+                                }
+                            }
+                        }
+                        if (event.getTo().getId() == Item.POINTED_DRIPSTONE) {
+                            getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
+
+                            Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos,pos.add(1,1,1)));
                             for (Entity entity : e) {
                                 if (entity instanceof EntityLiving && fallDistance > 0) {
                                     entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.FALLING_BLOCK, Math.min(40f, Math.max(0f, fallDistance * 2f))));

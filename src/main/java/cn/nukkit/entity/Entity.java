@@ -1979,8 +1979,9 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        if (fallDistance > 0.75) {
+        down.onEntityFallOn(this, fallDistance);
 
+        if (fallDistance > 0.75) {//todo: move these into their classes
             if (down.getId() == Block.FARMLAND) {
                 if (onPhysicalInteraction(down, false)) {
                     return;
