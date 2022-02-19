@@ -104,7 +104,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     public Stream<Block> scanBlocks(BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         int offsetX = getX() << 4;
         int offsetZ = getZ() << 4;
-        return IntStream.rangeClosed(min.getChunkSectionY(), max.getChunkSectionY())
+        return IntStream.rangeClosed(min.getChunkSectionY(isOverWorld()), max.getChunkSectionY(isOverWorld()))
                 .filter(sectionY -> sectionY >= 0 && sectionY < sections.length)
                 .mapToObj(sectionY -> sections[sectionY])
                 .filter(section -> !section.isEmpty()).parallel()
