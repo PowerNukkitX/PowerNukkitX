@@ -298,7 +298,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public double getMinY() {
-        return this.y + 0.9;
+        return this.y + 0.95;
     }
 
     public enum Tilt{
