@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 
+import cn.nukkit.utils.BinaryStream;
 import lombok.ToString;
 
 /**
