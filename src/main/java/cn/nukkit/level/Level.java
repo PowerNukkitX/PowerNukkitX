@@ -280,8 +280,8 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private int chunksPerTicks;
     private boolean clearChunksOnTick;
-    private int minHeight;
-    private int maxHeight;
+    private int minHeight = isOverWorld() ? -64 : 0;
+    private int maxHeight = isOverWorld() ? 320 : 256;
 
     private int updateLCG = ThreadLocalRandom.current().nextInt();
 
@@ -486,8 +486,6 @@ public class Level implements ChunkManager, Metadatable {
         Generator generator = generators.get();
         this.dimension = generator.getDimension();
         this.gameRules = this.requireProvider().getGamerules();
-        this.minHeight = (this.dimension == 0) ? -64 : 0;
-        this.maxHeight = (this.dimension == 0) ? 320 : 256;
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());
         Position spawn = this.getSpawnLocation();
