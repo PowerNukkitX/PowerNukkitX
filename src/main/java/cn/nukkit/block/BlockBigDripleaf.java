@@ -5,12 +5,15 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
@@ -112,6 +115,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         if (block.getSide(BlockFace.DOWN) instanceof BlockBigDripleaf) {
             BlockBigDripleaf blockDown = (BlockBigDripleaf) this.level.getBlock(block.getSide(BlockFace.DOWN));
             blockDown.setHead(false);
+            blockDown.recovering.set(false);
+            blockDown.tilting.set(false);
             blockBigDripleafTop.setBlockFace(((BlockBigDripleaf) block.getSide(BlockFace.DOWN)).getBlockFace());
             this.level.setBlock(blockDown,blockDown,true,true);
             this.level.setBlock(block,blockBigDripleafTop,true,true);
@@ -148,9 +153,15 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
 
-
     @Override
     public int onUpdate(int type) {
+        if (this.isGettingPower()) {
+            this.tilting.set(false);
+            this.recovering.set(false);
+            this.setTilt(Tilt.NONE);
+            this.level.setBlock(this,this,true,true);
+            return 0;
+        }
         if (!canKeepAlive(this)) {
             this.level.setBlock(this, new BlockAir(), true, true);
             this.level.dropItem(this, this.toItem());
@@ -163,41 +174,55 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
             });
             if (hasEntityOn.get()){
                 if (!tilting.get() && this.getTilt() == Tilt.NONE){
-                    tilting.set(true);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged())
-                            return;
-                        this.setTilt(Tilt.PARTIAL_TILT);
-                        this.level.setBlock(this,this,true,true);
-                    }, 15);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged()){
-                            tilting.set(false);
-                            return;
-                        }
-                        this.setTilt(Tilt.FULL_TILT);
-                        this.level.setBlock(this,this,true,true);
-                        tilting.set(false);
-                        this.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                        this.level.scheduleUpdate(this,20);//make sure that the block is updated
-                    }, 30);
+                    tilt();
                 }
             }else {
                 if (!recovering.get() && this.getTilt() != Tilt.NONE) {
-                    recovering.set(true);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged()) {
-                            recovering.set(false);
-                            return;
-                        }
-                        this.setTilt(Tilt.NONE);
-                        this.level.setBlock(this,this,true,true);
-                        recovering.set(false);
-                    },100);
+                    recovery();
                 }
             }
         }
         return super.onUpdate(type);
+    }
+
+    private void tilt(){
+        tilting.set(true);
+        Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
+            if(!tilting.get())
+                return;
+            if (isBlockChanged())
+                return;
+            this.setTilt(Tilt.PARTIAL_TILT);
+            this.level.setBlock(this,this,true,true);
+        }, 15);
+        Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
+            if(!tilting.get())
+                return;
+            if (isBlockChanged()){
+                tilting.set(false);
+                return;
+            }
+            this.setTilt(Tilt.FULL_TILT);
+            this.level.setBlock(this,this,true,true);
+            tilting.set(false);
+            this.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+            this.level.scheduleUpdate(this,20);//make sure that the block is updated
+        }, 30);
+    }
+
+    private void recovery(){
+        recovering.set(true);
+        Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
+            if(!recovering.get())
+                return;
+            if (isBlockChanged()) {
+                recovering.set(false);
+                return;
+            }
+            this.setTilt(Tilt.NONE);
+            this.level.setBlock(this,this,true,true);
+            recovering.set(false);
+        },100);
     }
 
     public boolean isBlockChanged() {
@@ -224,6 +249,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 block = block.getSide(BlockFace.UP);
             }
         }
+        if(block instanceof BlockBigDripleaf blockBigDripleaf) {
+            blockBigDripleaf.recovering.set(false);
+            blockBigDripleaf.tilting.set(false);
+        }
 
         int maxHeightIncreased = 0;
         Block blockUp = block.getBlock();
@@ -246,6 +275,30 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{new BlockSmallDripleaf().toItem()};
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+        this.setTilt(Tilt.FULL_TILT);
+        this.level.setBlock(this,this,true,true);
+        return true;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return !this.isHead();
+    }
+
+    @Override
+    public double getMinY() {
+        return this.y + 0.9;
     }
 
     public enum Tilt{
