@@ -178,7 +178,7 @@ public class EntityFishingHook extends EntityProjectile {
     }
 
     public int getWaterHeight() {
-        for (int y = this.getFloorY(); y < 256; y++) {
+        for (int y = this.getFloorY(); y < level.getMaxHeight(); y++) {
             int id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
             if (id == Block.AIR) {
                 return y;

@@ -3987,14 +3987,23 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public final boolean isYInRange(int y) {
-        if (this.getDimension() == 0) {
-            return y >= -64 && y < 320;
-        }
-        return y >= 0 && y < 256;
+        return y >= getMinHeight() && y < getMaxHeight();
     }
 
     public boolean canBlockSeeSky(Vector3 pos) {
         return this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()) < pos.getY();
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getMinHeight() {
+        return isOverWorld() ? -64 : 0;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getMaxHeight() {
+        return isOverWorld() ? 320 : 256;
     }
 
     public int getStrongPower(Vector3 pos, BlockFace direction) {
