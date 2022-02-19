@@ -4,13 +4,18 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
+
+import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author xtypr
@@ -96,5 +101,26 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean useDefaultFallDamage() {
+        return false;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public void onEntityFallOn(Entity entity, float fallDistance) {
+        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
+
+        damage *= 0.2F;
+
+        if (damage > 0) {
+            entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
+        }
     }
 }

@@ -5,12 +5,16 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.potion.Effect;
 
 import java.util.Random;
+
+import static cn.nukkit.potion.Effect.getEffect;
 
 @PowerNukkitOnly
 public class BlockHoney extends BlockSolid {
@@ -105,5 +109,26 @@ public class BlockHoney extends BlockSolid {
     @Override
     public int getLightFilter() {
         return 1;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean useDefaultFallDamage() {
+        return false;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public void onEntityFallOn(Entity entity, float fallDistance) {
+        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
+
+        damage *= 0.2F;
+
+        if (damage > 0) {
+            entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
+        }
     }
 }

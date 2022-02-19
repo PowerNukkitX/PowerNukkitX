@@ -17,9 +17,12 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author CoolLoong
@@ -253,8 +256,18 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     @Override
     public void onEntityFallOn(Entity entity,float fallDistance) {
         if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && this.getPropertyValue(HANGING) == 0) {
-            entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL,Math.round(fallDistance * 2 - 2)));
+            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            float damage = (float) Math.floor((fallDistance - jumpBoost) * 2 - 2);
+            if (damage > 0)
+                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL,damage));
         }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean useDefaultFallDamage() {
+        return false;
     }
 
     @PowerNukkitOnly
