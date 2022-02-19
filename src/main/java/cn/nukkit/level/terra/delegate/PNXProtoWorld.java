@@ -34,8 +34,8 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
         if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
-                chunkManager.setBlockStateAt(i, i1, i2,1, ((PNXBlockStateDelegate) blockState).getHandle());
-            chunkManager.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
+                chunkManager.setBlockStateAt(i, i1, i2,1, pnxBlockState.getHandle());
+            chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
         }
     }
 
