@@ -427,14 +427,14 @@ public class Level implements ChunkManager, Metadatable {
 
     public static int localBlockHash(double x, double y, double z, Level level) {
         byte hi = (byte) (((int) x & 15) + (((int) z & 15) << 4));
-        short lo = (short) y;
-        return (hi & 0xFF) << 16 | level.ensureY(lo);
+        short lo = (short) (level.ensureY((int) y) + 64);
+        return (hi & 0xFF) << 16 | lo;
     }
 
     public static Vector3 getBlockXYZ(long chunkHash, int blockHash, Level level) {
         int hi = (byte) (blockHash >>> 16);
         int lo = (short) blockHash;
-        int y = level.ensureY(lo);
+        int y = level.ensureY(lo - 64);
         int x = (hi & 0xF) + (getHashX(chunkHash) << 4);
         int z = ((hi >> 4) & 0xF) + (getHashZ(chunkHash) << 4);
         return new Vector3(x, y, z);
@@ -1874,7 +1874,7 @@ public class Level implements ChunkManager, Metadatable {
             for (int blockHash : blocks.keySet()) {
                 int hi = (byte) (blockHash >>> 16);
                 int lo = (short) blockHash;
-                int y = ensureY(lo);
+                int y = ensureY(lo - 64);
                 int x = (hi & 0xF) + bx;
                 int z = ((hi >> 4) & 0xF) + bz;
                 BaseFullChunk chunk = getChunk(x >> 4, z >> 4, false);

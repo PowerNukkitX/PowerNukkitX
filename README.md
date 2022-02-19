@@ -2,12 +2,12 @@
 
 <h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
+[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
 [![English](https://img.shields.io/badge/English-30%25-yellow?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/wiki/FAQ)
-
 
 🤔什么是PowerNukkitX ？
 ---
@@ -16,6 +16,10 @@
 注意事项：
 
 * PowerNukkitX要求的最低Java版本为17
+
+加入我们:
+
+* [Discord](https://discord.gg/j7UwsaNu4V)
 
 PowerNukkitX的优势：
 

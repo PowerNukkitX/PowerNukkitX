@@ -2,6 +2,7 @@
 
 <h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
+[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/README.md)
 [![English](https://img.shields.io/badge/English-30%25-yellow?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
@@ -16,6 +17,10 @@
 Attention:
 
 *  PowerNukkitX requires a minimum Java version of 17
+
+Join US:
+
+* [Discord](https://discord.gg/j7UwsaNu4V)
 
 What's new in PowerNukkitX? Let's See：
 
