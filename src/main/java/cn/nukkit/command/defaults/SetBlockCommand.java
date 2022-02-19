@@ -93,7 +93,7 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        if (y < 0 || y > 255) {
+        if (player.level.isYInRange((int) y)) {
             sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
             return true;
         }
