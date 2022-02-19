@@ -280,8 +280,6 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private int chunksPerTicks;
     private boolean clearChunksOnTick;
-    private int minHeight = isOverWorld() ? -64 : 0;
-    private int maxHeight = isOverWorld() ? 320 : 256;
 
     private int updateLCG = ThreadLocalRandom.current().nextInt();
 
@@ -3987,7 +3985,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public final boolean isYInRange(int y) {
-        return y >= this.minHeight && y < this.maxHeight;
+        return y >= getMinHeight() && y < getMaxHeight();
     }
 
     public boolean canBlockSeeSky(Vector3 pos) {
@@ -3997,13 +3995,13 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public int getMinHeight() {
-        return minHeight;
+        return isOverWorld() ? -64 : 0;
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public int getMaxHeight() {
-        return maxHeight;
+        return isOverWorld() ? 320 : 256;
     }
 
     public int getStrongPower(Vector3 pos, BlockFace direction) {
