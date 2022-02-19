@@ -486,8 +486,8 @@ public class Level implements ChunkManager, Metadatable {
         Generator generator = generators.get();
         this.dimension = generator.getDimension();
         this.gameRules = this.requireProvider().getGamerules();
-        this.minHeight = isOverWorld() ? -64 : 0;
-        this.maxHeight = isOverWorld() ? 320 : 256;
+        this.minHeight = (this.dimension == 0) ? -64 : 0;
+        this.maxHeight = (this.dimension == 0) ? 320 : 256;
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());
         Position spawn = this.getSpawnLocation();
