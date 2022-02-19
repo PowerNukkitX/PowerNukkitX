@@ -488,5 +488,6 @@ public class Network {
         this.registerPacket(ProtocolInfo.SCRIPT_MESSAGE_PACKET, ScriptMessagePacket.class);
         this.registerPacket(ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET, PlayerStartItemCoolDownPacket.class);
         this.registerPacket(ProtocolInfo.CODE_BUILDER_SOURCE_PACKET, CodeBuilderSourcePacket.class);
+        this.registerPacket(ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET, UpdateSubChunkBlocksPacket.class);
     }
 }
