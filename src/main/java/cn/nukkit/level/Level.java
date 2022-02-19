@@ -280,6 +280,8 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private int chunksPerTicks;
     private boolean clearChunksOnTick;
+    private int minHeight;
+    private int maxHeight;
 
     private int updateLCG = ThreadLocalRandom.current().nextInt();
 
@@ -484,6 +486,8 @@ public class Level implements ChunkManager, Metadatable {
         Generator generator = generators.get();
         this.dimension = generator.getDimension();
         this.gameRules = this.requireProvider().getGamerules();
+        this.minHeight = isOverWorld() ? -64 : 0;
+        this.maxHeight = isOverWorld() ? 320 : 256;
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());
         Position spawn = this.getSpawnLocation();
@@ -3985,10 +3989,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public final boolean isYInRange(int y) {
-        if (this.getDimension() == 0) {
-            return y >= -64 && y < 320;
-        }
-        return y >= 0 && y < 256;
+        return y >= this.minHeight && y < this.maxHeight;
     }
 
     public boolean canBlockSeeSky(Vector3 pos) {
@@ -3998,19 +3999,13 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public int getMinHeight() {
-        if (this.getDimension() == 0) {
-            return -64;
-        }
-        return 0;
+        return minHeight;
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public int getMaxHeight() {
-        if (this.getDimension() == 0) {
-            return 320;
-        }
-        return 256;
+        return maxHeight;
     }
 
     public int getStrongPower(Vector3 pos, BlockFace direction) {
