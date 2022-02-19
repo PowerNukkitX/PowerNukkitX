@@ -6,12 +6,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.Arrays;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
@@ -95,8 +98,26 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if(!target.isSolid())
+            return false;
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
         return true;
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        if (item.isPickaxe()){
+            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this, item1));
+            this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
+        }
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if ((this.getSide(this.getBlockFace().getOpposite()).getId() == BlockID.AIR))
+            this.onBreak(Item.get(ItemID.DIAMOND_PICKAXE));
+        return 0;
     }
 }
