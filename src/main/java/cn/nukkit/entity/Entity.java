@@ -1966,21 +1966,18 @@ public abstract class Entity extends Location implements Metadatable {
         Location floorLocation = this.floor();
         Block down = this.level.getBlock(floorLocation.down());
 
-        if (!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) {
+        if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
             float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
-
-            if(down instanceof BlockHayBale || down instanceof BlockHoney) {
-                damage *= 0.2F;
-            }
 
             if (damage > 0) {
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
             }
         }
 
-        if (fallDistance > 0.75) {
+        down.onEntityFallOn(this, fallDistance);
 
+        if (fallDistance > 0.75) {//todo: moving these into their own classes (method "onEntityFallOn()")
             if (down.getId() == Block.FARMLAND) {
                 if (onPhysicalInteraction(down, false)) {
                     return;

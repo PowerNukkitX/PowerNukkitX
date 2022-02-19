@@ -9,13 +9,20 @@ import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author CoolLoong
@@ -105,7 +112,33 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 this.getLevel().useBreakOn(this);
             }
         }
+        tryDrop();
         return 0;
+    }
+
+    public void tryDrop(){
+        Boolean AirUp = false;
+        Boolean AirDown = false;
+        Block blockUp = this.getBlock();
+        while(blockUp.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE){
+            blockUp = blockUp.getSide(BlockFace.UP);
+        }
+        if (blockUp.getSide(BlockFace.UP).getId() == AIR)
+            AirUp = true;
+        Block blockDown = this.getBlock();
+        while(blockDown.getSide(BlockFace.DOWN).getId() == POINTED_DRIPSTONE){
+            blockDown = blockDown.getSide(BlockFace.DOWN);
+        }
+        if (blockDown.getSide(BlockFace.DOWN).getId() == AIR)
+            AirDown = true;
+        if (AirUp && AirDown) {
+            BlockPointedDripstone block = (BlockPointedDripstone) blockDown.getBlock();
+            block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
+            while(block.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE) {
+                block = (BlockPointedDripstone) block.getSide(BlockFace.UP);
+                block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
+            }
+        }
     }
 
     @Override
@@ -220,6 +253,23 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return true;
     }
 
+    @Override
+    public void onEntityFallOn(Entity entity,float fallDistance) {
+        if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && this.getPropertyValue(HANGING) == 0) {
+            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            float damage = (float) Math.floor((fallDistance - jumpBoost) * 2 - 2);
+            if (damage > 0)
+                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL,damage));
+        }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean useDefaultFallDamage() {
+        return false;
+    }
+
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     protected void setTipBlock(int x, int y, int z, int hanging) {
@@ -249,7 +299,6 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     protected int getPointedDripStoneLength(int x, int y, int z, int hanging) {
-
         if (hanging == 1) {
             for (int j = y + 1; j < 320; ++j) {
                 int blockId = level.getBlockIdAt(x, j, z);
