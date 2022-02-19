@@ -422,7 +422,7 @@ public class Level implements ChunkManager, Metadatable {
         if (!level.isYInRange(y)) {
             throw new IllegalArgumentException("Y coordinate y is out of range!");
         }
-        return (((long) x & (long) 0xFFFFFFF) << 36) | ((long) (level.ensureY(y)) << 28) | ((long) z & (long) 0xFFFFFFF);
+        return (((long) x & (long) 0b111111111111111111111111111) << 37) | ((long) (level.ensureY(y) + 64) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
     public static int localBlockHash(double x, double y, double z, Level level) {
@@ -440,8 +440,10 @@ public class Level implements ChunkManager, Metadatable {
         return new Vector3(x, y, z);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public static int chunkBlockHash(int x, int y, int z) {
-        return (x << 12) | (z << 8) | y;
+        return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
     }
 
     public static int getHashX(long hash) {
