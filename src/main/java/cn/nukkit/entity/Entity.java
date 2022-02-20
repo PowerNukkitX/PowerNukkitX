@@ -1558,7 +1558,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         this.checkBlockCollision();
 
-        if (this.y < -82 && this.isAlive()) {
+        if (this.y < (level.getMinHeight() - 18) && this.isAlive()) {
             if (this instanceof Player) {
                 Player player = (Player) this;
                 if (!player.isCreative()) this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
