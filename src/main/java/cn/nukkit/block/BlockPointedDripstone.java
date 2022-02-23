@@ -109,30 +109,25 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 this.getLevel().useBreakOn(this);
             }
         }
-        tryDrop();
+        tryDrop(hanging);
         return 0;
     }
 
-    public void tryDrop(){
+    @PowerNukkitOnly
+    public void tryDrop(int hanging) {
+        if (hanging == 0) return;
         boolean AirUp = false;
-        boolean AirDown = false;
         Block blockUp = this.getBlock();
-        while(blockUp.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE){
+        while (blockUp.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE) {
             blockUp = blockUp.getSide(BlockFace.UP);
         }
         if (blockUp.getSide(BlockFace.UP).getId() == AIR)
             AirUp = true;
-        Block blockDown = this.getBlock();
-        while(blockDown.getSide(BlockFace.DOWN).getId() == POINTED_DRIPSTONE){
-            blockDown = blockDown.getSide(BlockFace.DOWN);
-        }
-        if (blockDown.getSide(BlockFace.DOWN).getId() == AIR)
-            AirDown = true;
-        if (AirUp && AirDown) {
-            BlockPointedDripstone block = (BlockPointedDripstone) blockDown.getBlock();
+        if (AirUp) {
+            BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
             block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
-            while(block.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE) {
-                block = (BlockPointedDripstone) block.getSide(BlockFace.UP);
+            while (block.getSide(BlockFace.DOWN).getId() == POINTED_DRIPSTONE) {
+                block = (BlockPointedDripstone) block.getSide(BlockFace.DOWN);
                 block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
             }
         }
@@ -243,12 +238,12 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     }
 
     @Override
-    public void onEntityFallOn(Entity entity,float fallDistance) {
+    public void onEntityFallOn(Entity entity, float fallDistance) {
         if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && this.getPropertyValue(HANGING) == 0) {
-            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
             float damage = (float) Math.floor((fallDistance - jumpBoost) * 2 - 2);
             if (damage > 0)
-                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL,damage));
+                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
     }
 
