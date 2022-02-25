@@ -141,7 +141,7 @@ public class PNXWorldHandle implements WorldHandle {
 
         @Override
         public int hashCode() {
-            return identifier.hashCode();
+            return this.toString().hashCode();
         }
 
         @Override
