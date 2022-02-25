@@ -41,6 +41,14 @@ public abstract class BlockFallable extends BlockSolid {
     }
 
     @PowerNukkitOnly
+    public void drop(CompoundTag customNbt) {
+        this.level.setBlock(this, Block.get(Block.AIR), true, true);
+        EntityFallingBlock fall = createFallingEntity(customNbt);
+
+        fall.spawnToAll();
+    }
+
+    @PowerNukkitOnly
     protected EntityFallingBlock createFallingEntity(CompoundTag customNbt) {
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")

@@ -1,4 +1,4 @@
-[<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/BlocklyNukkit/PowerNukkitX/master/blob/images/banner.png" />](https://www.powernukkitx.com)
+[<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/BlocklyNukkit/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
 <h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
