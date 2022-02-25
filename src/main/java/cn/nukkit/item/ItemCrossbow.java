@@ -10,12 +10,10 @@ import cn.nukkit.event.entity.EntityShootCrossbowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Utils;
-
-import java.util.Random;
 
 @Since("1.6.0.0-PNX")
 public class ItemCrossbow extends ItemTool {
@@ -51,9 +49,7 @@ public class ItemCrossbow extends ItemTool {
             needTickUsed -= enchantment.getLevel() * 5; //0.25s
         }
 
-        if (ticksUsed < needTickUsed) {
-            return true;
-        } else {
+        if (ticksUsed >= needTickUsed) {
             Item itemArrow;
             Inventory inventory = player.getOffhandInventory();
             if (!this.canLoad(itemArrow = inventory.getItem(0))) {
@@ -96,19 +92,16 @@ public class ItemCrossbow extends ItemTool {
                 this.loadArrow(player, itemArrow);
             }
 
-            return true;
         }
+        return true;
     }
 
     @Since("1.6.0.0-PNX")
     protected boolean canLoad(Item item) {
-        switch(item.getId()) {
-            case Item.ARROW:
-            case Item.FIREWORKS:
-                return true;
-            default:
-                return false;
-        }
+        return switch (item.getId()) {
+            case Item.ARROW, Item.FIREWORKS -> true;
+            default -> false;
+        };
     }
 
     @Since("1.6.0.0-PNX")
@@ -129,7 +122,7 @@ public class ItemCrossbow extends ItemTool {
             this.setCompoundTag(tag);
             this.loadTick = Server.getInstance().getTick();
             player.getInventory().setItemInHand(this);
-            player.getLevel().addLevelSoundEvent(player, 247);
+            player.getLevel().addSound(player, Sound.CROSSBOW_LOADING_END);
         }
     }
 
@@ -162,7 +155,7 @@ public class ItemCrossbow extends ItemTool {
                 EntityCrossbowFirework entity = new EntityCrossbowFirework(player.chunk, nbt);
                 entity.setMotion(new Vector3(mX, mY, mZ));
                 entity.spawnToAll();
-                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
+                player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
                 this.useArrow(player);
             } else {
                 EntityArrow entity = new EntityArrow(player.chunk, nbt, player, false);
@@ -181,7 +174,7 @@ public class ItemCrossbow extends ItemTool {
                             proj.close();
                         } else {
                             proj.spawnToAll();
-                            player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_CROSSBOW_SHOOT);
+                            player.getLevel().addSound(player, Sound.CROSSBOW_SHOOT);
                             this.useArrow(player);
                         }
                     }

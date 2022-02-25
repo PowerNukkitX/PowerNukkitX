@@ -5,22 +5,59 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
-    public AtomicBoolean tilting = new AtomicBoolean(false);
-    public AtomicBoolean recovering = new AtomicBoolean(false);
+    public static Map<Position, TiltAction> actions = new HashMap<>();
+    public static Set<Position> fullTiltBlocks = new HashSet<>();
+
+    static{
+        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+            for (Map.Entry<Position, TiltAction> entry : actions.entrySet()) {
+                    if (--entry.getValue().delay == 0) {
+                        if (checkTiltAction(entry.getKey())) {
+                            BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
+                            blockBigDripleaf.setTilt(entry.getValue().targetState);
+                            entry.getKey().getLevel().setBlock(entry.getKey(), blockBigDripleaf, true, true);
+                            if (entry.getValue().targetState == Tilt.FULL_TILT) {
+                                fullTiltBlocks.add(entry.getKey());
+                            }
+                        }
+                        actions.remove(entry.getKey());
+                        if (entry.getValue().nextAction != null){
+                            actions.put(entry.getKey(), entry.getValue().nextAction);
+                        }
+                    }
+            }
+        },1);
+        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+            for (Position pos : fullTiltBlocks.toArray(new Position[0])) {
+                if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
+                    pos.getLevelBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                }else{
+                    fullTiltBlocks.remove(pos);
+                }
+            }
+        },1);
+    }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
@@ -33,6 +70,28 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION,TILT,HEAD);
+
+    public static boolean checkTiltAction(Position pos){
+        if (!actions.containsKey(pos)){
+            return true;
+        }
+        TiltAction action = actions.get(pos);
+        if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.isHead()){
+            return true;
+        }
+        return false;
+    }
+
+    public static void addTiltAction(Position pos,TiltAction action){
+        if (!actions.containsKey(pos) ||!checkTiltAction(pos))
+            actions.put(pos,action);
+    }
+
+    public static void removeTiltAction(Position pos){
+        if (actions.containsKey(pos)) {
+            actions.remove(pos);
+        }
+    }
 
     protected BlockBigDripleaf() {
         super(0);
@@ -136,6 +195,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     public boolean onBreak(@Nonnull Item item) {
+        removeTiltAction(this);
         this.level.setBlock(this, new BlockAir(), true, true);
         this.level.dropItem(this, this.toItem());
         if(this.getSide(BlockFace.UP).getId() == BlockID.BIG_DRIPLEAF){
@@ -148,11 +208,17 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     }
 
 
-
     @Override
     public int onUpdate(int type) {
+        if (this.isGettingPower()) {
+            removeTiltAction(this);
+            this.setTilt(Tilt.NONE);
+            this.level.setBlock(this,this,true,true);
+            return 0;
+        }
         if (!canKeepAlive(this)) {
             this.level.setBlock(this, new BlockAir(), true, true);
+            removeTiltAction(this);
             this.level.dropItem(this, this.toItem());
         }
         if (this.isHead()) {
@@ -161,47 +227,15 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 if (entity.asBlockVector3().equals(this.asBlockVector3()))
                     hasEntityOn.set(true);
             });
-            if (hasEntityOn.get()){
-                if (!tilting.get() && this.getTilt() == Tilt.NONE){
-                    tilting.set(true);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged())
-                            return;
-                        this.setTilt(Tilt.PARTIAL_TILT);
-                        this.level.setBlock(this,this,true,true);
-                    }, 15);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged()){
-                            tilting.set(false);
-                            return;
-                        }
-                        this.setTilt(Tilt.FULL_TILT);
-                        this.level.setBlock(this,this,true,true);
-                        tilting.set(false);
-                        this.onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                        this.level.scheduleUpdate(this,20);//make sure that the block is updated
-                    }, 30);
-                }
+            if (hasEntityOn.get() && this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.NONE) {
+                addTiltAction(this, new TiltAction(Tilt.PARTIAL_TILT,15,new TiltAction(Tilt.FULL_TILT,15,null)));
             }else {
-                if (!recovering.get() && this.getTilt() != Tilt.NONE) {
-                    recovering.set(true);
-                    Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
-                        if (isBlockChanged()) {
-                            recovering.set(false);
-                            return;
-                        }
-                        this.setTilt(Tilt.NONE);
-                        this.level.setBlock(this,this,true,true);
-                        recovering.set(false);
-                    },100);
+                if (this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
+                    addTiltAction(this, new TiltAction(Tilt.NONE,100,null));
                 }
             }
         }
         return super.onUpdate(type);
-    }
-
-    public boolean isBlockChanged() {
-        return !(this.getLevelBlock() instanceof BlockBigDripleaf) || !(((BlockBigDripleaf) this.getLevelBlock()).getTilt() == this.getTilt());
     }
 
     public boolean canKeepAlive(Position pos){
@@ -224,6 +258,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                 block = block.getSide(BlockFace.UP);
             }
         }
+        removeTiltAction(block);
 
         int maxHeightIncreased = 0;
         Block blockUp = block.getBlock();
@@ -248,10 +283,47 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return new Item[]{new BlockSmallDripleaf().toItem()};
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
+        this.setTilt(Tilt.FULL_TILT);
+        this.level.setBlock(this,this,true,true);
+        return true;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return !this.isHead();
+    }
+
+    @Override
+    public double getMinY() {
+        return this.y + 0.95;
+    }
+
     public enum Tilt{
         NONE,
         PARTIAL_TILT,
         FULL_TILT,
         UNSTABLE
+    }
+
+    public class TiltAction {
+
+        public Tilt targetState;
+        public int delay;
+        public TiltAction nextAction;
+
+        public TiltAction(Tilt targetState, int delay,TiltAction nextAction) {
+            this.targetState = targetState;
+            this.delay = delay;
+            this.nextAction = nextAction;
+        }
     }
 }

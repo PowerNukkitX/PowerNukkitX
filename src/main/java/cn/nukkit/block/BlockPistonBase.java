@@ -352,8 +352,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     @PowerNukkitOnly
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
         if (
-                block.getY() >= 0 && (face != BlockFace.DOWN || block.getY() != 0) &&
-                        block.getY() <= 255 && (face != BlockFace.UP || block.getY() != 255)
+                block.getY() >= block.level.getMinHeight() && (face != BlockFace.DOWN || block.getY() != block.level.getMinHeight()) &&
+                        block.getY() <= block.level.getMaxHeight() - 1 && (face != BlockFace.UP || block.getY() != block.level.getMaxHeight() - 1)
         ) {
             if (extending && !block.canBePushed() || !extending && !block.canBePulled()) {
                 return false;

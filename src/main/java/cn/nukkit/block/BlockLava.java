@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.event.block.BlockIgniteEvent;
@@ -114,7 +116,7 @@ public class BlockLava extends BlockLiquid {
                     Vector3 v = this.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
                     Block block = this.getLevel().getBlock(v);
 
-                    if (block.up().getId() == AIR && block.getBurnChance() > 0) {
+                    if (block.up().getId() == AIR && block.getBurnChance() > 0 && isNetherSpreadNotAllowed(block)) {
                         BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
                         this.level.getServer().getPluginManager().callEvent(e);
 
@@ -131,9 +133,31 @@ public class BlockLava extends BlockLiquid {
         return result;
     }
 
+    /**
+     * 用于检验在地狱中岩浆是否可以引燃下界自然方块
+     * @param spreadTarget 目标火焰点燃方块
+     * @return 是否可以被点燃
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private boolean isNetherSpreadNotAllowed(Block spreadTarget) {
+        if(this.getLevel().isNether()) {
+            final var id = spreadTarget.getId();
+            if(id >= CRIMSON_ROOTS && id <= NETHER_SPROUTS_BLOCK) {
+                return false;
+            }
+            if(id >= STRIPPED_CRIMSON_STEM && id <= WARPED_DOUBLE_SLAB) {
+                return false;
+            }
+            return id < WARPED_HYPHAE || id > STRIPPED_WARPED_HYPHAE;
+        }
+        return true;
+    }
+
     protected boolean isSurroundingBlockFlammable(Block block) {
-        for (BlockFace face : BlockFace.values()) {
-            if (block.getSide(face).getBurnChance() > 0) {
+        for (final var face : BlockFace.values()) {
+            final var b = block.getSide(face);
+            if (b.getBurnChance() > 0 && isNetherSpreadNotAllowed(b)) {
                 return true;
             }
         }

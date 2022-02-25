@@ -1818,6 +1818,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void onEntityFallOn(Entity entity, float fallDistance) {
+
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean useDefaultFallDamage(){
+        return true;
+    }
+
     public AxisAlignedBB getBoundingBox() {
         return this.recalculateBoundingBox();
     }

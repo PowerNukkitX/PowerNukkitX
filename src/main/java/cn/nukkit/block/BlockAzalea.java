@@ -217,5 +217,6 @@ public class BlockAzalea extends BlockFlowable {
         for(Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
+        this.level.setBlock(this, Block.get(LOG));
     }
 }
