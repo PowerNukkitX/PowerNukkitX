@@ -499,6 +499,12 @@
                                 <exclude>META-INF/services/org.slf4j.spi.SLF4JServiceProvider</exclude>
                             </excludes>
                         </filter>
+                        <filter>
+                            <artifact>com.dfsek.terra:Terra</artifact>
+                            <excludes>
+                                <exclude>config.yml</exclude>
+                            </excludes>
+                        </filter>
                     </filters>
                     <transformers>
                         <transformer

@@ -22,6 +22,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
@@ -32,14 +35,27 @@ public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;
     private static PNXPlatform INSTANCE = null;
 
-    private static PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
-    private static PNXItemHandle pnxItemHandle = new PNXItemHandle();
+    private static final PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
+    private static final PNXItemHandle pnxItemHandle = new PNXItemHandle();
 
     static {
         DATA_PATH = new File("./terra");
         if (!DATA_PATH.exists()) {
             if (!DATA_PATH.mkdirs()) {
                 log.info("Failed to create terra config folder.");
+            }
+        }
+        var targetFile = new File("./terra/config.yml");
+        if(!targetFile.exists()) {
+            var terraDefaultConfigStream = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
+            if (terraDefaultConfigStream != null) {
+                try {
+                    Files.copy(terraDefaultConfigStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    log.info("Failed to extract terra config.");
+                }
+            } else {
+                log.info("Failed to extract terra config.");
             }
         }
     }
