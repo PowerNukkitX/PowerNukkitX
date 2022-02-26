@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator;
 
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.terra.delegate.PNXBiomeProviderDelegate;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
@@ -149,7 +150,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
             return provider;
         }
         final var newProvider = pack.getBiomeProvider();
-        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider,chunkManager));
+        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider));
         return newProvider;
     }
 
@@ -168,6 +169,12 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     public void generateChunk(int chunkX, int chunkZ) {
         getChunkGeneratorDelegate().generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
                 getBiomeProviderDelegate(), chunkX, chunkZ);
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                chunkManager.getChunk(chunkX, chunkZ).setBiome(x,z,(Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+            }
+        }
     }
 
     @Override
