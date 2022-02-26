@@ -15,6 +15,7 @@ import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -27,9 +28,7 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +42,12 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
+
+    private static Set<Position> movingBlocks = new HashSet<>();
+
+    public static boolean isBlockLocked(Position pos){
+        return movingBlocks.contains(pos);
+    }
 
     public boolean sticky;
 
@@ -262,8 +267,10 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         BlocksCalculator calculator = new BlocksCalculator(level, this, getBlockFace(), extending, sticky);
 
         boolean canMove = calculator.canMove();
+        calculator.lockBlocks();
 
         if (!canMove && extending) {
+            calculator.unlockBlocks();
             return false;
         }
 
@@ -273,6 +280,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         this.level.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
+            calculator.unlockBlocks();
             return false;
         }
 
@@ -304,7 +312,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
             int i = 0;
             for (Block newBlock : newBlocks) {
-                Vector3 oldPos = newBlock.add(0);
+                Block oldPos = newBlock.getBlock();
                 newBlock.position(newBlock.add(0).getSide(side));
                 
                 CompoundTag nbt = new CompoundTag()
@@ -338,6 +346,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
         BlockEntityPistonArm blockEntity = getOrCreateBlockEntity();
         blockEntity.move(extending, attached);
+        calculator.unlockBlocks();
         return true;
     }
 
@@ -426,6 +435,10 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             Block block = this.blockToMove;
 
             if (!canPush(block, this.moveDirection, true, extending)) {
+                return false;
+            }
+
+            if (movingBlocks.contains(new Position(block.getX(), block.getY(), block.getZ(), block.level))) {
                 return false;
             }
 
@@ -582,11 +595,29 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         }
 
         public List<Block> getBlocksToMove() {
-            return this.toMove;
+            return this.toMove.stream().map(Block::clone).collect(Collectors.toList());
         }
 
         public List<Block> getBlocksToDestroy() {
-            return this.toDestroy;
+            return this.toDestroy.stream().map(Block::clone).collect(Collectors.toList());
+        }
+
+        public void lockBlocks(){
+            for(Block block : this.toMove){
+                movingBlocks.add(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+            }
+            for (Block block : this.toDestroy){
+                movingBlocks.add(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+            }
+        }
+
+        public void unlockBlocks(){
+            for(Block block : this.toMove){
+                movingBlocks.remove(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+            }
+            for (Block block : this.toDestroy){
+                movingBlocks.remove(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+            }
         }
     }
 
