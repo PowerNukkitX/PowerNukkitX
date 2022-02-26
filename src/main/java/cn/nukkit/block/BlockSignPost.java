@@ -11,9 +11,8 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.SignColorChangeEvent;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSign;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.event.block.SignGlowEvent;
+import cn.nukkit.item.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -250,12 +249,41 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
     @Override
     public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() != DyeColor.BLACK.getDyeData()) {
+        boolean glow = false;
+        if (item.getId() == Item.DYE || (item instanceof StringItem && (glow = "minecraft:glow_ink_sac".equals(item.getNamespaceId())))) {
             BlockEntity blockEntity = this.level.getBlockEntity(this);
-            if (!(blockEntity instanceof BlockEntitySign)) {
+            if (!(blockEntity instanceof BlockEntitySign sign)) {
                 return false;
             }
-            BlockEntitySign sign = (BlockEntitySign) blockEntity;
+
+            if (item instanceof StringItem || (item.getId() == Item.DYE && item.getDamage() == DyeColor.BLACK.getDyeData())) {
+                if (sign.isGlowing() == glow) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                SignGlowEvent event = new SignGlowEvent(this, player, glow);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                sign.setGlowing(glow);
+                sign.spawnToAll();
+
+                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SACE_USED);
+
+                if (player != null && (player.getGamemode() & 0x01) == 0) {
+                    item.count--;
+                }
+
+                return true;
+            }
 
             BlockColor color = DyeColor.getByDyeData(item.getDamage()).getSignColor();
             if (color.equals(sign.getColor())) {
