@@ -3450,14 +3450,13 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Position getSafeSpawn(Vector3 spawn, int horizontalMaxOffset, boolean allowWaterUnder) {
-        if (spawn == null) {
+        if (spawn == null)
             spawn = this.getFuzzySpawnLocation();
-        } else {
-            return Position.fromObject(spawn, this);
-        }
-
         if (spawn == null)
             return null;
+        if (standable(spawn,true))
+            return Position.fromObject(spawn, this);
+
 
         if (allowWaterUnder) {
             for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
