@@ -141,7 +141,8 @@ public class PNXWorldHandle implements WorldHandle {
 
         @Override
         public int hashCode() {
-            return this.toString().hashCode();
+            // TODO: 2022/2/26 确认hashcode与对应方块的联系，避免空中矿石
+            return identifier.hashCode();
         }
 
         @Override
