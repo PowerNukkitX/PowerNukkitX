@@ -115,6 +115,13 @@ public class ItemMap extends Item {
         p.dataPacket(pk);
     }
 
+    public boolean trySendImage(Player p) {
+        BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
+        if (image == null) return false;
+        this.sendImage(p);
+        return true;
+    }
+
     @Override
     public boolean canBeActivated() {
         return true;
