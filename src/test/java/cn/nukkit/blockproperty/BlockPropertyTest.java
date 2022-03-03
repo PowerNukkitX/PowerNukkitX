@@ -2,7 +2,6 @@ package cn.nukkit.blockproperty;
 
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
 import cn.nukkit.math.BlockFace;
-import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;

@@ -6,7 +6,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import io.netty.util.internal.EmptyArrays;
 import joptsimple.internal.Strings;
-import lombok.var;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

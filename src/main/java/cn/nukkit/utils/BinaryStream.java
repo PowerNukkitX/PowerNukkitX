@@ -812,7 +812,7 @@ public class BinaryStream {
 
     public void putBlockVector3(int x, int y, int z) {
         this.putVarInt(x);
-        this.putUnsignedVarInt(y);
+        this.putUnsignedVarInt(Integer.toUnsignedLong(y));
         this.putVarInt(z);
     }
 

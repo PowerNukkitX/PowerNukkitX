@@ -7,11 +7,19 @@ import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import static cn.nukkit.potion.Effect.getEffect;
 
 /**
  * @author CoolLoong
@@ -94,18 +102,46 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @Override
     public int onUpdate(int type) {
-        return 1;
+        int hanging = getPropertyValue(HANGING);
+        if (hanging == 0) {
+            Block down = down();
+            if (down.getId() == AIR) {
+                this.getLevel().useBreakOn(this);
+            }
+        }
+        tryDrop(hanging);
+        return 0;
+    }
+
+    @PowerNukkitOnly
+    public void tryDrop(int hanging) {
+        if (hanging == 0) return;
+        boolean AirUp = false;
+        Block blockUp = this.getBlock();
+        while (blockUp.getSide(BlockFace.UP).getId() == POINTED_DRIPSTONE) {
+            blockUp = blockUp.getSide(BlockFace.UP);
+        }
+        if (blockUp.getSide(BlockFace.UP).getId() == AIR)
+            AirUp = true;
+        if (AirUp) {
+            BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
+            block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
+            while (block.getSide(BlockFace.DOWN).getId() == POINTED_DRIPSTONE) {
+                block = (BlockPointedDripstone) block.getSide(BlockFace.DOWN);
+                block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
+            }
+        }
     }
 
     @Override
-    public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
-        int placeX = this.getFloorX();
-        int placeY = this.getFloorY();
-        int placeZ = this.getFloorZ();
+    public boolean place(@Nullable Item item, @Nonnull Block block, @Nullable Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+        int placeX = block.getFloorX();
+        int placeY = block.getFloorY();
+        int placeZ = block.getFloorZ();
         int upBlockID = level.getBlockIdAt(placeX, placeY + 1, placeZ);
         int downBlockID = level.getBlockIdAt(placeX, placeY - 1, placeZ);
         if (upBlockID == AIR && downBlockID == AIR) return false;
-        /*
+        /*    "up" define is exist drip stone in block above,"down" is Similarly.
               up   down
           1   yes   yes
           2   yes   no
@@ -115,12 +151,11 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         int state = (upBlockID == POINTED_DRIPSTONE) ? (downBlockID == POINTED_DRIPSTONE ? 1 : 2) : (downBlockID != POINTED_DRIPSTONE ? 3 : 4);
         int hanging = 0;
         switch (state) {
-            case 1: {
+            case 1 -> {
                 setMergeBlock(placeX, placeY, placeZ, 0);
                 setBlockThicknessStateAt(placeX, placeY + 1, placeZ, 1, "merge");
-                break;
             }
-            case 2: {
+            case 2 -> {
                 if (level.getBlockIdAt(placeX, placeY - 1, placeZ) != AIR) {
                     if (face.equals(BlockFace.UP)) {
                         setBlockThicknessStateAt(placeX, placeY + 1, placeZ, 1, "merge");
@@ -132,9 +167,8 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                     return true;
                 }
                 hanging = 1;
-                break;
             }
-            case 3: {
+            case 3 -> {
                 if (downBlockID != AIR) {
                     setTipBlock(placeX, placeY, placeZ, 0);
                 } else {
@@ -142,7 +176,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 }
                 return true;
             }
-            case 4: {
+            case 4 -> {
                 if (level.getBlockIdAt(placeX, placeY + 1, placeZ) != AIR) {
                     if (face.equals(BlockFace.DOWN)) {
                         setMergeBlock(placeX, placeY, placeZ, 1);
@@ -153,7 +187,6 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                     }
                     return true;
                 }
-                break;
             }
         }
         setAddChange(placeX, placeY, placeZ, hanging);
@@ -163,9 +196,67 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return true;
     }
 
+    @Override
+    public boolean onBreak(Item item) {
+        int x = this.getFloorX();
+        int y = this.getFloorY();
+        int z = this.getFloorZ();
+        level.setBlock(x, y, z, Block.get(AIR), true, true);
+        int hanging = getPropertyValue(HANGING);
+        String thickness = getPropertyValue(DRIPSTONE_THICKNESS);
+        if (thickness.equals("merge")) {
+            if (hanging == 0) {
+                setBlockThicknessStateAt(x, y + 1, z, 1, "tip");
+            } else setBlockThicknessStateAt(x, y - 1, z, 0, "tip");
+        }
+        if (hanging == 0) {
+            int length = getPointedDripStoneLength(x, y, z, 0);
+            if (length > 0) {
+                Block downBlock = down();
+                for (int i = 0; i <= length - 1; ++i) {
+                    level.setBlock(downBlock.down(i), Block.get(AIR), false, false);
+                }
+                for (int i = length - 1; i >= 0; --i) {
+                    place(null, downBlock.down(i), null, BlockFace.DOWN, 0, 0, 0, null);
+                }
+            }
+        }
+        if (hanging == 1) {
+            int length = getPointedDripStoneLength(x, y, z, 1);
+            if (length > 0) {
+                Block upBlock = up();
+                for (int i = 0; i <= length - 1; ++i) {
+                    level.setBlock(upBlock.up(i), Block.get(AIR), false, false);
+                }
+                for (int i = length - 1; i >= 0; --i) {
+                    place(null, upBlock.up(i), null, BlockFace.DOWN, 0, 0, 0, null);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onEntityFallOn(Entity entity, float fallDistance) {
+        if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && this.getPropertyValue(HANGING) == 0) {
+            int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+            float damage = (float) Math.floor((fallDistance - jumpBoost) * 2 - 2);
+            if (damage > 0)
+                entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
+        }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean useDefaultFallDamage() {
+        return false;
+    }
+
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setTipBlock(int x, int y, int z, int hanging) {
+    protected void setTipBlock(int x, int y, int z, int hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, "tip");
         this.setPropertyValue(HANGING, hanging);
         this.getLevel().setBlock(x, y, z, this, true, true);
@@ -173,7 +264,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setMergeBlock(int x, int y, int z, int hanging) {
+    protected void setMergeBlock(int x, int y, int z, int hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, "merge");
         this.setPropertyValue(HANGING, hanging);
         this.getLevel().setBlock(x, y, z, this, true, true);
@@ -181,7 +272,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setBlockThicknessStateAt(int x, int y, int z, int hanging, String thickness) {
+    protected void setBlockThicknessStateAt(int x, int y, int z, int hanging, String thickness) {
         BlockState blockState;
         this.setPropertyValue(DRIPSTONE_THICKNESS, thickness);
         this.setPropertyValue(HANGING, hanging);
@@ -191,23 +282,19 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public int getPointedDripStoneLength(int hanging) {
-        int currentX = this.getFloorX();
-        int currentY = this.getFloorY();
-        int currentZ = this.getFloorZ();
-
+    protected int getPointedDripStoneLength(int x, int y, int z, int hanging) {
         if (hanging == 1) {
-            for (int y = currentY + 1; y < 320; ++y) {
-                int blockId = level.getBlockIdAt(currentX, y, currentZ);
+            for (int j = y + 1; j < 320; ++j) {
+                int blockId = level.getBlockIdAt(x, j, z);
                 if (blockId != POINTED_DRIPSTONE) {
-                    return y - currentY - 1;
+                    return j - y - 1;
                 }
             }
         } else {
-            for (int y = currentY - 1; y > -64; --y) {
-                int blockId = level.getBlockIdAt(currentX, y, currentZ);
+            for (int j = y - 1; j > -64; --j) {
+                int blockId = level.getBlockIdAt(x, j, z);
                 if (blockId != POINTED_DRIPSTONE) {
-                    return currentY - y - 1;
+                    return y - j - 1;
                 }
             }
         }
@@ -216,8 +303,8 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setAddChange(int x, int y, int z, int hanging) {
-        int length = getPointedDripStoneLength(hanging);
+    protected void setAddChange(int x, int y, int z, int hanging) {
+        int length = getPointedDripStoneLength(x, y, z, hanging);
         int k2 = (hanging == 0) ? -2 : 2;
         int k1 = (hanging == 0) ? -1 : 1;
         if (length == 1) {
@@ -232,4 +319,5 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             setBlockThicknessStateAt(x, y + k1, z, hanging, "frustum");
         }
     }
+
 }

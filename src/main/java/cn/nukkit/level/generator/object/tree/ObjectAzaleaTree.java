@@ -25,7 +25,7 @@ public class ObjectAzaleaTree extends TreeGenerator {
         if (k >= -63 && k + i + 2 < 320) {
             Vector3 blockpos = position.down();
             for (int il = 0; il < i + 1; il++) {
-                placeLogAt(level, j, il + k - 1, l);
+                placeLogAt(level, j, il + k, l);
             }
             this.setDirtAt(level, blockpos);
 

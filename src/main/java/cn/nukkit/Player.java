@@ -14,12 +14,14 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.entity.*;
-import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.data.IntPositionEntityData;
+import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
-import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.LecternPageChangeEvent;
 import cn.nukkit.event.block.WaterFrostEvent;
 import cn.nukkit.event.entity.*;
@@ -50,7 +52,6 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.math.*;
@@ -94,6 +95,8 @@ import org.powernukkit.version.Version;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -101,6 +104,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
+import java.util.List;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
@@ -3471,7 +3475,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         getServer().getPluginManager().callEvent(event = new PlayerMapInfoRequestEvent(this, mapItem));
 
                         if (!event.isCancelled()) {
-                            ((ItemMap) mapItem).sendImage(this);
+                            ItemMap map = (ItemMap) mapItem;
+                            if (map.trySendImage(this)) {
+                                return;
+                            }
+                            try {
+                                BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_RGB);
+                                Graphics2D graphics = image.createGraphics();
+
+                                int worldX = (this.getFloorX () / 128) << 7;
+                                int worldZ = (this.getFloorZ () / 128) << 7;
+                                for (int x = 0; x < 128; x++) {
+                                    for (int y = 0; y < 128; y++) {
+                                        graphics.setColor(new Color(this.getLevel().getMapColorAt(worldX + x, worldZ + y).getRGB()));
+                                        graphics.fillRect(x, y, x + 1, y + 1);
+                                    }
+                                }
+
+                                map.setImage(image);
+                                map.sendImage(this);
+                            } catch (Exception ex) {
+                                this.getServer().getLogger().debug("There was an error while generating map image", ex);
+                            }
                         }
                     }
 
