@@ -387,6 +387,8 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[SHIELD] = ItemShield.class; //513
 
+            list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //623
+
             list[GLOW_BERRIES] = ItemGlowBerries.class; //638
 
             list[CAMPFIRE] = ItemCampfire.class; //720
@@ -422,7 +424,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
 
-            list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //850
+
             for (int i = 0; i < 256; ++i) {
                 if (Block.list[i] != null) {
                     list[i] = Block.list[i];
