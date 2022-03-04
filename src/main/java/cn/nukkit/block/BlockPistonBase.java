@@ -48,47 +48,31 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
     private static Set<Position> movingBlocks = new HashSet<>();
 
-    private static Map<Position,TryMove> tryMovePistons = new HashMap<>();
-
-    private static class TryMove{
-
-        public int tryCount;
-        public boolean oldState;
-
-        public TryMove(int tryCount,boolean oldState){
-            this.tryCount = tryCount;
-            this.oldState = oldState;
-        }
-    }
+    private static Set<Position> tryExtendPistons = new HashSet<>();
 
     //continuously update a specific piston over a period of time if the piston is blocked by another piston
     static{
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            Map.Entry<Position, TryMove>[] entries = tryMovePistons.entrySet().toArray(new Map.Entry[0]);
-            for(Map.Entry<Position, TryMove> entry : entries){
-                BlockPistonBase piston =  (BlockPistonBase)entry.getKey().getLevelBlock();
-                if (entry.getValue().oldState != piston.isExtended()){
-                    tryMovePistons.remove(entry.getKey());
+            Position[] pistons = tryExtendPistons.toArray(new Position[0]);
+            for(Position piston : pistons){
+                if (!piston.getChunk().isLoaded())
+                    return;
+                BlockPistonBase blockPiston =  (BlockPistonBase)piston.getLevelBlock();
+                if (blockPiston.isExtended()){
+                    tryExtendPistons.remove(piston);
                     return;
                 }//check state before update it(update by other)
-                piston.onUpdate(BLOCK_UPDATE_NORMAL);
-                if (entry.getValue().oldState != piston.isExtended()){
-                    tryMovePistons.remove(entry.getKey());
+                blockPiston.onUpdate(BLOCK_UPDATE_NORMAL);
+                if (blockPiston.isExtended()){
+                    tryExtendPistons.remove(piston);
                     return;
-                }
-                Integer nextCount = entry.getValue().tryCount - 1;
-                if(nextCount <= 0){
-                    tryMovePistons.remove(entry.getKey());
-                }else{
-                    entry.getValue().tryCount = nextCount;
-                    tryMovePistons.put(entry.getKey(), entry.getValue());
                 }
             }
         },1);
     }
 
-    public static void tryMove(Position pos,int tryCount,boolean oldState){
-        tryMovePistons.put(pos, new TryMove(tryCount,oldState));
+    public static void tryMove(Position pistonPos){
+        tryExtendPistons.add(pistonPos);
     }
 
     public static boolean isBlockLocked(Position pos){
@@ -317,8 +301,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
         if (!canMove) {
             Position pos = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
-            if(calculator.blockedByPistion && !tryMovePistons.containsKey(pos)) {
-                tryMove(pos, 20,this.isExtended());
+            if(calculator.blockedByPistion && !tryExtendPistons.contains(pos)) {
+                tryMove(pos);
             }
             return false;
         }
