@@ -1721,6 +1721,16 @@ public class Level implements ChunkManager, Metadatable {
         return this.getChunk(x >> 4, z >> 4, false).getBlockRuntimeId(x & 0x0f, ensureY(y), z & 0x0f, layer);
     }
 
+    public synchronized Set<Block> getBlockAround(Vector3 pos) {
+        Set<Block> around = new HashSet<>();
+        Block block = getBlock(pos);
+        for (BlockFace face : BlockFace.values()) {
+            Block side = block.getSideAtLayer(0, face);
+            around.add(side);
+        }
+        return around;
+    }
+
     public synchronized Block getBlock(Vector3 pos) {
         return getBlock(pos, 0);
     }
