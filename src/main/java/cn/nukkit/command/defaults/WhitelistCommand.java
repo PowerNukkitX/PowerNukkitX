@@ -22,7 +22,7 @@ public class WhitelistCommand extends VanillaCommand {
                         "nukkit.command.whitelist.disable;" +
                         "nukkit.command.whitelist.list;" +
                         "nukkit.command.whitelist.add;" +
-                        "nukkit.command.whitelist.remove"+
+                        "nukkit.command.whitelist.remove;"+
                         //v1.18.10+
                         "nukkit.command.allowlist.reload;" +
                         "nukkit.command.allowlist.enable;" +
