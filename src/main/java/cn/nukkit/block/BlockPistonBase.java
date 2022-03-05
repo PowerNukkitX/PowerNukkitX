@@ -60,14 +60,13 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         }
     }
 
-    public void listenPistonUpdateTo(Position pos){
-        if (!pistonUpdateListeners.containsKey(pos)) {
-            pistonUpdateListeners.put(pos, new HashSet<>());
+    public static void listenPistonUpdateTo(Position listen ,Position to){
+        if (!pistonUpdateListeners.containsKey(to)) {
+            pistonUpdateListeners.put(to, new HashSet<>());
         }
-        Position posHere = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
-        Set<Position> set = pistonUpdateListeners.get(pos);
-        if (!set.contains(posHere))
-            set.add(posHere);
+        Set<Position> set = pistonUpdateListeners.get(to);
+        if (!set.contains(listen))
+            set.add(listen);
     }
 
     public static boolean isBlockLocked(Position pos){
@@ -168,6 +167,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     @Override
     public boolean onBreak(Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
+        updatePistonsListenTo(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()));
 
         Block block = this.getSide(getBlockFace());
 
@@ -194,9 +194,6 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             if (!this.level.getServer().isRedstoneEnabled()) {
                 return 0;
             }
-
-            if (movingBlocks.contains(new Position(this.x, this.y, this.z, this.level)))
-                return 0;
 
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
@@ -301,7 +298,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         if (!canMove) {
             Position pos = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
             if(calculator.blockedByPiston) {
-                listenPistonUpdateTo(calculator.blockedPiston);
+                listenPistonUpdateTo(new Position(this.getX(),this.getY(),this.getZ(),this.level),calculator.blockedPiston);
             }
             return false;
         }

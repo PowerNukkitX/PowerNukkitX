@@ -236,16 +236,20 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.movable = true;
             }
 
-            this.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             this.attachedBlocks.clear();
+            this.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             hasUpdate = false;
             this.finished = true;
             this.blocksCalculator.unlockBlocks();
             Position pistonPos = blocksCalculator.getPistonPos();
-            BlockPistonBase.updatePistonsListenTo(new Position(pistonPos.getX(), pistonPos.getY(), pistonPos.getZ(), this.level));
+            BlockPistonBase.updatePistonsListenTo(pistonPos);
         }
 
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        if (level != null) {
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        }else{
+            return true;
+        }
 
         return super.onUpdate() || hasUpdate;
     }
