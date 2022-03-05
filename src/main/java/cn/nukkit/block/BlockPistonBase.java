@@ -541,7 +541,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             });
             this.toLock.add(new Position(this.pistonPos.getX(), this.pistonPos.getY(), this.pistonPos.getZ(),this.pistonPos.level));
             Position pistionForward = this.pistonPos.getSide(this.moveDirection);
-            this.toLock.add(new Position(pistionForward.getSide(this.moveDirection).getX(), pistionForward.getY(), pistionForward.getZ(),pistionForward.level));
+            this.toLock.add(new Position(pistionForward.getX(), pistionForward.getY(), pistionForward.getZ(),pistionForward.level));
         }
 
         private boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
