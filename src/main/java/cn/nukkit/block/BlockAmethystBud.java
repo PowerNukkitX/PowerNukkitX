@@ -113,6 +113,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         }else {
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         }
+        this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         return true;
     }
 
