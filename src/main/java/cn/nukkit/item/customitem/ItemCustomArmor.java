@@ -12,6 +12,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author lt_name
  */
@@ -27,24 +30,12 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
     public static final int TIER_NETHERITE = 6;
     public static final int TIER_OTHER = 7;
 
-    public ItemCustomArmor(int id) {
-        this(id, 0, 1, UNKNOWN_STR);
+    public ItemCustomArmor(@Nonnull String id, @Nullable String name) {
+        super(id, name);
     }
 
-    public ItemCustomArmor(int id, Integer meta) {
-        this(id, meta, 1, UNKNOWN_STR);
-    }
-
-    public ItemCustomArmor(int id, Integer meta, int count) {
-        this(id, meta, count, UNKNOWN_STR);
-    }
-
-    public ItemCustomArmor(int id, Integer meta, int count, String name) {
-        this(id, meta, count, name, name);
-    }
-
-    public ItemCustomArmor(int id, Integer meta, int count, String name, String textureName) {
-        super(id, meta, count, name, textureName);
+    public ItemCustomArmor(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
+        super(id, name, textureName);
     }
 
     @Override

@@ -13,6 +13,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Utils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author lt_name
  */
@@ -50,24 +53,12 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
     public static final int DURABILITY_CARROT_ON_A_STICK = ItemTool.DURABILITY_CARROT_ON_A_STICK;
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = ItemTool.DURABILITY_WARPED_FUNGUS_ON_A_STICK;
 
-    public ItemCustomTool(int id) {
-        this(id, 0, 1, UNKNOWN_STR);
+    public ItemCustomTool(@Nonnull String id, @Nullable String name) {
+        super(id, name);
     }
 
-    public ItemCustomTool(int id, Integer meta) {
-        this(id, meta, 1, UNKNOWN_STR);
-    }
-
-    public ItemCustomTool(int id, Integer meta, int count) {
-        this(id, meta, count, UNKNOWN_STR);
-    }
-
-    public ItemCustomTool(int id, Integer meta, int count, String name) {
-        this(id, meta, count, name, name);
-    }
-
-    public ItemCustomTool(int id, Integer meta, int count, String name, String textureName) {
-        super(id, meta, count, name, textureName);
+    public ItemCustomTool(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
+        super(id, name, textureName);
     }
 
     @Override

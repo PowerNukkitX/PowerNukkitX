@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -577,25 +578,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
-    private static final HashMap<Integer, Class<? extends Item>> customItems = new HashMap<>();
+    private static final HashMap<String, Class<? extends Item>> customItems = new HashMap<>();
 
-    public static boolean registerCustomItem(int id, Class<? extends ItemCustom> c) {
-        if (id < 10000 || id > 65535) {
-            //Below 10000 is reserved for vanilla items
-            throw new IllegalArgumentException("Custom item id cannot be less than 10000 or greater than 65535");
-        }
-
-        customItems.put(id, c);
-        list[id] = c;
-
-        ItemCustom item = (ItemCustom) get(id);
-        if (RuntimeItems.getRuntimeMapping().registerCustomItem(item)) {
-            addCreativeItem(item);
-        }
-        return true;
+    public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
+        customItems.put(itemCustom.getNamespaceId(), c);
+        RuntimeItems.getRuntimeMapping().registerNamespacedIdItem(c);
+        addCreativeItem(itemCustom);
     }
 
-    public static boolean deleteCustomItem(int id) {
+/*    public static boolean deleteCustomItem(int id) {
         if (customItems.containsKey(id)) {
             removeCreativeItem(get(id));
             customItems.remove(id);
@@ -606,7 +598,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }else {
             return false;
         }
-    }
+    }*/
 
     public static void clearCreativeItems() {
         Item.creative.clear();

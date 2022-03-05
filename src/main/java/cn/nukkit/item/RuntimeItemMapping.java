@@ -149,7 +149,7 @@ public class RuntimeItemMapping {
         this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
-    @PowerNukkitOnly
+    /*@PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     synchronized boolean registerCustomItem(ItemCustom itemCustom) {
         if (this.customItems.contains(itemCustom.getId())) {
@@ -184,7 +184,7 @@ public class RuntimeItemMapping {
         this.generatePalette();
 
         return true;
-    }
+    }*/
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
@@ -317,6 +317,7 @@ public class RuntimeItemMapping {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), itemSupplier(constructor));
+        this.generatePalette();
     }
 
     @SneakyThrows
@@ -330,7 +331,7 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("FUTURE")
     public void registerNamespacedIdItem(@Nonnull Class<? extends StringItem> item) {
-        registerNamespacedIdItem(item.newInstance());
+        registerNamespacedIdItem(item.getDeclaredConstructor().newInstance());
     }
 
     @Nonnull

@@ -2,40 +2,31 @@ package cn.nukkit.item.customitem;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.item.Item;
+import cn.nukkit.item.StringItem;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author lt_name
  */
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public abstract class ItemCustom extends Item {
+public abstract class ItemCustom extends StringItem {
 
     @Setter
     @Getter
     private String textureName;
 
-    public ItemCustom(int id) {
-        this(id, 0, 1, UNKNOWN_STR);
+    public ItemCustom(@Nonnull String id, @Nullable String name) {
+        super(id, name);
     }
 
-    public ItemCustom(int id, Integer meta) {
-        this(id, meta, 1, UNKNOWN_STR);
-    }
-
-    public ItemCustom(int id, Integer meta, int count) {
-        this(id, meta, count, UNKNOWN_STR);
-    }
-
-    public ItemCustom(int id, Integer meta, int count, String name) {
-        this(id, meta, count, name, name);
-    }
-
-    public ItemCustom(int id, Integer meta, int count, String name, String textureName) {
-        super(id, meta, count, name);
+    public ItemCustom(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
+        this(id, name);
         this.textureName = textureName;
     }
 
