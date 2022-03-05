@@ -22,14 +22,21 @@ public class WhitelistCommand extends VanillaCommand {
                         "nukkit.command.whitelist.disable;" +
                         "nukkit.command.whitelist.list;" +
                         "nukkit.command.whitelist.add;" +
-                        "nukkit.command.whitelist.remove"
+                        "nukkit.command.whitelist.remove"+
+                        //v1.18.10+
+                        "nukkit.command.allowlist.reload;" +
+                        "nukkit.command.allowlist.enable;" +
+                        "nukkit.command.allowlist.disable;" +
+                        "nukkit.command.allowlist.list;" +
+                        "nukkit.command.allowlist.add;" +
+                        "nukkit.command.allowlist.remove"
         );
         this.commandParameters.clear();
         this.commandParameters.put("1arg", new CommandParameter[]{
-                CommandParameter.newEnum("action", new CommandEnum("WhitelistAction", "on", "off", "list", "reload"))
+                CommandParameter.newEnum("action", new CommandEnum("AllowlistAction", "on", "off", "list", "reload"))
         });
         this.commandParameters.put("2args", new CommandParameter[]{
-                CommandParameter.newEnum("action", new CommandEnum("WhitelistPlayerAction", "add", "remove")),
+                CommandParameter.newEnum("action", new CommandEnum("AllowlistPlayerAction", "add", "remove")),
                 CommandParameter.newType("player", CommandParamType.TARGET)
         });
     }
@@ -107,7 +114,7 @@ public class WhitelistCommand extends VanillaCommand {
     }
 
     private boolean badPerm(CommandSender sender, String perm) {
-        if (!sender.hasPermission("nukkit.command.whitelist." + perm)) {
+        if (!sender.hasPermission("nukkit.command.whitelist." + perm) && !sender.hasPermission("nukkit.command.allowlist." + perm)) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
 
             return true;
