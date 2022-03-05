@@ -111,6 +111,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
             Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5,0,0.5), item1));
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         }
+        this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         return true;
     }
 
