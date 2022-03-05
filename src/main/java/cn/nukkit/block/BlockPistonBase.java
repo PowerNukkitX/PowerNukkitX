@@ -48,31 +48,26 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
     private static Set<Position> movingBlocks = new HashSet<>();
 
-    private static Set<Position> tryExtendPistons = new HashSet<>();
+    private static Map<Position,Set<Position>> pistonUpdateListeners = new HashMap<>();
 
-    //continuously update a specific piston over a period of time if the piston is blocked by another piston
-    static{
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            Position[] pistons = tryExtendPistons.toArray(new Position[0]);
-            for(Position piston : pistons){
-                if (!piston.getChunk().isLoaded())
-                    return;
-                BlockPistonBase blockPiston =  (BlockPistonBase)piston.getLevelBlock();
-                if (blockPiston.isExtended()){
-                    tryExtendPistons.remove(piston);
-                    return;
-                }//check state before update it(update by other)
-                blockPiston.onUpdate(BLOCK_UPDATE_NORMAL);
-                if (blockPiston.isExtended()){
-                    tryExtendPistons.remove(piston);
-                    return;
-                }
+    public static void updatePistonsListenTo(Position pos){
+        if (pistonUpdateListeners.containsKey(pos)){
+            Set<Position> set = pistonUpdateListeners.get(pos);
+            for (Position p : set){
+                p.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             }
-        },1);
+            pistonUpdateListeners.remove(pos);
+        }
     }
 
-    public static void tryMove(Position pistonPos){
-        tryExtendPistons.add(pistonPos);
+    public void listenPistonUpdateTo(Position pos){
+        if (!pistonUpdateListeners.containsKey(pos)) {
+            pistonUpdateListeners.put(pos, new HashSet<>());
+        }
+        Position posHere = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
+        Set<Position> set = pistonUpdateListeners.get(pos);
+        if (!set.contains(posHere))
+            set.add(posHere);
     }
 
     public static boolean isBlockLocked(Position pos){
@@ -166,7 +161,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return false;
         }
         
-        this.checkState(piston.powered);
+        this.checkState(isGettingPower());
         return true;
     }
 
@@ -200,6 +195,9 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 return 0;
             }
 
+            if (movingBlocks.contains(new Position(this.x, this.y, this.z, this.level)))
+                return 0;
+
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
             // it would create two BlockEntities.
@@ -212,6 +210,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 return 0;
 
             if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
+
                 arm.powered = powered;
 
                 if (arm.chunk != null) {
@@ -301,8 +300,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
         if (!canMove) {
             Position pos = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
-            if(calculator.blockedByPistion && !tryExtendPistons.contains(pos)) {
-                tryMove(pos);
+            if(calculator.blockedByPiston) {
+                listenPistonUpdateTo(calculator.blockedPiston);
             }
             return false;
         }
@@ -381,8 +380,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         }
 
         BlockEntityPistonArm blockEntity = getOrCreateBlockEntity();
-        blockEntity.move(extending, attached);
-        calculator.unlockBlocks();
+        blockEntity.move(extending, attached,calculator);
         return true;
     }
 
@@ -422,6 +420,11 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     public class BlocksCalculator {
 
         private final Position pistonPos;
+
+        public Position getPistonPos() {
+            return pistonPos;
+        }
+
         private Vector3 armPos;
         private final Block blockToMove;
         private final BlockFace moveDirection;
@@ -431,7 +434,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         private final List<Block> toMove = new ArrayList<>();
         private final List<Block> toDestroy = new ArrayList<>();
         private final Set<Position> toLock = new HashSet<>();
-        private boolean blockedByPistion = false;
+        private boolean blockedByPiston = false;
+        private Position blockedPiston = null;
 
         /**
          * @param level Unused, needed for compatibility with Cloudburst Nukkit plugins
@@ -511,7 +515,14 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             boolean canPush = BlockPistonBase.canPush(block, face, destroyBlocks, extending);
             if (!canPush) {
                 if(block instanceof BlockPistonHead || block instanceof BlockPistonBase) {
-                    this.blockedByPistion = true;
+                    this.blockedByPiston = true;
+                    if (block instanceof BlockPistonBase) {
+                        this.blockedPiston = new Position(block.getX(), block.getY(), block.getZ(), block.level);
+                    }else{
+                        BlockPistonHead head = (BlockPistonHead) block;
+                        Block base = head.getSide(head.getFacing().getOpposite());
+                        this.blockedPiston = new Position(base.getX(), base.getY(), base.getZ(), base.level);
+                    }
                 }
             }
             return canPush;
@@ -679,8 +690,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
         @PowerNukkitOnly
         @Since("1.6.0.0-PNX")
-        public void unlockBlocks(){
-            for (Position pos : toLock){
+        public void unlockBlocks() {
+            for (Position pos : toLock) {
                 movingBlocks.remove(pos);
             }
         }
