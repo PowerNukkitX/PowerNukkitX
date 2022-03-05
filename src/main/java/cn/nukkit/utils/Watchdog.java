@@ -35,7 +35,7 @@ public class Watchdog extends Thread {
             StringBuilder sb = new StringBuilder("--------- The finalizer thread didn't complete in time! ---------").append('\n')
                 .append("This detection means that the finalizer thread may be stuck and").append('\n')
                 .append("RAM memory might be leaking!").append('\n')
-                .append(" - https://github.com/PowerNukkit/PowerNukkit/issues/new").append('\n')
+                .append(" - https://github.com/BlocklyNukkit/PowerNukkitX/issues/new").append('\n')
                 .append("---------------- ForcedFinalizer ----------------").append('\n');
             dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(forcedFinalizer.getId(), Integer.MAX_VALUE), sb);
             sb.append("-------------------------------------------------");
