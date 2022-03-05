@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 /**
  * @author lt_name
@@ -22,7 +23,7 @@ public abstract class ItemCustom extends StringItem {
     private String textureName;
 
     public ItemCustom(@Nonnull String id, @Nullable String name) {
-        super(id, name);
+        super(id.toLowerCase(Locale.ENGLISH), name);
     }
 
     public ItemCustom(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {

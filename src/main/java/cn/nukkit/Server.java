@@ -1140,6 +1140,12 @@ public class Server {
     private int lastLevelGC;
 
     public void tickProcessor() {
+        try {
+            Item.registerCustomItem(test.class);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
         getScheduler().scheduleDelayedTask(new Task() {
             @Override
             public void onRun(int currentTick) {

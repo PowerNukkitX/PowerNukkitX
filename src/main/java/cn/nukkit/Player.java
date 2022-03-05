@@ -1050,14 +1050,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        ArrayList<Integer> customItems = RuntimeItems.getRuntimeMapping().getCustomItems();
+        ArrayList<String> customItems = RuntimeItems.getRuntimeMapping().getCustomItems();
         if (!customItems.isEmpty()) {
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
             ItemComponentPacket.Entry[] entries = new ItemComponentPacket.Entry[customItems.size()];
 
             int i = 0;
-            for (Integer id : customItems) {
-                Item item = Item.get(id);
+            for (String id : customItems) {
+                Item item = Item.fromString(id);
                 if (!(item instanceof ItemCustom)) {
                     continue;
                 }
@@ -1066,7 +1066,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 CompoundTag data = itemCustom.getComponentsData();
                 data.putShort("minecraft:identifier", i);
 
-                entries[i] = new ItemComponentPacket.Entry(("customitem:" + item.getName()).toLowerCase(), data);
+                entries[i] = new ItemComponentPacket.Entry((/*"customitem:" + */item.getName()).toLowerCase(), data);
 
                 i++;
             }

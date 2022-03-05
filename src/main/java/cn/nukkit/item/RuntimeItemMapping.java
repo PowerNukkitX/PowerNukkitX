@@ -53,7 +53,7 @@ public class RuntimeItemMapping {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    private final ArrayList<Integer> customItems = new ArrayList<>();
+    private final ArrayList<String> customItems = new ArrayList<>();
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -139,9 +139,9 @@ public class RuntimeItemMapping {
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(entry.isComponentItem); // Component item
         }
-        for (int id : this.customItems) {
-            Item item = Item.get(id);
-            paletteBuffer.putString(("customitem:" + item.getName()).toLowerCase());
+        for (String id : this.customItems) {
+            Item item = Item.fromString(id);
+            paletteBuffer.putString((/*"customitem:" + */item.getName()).toLowerCase());
             paletteBuffer.putLShort(item.id);
             paletteBuffer.putBoolean(true); // Component item
         }
@@ -149,27 +149,29 @@ public class RuntimeItemMapping {
         this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
-    /*@PowerNukkitOnly
+    @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     synchronized boolean registerCustomItem(ItemCustom itemCustom) {
-        if (this.customItems.contains(itemCustom.getId())) {
+        if (this.customItems.contains(itemCustom.getNamespaceId())) {
             return false;
         }
-        this.customItems.add(itemCustom.getId());
+        this.customItems.add(itemCustom.getNamespaceId());
 
-        int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
+        //int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
 
-        legacyNetworkMap.put(fullId, (itemCustom.id << 1));
+        this.registerNamespacedIdItem(itemCustom);
+
+        /*legacyNetworkMap.put(fullId, (itemCustom.id << 1));
         networkLegacyMap.put(itemCustom.id, fullId);
         namespaceNetworkMap.put(itemCustom.name.toLowerCase(), OptionalInt.of(itemCustom.id));
-        networkNamespaceMap.put(itemCustom.id, itemCustom.name.toLowerCase());
+        networkNamespaceMap.put(itemCustom.id, itemCustom.name.toLowerCase());*/
 
         this.generatePalette();
 
         return true;
     }
 
-    @PowerNukkitOnly
+/*    @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     synchronized boolean deleteCustomItem(ItemCustom itemCustom) {
         if (!this.customItems.contains(itemCustom.getId())) {
@@ -188,7 +190,7 @@ public class RuntimeItemMapping {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public ArrayList<Integer> getCustomItems() {
+    public ArrayList<String> getCustomItems() {
         return new ArrayList<>(customItems);
     }
 
@@ -317,7 +319,6 @@ public class RuntimeItemMapping {
         Preconditions.checkNotNull(namespacedId, "namespacedId is null");
         Preconditions.checkNotNull(constructor, "constructor is null");
         this.namespacedIdItem.put(namespacedId.toLowerCase(Locale.ENGLISH), itemSupplier(constructor));
-        this.generatePalette();
     }
 
     @SneakyThrows

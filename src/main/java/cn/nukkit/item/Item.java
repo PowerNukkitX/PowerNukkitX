@@ -583,7 +583,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
         customItems.put(itemCustom.getNamespaceId(), c);
-        RuntimeItems.getRuntimeMapping().registerNamespacedIdItem(c);
+        RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
         addCreativeItem(itemCustom);
     }
 
@@ -765,6 +765,9 @@ public class Item implements Cloneable, BlockID, ItemID {
                 namespacedId = namespaceGroup + ":" + name;
             } else {
                 namespacedId = "minecraft:" + name;
+            }
+            if (customItems.containsKey(namespacedId)) {
+               return RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
             }
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {
