@@ -35,7 +35,52 @@ public class PNXWorldHandle implements WorldHandle {
     @Override
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
+        if (s.equals("minecraft:water"))
+            s = "minecraft:water[level=15]";//special case
+        if (s.equals("minecraft:lava"))
+            s = "minecraft:lava[level=15]";//special case
+        if (s.equals("minecraft:deepslate"))
+            s = "minecraft:deepslate[axis=y]";//special case
+        if (s.equals("minecraft:grass_block"))
+            s = "minecraft:grass_block[snowy=false]";//special case
+        if (s.equals("minecraft:podzol"))
+            s = "minecraft:podzol[snowy=false]";//special case
+        if (s.equals("minecraft:mycelium"))
+            s = "minecraft:mycelium[snowy=false]";//special case
+        if (s.equals("minecraft:sugar_cane"))
+            s = "minecraft:sugar_cane[age=0]";//special case
+        if (s.equals("minecraft:oak_log"))
+            s = "minecraft:oak_log[axis=y]";//special case
+        if (s.equals("minecraft:brown_mushroom_block[down=false]"))
+            s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";//special case
+        if (s.equals("minecraft:cactus"))
+            s = "minecraft:cactus[age=0]";//special case
+        if (s.equals("minecraft:spruce_log"))
+            s = "minecraft:spruce_log[axis=y]";//special case
+        if (s.equals("minecraft:mushroom_stem"))
+            s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";//special case
+        if (s.equals("minecraft:jungle_wood"))
+            s = "minecraft:jungle_wood[axis=y]";//special case
+        if (s.equals("minecraft:redstone_ore"))
+            s = "minecraft:redstone_ore[lit=false]";//special case
+        if (s.equals("minecraft:deepslate_redstone_ore"))
+            s = "minecraft:deepslate_redstone_ore[lit=false]";//special case
+        if (s.equals("minecraft:basalt"))
+            s = "minecraft:basalt[axis=y]";//special case
         State jeBlockStateData = new State(s);
+        if(jeBlockStateData.identifier.equals("minecraft:jungle_leaves"))
+            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
+        if(jeBlockStateData.identifier.equals("minecraft:oak_leaves"))
+            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
+        if (jeBlockStateData.identifier.equals("minecraft:bee_nest"))
+            jeBlockStateData.attributes.putIfAbsent("honey_level", "0");//special case
+        if (jeBlockStateData.identifier.equals("minecraft:vine")){
+            jeBlockStateData.attributes.putIfAbsent("east", "false");
+            jeBlockStateData.attributes.putIfAbsent("north", "false");
+            jeBlockStateData.attributes.putIfAbsent("south", "false");
+            jeBlockStateData.attributes.putIfAbsent("up", "false");
+            jeBlockStateData.attributes.putIfAbsent("west", "false");
+        }
         Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
         var toDefaultState = false;
         if (mappedData == null) {
@@ -72,7 +117,7 @@ public class PNXWorldHandle implements WorldHandle {
             });
         }
         var identifier = (String) mappedData.get("bedrock_identifier");
-        if (identifier.equals("minecraft:concretePowder"))
+        if (identifier.equals("minecraft:concretePowder"))//specific case
             identifier = "minecraft:concretepowder";
         final var data = new StringBuilder();
         data.append(identifier);
