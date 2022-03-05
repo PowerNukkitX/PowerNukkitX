@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -8,6 +9,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -124,6 +126,11 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         if (blockUp.getSide(BlockFace.UP).getId() == AIR)
             AirUp = true;
         if (AirUp) {
+            BlockFallEvent event = new BlockFallEvent(this);
+            Server.getInstance().getPluginManager().callEvent(event);
+            if (event.isCancelled()){
+                return;
+            }
             BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
             block.drop(new CompoundTag().putBoolean("BreakOnGround", true));
             while (block.getSide(BlockFace.DOWN).getId() == POINTED_DRIPSTONE) {

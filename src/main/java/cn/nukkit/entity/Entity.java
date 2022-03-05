@@ -1966,6 +1966,13 @@ public abstract class Entity extends Location implements Metadatable {
         Location floorLocation = this.floor();
         Block down = this.level.getBlock(floorLocation.down());
 
+        EntityFallEvent event = new EntityFallEvent(this,down,fallDistance);
+        this.server.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+        fallDistance = event.getFallDistance();
+
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
             float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
