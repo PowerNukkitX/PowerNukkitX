@@ -111,10 +111,10 @@ public class BlockFire extends BlockFlowable {
     @PowerNukkitDifference(info = "Soul Fire Implementation", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
-        
+
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_RANDOM) {
             Block down = down();
-            
+
             if (type == Level.BLOCK_UPDATE_NORMAL) {
                 int downId = down.getId();
                 if (downId == Block.SOUL_SAND || downId == Block.SOUL_SOIL) {
@@ -122,7 +122,7 @@ public class BlockFire extends BlockFlowable {
                     return type;
                 }
             }
-            
+
             if (!this.isBlockTopFacingSurfaceSolid(down) && !this.canNeighborBurn()) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
@@ -138,9 +138,9 @@ public class BlockFire extends BlockFlowable {
             Block down = down();
             int downId = down.getId();
 
-            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA 
-                    || downId == BlockID.BEDROCK && ((BlockBedrock)down).getBurnIndefinitely();
-            
+            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
+                    || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
+
             ThreadLocalRandom random = ThreadLocalRandom.current();
 
             //TODO: END
@@ -159,7 +159,7 @@ public class BlockFire extends BlockFlowable {
                             this.getLevel().canBlockSeeSky(this.west()) ||
                             this.getLevel().canBlockSeeSky(this.south()) ||
                             this.getLevel().canBlockSeeSky(this.north()))
-                    ) {
+            ) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
@@ -310,25 +310,22 @@ public class BlockFire extends BlockFlowable {
 
     public boolean isBlockTopFacingSurfaceSolid(Block block) {
         if (block != null) {
-            if (block instanceof BlockStairs ) {
-
+            if (block instanceof BlockStairs) {
                 return false;
             } else if (block instanceof BlockSlab && !((BlockSlab) block).isOnTop()) {
-
                 return false;
             } else if (block instanceof BlockSnowLayer) {
-
                 return false;
-            }else if (block instanceof BlockFenceGate){
-
+            } else if (block instanceof BlockFenceGate) {
                 return false;
-            }else if (block instanceof BlockTrapdoor){
-
+            } else if (block instanceof BlockTrapdoor) {
                 return false;
-            }
-            else return block.isSolid();
+            } else if (block instanceof BlockMossCarpet) {
+                return false;
+            } else if (block instanceof BlockAzalea) {
+                return false;
+            } else return block.isSolid();
         }
-
         return false;
     }
 

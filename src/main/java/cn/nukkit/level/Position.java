@@ -14,6 +14,7 @@ import cn.nukkit.utils.LevelException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -136,6 +137,12 @@ public class Position extends NamedPosition {
 
     public Block getLevelBlock() {
         return getValidLevel().getBlock(this);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public Set<Block> getLevelBlockAround() {
+        return getValidLevel().getBlockAround(this);
     }
 
     @PowerNukkitOnly

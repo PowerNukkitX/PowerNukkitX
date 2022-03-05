@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -31,6 +32,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
+
 /**
  * @author CreeperFace
  */
@@ -44,6 +47,28 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
     private static Set<Position> movingBlocks = new HashSet<>();
+
+    private static Map<Position,Set<Position>> pistonUpdateListeners = new HashMap<>();
+
+    public static void updatePistonsListenTo(Position pos){
+        if (pistonUpdateListeners.containsKey(pos)){
+            Set<Position> set = pistonUpdateListeners.get(pos);
+            for (Position p : set){
+                p.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
+            }
+            pistonUpdateListeners.remove(pos);
+        }
+    }
+
+    public void listenPistonUpdateTo(Position pos){
+        if (!pistonUpdateListeners.containsKey(pos)) {
+            pistonUpdateListeners.put(pos, new HashSet<>());
+        }
+        Position posHere = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
+        Set<Position> set = pistonUpdateListeners.get(pos);
+        if (!set.contains(posHere))
+            set.add(posHere);
+    }
 
     public static boolean isBlockLocked(Position pos){
         return movingBlocks.contains(pos);
@@ -136,7 +161,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return false;
         }
         
-        this.checkState(piston.powered);
+        this.checkState(isGettingPower());
         return true;
     }
 
@@ -163,12 +188,15 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     @PowerNukkitDifference(info = "Using new method for checking if powered + update all around redstone torches, " +
             "even if the piston can't move.", since = "1.4.0.0-PN")
     public int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_SCHEDULED) {
+        if (type != BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_SCHEDULED) {
             return 0;
         } else {
             if (!this.level.getServer().isRedstoneEnabled()) {
                 return 0;
             }
+
+            if (movingBlocks.contains(new Position(this.x, this.y, this.z, this.level)))
+                return 0;
 
             // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
             // before the "real" BlockEntity is set. That means, if we'd use the other method here,
@@ -182,6 +210,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 return 0;
 
             if (arm.state % 2 == 0 && arm.powered != powered && checkState(powered)) {
+
                 arm.powered = powered;
 
                 if (arm.chunk != null) {
@@ -264,15 +293,21 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
     private boolean doMove(boolean extending) {
         BlockFace direction = getBlockFace();
+
         BlocksCalculator calculator = new BlocksCalculator(level, this, getBlockFace(), extending, sticky);
 
         boolean canMove = calculator.canMove();
-        calculator.lockBlocks();
 
-        if (!canMove && extending) {
-            calculator.unlockBlocks();
+        if (!canMove) {
+            Position pos = new Position(this.getX(), this.getY(), this.getZ(), this.getLevel());
+            if(calculator.blockedByPiston) {
+                listenPistonUpdateTo(calculator.blockedPiston);
+            }
             return false;
         }
+
+        calculator.recordLockBlocks();
+        calculator.lockBlocks();
 
         List<BlockVector3> attached = Collections.emptyList();
 
@@ -345,8 +380,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         }
 
         BlockEntityPistonArm blockEntity = getOrCreateBlockEntity();
-        blockEntity.move(extending, attached);
-        calculator.unlockBlocks();
+        blockEntity.move(extending, attached,calculator);
         return true;
     }
 
@@ -364,6 +398,10 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 block.getY() >= block.level.getMinHeight() && (face != BlockFace.DOWN || block.getY() != block.level.getMinHeight()) &&
                         block.getY() <= block.level.getMaxHeight() - 1 && (face != BlockFace.UP || block.getY() != block.level.getMaxHeight() - 1)
         ) {
+            if (movingBlocks.contains(new Position(block.getX(), block.getY(), block.getZ(), block.level))) {
+                return false;
+            }
+
             if (extending && !block.canBePushed() || !extending && !block.canBePulled()) {
                 return false;
             }
@@ -381,7 +419,12 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
     public class BlocksCalculator {
 
-        private final Vector3 pistonPos;
+        private final Position pistonPos;
+
+        public Position getPistonPos() {
+            return pistonPos;
+        }
+
         private Vector3 armPos;
         private final Block blockToMove;
         private final BlockFace moveDirection;
@@ -390,6 +433,9 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
         private final List<Block> toMove = new ArrayList<>();
         private final List<Block> toDestroy = new ArrayList<>();
+        private final Set<Position> toLock = new HashSet<>();
+        private boolean blockedByPiston = false;
+        private Position blockedPiston = null;
 
         /**
          * @param level Unused, needed for compatibility with Cloudburst Nukkit plugins
@@ -432,13 +478,10 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
             this.toMove.clear();
             this.toDestroy.clear();
+
             Block block = this.blockToMove;
 
             if (!canPush(block, this.moveDirection, true, extending)) {
-                return false;
-            }
-
-            if (movingBlocks.contains(new Position(block.getX(), block.getY(), block.getZ(), block.level))) {
                 return false;
             }
 
@@ -464,6 +507,41 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             }
 
             return true;
+        }
+
+        @PowerNukkitOnly
+        @Since("1.6.0.0-PNX")
+        public boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
+            boolean canPush = BlockPistonBase.canPush(block, face, destroyBlocks, extending);
+            if (!canPush) {
+                if(block instanceof BlockPistonHead || block instanceof BlockPistonBase) {
+                    this.blockedByPiston = true;
+                    if (block instanceof BlockPistonBase) {
+                        this.blockedPiston = new Position(block.getX(), block.getY(), block.getZ(), block.level);
+                    }else{
+                        BlockPistonHead head = (BlockPistonHead) block;
+                        Block base = head.getSide(head.getFacing().getOpposite());
+                        this.blockedPiston = new Position(base.getX(), base.getY(), base.getZ(), base.level);
+                    }
+                }
+            }
+            return canPush;
+        }
+
+        @PowerNukkitOnly
+        @Since("1.6.0.0-PNX")
+        public void recordLockBlocks(){
+            this.toLock.clear();
+            this.toMove.forEach(block -> toLock.add(new Position(block.getX(), block.getY(), block.getZ(), block.level)));
+            this.toMove.forEach(block -> {
+                Block blockForward = block.getSide(this.moveDirection);
+                Position pos = new Position(blockForward.getX(), blockForward.getY(), blockForward.getZ(), blockForward.level);
+                if(!toLock.contains(pos))//todo: need to improve performance
+                    toLock.add(pos);
+            });
+            this.toLock.add(new Position(this.pistonPos.getX(), this.pistonPos.getY(), this.pistonPos.getZ(),this.pistonPos.level));
+            Position pistionForward = this.pistonPos.getSide(this.moveDirection);
+            this.toLock.add(new Position(pistionForward.getX(), pistionForward.getY(), pistionForward.getZ(),pistionForward.level));
         }
 
         private boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
@@ -602,21 +680,19 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return this.toDestroy.stream().map(Block::clone).collect(Collectors.toList());
         }
 
+        @PowerNukkitOnly
+        @Since("1.6.0.0-PNX")
         public void lockBlocks(){
-            for(Block block : this.toMove){
-                movingBlocks.add(new Position(block.getX(), block.getY(), block.getZ(),block.level));
-            }
-            for (Block block : this.toDestroy){
-                movingBlocks.add(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+            for (Position pos : toLock){
+                movingBlocks.add(pos);
             }
         }
 
-        public void unlockBlocks(){
-            for(Block block : this.toMove){
-                movingBlocks.remove(new Position(block.getX(), block.getY(), block.getZ(),block.level));
-            }
-            for (Block block : this.toDestroy){
-                movingBlocks.remove(new Position(block.getX(), block.getY(), block.getZ(),block.level));
+        @PowerNukkitOnly
+        @Since("1.6.0.0-PNX")
+        public void unlockBlocks() {
+            for (Position pos : toLock) {
+                movingBlocks.remove(pos);
             }
         }
     }
