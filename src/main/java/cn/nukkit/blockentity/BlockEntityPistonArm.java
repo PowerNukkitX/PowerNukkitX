@@ -7,9 +7,11 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockPistonBase;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -22,8 +24,11 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
@@ -40,7 +45,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     public BlockFace facing;
 
+    public boolean powered;
+
     public boolean extending;
+
+    public BlockPistonBase.BlocksCalculator blocksCalculator;
 
     public boolean sticky;
 
@@ -52,8 +61,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public List<BlockVector3> attachedBlocks;
-
-    public boolean powered;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -76,7 +83,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.sticky = namedTag.getBoolean("Sticky");
         this.extending = namedTag.getBoolean("Extending");
         this.powered = namedTag.getBoolean("powered");
-
 
         if (namedTag.contains("facing")) {
             this.facing = BlockFace.fromIndex(namedTag.getInt("facing"));
@@ -163,7 +169,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     @PowerNukkitOnly
-    public void move(boolean extending, List<BlockVector3> attachedBlocks) {
+    public void move(boolean extending, List<BlockVector3> attachedBlocks, BlockPistonBase.BlocksCalculator blocksCalculator) {
+        this.blocksCalculator = blocksCalculator;
         this.extending = extending;
         this.lastProgress = this.progress = extending ? 0 : 1;
         this.state = this.newState = (byte) (extending ? 1 : 3);
@@ -229,13 +236,20 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                 this.movable = true;
             }
 
-            this.level.scheduleUpdate(this.getLevelBlock(), 1);
             this.attachedBlocks.clear();
+            this.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             hasUpdate = false;
             this.finished = true;
+            this.blocksCalculator.unlockBlocks();
+            Position pistonPos = blocksCalculator.getPistonPos();
+            BlockPistonBase.updatePistonsListenTo(pistonPos);
         }
 
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        if (level != null) {
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        }else{
+            return true;
+        }
 
         return super.onUpdate() || hasUpdate;
     }

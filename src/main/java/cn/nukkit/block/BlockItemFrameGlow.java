@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemItemFrameGlow;
 
 /**
  * @author LoboMetalurgico
@@ -31,5 +33,10 @@ public class BlockItemFrameGlow extends BlockItemFrame {
     @Override
     public int getId() {
         return GLOW_FRAME;
+    }
+
+    @Override
+    public Item toItem() {
+        return new ItemItemFrameGlow();
     }
 }

@@ -369,7 +369,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 return h;
             }
         }
-        for (int y = isOverWorld() ? 319 : 255; y >= 0; --y) {
+        for (int y = isOverWorld() ? 319 : 255; y >= (isOverWorld() ? -64 : 0); --y) {
             if (getBlockId(x, y, z) != 0x00) {
                 this.setHeightMap(x, z, y);
                 return y;
