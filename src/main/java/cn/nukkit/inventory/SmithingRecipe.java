@@ -24,6 +24,7 @@ import cn.nukkit.item.Item;
 import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import static cn.nukkit.inventory.Recipe.matchItemList;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 @ToString
-public class SmithingRecipe implements Recipe {
+public class SmithingRecipe extends ShapelessRecipe {
     private final Item equipment;
     private final Item ingredient;
     private final Item result;
@@ -45,9 +46,10 @@ public class SmithingRecipe implements Recipe {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public SmithingRecipe(Item equipment, Item ingredient, Item result) {
-        this.equipment = equipment;
-        this.ingredient = ingredient;
+    public SmithingRecipe(String recipeId, int priority, Collection<Item> ingredients, Item result) {
+        super(recipeId, priority, result, ingredients);
+        this.equipment = (Item) ingredients.toArray()[0];
+        this.ingredient = (Item) ingredients.toArray()[1];
         this.result = result;
 
         ArrayList<Item> aggregation = new ArrayList<>(2);

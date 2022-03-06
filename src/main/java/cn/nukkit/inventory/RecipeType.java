@@ -21,7 +21,7 @@ public enum RecipeType {
     @PowerNukkitOnly STONECUTTER(0),
     @PowerNukkitOnly CARTOGRAPHY(0),
     @PowerNukkitOnly REPAIR(-1),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SMITHING(-1)
+    @PowerNukkitOnly @Since("1.4.0.0-PN") SMITHING(0)
     ;
 
     @PowerNukkitOnly public final int networkType;
