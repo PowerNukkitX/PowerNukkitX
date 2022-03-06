@@ -20,6 +20,7 @@
 加入我们:
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
+* [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 PowerNukkitX的优势：
 
