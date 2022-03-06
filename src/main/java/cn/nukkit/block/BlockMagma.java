@@ -8,6 +8,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
@@ -65,10 +66,9 @@ public class BlockMagma extends BlockSolid {
             return;
         }
 
-        if (entity instanceof Player) {
-            Player p = (Player) entity;
+        if (entity instanceof Player p) {
             if (p.getInventory().getBoots().getEnchantment(Enchantment.ID_FROST_WALKER) != null
-                    || p.isCreative() || p.isSpectator() || p.isSneaking()) {
+                    || p.isCreative() || p.isSpectator() || p.isSneaking() || p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 return;
             }
         }
