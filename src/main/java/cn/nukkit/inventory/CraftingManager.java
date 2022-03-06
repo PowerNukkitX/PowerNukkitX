@@ -222,8 +222,6 @@ public class CraftingManager {
             throw new AssertionError("Unable to find recipes.json");
         }
 
-        registerSmithingRecipes();
-
         Config recipesConfig = new Config(Config.JSON);
         recipesConfig.load(recipesStream);
         this.loadRecipes(recipesConfig);
@@ -238,28 +236,6 @@ public class CraftingManager {
         this.rebuildPacket();
 
         log.info("Loaded {} recipes.", this.recipes.size());
-    }
-    
-    private void registerSmithingRecipes() {
-        Item ingot = Item.get(ItemID.NETHERITE_INGOT);
-        int[][] ids = new int[][]{
-                {ItemID.DIAMOND_HELMET, ItemID.NETHERITE_HELMET},
-                {ItemID.DIAMOND_CHESTPLATE, ItemID.NETHERITE_CHESTPLATE},
-                {ItemID.DIAMOND_LEGGINGS, ItemID.NETHERITE_LEGGINGS},
-                {ItemID.DIAMOND_BOOTS, ItemID.NETHERITE_BOOTS},
-                {ItemID.DIAMOND_SWORD, ItemID.NETHERITE_SWORD},
-                {ItemID.DIAMOND_PICKAXE, ItemID.NETHERITE_PICKAXE},
-                {ItemID.DIAMOND_HOE, ItemID.NETHERITE_HOE},
-                {ItemID.DIAMOND_SHOVEL, ItemID.NETHERITE_SHOVEL},
-                {ItemID.DIAMOND_AXE, ItemID.NETHERITE_AXE}
-        };
-        for (int[] id : ids) {
-            new SmithingRecipe(
-                    Item.get(id[0]).createFuzzyCraftingRecipe(),
-                    ingot,
-                    Item.get(id[1])
-            ).registerToCraftingManager(this);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -278,8 +254,9 @@ public class CraftingManager {
                             craftingBlock = "shulker_box";
                         }
                         if (!"crafting_table".equals(craftingBlock) && !"stonecutter".equals(craftingBlock)
-                                && !"cartography_table".equalsIgnoreCase(craftingBlock) && !"shulker_box".equalsIgnoreCase(craftingBlock)) {
-                            // Ignore other recipes than crafting table, stonecutter and cartography table
+                                && !"cartography_table".equalsIgnoreCase(craftingBlock) && !"shulker_box".equalsIgnoreCase(craftingBlock)
+                                && !"smithing_table".equalsIgnoreCase(craftingBlock)) {
+                            // Ignore other recipes than crafting table, stonecutter, smithing_table and cartography table
                             continue;
                         }
                         // TODO: handle multiple result items
@@ -318,6 +295,9 @@ public class CraftingManager {
                                 break;
                             case "cartography_table":
                                 this.registerRecipe(new CartographyRecipe(recipeId, priority, result, sorted));
+                                break;
+                            case "smithing_table":
+                                this.registerRecipe(new SmithingRecipe(recipeId, priority, sorted, result));
                                 break;
                         }
                         break;
