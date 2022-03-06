@@ -1502,15 +1502,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         boolean endPortal = false;
         for (Block block : this.getCollisionBlocks()) {
             switch (block.getId()) {
-                case BlockID.NETHER_PORTAL:
-                    portal = true;
-                    break;
-                case BlockID.SCAFFOLDING:
-                    scaffolding = true;
-                    break;
-                case BlockID.END_PORTAL:
-                    endPortal = true;
-                    break;
+                case BlockID.NETHER_PORTAL -> portal = true;
+                case BlockID.SCAFFOLDING -> scaffolding = true;
+                case BlockID.END_PORTAL -> endPortal = true;
             }
 
             block.onEntityCollide(this);
