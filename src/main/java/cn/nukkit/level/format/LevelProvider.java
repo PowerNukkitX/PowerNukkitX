@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -123,7 +124,26 @@ public interface LevelProvider {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     default int getDimension() {
-        return getLevel().getDimension();
+        final var level = getLevel();
+        if (level != null) {
+            return getLevel().getDimension();
+        } else {
+            switch (getGenerator()) {
+                case "normal":
+                case "terra":
+                    return Level.DIMENSION_OVERWORLD;
+                case "nether":
+                    return Level.DIMENSION_NETHER;
+                case "the_end":
+                    return Level.DIMENSION_THE_END;
+            }
+            final var type = Generator.getGeneratorType(Generator.getGenerator(getGenerator()));
+            return switch (type) {
+                case Generator.TYPE_NETHER -> Level.DIMENSION_NETHER;
+                case Generator.TYPE_THE_END -> Level.DIMENSION_THE_END;
+                default -> Level.DIMENSION_OVERWORLD;
+            };
+        }
     }
 
     @PowerNukkitOnly
