@@ -68,7 +68,7 @@ public class BlockMagma extends BlockSolid {
 
         if (entity instanceof Player p) {
             if (p.getInventory().getBoots().getEnchantment(Enchantment.ID_FROST_WALKER) != null
-                    || p.isCreative() || p.isSpectator() || p.isSneaking() || p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+                    || p.isCreative() || p.isSpectator() || p.isSneaking() || !p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 return;
             }
         }
