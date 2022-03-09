@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
@@ -79,16 +80,18 @@ public class LevelConverter {
                                 }
                             }
                             loader.writeChunk(chunk);
+                            log.info(Server.getInstance().getLanguage().translateString("nukkit.anvil.converter.update-chunk",
+                                    level.getName(), chunk.getX() << 4, chunk.getZ() << 4));
                         }
                     }
-                    log.info(String.format("转换中... 已完成: %.2f%%", ((double) processed.incrementAndGet() / regions.length) * 100));
+                    log.info(String.format("Converting %s... [%.2f%%]", level.getName(), ((double) processed.incrementAndGet() / regions.length) * 100));
                     loader.close();
                 } catch (Exception e) {
                     MainLogger.getLogger().logException(e);
                 }
             });
 
-            log.info(String.format("世界 %s 成功转换，耗时： %.2f秒。", level.getName(), (System.currentTimeMillis() - time) / 1000f));
+            log.info(String.format("Successfully converted world %s (%.2fs)", level.getName(), (System.currentTimeMillis() - time) / 1000f));
         }
     }
 

@@ -161,7 +161,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @Override
     public void spawnToAll() {
-        BlockCauldron block = (BlockCauldron) getBlock();
+        final var block = getBlock();
         Player[] viewers = this.level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(Player.EMPTY_ARRAY);
         this.level.sendBlocks(viewers, new Vector3[]{block});
         super.spawnToAll();

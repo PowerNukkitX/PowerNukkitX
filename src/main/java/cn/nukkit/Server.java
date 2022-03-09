@@ -722,7 +722,6 @@ public class Server {
                         level.dimension = generator.getDimension();
                         level.gameRules = level.requireProvider().getGamerules();
                         level.setTickRate(this.baseTickRate);
-                        this.unloadLevel(level, true);
                     }
                 }
             }
