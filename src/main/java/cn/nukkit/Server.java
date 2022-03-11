@@ -711,17 +711,22 @@ public class Server {
         if (files != null) {
             for (final File file : files) {
                 if (file.isDirectory()) {
-                    this.loadLevel(file.getName(), false);
-                    final Level level = this.getLevelByName(file.getName());
-                    if (level != null && level.getProvider().isOverWorld() && level.getProvider() instanceof Anvil && ((Anvil) level.getProvider()).isOldAnvil()) {
-                        LevelConverter.convert256To384(level);
-                    }
-                    if (level != null) {
-                        // 不这么做会造成NPE
-                        Generator generator = level.getGenerator();
-                        level.dimension = generator.getDimension();
-                        level.gameRules = level.requireProvider().getGamerules();
-                        level.setTickRate(this.baseTickRate);
+                    try {
+                        if (Anvil.is384UpdateRequired(file)) {
+                            this.loadLevel(file.getName(), true);
+                            final Level level = this.getLevelByName(file.getName());
+                            LevelConverter.convert256To384(level);
+                            // 为了防止神必的NPE出现
+                            Generator generator = level.getGenerator();
+                            level.dimension = generator.getDimension();
+                            level.gameRules = level.requireProvider().getGamerules();
+                            level.setTickRate(this.baseTickRate);
+                            this.unloadLevel(level, true);
+                            // 由于性能原因，nk使用了level缓存，但是这会阻碍我们重新加载更新后的世界，所以我们从缓存中去掉它以禁用缓存
+                            this.levels.remove(level.getId());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }

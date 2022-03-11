@@ -64,8 +64,38 @@ public class Anvil extends BaseLevelProvider {
         return true;
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     public boolean isOldAnvil() {
         return isOldAnvil;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static boolean is384UpdateRequired(File levelDir) throws IOException {
+        final var datFile = new File(levelDir, "level.dat");
+        if (!datFile.exists()) {
+            throw new FileNotFoundException(datFile.getPath());
+        }
+        try (final var fis = new FileInputStream(datFile)) {
+            final var nbt = NBTIO.readCompressed(fis, ByteOrder.BIG_ENDIAN);
+            final var data = nbt.getCompound("Data");
+            final var levelVersion = data.getInt("version");
+            if (levelVersion != OLD_VERSION) {
+                return false;
+            }
+            final var generatorName = data.getString("generatorName");
+            switch (generatorName) {
+                case "normal":
+                case "terra":
+                    return true;
+                case "nether":
+                case "the_end":
+                    return false;
+            }
+            final var type = Generator.getGeneratorType(Generator.getGenerator(generatorName));
+            return !(type == Generator.TYPE_NETHER || type == Generator.TYPE_THE_END);
+        }
     }
 
     public static boolean isValid(String path) {

@@ -1,8 +1,8 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
@@ -69,19 +69,24 @@ public class LevelConverter {
                             chunk.backwardCompatibilityUpdate(level);
                             //TODO: 查找BlockEntityCauldron报错原因
                             chunk.initChunk();
+                            BlockState tmp;
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
-                                    for (int dy = chunk.getHighestBlockAt(dx, dz, false); dy >= -64; --dy) {
-                                        chunk.setBlockState(dx, dy + 64, dz, chunk.getBlockState(dx, dy, dz));
-                                        chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, chunk.getBlockState(dx, dy, dz, 1));
-                                        chunk.setBlockState(dx, dy, dz, BlockState.AIR);
-                                        chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                                    for (int dy = 255; dy >= 0; --dy) {
+                                        tmp = chunk.getBlockState(dx, dy, dz);
+                                        if (tmp.getBlockId() != BlockID.AIR) {
+                                            chunk.setBlockState(dx, dy + 64, dz, tmp);
+                                            chunk.setBlockState(dx, dy, dz, BlockState.AIR);
+                                        }
+                                        tmp = chunk.getBlockState(dx, dy, dz, 1);
+                                        if (tmp.getBlockId() != BlockID.AIR) {
+                                            chunk.setBlockStateAtLayer(dx, dy + 64, dz, 1, tmp);
+                                            chunk.setBlockStateAtLayer(dx, dy, dz, 1, BlockState.AIR);
+                                        }
                                     }
                                 }
                             }
                             loader.writeChunk(chunk);
-                            log.info(Server.getInstance().getLanguage().translateString("nukkit.anvil.converter.update-chunk",
-                                    level.getName(), chunk.getX() << 4, chunk.getZ() << 4));
                         }
                     }
                     log.info(String.format("Converting %s... [%.2f%%]", level.getName(), ((double) processed.incrementAndGet() / regions.length) * 100));
