@@ -1442,6 +1442,12 @@ public class Level implements ChunkManager, Metadatable {
         this.scheduleUpdate(pos, pos, delay, 0, true);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void scheduleUpdate(Block pos, int delay,boolean checkBlockWhenUpdate) {
+        this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
+    }
+
     public void scheduleUpdate(Block block, Vector3 pos, int delay) {
         this.scheduleUpdate(block, pos, delay, 0, true);
     }
@@ -1451,11 +1457,17 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea) {
+        this.scheduleUpdate(block, pos, delay, priority, checkArea, true);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
         if (block.getId() == 0 || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
             return;
         }
 
-        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, ((long) delay) + getCurrentTick(), priority);
+        BlockUpdateEntry entry = new BlockUpdateEntry(pos.floor(), block, ((long) delay) + getCurrentTick(), priority, checkBlockWhenUpdate);
 
         if (!this.updateQueue.contains(entry)) {
             this.updateQueue.add(entry);

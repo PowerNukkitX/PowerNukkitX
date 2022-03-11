@@ -4,10 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPistonBase;
+import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
@@ -241,7 +238,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             this.finished = true;
             this.blocksCalculator.unlockBlocks();
             this.blocksCalculator.getLockedBlocks().forEach(BlockPistonBase::updatePistonsListenTo);
-            this.blocksCalculator.getLockedBlocks().forEach(pos -> this.level.scheduleUpdate(pos.getLevelBlock(),1));
+            this.blocksCalculator.getLockedBlocks().forEach(pos -> {
+                this.level.scheduleUpdate(pos.getLevelBlock(), 1);
+                if (pos.getSide(BlockFace.UP).getLevelBlock() instanceof BlockFallableMeta){
+                    this.level.scheduleUpdate(pos.getSide(BlockFace.UP).getLevelBlock(), 1);
+                }
+            });
         }
 
         if (level != null) {
