@@ -35,7 +35,7 @@ public class Chunk extends BaseChunk {
     protected long inhabitedTime;
     protected boolean terrainPopulated;
     protected boolean terrainGenerated;
-    protected boolean isNew384World = false;
+    public boolean isNew384World = false;
 
     @Override
     public Chunk clone() {

@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.anvil.Chunk;
 import cn.nukkit.level.format.anvil.RegionLoader;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import lombok.extern.log4j.Log4j2;
@@ -61,7 +62,7 @@ public class LevelConverter {
                 }
                 try {
                     final RegionLoader loader = new RegionLoader(provider, regionX, regionZ);
-                    BaseFullChunk chunk;
+                    Chunk chunk;
                     for (int chunkX = 0; chunkX < 32; chunkX++) {
                         for (int chunkZ = 0; chunkZ < 32; chunkZ++) {
                             chunk = loader.readChunk(chunkX, chunkZ);
@@ -72,7 +73,7 @@ public class LevelConverter {
                             BlockState tmp;
                             for (int dx = 0; dx < 16; dx++) {
                                 for (int dz = 0; dz < 16; dz++) {
-                                    for (int dy = 255; dy >= 0; --dy) {
+                                    for (int dy = 255; dy >= -64; --dy) {
                                         tmp = chunk.getBlockState(dx, dy, dz);
                                         if (tmp.getBlockId() != BlockID.AIR) {
                                             chunk.setBlockState(dx, dy + 64, dz, tmp);
@@ -86,6 +87,7 @@ public class LevelConverter {
                                     }
                                 }
                             }
+                            chunk.isNew384World = true;
                             loader.writeChunk(chunk);
                         }
                     }
