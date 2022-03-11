@@ -19,17 +19,15 @@ public abstract class BlockFallable extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block down = this.down();
-            if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid || down.getLevelBlockAtLayer(1) instanceof BlockLiquid) && !BlockPistonBase.isBlockLocked(new Position(down.x, down.y, down.z, this.getLevel()))) {
-                BlockFallEvent event = new BlockFallEvent(this);
-                this.level.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) {
-                    return type;
-                }
-
-                drop(new CompoundTag());
+        Block down = this.down();
+        if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid || down.getLevelBlockAtLayer(1) instanceof BlockLiquid) && !BlockPistonBase.isBlockLocked(new Position(down.x, down.y, down.z, this.getLevel()))) {
+            BlockFallEvent event = new BlockFallEvent(this);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return type;
             }
+
+            drop(new CompoundTag());
         }
         return type;
     }
