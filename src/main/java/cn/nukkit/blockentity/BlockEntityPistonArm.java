@@ -4,10 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPistonBase;
+import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
@@ -237,12 +234,16 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
 
             this.attachedBlocks.clear();
-            this.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             hasUpdate = false;
             this.finished = true;
             this.blocksCalculator.unlockBlocks();
-            Position pistonPos = blocksCalculator.getPistonPos();
-            BlockPistonBase.updatePistonsListenTo(pistonPos);
+            this.blocksCalculator.getLockedBlocks().forEach(BlockPistonBase::updatePistonsListenTo);
+            this.blocksCalculator.getLockedBlocks().forEach(pos -> {
+                this.level.scheduleUpdate(pos.getLevelBlock(), 1);
+                if (pos.getSide(BlockFace.UP).getLevelBlock() instanceof BlockFallableMeta){
+                    this.level.scheduleUpdate(pos.getSide(BlockFace.UP).getLevelBlock(), 1);
+                }
+            });
         }
 
         if (level != null) {
@@ -261,7 +262,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public boolean isBlockEntityValid() {
         int id = getLevelBlock().getId();
-        return id == BlockID.PISTON || id == BlockID.STICKY_PISTON; 
+        return id == BlockID.PISTON || id == BlockID.STICKY_PISTON;
     }
 
     @Override
