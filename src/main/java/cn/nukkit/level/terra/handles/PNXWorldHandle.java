@@ -36,9 +36,9 @@ public class PNXWorldHandle implements WorldHandle {
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
         if (s.equals("minecraft:water"))
-            s = "minecraft:water[level=15]";//special case
+            s = "minecraft:water[level=0]";//special case
         if (s.equals("minecraft:lava"))
-            s = "minecraft:lava[level=15]";//special case
+            s = "minecraft:lava[level=0]";//special case
         if (s.equals("minecraft:deepslate"))
             s = "minecraft:deepslate[axis=y]";//special case
         if (s.equals("minecraft:grass_block"))
