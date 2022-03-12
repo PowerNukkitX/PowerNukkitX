@@ -183,6 +183,7 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[BlockID.EXPOSED_DOUBLE_CUT_COPPER_SLAB] = true;
         randomTickBlocks[BlockID.WEATHERED_DOUBLE_CUT_COPPER_SLAB] = true;
         randomTickBlocks[BlockID.BUDDING_AMETHYST] = true;
+        randomTickBlocks[BlockID.POINTED_DRIPSTONE] = true;
     }
 
     @PowerNukkitOnly
