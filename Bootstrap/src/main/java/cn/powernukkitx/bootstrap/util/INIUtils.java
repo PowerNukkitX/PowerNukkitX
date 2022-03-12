@@ -1,4 +1,4 @@
-package cn.powernukkitx.util;
+package cn.powernukkitx.bootstrap.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

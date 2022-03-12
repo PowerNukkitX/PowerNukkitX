@@ -1,4 +1,4 @@
-package cn.powernukkitx.info.locator;
+package cn.powernukkitx.bootstrap.info.locator;
 
 import java.io.File;
 

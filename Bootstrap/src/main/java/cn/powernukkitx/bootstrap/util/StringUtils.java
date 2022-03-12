@@ -1,4 +1,4 @@
-package cn.powernukkitx.util;
+package cn.powernukkitx.bootstrap.util;
 
 public final class StringUtils {
     public static String beforeLast(String str, String splitter) {

@@ -44,7 +44,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>cn.powernukkitx.Bootstrap</Main-Class>
+                            <Main-Class>cn.powernukkitx.bootstrap.Bootstrap</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

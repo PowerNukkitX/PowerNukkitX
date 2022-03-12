@@ -1,7 +1,7 @@
-package cn.powernukkitx.info.locator;
+package cn.powernukkitx.bootstrap.info.locator;
 
-import cn.powernukkitx.util.CollectionUtils;
-import cn.powernukkitx.util.StringUtils;
+import cn.powernukkitx.bootstrap.util.CollectionUtils;
+import cn.powernukkitx.bootstrap.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;

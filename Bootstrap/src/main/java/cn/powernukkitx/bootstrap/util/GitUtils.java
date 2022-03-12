@@ -1,6 +1,6 @@
-package cn.powernukkitx.util;
+package cn.powernukkitx.bootstrap.util;
 
-import cn.powernukkitx.Bootstrap;
+import cn.powernukkitx.bootstrap.Bootstrap;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +27,7 @@ public final class GitUtils {
         return gitCommitID;
     }
 
-    public static Optional<FullInfo> getFullGitInfo(File jarFile) {
+    public static Optional<FullGitInfo> getFullGitInfo(File jarFile) {
         if (!jarFile.exists()) {
             return Optional.empty();
         }
@@ -41,7 +41,7 @@ public final class GitUtils {
                     if (stream != null) {
                         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
                             final Map<String, String> infos = INIUtils.parseINI(reader);
-                            return Optional.of(new FullInfo().setTime(infos.getOrDefault("git.commit.time", "Unknown"))
+                            return Optional.of(new FullGitInfo().setTime(infos.getOrDefault("git.commit.time", "Unknown"))
                                     .setMainVersion(infos.getOrDefault("git.build.version", "Unknown"))
                                     .setCommitID(infos.getOrDefault("git.commit.id.abbrev", "Unknown"))
                                     .setBranchID(infos.getOrDefault("git.branch", "Unknown")));
@@ -55,7 +55,7 @@ public final class GitUtils {
         return Optional.empty();
     }
 
-    public static class FullInfo {
+    public static class FullGitInfo {
         private String mainVersion;
         private String commitID;
         private String branchID;
@@ -65,7 +65,7 @@ public final class GitUtils {
             return mainVersion;
         }
 
-        public FullInfo setMainVersion(String mainVersion) {
+        public FullGitInfo setMainVersion(String mainVersion) {
             this.mainVersion = mainVersion;
             return this;
         }
@@ -74,7 +74,7 @@ public final class GitUtils {
             return commitID;
         }
 
-        public FullInfo setCommitID(String commitID) {
+        public FullGitInfo setCommitID(String commitID) {
             this.commitID = commitID;
             return this;
         }
@@ -83,7 +83,7 @@ public final class GitUtils {
             return branchID;
         }
 
-        public FullInfo setBranchID(String branchID) {
+        public FullGitInfo setBranchID(String branchID) {
             this.branchID = branchID;
             return this;
         }
@@ -92,7 +92,7 @@ public final class GitUtils {
             return time;
         }
 
-        public FullInfo setTime(String time) {
+        public FullGitInfo setTime(String time) {
             this.time = time;
             return this;
         }

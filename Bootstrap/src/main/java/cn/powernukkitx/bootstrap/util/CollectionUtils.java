@@ -1,4 +1,4 @@
-package cn.powernukkitx.util;
+package cn.powernukkitx.bootstrap.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;

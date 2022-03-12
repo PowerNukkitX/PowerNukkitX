@@ -1,9 +1,8 @@
-package cn.powernukkitx.util;
+package cn.powernukkitx.bootstrap.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static cn.powernukkitx.util.LanguageUtils.tr;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public final class Logger {
@@ -14,11 +13,11 @@ public final class Logger {
     }
 
     public static void trInfo(String key, String... values) {
-        info(tr(key, values));
+        info(LanguageUtils.tr(key, values));
     }
 
     public static void trInfo(String key, Class<?> clazz, String... values) {
-        info(tr(key, values), clazz);
+        info(LanguageUtils.tr(key, values), clazz);
     }
 
     public static void info(String info, Class<?> clazz) {
