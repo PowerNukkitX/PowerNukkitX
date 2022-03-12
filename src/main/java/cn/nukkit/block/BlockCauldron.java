@@ -122,6 +122,19 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
         setIntValue(FILL_LEVEL, fillLevel);
     }
 
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public CauldronLiquid getCauldronLiquid() {
+        return this.getPropertyValue(LIQUID);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setCauldronLiquid(CauldronLiquid liquid) {
+        this.setPropertyValue(LIQUID, liquid);
+    }
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         BlockEntityCauldron cauldron = getBlockEntity();
@@ -150,7 +163,7 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                         cauldron.clearCustomColor();
                         this.getLevel().addLevelEvent(this.add(0.5, 0.375 + getFillLevel() * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_WATER);
                     }
-                } else if (bucket.isWater() || bucket.isLava()) {
+                } else if (bucket.isWater() || bucket.isLava() || bucket.isPowderSnow()) {
                     if (isFull() && !cauldron.isCustomColor() && !cauldron.hasPotion() && item.getDamage() == 8) {
                         break;
                     }
@@ -165,9 +178,16 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
                             clearWithFizz(cauldron);
                         } else if (bucket.isWater()) { //water bucket
                             this.setFillLevel(FILL_LEVEL.getMaxValue());//fill
+                            //default liquid type is water so we don't need to set it
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_FILLWATER);
+                        } else if (bucket.isPowderSnow()) { // powder snow bucket
+                            this.setFillLevel(FILL_LEVEL.getMaxValue());//fill
+                            this.setCauldronLiquid(CauldronLiquid.POWDER_SNOW);
+                            cauldron.clearCustomColor();
+                            this.level.setBlock(this, this, true);
+                            //todo: add the sound of powder snow (I can't find it)
                         } else { // lava bucket
                             if (isEmpty()) {
                                 BlockCauldronLava cauldronLava = new BlockCauldronLava(0xE);
