@@ -230,7 +230,7 @@ public class InventoryTransaction {
                     if(player.isSurvival()){
                         int slot = ((SlotChangeAction) action).getSlot();
                         if(slot == 36 || slot == 37 || slot == 38 || slot == 39){
-                            if(action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE)){
+                            if(action.getSourceItem().hasEnchantment(Enchantment.ID_BINDING_CURSE) && action.getSourceItem().applyEnchantments()){
                                 this.sendInventories();
                                 return false;
                             }

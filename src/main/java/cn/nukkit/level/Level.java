@@ -2293,7 +2293,7 @@ public class Level implements ChunkManager, Metadatable {
 
         boolean mustDrop = target.mustDrop(vector, layer, face, item, player);
         boolean mustSilkTouch = target.mustSilkTouch(vector, layer, face, item, player);
-        boolean isSilkTouch = mustSilkTouch || item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null;
+        boolean isSilkTouch = mustSilkTouch || (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null && item.applyEnchantments());
 
         if (player != null) {
             if (player.getGamemode() == 2) {

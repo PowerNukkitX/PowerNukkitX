@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -22,8 +25,10 @@ public class ItemBookEnchanted extends Item {
         return 1;
     }
 
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
     @Override
-    public boolean hasEnchantments() {//enchanted books haven't enchantments
+    public boolean applyEnchantments() {
         return false;
     }
 }
