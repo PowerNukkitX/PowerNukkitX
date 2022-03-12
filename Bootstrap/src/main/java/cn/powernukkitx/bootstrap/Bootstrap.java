@@ -1,5 +1,7 @@
 package cn.powernukkitx.bootstrap;
 
+import cn.powernukkitx.bootstrap.util.CollectionUtils;
+import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.LanguageUtils;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -11,9 +13,13 @@ public final class Bootstrap {
     public static Program program;
 
     public static void main(String[] args) {
+        ConfigUtils.init();
         LanguageUtils.init();
 
-        final boolean isCLI = ensureConsole();
+        boolean isCLI = ensureConsole();
+        if (CollectionUtils.has(args, "--cli")) {
+            isCLI = true;
+        }
         if (isCLI) {
             program = new CLI();
         } else {

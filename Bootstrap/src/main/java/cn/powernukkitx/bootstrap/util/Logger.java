@@ -1,5 +1,8 @@
 package cn.powernukkitx.bootstrap.util;
 
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -42,5 +45,20 @@ public final class Logger {
         System.out.println(ansi().fgCyan().a(dateFormat.format(new Date())).reset()
                 .a(" [").fgRed().a("WARN ").reset().a("] ")
                 .a(warn));
+    }
+
+    public static void bar(float percent, String append) {
+        final int width = AnsiConsole.getTerminalWidth();
+        final Ansi ansi = ansi().cursorUpLine().eraseLine().fgBrightGreen().a("[");
+        final int barWidth = width - 12 - StringUtils.getPrintLength(append);
+        final int finishedWidth = Math.round(percent * barWidth);
+        ansi.a(StringUtils.repeat("=", finishedWidth));
+        ansi.fgBrightYellow().a(StringUtils.repeat("-", barWidth - finishedWidth));
+        ansi.a("] ").reset().a(String.format("%.2f%%", percent * 100)).a(" ").a(append);
+        AnsiConsole.out().println(ansi);
+    }
+
+    public static void cl() {
+        System.out.println();
     }
 }

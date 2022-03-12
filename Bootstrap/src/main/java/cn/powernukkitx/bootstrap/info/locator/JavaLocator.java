@@ -108,6 +108,7 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
                     vendor = StringUtils.beforeLast(s, " (build");
                 }
             }
+            process.destroy();
             if(majorVersion != null && vendor != null)
                 return Optional.of(new JavaInfo(majorVersion, fullVersion, vendor));
         } catch (IOException | InterruptedException e) {

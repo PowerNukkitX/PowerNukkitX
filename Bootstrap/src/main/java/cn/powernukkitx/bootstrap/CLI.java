@@ -1,21 +1,34 @@
 package cn.powernukkitx.bootstrap;
 
+import cn.powernukkitx.bootstrap.cli.AdoptOpenJDKInstall;
+import cn.powernukkitx.bootstrap.cli.Component;
+import cn.powernukkitx.bootstrap.cli.GraalVMInstall;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.Location;
 import cn.powernukkitx.bootstrap.util.GitUtils;
 import cn.powernukkitx.bootstrap.util.LanguageUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
+import cn.powernukkitx.bootstrap.util.URLUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import java.io.IOException;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
 
 import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
 
 public final class CLI implements Program {
+    public final Timer timer = new Timer();
+
+    private final Map<String, Component> components = new HashMap<>();
+
+    public CLI() {
+        components.put("GraalVMInstall", new GraalVMInstall());
+        components.put("AdoptOpenJDKInstall", new AdoptOpenJDKInstall());
+    }
 
     @Override
     public void exec(String... args) {
@@ -99,6 +112,44 @@ public final class CLI implements Program {
                 Logger.info("");
             }
             startPNX = false;
+        }
+
+        if (startPNX) {
+            JavaLocator javaLocator = new JavaLocator("17");
+            List<Location<JavaLocator.JavaInfo>> result = javaLocator.locate();
+            Logger.trInfo("display.install-choose-vendor");
+            final URL graalURL = URLUtils.graal17URL();
+            final URL adoptURL = URLUtils.adopt17URL();
+            if(graalURL!=null){
+                Logger.info("g. GraalVM");
+            }
+            if(adoptURL!=null){
+                Logger.info("a. AdoptOpenJDK");
+            }
+            Scanner scanner = new Scanner(System.in);
+            String line;
+            while (true) {
+                line = scanner.nextLine();
+                if(line != null && line.length() > 0) {
+                    switch (line.charAt(0)) {
+                        case 'g':
+                            exec("GraalVMInstall");
+                            break;
+                        case 'a':
+                            exec("AdoptOpenJDKInstall");
+                    }
+                    break;
+                }
+            }
+        }
+
+        // 最终停止timer，退出程序
+        timer.cancel();
+    }
+
+    public void exec(String componentName) {
+        if(components.containsKey(componentName)) {
+            components.get(componentName).execute(this);
         }
     }
 }
