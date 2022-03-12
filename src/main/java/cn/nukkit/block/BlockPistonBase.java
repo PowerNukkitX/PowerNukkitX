@@ -517,6 +517,11 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                     this.blockedPos = new Position(base.getX(), base.getY(), base.getZ(), base.level);
                     return false;
                 }
+                if (block instanceof BlockPistonBase) {
+                    this.blockedByPistonHeadOrLockedBlock = true;
+                    this.blockedPos = blockedPos;
+                    return false;
+                }
                 if(lockedBlocks.contains(blockedPos)) {
                     this.blockedByPistonHeadOrLockedBlock = true;
                     this.blockedPos = blockedPos;
