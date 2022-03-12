@@ -21,4 +21,9 @@ public class ItemBookEnchanted extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public boolean hasEnchantments() {//enchanted books haven't enchantments
+        return false;
+    }
 }
