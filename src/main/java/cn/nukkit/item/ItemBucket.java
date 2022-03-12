@@ -79,8 +79,9 @@ public class ItemBucket extends Item {
             case 12:
                 return BlockID.FLOWING_WATER;
             case 10:
-            case 11:
                 return BlockID.FLOWING_LAVA;
+            case 11:
+                return BlockID.POWDER_SNOW;
             default:
                 return BlockID.AIR;
         }
@@ -102,6 +103,12 @@ public class ItemBucket extends Item {
     @Since("1.4.0.0-PN")
     public boolean isLava() {
         return getTargetBlock().getId() == BlockID.FLOWING_LAVA;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean isPowderSnow() {
+        return getTargetBlock().getId() == BlockID.POWDER_SNOW;
     }
 
     @PowerNukkitOnly
@@ -140,7 +147,6 @@ public class ItemBucket extends Item {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Block getTargetBlock() {
-        if (this.meta == 11) return new BlockPowderSnow();
         return getId() == BUCKET ? Block.get(getDamageByTarget(this.meta)) : Block.get(BlockID.AIR);
     }
 
