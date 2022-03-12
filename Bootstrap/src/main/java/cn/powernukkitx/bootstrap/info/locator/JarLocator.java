@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-public final class JarLocator extends Locator<JarLocator.JarInfo> {
+public class JarLocator extends Locator<JarLocator.JarInfo> {
     private final File dir;
     private final String withClassOrPackage;
 

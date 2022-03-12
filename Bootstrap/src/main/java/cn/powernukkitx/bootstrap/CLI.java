@@ -44,9 +44,9 @@ public final class CLI implements Program {
                 JarLocator bootstrapLocator = new JarLocator(workingDir, "cn.powernukkitx.bootstrap");
                 List<Location<JarLocator.JarInfo>> result = bootstrapLocator.locate();
                 if (result.size() == 0) {
-                    Logger.trInfo("display.bootstrap-not-found");
+                    Logger.trWarn("display.bootstrap-not-found");
                 } else if (result.size() > 1) {
-                    Logger.trInfo("display.bootstrap-multi-conflict");
+                    Logger.trWarn("display.bootstrap-multi-conflict");
                 } else {
                     Location<JarLocator.JarInfo> location = result.get(0);
                     if (location.getInfo().getGitInfo().isPresent()) {
@@ -59,7 +59,7 @@ public final class CLI implements Program {
                         Logger.trInfo("display.version.time", gitInfo.getTime());
                         Logger.info("");
                     } else {
-                        Logger.trInfo("display.bootstrap-break");
+                        Logger.trWarn("display.bootstrap-break");
                     }
                 }
             }
@@ -67,9 +67,9 @@ public final class CLI implements Program {
                 JarLocator pnxLocator = new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly");
                 List<Location<JarLocator.JarInfo>> result = pnxLocator.locate();
                 if (result.size() == 0) {
-                    Logger.trInfo("display.server-not-found");
+                    Logger.trWarn("display.server-not-found");
                 } else if (result.size() > 1) {
-                    Logger.trInfo("display.server-multi-conflict");
+                    Logger.trWarn("display.server-multi-conflict");
                 } else {
                     Location<JarLocator.JarInfo> location = result.get(0);
                     if (location.getInfo().getGitInfo().isPresent()) {
@@ -82,7 +82,7 @@ public final class CLI implements Program {
                         Logger.trInfo("display.version.time", gitInfo.getTime());
                         Logger.info("");
                     } else {
-                        Logger.trInfo("display.bootstrap-break");
+                        Logger.trWarn("display.server-break");
                     }
                 }
             }
