@@ -14,12 +14,15 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.Random;
 
 import static cn.nukkit.potion.Effect.getEffect;
 
@@ -49,6 +52,30 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIPSTONE_THICKNESS, HANGING);
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int isHanging(){
+        return getPropertyValue(HANGING);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setHanging(int value){
+        setPropertyValue(HANGING, value);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void setThickness(String value){
+        setPropertyValue(DRIPSTONE_THICKNESS, value);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public String getThickness(){
+        return getPropertyValue(DRIPSTONE_THICKNESS);
+    }
 
     public BlockPointedDripstone() {
     }
@@ -101,9 +128,26 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return 1;
     }
 
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")){
+            Random rand = new Random();
+            double nextDouble = rand.nextDouble();
+            if (0 <= nextDouble && nextDouble <= 0.011377778){
+                this.grow();
+            }
+        }
         int hanging = getPropertyValue(HANGING);
         if (hanging == 0) {
             Block down = down();
@@ -327,4 +371,10 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         }
     }
 
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public void grow() {
+        this.place(null, this.getSide(this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP), null, this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP, 0, 0, 0, null);
+    }
 }
