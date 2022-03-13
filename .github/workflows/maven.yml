@@ -60,6 +60,15 @@ jobs:
         with:
           name: PowerNukkitX-Libs
           path: target/libs/
+      - name: Upload to OSS
+        uses: tvrcgo/upload-to-oss@v0.1.1
+        with:
+          key-id: ${{ secrets.OSS_KEY_ID }}
+          key-secret: ${{ secrets.OSS_KEY_SECRET }}
+          region: oss-cn-hongkong
+          bucket: pnx-assets
+          asset-path: ./target/powernukkitx.jar
+          target-path: /core/${{ github.ref_name }}-${GITHUB_SHA::8}/
 
   build-bootstrap:
     name: 构建启动器
@@ -91,3 +100,12 @@ jobs:
         with:
           name: PowerNukkitX-bootstrap
           path: Bootstrap/target/bootstrap.jar
+      - name: Upload to OSS
+        uses: tvrcgo/upload-to-oss@v0.1.1
+        with:
+          key-id: ${{ secrets.OSS_KEY_ID }}
+          key-secret: ${{ secrets.OSS_KEY_SECRET }}
+          region: oss-cn-hongkong
+          bucket: pnx-assets
+          asset-path: ./Bootstrap/target/bootstrap.jar
+          target-path: /bootstrap/${{ github.ref_name }}-${GITHUB_SHA::8}/
