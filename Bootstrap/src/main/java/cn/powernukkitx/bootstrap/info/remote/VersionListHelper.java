@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -38,30 +39,29 @@ public final class VersionListHelper {
     private static List<VersionEntry> exactKeys(final String xml) {
         final Matcher keyMatcher = keyPattern.matcher(xml);
         final List<VersionEntry> out = new ArrayList<>(20);
-        if (keyMatcher.find()) {
-            for (int i = 0, len = keyMatcher.groupCount(); i < len; i++) {
-                final String[] tmp = keyMatcher.group(i).split("-");
-                out.add(new VersionEntry().setBranch(StringUtils.afterFirst(tmp[0], "/")).setCommit(tmp[1]));
-            }
+        while (keyMatcher.find()) {
+            final String[] tmp = keyMatcher.group(0).split("-");
+            out.add(new VersionEntry().setBranch(StringUtils.afterFirst(tmp[0], "/")).setCommit(tmp[1]));
         }
 
         final Matcher timeMatcher = timePattern.matcher(xml);
-        if (timeMatcher.find()) {
-            for (int i = 0, len = timeMatcher.groupCount(); i < len; i++) {
-                try {
-                    out.get(i).setTime(commonTimeFormat.format(utcTimeFormat.parse(timeMatcher.group(i))));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+        int i = 0;
+        while (timeMatcher.find()) {
+            try {
+                out.get(i++).setTime(utcTimeFormat.parse(timeMatcher.group(0)));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
         }
+
+        out.sort((a, b) -> b.time.compareTo(a.time));
         return out;
     }
 
     public static final class VersionEntry {
         private String branch;
         private String commit;
-        private String time;
+        private Date time;
 
         public String getBranch() {
             return branch;
@@ -82,10 +82,10 @@ public final class VersionListHelper {
         }
 
         public String getTime() {
-            return time;
+            return commonTimeFormat.format(time);
         }
 
-        public VersionEntry setTime(String time) {
+        public VersionEntry setTime(Date time) {
             this.time = time;
             return this;
         }
