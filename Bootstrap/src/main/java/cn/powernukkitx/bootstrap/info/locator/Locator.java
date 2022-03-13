@@ -12,4 +12,12 @@ public abstract class Locator<T> {
             return "";
         }
     }
+
+    public static String platformSplitter() {
+        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+            return ";";
+        } else {
+            return ":";
+        }
+    }
 }

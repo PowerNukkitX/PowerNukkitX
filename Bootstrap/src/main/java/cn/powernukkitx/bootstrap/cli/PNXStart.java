@@ -4,6 +4,7 @@ import cn.powernukkitx.bootstrap.CLI;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.Location;
+import cn.powernukkitx.bootstrap.info.locator.Locator;
 import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
 
@@ -47,11 +48,14 @@ public final class PNXStart implements Component {
             Logger.trInfo("display.pnx.starting", fileName);
             final ProcessBuilder processBuilder = new ProcessBuilder();
             final String cmd = ConfigUtils.startCommand()
-                    .replace("%JAVA%", java.getFile().getAbsolutePath()).replace("%PNX%", fileName);
+                    .replace("%JAVA%", java.getFile().getAbsolutePath())
+                    .replace("%PNX%", fileName)
+                    .replace("%CP_SPLIT%", Locator.platformSplitter());
             try {
                 long previousStartTime = 0L;
-                //noinspection LoopConditionNotUpdatedInsideLoop
-                while (autoRestart) {
+                boolean fistTime = true;
+                while (autoRestart || fistTime) {
+                    fistTime = false;
                     if (System.currentTimeMillis() - previousStartTime > ConfigUtils.minRestartTime()) {
                         if (previousStartTime != 0L) {
                             Logger.trInfo("display.pnx.restart");
