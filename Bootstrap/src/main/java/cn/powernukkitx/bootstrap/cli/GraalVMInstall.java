@@ -28,7 +28,6 @@ public final class GraalVMInstall implements Component {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void downloadGraalVM17() {
-        Logger.trInfo("display.install-java17");
         final File localJavaDir = new File("./java");
         if (!localJavaDir.exists()) {
             localJavaDir.mkdirs();

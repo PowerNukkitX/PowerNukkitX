@@ -32,7 +32,6 @@ public final class AdoptOpenJDKInstall implements Component {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void downloadAdoptOpenJDK17() {
-        Logger.trInfo("display.install-java17");
         final File localJavaDir = new File("./java");
         if (!localJavaDir.exists()) {
             localJavaDir.mkdirs();

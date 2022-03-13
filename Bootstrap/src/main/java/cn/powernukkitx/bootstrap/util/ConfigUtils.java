@@ -34,6 +34,10 @@ public final class ConfigUtils {
         return configMap.get("adopt.version");
     }
 
+    public static String startCommand() {
+        return configMap.get("start-cmd");
+    }
+
     public static String get(String key) {
         return configMap.get(key);
     }
