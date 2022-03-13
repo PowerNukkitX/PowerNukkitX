@@ -27,6 +27,7 @@ public final class CLI implements Program {
         components.put("CheckVersion", new CheckVersion());
         components.put("JavaInstall", new JavaInstall());
         components.put("PNXStart", new PNXStart());
+        components.put("UpdatePNX", new UpdatePNX());
     }
 
     @Override
@@ -35,7 +36,8 @@ public final class CLI implements Program {
         parser.allowsUnrecognizedOptions();
         OptionSpec<Void> helpSpec = parser.accepts("help", LanguageUtils.tr("command.help")).forHelp();
         OptionSpec<String> versionSpec = parser.accepts("version", LanguageUtils.tr("command.version")).withOptionalArg().ofType(String.class);
-        OptionSpec<Void> autoRestartSpec = parser.accepts("autoRestart", "command.autoRestart").availableUnless(helpSpec, versionSpec);
+        OptionSpec<Void> autoRestartSpec = parser.accepts("autoRestart", LanguageUtils.tr("command.autoRestart")).availableUnless(helpSpec, versionSpec);
+        OptionSpec<Void> updatePNXSpec = parser.accepts("updatePNX", LanguageUtils.tr("command.updatePNX")).availableUnless(autoRestartSpec);
 
         // 解析参数
         OptionSet options = parser.parse(args);
@@ -46,11 +48,14 @@ public final class CLI implements Program {
         if (options.has(versionSpec)) {
             exec("CheckVersion", options.valueOf(versionSpec));
         }
+        if (options.has(updatePNXSpec)) {
+            exec("UpdatePNX");
+        }
 
         if (startPNX) {
             JavaLocator javaLocator = new JavaLocator("17");
             List<Location<JavaLocator.JavaInfo>> result = javaLocator.locate();
-            if(result.size() == 0) {
+            if (result.size() == 0) {
                 exec("JavaInstall");
             } else {
                 exec("PNXStart", result, options.has(autoRestartSpec) || ConfigUtils.autoRestart());
@@ -62,7 +67,7 @@ public final class CLI implements Program {
     }
 
     public void exec(String componentName, Object... args) {
-        if(components.containsKey(componentName)) {
+        if (components.containsKey(componentName)) {
             components.get(componentName).execute(this, args);
         }
     }

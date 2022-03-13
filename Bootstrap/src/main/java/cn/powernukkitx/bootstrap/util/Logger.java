@@ -58,7 +58,11 @@ public final class Logger {
         AnsiConsole.out().println(ansi);
     }
 
-    public static void cl() {
+    public static void clearUpLine() {
+        AnsiConsole.out().println(ansi().saveCursorPosition().cursorUpLine().eraseLine().restoreCursorPosition());
+    }
+
+    public static void newLine() {
         System.out.println();
     }
 }

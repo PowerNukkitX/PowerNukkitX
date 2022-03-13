@@ -40,6 +40,7 @@ public final class PNXStart implements Component {
         List<Location<JarLocator.JarInfo>> result = pnxLocator.locate();
         if (result.size() == 0) {
             Logger.trWarn("display.server-not-found");
+            cli.exec("UpdatePNX");
         } else if (result.size() > 1) {
             Logger.trWarn("display.server-multi-conflict");
         } else {

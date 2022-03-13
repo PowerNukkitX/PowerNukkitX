@@ -9,6 +9,12 @@ public final class StringUtils {
         return str.substring(0, i);
     }
 
+    public static String afterFirst(String str, String splitter) {
+        final int i = str.indexOf(splitter);
+        if (i == -1) return str;
+        return str.substring(i + 1);
+    }
+
     public static String displayableBytes(long bytes) {
         if (bytes >= 1024 * 1024 * 2) {
             return String.format("%.2fMB", bytes / 1024.0 / 1024);
