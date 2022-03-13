@@ -17,7 +17,7 @@ public final class URLUtils {
                     return new URL(get("graalvm.linux-aarch"));
                 }
                 return new URL(get("graalvm.linux-x86"));
-            } else if (s.contains("MACOS") || s.contains("DARWIN") || s.contains("OSX")) {
+            } else if (s.contains("MACOS") || s.contains("DARWIN") || s.contains("OSX") || s.contains("MAC")) {
                 return new URL(get("graalvm.darwin-x86"));
             }
         } catch (MalformedURLException ignore) {
@@ -29,17 +29,20 @@ public final class URLUtils {
     public static URL adopt17URL() {
         try {
             final String s = System.getProperties().getProperty("os.name").toUpperCase();
+            final String arch = System.getProperty("os.arch").toLowerCase();
             if (s.contains("WINDOWS")) {
                 return new URL(get("adopt.win-x86"));
             } else if (s.contains("LINUX")) {
-                final String arch = System.getProperty("os.arch").toLowerCase();
                 if (arch.contains("aarch")) {
                     return new URL(get("adopt.linux-aarch"));
                 } else if (arch.contains("arm")) {
                     return new URL(get("adopt.linux-arm"));
                 }
                 return new URL(get("adopt.linux-x86"));
-            } else if (s.contains("MACOS") || s.contains("DARWIN") || s.contains("OSX")) {
+            } else if (s.contains("MACOS") || s.contains("DARWIN") || s.contains("OSX") || s.contains("MAC")) {
+                if (arch.contains("aarch") || arch.contains("arm")) {
+                    return new URL(get("adopt.darwin-aarch"));
+                }
                 return new URL(get("adopt.darwin-x86"));
             }
         } catch (MalformedURLException ignore) {

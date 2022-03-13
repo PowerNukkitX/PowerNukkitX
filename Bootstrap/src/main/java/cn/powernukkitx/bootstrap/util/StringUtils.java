@@ -1,5 +1,7 @@
 package cn.powernukkitx.bootstrap.util;
 
+import java.net.URL;
+
 public final class StringUtils {
     public static String beforeLast(String str, String splitter) {
         final int i = str.indexOf(splitter);
@@ -36,5 +38,25 @@ public final class StringUtils {
             sb.append(s);
         }
         return sb.toString();
+    }
+
+    public static String uriSuffix(String s) {
+        final int splashIndex = s.indexOf("/");
+        String last;
+        if (splashIndex == -1) {
+            last = s;
+        } else {
+            last = s.substring(splashIndex + 1);
+        }
+        final int dotIndex = last.indexOf('.');
+        if (dotIndex == -1) {
+            return "";
+        } else {
+            return s.substring(0, dotIndex);
+        }
+    }
+
+    public static String uriSuffix(URL url) {
+        return uriSuffix(url.toString());
     }
 }

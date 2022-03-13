@@ -3,6 +3,7 @@ package cn.powernukkitx.bootstrap;
 import cn.powernukkitx.bootstrap.cli.AdoptOpenJDKInstall;
 import cn.powernukkitx.bootstrap.cli.Component;
 import cn.powernukkitx.bootstrap.cli.GraalVMInstall;
+import cn.powernukkitx.bootstrap.cli.PrintHelp;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.Location;
@@ -22,16 +23,18 @@ import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
 
 public final class CLI implements Program {
     public final Timer timer = new Timer();
+    private boolean startPNX = true;
 
     private final Map<String, Component> components = new HashMap<>();
 
     public CLI() {
         components.put("GraalVMInstall", new GraalVMInstall());
         components.put("AdoptOpenJDKInstall", new AdoptOpenJDKInstall());
+        components.put("PrintHelp", new PrintHelp());
     }
 
     @Override
-    public void exec(String... args) {
+    public void exec(String[] args) {
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
         OptionSpec<Void> helpSpec = parser.accepts("help", LanguageUtils.tr("command.help")).forHelp();
@@ -39,16 +42,9 @@ public final class CLI implements Program {
 
         // 解析参数
         OptionSet options = parser.parse(args);
-        // flags
-        boolean startPNX = true;
 
         if (options.has(helpSpec)) {
-            try {
-                parser.printHelpOn(System.out);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            startPNX = false;
+            exec("PrintHelp", parser);
         }
         if (options.has(versionSpec)) {
             String arg = options.valueOf(versionSpec);
@@ -137,6 +133,7 @@ public final class CLI implements Program {
                             break;
                         case 'a':
                             exec("AdoptOpenJDKInstall");
+                            break;
                     }
                     break;
                 }
@@ -147,9 +144,13 @@ public final class CLI implements Program {
         timer.cancel();
     }
 
-    public void exec(String componentName) {
+    public void exec(String componentName, Object... args) {
         if(components.containsKey(componentName)) {
-            components.get(componentName).execute(this);
+            components.get(componentName).execute(this, args);
         }
+    }
+
+    public void setStartPNX(boolean start) {
+        this.startPNX = start;
     }
 }

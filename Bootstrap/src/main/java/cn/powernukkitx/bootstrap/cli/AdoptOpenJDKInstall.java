@@ -1,7 +1,9 @@
 package cn.powernukkitx.bootstrap.cli;
 
 import cn.powernukkitx.bootstrap.CLI;
+import cn.powernukkitx.bootstrap.util.GzipUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
+import cn.powernukkitx.bootstrap.util.StringUtils;
 import cn.powernukkitx.bootstrap.util.URLUtils;
 import com.github.kevinsawicki.http.HttpRequest;
 import net.lingala.zip4j.ZipFile;
@@ -19,11 +21,12 @@ import static cn.powernukkitx.bootstrap.util.StringUtils.displayableBytes;
 @SuppressWarnings("DuplicatedCode")
 public final class AdoptOpenJDKInstall implements Component {
     private CLI cli;
+    private String suffix = "tar.gz";
 
     @Override
-    public void execute(CLI cli) {
+    public void execute(CLI cli, Object... args) {
         this.cli = cli;
-        downloadAdoptOpenJDK17();
+        //downloadAdoptOpenJDK17();
         uncompressAdoptOpenJDK17();
     }
 
@@ -40,7 +43,8 @@ public final class AdoptOpenJDKInstall implements Component {
             return;
         }
         try {
-            final File targetZip = new File("tmp.zip");
+            suffix = StringUtils.uriSuffix(downloadURL);
+            final File targetZip = new File("tmp." + suffix);
             HttpRequest request = HttpRequest.get(downloadURL);
             Logger.trInfo("display.connecting", downloadURL.toString());
             final AtomicLong atomicLong = new AtomicLong(0);
@@ -66,18 +70,27 @@ public final class AdoptOpenJDKInstall implements Component {
     }
 
     private void uncompressAdoptOpenJDK17() {
-        final File file = new File("tmp.zip");
+        final File file = new File("tmp." + suffix);
         Logger.trInfo("display.uncompressing", file.getAbsolutePath());
-        final ZipFile zipFile = new ZipFile(file);
-        try {
-            final String name = "jdk-" + adoptOpenJDKVersion().replace("_", "+") + "-jre";
-            zipFile.extractFile(name + "/", "./java");
-            zipFile.close();
-            Logger.trInfo("display.success.uncompress", file.getAbsolutePath());
-            //noinspection ResultOfMethodCallIgnored
-            file.delete();
-        } catch (IOException e) {
-            Logger.trInfo("display.fail.uncompress", file.getAbsolutePath());
+        if ("zip".equals(suffix)) {
+            final ZipFile zipFile = new ZipFile(file);
+            try {
+                final String name = "jdk-" + adoptOpenJDKVersion().replace("_", "+") + "-jre";
+                zipFile.extractFile(name + "/", "./java");
+                zipFile.close();
+                Logger.trInfo("display.success.uncompress", file.getAbsolutePath());
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            } catch (IOException e) {
+                Logger.trInfo("display.fail.uncompress", file.getAbsolutePath());
+            }
+        } else if ("tar.gz".equals(suffix)) {
+            try {
+                GzipUtils.uncompressTGzipFile(file, new File("./java"));
+                Logger.trInfo("display.success.uncompress", file.getAbsolutePath());
+            } catch (IOException e) {
+                Logger.trInfo("display.fail.uncompress", file.getAbsolutePath());
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ public final class GraalVMInstall implements Component {
     private CLI cli;
 
     @Override
-    public void execute(CLI cli) {
+    public void execute(CLI cli, Object... args) {
         this.cli = cli;
         downloadGraalVM17();
         uncompressGraalVM17();
