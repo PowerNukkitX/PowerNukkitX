@@ -8,7 +8,9 @@ import cn.powernukkitx.bootstrap.info.locator.Locator;
 import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
@@ -33,6 +35,11 @@ public final class PNXStart implements Component {
                 return 0;
             }
         });
+
+        if (!new File("libs").exists()) {
+            cli.exec("UpdateLibs");
+        }
+
         final Location<JavaLocator.JavaInfo> java = javaLocations.get(0);
         Logger.trInfo("display.pnx.jvm", java.getInfo().getVendor());
 

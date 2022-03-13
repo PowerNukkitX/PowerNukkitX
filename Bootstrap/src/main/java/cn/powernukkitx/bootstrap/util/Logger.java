@@ -48,6 +48,7 @@ public final class Logger {
     }
 
     public static void bar(float percent, String append) {
+        percent = Math.min(1, percent);
         final int width = AnsiConsole.getTerminalWidth();
         final Ansi ansi = ansi().cursorUpLine().eraseLine().fgBrightGreen().a("[");
         final int barWidth = width - 12 - StringUtils.getPrintLength(append);
@@ -59,7 +60,7 @@ public final class Logger {
     }
 
     public static void clearUpLine() {
-        AnsiConsole.out().println(ansi().saveCursorPosition().cursorUpLine().eraseLine().restoreCursorPosition());
+        AnsiConsole.out().println(ansi().saveCursorPosition().cursorUpLine().eraseLine());
     }
 
     public static void newLine() {

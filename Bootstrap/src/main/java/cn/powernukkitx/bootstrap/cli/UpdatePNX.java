@@ -2,16 +2,11 @@ package cn.powernukkitx.bootstrap.cli;
 
 import cn.powernukkitx.bootstrap.CLI;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
-import cn.powernukkitx.bootstrap.info.locator.Location;
 import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
 import cn.powernukkitx.bootstrap.util.Logger;
 import cn.powernukkitx.bootstrap.util.URLUtils;
-import com.github.kevinsawicki.http.HttpRequest;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +33,7 @@ public final class UpdatePNX implements Component {
             pnxLocator.locate().forEach(e -> e.getFile().delete());
             final URL downloadLink = Objects.requireNonNull(URLUtils.getAssetsLink("core", versionEntry.getBranch() + "-" + versionEntry.getCommit()));
             URLUtils.downloadWithBar(downloadLink, new File("powernukkitx.jar"), "PowerNukkitX-Core", cli.timer);
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (Exception e) {
             Logger.trWarn("display.remote.failed-fetch-versions");
             cli.setStartPNX(false);
             return;
