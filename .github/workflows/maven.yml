@@ -68,7 +68,7 @@ jobs:
           region: oss-cn-hongkong
           bucket: pnx-assets
           asset-path: ./target/powernukkitx.jar
-          target-path: /core/${{ github.ref_name }}-${GITHUB_SHA::8}/
+          target-path: /core/${{ github.ref_name }}-${{ github.sha::8 }}/
 
   build-bootstrap:
     name: 构建启动器
@@ -108,4 +108,4 @@ jobs:
           region: oss-cn-hongkong
           bucket: pnx-assets
           asset-path: ./Bootstrap/target/bootstrap.jar
-          target-path: /bootstrap/${{ github.ref_name }}-${GITHUB_SHA::8}/
+          target-path: /bootstrap/${{ github.ref_name }}-${{ github.sha::8 }}/
