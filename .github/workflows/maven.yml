@@ -47,7 +47,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
       - name: Rename artifacts
-        run: mv target/powernukkitx-*-shaded.jar target/powernukkitx.jar
+        run: mv target/powernukkitx-*-SNAPSHOT.jar target/powernukkitx.jar
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
         if: success()
@@ -89,5 +89,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: Bootstrap
+          name: PowerNukkitX-bootstrap
           path: Bootstrap/target/bootstrap.jar
