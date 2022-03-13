@@ -10,21 +10,25 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public final class GitUtils {
-    private static String gitCommitID = null;
+    private static FullGitInfo selfGitInfo = null;
 
-    public static String commitID() {
-        if (gitCommitID != null) return gitCommitID;
+    public static Optional<FullGitInfo> getSelfGitInfo() {
+        if (selfGitInfo != null) return Optional.of(selfGitInfo);
         try (final InputStream stream = Bootstrap.class.getClassLoader().getResourceAsStream("git.properties")) {
             if (stream != null) {
                 try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-                    final Map<String, String> gitInfo = INIUtils.parseINI(reader);
-                    gitCommitID = gitInfo.getOrDefault("git.commit.id.abbrev", "Unknown");
+                    final Map<String, String> infos = INIUtils.parseINI(reader);
+                    selfGitInfo = new FullGitInfo().setTime(infos.getOrDefault("git.commit.time", "Unknown"))
+                            .setMainVersion(infos.getOrDefault("git.build.version", "Unknown"))
+                            .setCommitID(infos.getOrDefault("git.commit.id.abbrev", "Unknown"))
+                            .setBranchID(infos.getOrDefault("git.branch", "Unknown"));
+                    return Optional.of(selfGitInfo);
                 }
             }
-        } catch (IOException e) {
-            gitCommitID = "Unknown";
+        } catch (IOException ignored) {
+
         }
-        return gitCommitID;
+        return Optional.ofNullable(selfGitInfo);
     }
 
     public static Optional<FullGitInfo> getFullGitInfo(File jarFile) {

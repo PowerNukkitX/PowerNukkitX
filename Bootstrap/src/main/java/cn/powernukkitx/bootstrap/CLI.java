@@ -15,7 +15,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -50,19 +49,11 @@ public final class CLI implements Program {
             String arg = options.valueOf(versionSpec);
             if (arg == null) arg = "bootstrap,pnx,java";
             if (arg.contains("bootstrap")) {
-                JarLocator bootstrapLocator = new JarLocator(workingDir, "cn.powernukkitx.bootstrap");
-                List<Location<JarLocator.JarInfo>> result = bootstrapLocator.locate();
-                if (result.size() == 0) {
-                    Logger.trWarn("display.bootstrap-not-found");
-                } else if (result.size() > 1) {
-                    Logger.trWarn("display.bootstrap-multi-conflict");
-                } else {
-                    Location<JarLocator.JarInfo> location = result.get(0);
-                    if (location.getInfo().getGitInfo().isPresent()) {
-                        GitUtils.FullGitInfo gitInfo = location.getInfo().getGitInfo().get();
+                    Optional<GitUtils.FullGitInfo> optGitInfo = GitUtils.getSelfGitInfo();
+                    if (optGitInfo.isPresent()) {
+                        GitUtils.FullGitInfo gitInfo = optGitInfo.get();
                         Logger.trInfo("display.bootstrap-version");
                         Logger.info("");
-                        Logger.trInfo("display.version.path", location.getFile().getAbsolutePath());
                         Logger.trInfo("display.version.major", gitInfo.getMainVersion());
                         Logger.trInfo("display.version.full", "git-" + gitInfo.getBranchID() + "-" + gitInfo.getCommitID());
                         Logger.trInfo("display.version.time", gitInfo.getTime());
@@ -70,7 +61,6 @@ public final class CLI implements Program {
                     } else {
                         Logger.trWarn("display.bootstrap-break");
                     }
-                }
             }
             if (arg.contains("pnx")) {
                 JarLocator pnxLocator = new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly");
