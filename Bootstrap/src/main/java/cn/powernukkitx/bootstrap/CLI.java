@@ -3,6 +3,7 @@ package cn.powernukkitx.bootstrap;
 import cn.powernukkitx.bootstrap.cli.*;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.Location;
+import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.LanguageUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -34,6 +35,7 @@ public final class CLI implements Program {
         parser.allowsUnrecognizedOptions();
         OptionSpec<Void> helpSpec = parser.accepts("help", LanguageUtils.tr("command.help")).forHelp();
         OptionSpec<String> versionSpec = parser.accepts("version", LanguageUtils.tr("command.version")).withOptionalArg().ofType(String.class);
+        OptionSpec<Void> autoRestartSpec = parser.accepts("autoRestart", "command.autoRestart").availableUnless(helpSpec, versionSpec);
 
         // 解析参数
         OptionSet options = parser.parse(args);
@@ -51,7 +53,7 @@ public final class CLI implements Program {
             if(result.size() == 0) {
                 exec("JavaInstall");
             } else {
-                exec("PNXStart", result);
+                exec("PNXStart", result, options.has(autoRestartSpec) || ConfigUtils.autoRestart());
             }
         }
 

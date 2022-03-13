@@ -38,6 +38,14 @@ public final class ConfigUtils {
         return configMap.get("start-cmd");
     }
 
+    public static int minRestartTime() {
+        return Integer.parseInt(configMap.getOrDefault("min-restart-time", "30000"));
+    }
+
+    public static boolean autoRestart() {
+        return Boolean.parseBoolean(configMap.getOrDefault("auto-restart", "false"));
+    }
+
     public static String get(String key) {
         return configMap.get(key);
     }

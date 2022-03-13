@@ -8,9 +8,6 @@ import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
@@ -18,8 +15,10 @@ import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
 public final class PNXStart implements Component {
     @Override
     public void execute(CLI cli, Object... args) {
-        if (args.length != 1) return;
+        if (args.length != 2) return;
         @SuppressWarnings("unchecked") final List<Location<JavaLocator.JavaInfo>> javaLocations = (List<Location<JavaLocator.JavaInfo>>) args[0];
+        final boolean autoRestart = (boolean) args[1];
+
         // 优先选择GraalVM
         javaLocations.sort((a, b) -> {
             if (a.equals(b)) return 0;
@@ -50,9 +49,22 @@ public final class PNXStart implements Component {
             final String cmd = ConfigUtils.startCommand()
                     .replace("%JAVA%", java.getFile().getAbsolutePath()).replace("%PNX%", fileName);
             try {
-                final Process process = processBuilder.command(cmd.split(" ")).inheritIO().start();
-                process.waitFor();
-                process.destroy();
+                long previousStartTime = 0L;
+                //noinspection LoopConditionNotUpdatedInsideLoop
+                while (autoRestart) {
+                    if (System.currentTimeMillis() - previousStartTime > ConfigUtils.minRestartTime()) {
+                        if (previousStartTime != 0L) {
+                            Logger.trInfo("display.pnx.restart");
+                        }
+                        previousStartTime = System.currentTimeMillis();
+                        final Process process = processBuilder.command(cmd.split(" ")).inheritIO().start();
+                        process.waitFor();
+                        process.destroy();
+                    } else {
+                        Logger.trWarn("display.pnx.failed-restart");
+                        break;
+                    }
+                }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
