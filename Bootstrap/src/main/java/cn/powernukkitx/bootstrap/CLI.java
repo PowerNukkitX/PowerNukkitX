@@ -29,6 +29,7 @@ public final class CLI implements Program {
         components.put("PNXStart", new PNXStart());
         components.put("UpdatePNX", new UpdatePNX());
         components.put("UpdateLibs", new UpdateLibs());
+        components.put("UpdateBootstrap", new UpdateBootstrap());
     }
 
     @Override
@@ -40,6 +41,7 @@ public final class CLI implements Program {
         OptionSpec<Void> autoRestartSpec = parser.accepts("autoRestart", LanguageUtils.tr("command.autoRestart")).availableUnless(helpSpec, versionSpec);
         OptionSpec<Void> updatePNXSpec = parser.accepts("updatePNX", LanguageUtils.tr("command.updatePNX")).availableUnless(autoRestartSpec);
         OptionSpec<Void> updateLibsSpec = parser.accepts("updateLibs", LanguageUtils.tr("command.updateLibs")).availableUnless(autoRestartSpec);
+        OptionSpec<Void> updateBootstrapSpec = parser.accepts("updateBootstrap", LanguageUtils.tr("command.updateBootstrap")).availableUnless(autoRestartSpec);
 
         // 解析参数
         OptionSet options = parser.parse(args);
@@ -55,6 +57,9 @@ public final class CLI implements Program {
         }
         if (options.has(updateLibsSpec)) {
             exec("UpdateLibs");
+        }
+        if (options.has(updateBootstrapSpec)) {
+            exec("UpdateBootstrap");
         }
 
         if (startPNX) {

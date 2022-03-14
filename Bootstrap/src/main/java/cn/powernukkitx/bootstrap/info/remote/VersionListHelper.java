@@ -28,7 +28,7 @@ public final class VersionListHelper {
         final HttpRequest request = HttpRequest.get(OSS + "?" +
                 "list-type=2" + "&" +
                 "prefix=" + category + "/&" +
-                "max-keys=20" + "&" +
+                "max-keys=30" + "&" +
                 "delimiter=/");
         return exactKeys(request.body(HttpRequest.CHARSET_UTF8));
     }

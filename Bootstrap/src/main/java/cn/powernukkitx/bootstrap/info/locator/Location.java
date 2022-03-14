@@ -28,4 +28,12 @@ public class Location<T> {
         this.info = info;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "file=" + file +
+                ", info=" + info +
+                '}';
+    }
 }
