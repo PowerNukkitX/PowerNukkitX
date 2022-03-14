@@ -65,4 +65,13 @@ public final class StringUtils {
     public static String uriSuffix(URL url) {
         return uriSuffix(url.toString());
     }
+
+    public static String stripTrailing(String str) {
+        for (int i = str.length() - 1; i >=0 ; i--) {
+            if(!Character.isWhitespace(str.charAt(i))) {
+                return str.substring(0, i + 1);
+            }
+        }
+        return str;
+    }
 }

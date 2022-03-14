@@ -17,10 +17,16 @@ public final class Bootstrap {
         LanguageUtils.init();
 
         boolean isCLI = ensureConsole();
+        boolean isGUI = false;
         if (CollectionUtils.has(args, "--cli")) {
             isCLI = true;
         }
-        if (isCLI) {
+        if (CollectionUtils.has(args, "--gui")) {
+            isGUI = true;
+        }
+        if (isGUI) {
+            program = new GUI();
+        } else if (isCLI) {
             program = new CLI();
         } else {
             program = new GUI();
