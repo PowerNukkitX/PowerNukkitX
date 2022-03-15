@@ -4,10 +4,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.block.Block;
 import cn.nukkit.math.BlockFace;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static cn.nukkit.math.BlockFace.*;
@@ -109,6 +106,10 @@ public final class Rail {
         }
 
         public boolean hasConnectingDirections(BlockFace... faces) {
+            return Stream.of(faces).allMatch(connectingDirections::contains);
+        }
+
+        public boolean hasConnectingDirections(Collection<BlockFace> faces) {
             return Stream.of(faces).allMatch(connectingDirections::contains);
         }
 
