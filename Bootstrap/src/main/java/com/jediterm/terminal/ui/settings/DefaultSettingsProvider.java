@@ -1,5 +1,6 @@
 package com.jediterm.terminal.ui.settings;
 
+import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import com.jediterm.terminal.HyperlinkStyle;
 import com.jediterm.terminal.TerminalColor;
 import com.jediterm.terminal.TextStyle;
@@ -107,7 +108,7 @@ public class DefaultSettingsProvider implements SettingsProvider {
 
     @Override
     public ColorPalette getTerminalColorPalette() {
-        return UIUtil.isWindows ? ColorPaletteImpl.WINDOWS_PALETTE : ColorPaletteImpl.XTERM_PALETTE;
+        return "Windows".equals(ConfigUtils.get("gui-terminal-color")) ? ColorPaletteImpl.WINDOWS_PALETTE : ColorPaletteImpl.XTERM_PALETTE;
     }
 
     @Override

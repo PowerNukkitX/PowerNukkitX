@@ -148,9 +148,10 @@ public final class MainWindowController extends CommonController {
 
     public void onClose() {
         try {
-            terminalTty.write("\r\nstop");
+            if(terminalTty.isConnected())
+                terminalTty.write("\r\nstop");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.stop-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
             return;
         }
         System.exit(0);

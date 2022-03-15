@@ -46,6 +46,7 @@ public final class MainWindowView extends JFrame implements SwingView<JFrame> {
         }
         /* 初始化swing界面 */
         this.setVisible(true);
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(null); //居中
         // 监听窗口变化并反馈给控制器
         this.addComponentListener(new ComponentAdapter() {
