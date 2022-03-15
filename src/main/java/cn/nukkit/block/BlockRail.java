@@ -117,6 +117,11 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean sticksToPiston() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();

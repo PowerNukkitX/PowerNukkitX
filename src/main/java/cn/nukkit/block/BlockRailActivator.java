@@ -49,22 +49,24 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_SCHEDULED) {
-            super.onUpdate(type);
+            if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
+                return 0; // Already broken
+            }
+
+            if (!this.level.getServer().isRedstoneEnabled()) {
+                return 0;
+            }
             boolean wasPowered = isActive();
             boolean isPowered = this.isGettingPower()
                     || checkSurrounding(this, true, 0)
                     || checkSurrounding(this, false, 0);
-            boolean hasUpdate = false;
 
+            // Avoid Block mistake
             if (wasPowered != isPowered) {
                 setActive(isPowered);
-                hasUpdate = true;
-            }
-
-            if (hasUpdate) {
-                level.updateAround(down());
+                RedstoneComponent.updateAroundRedstone(down());
                 if (getOrientation().isAscending()) {
-                    level.updateAround(up());
+                    RedstoneComponent.updateAroundRedstone(up());
                 }
             }
             return type;
@@ -181,7 +183,7 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
                 || base != Rail.Orientation.STRAIGHT_EAST_WEST
                 && base != Rail.Orientation.ASCENDING_EAST
                 && base != Rail.Orientation.ASCENDING_WEST)
-                && (this.isGettingPower() || checkSurrounding(pos, relative, power + 1));
+                && (block.isGettingPower() || checkSurrounding(pos, relative, power + 1));
     }
 
     @Override
