@@ -3980,23 +3980,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         }
                                     }
 
-                                    Enchantment[] enchantments = item.getEnchantments();
-
                                     float itemDamage = item.getAttackDamage();
-                                    for (Enchantment enchantment : enchantments) {
-                                        itemDamage += enchantment.getDamageBonus(target);
+                                    Enchantment[] enchantments = item.getEnchantments();
+                                    if(item.applyEnchantments()) {
+                                        for (Enchantment enchantment : enchantments) {
+                                            itemDamage += enchantment.getDamageBonus(target);
+                                        }
                                     }
 
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
                                     float knockBack = 0.3f;
-                                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                                    if (knockBackEnchantment != null) {
-                                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                    if(item.applyEnchantments()) {
+                                        Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                                        if (knockBackEnchantment != null) {
+                                            knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                        }
                                     }
 
-                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, enchantments);
+                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -4024,8 +4027,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         sideEffect.doPostAttack(this, entityDamageByEntityEvent, target);
                                     }
 
-                                    for (Enchantment enchantment : item.getEnchantments()) {
-                                        enchantment.doPostAttack(this, target);
+                                    if(item.applyEnchantments()) {
+                                        for (Enchantment enchantment : item.getEnchantments()) {
+                                            enchantment.doPostAttack(this, target);
+                                        }
                                     }
 
                                     if (item.isTool() && (this.isSurvival() || this.isAdventure())) {
@@ -4820,7 +4825,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 for (Item item : ev.getDrops()) {
-                    if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                    if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE) && item.applyEnchantments()) {
                         this.level.dropItem(this, item, null, true, 40);
                     }
                 }

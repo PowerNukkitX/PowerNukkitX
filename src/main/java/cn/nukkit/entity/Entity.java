@@ -1958,7 +1958,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.boundingBox;
     }
 
-    public void fall(float fallDistance) {
+    public void fall(float fallDistance) {//todo: check why @param fallDistance always less than the real distance
         if (this.hasEffect(Effect.SLOW_FALLING)) {
             return;
         }
@@ -1975,7 +1975,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         if ((!this.isPlayer || level.getGameRules().getBoolean(GameRule.FALL_DAMAGE)) && down.useDefaultFallDamage()) {
             int jumpBoost = this.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
-            float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
+            float damage = fallDistance - 3 - jumpBoost;
 
             if (damage > 0) {
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));

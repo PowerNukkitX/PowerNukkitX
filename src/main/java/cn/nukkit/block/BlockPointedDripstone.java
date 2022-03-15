@@ -297,7 +297,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     public void onEntityFallOn(Entity entity, float fallDistance) {
         if (this.level.gameRules.getBoolean(GameRule.FALL_DAMAGE) && this.getPropertyValue(DRIPSTONE_THICKNESS).equals("tip") && this.getPropertyValue(HANGING) == 0) {
             int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
-            float damage = (float) Math.floor((fallDistance - jumpBoost) * 2 - 2);
+            float damage = (fallDistance - jumpBoost) * 2 - 2;
             if (damage > 0)
                 entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
