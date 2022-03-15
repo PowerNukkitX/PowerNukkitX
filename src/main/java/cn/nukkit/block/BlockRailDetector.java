@@ -1,22 +1,59 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
+import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.OptionalBoolean;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author CreeperFace (Nukkit Project), larryTheCoder (Minecart and Riding Project)
  * @since 2015/11/22 
  */
 public class BlockRailDetector extends BlockRail {
+
+    public static Set<Position> activeDetectors = new HashSet<>();
+
+    static{
+        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+            for (Position pos : activeDetectors.toArray(new Position[0])) {
+                BlockRailDetector detector;
+                if (pos.getLevel().getBlock(pos) instanceof BlockRailDetector) {
+                    detector = (BlockRailDetector) pos.getLevel().getBlock(pos);
+                }else{
+                    activeDetectors.remove(pos);
+                    return;
+                }
+                for (Entity entity : detector.level.getNearbyEntities(new SimpleAxisAlignedBB(
+                        detector.getFloorX() + 0.2D,
+                        detector.getFloorY(),
+                        detector.getFloorZ() + 0.2D,
+                        detector.getFloorX() + 0.8D,
+                        detector.getFloorY() + 0.8D,
+                        detector.getFloorZ() + 0.8D))) {
+                    if (entity instanceof EntityMinecartAbstract) {
+                        return;
+                    }
+                }
+                detector.setActive(false);
+                detector.level.setBlock(detector,detector,true,true);
+                activeDetectors.remove(detector);
+            }
+        }, 20);
+    }
 
     public BlockRailDetector() {
         this(0);
@@ -60,50 +97,14 @@ public class BlockRailDetector extends BlockRail {
         return isActive() ? 0 : (side == BlockFace.UP ? 15 : 0);
     }
 
-    @Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            updateState();
-            return type;
+    public void setActive() {
+        if (this.isActive()){
+            return;
         }
-        return super.onUpdate(type);
-    }
-
-    @Override
-    public void onEntityCollide(Entity entity) {
-        updateState();
-    }
-
-    protected void updateState() {
-        boolean wasPowered = isActive();
-        boolean isPowered = false;
-
-        for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
-                getFloorX() + 0.125D,
-                getFloorY(),
-                getFloorZ() + 0.125D,
-                getFloorX() + 0.875D,
-                getFloorY() + 0.525D,
-                getFloorZ() + 0.875D))) {
-            if (entity instanceof EntityMinecartAbstract) {
-                isPowered = true;
-                break;
-            }
-        }
-
-        if (isPowered && !wasPowered) {
-            setActive(true);
-            level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.down(), 0);
-        }
-
-        if (!isPowered && wasPowered) {
-            setActive(false);
-            level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.down(), 0);
-        }
-
+        setActive(true);
+        this.level.setBlock(this, this, true, true);
         level.updateComparatorOutputLevel(this);
+        activeDetectors.add(this);
     }
 
     @Override

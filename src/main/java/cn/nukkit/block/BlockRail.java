@@ -130,7 +130,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
-        if(type == Level.BLOCK_UPDATE_REDSTONE){
+        if(type == Level.BLOCK_UPDATE_REDSTONE && this.getRailDirection().isCurved()) {
             //TODO: change face when powered
         }
         return 0;
