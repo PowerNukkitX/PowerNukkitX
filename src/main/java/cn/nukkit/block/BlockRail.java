@@ -117,6 +117,11 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean sticksToPiston() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
@@ -124,6 +129,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
+        }
+        if(type == Level.BLOCK_UPDATE_REDSTONE && this.getRailDirection().isCurved()) {
+            //TODO: change face when powered
         }
         return 0;
     }
@@ -389,5 +397,11 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     public  boolean canBePulled() {
         return true;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean breaksWhenMoved() {
+        return false;
     }
 }
