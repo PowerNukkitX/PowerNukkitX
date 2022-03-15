@@ -41,8 +41,7 @@ public class CommonModel implements Model {
 
     @Override
     public <T, B extends T> void addDataListenerDirectly(DataKey<B> dataKey, DataListener<T> dataListener) {
-        List<DataListener<?>> listeners = dataListenerMap.get(dataKey);
-        if (listeners == null) listeners = new ArrayList<>();
+        List<DataListener<?>> listeners = dataListenerMap.computeIfAbsent(dataKey, k -> new ArrayList<>());
         listeners.add(dataListener);
     }
 

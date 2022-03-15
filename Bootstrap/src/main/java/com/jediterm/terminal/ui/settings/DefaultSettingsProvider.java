@@ -17,215 +17,220 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
 
+import static cn.powernukkitx.bootstrap.util.LanguageUtils.tr;
+
 public class DefaultSettingsProvider implements SettingsProvider {
-  @Override
-  public @NotNull TerminalActionPresentation getNewSessionActionPresentation() {
-    return new TerminalActionPresentation("New Session", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-  }
+    public static final TerminalColor DEFAULT_FG = TerminalColor.rgb(187, 187, 187);
+    public static final TerminalColor DEFAULT_BG = TerminalColor.rgb(43, 43, 43);
 
-  @Override
-  public @NotNull TerminalActionPresentation getOpenUrlActionPresentation() {
-    return new TerminalActionPresentation("Open as URL", Collections.emptyList());
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getCopyActionPresentation() {
-    KeyStroke keyStroke = UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.META_DOWN_MASK)
-      // CTRL + C is used for signal; use CTRL + SHIFT + C instead
-      : KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
-    return new TerminalActionPresentation("Copy", keyStroke);
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getPasteActionPresentation() {
-    KeyStroke keyStroke = UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_DOWN_MASK)
-      // CTRL + V is used for signal; use CTRL + SHIFT + V instead
-      : KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
-    return new TerminalActionPresentation("Paste", keyStroke);
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getClearBufferActionPresentation() {
-    return new TerminalActionPresentation("Clear Buffer", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getPageUpActionPresentation() {
-    return new TerminalActionPresentation("Page Up",
-      KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getPageDownActionPresentation() {
-    return new TerminalActionPresentation("Page Down",
-      KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getLineUpActionPresentation() {
-    return new TerminalActionPresentation("Line Up", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getLineDownActionPresentation() {
-    return new TerminalActionPresentation("Line Down", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getCloseSessionActionPresentation() {
-    return new TerminalActionPresentation("Close Session", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getFindActionPresentation() {
-    return new TerminalActionPresentation("Find", UIUtil.isMac
-      ? KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.META_DOWN_MASK)
-      : KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK));
-  }
-
-  @Override
-  public @NotNull TerminalActionPresentation getSelectAllActionPresentation() {
-    return new TerminalActionPresentation("Select All", Collections.emptyList());
-  }
-
-  @Override
-  public ColorPalette getTerminalColorPalette() {
-    return UIUtil.isWindows ? ColorPaletteImpl.WINDOWS_PALETTE : ColorPaletteImpl.XTERM_PALETTE;
-  }
-
-  @Override
-  public Font getTerminalFont() {
-    String fontName;
-    if (UIUtil.isWindows) {
-      fontName = "Consolas";
-    } else if (UIUtil.isMac) {
-      fontName = "Menlo";
-    } else {
-      fontName = "Monospaced";
+    @Override
+    public @NotNull TerminalActionPresentation getNewSessionActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.new-session"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
     }
-    return new Font(fontName, Font.PLAIN, (int)getTerminalFontSize());
-  }
 
-  @Override
-  public float getTerminalFontSize() {
-    return 14;
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getOpenUrlActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.open-as-url"), Collections.emptyList());
+    }
 
-  @Override
-  public TextStyle getDefaultStyle() {
-    return new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE);
-    // return new TextStyle(TerminalColor.WHITE, TerminalColor.rgb(24, 24, 24));
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getCopyActionPresentation() {
+        KeyStroke keyStroke = UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.META_DOWN_MASK)
+                // CTRL + C is used for signal; use CTRL + SHIFT + C instead
+                : KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
+        return new TerminalActionPresentation(tr("gui.terminal.menu.copy"), keyStroke);
+    }
 
-  @Override
-  public TextStyle getSelectionColor() {
-    return new TextStyle(TerminalColor.WHITE, TerminalColor.rgb(82, 109, 165));
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getPasteActionPresentation() {
+        KeyStroke keyStroke = UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_DOWN_MASK)
+                // CTRL + V is used for signal; use CTRL + SHIFT + V instead
+                : KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
+        return new TerminalActionPresentation(tr("gui.terminal.menu.paste"), keyStroke);
+    }
 
-  @Override
-  public TextStyle getFoundPatternColor() {
-    return new TextStyle(TerminalColor.BLACK, TerminalColor.rgb(255, 255, 0));
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getClearBufferActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.clear-buffer"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK));
+    }
 
-  @Override
-  public TextStyle getHyperlinkColor() {
-    return new TextStyle(TerminalColor.awt(Color.BLUE), TerminalColor.WHITE);
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getPageUpActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.page-up"),
+                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_DOWN_MASK));
+    }
 
-  @Override
-  public HyperlinkStyle.HighlightMode getHyperlinkHighlightingMode() {
-    return HyperlinkStyle.HighlightMode.HOVER;
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getPageDownActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.page-down"),
+                KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_DOWN_MASK));
+    }
 
-  @Override
-  public boolean useInverseSelectionColor() {
-    return true;
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getLineUpActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.line-up"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK));
+    }
 
-  @Override
-  public boolean copyOnSelect() {
-    return emulateX11CopyPaste();
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getLineDownActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.line-down"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK));
+    }
 
-  @Override
-  public boolean pasteOnMiddleMouseClick() {
-    return emulateX11CopyPaste();
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getCloseSessionActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.close-session"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
+    }
 
-  @Override
-  public boolean emulateX11CopyPaste() {
-    return false;
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getFindActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.find"), UIUtil.isMac
+                ? KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.META_DOWN_MASK)
+                : KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK));
+    }
 
-  @Override
-  public boolean useAntialiasing() {
-    return true;
-  }
+    @Override
+    public @NotNull TerminalActionPresentation getSelectAllActionPresentation() {
+        return new TerminalActionPresentation(tr("gui.terminal.menu.select-all"), Collections.emptyList());
+    }
 
-  @Override
-  public int maxRefreshRate() {
-    return 50;
-  }
+    @Override
+    public ColorPalette getTerminalColorPalette() {
+        return UIUtil.isWindows ? ColorPaletteImpl.WINDOWS_PALETTE : ColorPaletteImpl.XTERM_PALETTE;
+    }
 
-  @Override
-  public boolean audibleBell() {
-    return true;
-  }
+    @Override
+    public Font getTerminalFont() {
+        String fontName;
+        if (UIUtil.isWindows) {
+            fontName = "黑体";
+        } else if (UIUtil.isMac) {
+            fontName = "Menlo";
+        } else {
+            fontName = "Monospaced";
+        }
+        return new Font(fontName, Font.PLAIN, (int) getTerminalFontSize());
+    }
 
-  @Override
-  public boolean enableMouseReporting() {
-    return true;
-  }
+    @Override
+    public float getTerminalFontSize() {
+        return 18;
+    }
 
-  @Override
-  public int caretBlinkingMs() {
-    return 505;
-  }
+    @Override
+    public TextStyle getDefaultStyle() {
+        //return new TextStyle(TerminalColor.BLACK, TerminalColor.WHITE);
+        return new TextStyle(DEFAULT_FG, DEFAULT_BG);
+    }
 
-  @Override
-  public boolean scrollToBottomOnTyping() {
-    return true;
-  }
+    @Override
+    public TextStyle getSelectionColor() {
+        return new TextStyle(DEFAULT_FG, TerminalColor.rgb(33, 66, 131));
+    }
 
-  @Override
-  public boolean DECCompatibilityMode() {
-    return true;
-  }
+    @Override
+    public TextStyle getFoundPatternColor() {
+        return new TextStyle(DEFAULT_FG, TerminalColor.rgb(50, 89, 61));
+    }
 
-  @Override
-  public boolean forceActionOnMouseReporting() {
-    return false;
-  }
+    @Override
+    public TextStyle getHyperlinkColor() {
+        return new TextStyle(TerminalColor.awt(Color.BLUE), DEFAULT_BG);
+    }
 
-  @Override
-  public int getBufferMaxLinesCount() {
-    return LinesBuffer.DEFAULT_MAX_LINES_COUNT;
-  }
+    @Override
+    public HyperlinkStyle.HighlightMode getHyperlinkHighlightingMode() {
+        return HyperlinkStyle.HighlightMode.HOVER;
+    }
 
-  @Override
-  public boolean altSendsEscape() {
-    return true;
-  }
+    @Override
+    public boolean useInverseSelectionColor() {
+        return false;
+    }
 
-  @Override
-  public boolean ambiguousCharsAreDoubleWidth() {
-    return false;
-  }
+    @Override
+    public boolean copyOnSelect() {
+        return emulateX11CopyPaste();
+    }
 
-  @Override
-  public @NotNull TerminalTypeAheadSettings getTypeAheadSettings() {
-    return TerminalTypeAheadSettings.DEFAULT;
-  }
+    @Override
+    public boolean pasteOnMiddleMouseClick() {
+        return emulateX11CopyPaste();
+    }
+
+    @Override
+    public boolean emulateX11CopyPaste() {
+        return false;
+    }
+
+    @Override
+    public boolean useAntialiasing() {
+        return true;
+    }
+
+    @Override
+    public int maxRefreshRate() {
+        return 50;
+    }
+
+    @Override
+    public boolean audibleBell() {
+        return true;
+    }
+
+    @Override
+    public boolean enableMouseReporting() {
+        return true;
+    }
+
+    @Override
+    public int caretBlinkingMs() {
+        return 505;
+    }
+
+    @Override
+    public boolean scrollToBottomOnTyping() {
+        return true;
+    }
+
+    @Override
+    public boolean DECCompatibilityMode() {
+        return true;
+    }
+
+    @Override
+    public boolean forceActionOnMouseReporting() {
+        return false;
+    }
+
+    @Override
+    public int getBufferMaxLinesCount() {
+        return LinesBuffer.DEFAULT_MAX_LINES_COUNT;
+    }
+
+    @Override
+    public boolean altSendsEscape() {
+        return true;
+    }
+
+    @Override
+    public boolean ambiguousCharsAreDoubleWidth() {
+        return false;
+    }
+
+    @Override
+    public @NotNull TerminalTypeAheadSettings getTypeAheadSettings() {
+        return TerminalTypeAheadSettings.DEFAULT;
+    }
 }

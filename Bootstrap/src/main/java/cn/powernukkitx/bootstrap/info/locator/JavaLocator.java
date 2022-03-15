@@ -16,9 +16,16 @@ import java.util.stream.Collectors;
 
 public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
     private final String version;
+    private final boolean sort4GraalVM;
 
     public JavaLocator(String version) {
         this.version = version;
+        this.sort4GraalVM = false;
+    }
+
+    public JavaLocator(String version, boolean sort4GraalVM) {
+        this.version = version;
+        this.sort4GraalVM = sort4GraalVM;
     }
 
     @Override
@@ -71,9 +78,24 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
                         new JavaInfo("Unknown", "Unknown", "Unknown")));
             }
         }
-        // 去重并返回
-        return javaExecutableList.stream()
+        // 去重、排序并返回
+        final List<Location<JavaInfo>> out = javaExecutableList.stream()
                 .filter(CollectionUtils.distinctByKey(Location::getFile)).collect(Collectors.toList());
+        if(sort4GraalVM) {
+            out.sort((a, b) -> {
+                if (a.equals(b)) return 0;
+                final boolean a1 = a.getInfo().getVendor().contains("GraalVM");
+                final boolean b1 = b.getInfo().getVendor().contains("GraalVM");
+                if (a1 && !b1) {
+                    return -1;
+                } else if (!a1 && b1) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        }
+        return out;
     }
 
     private boolean isJavaDir(File binDir) {

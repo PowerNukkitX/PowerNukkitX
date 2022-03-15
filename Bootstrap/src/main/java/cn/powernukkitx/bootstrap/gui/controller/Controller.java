@@ -15,15 +15,15 @@ import java.util.Collection;
 import java.util.List;
 
 public interface Controller {
-    List<Class<? extends View>> getAvailableViews();
+    List<Class<? extends View<?>>> getAvailableViews();
 
-    List<? extends View> getAliveViews();
+    List<? extends View<?>> getAliveViews();
 
-    default <T extends View> List<T> getAliveViews(ViewKey<T> viewKey) {
-        final List<? extends View> views = getAliveViews();
+    default <T extends View<?>> List<T> getAliveViews(ViewKey<T> viewKey) {
+        final List<? extends View<?>> views = getAliveViews();
         final List<T> out = new ArrayList<>(views.size());
         final Class<T> clazz = viewKey.getClazz();
-        for (final View each : views) {
+        for (final View<?> each : views) {
             if (clazz.isInstance(each)) {
                 out.add(clazz.cast(each));
             }
@@ -32,9 +32,9 @@ public interface Controller {
     }
 
     @Nullable
-    default View getViewByID(int viewID) {
-        final List<? extends View> views = getAliveViews();
-        for (final View each : views) {
+    default View<?> getViewByID(int viewID) {
+        final List<? extends View<?>> views = getAliveViews();
+        for (final View<?> each : views) {
             if (viewID == each.getViewID()) {
                 return each;
             }
@@ -43,8 +43,8 @@ public interface Controller {
     }
 
     @Nullable
-    default <T extends View> T getViewByID(int viewID, Class<T> viewClazz) {
-        final View view = getViewByID(viewID);
+    default <T extends View<?>> T getViewByID(int viewID, Class<T> viewClazz) {
+        final View<?> view = getViewByID(viewID);
         if(view == null) return null;
         if (viewClazz.isInstance(view)) {
             return viewClazz.cast(view);
@@ -52,7 +52,7 @@ public interface Controller {
         throw new InvalidViewClassException(view);
     }
 
-    void addView(View view);
+    void addView(View<?> view);
 
     /**
      * @return 原始Model列表，不应该有复制

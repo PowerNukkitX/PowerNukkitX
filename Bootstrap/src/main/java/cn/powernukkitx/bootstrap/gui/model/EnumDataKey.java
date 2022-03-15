@@ -6,5 +6,9 @@ public enum EnumDataKey {
     // MainWindow
     MainWindowTitle,
     MainWindowSize,
-    MainWindowIcon
+    MainWindowIcon,
+
+    // Terminal
+    TerminalTty,
+    ServerRunning,
 }

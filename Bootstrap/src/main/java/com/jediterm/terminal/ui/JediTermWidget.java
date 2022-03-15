@@ -1,5 +1,6 @@
 package com.jediterm.terminal.ui;
 
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
 import com.jediterm.terminal.*;
 import com.jediterm.terminal.SubstringFinder.FindResult;
 import com.jediterm.terminal.SubstringFinder.FindResult.FindItem;
@@ -18,15 +19,15 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static cn.powernukkitx.bootstrap.util.LanguageUtils.tr;
 
 /**
  * JediTerm terminal widget with UI implemented in Swing.
@@ -327,6 +328,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
         }
       });
     } else {
+      myFindComponent.getComponent().setVisible(true);
       myFindComponent.getComponent().requestFocusInWindow();
     }
   }
@@ -408,28 +410,22 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
     private final JLabel label = new JLabel();
     private final JButton prev;
     private final JButton next;
-    private final JCheckBox ignoreCaseCheckBox = new JCheckBox("Ignore Case", true);
+    private final JButton close;
+    private final JCheckBox ignoreCaseCheckBox = new JCheckBox(tr("gui.terminal.search.ignore-case"), true);
 
     public SearchPanel() {
       next = createNextButton();
-      next.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          nextFindResultItem(myTerminalPanel.selectNextFindResultItem());
-        }
-      });
+      next.addActionListener(e -> nextFindResultItem(myTerminalPanel.selectNextFindResultItem()));
 
       prev = createPrevButton();
-      prev.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          prevFindResultItem(myTerminalPanel.selectPrevFindResultItem());
-        }
-      });
+      prev.addActionListener(e -> prevFindResultItem(myTerminalPanel.selectPrevFindResultItem()));
+
+      close = createCloseButton();
+      close.addActionListener(e -> this.setVisible(false));
 
       myTextField.setPreferredSize(new Dimension(
-        myTerminalPanel.myCharSize.width * 30,
-        myTerminalPanel.myCharSize.height + 3));
+              myTerminalPanel.myCharSize.width * 30,
+              myTerminalPanel.myCharSize.height + 11));
       myTextField.setEditable(true);
 
       updateLabel(null);
@@ -439,6 +435,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
       add(label);
       add(next);
       add(prev);
+      add(close);
 
       setOpaque(true);
     }
@@ -449,6 +446,15 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 
     protected JButton createPrevButton() {
       return new BasicArrowButton(SwingConstants.SOUTH);
+    }
+
+    protected JButton createCloseButton() {
+      final JButton closeButton = new JButton(UIManager.getIcon("TitlePane.closeIcon"));
+      closeButton.setPreferredSize(new Dimension(16, 16));
+      closeButton.setMaximumSize(new Dimension(16, 16));
+      closeButton.setContentAreaFilled(false);
+      closeButton.setBorder(null);
+      return closeButton;
     }
 
     @Override
@@ -464,7 +470,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
     private void updateLabel(FindItem selectedItem) {
       FindResult result = myTerminalPanel.getFindResult();
       label.setText(((selectedItem != null) ? selectedItem.getIndex() : 0)
-        + " of " + ((result != null) ? result.getItems().size() : 0));
+        + " / " + ((result != null) ? result.getItems().size() : 0));
     }
 
     @Override
@@ -508,7 +514,7 @@ public class JediTermWidget extends JPanel implements TerminalSession, TerminalW
 
   }
 
-  private class FindResultScrollBarUI extends BasicScrollBarUI {
+  private class FindResultScrollBarUI extends FlatScrollBarUI {
 
     protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
       super.paintTrack(g, c, trackBounds);

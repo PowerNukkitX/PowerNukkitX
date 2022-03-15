@@ -8,8 +8,8 @@ import java.awt.*;
 
 import static cn.powernukkitx.bootstrap.gui.model.keys.MainWindowDataKeys.*;
 
-public final class MainWindowViewModel extends CommonModel {
-    public MainWindowViewModel() {
+public final class MainWindowModel extends CommonModel {
+    public MainWindowModel() {
         super(CommonModel.INSTANCE);
         init();
     }
@@ -18,5 +18,6 @@ public final class MainWindowViewModel extends CommonModel {
         this.setDataDirectly(TITLE, LanguageUtils.tr("gui.main-window.title"));
         this.setDataDirectly(WINDOW_SIZE, new Dimension(720, 480));
         this.setDataDirectly(ICON, Toolkit.getDefaultToolkit().createImage(GUI.class.getClassLoader().getResource("image/pnx.png")));
+        this.setDataDirectly(SERVER_RUNNING, false);
     }
 }

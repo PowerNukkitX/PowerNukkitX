@@ -6,18 +6,20 @@ import cn.powernukkitx.bootstrap.gui.model.listeners.CommonBindListener;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public interface View {
+public interface View<C> {
     AtomicInteger globalViewID = new AtomicInteger(0);
 
     static int newViewID() {
         return globalViewID.getAndIncrement();
     }
 
-    ViewKey<? extends View> getViewKey();
+    ViewKey<? extends View<?>> getViewKey();
 
     int getViewID();
 
     void init();
+
+    C getActualComponent();
 
     Controller getController();
 

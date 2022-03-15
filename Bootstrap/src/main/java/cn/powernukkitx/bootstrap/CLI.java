@@ -63,7 +63,7 @@ public final class CLI implements Program {
         }
 
         if (startPNX) {
-            JavaLocator javaLocator = new JavaLocator("17");
+            JavaLocator javaLocator = new JavaLocator("17", true);
             List<Location<JavaLocator.JavaInfo>> result = javaLocator.locate();
             if (result.size() == 0) {
                 exec("JavaInstall");

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class CommonController implements Controller{
-    protected final List<View> views = new ArrayList<>();
+    protected final List<View<?>> views = new ArrayList<>();
     protected final List<Model> models = new ArrayList<>();
 
     public CommonController() {
@@ -17,17 +17,17 @@ public abstract class CommonController implements Controller{
     }
 
     @Override
-    public List<Class<? extends View>> getAvailableViews() {
+    public List<Class<? extends View<?>>> getAvailableViews() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<? extends View> getAliveViews() {
+    public List<? extends View<?>> getAliveViews() {
         return views;
     }
 
     @Override
-    public void addView(View view) {
+    public void addView(View<?> view) {
         views.add(view);
     }
 

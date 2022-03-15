@@ -22,20 +22,6 @@ public final class PNXStart implements Component {
         @SuppressWarnings("unchecked") final List<Location<JavaLocator.JavaInfo>> javaLocations = (List<Location<JavaLocator.JavaInfo>>) args[0];
         final boolean autoRestart = (boolean) args[1];
 
-        // 优先选择GraalVM
-        javaLocations.sort((a, b) -> {
-            if (a.equals(b)) return 0;
-            final boolean a1 = a.getInfo().getVendor().contains("GraalVM");
-            final boolean b1 = b.getInfo().getVendor().contains("GraalVM");
-            if (a1 && !b1) {
-                return -1;
-            } else if (!a1 && b1) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
         if (!new File("libs").exists()) {
             cli.exec("UpdateLibs");
         }
