@@ -11,4 +11,9 @@ public enum EnumDataKey {
     // Terminal
     TerminalTty,
     ServerRunning,
+
+    // CheckUpdateWindow
+    CheckUpdateWindowTitle,
+    CheckUpdateWindowIcon,
+    CheckUpdateWindowSize
 }

@@ -55,16 +55,6 @@ public final class MainWindowController extends CommonController {
         return VIEW_CLASSES;
     }
 
-    @Override
-    public void addView(View<?> view) {
-        super.addView(view);
-        if (view != mainWindowView) {
-            final Object component = view.getActualComponent();
-            if (component instanceof JComponent)
-                mainWindowView.add((JComponent) component);
-        }
-    }
-
     public MainWindowView getMainWindowView() {
         return mainWindowView;
     }
