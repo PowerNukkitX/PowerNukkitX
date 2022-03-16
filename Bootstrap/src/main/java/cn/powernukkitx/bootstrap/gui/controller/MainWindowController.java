@@ -90,6 +90,7 @@ public final class MainWindowController extends CommonController {
     }
 
     public void onStartServer() {
+        mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title.starting"));
         new SwingWorker<Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>>, Void>() {
             @Override
             protected Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>> doInBackground() {
@@ -131,16 +132,20 @@ public final class MainWindowController extends CommonController {
                             terminalTty = new TerminalTty(process,terminalView.getActualComponent().getTerminal(), terminalView.getTerminalWidget().getTerminalTextBuffer());
                             mainWindowViewModel.setData(MainWindowDataKeys.TERMINAL_TTY, terminalTty);
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, true);
+                            mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title.running"));
                             process.waitFor();
                             process.destroy();
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, false);
+                            mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
                         } catch (IOException | InterruptedException e) {
                             JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+                            mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
                         }
                     });
                     pnxThread.start();
                 } catch (InterruptedException | ExecutionException e) {
                     JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+                    mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
                 }
             }
         }.execute();
