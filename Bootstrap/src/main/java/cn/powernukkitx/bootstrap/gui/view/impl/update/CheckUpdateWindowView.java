@@ -43,7 +43,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         // 居中显示
         final Point pointScreenCenter = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-        this.setLocation(pointScreenCenter.x - 240, pointScreenCenter.y - 180);
+        this.setLocation(pointScreenCenter.x - 240, pointScreenCenter.y - 160);
         // 监听窗口变化并反馈给控制器
         this.addComponentListener(new ComponentAdapter() {
             @Override
