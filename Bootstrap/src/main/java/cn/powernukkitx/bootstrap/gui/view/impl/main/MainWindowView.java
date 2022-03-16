@@ -43,6 +43,14 @@ public final class MainWindowView extends JFrame implements SwingView<JFrame> {
             serverMenu.add(startServerOption);
             startServerOption.addActionListener(e -> controller.onStartServer());
             bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, value -> startServerOption.setEnabled(!value));
+            final JMenuItem stopServerOption = new JMenuItem(LanguageUtils.tr("gui.menu.server.stop"));
+            serverMenu.add(stopServerOption);
+            stopServerOption.addActionListener(e -> controller.onCloseServer());
+            bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, stopServerOption::setEnabled);
+            final JMenuItem restartServerOption = new JMenuItem(LanguageUtils.tr("gui.menu.server.restart"));
+            serverMenu.add(restartServerOption);
+            restartServerOption.addActionListener(e -> controller.onRestartServer());
+            bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, restartServerOption::setEnabled);
         }
         /* 初始化swing界面 */
         this.setVisible(true);

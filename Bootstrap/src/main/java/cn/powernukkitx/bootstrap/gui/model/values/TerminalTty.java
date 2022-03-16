@@ -29,7 +29,6 @@ public final class TerminalTty extends ProcessTtyConnector {
 
     @Override
     public void write(byte[] bytes) throws IOException {
-        System.out.println(Arrays.toString(bytes));
         if (bytes.length > 0) {
             if (bytes[0] == 13) {
                 super.write(stringBuffer.toString().getBytes(myCharset));

@@ -148,13 +148,27 @@ public final class MainWindowController extends CommonController {
 
     public void onClose() {
         try {
-            if(terminalTty.isConnected())
+            if(terminalTty != null && terminalTty.isConnected())
                 terminalTty.write("\r\nstop");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.stop-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
             return;
         }
         System.exit(0);
+    }
+
+    public void onCloseServer() {
+        try {
+            if(terminalTty != null && terminalTty.isConnected())
+                terminalTty.write("\r\nstop");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.stop-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void onRestartServer() {
+        onCloseServer();
+        onStartServer();
     }
 
 }
