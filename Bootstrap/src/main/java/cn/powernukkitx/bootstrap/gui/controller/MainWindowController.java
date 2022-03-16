@@ -92,7 +92,7 @@ public final class MainWindowController extends CommonController {
     public void onStartServer() {
         new SwingWorker<Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>>, Void>() {
             @Override
-            protected Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>> doInBackground() throws Exception {
+            protected Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>> doInBackground() {
                 final List<Location<JavaLocator.JavaInfo>> javaLocations = new JavaLocator("17", true).locate();
                 if(javaLocations.size() == 0) {
                     JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-java17"), tr("gui.std-dialog.error.failed-to-start-pnx"), JOptionPane.ERROR_MESSAGE);
@@ -128,7 +128,7 @@ public final class MainWindowController extends CommonController {
                     pnxThread = new Thread(() -> {
                         try {
                             final Process process = new ProcessBuilder(cmd.split(" ")).start();
-                            terminalTty = new TerminalTty(process);
+                            terminalTty = new TerminalTty(process,terminalView.getActualComponent().getTerminal(), terminalView.getTerminalWidget().getTerminalTextBuffer());
                             mainWindowViewModel.setData(MainWindowDataKeys.TERMINAL_TTY, terminalTty);
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, true);
                             process.waitFor();
