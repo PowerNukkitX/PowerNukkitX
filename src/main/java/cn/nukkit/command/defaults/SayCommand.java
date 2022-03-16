@@ -1,12 +1,18 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Position;
+import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
+
+import java.util.List;
 
 /**
  * @author xtypr
@@ -45,7 +51,14 @@ public class SayCommand extends VanillaCommand {
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            msg.append(arg).append(" ");
+            if (EntitySelector.hasArguments(arg)){
+                List<Entity> entities = EntitySelector.matchEntities(sender.isPlayer() ? (Player)sender : new Position(0,0,0, Server.getInstance().getDefaultLevel()), arg);
+                for(Entity entity : entities){
+                    msg.append(entity.getName()).append(" ");
+                }
+            }else {
+                msg.append(arg).append(" ");
+            }
         }
         if (msg.length() > 0) {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));

@@ -1,14 +1,18 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Position;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
+import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
 
@@ -56,16 +60,26 @@ public class EffectCommand extends Command {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
-        Player player = sender.getServer().getPlayer(args[0]);
-        if (player == null) {
+        List<Entity> entities = null;
+        if (EntitySelector.hasArguments(args[0])) {
+            if (sender.isPlayer())
+                entities = EntitySelector.matchEntities((Player)sender, args[0]);
+            else
+                entities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[0]);
+        } else if(sender.getServer().getPlayer(args[0]) != null){
+             entities.set(0,sender.getServer().getPlayer(args[0]));
+        }
+        if (entities.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return true;
         }
         if (args[1].equalsIgnoreCase("clear")) {
-            for (Effect effect : player.getEffects().values()) {
-                player.removeEffect(effect.getId());
+            for(Entity entity : entities) {
+                for (Effect effect : entity.getEffects().values()) {
+                    entity.removeEffect(effect.getId());
+                }
+                sender.sendMessage(new TranslationContainer("commands.effect.success.removed.all", entity.getName()));
             }
-            sender.sendMessage(new TranslationContainer("commands.effect.success.removed.all", player.getDisplayName()));
             return true;
         }
         Effect effect;
@@ -108,21 +122,23 @@ public class EffectCommand extends Command {
                 effect.setVisible(false);
             }
         }
-        if (duration == 0) {
-            if (!player.hasEffect(effect.getId())) {
-                if (player.getEffects().size() == 0) {
-                    sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", player.getDisplayName()));
-                } else {
-                    sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), player.getDisplayName()));
+        for (Entity entity : entities) {
+            if (duration == 0) {
+                if (!entity.hasEffect(effect.getId())) {
+                    if (entity.getEffects().size() == 0) {
+                        sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", entity.getName()));
+                    } else {
+                        sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), entity.getName()));
+                    }
+                    return true;
                 }
-                return true;
+                entity.removeEffect(effect.getId());
+                sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), entity.getName()));
+            } else {
+                effect.setDuration(duration).setAmplifier(amplification);
+                entity.addEffect(effect);
+                Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20)));
             }
-            player.removeEffect(effect.getId());
-            sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), player.getDisplayName()));
-        } else {
-            effect.setDuration(duration).setAmplifier(amplification);
-            player.addEffect(effect);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), player.getDisplayName(), String.valueOf(effect.getDuration() / 20)));
         }
         return true;
     }
