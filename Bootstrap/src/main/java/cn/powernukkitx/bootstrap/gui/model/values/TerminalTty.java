@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public final class TerminalTty extends ProcessTtyConnector {
     private final Terminal terminal;
