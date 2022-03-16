@@ -13,6 +13,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.OptionalBoolean;
+import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,6 +52,12 @@ public class BlockRailDetector extends BlockRail {
                 detector.setActive(false);
                 detector.level.setBlock(detector,detector,true,true);
                 activeDetectors.remove(detector);
+
+                //update redstone
+                RedstoneComponent.updateAroundRedstone(detector.down());
+                if (detector.getOrientation().isAscending()) {
+                    RedstoneComponent.updateAroundRedstone(detector.up());
+                }
             }
         }, 20);
     }
@@ -103,7 +110,14 @@ public class BlockRailDetector extends BlockRail {
         }
         setActive(true);
         this.level.setBlock(this, this, true, true);
+
+        //update redstone
+        RedstoneComponent.updateAroundRedstone(down());
+        if (getOrientation().isAscending()) {
+            RedstoneComponent.updateAroundRedstone(up());
+        }
         level.updateComparatorOutputLevel(this);
+
         activeDetectors.add(this);
     }
 
