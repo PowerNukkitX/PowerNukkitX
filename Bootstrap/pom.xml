@@ -169,6 +169,7 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
+                                <exclude>module-info.class</exclude>
                             </excludes>
                         </filter>
                     </filters>
