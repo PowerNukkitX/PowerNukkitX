@@ -6,9 +6,10 @@ import cn.powernukkitx.bootstrap.gui.model.EnumDataKey;
 import java.awt.*;
 
 public final class UpdateWindowDataKeys {
-    public static final MainWindowDataKeys.TitleKey TITLE = new MainWindowDataKeys.TitleKey();
-    public static final MainWindowDataKeys.WindowSizeKey WINDOW_SIZE = new MainWindowDataKeys.WindowSizeKey();
-    public static final MainWindowDataKeys.IconKey ICON = new MainWindowDataKeys.IconKey();
+    public static final TitleKey TITLE = new TitleKey();
+    public static final WindowSizeKey WINDOW_SIZE = new WindowSizeKey();
+    public static final IconKey ICON = new IconKey();
+    public static final OnDisplayKey DISPLAY = new OnDisplayKey();
 
     public static class TitleKey extends DataKey<String> {
         TitleKey() {
@@ -25,6 +26,12 @@ public final class UpdateWindowDataKeys {
     public static class IconKey extends DataKey<Image> {
         IconKey() {
             super(EnumDataKey.CheckUpdateWindowSize, Image.class);
+        }
+    }
+
+    public static class OnDisplayKey extends DataKey<Boolean> {
+        OnDisplayKey() {
+            super(EnumDataKey.CheckUpdateWindowOnDisplay, Boolean.class);
         }
     }
 }

@@ -1,5 +1,6 @@
 package cn.powernukkitx.bootstrap.gui.controller;
 
+import cn.powernukkitx.bootstrap.gui.exception.model.InvalidDataClassException;
 import cn.powernukkitx.bootstrap.gui.exception.view.InvalidViewClassException;
 import cn.powernukkitx.bootstrap.gui.model.DataKey;
 import cn.powernukkitx.bootstrap.gui.model.DataListener;
@@ -102,6 +103,15 @@ public interface Controller {
             final B data = each.getData(dataKey);
             if(data != null) dataListener.handleUpdate(data);
             each.listenData(dataKey, dataListener);
+        }
+    }
+
+    default <T> void batchSetData(DataKey<T> dataKey, T data) {
+        if (!dataKey.getClazz().isInstance(data)) {
+            throw new InvalidDataClassException(dataKey);
+        }
+        for(final Model model : getModels()) {
+            model.setData(dataKey, data);
         }
     }
 

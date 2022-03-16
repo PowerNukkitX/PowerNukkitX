@@ -52,6 +52,13 @@ public final class MainWindowView extends JFrame implements SwingView<JFrame> {
             restartServerOption.addActionListener(e -> controller.onRestartServer());
             bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, restartServerOption::setEnabled);
         }
+        {  // 窗口菜单
+            final JMenu windowMenu = new JMenu(LanguageUtils.tr("gui.menu.window"));
+            menuBar.add(windowMenu);
+            final JMenuItem checkUpdateWindowOption = new JMenuItem(LanguageUtils.tr("gui.menu.window.check-update"));
+            windowMenu.add(checkUpdateWindowOption);
+            checkUpdateWindowOption.addActionListener(e -> controller.onOpenCheckUpdateWindow());
+        }
         /* 初始化swing界面 */
         this.setVisible(true);
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

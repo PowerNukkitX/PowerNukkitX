@@ -15,5 +15,6 @@ public enum EnumDataKey {
     // CheckUpdateWindow
     CheckUpdateWindowTitle,
     CheckUpdateWindowIcon,
-    CheckUpdateWindowSize
+    CheckUpdateWindowSize,
+    CheckUpdateWindowOnDisplay
 }

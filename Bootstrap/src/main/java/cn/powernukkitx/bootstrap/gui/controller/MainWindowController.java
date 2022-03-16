@@ -2,6 +2,7 @@ package cn.powernukkitx.bootstrap.gui.controller;
 
 import cn.powernukkitx.bootstrap.gui.model.impl.view.MainWindowModel;
 import cn.powernukkitx.bootstrap.gui.model.keys.MainWindowDataKeys;
+import cn.powernukkitx.bootstrap.gui.model.keys.UpdateWindowDataKeys;
 import cn.powernukkitx.bootstrap.gui.model.values.TerminalTty;
 import cn.powernukkitx.bootstrap.gui.view.impl.main.MainWindowView;
 import cn.powernukkitx.bootstrap.gui.view.View;
@@ -32,6 +33,8 @@ public final class MainWindowController extends CommonController {
     private final MainWindowView mainWindowView;
     private final TerminalView terminalView;
 
+    private final CheckUpdateWindowController checkUpdateWindowController;
+
     private TerminalTty terminalTty = null;
     private Thread pnxThread = null;
 
@@ -40,6 +43,8 @@ public final class MainWindowController extends CommonController {
         addModel(this.mainWindowViewModel = new MainWindowModel());
         views.add(this.mainWindowView = new MainWindowView(this));
         views.add(this.terminalView = new TerminalView(this));
+        // 创建其他窗口控制器
+        this.checkUpdateWindowController = new CheckUpdateWindowController();
     }
 
     @Override
@@ -48,6 +53,7 @@ public final class MainWindowController extends CommonController {
             this.terminalView.init();
             this.mainWindowView.init();
         });
+        this.checkUpdateWindowController.start();
     }
 
     @Override
@@ -164,6 +170,10 @@ public final class MainWindowController extends CommonController {
     public void onRestartServer() {
         onCloseServer();
         onStartServer();
+    }
+
+    public void onOpenCheckUpdateWindow() {
+        checkUpdateWindowController.batchSetData(UpdateWindowDataKeys.DISPLAY, true);
     }
 
 }
