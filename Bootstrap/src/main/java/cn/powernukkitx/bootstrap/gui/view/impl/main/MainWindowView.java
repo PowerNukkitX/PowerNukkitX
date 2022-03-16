@@ -55,7 +55,9 @@ public final class MainWindowView extends JFrame implements SwingView<JFrame> {
         /* 初始化swing界面 */
         this.setVisible(true);
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.setLocationRelativeTo(null); //居中
+        // 居中显示
+        final Point pointScreenCenter = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+        this.setLocation(pointScreenCenter.x - 360, pointScreenCenter.y - 240);
         // 监听窗口变化并反馈给控制器
         this.addComponentListener(new ComponentAdapter() {
             @Override
