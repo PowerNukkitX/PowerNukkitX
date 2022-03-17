@@ -266,16 +266,18 @@ public class SimpleCommandMap implements CommandMap {
             return false;
         }
 
+        boolean output = true;
         target.timing.startTiming();
         try {
-            target.execute(sender, sentCommandLabel, args);
+            output = target.execute(sender, sentCommandLabel, args);
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
             log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
+            output = false;
         }
         target.timing.stopTiming();
 
-        return true;
+        return output;
     }
 
     @Override
