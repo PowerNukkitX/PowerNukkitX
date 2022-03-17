@@ -1,14 +1,12 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Position;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
@@ -53,7 +51,7 @@ public class XpCommand extends Command {
 
             List<Entity> entities = null;
             if (EntitySelector.hasArguments(args[1])) {
-                entities = EntitySelector.matchEntities(new Position(0, 0, 0, Server.getInstance().getDefaultLevel()), args[1]);
+                entities = EntitySelector.matchEntities(sender, args[1]);
             } else if (sender.getServer().getPlayer(args[1]) != null){
                 entities.set(0, sender.getServer().getPlayer(args[1]));
             }
@@ -74,9 +72,9 @@ public class XpCommand extends Command {
                 List<Entity> entities = null;
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer()) {
-                        entities = EntitySelector.matchEntities((Player) sender, args[1]);
+                        entities = EntitySelector.matchEntities(sender, args[1]);
                     } else {
-                        entities = EntitySelector.matchEntities(new Position(0, 0, 0, Server.getInstance().getDefaultLevel()), args[1]);
+                        entities = EntitySelector.matchEntities(sender, args[1]);
                     }
                 } else if(sender.getServer().getPlayer(args[1]) != null){
                     entities.set(0, sender.getServer().getPlayer(args[1]));

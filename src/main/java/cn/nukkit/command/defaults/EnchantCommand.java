@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -13,12 +12,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Position;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * @author Pub4Game
@@ -60,9 +57,9 @@ public class EnchantCommand extends VanillaCommand {
         List<Entity> entities = null;
         if (EntitySelector.hasArguments(args[0])) {
             if (sender.isPlayer()) {
-                entities = EntitySelector.matchEntities((Player) sender, args[0]);
+                entities = EntitySelector.matchEntities(sender, args[0]);
             } else {
-                entities = EntitySelector.matchEntities(new Position(0, 0, 0, Server.getInstance().getDefaultLevel()), args[0]);
+                entities = EntitySelector.matchEntities(sender, args[0]);
             }
         } else if(sender.getServer().getPlayer(args[0]) != null){
             entities.set(0, sender.getServer().getPlayer(args[0]));

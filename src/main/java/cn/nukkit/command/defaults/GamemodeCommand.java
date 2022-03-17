@@ -9,12 +9,10 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Position;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * @author xtypr
@@ -62,7 +60,7 @@ public class GamemodeCommand extends VanillaCommand {
                     if (sender.isPlayer())
                         entities = EntitySelector.matchEntities((Player)sender, args[1]);
                     else
-                        entities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[1]);
+                        entities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
                     entities.set(0, sender.getServer().getPlayer(args[1]));
                 }

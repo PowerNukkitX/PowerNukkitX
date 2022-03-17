@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -10,7 +8,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
@@ -69,11 +66,11 @@ public class TeleportCommand extends VanillaCommand {
                 List<Entity> targetEntities = null;
                 if (EntitySelector.hasArguments(args[0])) {
                     if (sender.isPlayer())
-                        targetEntities = EntitySelector.matchEntities((Player)sender, args[0]);
+                        targetEntities = EntitySelector.matchEntities(sender, args[0]);
                     else
-                        targetEntities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[0]);
+                        targetEntities = EntitySelector.matchEntities(sender, args[0]);
                 } else if (sender.getServer().getPlayer(args[0]) != null){
-                    targetEntities.set(0,sender.getServer().getPlayer(args[1]));
+                    targetEntities.set(0,sender.getServer().getPlayer(args[0]));
                 }
                 if (targetEntities.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
@@ -92,9 +89,9 @@ public class TeleportCommand extends VanillaCommand {
             List<Entity> entities = null;
             if (EntitySelector.hasArguments(args[0])) {
                 if (sender.isPlayer())
-                    entities = EntitySelector.matchEntities((Player)sender, args[0]);
+                    entities = EntitySelector.matchEntities(sender, args[0]);
                 else
-                    entities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[0]);
+                    entities = EntitySelector.matchEntities(sender, args[0]);
             } else if (sender.getServer().getPlayer(args[0]) != null) {
                 entities.set(0,sender.getServer().getPlayer(args[0]));
             }
@@ -113,9 +110,9 @@ public class TeleportCommand extends VanillaCommand {
                 List<Entity> targetEntities = null;
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer())
-                        targetEntities = EntitySelector.matchEntities((Player)sender, args[1]);
+                        targetEntities = EntitySelector.matchEntities(sender, args[1]);
                     else
-                        targetEntities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[1]);
+                        targetEntities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
                     targetEntities.set(0,sender.getServer().getPlayer(args[1]));
                 }
