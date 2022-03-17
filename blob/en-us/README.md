@@ -115,16 +115,12 @@ Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob
 🌐 Links
 ---
 
-- __[🌐 PowerNukkit Website](https://powernukkit.org/)__
-- __[👩🏽‍💻 PowerNukkit Website for Plugin Developers](https://devs.powernukkit.org/)__
-- __[💬 PowerNukkit Forum and Guides](https://discuss.powernukkit.org/)__
-- __[💬 PowerNukkit Discord](https://powernukkit.org/discord)__
-- __[💾 Download PowerNukkit Recommended Build](https://powernukkit.org/recommended)__
-- __[💾 Download PowerNukkit Releases](https://powernukkit.org/releases)__
-- __[💾 Download PowerNukkit Snapshots](https://powernukkit.org/snapshots)__
+- __[🌐 PowerNukkitX Website](https://powernukkitx.cn/)__
+- __[👩🏽‍💻 PowernNukkitX Document library](https://doc.powernukkitx.cn/)__
+- __[💬 PowerNukkitX Discord](https://discord.gg/j7UwsaNu4V)__
+- __[💾 Download PowerNukkit Recommended Build](https://github.com/PowerNukkitX/PowerNukkitX/actions)__
 - __[🔌 Cloudburst Nukkit Plugins](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit Plugins](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
-- __[🧩 PowerNukkit Plugin Requests](https://discuss.powernukkit.org/c/plugins/plugin-requests/13)__
 
 🎨  Statistics
 ---

@@ -113,16 +113,12 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 🌐 友情链接
 ---
 
-- __[🌐 PowerNukkit官网](https://powernukkit.org/)__
-- __[👩🏽‍💻 PowerNukkit插件开发文档库](https://devs.powernukkit.org/)__
-- __[💬 PowerNukkit官方论坛](https://discuss.powernukkit.org/)__
-- __[💬 PowerNukkit Discord](https://powernukkit.org/discord)__
-- __[💾 下载测试版PowerNukkit](https://powernukkit.org/recommended)__
-- __[💾 下载正式版PowerNukkit](https://powernukkit.org/releases)__
-- __[💾 下载快照版PowerNukkit](https://powernukkit.org/snapshots)__
+- __[🌐 PowerNukkitX官网](https://powernukkitx.cn/)__
+- __[👩🏽‍💻 PowerNukkitX文档库](https://doc.powernukkitx.cn/)__
+- __[💬 PowerNukkitX Discord](https://discord.gg/j7UwsaNu4V)__
+- __[💾 下载测试版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
-- __[🧩 PowerNukkit 插件请求](https://discuss.powernukkit.org/c/plugins/plugin-requests/13)__
 
 🎨  数据统计
 ---
