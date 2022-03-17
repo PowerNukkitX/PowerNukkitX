@@ -7,9 +7,11 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class GiveCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length < 2) {
@@ -56,7 +58,17 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
 
-        Player player = sender instanceof Player && "@p".equals(args[0])? (Player) sender : sender.getServer().getPlayer(args[0]);
+        List<Entity> entities = List.of();
+        if (EntitySelector.hasArguments(args[0])) {
+            if (sender.isPlayer())
+                entities = EntitySelector.matchEntities(sender, args[0]);
+            else
+                entities = EntitySelector.matchEntities(sender, args[0]);
+        } else if(sender.getServer().getPlayer(args[0]) != null){
+            entities.set(0, sender.getServer().getPlayer(args[0]));
+        }
+
+        List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
         Item item;
 
         try {
@@ -88,49 +100,52 @@ public class GiveCommand extends VanillaCommand {
         }
         if (count <= 0) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
+            return false;
         }
         item.setCount(count);
 
-        if (player == null) {
+        if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return true;
+            return false;
         }
         
         if (item.isNull()) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
-            return true;
+            return false;
         }
-        
-        Item[] returns = player.getInventory().addItem(item.clone());
-        List<Item> drops = new ArrayList<>();
-        for (Item returned: returns) {
-            int maxStackSize = returned.getMaxStackSize();
-            if (returned.getCount() <= maxStackSize) {
-                drops.add(returned);
-            } else {
-                while (returned.getCount() > maxStackSize) {
-                    Item drop = returned.clone();
-                    int toDrop = Math.min(returned.getCount(), maxStackSize);
-                    drop.setCount(toDrop);
-                    returned.setCount(returned.getCount() - toDrop);
-                    drops.add(drop);
-                }
-                if (!returned.isNull()) {
+        for (Entity entity : players) {
+            Player player = (Player) entity;
+            Item[] returns = player.getInventory().addItem(item.clone());
+            List<Item> drops = new ArrayList<>();
+            for (Item returned : returns) {
+                int maxStackSize = returned.getMaxStackSize();
+                if (returned.getCount() <= maxStackSize) {
                     drops.add(returned);
+                } else {
+                    while (returned.getCount() > maxStackSize) {
+                        Item drop = returned.clone();
+                        int toDrop = Math.min(returned.getCount(), maxStackSize);
+                        drop.setCount(toDrop);
+                        returned.setCount(returned.getCount() - toDrop);
+                        drops.add(drop);
+                    }
+                    if (!returned.isNull()) {
+                        drops.add(returned);
+                    }
                 }
             }
+
+            for (Item drop : drops) {
+                player.dropItem(drop);
+            }
+
+            Command.broadcastCommandMessage(sender, new TranslationContainer(
+                    "%commands.give.success",
+                    item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+                    String.valueOf(item.getCount()),
+                    player.getName()));
+            return true;
         }
-        
-        for (Item drop: drops) {
-            player.dropItem(drop);
-        }
-        
-        Command.broadcastCommandMessage(sender, new TranslationContainer(
-                "%commands.give.success",
-                item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0? ":" + item.getDamage():"") + ")",
-                String.valueOf(item.getCount()),
-                player.getName()));
-        return true;
+        return false;
     }
 }

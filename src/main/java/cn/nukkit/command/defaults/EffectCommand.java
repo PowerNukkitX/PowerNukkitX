@@ -1,7 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -9,7 +7,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Position;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
 import cn.nukkit.utils.EntitySelector;
@@ -54,13 +51,13 @@ public class EffectCommand extends Command {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         if (args.length < 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
-        List<Entity> entities = null;
+        List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
         } else if(sender.getServer().getPlayer(args[0]) != null){
@@ -68,7 +65,7 @@ public class EffectCommand extends Command {
         }
         if (entities.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return true;
+            return false;
         }
         if (args[1].equalsIgnoreCase("clear")) {
             for(Entity entity : entities) {
@@ -87,7 +84,7 @@ public class EffectCommand extends Command {
                 effect = Effect.getEffectByName(args[1]);
             } catch (Exception e) {
                 sender.sendMessage(new TranslationContainer("commands.effect.notFound", args[1]));
-                return true;
+                return false;
             }
         }
         int duration = 300;
@@ -97,7 +94,7 @@ public class EffectCommand extends Command {
                 duration = Integer.parseInt(args[2]);
             } catch (NumberFormatException a) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
+                return false;
             }
             if (!(effect instanceof InstantEffect)) {
                 duration *= 20;
@@ -110,7 +107,7 @@ public class EffectCommand extends Command {
                 amplification = Integer.parseInt(args[3]);
             } catch (NumberFormatException a) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
+                return false;
             }
         }
         if (args.length >= 5) {

@@ -29,12 +29,12 @@ public class ExecuteCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length < 4){
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
+            return false;
         }
 
         List<Entity> entities = null;
@@ -50,16 +50,10 @@ public class ExecuteCommand extends VanillaCommand {
             for(int i = 1;i <= 3;i++){
                 if(!args[i].equals("~")){
                     usePos = true;
-                    switch (i){
-                        case 1:
-                            pos.x = Double.parseDouble(args[i]);
-                            break;
-                        case 2:
-                            pos.y = Double.parseDouble(args[i]);
-                            break;
-                        case 3:
-                            pos.z = Double.parseDouble(args[i]);
-                            break;
+                    switch (i) {
+                        case 1 -> pos.x = Double.parseDouble(args[i]);
+                        case 2 -> pos.y = Double.parseDouble(args[i]);
+                        case 3 -> pos.z = Double.parseDouble(args[i]);
                     }
                 }
             }

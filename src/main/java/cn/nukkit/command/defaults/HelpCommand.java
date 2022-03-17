@@ -28,7 +28,7 @@ public class HelpCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         StringBuilder command = new StringBuilder();
         int pageNumber = 1;
