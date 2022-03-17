@@ -1,5 +1,5 @@
 # 贡献帮助指南
- 👋 Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/blocklynukkit/powernukkitx)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
+ 👋 Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
 
  但您需注意，这些规则本身不是"**官方规则**"，但您若遵循它们将帮助参与者们提高处理效率。
 
@@ -43,7 +43,7 @@
 
 ## <a id="目录-问题#2"></a>我想提交拉取申请!
 
-同时我们也欢迎各位开发者们对该项目作出您的贡献，您可在[问题追踪器](https://github.com/blocklynukkit/powernukkitx/issues)页面发表您可以解决的问题等，同时我们也会使用[`Good First issue`](https://github.com/blocklynukkit/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)标签标记出我们认为对新人有帮助的问题解答等。
+同时我们也欢迎各位开发者们对该项目作出您的贡献，您可在[问题追踪器](https://github.com/PowerNukkitX/PowerNukkitX/issues)页面发表您可以解决的问题等，同时我们也会使用[`Good First issue`](https://github.com/PowerNukkitX/PowerNukkitX/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)标签标记出我们认为对新人有帮助的问题解答等。
 
 ⚠ 若您想参与该项目，则您需要注意一些事项：
 
@@ -116,7 +116,7 @@
 ---
 Need to switch languages? 
 
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CONTRIBUTING.md)
-[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/BlocklyNukkit/PowerNukkitX/blob/master/CHANGELOG.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
+[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
