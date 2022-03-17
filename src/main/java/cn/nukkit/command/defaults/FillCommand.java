@@ -80,7 +80,7 @@ public class FillCommand extends VanillaCommand {
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
 
-            if (aabb.getMinY() < 0 || aabb.getMaxY() > 255) {
+            if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
                 sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
                 return true;
             }
