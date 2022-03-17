@@ -722,6 +722,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    @Override
+    public boolean isEntity() {
+        return true;
+    }
+
     public void removeAchievement(String achievementId) {
         achievements.remove(achievementId);
     }

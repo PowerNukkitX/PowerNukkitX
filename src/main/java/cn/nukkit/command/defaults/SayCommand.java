@@ -40,19 +40,12 @@ public class SayCommand extends VanillaCommand {
             return false;
         }
 
-        String senderString;
-        if (sender instanceof Player) {
-            senderString = ((Player) sender).getDisplayName();
-        } else if (sender instanceof ConsoleCommandSender) {
-            senderString = "Server";
-        } else {
-            senderString = sender.getName();
-        }
+        String senderString = sender.getName();
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
             if (EntitySelector.hasArguments(arg)){
-                List<Entity> entities = EntitySelector.matchEntities(sender.isPlayer() ? (Player)sender : new Position(0,0,0, Server.getInstance().getDefaultLevel()), arg);
+                List<Entity> entities = EntitySelector.matchEntities(sender.getPosition(), arg);
                 for(Entity entity : entities){
                     msg.append(entity.getName()).append(" ");
                 }

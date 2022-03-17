@@ -1,7 +1,10 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.Position;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -109,5 +112,16 @@ public class ConsoleCommandSender implements CommandSender {
     @Override
     public void setOp(boolean value) {
 
+    }
+
+    @Override
+    public Position getPosition() {
+        //default position
+        return new Position(0,0,0,Server.getInstance().getDefaultLevel());
+    }
+
+    @Override
+    public boolean isEntity() {
+        return false;
     }
 }

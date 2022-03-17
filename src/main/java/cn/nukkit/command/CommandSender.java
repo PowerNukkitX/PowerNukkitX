@@ -1,7 +1,10 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
 
 import javax.annotation.Nonnull;
@@ -71,4 +74,12 @@ public interface CommandSender extends Permissible {
 
     boolean isPlayer();
 
+    @PowerNukkitOnly
+    @Since("1.6.0")
+    boolean isEntity();
+
+    //return the sender's position
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    Position getPosition();
 }
