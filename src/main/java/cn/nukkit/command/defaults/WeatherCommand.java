@@ -48,14 +48,10 @@ public class WeatherCommand extends VanillaCommand {
             seconds = 600 * 20;
         }
 
-        if (sender instanceof Player) {
-            level = ((Player) sender).getLevel();
-        } else {
-            level = sender.getServer().getDefaultLevel();
-        }
+        level = sender.getPosition().level;
 
         switch (weather) {
-            case "clear":
+            case "clear" -> {
                 level.setRaining(false);
                 level.setThundering(false);
                 level.setRainTime(seconds * 20);
@@ -63,22 +59,26 @@ public class WeatherCommand extends VanillaCommand {
                 Command.broadcastCommandMessage(sender,
                         new TranslationContainer("commands.weather.clear"));
                 return true;
-            case "rain":
+            }
+            case "rain" -> {
                 level.setRaining(true);
                 level.setRainTime(seconds * 20);
                 Command.broadcastCommandMessage(sender,
                         new TranslationContainer("commands.weather.rain"));
                 return true;
-            case "thunder":
+            }
+            case "thunder" -> {
                 level.setThundering(true);
                 level.setRainTime(seconds * 20);
                 level.setThunderTime(seconds * 20);
                 Command.broadcastCommandMessage(sender,
                         new TranslationContainer("commands.weather.thunder"));
                 return true;
-            default:
+            }
+            default -> {
                 sender.sendMessage(new TranslationContainer("commands.weather.usage", this.usageMessage));
                 return false;
+            }
         }
 
     }
