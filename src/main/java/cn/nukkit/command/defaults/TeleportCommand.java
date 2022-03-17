@@ -147,9 +147,9 @@ public class TeleportCommand extends VanillaCommand {
             double yaw;
             double pitch;
             try {
-                x = parseTilde(args[pos++], target.x);
-                y = parseTilde(args[pos++], target.y);
-                z = parseTilde(args[pos++], target.z);
+                x = parseTilde(args[pos++], sender.getPosition().x);
+                y = parseTilde(args[pos++], sender.getPosition().y);
+                z = parseTilde(args[pos++], sender.getPosition().z);
                 if (args.length > pos) {
                     yaw = Integer.parseInt(args[pos++]);
                     pitch = Integer.parseInt(args[pos]);
@@ -159,7 +159,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
             } catch (NumberFormatException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
+                return false;
             }
             target.teleport(new Location(x, y, z, yaw, pitch, target.getLevel()), PlayerTeleportEvent.TeleportCause.COMMAND);
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.getName(), String.valueOf(NukkitMath.round(x, 2)), String.valueOf(NukkitMath.round(y, 2)), String.valueOf(NukkitMath.round(z, 2))));
