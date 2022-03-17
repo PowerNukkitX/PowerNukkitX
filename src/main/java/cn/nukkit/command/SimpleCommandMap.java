@@ -31,6 +31,8 @@ public class SimpleCommandMap implements CommandMap {
 
     private void setDefaultCommands() {
         this.register("nukkit",new ExecuteCommand("execute"));
+        this.register("nukkit",new SpreadPlayersCommand("spreadplayers"));
+        this.register("nukkit",new SetMaxPlayersCommand("setmaxplayers"));
         this.register("nukkit",new PlaySoundCommand("playsound"));
         this.register("nukkit",new FillCommand("fill"));
         this.register("nukkit",new DayLockCommand("daylock"));
