@@ -39,7 +39,7 @@ public class ExecuteCommand extends VanillaCommand {
 
         List<Entity> entities = null;
         if(EntitySelector.hasArguments(args[0])){
-            entities = EntitySelector.matchEntities(sender.getPosition(),args[0]);
+            entities = EntitySelector.matchEntities(sender,args[0]);
         }else{
             entities = Collections.singletonList(Server.getInstance().getPlayer(args[0]));
         }

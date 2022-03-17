@@ -45,7 +45,7 @@ public class SayCommand extends VanillaCommand {
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
             if (EntitySelector.hasArguments(arg)){
-                List<Entity> entities = EntitySelector.matchEntities(sender.getPosition(), arg);
+                List<Entity> entities = EntitySelector.matchEntities(sender, arg);
                 for(Entity entity : entities){
                     msg.append(entity.getName()).append(" ");
                 }

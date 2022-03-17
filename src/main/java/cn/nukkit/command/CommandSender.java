@@ -3,11 +3,13 @@ package cn.nukkit.command;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * 能发送命令的人。<br>
@@ -42,7 +44,7 @@ public interface CommandSender extends Permissible {
      */
     void sendMessage(TextContainer message);
 
-    /**
+    /**EntitySelector
      * 返回命令发送者所在的服务器。<br>
      * Returns the server of the command sender.
      *
@@ -74,12 +76,29 @@ public interface CommandSender extends Permissible {
 
     boolean isPlayer();
 
+    /**
+     * @return whether the sender is an entity <br>
+     * please use this method to check whether the sender is an entity instead of using code {@code "xxx instanceof Entity"} <br>
+     * because the sender may not an instance of {@code "Entity"} but in fact it is executing commands identity as an entity(eg: {@code "ExecutorCommandSender"})
+     */
     @PowerNukkitOnly
-    @Since("1.6.0")
-    boolean isEntity();
+    @Since("1.6.0.0-PNX")
+    default boolean isEntity() {return false;};
+
+    //return the entity who execute the command if the sender is a entity
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nullable
+    default Entity asEntity() {return null;};
+
+    //return the player who execute the command if the sender is a player
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nullable
+    default Entity asPlayer() {return null;};
 
     //return the sender's position
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    Position getPosition();
+    default Position getPosition() {return new Position(0, 0, 0,Server.getInstance().getDefaultLevel());}
 }

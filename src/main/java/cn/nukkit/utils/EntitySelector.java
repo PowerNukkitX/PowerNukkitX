@@ -1,9 +1,8 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -18,9 +17,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//special thanks to wode
-@PowerNukkitOnly
-@Since("1.6.0.0-PNX")
 public final class EntitySelector {
 
     private static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;
@@ -65,23 +61,23 @@ public final class EntitySelector {
         return arg;
     }
 
-    public static List<Entity> matchEntities(Position reference, String token){
+    public static List<Entity> matchEntities(CommandSender sender, String token) {
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
 
         if (matcher.matches()) {
             Map<String, String> args = null;
             try {
                 args = getArgumentMap(matcher.group(2));
-            }catch(SelectorSyntaxException e){
+            } catch (SelectorSyntaxException e) {
                 e.printStackTrace();
             }
 
             if (isEntityTypeValid(args)) {
                 String selectorType = matcher.group(1);
 
-                BlockVector3 blockVec = getBlockVectorFromArguments(args, reference);
-                Vector3 vec = getVector3FromArguments(args, reference);
-                List<Level> levels = getLevels(reference, args);
+                BlockVector3 blockVec = getBlockVectorFromArguments(args, sender);
+                Vector3 vec = getVector3FromArguments(args, sender);
+                List<Level> levels = getLevels(sender, args);
 
                 List<Entity> matchingEntities = Lists.newArrayList();
 
@@ -96,9 +92,11 @@ public final class EntitySelector {
                         predicates.addAll(getRotationsPredicates(args));
 
                         if ("s".equalsIgnoreCase(selectorType)) {
-                            if (reference instanceof Entity) {
-                                Entity entity = (Entity) reference;
-
+                            Entity entity = null;
+                            if (sender.isEntity()){
+                                entity = sender.asEntity();
+                            }
+                            if (entity != null) {
                                 if (args.containsKey(ARG_DX) || args.containsKey(ARG_DY) || args.containsKey(ARG_DZ)) {
                                     int dx = getInt(args, ARG_DX, 0);
                                     int dy = getInt(args, ARG_DY, 0);
@@ -117,7 +115,7 @@ public final class EntitySelector {
                                 }
 
                                 return Lists.newArrayList(entity);
-                            } else {
+                            }else {
                                 return Collections.emptyList();
                             }
                         }
@@ -126,20 +124,20 @@ public final class EntitySelector {
                     }
                 }
 
-                return getEntitiesFromPredicates(matchingEntities, args, reference, selectorType, vec);
+                return getEntitiesFromPredicates(matchingEntities, args, sender, selectorType, vec);
             }
         }
 
         return Collections.emptyList();
     }
 
-    private static List<Level> getLevels(Position reference, Map<String, String> argumentMap) {
+    private static List<Level> getLevels(CommandSender sender, Map<String, String> argumentMap) {
         List<Level> levels = Lists.newArrayList();
 
-        if (hasLevelArgument(argumentMap) && reference instanceof Position) {
-            levels.add(((Position) reference).getLevel());
+        if (hasLevelArgument(argumentMap)) {
+            levels.add(sender.getPosition().getLevel());
         } else {
-            levels.addAll(Server.getInstance().getLevels().values());
+            levels.addAll(sender.getServer().getLevels().values());
         }
 
         return levels;
@@ -159,7 +157,7 @@ public final class EntitySelector {
     private static List<Predicate<Entity>> getTypePredicates(Map<String, String> params, String selectorType) {
         String type = getArgument(params, ARG_TYPE);
 
-        if (type != null && (selectorType.equals("e") || selectorType.equals("r") || selectorType.equals("s"))) {
+        if (type != null && (selectorType.equals("e") || selectorType.equals("r")|| selectorType.equals("s"))) {
             boolean inverted;
             String identifier;
 
@@ -377,7 +375,7 @@ public final class EntitySelector {
         return results;
     }
 
-    private static List<Entity> getEntitiesFromPredicates(List<Entity> matchingEntities, Map<String, String> params, Position reference, String selectorType, Vector3 vec) {
+    private static List<Entity> getEntitiesFromPredicates(List<Entity> matchingEntities, Map<String, String> params, CommandSender sender, String selectorType, Vector3 vec) {
         int c = getInt(params, ARG_C, !selectorType.equals("a") && !selectorType.equals("e") ? 1 : 0);
 
         if (!selectorType.equals("p") && !selectorType.equals("a") && !selectorType.equals("e")) {
@@ -389,8 +387,8 @@ public final class EntitySelector {
         }
 
         Entity entity = null;
-        if (reference instanceof Entity) {
-            entity = (Entity) reference;
+        if (sender.isEntity()) {
+            entity = sender.asEntity();
         }
 
         if (entity != null && c == 1 && matchingEntities.contains(entity) && !"r".equals(selectorType)) {
@@ -416,26 +414,26 @@ public final class EntitySelector {
         return new SimpleAxisAlignedBB(vec.getX() + (negativeX ? dx : 0), vec.getY() + (negativeY ? dy : 0), vec.getZ() + (negativeZ ? dz : 0), vec.getX() + (negativeX ? 0 : dx) + 1, vec.getY() + (negativeY ? 0 : dy) + 1, vec.getZ() + (negativeZ ? 0 : dz) + 1);
     }
 
-    private static BlockVector3 getBlockVectorFromArguments(Map<String, String> params, Position reference) {
+    private static BlockVector3 getBlockVectorFromArguments(Map<String, String> params, CommandSender sender) {
         int defaultX = 0;
         int defaultY = 0;
         int defaultZ = 0;
 
-        defaultX = reference.getFloorX();
-        defaultY = reference.getFloorY();
-        defaultZ = reference.getFloorZ();
+        defaultX = sender.getPosition().getFloorX();
+        defaultY = sender.getPosition().getFloorY();
+        defaultZ = sender.getPosition().getFloorZ();
 
         return new BlockVector3(getInt(params, ARG_X, defaultX), getInt(params, ARG_Y, defaultY), getInt(params, ARG_Z, defaultZ));
     }
 
-    private static Vector3 getVector3FromArguments(Map<String, String> params, Position reference) {
+    private static Vector3 getVector3FromArguments(Map<String, String> params, CommandSender sender) {
         double defaultX = 0;
         double defaultY = 0;
         double defaultZ = 0;
 
-        defaultX = reference.getX();
-        defaultY = reference.getY();
-        defaultZ = reference.getZ();
+        defaultX = sender.getPosition().getX();
+        defaultY = sender.getPosition().getY();
+        defaultZ = sender.getPosition().getZ();
 
         return new Vector3(getCoordinate(params, ARG_X, defaultX, true), getCoordinate(params, ARG_Y, defaultY, false), getCoordinate(params, ARG_Z, defaultZ, true));
     }

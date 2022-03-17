@@ -5,9 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
