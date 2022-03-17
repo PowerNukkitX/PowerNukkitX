@@ -55,8 +55,8 @@ public class TeleportCommand extends VanillaCommand {
         Entity target;
         Entity origin = null;
         if (args.length == 1 || args.length == 3 || args.length == 5) {
-            if (sender instanceof Entity) {
-                target = (Entity) sender;
+            if (sender.isEntity()) {
+                target = sender.asEntity();
             } else {
                 sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
                 return false;
