@@ -58,7 +58,7 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
 
-        List<Entity> entities = null;
+        List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             if (sender.isPlayer())
                 entities = EntitySelector.matchEntities(sender, args[0]);

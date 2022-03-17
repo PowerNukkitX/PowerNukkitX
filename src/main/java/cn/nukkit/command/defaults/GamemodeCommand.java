@@ -52,13 +52,13 @@ public class GamemodeCommand extends VanillaCommand {
             return false;
         }
 
-        List<Entity> entities = null;
+        List<Entity> entities = List.of();
         if (args.length > 1) {
             if (sender.hasPermission("nukkit.command.gamemode.other")) {
 
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer())
-                        entities = EntitySelector.matchEntities((Player)sender, args[1]);
+                        entities = EntitySelector.matchEntities(sender, args[1]);
                     else
                         entities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){

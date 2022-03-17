@@ -63,7 +63,7 @@ public class TeleportCommand extends VanillaCommand {
             }
             if (args.length == 1) {
                 origin = target;
-                List<Entity> targetEntities = null;
+                List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[0])) {
                     if (sender.isPlayer())
                         targetEntities = EntitySelector.matchEntities(sender, args[0]);
@@ -83,7 +83,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
             }
         } else {
-            List<Entity> entities = null;
+            List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[0])) {
                 if (sender.isPlayer())
                     entities = EntitySelector.matchEntities(sender, args[0]);
@@ -101,7 +101,7 @@ public class TeleportCommand extends VanillaCommand {
             if (args.length == 2) {
 
                 origin = target;
-                List<Entity> targetEntities = null;
+                List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer())
                         targetEntities = EntitySelector.matchEntities(sender, args[1]);

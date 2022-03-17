@@ -41,7 +41,6 @@ public class XpCommand extends Command {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
         String amountString;
-        String playerName;
         List<Entity> players;
         if (!(sender instanceof Player)) {
             if (args.length != 2) {
@@ -49,7 +48,7 @@ public class XpCommand extends Command {
                 return true;
             }
 
-            List<Entity> entities = null;
+            List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[1])) {
                 entities = EntitySelector.matchEntities(sender, args[1]);
             } else if (sender.getServer().getPlayer(args[1]) != null){
@@ -69,7 +68,7 @@ public class XpCommand extends Command {
                 players.add((Entity) sender);
             } else if (args.length == 2) {
                 amountString = args[0];
-                List<Entity> entities = null;
+                List<Entity> entities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer()) {
                         entities = EntitySelector.matchEntities(sender, args[1]);
