@@ -16,5 +16,8 @@ public enum EnumDataKey {
     CheckUpdateWindowTitle,
     CheckUpdateWindowIcon,
     CheckUpdateWindowSize,
-    CheckUpdateWindowOnDisplay
+    CheckUpdateWindowOnDisplay,
+    JavaLocations,
+    PNXLocations,
+    LibLocations
 }

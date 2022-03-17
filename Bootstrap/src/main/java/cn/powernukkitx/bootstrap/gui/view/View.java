@@ -4,6 +4,7 @@ import cn.powernukkitx.bootstrap.gui.controller.Controller;
 import cn.powernukkitx.bootstrap.gui.model.DataKey;
 import cn.powernukkitx.bootstrap.gui.model.listeners.CommonBindListener;
 
+import javax.swing.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface View<C> {

@@ -60,6 +60,10 @@ public final class VersionListHelper {
             }
         }
 
+        if(out.get(0).getCommit().endsWith("/")) {
+            out.remove(0);
+        }
+
         out.sort((a, b) -> b.time.compareTo(a.time));
         return out;
     }
@@ -68,7 +72,8 @@ public final class VersionListHelper {
         final Matcher keyMatcher = keyPattern.matcher(xml);
         final List<LibEntry> out = new ArrayList<>(80);
         while (keyMatcher.find()) {
-            out.add(new LibEntry().setLibName(StringUtils.afterFirst(keyMatcher.group(0), "/")));
+            final String name = keyMatcher.group(0);
+            out.add(new LibEntry().setLibName(StringUtils.afterFirst(name, "/")));
         }
 
         final Matcher timeMatcher = timePattern.matcher(xml);
@@ -79,6 +84,10 @@ public final class VersionListHelper {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+        }
+
+        if("".equals(out.get(0).getLibName())) {
+            out.remove(0);
         }
 
         return out;

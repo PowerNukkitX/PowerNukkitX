@@ -98,7 +98,7 @@ public interface Controller {
         }
     }
 
-    default <T, B extends T> void getAndListenData(DataKey<B> dataKey, DataListener<T> dataListener) {
+    default <B> void getAndListenData(DataKey<B> dataKey, DataListener<? super B> dataListener) {
         for (final Model each : getModels()) {
             final B data = each.getData(dataKey);
             if(data != null) dataListener.handleUpdate(data);

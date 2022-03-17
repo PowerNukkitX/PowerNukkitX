@@ -13,7 +13,7 @@ public abstract class CommonController implements Controller{
     protected final List<Model> models = new ArrayList<>();
 
     public CommonController() {
-        models.add(CommonModel.INSTANCE);
+
     }
 
     @Override

@@ -7,10 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -80,7 +77,9 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
         }
         // 去重、排序并返回
         final List<Location<JavaInfo>> out = javaExecutableList.stream()
-                .filter(CollectionUtils.distinctByKey(Location::getFile)).collect(Collectors.toList());
+                .filter(CollectionUtils.distinctByKey(Location::getFile))
+                .sorted((a, b) -> a.getInfo().getMajorVersion().compareTo(b.getInfo().getMajorVersion()))
+                .collect(Collectors.toList());
         if(sort4GraalVM) {
             out.sort((a, b) -> {
                 if (a.equals(b)) return 0;
@@ -126,7 +125,7 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
                             majorVersion = tmp[1];
                         }
                     }
-                } else if (s.contains("Server VM")) {
+                } else if (s.contains("Server VM") || s.contains("Runtime")) {
                     vendor = StringUtils.beforeLast(s, " (build");
                 }
             }

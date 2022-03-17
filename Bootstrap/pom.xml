@@ -80,7 +80,6 @@
                     <archive>
                         <manifestEntries>
                             <Main-Class>cn.powernukkitx.bootstrap.Bootstrap</Main-Class>
-                            <SplashScreen-Image>image/pnx.png</SplashScreen-Image>
                         </manifestEntries>
                     </archive>
                 </configuration>

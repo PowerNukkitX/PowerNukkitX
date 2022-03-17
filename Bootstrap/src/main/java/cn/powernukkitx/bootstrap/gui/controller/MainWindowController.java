@@ -39,7 +39,6 @@ public final class MainWindowController extends CommonController {
     private Thread pnxThread = null;
 
     public MainWindowController() {
-        super();
         addModel(this.mainWindowViewModel = new MainWindowModel());
         views.add(this.mainWindowView = new MainWindowView(this));
         views.add(this.terminalView = new TerminalView(this));
@@ -173,7 +172,7 @@ public final class MainWindowController extends CommonController {
     }
 
     public void onOpenCheckUpdateWindow() {
-        checkUpdateWindowController.batchSetData(UpdateWindowDataKeys.DISPLAY, true);
+        checkUpdateWindowController.onOpen();
     }
 
 }
