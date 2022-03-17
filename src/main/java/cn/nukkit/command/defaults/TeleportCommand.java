@@ -71,17 +71,13 @@ public class TeleportCommand extends VanillaCommand {
                     else
                         targetEntities = EntitySelector.matchEntities(sender, args[0]);
                 } else if (sender.getServer().getPlayer(args[0]) != null){
-                    targetEntities.set(0,sender.getServer().getPlayer(args[0]));
+                    targetEntities = List.of(sender.getServer().getPlayer(args[0]));
                 }
                 if (targetEntities.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
                 }
                 target = targetEntities;
-                if (target == null) {
-                    sender.sendMessage(TextFormat.RED + "Can't find player " + args[0]);
-                    return false;
-                }
             }
         } else {
             List<Entity> entities = List.of();
@@ -91,7 +87,7 @@ public class TeleportCommand extends VanillaCommand {
                 else
                     entities = EntitySelector.matchEntities(sender, args[0]);
             } else if (sender.getServer().getPlayer(args[0]) != null) {
-                entities.set(0,sender.getServer().getPlayer(args[0]));
+                entities = List.of(sender.getServer().getPlayer(args[0]));
             }
             if (entities.size() == 0) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
@@ -109,7 +105,7 @@ public class TeleportCommand extends VanillaCommand {
                     else
                         targetEntities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
-                    targetEntities.set(0,sender.getServer().getPlayer(args[1]));
+                    targetEntities = List.of(sender.getServer().getPlayer(args[1]));
                 }
                 if (targetEntities.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));

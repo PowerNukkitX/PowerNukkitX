@@ -52,7 +52,7 @@ public class XpCommand extends Command {
             if (EntitySelector.hasArguments(args[1])) {
                 entities = EntitySelector.matchEntities(sender, args[1]);
             } else if (sender.getServer().getPlayer(args[1]) != null){
-                entities.set(0, sender.getServer().getPlayer(args[1]));
+                entities = List.of(sender.getServer().getPlayer(args[1]));
             }
 
             players = entities.stream().filter(entity -> entity instanceof Player).toList();
@@ -76,7 +76,7 @@ public class XpCommand extends Command {
                         entities = EntitySelector.matchEntities(sender, args[1]);
                     }
                 } else if(sender.getServer().getPlayer(args[1]) != null){
-                    entities.set(0, sender.getServer().getPlayer(args[1]));
+                    entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
                 players = entities.stream().filter(entity -> entity instanceof Player).toList();

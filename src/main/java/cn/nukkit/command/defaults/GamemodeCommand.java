@@ -62,7 +62,7 @@ public class GamemodeCommand extends VanillaCommand {
                     else
                         entities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
-                    entities.set(0, sender.getServer().getPlayer(args[1]));
+                    entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
                 if (entities == null) {
@@ -91,20 +91,19 @@ public class GamemodeCommand extends VanillaCommand {
             return false;
         }
 
-        for (Entity target : entities)
+        for (Entity target : entities) {
 
-        if (!((Player) target).setGamemode(gameMode)) {
-            sender.sendMessage("Game mode update for " + target.getName() + " failed");
-            return false;
-        } else {
-            if (target.equals(sender)) {
-                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
+            if (!((Player) target).setGamemode(gameMode)) {
+                sender.sendMessage("Game mode update for " + target.getName() + " failed");
             } else {
-                ((Player) target).sendMessage(new TranslationContainer("gameMode.changed", Server.getGamemodeString(gameMode)));
-                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
+                if (target.equals(sender)) {
+                    Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
+                } else {
+                    ((Player) target).sendMessage(new TranslationContainer("gameMode.changed", Server.getGamemodeString(gameMode)));
+                    Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
+                }
             }
         }
-
         return true;
     }
 }
