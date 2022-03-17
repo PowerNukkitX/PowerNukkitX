@@ -60,8 +60,8 @@ public class EffectCommand extends Command {
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if(sender.getServer().getPlayer(args[0]) != null){
-             entities.set(0,sender.getServer().getPlayer(args[0]));
+        } else if  (sender.getServer().getPlayer(args[0]) != null){
+             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
         if (entities.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));

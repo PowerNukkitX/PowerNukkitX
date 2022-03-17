@@ -65,7 +65,7 @@ public class GiveCommand extends VanillaCommand {
             else
                 entities = EntitySelector.matchEntities(sender, args[0]);
         } else if(sender.getServer().getPlayer(args[0]) != null){
-            entities.set(0, sender.getServer().getPlayer(args[0]));
+            entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
         List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
