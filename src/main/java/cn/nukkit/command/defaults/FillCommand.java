@@ -75,20 +75,20 @@ public class FillCommand extends VanillaCommand {
                 GlobalBlockPalette.getOrCreateRuntimeId(replaceTileId, replaceDataValue);
             } catch (NoSuchElementException e) {
                 sender.sendMessage(String.format(TextFormat.RED + "There is no such block with ID %1$d:%2$d", tileId, tileData));
-                return true;
+                return false;
             }
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
 
             if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
                 sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
-                return true;
+                return false;
             }
 
             int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
             if (size > 16 * 16 * 16 * 8) {
                 sender.sendMessage(String.format(TextFormat.RED + "Too many blocks in the specified area (%1$d > %2$d)", size, 16 * 16 * 16 * 8));
-                return true;
+                return false;
             }
 
             Level level = from.getLevel();
@@ -97,7 +97,7 @@ public class FillCommand extends VanillaCommand {
                 for (int chunkZ = NukkitMath.floorDouble(aabb.getMinZ()) >> 4; chunkZ <= NukkitMath.floorDouble(aabb.getMaxZ()) >> 4; chunkZ++) {
                     if (level.getChunkIfLoaded(chunkX, chunkZ) == null) {
                         sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
-                        return true;
+                        return false;
                     }
                 }
             }

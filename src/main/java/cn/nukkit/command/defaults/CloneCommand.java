@@ -9,13 +9,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.CommandParser;
 import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
@@ -74,7 +70,7 @@ public class CloneCommand extends VanillaCommand {
 
             if (size > 16 * 16 * 256 * 8) {
                 sender.sendMessage(String.format(TextFormat.RED + "Too many blocks in the specified area (%1$d > %2$d)", size, 16 * 16 * 256 * 8));
-                return true;
+                return false;
             }
 
             Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
@@ -82,11 +78,11 @@ public class CloneCommand extends VanillaCommand {
 
             if (blocksAABB.getMinY() < -64 || blocksAABB.getMaxY() > 320 || destinationAABB.getMinY() < -64 || destinationAABB.getMaxY() > 320) {
                 sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
-                return true;
+                return false;
             }
             if (blocksAABB.intersectsWith(destinationAABB) && cloneMode != CloneMode.FORCE) {
                 sender.sendMessage(TextFormat.RED + "Source and destination can not overlap");
-                return true;
+                return false;
             }
 
             Level level = begin.getLevel();
@@ -95,11 +91,11 @@ public class CloneCommand extends VanillaCommand {
                 for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                     if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
                         sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
-                        return true;
+                        return false;
                     }
                     if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
                         sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
-                        return true;
+                        return false;
                     }
                 }
             }

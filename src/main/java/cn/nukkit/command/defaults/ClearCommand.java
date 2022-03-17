@@ -63,7 +63,7 @@ public class ClearCommand extends VanillaCommand {
                 targets = Lists.newArrayList((Player) sender);
             } else {
                 sender.sendMessage(TextFormat.RED + "No targets matched selector");
-                return true;
+                return false;
             }
 
             for (Player target : targets) {
