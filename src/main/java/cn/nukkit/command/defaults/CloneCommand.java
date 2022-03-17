@@ -17,6 +17,8 @@ import cn.nukkit.utils.TextFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.nukkit.utils.Utils.getLevelBlocks;
+
 public class CloneCommand extends VanillaCommand {
 
     public CloneCommand(String name) {
@@ -178,27 +180,5 @@ public class CloneCommand extends VanillaCommand {
         NORMAL,
         FORCE,
         MOVE
-    }
-
-    protected static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
-        int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));
-        int minY = NukkitMath.floorDouble(Math.min(bb.getMinY(), bb.getMaxY()));
-        int minZ = NukkitMath.floorDouble(Math.min(bb.getMinZ(), bb.getMaxZ()));
-        int maxX = NukkitMath.floorDouble(Math.max(bb.getMinX(), bb.getMaxX()));
-        int maxY = NukkitMath.floorDouble(Math.max(bb.getMinY(), bb.getMaxY()));
-        int maxZ = NukkitMath.floorDouble(Math.max(bb.getMinZ(), bb.getMaxZ()));
-
-        List<Block> blocks = new ArrayList<>();
-        Vector3 vec = new Vector3();
-
-        for (int z = minZ; z <= maxZ; ++z) {
-            for (int x = minX; x <= maxX; ++x) {
-                for (int y = minY; y <= maxY; ++y) {
-                    blocks.add(level.getBlock(vec.setComponents(x, y, z), false));
-                }
-            }
-        }
-
-        return blocks.toArray(new Block[0]);
     }
 }
