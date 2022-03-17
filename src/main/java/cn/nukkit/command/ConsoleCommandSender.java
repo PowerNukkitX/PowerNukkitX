@@ -113,15 +113,4 @@ public class ConsoleCommandSender implements CommandSender {
     public void setOp(boolean value) {
 
     }
-
-    @Override
-    public Position getPosition() {
-        //default position
-        return new Position(0,0,0,Server.getInstance().getDefaultLevel());
-    }
-
-    @Override
-    public boolean isEntity() {
-        return false;
-    }
 }

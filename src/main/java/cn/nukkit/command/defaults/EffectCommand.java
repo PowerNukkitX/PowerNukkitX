@@ -62,10 +62,7 @@ public class EffectCommand extends Command {
         }
         List<Entity> entities = null;
         if (EntitySelector.hasArguments(args[0])) {
-            if (sender.isPlayer())
-                entities = EntitySelector.matchEntities((Player)sender, args[0]);
-            else
-                entities = EntitySelector.matchEntities(new Position(0,0,0, Server.getInstance().getDefaultLevel()), args[0]);
+            entities = EntitySelector.matchEntities(sender, args[0]);
         } else if(sender.getServer().getPlayer(args[0]) != null){
              entities.set(0,sender.getServer().getPlayer(args[0]));
         }

@@ -12,6 +12,7 @@ import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 //used for executing commands in place of an entity
@@ -61,6 +62,14 @@ public class ExecutorCommandSender implements CommandSender {
     @Override
     public boolean isEntity() {
         return true;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Nullable
+    @Override
+    public Entity asEntity() {
+        return this.entity;
     }
 
     @Override

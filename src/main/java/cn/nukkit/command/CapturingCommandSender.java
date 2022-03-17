@@ -2,7 +2,6 @@ package cn.nukkit.command;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.*;
@@ -117,17 +116,6 @@ public class CapturingCommandSender implements CommandSender {
     @Override
     public boolean isPlayer() {
         return false;
-    }
-
-    @Override
-    public boolean isEntity() {
-        return false;
-    }
-
-    @Override
-    public Position getPosition() {
-        //default position
-        return new Position(0,0,0,Server.getInstance().getDefaultLevel());
     }
 
     @Override
