@@ -70,9 +70,7 @@ public class CommandParser {
     public Level getTargetLevel() {
         Level level = null;
 
-        if (this.sender instanceof Position) {
-            level = ((Position) this.sender).getLevel();
-        }
+        level = sender.getPosition().getLevel();
 
         return level == null ? this.sender.getServer().getDefaultLevel() : level;
     }
@@ -153,22 +151,9 @@ public class CommandParser {
         double baseY = 0;
         double baseZ = 0;
 
-        if (this.sender instanceof Vector3) {
-            Vector3 vec = (Vector3) this.sender;
-            baseX = vec.getX();
-            baseY = vec.getY();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector3f) {
-            Vector3f vec = (Vector3f) this.sender;
-            baseX = vec.getX();
-            baseY = vec.getY();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof BlockVector3) {
-            BlockVector3 vec = (BlockVector3) this.sender;
-            baseX = vec.getX();
-            baseY = vec.getY();
-            baseZ = vec.getZ();
-        }
+        baseX = sender.getPosition().getX();
+        baseY = sender.getPosition().getY();
+        baseZ = sender.getPosition().getZ();
 
         return new Vector3(this.parseCoordinate(baseX), this.parseCoordinate(baseY), this.parseCoordinate(baseZ));
     }
@@ -177,23 +162,8 @@ public class CommandParser {
         double baseX = 0;
         double baseZ = 0;
 
-        if (this.sender instanceof Vector3) {
-            Vector3 vec = (Vector3) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector3f) {
-            Vector3f vec = (Vector3f) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof BlockVector3) {
-            BlockVector3 vec = (BlockVector3) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector2) {
-            Vector2 vec = (Vector2) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getY();
-        }
+        baseX = sender.getPosition().getX();
+        baseZ = sender.getPosition().getZ();
 
         return new Vector2(this.parseCoordinate(baseX), this.parseCoordinate(baseZ));
     }

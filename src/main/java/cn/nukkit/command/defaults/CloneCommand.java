@@ -9,9 +9,13 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.CommandParser;
 import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CloneCommand extends VanillaCommand {
 
@@ -98,8 +102,8 @@ public class CloneCommand extends VanillaCommand {
                 }
             }
 
-            Block[] blocks = level.getCollisionBlocks(blocksAABB);
-            Block[] destinationBlocks = level.getCollisionBlocks(destinationAABB);
+            Block[] blocks = getLevelBlocks(level, blocksAABB);
+            Block[] destinationBlocks = getLevelBlocks(level, destinationAABB);
             int count = 0;
 
             boolean move = cloneMode == CloneMode.MOVE;
@@ -174,5 +178,27 @@ public class CloneCommand extends VanillaCommand {
         NORMAL,
         FORCE,
         MOVE
+    }
+
+    protected static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
+        int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));
+        int minY = NukkitMath.floorDouble(Math.min(bb.getMinY(), bb.getMaxY()));
+        int minZ = NukkitMath.floorDouble(Math.min(bb.getMinZ(), bb.getMaxZ()));
+        int maxX = NukkitMath.floorDouble(Math.max(bb.getMinX(), bb.getMaxX()));
+        int maxY = NukkitMath.floorDouble(Math.max(bb.getMinY(), bb.getMaxY()));
+        int maxZ = NukkitMath.floorDouble(Math.max(bb.getMinZ(), bb.getMaxZ()));
+
+        List<Block> blocks = new ArrayList<>();
+        Vector3 vec = new Vector3();
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    blocks.add(level.getBlock(vec.setComponents(x, y, z), false));
+                }
+            }
+        }
+
+        return blocks.toArray(new Block[0]);
     }
 }
