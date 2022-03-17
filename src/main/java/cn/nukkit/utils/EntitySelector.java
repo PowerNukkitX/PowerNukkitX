@@ -240,7 +240,7 @@ public final class EntitySelector {
                 name = name.substring(1);
             }
             String f = name;
-            results.add(entity -> entity != null && (entity.getName().equals(f) != inverted || entity.getName().equals(f.replaceAll("_"," ")) != inverted));
+            results.add(entity -> entity != null && entity.getName().equals(f.replaceAll("_"," ")) != inverted);
         }
 
         return results;
