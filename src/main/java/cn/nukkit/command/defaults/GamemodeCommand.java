@@ -91,11 +91,13 @@ public class GamemodeCommand extends VanillaCommand {
             return false;
         }
 
+        boolean successExecute = false;
         for (Entity target : entities) {
 
             if (!((Player) target).setGamemode(gameMode)) {
                 sender.sendMessage("Game mode update for " + target.getName() + " failed");
             } else {
+                successExecute = true;
                 if (target.equals(sender)) {
                     Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
                 } else {
@@ -103,6 +105,10 @@ public class GamemodeCommand extends VanillaCommand {
                     Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
                 }
             }
+        }
+        if (!successExecute) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+            return false;
         }
         return true;
     }

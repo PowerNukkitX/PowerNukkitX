@@ -87,6 +87,7 @@ public class EnchantCommand extends VanillaCommand {
             return false;
         }
 
+        boolean successExecute = false;
         for (Entity entity : entities) {
             Player player = (Player) entity;
             enchantment.setLevel(enchantLevel);
@@ -99,6 +100,7 @@ public class EnchantCommand extends VanillaCommand {
                 item.addEnchantment(enchantment);
                 player.getInventory().setItemInHand(item);
             } else {
+                successExecute = true;
                 Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
                 enchanted.addEnchantment(enchantment);
                 Item clone = item.clone();
@@ -106,6 +108,10 @@ public class EnchantCommand extends VanillaCommand {
                 PlayerInventory inventory = player.getInventory();
                 inventory.setItemInHand(clone);
                 player.giveItem(enchanted);
+            }
+            if (!successExecute) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
             }
             Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.enchant.success", args[1]));
             return true;

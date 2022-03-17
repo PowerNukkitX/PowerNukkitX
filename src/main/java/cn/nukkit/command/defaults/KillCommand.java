@@ -45,27 +45,35 @@ public class KillCommand extends VanillaCommand {
                 return true;
             }
             List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : null;
-            if(entities == null) return true;
+            if (entities == null) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
+            }
             StringBuilder message = new StringBuilder();
+            boolean successExecute = false;
             for (Entity entity : entities) {
                 if (entity.getName().equals(sender.getName())) {
                     if (!sender.hasPermission("nukkit.command.kill.self")) {
                         continue;
                     }
                 }
-                if (entity instanceof Player) {
-                    Player player = (Player) entity;
+                if (entity instanceof Player player) {
                     EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000);
                     sender.getServer().getPluginManager().callEvent(ev);
                     if (ev.isCancelled()) {
-                        return true;
+                        continue;
                     }
+                    successExecute = true;
                     player.setLastDamageCause(ev);
                     player.setHealth(0);
-                }else {
+                } else {
                     entity.kill();
                 }
                 message.append(entity.getName()).append(", ");
+            }
+            if (!successExecute) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
             }
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message.toString()));
             return true;
