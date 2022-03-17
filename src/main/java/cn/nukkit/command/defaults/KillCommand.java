@@ -37,7 +37,7 @@ public class KillCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         if (args.length >= 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
@@ -66,11 +66,22 @@ public class KillCommand extends VanillaCommand {
 
             for (Entity entity : entities) {
                 if (!(entity instanceof Player player)) {
-                    entity.close();
+                    EntityDamageEvent ev = new EntityDamageEvent(entity, DamageCause.SUICIDE, 1000);
+                    sender.getServer().getPluginManager().callEvent(ev);
+                    if (!ev.isCancelled()) {
+                        entity.close();
+                    }
                 } else {
-                    player.kill();
+                    EntityDamageEvent ev = new EntityDamageEvent((Player) sender, DamageCause.SUICIDE, 1000);
+                    sender.getServer().getPluginManager().callEvent(ev);
+                    if (!ev.isCancelled()) {
+                        player.kill();
+                    }
                 }
             }
+            sender.sendMessage(new TranslationContainer("commands.kill.successful", sender.getName()));
+            return true;
+
         }
 
         if (sender instanceof Player) {

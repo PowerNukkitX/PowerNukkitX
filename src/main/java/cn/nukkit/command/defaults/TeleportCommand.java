@@ -108,6 +108,7 @@ public class TeleportCommand extends VanillaCommand {
             target = entities.get(0);
 
             if (args.length == 2) {
+
                 origin = target;
                 List<Entity> targetEntities = null;
                 if (EntitySelector.hasArguments(args[1])) {
