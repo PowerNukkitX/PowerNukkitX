@@ -75,9 +75,6 @@ public class TeleportCommand extends VanillaCommand {
                 if (targetEntities.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
-                } else if (targetEntities.size() > 1) {
-                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                    return false;
                 }
                 target = targetEntities.get(0);
                 if (target == null) {
@@ -98,9 +95,6 @@ public class TeleportCommand extends VanillaCommand {
             if (entities.size() == 0) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return false;
-            } else if (entities.size() > 1) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                return false;
             }
             target = entities.get(0);
 
@@ -117,9 +111,6 @@ public class TeleportCommand extends VanillaCommand {
                     targetEntities.set(0,sender.getServer().getPlayer(args[1]));
                 }
                 if (targetEntities.size() == 0) {
-                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                    return false;
-                } else if (targetEntities.size() > 1) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
                 }
