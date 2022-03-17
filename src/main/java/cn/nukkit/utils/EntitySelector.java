@@ -2,6 +2,8 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -16,6 +18,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//special thanks to wode
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public final class EntitySelector {
 
     private static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;

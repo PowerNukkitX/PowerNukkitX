@@ -6,10 +6,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.blockentity.BlockEntityLectern;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
@@ -3261,6 +3258,58 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Timings.playerCommandTimer.startTiming();
                     this.server.dispatchCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage().substring(1));
                     Timings.playerCommandTimer.stopTiming();
+                    break;
+                case ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET:
+                    CommandBlockUpdatePacket cmdpk = (CommandBlockUpdatePacket) packet;
+                    if (this.isOp() && this.isCreative()) {
+                        if (cmdpk.isBlock) {
+                            BlockEntity blockEntity = this.level.getBlockEntity(new Vector3(cmdpk.x, cmdpk.y, cmdpk.z));
+                            if (blockEntity instanceof BlockEntityCommandBlock) {
+                                BlockEntityCommandBlock commandBlock = (BlockEntityCommandBlock) blockEntity;
+                                Block cmdBlock = commandBlock.getLevelBlock();
+
+                                //change commandblock type
+                                switch (cmdpk.commandBlockMode) {
+                                    case ICommandBlock.MODE_REPEATING:
+                                        if (cmdBlock.getId() != BlockID.REPEATING_COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.REPEATING_COMMAND_BLOCK, cmdBlock.getDamage());
+                                            commandBlock.scheduleUpdate();
+                                        }
+                                        break;
+                                    case ICommandBlock.MODE_CHAIN:
+                                        if (cmdBlock.getId() != BlockID.CHAIN_COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.CHAIN_COMMAND_BLOCK, cmdBlock.getDamage());
+                                        }
+                                        break;
+                                    case ICommandBlock.MODE_NORMAL:
+                                    default:
+                                        if (cmdBlock.getId() != BlockID.COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.COMMAND_BLOCK, cmdBlock.getDamage());
+                                        }
+                                        break;
+                                }
+
+                                boolean conditional = cmdpk.isConditional;
+                                cmdBlock.setPropertyValue(BlockCommandBlock.CONDITIONAL_BIT, conditional);
+
+                                this.level.setBlock(commandBlock, cmdBlock, true);
+
+                                commandBlock.setCommand(cmdpk.command);
+                                commandBlock.setName(cmdpk.name);
+                                commandBlock.setTrackOutput(cmdpk.shouldTrackOutput);
+                                commandBlock.setConditional(conditional);
+                                commandBlock.setTickDelay(cmdpk.tickDelay);
+                                commandBlock.setExecutingOnFirstTick(cmdpk.executingOnFirstTick);
+
+                                //redstone mode / auto
+                                boolean isRedstoneMode = cmdpk.isRedstoneMode;
+                                commandBlock.setAuto(!isRedstoneMode);
+                                if (!isRedstoneMode && cmdpk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
+                                    commandBlock.trigger();
+                                }
+                            }
+                        }
+                    }
                     break;
                 case ProtocolInfo.TEXT_PACKET:
                     if (!this.spawned || !this.isAlive()) {

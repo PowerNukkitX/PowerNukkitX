@@ -2648,6 +2648,7 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.TARGET, BlockEntityTarget.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_PORTAL, BlockEntityEndPortal.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
+        BlockEntity.registerBlockEntity(BlockEntity.COMMAND_BLOCK, BlockEntityCommandBlock.class);
     }
 
     public boolean isNetherAllowed() {
