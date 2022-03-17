@@ -8,11 +8,13 @@ import cn.powernukkitx.bootstrap.gui.model.values.JavaLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.LibLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.view.SwingView;
 import cn.powernukkitx.bootstrap.gui.view.View;
+import cn.powernukkitx.bootstrap.gui.view.impl.simple.ListChooseDialog;
 import cn.powernukkitx.bootstrap.gui.view.keys.CheckUpdateWindowViewKey;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.LibsLocator;
 import cn.powernukkitx.bootstrap.info.locator.Location;
+import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
 import cn.powernukkitx.bootstrap.util.GitUtils;
 
 import javax.swing.*;
@@ -24,7 +26,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static cn.powernukkitx.bootstrap.gui.view.impl.update.TreeEntry.*;
 import static cn.powernukkitx.bootstrap.util.LanguageUtils.tr;
@@ -33,6 +38,7 @@ import static cn.powernukkitx.bootstrap.util.SwingUtils.getIcon;
 public final class CheckUpdateWindowView extends JFrame implements SwingView<JFrame> {
     private final int viewID = View.newViewID();
     private final CheckUpdateWindowController controller;
+    private final JFrame self = this;
 
     public CheckUpdateWindowView(CheckUpdateWindowController controller) {
         this.controller = controller;
@@ -85,7 +91,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                 if (javaLocations.size() == 0) {
                     javaEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
                     javaNode.removeAllChildren();
-                    final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.java-not-found"));
+                    final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.java-not-found")).setExtra("downloadJVM");
                     final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
                     javaNode.add(tmpNode);
                 } else {
@@ -98,7 +104,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                         if (i == 0) {
                             final TreeEntry tmpEntry = "17".equals(info.getMajorVersion()) ?
                                     createOkEntry(info.getFullVersion() + " - " + info.getVendor()) :
-                                    createWarnEntry(info.getFullVersion() + " - " + info.getVendor());
+                                    createWarnEntry(info.getFullVersion() + " - " + info.getVendor()).setExtra("needNewJVM");
                             final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
                             javaNode.add(tmpNode);
                             if (!"17".equals(info.getMajorVersion())) {
@@ -107,7 +113,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                         } else {
                             final TreeEntry tmpEntry = "17".equals(info.getMajorVersion()) ?
                                     createComponentEntry(info.getFullVersion() + " - " + info.getVendor()) :
-                                    createWarnEntry(info.getFullVersion() + " - " + info.getVendor());
+                                    createWarnEntry(info.getFullVersion() + " - " + info.getVendor()).setExtra("needNewJVM");
                             final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
                             javaNode.add(tmpNode);
                         }
@@ -125,7 +131,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                 if (pnxLocations.size() == 0) {
                     pnxEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
                     pnxNode.removeAllChildren();
-                    final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-not-found"));
+                    final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-not-found")).setExtra("downloadPNX");
                     final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
                     pnxNode.add(tmpNode);
                 } else {
@@ -135,7 +141,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                     if (pnxLocations.size() != 1) {
                         conflict = true;
                         pnxEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
-                        final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-multi-conflict"));
+                        final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-multi-conflict")).setExtra("conflictPNX");
                         final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
                         pnxNode.add(tmpNode);
                     }
@@ -192,25 +198,55 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
             tree.expandRow(0);
             tree.setRootVisible(false);
         }
-//        final JPanel outerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
-//        scrollPane.setViewportView(outerPanel);
-//        // JVM信息
-//        {
-//            final JPanel panel = new JPanel();
-//            final BoxLayout lo = new BoxLayout(panel, Y_AXIS);
-//            panel.setLayout(lo);
-//            outerPanel.add(panel);
-//            final JLabel javaLabel = new JLabel(getIcon("wait.png", 16));
-//            panel.add(warp(javaLabel, new JLabel(tr("gui.update-window.java-runtime"))));
-//            bind(UpdateWindowDataKeys.JAVA_LOCATIONS, JavaLocationsWarp.class, value -> {
-//                final List<Location<JavaLocator.JavaInfo>> javaLocations = value.get();
-//                if(javaLocations.size() != 0) {
-//                    javaLabel.setIcon(getIcon("error.png", 16));
-//                    panel.add(warp(20, new JLabel(getIcon("error.png", 14)),
-//                            warn(p(tr("gui.update-window.java-not-found")))));
-//                }
-//            });
-//        }
+        {
+            // 监听点击
+            tree.addTreeSelectionListener(e -> SwingUtilities.invokeLater(() -> {
+                final Object obj = e.getNewLeadSelectionPath().getLastPathComponent();
+                if (obj instanceof DefaultMutableTreeNode) {
+                    final Object value = ((DefaultMutableTreeNode) obj).getUserObject();
+                    if (value instanceof TreeEntry) {
+                        final TreeEntry data = (TreeEntry) value;
+                        switch (data.getExtra()) {
+                            case "needNewJVM":
+                                int res = JOptionPane.showConfirmDialog(this, tr("gui.update-window.need-java17", data.getName()),
+                                        tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                                if (res != 0) break;
+                            case "downloadJVM":
+                                ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-java"),
+                                        Arrays.asList(tr("gui.update-window.openjdk"), tr("gui.update-window.graalvm")),
+                                        i -> System.out.println(i)); // TODO: 2022/3/17 完成下载
+                                break;
+                            case "conflictPNX":
+                                int res2 = JOptionPane.showConfirmDialog(this, tr("gui.update-window.fix-pnx"),
+                                        tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                                if (res2 != 0) break;
+                            case "downloadPNX":
+                                new SwingWorker<List<VersionListHelper.VersionEntry>, Void>() {
+                                    @Override
+                                    protected List<VersionListHelper.VersionEntry> doInBackground() {
+                                        return VersionListHelper.listRemoteVersions("core");
+                                    }
+
+                                    @Override
+                                    protected void done() {
+                                        try {
+                                            final List<VersionListHelper.VersionEntry> versions = get();
+                                            ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-pnx"),
+                                                    versions.stream().map(each -> "git-" + each.getBranch() + "-" + each.getCommit() + " (" + each.getTime() + ")").collect(Collectors.toList()),
+                                                    i -> System.out.println(i)); // TODO: 2022/3/17 完成下载
+                                        } catch (InterruptedException | ExecutionException ex) {
+                                            JOptionPane.showMessageDialog(self, tr("gui.update-window.fail-fetch-pnx-versions"),
+                                                    tr("gui.common.err"), JOptionPane.ERROR_MESSAGE);
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }.execute();
+                                break;
+                        }
+                    }
+                }
+            }));
+        }
         /* 初始化swing界面 */
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         // 居中显示

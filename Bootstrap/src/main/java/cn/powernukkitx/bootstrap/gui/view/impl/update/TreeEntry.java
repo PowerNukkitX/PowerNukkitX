@@ -9,6 +9,7 @@ public final class TreeEntry {
 
     private Icon icon;
     private String name;
+    private String extra;
 
     public TreeEntry(Icon icon, String name) {
         this.icon = icon;
@@ -55,5 +56,14 @@ public final class TreeEntry {
 
     public static TreeEntry createOkEntry(String name) {
         return new TreeEntry(SwingUtils.getIcon("ok.png", SIZE), name);
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public TreeEntry setExtra(String extra) {
+        this.extra = extra;
+        return this;
     }
 }
