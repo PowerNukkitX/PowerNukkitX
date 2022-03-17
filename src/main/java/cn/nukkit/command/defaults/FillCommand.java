@@ -174,11 +174,13 @@ public class FillCommand extends VanillaCommand {
 
             if (count == 0) {
                 sender.sendMessage(TextFormat.RED + "0 blocks filled");
+                return false;
             } else {
                 sender.sendMessage(String.format("%1$d blocks filled", count));
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
+            return false;
         }
 
         return true;

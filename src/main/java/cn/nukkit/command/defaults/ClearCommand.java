@@ -169,6 +169,7 @@ public class ClearCommand extends VanillaCommand {
 
                     if (remaining == maxCount) {
                         sender.sendMessage(String.format(TextFormat.RED + "Could not clear the inventory of %1$s, no items to remove", target.getName()));
+                        return false;
                     } else {
                         sender.sendMessage(String.format("Cleared the inventory of %1$s, removing %2$d items", target.getName(), maxCount - remaining));
                     }
@@ -176,6 +177,7 @@ public class ClearCommand extends VanillaCommand {
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
+            return false;
         }
 
         return true;

@@ -50,6 +50,7 @@ public class DayLockCommand extends VanillaCommand {
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
+            return false;
         }
 
         return true;

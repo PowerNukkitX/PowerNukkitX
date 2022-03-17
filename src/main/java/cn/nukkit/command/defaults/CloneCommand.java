@@ -156,11 +156,13 @@ public class CloneCommand extends VanillaCommand {
 
             if (count == 0) {
                 sender.sendMessage(TextFormat.RED + "No blocks cloned");
+                return false;
             } else {
                 sender.sendMessage(String.format("%1$d blocks cloned", count));
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
+            return false;
         }
 
         return true;
