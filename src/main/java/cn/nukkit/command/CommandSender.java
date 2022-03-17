@@ -12,14 +12,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * 能发送命令的人。<br>
+ * 能发送命令的对象。<br>
  * Who sends commands.
  *
- * <p>可以是一个玩家或者一个控制台。<br>
+ * <p>可以是一个玩家或者一个控制台或者一个实体或者其他。<br>
  * That can be a player or a console.</p>
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author smartcmd(code) @ PowerNukkitX Project
  * @see cn.nukkit.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
@@ -97,8 +98,9 @@ public interface CommandSender extends Permissible {
     @Nullable
     default Entity asPlayer() {return null;};
 
-    //return the sender's position
+    //return the sender's position which can be used as a reference in EntitySelector
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
+    @Nonnull
     default Position getPosition() {return new Position(0, 0, 0,Server.getInstance().getDefaultLevel());}
 }
