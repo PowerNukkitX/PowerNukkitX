@@ -68,13 +68,7 @@ public class PlaySoundCommand extends VanillaCommand {
                 return false;
             }
 
-            if (position == null) {
-                if (sender instanceof Position)  {
-                    position = (Position) sender;
-                } else {
-                    position = new Position(0, 0, 0, parser.getTargetLevel());
-                }
-            }
+            position = sender.getPosition();
 
             if (targets.size() == 0) {
                 sender.sendMessage(TextFormat.RED + "No targets matched selector");

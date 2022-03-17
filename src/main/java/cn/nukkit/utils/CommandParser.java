@@ -112,24 +112,7 @@ public class CommandParser {
 
     public String parseString() throws CommandSyntaxException {
         try {
-            String str = this.next();
-            if(str.startsWith("\"")) {
-                StringBuilder strBuilder = new StringBuilder(str.substring(1));
-                boolean finish = false;
-                String next = null;
-                while(!finish) {
-                    next = this.next();
-                    if(next.endsWith("\"")) {
-                        finish = true;
-                        strBuilder.append(" ").append(next.substring(0, next.length() - 1));
-                    }else{
-                        strBuilder.append(" ").append(next);
-                    }
-                }
-                return strBuilder.toString();
-            }else{
-                return str;
-            }
+            return this.next();
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
@@ -146,7 +129,7 @@ public class CommandParser {
 
     public List<Entity> parseTargets() throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.parseString();
             if (EntitySelector.hasArguments(arg)) {
                 return EntitySelector.matchEntities(this.sender, arg);
             }else{
