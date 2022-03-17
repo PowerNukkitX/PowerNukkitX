@@ -98,7 +98,7 @@ public interface CommandSender extends Permissible {
     @Nullable
     default Entity asPlayer() {return null;};
 
-    //return the sender's position which can be used as a reference in EntitySelector
+    //return the sender's position
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nonnull
