@@ -93,7 +93,7 @@ public class EnchantCommand extends VanillaCommand {
             Item item = player.getInventory().getItemInHand();
             if (item.getId() == 0) {
                 sender.sendMessage(new TranslationContainer("commands.enchant.noItem"));
-                return true;
+                continue;
             }
             if (item.getId() != ItemID.BOOK) {
                 item.addEnchantment(enchantment);
