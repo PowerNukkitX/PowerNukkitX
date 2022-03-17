@@ -20,7 +20,7 @@ public class ClearCommand extends VanillaCommand {
 
     public ClearCommand(String name) {
         super(name, "Clears items from player inventory.", "/clear [player: target] [itemId: int] [data: int] [maxCount: int]");
-        this.setPermission("vanillacommand.clear");
+        this.setPermission("nukkit.command.clear");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("player",true, CommandParamType.TARGET),
