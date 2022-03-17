@@ -16,7 +16,6 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * @author xtypr
@@ -69,7 +68,7 @@ public class GiveCommand extends VanillaCommand {
             entities.set(0, sender.getServer().getPlayer(args[0]));
         }
 
-        Stream<Entity> players = entities.stream().filter(entity -> entity instanceof Player);
+        List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
         Item item;
 
         try {
@@ -105,7 +104,7 @@ public class GiveCommand extends VanillaCommand {
         }
         item.setCount(count);
 
-        if (players.toList().size() == 0) {
+        if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return false;
         }
@@ -114,7 +113,7 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;
         }
-        for (Entity entity : players.toList()) {
+        for (Entity entity : players) {
             Player player = (Player) entity;
             Item[] returns = player.getInventory().addItem(item.clone());
             List<Item> drops = new ArrayList<>();
