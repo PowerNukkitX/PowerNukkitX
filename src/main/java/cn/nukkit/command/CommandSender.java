@@ -1,5 +1,6 @@
 package cn.nukkit.command;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -96,7 +97,7 @@ public interface CommandSender extends Permissible {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nullable
-    default Entity asPlayer() {return null;};
+    default Player asPlayer() {return null;};
 
     //return the sender's position
     @PowerNukkitOnly

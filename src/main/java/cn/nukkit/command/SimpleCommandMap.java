@@ -31,6 +31,17 @@ public class SimpleCommandMap implements CommandMap {
 
     private void setDefaultCommands() {
         this.register("nukkit",new ExecuteCommand("execute"));
+        this.register("nukkit",new TestForCommand("testfor"));
+        this.register("nukkit",new TestForBlockCommand("testforblock"));
+        this.register("nukkit",new TestForBlocksCommand("testforblocks"));
+        this.register("nukkit",new SpreadPlayersCommand("spreadplayers"));
+        this.register("nukkit",new SetMaxPlayersCommand("setmaxplayers"));
+        this.register("nukkit",new PlaySoundCommand("playsound"));
+        this.register("nukkit",new StopSoundCommand("stopsound"));
+        this.register("nukkit",new FillCommand("fill"));
+        this.register("nukkit",new DayLockCommand("daylock"));
+        this.register("nukkit",new ClearCommand("clear"));
+        this.register("nukkit",new CloneCommand("clone"));
         this.register("nukkit", new VersionCommand("version"));
         this.register("nukkit", new PluginsCommand("plugins"));
         this.register("nukkit", new SeedCommand("seed"));
@@ -255,16 +266,18 @@ public class SimpleCommandMap implements CommandMap {
             return false;
         }
 
+        boolean output = true;
         target.timing.startTiming();
         try {
-            target.execute(sender, sentCommandLabel, args);
+            output = target.execute(sender, sentCommandLabel, args);
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
             log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);
+            output = false;
         }
         target.timing.stopTiming();
 
-        return true;
+        return output;
     }
 
     @Override

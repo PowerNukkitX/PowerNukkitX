@@ -2,6 +2,11 @@ package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Vector3;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
@@ -14,10 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.SplittableRandom;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -444,5 +446,30 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    //used for commands /fill , /clone and so on
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
+        int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));
+        int minY = NukkitMath.floorDouble(Math.min(bb.getMinY(), bb.getMaxY()));
+        int minZ = NukkitMath.floorDouble(Math.min(bb.getMinZ(), bb.getMaxZ()));
+        int maxX = NukkitMath.floorDouble(Math.max(bb.getMinX(), bb.getMaxX()));
+        int maxY = NukkitMath.floorDouble(Math.max(bb.getMinY(), bb.getMaxY()));
+        int maxZ = NukkitMath.floorDouble(Math.max(bb.getMinZ(), bb.getMaxZ()));
+
+        List<Block> blocks = new ArrayList<>();
+        Vector3 vec = new Vector3();
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    blocks.add(level.getBlock(vec.setComponents(x, y, z), false));
+                }
+            }
+        }
+
+        return blocks.toArray(new Block[0]);
     }
 }

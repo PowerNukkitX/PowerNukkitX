@@ -87,9 +87,9 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        if (sender.getPosition().level.isYInRange((int) y)) {
+        if (!sender.getPosition().level.isYInRange((int) y)) {
             sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
-            return true;
+            return false;
         }
 
         Level level = sender.getPosition().getLevel();
@@ -99,8 +99,8 @@ public class SetBlockCommand extends VanillaCommand {
         if (current.getId() != Block.AIR) {
             switch (oldBlockHandling) {
                 case "destroy":
-                    if (sender instanceof Player player) {
-                        level.useBreakOn(position, null, Item.get(Item.AIR), player, true, true);
+                    if (sender.isPlayer()) {
+                        level.useBreakOn(position, null, Item.get(Item.AIR), sender.asPlayer(), true, true);
                     } else {
                         level.useBreakOn(position);
                     }
@@ -108,13 +108,13 @@ public class SetBlockCommand extends VanillaCommand {
                     break;
                 case "keep":
                     sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
-                    return true;
+                    return false;
             }
         }
 
         if (current.getId() == block.getId() && current.getDamage() == block.getDamage()) {
             sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
-            return true;
+            return false;
         }
 
         Item item = block.toItem();

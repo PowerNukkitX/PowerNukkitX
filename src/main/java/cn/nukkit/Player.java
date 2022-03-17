@@ -720,7 +720,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public Entity asPlayer() {
+    public Player asPlayer() {
         return this;
     }
 

@@ -970,11 +970,14 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
+        if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
+        }
+
         if (this.commandMap.dispatch(sender, commandLine)) {
             return true;
         }
 
-        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
 
         return false;
     }
