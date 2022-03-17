@@ -5,6 +5,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityTeleportEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
@@ -53,7 +54,7 @@ public class TeleportCommand extends VanillaCommand {
             return false;
         }
         Entity target;
-        Entity origin = null;
+        List<Entity> origin = List.of();
         if (args.length == 1 || args.length == 3 || args.length == 5) {
             if (sender.isEntity()) {
                 target = sender.asEntity();
@@ -62,7 +63,7 @@ public class TeleportCommand extends VanillaCommand {
                 return false;
             }
             if (args.length == 1) {
-                origin = target;
+                origin = List.of(target);
                 List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[0])) {
                     if (sender.isPlayer())
@@ -100,7 +101,7 @@ public class TeleportCommand extends VanillaCommand {
 
             if (args.length == 2) {
 
-                origin = target;
+                origin = entities;
                 List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
                     if (sender.isPlayer())
@@ -118,14 +119,21 @@ public class TeleportCommand extends VanillaCommand {
             }
         }
 
-        if (origin == null) {
-            sender.sendMessage(TextFormat.RED + "Can't find player " + args[1]);
-            return false;
-        }
+
         if (args.length < 3) {
-            origin.teleport(target, PlayerTeleportEvent.TeleportCause.COMMAND);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", origin.getName(), target.getName()));
+            if (origin.size() == 0) {
+                sender.sendMessage(TextFormat.RED + "Can't find player " + args[1]);
+                return false;
+            }
+            for (Entity originEntity : origin) {
+                EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target);
+                if (!event.isCancelled()) {
+                    originEntity.teleport(target);
+                }
+            }
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", target.getName()));
             return true;
+
         } else if (target.getLevel() != null) {
             int pos;
             if (args.length == 4 || args.length == 6) {
