@@ -2,10 +2,8 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import com.google.common.base.Predicate;
@@ -242,7 +240,7 @@ public final class EntitySelector {
                 name = name.substring(1);
             }
             String f = name;
-            results.add(entity -> entity != null && entity.getName().equals(f) != inverted);
+            results.add(entity -> entity != null && (entity.getName().equals(f) != inverted || entity.getName().equals(f.replaceAll("_"," ")) != inverted));
         }
 
         return results;
