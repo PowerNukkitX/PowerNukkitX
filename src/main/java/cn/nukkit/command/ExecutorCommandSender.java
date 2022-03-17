@@ -1,5 +1,6 @@
 package cn.nukkit.command;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
@@ -56,7 +57,7 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public boolean isPlayer() {
-        return false;
+        return entity instanceof Player;
     }
 
     @Override
@@ -64,12 +65,14 @@ public class ExecutorCommandSender implements CommandSender {
         return true;
     }
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @Nullable
     @Override
     public Entity asEntity() {
         return this.entity;
+    }
+
+    @Override
+    public Player asPlayer() {
+        return isPlayer() ? (Player) this.entity : null;
     }
 
     @Override

@@ -5,13 +5,16 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.utils.CommandParser;
 import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Lists;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlaySoundCommand extends VanillaCommand {
 
@@ -20,7 +23,7 @@ public class PlaySoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("sound",false, CommandParamType.STRING),
+                CommandParameter.newEnum("sound",false, Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()).toArray(new String[0])),
                 CommandParameter.newType("player",true, CommandParamType.TARGET),
                 CommandParameter.newType("position",true, CommandParamType.POSITION),
                 CommandParameter.newType("volume",true, CommandParamType.FLOAT),
@@ -58,8 +61,8 @@ public class PlaySoundCommand extends VanillaCommand {
                         }
                     }
                 }
-            } else if (sender instanceof Player) {
-                targets = Lists.newArrayList((Player) sender);
+            } else if (sender.isPlayer()) {
+                targets = Lists.newArrayList(sender.asPlayer());
             } else {
                 sender.sendMessage(TextFormat.RED + "No targets matched selector");
                 return false;

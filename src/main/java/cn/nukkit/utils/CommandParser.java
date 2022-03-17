@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.entity.Entity;
@@ -12,6 +13,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -110,7 +112,24 @@ public class CommandParser {
 
     public String parseString() throws CommandSyntaxException {
         try {
-            return this.next();
+            String str = this.next();
+            if(str.startsWith("\"")) {
+                StringBuilder strBuilder = new StringBuilder(str.substring(1));
+                boolean finish = false;
+                String next = null;
+                while(!finish) {
+                    next = this.next();
+                    if(next.endsWith("\"")) {
+                        finish = true;
+                        strBuilder.append(" ").append(next.substring(0, next.length() - 1));
+                    }else{
+                        strBuilder.append(" ").append(next);
+                    }
+                }
+                return strBuilder.toString();
+            }else{
+                return str;
+            }
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
@@ -128,7 +147,11 @@ public class CommandParser {
     public List<Entity> parseTargets() throws CommandSyntaxException {
         try {
             String arg = this.next();
-            return EntitySelector.matchEntities(this.sender, arg);
+            if (EntitySelector.hasArguments(arg)) {
+                return EntitySelector.matchEntities(this.sender, arg);
+            }else{
+                return Collections.singletonList(Server.getInstance().getPlayer(arg));
+            }
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
