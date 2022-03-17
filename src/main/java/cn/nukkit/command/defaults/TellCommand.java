@@ -4,9 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,16 +41,16 @@ public class TellCommand extends VanillaCommand {
             return false;
         }
 
-        String name = args[0].toLowerCase();
+        String target = args[0].toLowerCase();
 
-        Player player = sender.getServer().getPlayer(name);
-        if (player == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.player.notFound"));
-            return true;
+        List<Entity> entities = null;
+        if(EntitySelector.hasArguments(target)){
+            entities = EntitySelector.matchEntities(sender, target);
+        }else {
+            entities = Collections.singletonList(sender.getServer().getPlayer(target));
         }
-
-        if (Objects.equals(player, sender)) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.message.sameTarget"));
+        if (entities.isEmpty()) {
+            sender.sendMessage(new TranslationContainer("commands.generic.player.notFound"));
             return true;
         }
 
@@ -60,9 +64,16 @@ public class TellCommand extends VanillaCommand {
 
         String displayName = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName());
 
-        sender.sendMessage("[" + sender.getName() + " -> " + player.getDisplayName() + "] " + msg);
-        player.sendMessage("[" + displayName + " -> " + player.getName() + "] " + msg);
-
+        for (Entity entity : entities) {
+            if (entity instanceof Player) {
+                if (Objects.equals(entity, sender.asEntity())) {
+                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.message.sameTarget"));
+                    continue;
+                }
+                sender.sendMessage("[" + sender.getName() + " -> " + entity.getName() + "] " + msg);
+                ((Player)entity).sendMessage("[" + displayName + " -> " + entity.getName() + "] " + msg);
+            }
+        }
         return true;
     }
 }

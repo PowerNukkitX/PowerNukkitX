@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -32,7 +33,7 @@ public class KillCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return false;
+            return true;
         }
         if (args.length >= 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
@@ -43,42 +44,32 @@ public class KillCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return true;
             }
-
-            List<Entity> entities = null;
-            if (EntitySelector.hasArguments(args[0])) {
-                if (sender.isPlayer())
-                    entities = EntitySelector.matchEntities(sender, args[0]);
-                else
-                    entities = EntitySelector.matchEntities(sender, args[0]);
-            } else if(sender.getServer().getPlayer(args[0]) != null){
-                entities.set(0, sender.getServer().getPlayer(args[0]));
-            }
-
-            if (entities.size() == 0 ) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                return false;
-            }
-
+            List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : null;
+            if(entities == null) return true;
+            StringBuilder message = new StringBuilder();
             for (Entity entity : entities) {
-                if (!(entity instanceof Player player)) {
-                    EntityDamageEvent ev = new EntityDamageEvent(entity, DamageCause.SUICIDE, 1000);
-                    sender.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        entity.close();
-                    }
-                } else {
-                    EntityDamageEvent ev = new EntityDamageEvent((Player) sender, DamageCause.SUICIDE, 1000);
-                    sender.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        player.kill();
+                if (entity.getName().equals(sender.getName())) {
+                    if (!sender.hasPermission("nukkit.command.kill.self")) {
+                        continue;
                     }
                 }
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
+                    EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000);
+                    sender.getServer().getPluginManager().callEvent(ev);
+                    if (ev.isCancelled()) {
+                        return true;
+                    }
+                    player.setLastDamageCause(ev);
+                    player.setHealth(0);
+                }else {
+                    entity.kill();
+                }
+                message.append(entity.getName()).append(", ");
             }
-            sender.sendMessage(new TranslationContainer("commands.kill.successful", sender.getName()));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message.toString()));
             return true;
-
         }
-
         if (sender instanceof Player) {
             if (!sender.hasPermission("nukkit.command.kill.self")) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
