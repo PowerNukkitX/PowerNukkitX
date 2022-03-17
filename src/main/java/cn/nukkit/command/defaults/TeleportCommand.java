@@ -53,17 +53,17 @@ public class TeleportCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
         }
-        Entity target;
+        List <Entity> target = List.of();
         List<Entity> origin = List.of();
         if (args.length == 1 || args.length == 3 || args.length == 5) {
             if (sender.isEntity()) {
-                target = sender.asEntity();
+                target = List.of(sender.asEntity());
             } else {
                 sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
                 return false;
             }
             if (args.length == 1) {
-                origin = List.of(target);
+                origin = target;
                 List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[0])) {
                     if (sender.isPlayer())
@@ -77,7 +77,7 @@ public class TeleportCommand extends VanillaCommand {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
                 }
-                target = targetEntities.get(0);
+                target = targetEntities;
                 if (target == null) {
                     sender.sendMessage(TextFormat.RED + "Can't find player " + args[0]);
                     return false;
@@ -97,7 +97,7 @@ public class TeleportCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return false;
             }
-            target = entities.get(0);
+            target = entities;
 
             if (args.length == 2) {
 
@@ -115,7 +115,7 @@ public class TeleportCommand extends VanillaCommand {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
                 }
-                target = targetEntities.get(0);
+                target = targetEntities;
             }
         }
 
@@ -126,15 +126,15 @@ public class TeleportCommand extends VanillaCommand {
                 return false;
             }
             for (Entity originEntity : origin) {
-                EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target);
+                EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target.get(0));
                 if (!event.isCancelled()) {
-                    originEntity.teleport(target);
+                    originEntity.teleport(target.get(0));
                 }
             }
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", target.getName()));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", target.get(0).getName()));
             return true;
 
-        } else if (target.getLevel() != null) {
+        } else {
             int pos;
             if (args.length == 4 || args.length == 6) {
                 pos = 1;
@@ -154,18 +154,23 @@ public class TeleportCommand extends VanillaCommand {
                     yaw = Integer.parseInt(args[pos++]);
                     pitch = Integer.parseInt(args[pos]);
                 } else {
-                    yaw = target.getYaw();
-                    pitch = target.getPitch();
+                    yaw = 0;
+                    pitch = 0;
                 }
             } catch (NumberFormatException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return false;
             }
-            target.teleport(new Location(x, y, z, yaw, pitch, target.getLevel()), PlayerTeleportEvent.TeleportCause.COMMAND);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.getName(), String.valueOf(NukkitMath.round(x, 2)), String.valueOf(NukkitMath.round(y, 2)), String.valueOf(NukkitMath.round(z, 2))));
+            for (Entity targetEntity : target) {
+                Location location = new Location(x, y, z, yaw, pitch, targetEntity.getLevel());
+                EntityTeleportEvent event = new EntityTeleportEvent(targetEntity, targetEntity, location);
+                if (!event.isCancelled()) {
+                    targetEntity.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
+                }
+            }
+
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.size() + " entities", String.valueOf(NukkitMath.round(x, 2)), String.valueOf(NukkitMath.round(y, 2)), String.valueOf(NukkitMath.round(z, 2))));
             return true;
         }
-        sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-        return true;
     }
 }
