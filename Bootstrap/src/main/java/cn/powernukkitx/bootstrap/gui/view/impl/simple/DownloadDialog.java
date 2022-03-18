@@ -53,7 +53,7 @@ public final class DownloadDialog extends JDialog {
             progressBar.setOrientation(HORIZONTAL);
             panel.add(progressBar);
             progressBar.setLocation(8, 36);
-            progressBar.setSize(new Dimension(556, 16));
+            progressBar.setSize(new Dimension(560, 16));
         }
         new SwingWorker<Void, Void>() {
             @Override

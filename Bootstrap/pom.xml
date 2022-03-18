@@ -48,7 +48,7 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -67,6 +67,12 @@
             <artifactId>flatlaf</artifactId>
             <version>2.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.1.5</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -158,6 +164,23 @@
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
                                 <exclude>module-info.class</exclude>
+                                <exclude>com/sun/jna/sunos-x86-64/**</exclude>
+                                <exclude>com/sun/jna/sunos-x86/**</exclude>
+                                <exclude>com/sun/jna/sunos-sparc/**</exclude>
+                                <exclude>com/sun/jna/sunos-sparcv9/**</exclude>
+                                <exclude>com/sun/jna/linux-ppc/**</exclude>
+                                <exclude>com/sun/jna/linux-ppc64le/**</exclude>
+                                <exclude>com/sun/jna/sunos-sparcv9/**</exclude>
+                                <exclude>com/sun/jna/aix-ppc/**</exclude>
+                                <exclude>com/sun/jna/aix-ppc64/**</exclude>
+                                <exclude>com/sun/jna/openbsd-x86-64/**</exclude>
+                                <exclude>com/sun/jna/openbsd-x86/**</exclude>
+                                <exclude>com/sun/jna/freebsd-x86-64/**</exclude>
+                                <exclude>com/sun/jna/linux-mips64el/**</exclude>
+                                <exclude>com/sun/jna/linux-s390x/**</exclude>
+                                <exclude>com/sun/jna/linux-riscv64/**</exclude>
+                                <exclude>org/fusesource/jansi/internal/native/FreeBSD/**</exclude>
+                                <exclude>org/fusesource/jansi/internal/native/Linux/ppc64/**</exclude>
                             </excludes>
                         </filter>
                     </filters>

@@ -25,6 +25,18 @@ public final class StringUtils {
         }
     }
 
+    public static String displayableFreq(long hz) {
+        if (hz >= 1000000000) {
+            return String.format("%.2fGHz", hz / 1000000000.0);
+        } else if (hz >= 1000 * 1000) {
+            return String.format("%.2fMHz", hz / 1000000.0);
+        } else if (hz >= 1000) {
+            return String.format("%.2fKHz", hz / 1000.0);
+        } else {
+            return String.format("%dHz", hz);
+        }
+    }
+
     public static int getPrintLength(String s) {
         int length = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -67,8 +79,8 @@ public final class StringUtils {
     }
 
     public static String stripTrailing(String str) {
-        for (int i = str.length() - 1; i >=0 ; i--) {
-            if(!Character.isWhitespace(str.charAt(i))) {
+        for (int i = str.length() - 1; i >= 0; i--) {
+            if (!Character.isWhitespace(str.charAt(i))) {
                 return str.substring(0, i + 1);
             }
         }

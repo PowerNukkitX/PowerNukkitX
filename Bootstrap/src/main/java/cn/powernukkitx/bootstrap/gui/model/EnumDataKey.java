@@ -19,5 +19,22 @@ public enum EnumDataKey {
     CheckUpdateWindowOnDisplay,
     JavaLocations,
     PNXLocations,
-    LibLocations
+    LibLocations,
+
+    // PerformanceView
+    PerformanceWindowSize,
+    PerformanceWindowIcon,
+    PerformanceWindowTitle,
+    PerformanceWindowOnDisplay,
+    TotalCPUUsage,
+    CPUCoreCount,
+    CPULogicCount,
+    CPUVendor,
+    CPUModel,
+    CPUMhz,
+    CPUCurrentMhz,
+    TotalMemory,
+    TotalMemoryUsing,
+    IsInVM,
+
 }

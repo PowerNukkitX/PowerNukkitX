@@ -34,6 +34,7 @@ public final class MainWindowController extends CommonController {
     private final TerminalView terminalView;
 
     private final CheckUpdateWindowController checkUpdateWindowController;
+    private final PerformanceWindowController performanceWindowController;
 
     private TerminalTty terminalTty = null;
     private Thread pnxThread = null;
@@ -44,6 +45,7 @@ public final class MainWindowController extends CommonController {
         views.add(this.terminalView = new TerminalView(this));
         // 创建其他窗口控制器
         this.checkUpdateWindowController = new CheckUpdateWindowController();
+        this.performanceWindowController = new PerformanceWindowController();
     }
 
     @Override
@@ -53,6 +55,7 @@ public final class MainWindowController extends CommonController {
             this.mainWindowView.init();
         });
         this.checkUpdateWindowController.start();
+        this.performanceWindowController.start();
     }
 
     @Override
@@ -184,4 +187,7 @@ public final class MainWindowController extends CommonController {
         checkUpdateWindowController.onOpen();
     }
 
+    public void onOpenPerformanceWindow() {
+        performanceWindowController.onOpen();
+    }
 }

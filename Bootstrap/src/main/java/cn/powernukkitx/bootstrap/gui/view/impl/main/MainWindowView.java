@@ -16,6 +16,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static cn.powernukkitx.bootstrap.util.LanguageUtils.tr;
+
 public final class MainWindowView extends JFrame implements SwingView<JFrame> {
     private final int viewID = View.newViewID();
     private final MainWindowController controller;
@@ -37,27 +39,30 @@ public final class MainWindowView extends JFrame implements SwingView<JFrame> {
         final JMenuBar menuBar = new JMenuBar();
         this.setJMenuBar(menuBar);
         {  // 服务端菜单
-            final JMenu serverMenu = new JMenu(LanguageUtils.tr("gui.menu.server"));
+            final JMenu serverMenu = new JMenu(tr("gui.menu.server"));
             menuBar.add(serverMenu);
-            final JMenuItem startServerOption = new JMenuItem(LanguageUtils.tr("gui.menu.server.start"));
+            final JMenuItem startServerOption = new JMenuItem(tr("gui.menu.server.start"));
             serverMenu.add(startServerOption);
             startServerOption.addActionListener(e -> controller.onStartServer());
             bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, value -> startServerOption.setEnabled(!value));
-            final JMenuItem stopServerOption = new JMenuItem(LanguageUtils.tr("gui.menu.server.stop"));
+            final JMenuItem stopServerOption = new JMenuItem(tr("gui.menu.server.stop"));
             serverMenu.add(stopServerOption);
             stopServerOption.addActionListener(e -> controller.onCloseServer());
             bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, stopServerOption::setEnabled);
-            final JMenuItem restartServerOption = new JMenuItem(LanguageUtils.tr("gui.menu.server.restart"));
+            final JMenuItem restartServerOption = new JMenuItem(tr("gui.menu.server.restart"));
             serverMenu.add(restartServerOption);
             restartServerOption.addActionListener(e -> controller.onRestartServer());
             bind(MainWindowDataKeys.SERVER_RUNNING, Boolean.class, restartServerOption::setEnabled);
         }
         {  // 窗口菜单
-            final JMenu windowMenu = new JMenu(LanguageUtils.tr("gui.menu.window"));
+            final JMenu windowMenu = new JMenu(tr("gui.menu.window"));
             menuBar.add(windowMenu);
-            final JMenuItem checkUpdateWindowOption = new JMenuItem(LanguageUtils.tr("gui.menu.window.check-update"));
+            final JMenuItem checkUpdateWindowOption = new JMenuItem(tr("gui.menu.window.check-update"));
             windowMenu.add(checkUpdateWindowOption);
             checkUpdateWindowOption.addActionListener(e -> controller.onOpenCheckUpdateWindow());
+            final JMenuItem performanceOption = new JMenuItem(tr("gui.menu.window.performance"));
+            windowMenu.add(performanceOption);
+            performanceOption.addActionListener(e -> controller.onOpenPerformanceWindow());
         }
         /* 初始化swing界面 */
         this.setVisible(true);
