@@ -16,6 +16,7 @@ import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -145,10 +146,11 @@ public class TeleportCommand extends VanillaCommand {
             } else {
                 pos = 0;
             }
+
             double yaw;
             double pitch;
             Position position;
-            CommandParser parser = new CommandParser(this, sender, args);
+            CommandParser parser = new CommandParser(this, sender, Arrays.copyOfRange(args, pos, pos + 3));
             try {
                 position = parser.parsePosition();
                 pos = pos + 3;
