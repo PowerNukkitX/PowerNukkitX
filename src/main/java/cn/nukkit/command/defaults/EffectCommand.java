@@ -55,7 +55,7 @@ public class EffectCommand extends Command {
         }
         if (args.length < 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
+            return false;
         }
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {

@@ -81,7 +81,11 @@ public class GamemodeCommand extends VanillaCommand {
         } else if (!(sender instanceof Player)) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
+        } else {
+            entities = List.of(sender.asPlayer());
         }
+
+
 
         if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival")) ||
                 (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative")) ||
