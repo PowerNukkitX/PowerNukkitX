@@ -7,15 +7,10 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CommandParser {
@@ -153,40 +148,52 @@ public class CommandParser {
     }
 
     public Vector3 parseVector3() throws CommandSyntaxException {
-        double baseX = 0;
-        double baseY = 0;
-        double baseZ = 0;
-
-        baseX = sender.getPosition().getX();
-        baseY = sender.getPosition().getY();
-        baseZ = sender.getPosition().getZ();
-
-        return new Vector3(this.parseCoordinate(baseX), this.parseCoordinate(baseY), this.parseCoordinate(baseZ));
+        Vector3 baseVector = sender.getPosition();
+        baseVector = parseCoordinate(baseVector,CoordinateType.X);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Y);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Z);
+        return baseVector;
     }
 
     public Vector2 parseVector2() throws CommandSyntaxException {
-        double baseX = 0;
-        double baseZ = 0;
-
-        baseX = sender.getPosition().getX();
-        baseZ = sender.getPosition().getZ();
-
-        return new Vector2(this.parseCoordinate(baseX), this.parseCoordinate(baseZ));
+        Vector3 baseVector = sender.getPosition();
+        baseVector = parseCoordinate(baseVector,CoordinateType.X);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Z);
+        return new Vector2(baseVector.x,baseVector.z);
     }
 
-    private double parseCoordinate(double baseCoordinate) throws CommandSyntaxException {
+    private Vector3 parseCoordinate(Vector3 baseVector3,CoordinateType type) throws CommandSyntaxException {
         try {
             String arg = this.next();
             if (arg.startsWith("~")) {
                 String relativeCoordinate = arg.substring(1);
                 if (relativeCoordinate.isEmpty()) {
-                    return baseCoordinate;
+                    return baseVector3;
                 }
-                return baseCoordinate + Double.parseDouble(relativeCoordinate);
+                return switch (type) {
+                    case X -> baseVector3.add(Double.parseDouble(relativeCoordinate), 0, 0);
+                    case Y -> baseVector3.add(0, Double.parseDouble(relativeCoordinate), 0);
+                    case Z -> baseVector3.add(0, 0, Double.parseDouble(relativeCoordinate));
+                };
             }
-            return Double.parseDouble(arg);
+            if (arg.startsWith("^")) {
+                String relativeAngleCoordinate = arg.substring(1);
+                if (relativeAngleCoordinate.isEmpty()) {
+                    return baseVector3;
+                }
+                return switch (type) {
+                    case X -> BVector3.fromLocation(sender.getLocation()).addAngle(-90, 0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case Y -> BVector3.fromLocation(sender.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case Z -> BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                };
+            }
+            return baseVector3;
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
+    }
+
+    enum CoordinateType{
+        X, Y, Z
     }
 }

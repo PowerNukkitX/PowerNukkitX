@@ -7,11 +7,13 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.EntitySelector;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class ExecuteCommand extends VanillaCommand {
 
@@ -45,7 +47,7 @@ public class ExecuteCommand extends VanillaCommand {
         }
 
         for (Entity entity : entities) {
-            Position pos = entity.getPosition();
+            Location pos = entity.getLocation();
             boolean usePos = false;
             for(int i = 1;i <= 3;i++){
                 if(!args[i].equals("~")){
