@@ -8,6 +8,8 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.utils.CommandParser;
+import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import java.text.DecimalFormat;
@@ -51,29 +53,26 @@ public class SpawnpointCommand extends VanillaCommand {
         DecimalFormat round2 = new DecimalFormat("##0.00");
         if (args.length == 4) {
             if (level != null) {
-                int x;
-                int y;
-                int z;
+                Position position;
+                CommandParser parser = new CommandParser(this, sender, args);
                 try {
-                    x = Integer.parseInt(args[1]);
-                    y = Integer.parseInt(args[2]);
-                    z = Integer.parseInt(args[3]);
-                } catch (NumberFormatException e1) {
+                    position = parser.parsePosition();
+                } catch (CommandSyntaxException e1) {
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                    return true;
+                    return false;
                 }
                 if(level.isOverWorld()) {
-                    if (y < -64) y = -64;
-                    if (y > 320) y = 320;
+                    if (position.y < -64) position.y = -64;
+                    if (position.y > 320) position.y = 320;
                 } else {
-                    if (y < 0) y = 0;
-                    if (y > 255) y = 255;
+                    if (position.y < 0) position.y = 0;
+                    if (position.y > 255) position.y = 255;
                 }
-                target.setSpawn(new Position(x, y, z, level));
+                target.setSpawn(position);
                 Command.broadcastCommandMessage(sender, new TranslationContainer("commands.spawnpoint.success", target.getName(),
-                        round2.format(x),
-                        round2.format(y),
-                        round2.format(z)));
+                        round2.format(position.x),
+                        round2.format(position.y),
+                        round2.format(position.z)));
                 return true;
             }
         } else if (args.length <= 1) {
