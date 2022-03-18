@@ -62,7 +62,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         if (image != null || colors.length > 0) {
             update |= TEXTURE_UPDATE;
         }
-        if (decorators.length > 0) {
+        if (decorators.length > 0 || !trackedObjects.isEmpty()) {
             update |= DECORATIONS_UPDATE;
         }
         if (eids.length > 0) {
