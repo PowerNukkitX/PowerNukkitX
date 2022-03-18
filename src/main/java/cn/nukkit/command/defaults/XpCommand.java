@@ -70,11 +70,7 @@ public class XpCommand extends Command {
                 amountString = args[0];
                 List<Entity> entities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
-                    if (sender.isPlayer()) {
-                        entities = EntitySelector.matchEntities(sender, args[1]);
-                    } else {
-                        entities = EntitySelector.matchEntities(sender, args[1]);
-                    }
+                    entities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
                     entities = List.of(sender.getServer().getPlayer(args[1]));
                 }

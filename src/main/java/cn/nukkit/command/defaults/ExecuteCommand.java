@@ -10,11 +10,8 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.CommandParser;
-import cn.nukkit.utils.EntitySelector;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class ExecuteCommand extends VanillaCommand {
 
@@ -58,7 +55,6 @@ public class ExecuteCommand extends VanillaCommand {
                         return false;
                     }
                 }
-                return true;
             }else{
                 parser.parseString();//skip "detect"
                 CommandParser detectPosParser = new CommandParser(parser);
@@ -79,8 +75,8 @@ public class ExecuteCommand extends VanillaCommand {
                         return false;
                     }
                 }
-                return true;
             }
+            return true;
         }catch (Exception e){
             e.printStackTrace();
             return false;
