@@ -2,19 +2,23 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
  * @author CreeperFace
  * @since 5.3.2017
  */
 @ToString
-public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to 1.2
+public class ClientboundMapItemDataPacket extends DataPacket {
 
     public int[] eids = EmptyArrays.EMPTY_INTS;
 
@@ -29,14 +33,15 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
 
     public byte dimensionId;
 
+    public final List<MapTrackedObject> trackedObjects = new ObjectArrayList<>();
     public MapDecorator[] decorators = MapDecorator.EMPTY_ARRAY;
     public int[] colors = EmptyArrays.EMPTY_INTS;
     public BufferedImage image = null;
 
     //update
-    public static final int TEXTURE_UPDATE = 2;
-    public static final int DECORATIONS_UPDATE = 4;
-    public static final int ENTITIES_UPDATE = 8;
+    public static final int TEXTURE_UPDATE = 0x2;
+    public static final int DECORATIONS_UPDATE = 0x4;
+    public static final int ENTITIES_UPDATE = 0x8;
 
     @Override
     public byte pid() {
@@ -54,22 +59,21 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         this.putEntityUniqueId(mapId);
 
         int update = 0;
-        if (eids.length > 0) {
-            update |= 0x08;
-        }
-        if (decorators.length > 0) {
-            update |= DECORATIONS_UPDATE;
-        }
-
         if (image != null || colors.length > 0) {
             update |= TEXTURE_UPDATE;
+        }
+        if (decorators.length > 0 || !trackedObjects.isEmpty()) {
+            update |= DECORATIONS_UPDATE;
+        }
+        if (eids.length > 0) {
+            update |= ENTITIES_UPDATE;
         }
 
         this.putUnsignedVarInt(update);
         this.putByte(this.dimensionId);
         this.putBoolean(this.isLocked);
 
-        if ((update & 0x08) != 0) { //TODO: find out what these are for
+        if ((update & ENTITIES_UPDATE) != 0) { //TODO: find out what these are for
             this.putUnsignedVarInt(eids.length);
             for (int eid : eids) {
                 this.putEntityUniqueId(eid);
@@ -80,8 +84,21 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         }
 
         if ((update & DECORATIONS_UPDATE) != 0) {
-            this.putUnsignedVarInt(decorators.length);
+            this.putUnsignedVarInt(this.trackedObjects.size());
+            for (MapTrackedObject object : this.trackedObjects) {
+                switch (object.getType()) {
+                    case BLOCK -> {
+                        this.putLInt(object.getType().ordinal());
+                        this.putBlockVector3(object.getPosition().getFloorX(), object.getPosition().getFloorY(), object.getPosition().getFloorZ());
+                    }
+                    case ENTITY -> {
+                        this.putLInt(object.getType().ordinal());
+                        this.putEntityUniqueId(object.getEntityId());
+                    }
+                }
+            }
 
+            this.putUnsignedVarInt(decorators.length);
             for (MapDecorator decorator : decorators) {
                 this.putByte(decorator.rotation);
                 this.putByte(decorator.icon);
@@ -98,19 +115,19 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
             this.putVarInt(offsetX);
             this.putVarInt(offsetZ);
 
-            this.putUnsignedVarInt(width * height);
-
             if (image != null) {
+                this.putUnsignedVarInt((long) width * height);
                 for (int y = 0; y < width; y++) {
                     for (int x = 0; x < height; x++) {
-                        putUnsignedVarInt(Utils.toABGR(this.image.getRGB(x, y)));
+                        this.putUnsignedVarInt(Utils.toABGR(this.image.getRGB(x, y)));
                     }
                 }
 
                 image.flush();
             } else if (colors.length > 0) {
+                this.putUnsignedVarInt(colors.length);
                 for (int color : colors) {
-                    putUnsignedVarInt(color);
+                    this.putUnsignedVarInt(color);
                 }
             }
         }
@@ -127,5 +144,27 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         public byte offsetZ;
         public String label;
         public Color color;
+    }
+
+    @Getter
+    public static class MapTrackedObject {
+        private final Type type;
+        private long entityId;
+        private Vector3 position;
+
+        public MapTrackedObject(long entityId) {
+            this.type = Type.ENTITY;
+            this.entityId = entityId;
+        }
+
+        public MapTrackedObject(Vector3 position) {
+            this.type = Type.BLOCK;
+            this.position = position;
+        }
+
+        public enum Type {
+            ENTITY,
+            BLOCK
+        }
     }
 }
