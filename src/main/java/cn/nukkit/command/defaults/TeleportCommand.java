@@ -150,7 +150,7 @@ public class TeleportCommand extends VanillaCommand {
             double yaw;
             double pitch;
             Position position;
-            CommandParser parser = new CommandParser(this, sender, Arrays.copyOfRange(args, pos, pos + 3));
+            CommandParser parser = new CommandParser(this, sender, args);
             try {
                 position = parser.parsePosition();
                 pos = pos + 3;

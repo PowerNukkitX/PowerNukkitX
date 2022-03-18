@@ -187,7 +187,11 @@ public class CommandParser {
                     case Z -> BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
                 };
             }
-            return baseVector3;
+            return switch (type) {
+                case X -> baseVector3.setX(Double.parseDouble(arg));
+                case Y -> baseVector3.setY(Double.parseDouble(arg));
+                case Z -> baseVector3.setZ(Double.parseDouble(arg));
+            };
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }

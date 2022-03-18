@@ -59,7 +59,7 @@ public class ExecuteCommand extends VanillaCommand {
                     }
                 }
             }
-            CommandSender executeSender = new ExecutorCommandSender(sender instanceof ExecutorCommandSender ? ((ExecutorCommandSender) sender).getExecutor() : sender,entity,usePos ? pos : null);
+            CommandSender executeSender = new ExecutorCommandSender(sender,entity,usePos ? pos : null);
             StringBuilder executedCommand = new StringBuilder();
             for(int i = 4;i < args.length;i++){
                 executedCommand.append(args[i]).append(" ");
