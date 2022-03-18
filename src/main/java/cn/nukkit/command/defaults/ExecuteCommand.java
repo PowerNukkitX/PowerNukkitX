@@ -23,8 +23,17 @@ public class ExecuteCommand extends VanillaCommand {
         this.setPermission("nukkit.command.execute");
         this.commandParameters.clear();
         this.commandParameters.put("default",new CommandParameter[]{
-                CommandParameter.newType("target",CommandParamType.TARGET),
+                CommandParameter.newType("origin",CommandParamType.TARGET),
                 CommandParameter.newType("position",CommandParamType.POSITION),
+                CommandParameter.newType("command",CommandParamType.RAWTEXT)
+        });
+        this.commandParameters.put("detect",new CommandParameter[]{
+                CommandParameter.newType("origin",CommandParamType.TARGET),
+                CommandParameter.newType("position",CommandParamType.POSITION),
+                CommandParameter.newEnum("detect",new String[]{"detect"}),
+                CommandParameter.newType("detectPos",CommandParamType.POSITION),
+                CommandParameter.newType("block",CommandParamType.INT),
+                CommandParameter.newType("data",CommandParamType.INT),
                 CommandParameter.newType("command",CommandParamType.RAWTEXT)
         });
     }
