@@ -86,10 +86,7 @@ public class TeleportCommand extends VanillaCommand {
         } else {
             List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[0])) {
-                if (sender.isPlayer())
-                    entities = EntitySelector.matchEntities(sender, args[0]);
-                else
-                    entities = EntitySelector.matchEntities(sender, args[0]);
+                entities = EntitySelector.matchEntities(sender, args[0]);
             } else if (sender.getServer().getPlayer(args[0]) != null) {
                 entities = List.of(sender.getServer().getPlayer(args[0]));
             }
