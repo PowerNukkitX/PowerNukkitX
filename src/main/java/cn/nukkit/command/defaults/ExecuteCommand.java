@@ -38,17 +38,40 @@ public class ExecuteCommand extends VanillaCommand {
         try{
             CommandParser parser = new CommandParser(this,sender, args);
             List<Entity> entities = parser.parseTargets();
-            CommandParser parser2 = new CommandParser(parser);
-            parser.parsePosition();//skip position
-            String command = parser.parseAllRemain();
-            for (Entity entity : entities) {
-                CommandSender executeSender = new ExecutorCommandSender(sender,entity,Location.fromObject(parser2.parsePosition(entity,false)));
-                if(!Server.getInstance().dispatchCommand(executeSender,command)){
-                    sender.sendMessage(new TranslationContainer("commands.generic.exception"));
-                    return false;
+            CommandParser executePosParser = new CommandParser(parser);
+            parser.parsePosition();//skip execute position
+            if (!parser.parseString(false).equals("detect")) {
+                String command = parser.parseAllRemain();
+                for (Entity entity : entities) {
+                    CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
+                    if (!Server.getInstance().dispatchCommand(executeSender, command)) {
+                        sender.sendMessage(new TranslationContainer("commands.generic.exception"));
+                        return false;
+                    }
                 }
+                return true;
+            }else{
+                parser.parseString();//skip "detect"
+                CommandParser detectPosParser = new CommandParser(parser);
+                parser.parsePosition();//skip detect position
+                int blockid = parser.parseInt();
+                int meta = parser.parseInt();
+                String command = parser.parseAllRemain();
+                for (Entity entity : entities) {
+                    Position detectPos = detectPosParser.parsePosition(entity,false);
+                    if (detectPos.getLevelBlock().getId() == blockid && detectPos.getLevelBlock().getDamage() == meta) {
+                        CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
+                        if (!Server.getInstance().dispatchCommand(executeSender, command)) {
+                            sender.sendMessage(new TranslationContainer("commands.generic.exception"));
+                            return false;
+                        }
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }catch (Exception e){
             e.printStackTrace();
             return false;

@@ -211,9 +211,12 @@ public class CommandParser {
 
     public Vector3 parseVector3(Vector3 bv,boolean moveCursor) throws CommandSyntaxException {
         Vector3 baseVector = bv == null ? sender.getPosition() : bv;
-        baseVector = parseCoordinate(baseVector,CoordinateType.X,moveCursor);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Y,moveCursor);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Z,moveCursor);
+        baseVector = parseCoordinate(baseVector,CoordinateType.X);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Y);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Z);
+        if (!moveCursor){
+            this.cursor-=3;
+        }
         return baseVector;
     }
 
@@ -225,6 +228,9 @@ public class CommandParser {
         Vector3 baseVector = sender.getPosition();
         baseVector = parseCoordinate(baseVector,CoordinateType.X,moveCursor);
         baseVector = parseCoordinate(baseVector,CoordinateType.Z,moveCursor);
+        if (!moveCursor){
+            this.cursor-=2;
+        }
         return new Vector2(baseVector.x,baseVector.z);
     }
 
