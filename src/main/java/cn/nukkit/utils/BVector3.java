@@ -3,6 +3,7 @@ package cn.nukkit.utils;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class BVector3{
@@ -39,6 +40,18 @@ public class BVector3{
 
     public BVector3 setAngle(double xzAxisAngle, double yAxisAngle){
         convertAngle(xzAxisAngle,yAxisAngle);
+        updatePos();
+        return this;
+    }
+
+    public BVector3 setYAngle(double yAngle){
+        this.yAxisAngle = yAngle;
+        updatePos();
+        return this;
+    }
+
+    public BVector3 setXZAngle(double xzAngle){
+        this.xzAxisAngle = xzAngle;
         updatePos();
         return this;
     }
