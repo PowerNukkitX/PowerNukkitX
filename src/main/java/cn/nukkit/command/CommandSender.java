@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
 
@@ -104,4 +105,11 @@ public interface CommandSender extends Permissible {
     @Since("1.6.0.0-PNX")
     @Nonnull
     default Position getPosition() {return new Position(0, 0, 0,Server.getInstance().getDefaultLevel());}
+
+
+    //return the sender's location
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nonnull
+    default Location getLocation() {return new Location(0, 0, 0,Server.getInstance().getDefaultLevel());}
 }

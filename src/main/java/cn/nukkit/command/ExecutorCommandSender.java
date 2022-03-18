@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -13,7 +14,6 @@ import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
 
 //used for executing commands in place of an entity
@@ -23,15 +23,15 @@ public class ExecutorCommandSender implements CommandSender {
 
     private CommandSender executor;
     private Entity entity;
-    private Position executePosition;
+    private Location executeLocation;
 
-    public ExecutorCommandSender(CommandSender executor, Entity entity, Position executePosition) {
+    public ExecutorCommandSender(CommandSender executor, Entity entity, Location executeLocation) {
         if (executor instanceof ExecutorCommandSender){
             throw new IllegalArgumentException("Cannot create ExecutorCommandSender from another ExecutorCommandSender");
         }
         this.executor = executor;
         this.entity = entity;
-        this.executePosition = executePosition;
+        this.executeLocation = executeLocation;
     }
 
     @Override
@@ -77,7 +77,15 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public Position getPosition() {
-        return executePosition == null ? entity : executePosition;
+        return executeLocation == null ? entity : executeLocation;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Nonnull
+    @Override
+    public Location getLocation() {
+        return executeLocation == null ? entity : executeLocation;
     }
 
     @Override
@@ -148,7 +156,7 @@ public class ExecutorCommandSender implements CommandSender {
         return entity;
     }
 
-    public Position getExecutePosition() {
-        return executePosition;
+    public Position getExecuteLocation() {
+        return executeLocation;
     }
 }
