@@ -55,7 +55,7 @@ public class EffectCommand extends Command {
         }
         if (args.length < 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
+            return false;
         }
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
@@ -116,6 +116,7 @@ public class EffectCommand extends Command {
                 effect.setVisible(false);
             }
         }
+        boolean successExecute = false;
         for (Entity entity : entities) {
             if (duration == 0) {
                 if (!entity.hasEffect(effect.getId())) {
@@ -124,16 +125,18 @@ public class EffectCommand extends Command {
                     } else {
                         sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), entity.getName()));
                     }
-                    return true;
+                    continue;
                 }
+                successExecute = true;
                 entity.removeEffect(effect.getId());
                 sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), entity.getName()));
             } else {
+                successExecute = true;
                 effect.setDuration(duration).setAmplifier(amplification);
                 entity.addEffect(effect);
                 Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20)));
             }
         }
-        return true;
+        return successExecute;
     }
 }

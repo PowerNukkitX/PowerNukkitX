@@ -53,7 +53,7 @@ public class TeleportCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
         }
-        List <Entity> target = List.of();
+        List <Entity> target;
         List<Entity> origin = List.of();
         if (args.length == 1 || args.length == 3 || args.length == 5) {
             if (sender.isEntity()) {
@@ -96,7 +96,6 @@ public class TeleportCommand extends VanillaCommand {
             target = entities;
 
             if (args.length == 2) {
-
                 origin = entities;
                 List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
@@ -115,8 +114,8 @@ public class TeleportCommand extends VanillaCommand {
             }
         }
 
-
         if (args.length < 3) {
+            boolean successExecute = false;
             if (origin.size() == 0) {
                 sender.sendMessage(TextFormat.RED + "Can't find player " + args[1]);
                 return false;
@@ -125,8 +124,14 @@ public class TeleportCommand extends VanillaCommand {
                 EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target.get(0));
                 if (!event.isCancelled()) {
                     originEntity.teleport(target.get(0));
+                    successExecute = true;
                 }
             }
+            if (!successExecute) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
+            }
+
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", target.get(0).getName()));
             return true;
 
@@ -157,12 +162,18 @@ public class TeleportCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return false;
             }
+            boolean successExecute = false;
             for (Entity targetEntity : target) {
                 Location location = new Location(x, y, z, yaw, pitch, targetEntity.getLevel());
                 EntityTeleportEvent event = new EntityTeleportEvent(targetEntity, targetEntity, location);
                 if (!event.isCancelled()) {
                     targetEntity.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
+                    successExecute = true;
                 }
+            }
+            if (!successExecute) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
             }
 
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.size() + " entities", String.valueOf(NukkitMath.round(x, 2)), String.valueOf(NukkitMath.round(y, 2)), String.valueOf(NukkitMath.round(z, 2))));
