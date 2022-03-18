@@ -127,7 +127,7 @@ public class TeleportCommand extends VanillaCommand {
             for (Entity originEntity : origin) {
                 EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target.get(0));
                 if (!event.isCancelled()) {
-                    originEntity.teleport(target.get(0));
+                    originEntity.teleport(target.get(0), PlayerTeleportEvent.TeleportCause.COMMAND);
                     successExecute = true;
                 }
             }
@@ -159,8 +159,8 @@ public class TeleportCommand extends VanillaCommand {
                     yaw = Integer.parseInt(args[pos++]);
                     pitch = Integer.parseInt(args[pos]);
                 } else {
-                    yaw = 0;
-                    pitch = 0;
+                    yaw = sender.getLocation().getYaw();
+                    pitch = sender.getLocation().getPitch();
                 }
             } catch (NumberFormatException | CommandSyntaxException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
