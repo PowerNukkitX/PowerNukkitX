@@ -9,7 +9,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
-import cn.nukkit.utils.EntitySelector;
+import cn.nukkit.utils.CommandParser;
+import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
 
@@ -57,86 +58,88 @@ public class EffectCommand extends Command {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
         }
-        List<Entity> entities = List.of();
-        if (EntitySelector.hasArguments(args[0])) {
-            entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if  (sender.getServer().getPlayer(args[0]) != null){
-             entities = List.of(sender.getServer().getPlayer(args[0]));
-        }
-        if (entities.size() == 0) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+        CommandParser parser = new CommandParser(this, sender, args);
+        try {
+            List<Entity> entities = parser.parseTargets();
+
+            if (entities.size() == 0) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
+            }
+            if (args[1].equalsIgnoreCase("clear")) {
+                for (Entity entity : entities) {
+                    for (Effect effect : entity.getEffects().values()) {
+                        entity.removeEffect(effect.getId());
+                    }
+                    sender.sendMessage(new TranslationContainer("commands.effect.success.removed.all", entity.getName()));
+                }
+                return true;
+            }
+            Effect effect;
+            try {
+                effect = Effect.getEffect(Integer.parseInt(args[1]));
+            } catch (NumberFormatException | ServerException a) {
+                try {
+                    effect = Effect.getEffectByName(args[1]);
+                } catch (Exception e) {
+                    sender.sendMessage(new TranslationContainer("commands.effect.notFound", args[1]));
+                    return false;
+                }
+            }
+            int duration = 300;
+            int amplification = 0;
+            if (args.length >= 3) {
+                try {
+                    duration = Integer.parseInt(args[2]);
+                } catch (NumberFormatException a) {
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    return false;
+                }
+                if (!(effect instanceof InstantEffect)) {
+                    duration *= 20;
+                }
+            } else if (effect instanceof InstantEffect) {
+                duration = 1;
+            }
+            if (args.length >= 4) {
+                try {
+                    amplification = Integer.parseInt(args[3]);
+                } catch (NumberFormatException a) {
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    return false;
+                }
+            }
+            if (args.length >= 5) {
+                String v = args[4].toLowerCase();
+                if (v.matches("(?i)|on|true|t|1")) {
+                    effect.setVisible(false);
+                }
+            }
+            boolean successExecute = false;
+            for (Entity entity : entities) {
+                if (duration == 0) {
+                    if (!entity.hasEffect(effect.getId())) {
+                        if (entity.getEffects().size() == 0) {
+                            sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", entity.getName()));
+                        } else {
+                            sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), entity.getName()));
+                        }
+                        continue;
+                    }
+                    successExecute = true;
+                    entity.removeEffect(effect.getId());
+                    sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), entity.getName()));
+                } else {
+                    successExecute = true;
+                    effect.setDuration(duration).setAmplifier(amplification);
+                    entity.addEffect(effect);
+                    Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20)));
+                }
+            }
+            return successExecute;
+        } catch (CommandSyntaxException e) {
+            e.printStackTrace();
             return false;
         }
-        if (args[1].equalsIgnoreCase("clear")) {
-            for(Entity entity : entities) {
-                for (Effect effect : entity.getEffects().values()) {
-                    entity.removeEffect(effect.getId());
-                }
-                sender.sendMessage(new TranslationContainer("commands.effect.success.removed.all", entity.getName()));
-            }
-            return true;
-        }
-        Effect effect;
-        try {
-            effect = Effect.getEffect(Integer.parseInt(args[1]));
-        } catch (NumberFormatException | ServerException a) {
-            try {
-                effect = Effect.getEffectByName(args[1]);
-            } catch (Exception e) {
-                sender.sendMessage(new TranslationContainer("commands.effect.notFound", args[1]));
-                return false;
-            }
-        }
-        int duration = 300;
-        int amplification = 0;
-        if (args.length >= 3) {
-            try {
-                duration = Integer.parseInt(args[2]);
-            } catch (NumberFormatException a) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return false;
-            }
-            if (!(effect instanceof InstantEffect)) {
-                duration *= 20;
-            }
-        } else if (effect instanceof InstantEffect) {
-            duration = 1;
-        }
-        if (args.length >= 4) {
-            try {
-                amplification = Integer.parseInt(args[3]);
-            } catch (NumberFormatException a) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return false;
-            }
-        }
-        if (args.length >= 5) {
-            String v = args[4].toLowerCase();
-            if (v.matches("(?i)|on|true|t|1")) {
-                effect.setVisible(false);
-            }
-        }
-        boolean successExecute = false;
-        for (Entity entity : entities) {
-            if (duration == 0) {
-                if (!entity.hasEffect(effect.getId())) {
-                    if (entity.getEffects().size() == 0) {
-                        sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", entity.getName()));
-                    } else {
-                        sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), entity.getName()));
-                    }
-                    continue;
-                }
-                successExecute = true;
-                entity.removeEffect(effect.getId());
-                sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), entity.getName()));
-            } else {
-                successExecute = true;
-                effect.setDuration(duration).setAmplifier(amplification);
-                entity.addEffect(effect);
-                Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20)));
-            }
-        }
-        return successExecute;
     }
 }
