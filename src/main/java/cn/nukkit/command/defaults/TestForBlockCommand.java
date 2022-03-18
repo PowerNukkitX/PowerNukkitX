@@ -62,10 +62,10 @@ public class TestForBlockCommand extends VanillaCommand {
             int meta = block.getDamage();
 
             if (id == tileId && meta == dataValue) {
-                sender.sendMessage(String.format("Successfully found the block at %1$d,%2$d,%3$d.", position.getFloorX(), position.getFloorY(), position.getFloorZ()));
+                sender.sendMessage(String.format("Successfully found the block at %1$f,%2$f,%3$f.", position.getX(), position.getY(), position.getZ()));
                 return true;
             } else {
-                sender.sendMessage(String.format(TextFormat.RED + "The block at %1$d,%2$d,%3$d is %4$d:%5$d (expected: %6$d:%7$d).", position.getFloorX(), position.getFloorY(), position.getFloorZ(), id, meta, tileId, dataValue));
+                sender.sendMessage(String.format(TextFormat.RED + "The block at %1$f,%2$f,%3$f is %4$d:%5$d (expected: %6$d:%7$d).", position.getX(), position.getY(), position.getZ(), id, meta, tileId, dataValue));
                 return false;
             }
         } catch (CommandSyntaxException e) {

@@ -77,7 +77,7 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public Position getPosition() {
-        return executeLocation == null ? entity : executeLocation;
+        return (executeLocation == null ? entity : executeLocation).clone();
     }
 
     @Since("1.6.0.0-PNX")
@@ -85,7 +85,7 @@ public class ExecutorCommandSender implements CommandSender {
     @Nonnull
     @Override
     public Location getLocation() {
-        return executeLocation == null ? entity : executeLocation;
+        return (executeLocation == null ? entity : executeLocation).clone();
     }
 
     @Override
