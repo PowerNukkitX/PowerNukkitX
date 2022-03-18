@@ -47,18 +47,18 @@ public final class StringUtils {
     }
 
     public static String uriSuffix(String s) {
-        final int splashIndex = s.indexOf("/");
+        final int splashIndex = s.lastIndexOf("/");
         String last;
         if (splashIndex == -1) {
             last = s;
         } else {
             last = s.substring(splashIndex + 1);
         }
-        final int dotIndex = last.indexOf('.');
+        final int dotIndex = last.lastIndexOf('.');
         if (dotIndex == -1) {
             return "";
         } else {
-            return s.substring(0, dotIndex);
+            return last.substring(dotIndex + 1);
         }
     }
 

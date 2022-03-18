@@ -10,6 +10,7 @@ import java.util.*;
 
 public class CommonModel implements Model {
     public static final CommonModel INSTANCE = new CommonModel(null);
+    public static final Timer TIMER = new Timer("timer");
 
     protected final Map<DataKey<?>, Object> dataMap = new HashMap<>();
     protected final Map<DataKey<?>, List<DataListener<?>>> dataListenerMap = new HashMap<>();

@@ -26,7 +26,7 @@ public final class AdoptOpenJDKInstall implements Component {
     @Override
     public void execute(CLI cli, Object... args) {
         this.cli = cli;
-        //downloadAdoptOpenJDK17();
+        downloadAdoptOpenJDK17();
         uncompressAdoptOpenJDK17();
     }
 

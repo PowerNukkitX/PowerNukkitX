@@ -7,15 +7,27 @@ import cn.powernukkitx.bootstrap.gui.model.values.JavaLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.LibLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.Warp;
 import cn.powernukkitx.bootstrap.gui.view.View;
+import cn.powernukkitx.bootstrap.gui.view.impl.simple.DownloadDialog;
 import cn.powernukkitx.bootstrap.gui.view.impl.update.CheckUpdateWindowView;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.LibsLocator;
+import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
+import cn.powernukkitx.bootstrap.util.GzipUtils;
+import cn.powernukkitx.bootstrap.util.StringUtils;
+import cn.powernukkitx.bootstrap.util.URLUtils;
+import net.lingala.zip4j.ZipFile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
 import static cn.powernukkitx.bootstrap.util.LanguageUtils.tr;
@@ -61,13 +73,19 @@ public final class CheckUpdateWindowController extends CommonController {
     }
 
     public void collectData() {
-        updateWindowModel.setData(UpdateWindowDataKeys.TITLE, tr("gui.update-window.title.collecting", "0"));
+        collectData(true, true, true);
+    }
+
+    public void collectData(boolean java, boolean pnx, boolean libs) {
+        final int sum = (java ? 1 : 0) + (pnx ? 1 : 0) + (libs ? 1 : 0);
+        updateWindowModel.setData(UpdateWindowDataKeys.TITLE, tr("gui.update-window.title.collecting", "0", String.valueOf(sum)));
         new SwingWorker<Void, Warp<?>>() {
             @Override
             protected Void doInBackground() {
-                publish(new JavaLocationsWarp(new JavaLocator(null, true).locate()));
-                publish(new JarLocationsWarp(new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly").locate()));
-                publish(new LibLocationsWarp(new LibsLocator().locate()));
+                if (java) publish(new JavaLocationsWarp(new JavaLocator(null, true).locate()));
+                if (pnx)
+                    publish(new JarLocationsWarp(new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly").locate()));
+                if (libs) publish(new LibLocationsWarp(new LibsLocator().locate()));
                 return null;
             }
 
@@ -78,19 +96,109 @@ public final class CheckUpdateWindowController extends CommonController {
 
             @Override
             protected void process(List<Warp<?>> chunks) {
-                updateWindowModel.setData(UpdateWindowDataKeys.TITLE, tr("gui.update-window.title.collecting", String.valueOf(chunks.size())));
+                updateWindowModel.setData(UpdateWindowDataKeys.TITLE, tr("gui.update-window.title.collecting", String.valueOf(chunks.size()), String.valueOf(sum)));
                 for (final Warp<?> tmp : chunks) {
-                    if(tmp.isConsumed()) continue;
+                    if (tmp.isConsumed()) continue;
                     tmp.consume();
-                    if(tmp instanceof JavaLocationsWarp) {
+                    if (tmp instanceof JavaLocationsWarp) {
                         updateWindowModel.setData(UpdateWindowDataKeys.JAVA_LOCATIONS, (JavaLocationsWarp) tmp);
-                    }else if(tmp instanceof JarLocationsWarp) {
+                    } else if (tmp instanceof JarLocationsWarp) {
                         updateWindowModel.setData(UpdateWindowDataKeys.PNX_LOCATIONS, (JarLocationsWarp) tmp);
-                    }else if(tmp instanceof LibLocationsWarp) {
+                    } else if (tmp instanceof LibLocationsWarp) {
                         updateWindowModel.setData(UpdateWindowDataKeys.LIBS_LOCATIONS, (LibLocationsWarp) tmp);
                     }
                 }
             }
         }.execute();
+    }
+
+    public void onDownloadJava(int index) {
+        URL downloadURL = null;
+        switch (index) {
+            case 0:
+                downloadURL = URLUtils.adopt17URL();
+                break;
+            case 1:
+                downloadURL = URLUtils.graal17URL();
+                break;
+        }
+        if (downloadURL != null) {
+            final String suffix = StringUtils.uriSuffix(downloadURL);
+            final File target = new File("tmp." + suffix);
+            DownloadDialog.openDownloadDialog("Java17", downloadURL.toString(), target, dialog -> {
+                dialog.getLabel().setText(tr("gui.download-dialog.uncompressing"));
+                if ("zip".equals(suffix)) {
+                    final ZipFile zipFile = new ZipFile(target);
+                    try {
+                        zipFile.extractAll("./java");
+                        zipFile.close();
+                        dialog.dispose();
+                        //noinspection ResultOfMethodCallIgnored
+                        target.delete();
+                    } catch (IOException e) {
+                        dialog.dispose();
+                        JOptionPane.showMessageDialog(dialog, tr("gui.download-dialog.failed-uncompress"), tr("gui.common.err"), JOptionPane.ERROR_MESSAGE);
+                    }
+                } else if ("tar.gz".equals(suffix)) {
+                    try {
+                        GzipUtils.uncompressTGzipFile(target, new File("./java"));
+                        dialog.dispose();
+                        //noinspection ResultOfMethodCallIgnored
+                        target.delete();
+                    } catch (IOException e) {
+                        dialog.dispose();
+                        JOptionPane.showMessageDialog(dialog, tr("gui.download-dialog.failed-uncompress"), tr("gui.common.err"), JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            });
+        }
+    }
+
+    public void onClearPNX() {
+        CompletableFuture.runAsync(() -> {
+            final JarLocator pnxLocator = new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly");
+            //noinspection ResultOfMethodCallIgnored
+            pnxLocator.locate().forEach(e -> e.getFile().delete());
+        });
+    }
+
+    public void onDownloadPNX(VersionListHelper.VersionEntry version) {
+        final URL downloadLink = Objects.requireNonNull(URLUtils.getAssetsLink("core", version.getBranch() + "-" + version.getCommit()));
+        final File target = new File("powernukkitx.jar");
+        DownloadDialog.openDownloadDialog("PowerNukkitX", downloadLink.toString(), target, dialog -> {
+            dialog.dispose();
+            collectData(false, true, false);
+        });
+    }
+
+    public void onDownloadLib(String libName) {
+        final URL downloadLink = Objects.requireNonNull(URLUtils.getAssetsLink("libs", libName));
+        final File target = new File("libs/" + libName);
+        DownloadDialog.openDownloadDialog(libName, downloadLink.toString(), target, dialog -> {
+            dialog.dispose();
+            collectData(false, false, true);
+        });
+    }
+
+    public void onDownloadLibs(List<String> libNames) {
+        if (libNames.size() == 0) {
+            JOptionPane.showMessageDialog(checkUpdateWindowView.getActualComponent(), tr("gui.update-window.all-libs-are-latest"),
+                    tr("gui.common.sign"), JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        downloadLib(libNames.listIterator(), libNames.get(0));
+    }
+
+    private void downloadLib(Iterator<String> it, String libName) {
+        final URL downloadLink = Objects.requireNonNull(URLUtils.getAssetsLink("libs", libName));
+        final File target = new File("libs/" + libName);
+        DownloadDialog.openDownloadDialog(libName, downloadLink.toString(), target, dialog -> {
+            dialog.dispose();
+            if (it.hasNext()) {
+                downloadLib(it, it.next());
+            } else {
+                collectData(false, false, true);
+            }
+        });
     }
 }

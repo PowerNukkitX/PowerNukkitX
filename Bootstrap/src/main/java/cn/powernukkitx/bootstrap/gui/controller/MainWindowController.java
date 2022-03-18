@@ -1,11 +1,11 @@
 package cn.powernukkitx.bootstrap.gui.controller;
 
+import cn.powernukkitx.bootstrap.gui.model.impl.CommonModel;
 import cn.powernukkitx.bootstrap.gui.model.impl.view.MainWindowModel;
 import cn.powernukkitx.bootstrap.gui.model.keys.MainWindowDataKeys;
-import cn.powernukkitx.bootstrap.gui.model.keys.UpdateWindowDataKeys;
 import cn.powernukkitx.bootstrap.gui.model.values.TerminalTty;
-import cn.powernukkitx.bootstrap.gui.view.impl.main.MainWindowView;
 import cn.powernukkitx.bootstrap.gui.view.View;
+import cn.powernukkitx.bootstrap.gui.view.impl.main.MainWindowView;
 import cn.powernukkitx.bootstrap.gui.view.impl.main.TerminalView;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
@@ -90,19 +90,27 @@ public final class MainWindowController extends CommonController {
             @Override
             protected Pair<Location<JavaLocator.JavaInfo>, Location<JarLocator.JarInfo>> doInBackground() {
                 final List<Location<JavaLocator.JavaInfo>> javaLocations = new JavaLocator("17", true).locate();
-                if(javaLocations.size() == 0) {
-                    JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-java17"), tr("gui.std-dialog.error.failed-to-start-pnx"), JOptionPane.ERROR_MESSAGE);
+                if (javaLocations.size() == 0) {
+                    int res = JOptionPane.showConfirmDialog(mainWindowView, tr("gui.std-dialog.error.no-java17"), tr("gui.std-dialog.error.failed-to-start-pnx"),
+                            JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if (res == 0) {
+                        onOpenCheckUpdateWindow();
+                    }
                     return null;
                 }
                 final Location<JavaLocator.JavaInfo> javaInfo = javaLocations.get(0);
 
                 final List<Location<JarLocator.JarInfo>> pnxLocations = new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly").locate();
                 if (pnxLocations.size() == 0) {
-                    JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.failed-to-start-pnx"), JOptionPane.ERROR_MESSAGE);
+                    int res = JOptionPane.showConfirmDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.failed-to-start-pnx"),
+                            JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+                    if (res == 0) {
+                        onOpenCheckUpdateWindow();
+                    }
                     return null;
                 } else if (pnxLocations.size() > 1) {
                     final StringBuilder sb = new StringBuilder();
-                    for(final Location<JarLocator.JarInfo> each : pnxLocations) {
+                    for (final Location<JarLocator.JarInfo> each : pnxLocations) {
                         sb.append(each.getFile().getName()).append("\n");
                     }
                     JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.multi-conflict-pnx", sb.toString()), JOptionPane.ERROR_MESSAGE);
@@ -124,7 +132,7 @@ public final class MainWindowController extends CommonController {
                     pnxThread = new Thread(() -> {
                         try {
                             final Process process = new ProcessBuilder(cmd.split(" ")).start();
-                            terminalTty = new TerminalTty(process,terminalView.getActualComponent().getTerminal(), terminalView.getTerminalWidget().getTerminalTextBuffer());
+                            terminalTty = new TerminalTty(process, terminalView.getActualComponent().getTerminal(), terminalView.getTerminalWidget().getTerminalTextBuffer());
                             mainWindowViewModel.setData(MainWindowDataKeys.TERMINAL_TTY, terminalTty);
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, true);
                             mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title.running"));
@@ -148,8 +156,9 @@ public final class MainWindowController extends CommonController {
 
     public void onClose() {
         try {
-            if(terminalTty != null && terminalTty.isConnected())
+            if (terminalTty != null && terminalTty.isConnected())
                 terminalTty.write("\r\nstop");
+            CommonModel.TIMER.cancel();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.stop-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
             return;
@@ -159,7 +168,7 @@ public final class MainWindowController extends CommonController {
 
     public void onCloseServer() {
         try {
-            if(terminalTty != null && terminalTty.isConnected())
+            if (terminalTty != null && terminalTty.isConnected())
                 terminalTty.write("\r\nstop");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.stop-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);

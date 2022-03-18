@@ -18,14 +18,13 @@ import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
 import cn.powernukkitx.bootstrap.util.GitUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -39,6 +38,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
     private final int viewID = View.newViewID();
     private final CheckUpdateWindowController controller;
     private final JFrame self = this;
+    private final List<LibsLocator.LibInfo> libsToUpdate = new ArrayList<>();
 
     public CheckUpdateWindowView(CheckUpdateWindowController controller) {
         this.controller = controller;
@@ -77,10 +77,13 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
             final JMenuItem refreshOption = new JMenuItem(tr("gui.menu.update-option.refresh"));
             menu.add(refreshOption);
             refreshOption.addActionListener(e -> controller.onRefresh());
+            final JMenuItem allLibsOption = new JMenuItem(tr("gui.menu.update-option.update-all-libs"));
+            menu.add(allLibsOption);
+            allLibsOption.addActionListener(e -> controller.onDownloadLibs(libsToUpdate.stream().map(LibsLocator.LibInfo::getName).collect(Collectors.toList())));
         }
         // 根节点
         final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-        final TreeModel treeModel = new DefaultTreeModel(rootNode);
+        final DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
         tree.setModel(treeModel);
         {  // JVM信息
             final TreeEntry javaEntry = createWaitEntry(tr("gui.update-window.java-runtime"));
@@ -90,14 +93,14 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                 final List<Location<JavaLocator.JavaInfo>> javaLocations = value.get();
                 if (javaLocations.size() == 0) {
                     javaEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
-                    javaNode.removeAllChildren();
+                    safeClearChildren(treeModel, javaNode);
                     final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.java-not-found")).setExtra("downloadJVM");
                     final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                    javaNode.add(tmpNode);
+                    safeAddChild(treeModel, javaNode, tmpNode);
                 } else {
                     List<Location<JavaLocator.JavaInfo>> get = value.get();
                     javaEntry.setIcon(getIcon("ok.png", TreeEntry.SIZE));
-                    javaNode.removeAllChildren();
+                    safeClearChildren(treeModel, javaNode);
                     for (int i = 0, getSize = get.size(); i < getSize; i++) {
                         final Location<JavaLocator.JavaInfo> javaInfoLocation = get.get(i);
                         final JavaLocator.JavaInfo info = javaInfoLocation.getInfo();
@@ -106,7 +109,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                                     createOkEntry(info.getFullVersion() + " - " + info.getVendor()) :
                                     createWarnEntry(info.getFullVersion() + " - " + info.getVendor()).setExtra("needNewJVM");
                             final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                            javaNode.add(tmpNode);
+                            safeAddChild(treeModel, javaNode, tmpNode);
                             if (!"17".equals(info.getMajorVersion())) {
                                 javaEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
                             }
@@ -115,7 +118,7 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                                     createComponentEntry(info.getFullVersion() + " - " + info.getVendor()) :
                                     createWarnEntry(info.getFullVersion() + " - " + info.getVendor()).setExtra("needNewJVM");
                             final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                            javaNode.add(tmpNode);
+                            safeAddChild(treeModel, javaNode, tmpNode);
                         }
                     }
                 }
@@ -130,30 +133,30 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                 final List<Location<JarLocator.JarInfo>> pnxLocations = value.get();
                 if (pnxLocations.size() == 0) {
                     pnxEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
-                    pnxNode.removeAllChildren();
+                    safeClearChildren(treeModel, pnxNode);
                     final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-not-found")).setExtra("downloadPNX");
                     final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                    pnxNode.add(tmpNode);
+                    safeAddChild(treeModel, pnxNode, tmpNode);
                 } else {
                     pnxEntry.setIcon(getIcon("ok.png", TreeEntry.SIZE));
-                    pnxNode.removeAllChildren();
+                    safeClearChildren(treeModel, pnxNode);
                     boolean conflict = false;
                     if (pnxLocations.size() != 1) {
                         conflict = true;
                         pnxEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
                         final TreeEntry tmpEntry = createErrorEntry(tr("gui.update-window.pnx-multi-conflict")).setExtra("conflictPNX");
                         final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                        pnxNode.add(tmpNode);
+                        safeAddChild(treeModel, pnxNode, tmpNode);
                     }
                     for (final Location<JarLocator.JarInfo> pnxLocation : pnxLocations) {
                         final JarLocator.JarInfo info = pnxLocation.getInfo();
                         if (info.getGitInfo().isPresent()) {
                             final GitUtils.FullGitInfo gitInfo = info.getGitInfo().get();
                             final TreeEntry tmpEntry = conflict ?
-                                    createWarnEntry(gitInfo.getMainVersion() + "-git-" + gitInfo.getCommitID()) :
-                                    createOkEntry(gitInfo.getMainVersion() + "-git-" + gitInfo.getCommitID());
+                                    createWarnEntry(gitInfo.getMainVersion() + "-git-" + gitInfo.getCommitID()).setExtra("conflictPNX") :
+                                    createOkEntry(gitInfo.getMainVersion() + "-git-" + gitInfo.getCommitID()).setExtra("updatePNX");
                             final DefaultMutableTreeNode tmpNode = new DefaultMutableTreeNode(tmpEntry);
-                            pnxNode.add(tmpNode);
+                            safeAddChild(treeModel, pnxNode, tmpNode);
                         }
                     }
                 }
@@ -166,24 +169,27 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
             rootNode.add(libsNode);
             bind(UpdateWindowDataKeys.LIBS_LOCATIONS, LibLocationsWarp.class, value -> {
                 final List<Location<LibsLocator.LibInfo>> libLocations = value.get();
+                libsToUpdate.clear();
                 boolean libFull = true;
-                libsNode.removeAllChildren();
+                safeClearChildren(treeModel, libsNode);
                 for (final Location<LibsLocator.LibInfo> location : libLocations) {
                     final LibsLocator.LibInfo info = location.getInfo();
                     DefaultMutableTreeNode tmpNode;
                     if (!info.isExists()) {
-                        final TreeEntry tmpEntry = createErrorEntry(info.getName());
+                        final TreeEntry tmpEntry = createErrorEntry(info.getName()).setExtra("downloadLib");
                         tmpNode = new DefaultMutableTreeNode(tmpEntry);
                         libFull = false;
+                        libsToUpdate.add(info);
                     } else if (info.isNeedsUpdate()) {
-                        final TreeEntry tmpEntry = createWarnEntry(info.getName());
+                        final TreeEntry tmpEntry = createWarnEntry(info.getName()).setExtra("downloadLib");
                         tmpNode = new DefaultMutableTreeNode(tmpEntry);
                         libFull = false;
+                        libsToUpdate.add(info);
                     } else {
                         final TreeEntry treeEntry = createOkEntry(info.getName());
                         tmpNode = new DefaultMutableTreeNode(treeEntry);
                     }
-                    libsNode.add(tmpNode);
+                    safeAddChild(treeModel, libsNode, tmpNode);
                 }
                 if (!libFull) {
                     libsEntry.setIcon(getIcon("error.png", TreeEntry.SIZE));
@@ -206,43 +212,64 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                     final Object value = ((DefaultMutableTreeNode) obj).getUserObject();
                     if (value instanceof TreeEntry) {
                         final TreeEntry data = (TreeEntry) value;
-                        switch (data.getExtra()) {
-                            case "needNewJVM":
-                                int res = JOptionPane.showConfirmDialog(this, tr("gui.update-window.need-java17", data.getName()),
-                                        tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                                if (res != 0) break;
-                            case "downloadJVM":
-                                ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-java"),
-                                        Arrays.asList(tr("gui.update-window.openjdk"), tr("gui.update-window.graalvm")),
-                                        i -> System.out.println(i)); // TODO: 2022/3/17 完成下载
-                                break;
-                            case "conflictPNX":
-                                int res2 = JOptionPane.showConfirmDialog(this, tr("gui.update-window.fix-pnx"),
-                                        tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                                if (res2 != 0) break;
-                            case "downloadPNX":
-                                new SwingWorker<List<VersionListHelper.VersionEntry>, Void>() {
-                                    @Override
-                                    protected List<VersionListHelper.VersionEntry> doInBackground() {
-                                        return VersionListHelper.listRemoteVersions("core");
+                        final String extra = data.getExtra();
+                        if (extra != null)
+                            switch (extra) {
+                                case "needNewJVM":
+                                    int res = JOptionPane.showConfirmDialog(this, tr("gui.update-window.need-java17", data.getName()),
+                                            tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                    if (res != 0) break;
+                                case "downloadJVM":
+                                    ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-java"),
+                                            Arrays.asList(tr("gui.update-window.openjdk"), tr("gui.update-window.graalvm")),
+                                            controller::onDownloadJava);
+                                    break;
+                                case "updatePNX":
+                                    int res4 = JOptionPane.showConfirmDialog(this, tr("gui.update-window.update-pnx"),
+                                            tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                    if (res4 != 0) break;
+                                case "conflictPNX":
+                                    if ("conflictPNX".equals(extra)) {
+                                        int res2 = JOptionPane.showConfirmDialog(this, tr("gui.update-window.fix-pnx"),
+                                                tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                        if (res2 != 0) break;
+                                        controller.onClearPNX();
                                     }
-
-                                    @Override
-                                    protected void done() {
-                                        try {
-                                            final List<VersionListHelper.VersionEntry> versions = get();
-                                            ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-pnx"),
-                                                    versions.stream().map(each -> "git-" + each.getBranch() + "-" + each.getCommit() + " (" + each.getTime() + ")").collect(Collectors.toList()),
-                                                    i -> System.out.println(i)); // TODO: 2022/3/17 完成下载
-                                        } catch (InterruptedException | ExecutionException ex) {
-                                            JOptionPane.showMessageDialog(self, tr("gui.update-window.fail-fetch-pnx-versions"),
-                                                    tr("gui.common.err"), JOptionPane.ERROR_MESSAGE);
-                                            ex.printStackTrace();
+                                case "downloadPNX":
+                                    new SwingWorker<List<VersionListHelper.VersionEntry>, Void>() {
+                                        @Override
+                                        protected List<VersionListHelper.VersionEntry> doInBackground() {
+                                            return VersionListHelper.listRemoteVersions("core");
                                         }
+
+                                        @Override
+                                        protected void done() {
+                                            try {
+                                                final List<VersionListHelper.VersionEntry> versions = get();
+                                                ListChooseDialog.openListChooseDialog(tr("gui.update-window.download-pnx"),
+                                                        versions.stream().map(each -> "git-" + each.getBranch() + "-" + each.getCommit() + " (" + each.getTime() + ")").collect(Collectors.toList()),
+                                                        i -> controller.onDownloadPNX(versions.get(i)));
+                                            } catch (InterruptedException | ExecutionException ex) {
+                                                JOptionPane.showMessageDialog(self, tr("gui.update-window.fail-fetch-pnx-versions"),
+                                                        tr("gui.common.err"), JOptionPane.ERROR_MESSAGE);
+                                                ex.printStackTrace();
+                                            }
+                                        }
+                                    }.execute();
+                                    break;
+                                case "downloadLib":
+                                    if (libsToUpdate.size() > 0) {
+                                        int res3 = JOptionPane.showConfirmDialog(this, tr("gui.update-window.download-all-libs"),
+                                                tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                                        if (res3 == 0)
+                                            controller.onDownloadLibs(libsToUpdate.stream().map(LibsLocator.LibInfo::getName).collect(Collectors.toList()));
+                                        else
+                                            controller.onDownloadLib(data.getName());
+                                    } else {
+                                        controller.onDownloadLib(data.getName());
                                     }
-                                }.execute();
-                                break;
-                        }
+                                    break;
+                            }
                     }
                 }
             }));
@@ -275,5 +302,15 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
     @Override
     public Controller getController() {
         return controller;
+    }
+
+    private void safeClearChildren(DefaultTreeModel treeModel, DefaultMutableTreeNode treeNode) {
+        for (int i = treeNode.getChildCount() - 1; i >= 0; i--) {
+            treeModel.removeNodeFromParent((MutableTreeNode) treeNode.getChildAt(i));
+        }
+    }
+
+    private void safeAddChild(DefaultTreeModel treeModel, DefaultMutableTreeNode parent, DefaultMutableTreeNode child) {
+        treeModel.insertNodeInto(child, parent, parent.getChildCount());
     }
 }

@@ -5,10 +5,7 @@ import com.github.kevinsawicki.http.HttpRequest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +15,7 @@ public final class VersionListHelper {
     public static final Pattern timePattern = Pattern.compile("(?<=<LastModified>)([0-9TZ:.-]*)(?=</LastModified>)");
     public static final SimpleDateFormat utcTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     public static final SimpleDateFormat commonTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final WeakHashMap<String, String> cache = new WeakHashMap<>(3);
 
     static {
         utcTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -25,21 +23,33 @@ public final class VersionListHelper {
     }
 
     public static List<VersionEntry> listRemoteVersions(final String category) {
-        final HttpRequest request = HttpRequest.get(OSS + "?" +
-                "list-type=2" + "&" +
-                "prefix=" + category + "/&" +
-                "max-keys=30" + "&" +
-                "delimiter=/");
-        return exactKeys(request.body(HttpRequest.CHARSET_UTF8));
+        if (cache.containsKey(category)) {
+            return exactKeys(cache.get(category));
+        } else {
+            final HttpRequest request = HttpRequest.get(OSS + "?" +
+                    "list-type=2" + "&" +
+                    "prefix=" + category + "/&" +
+                    "max-keys=30" + "&" +
+                    "delimiter=/");
+            final String result = request.body(HttpRequest.CHARSET_UTF8);
+            cache.put(category, result);
+            return exactKeys(result);
+        }
     }
 
     public static List<LibEntry> listRemoteLibs() {
-        final HttpRequest request = HttpRequest.get(OSS + "?" +
-                "list-type=2" + "&" +
-                "prefix=libs" + "/&" +
-                "max-keys=100" + "&" +
-                "delimiter=/");
-        return exactLibs(request.body(HttpRequest.CHARSET_UTF8));
+        if (cache.containsKey("libs")) {
+            return exactLibs(cache.get("libs"));
+        } else {
+            final HttpRequest request = HttpRequest.get(OSS + "?" +
+                    "list-type=2" + "&" +
+                    "prefix=libs" + "/&" +
+                    "max-keys=100" + "&" +
+                    "delimiter=/");
+            final String result = request.body(HttpRequest.CHARSET_UTF8);
+            cache.put("libs", result);
+            return exactLibs(result);
+        }
     }
 
     private static List<VersionEntry> exactKeys(final String xml) {
@@ -60,7 +70,7 @@ public final class VersionListHelper {
             }
         }
 
-        if(out.get(0).getCommit().endsWith("/")) {
+        if (out.get(0).getCommit().endsWith("/")) {
             out.remove(0);
         }
 
@@ -86,7 +96,7 @@ public final class VersionListHelper {
             }
         }
 
-        if("".equals(out.get(0).getLibName())) {
+        if ("".equals(out.get(0).getLibName())) {
             out.remove(0);
         }
 
