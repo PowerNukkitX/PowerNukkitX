@@ -9,10 +9,14 @@ import cn.nukkit.event.entity.EntityTeleportEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.NukkitMath;
+import cn.nukkit.utils.CommandParser;
+import cn.nukkit.utils.CommandSyntaxException;
 import cn.nukkit.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -142,15 +146,15 @@ public class TeleportCommand extends VanillaCommand {
             } else {
                 pos = 0;
             }
-            double x;
-            double y;
-            double z;
+
             double yaw;
             double pitch;
+            Position position;
+            CommandParser parser = new CommandParser(this, sender, Arrays.copyOfRange(args, pos, pos + 3));
             try {
-                x = parseTilde(args[pos++], sender.getPosition().x);
-                y = parseTilde(args[pos++], sender.getPosition().y);
-                z = parseTilde(args[pos++], sender.getPosition().z);
+                position = parser.parsePosition();
+                pos = pos + 3;
+
                 if (args.length > pos) {
                     yaw = Integer.parseInt(args[pos++]);
                     pitch = Integer.parseInt(args[pos]);
@@ -158,13 +162,13 @@ public class TeleportCommand extends VanillaCommand {
                     yaw = 0;
                     pitch = 0;
                 }
-            } catch (NumberFormatException e1) {
+            } catch (NumberFormatException | CommandSyntaxException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return false;
             }
             boolean successExecute = false;
             for (Entity targetEntity : target) {
-                Location location = new Location(x, y, z, yaw, pitch, targetEntity.getLevel());
+                Location location = new Location(position.x, position.y, position.z, yaw, pitch, targetEntity.getLevel());
                 EntityTeleportEvent event = new EntityTeleportEvent(targetEntity, targetEntity, location);
                 if (!event.isCancelled()) {
                     targetEntity.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
@@ -176,7 +180,7 @@ public class TeleportCommand extends VanillaCommand {
                 return false;
             }
 
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.size() + " entities", String.valueOf(NukkitMath.round(x, 2)), String.valueOf(NukkitMath.round(y, 2)), String.valueOf(NukkitMath.round(z, 2))));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.size() + " entities", String.valueOf(NukkitMath.round(position.x, 2)), String.valueOf(NukkitMath.round(position.y, 2)), String.valueOf(NukkitMath.round(position.z, 2))));
             return true;
         }
     }

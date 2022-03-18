@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -11,7 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.CommandParser;
+import cn.nukkit.utils.CommandSyntaxException;
 
 import java.util.Arrays;
 
@@ -42,19 +42,15 @@ public class SetBlockCommand extends VanillaCommand {
             return false;
         }
 
-        double x;
-        double y;
-        double z;
+        CommandParser parser = new CommandParser(this, sender, args);
+        Position position;
         int data = 0;
         try {
-            x = parseTilde(args[0], sender.getPosition().x);
-            y = parseTilde(args[1], sender.getPosition().y);
-            z = parseTilde(args[2], sender.getPosition().z);
-
+            position = parser.parsePosition();
             if (args.length > 4) {
                 data = Integer.parseInt(args[4]);
             }
-        } catch (NumberFormatException|IndexOutOfBoundsException ignored) {
+        } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
@@ -87,28 +83,28 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        if (!sender.getPosition().level.isYInRange((int) y)) {
+        if (!sender.getPosition().level.isYInRange((int) position.y)) {
             sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
             return false;
         }
 
         Level level = sender.getPosition().getLevel();
 
-        Position position = new Position(x, y, z, sender.getPosition().getLevel());
         Block current = level.getBlock(position);
         if (current.getId() != Block.AIR) {
             switch (oldBlockHandling) {
-                case "destroy":
+                case "destroy" -> {
                     if (sender.isPlayer()) {
                         level.useBreakOn(position, null, Item.get(Item.AIR), sender.asPlayer(), true, true);
                     } else {
                         level.useBreakOn(position);
                     }
                     current = level.getBlock(position);
-                    break;
-                case "keep":
+                }
+                case "keep" -> {
                     sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
                     return false;
+                }
             }
         }
 
@@ -121,7 +117,7 @@ public class SetBlockCommand extends VanillaCommand {
         block.position(position);
         if (level.setBlock(position, block, true, true)) {
             if (args.length > 4) {
-                level.setBlockDataAt((int) x, (int) y, (int) z, data);
+                level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
             }
             sender.sendMessage(new TranslationContainer("commands.setblock.success"));
             return true;
