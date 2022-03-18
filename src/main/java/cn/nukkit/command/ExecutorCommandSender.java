@@ -26,10 +26,11 @@ public class ExecutorCommandSender implements CommandSender {
     private Location executeLocation;
 
     public ExecutorCommandSender(CommandSender executor, Entity entity, Location executeLocation) {
-        if (executor instanceof ExecutorCommandSender){
-            throw new IllegalArgumentException("Cannot create ExecutorCommandSender from another ExecutorCommandSender");
+        if (executor instanceof ExecutorCommandSender executorCommandSender) {
+            this.executor = executorCommandSender.getExecutor();
+        } else {
+            this.executor = executor;
         }
-        this.executor = executor;
         this.entity = entity;
         this.executeLocation = executeLocation;
     }

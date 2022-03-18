@@ -27,8 +27,22 @@ public class CommandParser {
         this.args = args;
     }
 
+    public CommandParser(CommandParser parser){
+        this.command = parser.command;
+        this.sender = parser.sender;
+        this.args = parser.args;
+        this.cursor = parser.cursor;
+    }
+
     private String next() throws ArrayIndexOutOfBoundsException {
-        return this.args[++this.cursor];
+        return next(true);
+    }
+
+    private String next(boolean moveCursor) throws ArrayIndexOutOfBoundsException {
+        if (moveCursor)
+            return this.args[++this.cursor];
+        else
+            return this.args[this.cursor + 1];
     }
 
     public String getErrorMessage() {
@@ -72,9 +86,17 @@ public class CommandParser {
         return level == null ? this.sender.getServer().getDefaultLevel() : level;
     }
 
+    public boolean hasNext(){
+        return this.cursor < this.args.length - 1;
+    }
+
     public int parseInt() throws CommandSyntaxException {
+        return parseInt(true);
+    }
+
+    public int parseInt(boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.next(moveCursor);
             return Integer.parseInt(arg);
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -82,8 +104,12 @@ public class CommandParser {
     }
 
     public double parseDouble() throws CommandSyntaxException {
+        return parseDouble(true);
+    }
+
+    public double parseDouble(boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.next(moveCursor);
             return Double.parseDouble(arg);
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -91,8 +117,12 @@ public class CommandParser {
     }
 
     public boolean parseBoolean() throws CommandSyntaxException {
+        return parseBoolean(true);
+    }
+
+    public boolean parseBoolean(boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.next(moveCursor);
             switch (arg.toLowerCase()) {
                 case "true":
                     return true;
@@ -106,16 +136,24 @@ public class CommandParser {
     }
 
     public String parseString() throws CommandSyntaxException {
+        return parseString(true);
+    }
+
+    public String parseString(boolean moveCursor) throws CommandSyntaxException {
         try {
-            return this.next();
+            return this.next(moveCursor);
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
     }
 
     public <T extends Enum<T>> T parseEnum(Class<T> enumType) throws CommandSyntaxException {
+        return parseEnum(enumType, true);
+    }
+
+    public <T extends Enum<T>> T parseEnum(Class<T> enumType,boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.next(moveCursor);
             return Enum.valueOf(enumType, arg.toUpperCase());
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -123,8 +161,12 @@ public class CommandParser {
     }
 
     public List<Entity> parseTargets() throws CommandSyntaxException {
+        return parseTargets(true);
+    }
+
+    public List<Entity> parseTargets(boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.parseString();
+            String arg = this.parseString(moveCursor);
             if (EntitySelector.hasArguments(arg)) {
                 return EntitySelector.matchEntities(this.sender, arg);
             }else{
@@ -136,35 +178,87 @@ public class CommandParser {
     }
 
     public List<Player> parseTargetPlayers() throws CommandSyntaxException {
+        return parseTargetPlayers(true);
+    }
+
+    public List<Player> parseTargetPlayers(boolean moveCursor) throws CommandSyntaxException {
         try {
-            return this.parseTargets().stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
+            return this.parseTargets(moveCursor).stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
     }
 
     public Position parsePosition() throws CommandSyntaxException {
-        return Position.fromObject(this.parseVector3(), this.getTargetLevel());
+        return this.parsePosition(null);
+    }
+
+    public Position parsePosition(Vector3 baseVector) throws CommandSyntaxException {
+        return this.parsePosition(baseVector, true);
+    }
+
+    public Position parsePosition(Vector3 baseVector,boolean moveCursor) throws CommandSyntaxException {
+        return Position.fromObject(this.parseVector3(baseVector,moveCursor), this.getTargetLevel());
     }
 
     public Vector3 parseVector3() throws CommandSyntaxException {
-        Vector3 baseVector = sender.getPosition();
+        return parseVector3(null);
+    }
+
+    public Vector3 parseVector3(Vector3 bv) throws CommandSyntaxException {
+        return parseVector3(bv, true);
+    }
+
+    public Vector3 parseVector3(Vector3 bv,boolean moveCursor) throws CommandSyntaxException {
+        Vector3 baseVector = bv == null ? sender.getPosition() : bv;
         baseVector = parseCoordinate(baseVector,CoordinateType.X);
         baseVector = parseCoordinate(baseVector,CoordinateType.Y);
         baseVector = parseCoordinate(baseVector,CoordinateType.Z);
+        if (!moveCursor){
+            this.cursor-=3;
+        }
         return baseVector;
     }
 
     public Vector2 parseVector2() throws CommandSyntaxException {
+        return parseVector2(true);
+    }
+
+    public Vector2 parseVector2(boolean moveCursor) throws CommandSyntaxException {
         Vector3 baseVector = sender.getPosition();
-        baseVector = parseCoordinate(baseVector,CoordinateType.X);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Z);
+        baseVector = parseCoordinate(baseVector,CoordinateType.X,moveCursor);
+        baseVector = parseCoordinate(baseVector,CoordinateType.Z,moveCursor);
+        if (!moveCursor){
+            this.cursor-=2;
+        }
         return new Vector2(baseVector.x,baseVector.z);
     }
 
+    public String parseAllRemain(){
+        return parseAllRemain(true);
+    }
+
+    public String parseAllRemain(boolean moveCursor){
+        StringBuilder sb = new StringBuilder();
+        if (moveCursor) {
+            while (this.hasNext()) {
+                sb.append(this.next()).append(" ");
+            }
+        }else{
+            for (int i = this.cursor; i < this.args.length; i++) {
+                sb.append(this.args[i]).append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
     private Vector3 parseCoordinate(Vector3 baseVector3,CoordinateType type) throws CommandSyntaxException {
+        return parseCoordinate(baseVector3,type,true);
+    }
+
+    private Vector3 parseCoordinate(Vector3 baseVector3,CoordinateType type,boolean moveCursor) throws CommandSyntaxException {
         try {
-            String arg = this.next();
+            String arg = this.next(moveCursor);
             if (arg.startsWith("~")) {
                 String relativeCoordinate = arg.substring(1);
                 if (relativeCoordinate.isEmpty()) {
@@ -182,12 +276,16 @@ public class CommandParser {
                     return baseVector3;
                 }
                 return switch (type) {
-                    case X -> BVector3.fromLocation(sender.getLocation()).addAngle(-90, 0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
+                    case X -> BVector3.fromLocation(sender.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
                     case Y -> BVector3.fromLocation(sender.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
                     case Z -> BVector3.fromLocation(sender.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(baseVector3);
                 };
             }
-            return baseVector3;
+            return switch (type) {
+                case X -> baseVector3.setX(Double.parseDouble(arg));
+                case Y -> baseVector3.setY(Double.parseDouble(arg));
+                case Z -> baseVector3.setZ(Double.parseDouble(arg));
+            };
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }

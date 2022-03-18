@@ -86,10 +86,7 @@ public class TeleportCommand extends VanillaCommand {
         } else {
             List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[0])) {
-                if (sender.isPlayer())
-                    entities = EntitySelector.matchEntities(sender, args[0]);
-                else
-                    entities = EntitySelector.matchEntities(sender, args[0]);
+                entities = EntitySelector.matchEntities(sender, args[0]);
             } else if (sender.getServer().getPlayer(args[0]) != null) {
                 entities = List.of(sender.getServer().getPlayer(args[0]));
             }
@@ -103,10 +100,7 @@ public class TeleportCommand extends VanillaCommand {
                 origin = entities;
                 List<Entity> targetEntities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
-                    if (sender.isPlayer())
-                        targetEntities = EntitySelector.matchEntities(sender, args[1]);
-                    else
-                        targetEntities = EntitySelector.matchEntities(sender, args[1]);
+                    targetEntities = EntitySelector.matchEntities(sender, args[1]);
                 } else if(sender.getServer().getPlayer(args[1]) != null){
                     targetEntities = List.of(sender.getServer().getPlayer(args[1]));
                 }
@@ -127,7 +121,7 @@ public class TeleportCommand extends VanillaCommand {
             for (Entity originEntity : origin) {
                 EntityTeleportEvent event = new EntityTeleportEvent(originEntity, originEntity, target.get(0));
                 if (!event.isCancelled()) {
-                    originEntity.teleport(target.get(0));
+                    originEntity.teleport(target.get(0), PlayerTeleportEvent.TeleportCause.COMMAND);
                     successExecute = true;
                 }
             }
@@ -150,7 +144,7 @@ public class TeleportCommand extends VanillaCommand {
             double yaw;
             double pitch;
             Position position;
-            CommandParser parser = new CommandParser(this, sender, Arrays.copyOfRange(args, pos, pos + 3));
+            CommandParser parser = new CommandParser(this, sender, args);
             try {
                 position = parser.parsePosition();
                 pos = pos + 3;
@@ -159,8 +153,8 @@ public class TeleportCommand extends VanillaCommand {
                     yaw = Integer.parseInt(args[pos++]);
                     pitch = Integer.parseInt(args[pos]);
                 } else {
-                    yaw = 0;
-                    pitch = 0;
+                    yaw = sender.getLocation().getYaw();
+                    pitch = sender.getLocation().getPitch();
                 }
             } catch (NumberFormatException | CommandSyntaxException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
