@@ -18,8 +18,6 @@ jobs:
       - name: 检查文件改动情况
         id: check-changed-files
         uses: tj-actions/changed-files@v11.4
-        with:
-          since_last_remote_commit: 'true'
 
       - name: 输出更改文件列表
         run: echo ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
@@ -73,7 +71,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX'
+        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
@@ -117,7 +115,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX'
+        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
