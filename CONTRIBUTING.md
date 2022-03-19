@@ -57,7 +57,7 @@
 
   To make things run more smoothly, we recommend that you look up some online resources to familiarise yourself with the git vocabulary and commands, and practice working with forks and submitting pull requests at your own pace. A high-level overview of the process can be found in [this article by GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests).
 
-  We also provide a [handy link](https://powernukkit.org/pr) for making pull requests to PowerNukkit: `https://powernukkit.org/pr`.
+  We also provide a [handy link](https://powernukkit.org/pr) for making pull requests to PowerNukkitX: `https://github.com/powernukkitx/powernukkitx/pulls`.
 
 * **Make sure to submit pull requests off of a topic branch.**
 
@@ -81,7 +81,7 @@
 
 * **只有当代码准备好了才推送。**
 
-  As an extension of the above, when making changes to an already-open PR, please try to only push changes you are reasonably certain of. Pushing after every commit causes the continuous integration build queue to grow in size, slowing down work and taking up time that could be spent verifying other changes.
+  作为上述内容的延伸，当对一个已经开放的PR进行修改时，请尽量只推送你有合理把握的修改。每次提交后的推送都会导致持续自动构建队列的规模扩大，减缓工作速度，并占用可以用来验证其他修改的时间。
 
 * **Make sure to keep the *Allow edits from maintainers* check box checked.**
 
@@ -97,19 +97,19 @@
 
   The cases in which force-pushing is warranted are very rare (such as accidentally leaking sensitive info in one of the files committed, adding unrelated files, or mis-merging a dependent PR).
 
-* **Be patient when waiting for the code to be reviewed and merged.**
+* **在等待代码被审查和合并的过程中要有耐心。**
 
-  As much as we'd like to review all contributions as fast as possible, our time is limited, as team members have to work on their own tasks in addition to reviewing code. As such, work needs to be prioritised, and it can unfortunately take weeks or months for your PR to be merged, depending on how important it is deemed to be.
+  尽管我们希望尽可能快地审查所有的贡献，但我们的时间是有限的，因为团队成员除了审查代码外，还必须处理自己的任务。因此，工作需要被优先考虑，不幸的是，你的PR可能需要数天或数周才能被合并，这取决于它被认为是多么重要。
 
-* **Don't mistake criticism of code for criticism of your person.**
+* **不要把对代码的批评误认为是对你个人的批评。**
 
-  As mentioned before, we are highly committed to quality when it comes to the project. This means that contributions from less experienced community members can take multiple rounds of review to get to a mergeable state. We try our utmost best to never conflate a person with the code they authored, and to keep the discussion focused on the code at all times. Please consider our comments and requests a learning experience, and don't treat it as a personal attack.
+  如前所述，当涉及到项目时，我们对质量有高度的承诺。这意味着，来自经验不足的社区成员的贡献可能需要多轮审查才能达到可合并的状态。我们尽最大努力不把一个人和他所写的代码混为一谈，并且在任何时候都把讨论集中在代码上。请把我们的评论和要求看作是一种学习经验，不要把它当作是一种人身攻击。
 
-* **Feel free to reach out for help.**
+* **我们随时欢迎您联系我们或寻求帮助。**
 
-  If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [development Discord server](https://www.powernukkit.org/discord). We will try to help you as much as we can.
+  如果你对代码库的某些部分或游戏和框架的某些内部运作不确定，请通过在相关问题或PR中留言，或在[Discord](https://discord.gg/j7UwsaNu4V)&[QQ群](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)发文来联系我们。我们会尽可能地帮助你。
 
-  When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
+  说到哪种沟通方式最好，GitHub通常更适合长篇大论，而Discord和QQ群则更适合快速的呼唤和回应。在决定的时候，请尽力斟酌，并尽量将一个讨论放在一个地方，而不是来回移动。
 
 ## <a id="目录-多语言文档"></a>🌐 多语言文档
 
