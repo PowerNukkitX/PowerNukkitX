@@ -5,7 +5,7 @@
     <name>PowerNukkitX</name>
     <description>A fork of PowerNukkit</description>
 
-    <groupId>com.blocklynukkit</groupId>
+    <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
     <version>1.6.0.0-PNX-SNAPSHOT</version>
 
@@ -89,6 +89,16 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
@@ -96,9 +106,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.powernukkit.bedrock.network</groupId>
+            <groupId>com.nukkitx.network</groupId>
             <artifactId>raknet</artifactId>
-            <version>1.6.25-PN.2</version>
+            <version>1.6.28-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -470,6 +480,23 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>3.0.0-M1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <excludeScope>provided</excludeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
