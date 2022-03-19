@@ -73,6 +73,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
+        if: github.repository == 'PowerNukkitX/PowerNukkitX'
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
@@ -116,6 +117,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
+        if: github.repository == 'PowerNukkitX/PowerNukkitX'
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
