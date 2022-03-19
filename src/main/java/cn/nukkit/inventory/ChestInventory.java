@@ -57,6 +57,7 @@ public class ChestInventory extends ContainerInventory {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public void onClose(Player who) {
+        boolean isCompletelyClose = false;
         if (this.getViewers().size() == 1) {
             BlockEventPacket pk = new BlockEventPacket();
             pk.x = (int) this.getHolder().getX();
@@ -70,13 +71,18 @@ public class ChestInventory extends ContainerInventory {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
+            isCompletelyClose = true;
         }
         if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
             RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
             this.getHolder().level.getServer().getPluginManager().callEvent(event);
+            if (isCompletelyClose) {
+                trappedChest.setClosing(true);
+            }
             if (!event.isCancelled()) {
                 RedstoneComponent.updateAllAroundRedstone(this.getHolder());
             }
+            trappedChest.setClosing(false);
         }
 
         super.onClose(who);
