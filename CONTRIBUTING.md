@@ -53,19 +53,19 @@
 
 * **您需熟悉Git和Pull Request工作流程**
 
-  [git](https://git-scm.com/) is a distributed version control system that might not be very intuitive at the beginning if you're not familiar with version control. In particular, projects using git have a particular workflow for submitting code changes, which is called the pull request workflow.
+  [git](https://git-scm.com/) 是一个分布式版本控制系统，如果你不熟悉版本控制，一开始可能不是很直观。特别是，使用git的项目有一个特定的工作流程来提交代码修改，这被称为拉动请求工作(Pull Requests)流程。
 
-  To make things run more smoothly, we recommend that you look up some online resources to familiarise yourself with the git vocabulary and commands, and practice working with forks and submitting pull requests at your own pace. A high-level overview of the process can be found in [this article by GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests).
+  为了让事情进行得更顺利，我们建议你在网上查找一些资源，熟悉git的词汇和命令，并按照自己的节奏练习处理分叉和提交拉动请求。关于这个过程的高层次概述可以在[该文章](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests)中找到。
 
-  We also provide a [handy link](https://powernukkit.org/pr) for making pull requests to PowerNukkitX: `https://github.com/powernukkitx/powernukkitx/pulls`.
+  我们还提供了一个[快捷链接](https://github.com/powernukkitx/powernukkitx/pulls)，用于向PowerNukkitX提出拉动请求。
 
-* **Make sure to submit pull requests off of a topic branch.**
+* **确保提交的拉动请求是在相关分支上。**
 
-  As described in the article linked in the previous point, topic branches help you parallelise your work and separate it from the main `bleeding` branch, and additionally are easier for maintainers to work with. Working with multiple `bleeding` branches across many remotes is difficult to keep track of, and it's easy to make a mistake and push to the wrong `bleeding` branch by accident.
+  如前文所述，特性分支可以帮助你将工作平行化，并将其与主要的 `Bleeding` 分支分开，另外也便于维护者的工作。在许多远程站点上使用多个 `Bleeding` 分支是很难跟踪的，而且很容易犯错，不小心推送到错误的 `Bleeding` 分支。
 
-* **Add tests for your code whenever possible.**
+* **尽可能地为你添加的代码做测试。**
 
-  Automated tests are an essential part of a quality and reliable codebase. They help to make the code more maintainable by ensuring it is safe to reorganise (or refactor) the code in various ways, and also prevent regressions - bugs that resurface after having been fixed at some point in the past. If it is viable, please put in the time to add tests, so that the changes you make can last for a (hopefully) very long time.
+  自动测试是高质量和可靠的代码库的一个重要组成部分。它们通过确保以各种方式重组（或重构）代码是安全的，来帮助使代码更具可维护性，同时也防止回归--在过去的某个时间点被修复后重新出现的错误。如果可行的话，请花时间添加测试，这样你所做的修改可以持续很长时间（希望如此）。
 
 * **Run tests before opening a pull request.**
 
@@ -73,7 +73,7 @@
 
   Continuous integration will always run the tests for you (and us), too, but it is best not to rely on it, as there might be many builds queued at any time. Running tests on your own will help you be more certain that at the point of clicking the "Create pull request" button, your changes are as ready as can be.
 
-* **Make sure that the pull request is complete before opening it.**
+* **在打开拉动请求之前，请确保该请求是完整的。**
 
   Whether it's fixing a bug or implementing new functionality, it's best that you make sure that the change you want to submit as a pull request is as complete as it can be before clicking the *Create pull request* button. Having to track if a pull request is ready for review or not places additional burden on reviewers.
 
@@ -91,7 +91,7 @@
 
   Unless there are merge conflicts that need resolution, there is no need to keep merging `bleeding` back to a branch over and over again. One of the maintainers will merge `bleeding` themselves before merging the PR itself anyway, and continual merge commits can cause CI to get overwhelmed due to queueing up too many builds.
 
-* **Refrain from force-pushing to the PR branch.**
+* **避免强行推送到PR分支。**
 
   Force-pushing should be avoided, as it can lead to accidentally overwriting a maintainer's changes or CI building wrong commits. We value all history in the project, so there is no need to squash or amend commits in most cases.
 
