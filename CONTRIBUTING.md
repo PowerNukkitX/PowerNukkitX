@@ -53,49 +53,49 @@
 
 * **您需熟悉Git和Pull Request工作流程**
 
-  [git](https://git-scm.com/) is a distributed version control system that might not be very intuitive at the beginning if you're not familiar with version control. In particular, projects using git have a particular workflow for submitting code changes, which is called the pull request workflow.
+  [git](https://git-scm.com/) 是一个分布式版本控制系统，如果你不熟悉版本控制，一开始可能不是很直观。特别是，使用git的项目有一个特定的工作流程来提交代码修改，这被称为拉动请求工作(Pull Requests)流程。
 
-  To make things run more smoothly, we recommend that you look up some online resources to familiarise yourself with the git vocabulary and commands, and practice working with forks and submitting pull requests at your own pace. A high-level overview of the process can be found in [this article by GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests).
+  为了让事情进行得更顺利，我们建议你在网上查找一些资源，熟悉git的词汇和命令，并按照自己的节奏练习处理分叉和提交拉动请求。关于这个过程的高层次概述可以在[该文章](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests)中找到。
 
-  We also provide a [handy link](https://powernukkit.org/pr) for making pull requests to PowerNukkitX: `https://github.com/powernukkitx/powernukkitx/pulls`.
+  我们还提供了一个[快捷链接](https://github.com/powernukkitx/powernukkitx/pulls)，用于向PowerNukkitX提出拉动请求。
 
-* **Make sure to submit pull requests off of a topic branch.**
+* **确保提交的拉动请求是在相关分支上。**
 
-  As described in the article linked in the previous point, topic branches help you parallelise your work and separate it from the main `bleeding` branch, and additionally are easier for maintainers to work with. Working with multiple `bleeding` branches across many remotes is difficult to keep track of, and it's easy to make a mistake and push to the wrong `bleeding` branch by accident.
+  如前文所述，特性分支可以帮助你将工作平行化，并将其与主要的 `Bleeding` 分支分开，另外也便于维护者的工作。在许多远程站点上使用多个 `Bleeding` 分支是很难跟踪的，而且很容易犯错，不小心推送到错误的 `Bleeding` 分支。
 
-* **Add tests for your code whenever possible.**
+* **尽可能地为你添加的代码做测试。**
 
-  Automated tests are an essential part of a quality and reliable codebase. They help to make the code more maintainable by ensuring it is safe to reorganise (or refactor) the code in various ways, and also prevent regressions - bugs that resurface after having been fixed at some point in the past. If it is viable, please put in the time to add tests, so that the changes you make can last for a (hopefully) very long time.
+  自动测试是高质量和可靠的代码库的一个重要组成部分。它们通过确保以各种方式重组（或重构）代码是安全的，来帮助使代码更具可维护性，同时也防止回归--在过去的某个时间点被修复后重新出现的错误。如果可行的话，请花时间添加测试，这样你所做的修改可以持续很长时间（希望如此）。
 
-* **Run tests before opening a pull request.**
+* **在打开拉动请求之前，先运行测试。**
 
-  Tying into the previous point, sometimes changes in one part of the codebase can result in unpredictable changes in behaviour in other pieces of the code. This is why it is best to always try to run tests before opening a PR.
+  与上一点相联系的是，有时代码库的一部分的变化会导致代码的其他部分的行为发生不可预测的变化。这就是为什么最好是在开启PR之前先运行测试。
 
-  Continuous integration will always run the tests for you (and us), too, but it is best not to rely on it, as there might be many builds queued at any time. Running tests on your own will help you be more certain that at the point of clicking the "Create pull request" button, your changes are as ready as can be.
+  持续集成也会为你（和我们）运行测试，但最好不要依赖它，因为任何时候都可能有许多构建在排队。自己运行测试将帮助你更确定在点击 "创建拉动请求" 按钮时，你的修改已经准备就绪。
 
-* **Make sure that the pull request is complete before opening it.**
+* **在打开拉动请求之前，请确保该请求是完整的。**
 
-  Whether it's fixing a bug or implementing new functionality, it's best that you make sure that the change you want to submit as a pull request is as complete as it can be before clicking the *Create pull request* button. Having to track if a pull request is ready for review or not places additional burden on reviewers.
+  无论是修复错误还是实现新功能，你最好在点击*创建拉动请求*按钮之前，确保你要提交的修改尽可能完整。要跟踪一个拉动请求是否准备好接受审查，会给审查者带来额外的负担。
 
-  Draft pull requests are an option, but use them sparingly and within reason. They are best suited to discuss code changes that cannot be easily described in natural language or have a potential large impact on the future direction of the project. When in doubt, don't open drafts unless a maintainer asks you to do so.
+  草稿拉动请求是一种选择，但要在合理的范围内少用它们。它们最适合用来讨论那些不容易用自然语言描述的代码修改，或者对项目的未来方向有潜在的巨大影响。如果有疑问，不要打开草案，除非维护者要求你这么做。
 
 * **只有当代码准备好了才推送。**
 
   作为上述内容的延伸，当对一个已经开放的PR进行修改时，请尽量只推送你有合理把握的修改。每次提交后的推送都会导致持续自动构建队列的规模扩大，减缓工作速度，并占用可以用来验证其他修改的时间。
 
-* **Make sure to keep the *Allow edits from maintainers* check box checked.**
+* **请确保选中*允许来自维护者的编辑*复选框。**
 
-  To speed up the merging process, collaborators and team members will sometimes want to push changes to your branch themselves, to make minor code style adjustments or to otherwise refactor the code without having to describe how they'd like the code to look like in painstaking detail. Having the *Allow edits from maintainers* check box checked lets them do that; without it they are forced to report issues back to you and wait for you to address them.
+  为了加快合并过程，合作者和团队成员有时会想自己向你的分支推送修改，对代码风格进行细微的调整，或者以其他方式重构代码，而不必煞费苦心地描述他们希望代码是什么样子。勾选 "允许维护者编辑 "复选框可以让他们这样做；如果没有这个复选框，他们就不得不向你报告问题并等待你来处理。
 
-* **Refrain from continually merging the master branch back to the PR.**
+* **不要不断地将PR合并到主分支上。**
 
-  Unless there are merge conflicts that need resolution, there is no need to keep merging `bleeding` back to a branch over and over again. One of the maintainers will merge `bleeding` themselves before merging the PR itself anyway, and continual merge commits can cause CI to get overwhelmed due to queueing up too many builds.
+  除非有合并冲突需要解决，否则没有必要一次又一次地把 `Bleeding` 合并到一个分支。反正在合并PR之前，其中一个维护者会自己合并 `bleeding`，而且持续的合并提交会使CI因排队等待过多的构建而不堪重负。
 
-* **Refrain from force-pushing to the PR branch.**
+* **避免强行推送到PR分支。**
 
-  Force-pushing should be avoided, as it can lead to accidentally overwriting a maintainer's changes or CI building wrong commits. We value all history in the project, so there is no need to squash or amend commits in most cases.
+  应该避免强行推送，因为这可能会导致意外地覆盖维护者的修改或CI构建错误的提交。我们重视项目中的所有历史，所以在大多数情况下没有必要压制或修改提交。
 
-  The cases in which force-pushing is warranted are very rare (such as accidentally leaking sensitive info in one of the files committed, adding unrelated files, or mis-merging a dependent PR).
+  需要强行推送的情况非常少见（比如不小心泄露了提交文件中的敏感信息，添加了不相关的文件，或者错误地合并了一个依赖的PR）。
 
 * **在等待代码被审查和合并的过程中要有耐心。**
 
