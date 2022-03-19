@@ -67,25 +67,25 @@
 
   自动测试是高质量和可靠的代码库的一个重要组成部分。它们通过确保以各种方式重组（或重构）代码是安全的，来帮助使代码更具可维护性，同时也防止回归--在过去的某个时间点被修复后重新出现的错误。如果可行的话，请花时间添加测试，这样你所做的修改可以持续很长时间（希望如此）。
 
-* **Run tests before opening a pull request.**
+* **在打开拉动请求之前，先运行测试。**
 
-  Tying into the previous point, sometimes changes in one part of the codebase can result in unpredictable changes in behaviour in other pieces of the code. This is why it is best to always try to run tests before opening a PR.
+  与上一点相联系的是，有时代码库的一部分的变化会导致代码的其他部分的行为发生不可预测的变化。这就是为什么最好是在开启PR之前先运行测试。
 
-  Continuous integration will always run the tests for you (and us), too, but it is best not to rely on it, as there might be many builds queued at any time. Running tests on your own will help you be more certain that at the point of clicking the "Create pull request" button, your changes are as ready as can be.
+  持续集成也会为你（和我们）运行测试，但最好不要依赖它，因为任何时候都可能有许多构建在排队。自己运行测试将帮助你更确定在点击 "创建拉动请求" 按钮时，你的修改已经准备就绪。
 
 * **在打开拉动请求之前，请确保该请求是完整的。**
 
-  Whether it's fixing a bug or implementing new functionality, it's best that you make sure that the change you want to submit as a pull request is as complete as it can be before clicking the *Create pull request* button. Having to track if a pull request is ready for review or not places additional burden on reviewers.
+  无论是修复错误还是实现新功能，你最好在点击*创建拉动请求*按钮之前，确保你要提交的修改尽可能完整。要跟踪一个拉动请求是否准备好接受审查，会给审查者带来额外的负担。
 
-  Draft pull requests are an option, but use them sparingly and within reason. They are best suited to discuss code changes that cannot be easily described in natural language or have a potential large impact on the future direction of the project. When in doubt, don't open drafts unless a maintainer asks you to do so.
+  草稿拉动请求是一种选择，但要在合理的范围内少用它们。它们最适合用来讨论那些不容易用自然语言描述的代码修改，或者对项目的未来方向有潜在的巨大影响。如果有疑问，不要打开草案，除非维护者要求你这么做。
 
 * **只有当代码准备好了才推送。**
 
   作为上述内容的延伸，当对一个已经开放的PR进行修改时，请尽量只推送你有合理把握的修改。每次提交后的推送都会导致持续自动构建队列的规模扩大，减缓工作速度，并占用可以用来验证其他修改的时间。
 
-* **Make sure to keep the *Allow edits from maintainers* check box checked.**
+* **请确保选中*允许来自维护者的编辑*复选框。**
 
-  To speed up the merging process, collaborators and team members will sometimes want to push changes to your branch themselves, to make minor code style adjustments or to otherwise refactor the code without having to describe how they'd like the code to look like in painstaking detail. Having the *Allow edits from maintainers* check box checked lets them do that; without it they are forced to report issues back to you and wait for you to address them.
+  为了加快合并过程，合作者和团队成员有时会想自己向你的分支推送修改，对代码风格进行细微的调整，或者以其他方式重构代码，而不必煞费苦心地描述他们希望代码是什么样子。勾选 "允许维护者编辑 "复选框可以让他们这样做；如果没有这个复选框，他们就不得不向你报告问题并等待你来处理。
 
 * **Refrain from continually merging the master branch back to the PR.**
 
@@ -93,9 +93,9 @@
 
 * **避免强行推送到PR分支。**
 
-  Force-pushing should be avoided, as it can lead to accidentally overwriting a maintainer's changes or CI building wrong commits. We value all history in the project, so there is no need to squash or amend commits in most cases.
+  应该避免强行推送，因为这可能会导致意外地覆盖维护者的修改或CI构建错误的提交。我们重视项目中的所有历史，所以在大多数情况下没有必要压制或修改提交。
 
-  The cases in which force-pushing is warranted are very rare (such as accidentally leaking sensitive info in one of the files committed, adding unrelated files, or mis-merging a dependent PR).
+  需要强行推送的情况非常少见（比如不小心泄露了提交文件中的敏感信息，添加了不相关的文件，或者错误地合并了一个依赖的PR）。
 
 * **在等待代码被审查和合并的过程中要有耐心。**
 
