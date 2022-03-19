@@ -117,6 +117,7 @@
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
-[![English](https://img.shields.io/badge/English-todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
+[![PNX-DOC](https://img.shields.io/badge/PNX-DOC文档库-blue?style=flat-square)](https://doc.powernukkitx.cn)
