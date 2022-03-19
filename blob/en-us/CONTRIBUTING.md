@@ -1,15 +1,16 @@
 # Contributing Guidelines
 
-Thank you for showing interest in the development of PowerNukkit We aim to provide a good collaborating environment for everyone involved, and as such have decided to list some of the most important things to keep in mind in the process. The guidelines below have been chosen based on past experience.
+ 👋 Hi, we are glad to see your enthusiasm for the [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) project, our goal is to provide a good collaborative environment for all participants involved in the development, so we The following guidelines are based on past experience and are a list of things you should keep in mind during the process.
 
-These are not "official rules" *per se*, but following them will help everyone deal with things in the most efficient manner.
+ You should note, however, that these rules are not "**official rules**" per se, but that following them will help participants to be more efficient in their processes.
 
-## Table of contents
+## CataLogs
 
-1. [I would like to submit an issue!](#i-would-like-to-submit-an-issue)
-2. [I would like to submit a pull request!](#i-would-like-to-submit-a-pull-request)
+1. <a href="#CataLogs-Faq#1">🧾 I would like to submit an issue!</a>
+2. <a href="#CataLogs-Faq#2">💡 I would like to submit a pull request!</a>
+3. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
 
-## I would like to submit an issue!
+## <a id="CataLogs-Faq#1"></a>🧾 I would like to submit an issue!
 
 Issues, bug reports and feature suggestions are welcomed, though please keep in mind that at any point in time, hundreds of issues are open, which vary in severity and the amount of time needed to address them. As such it's not uncommon for issues to remain unresolved for a long time or even closed outright if they are deemed not important enough to fix in the foreseeable future.
 
@@ -48,7 +49,7 @@ Issues, bug reports and feature suggestions are welcomed, though please keep in 
 
   GitHub is mostly a developer space, and as such isn't really fit for lengthened discussions about gameplay mechanics (which might not even be in any way confirmed for the final release) and similar non-technical matters. Such matters are probably best addressed at the PowerNukkit forums.
 
-## I would like to submit a pull request!
+## <a id="CataLogs-Faq#2"></a>💡  I would like to submit a pull request!
 
 We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/powernukkit/powernukkit/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/powernukkit/powernukkit/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
 
@@ -117,3 +118,14 @@ Here are some key things to note before jumping in:
   If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [development Discord server](https://www.powernukkit.org/discord). We will try to help you as much as we can.
 
   When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
+
+## <a id="CataLogs-Swlang"></a>🌐 Multilingual documentation
+
+---
+Need to switch languages? 
+
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
+[![PNX-DOC](https://img.shields.io/badge/PNX-Doc-blue?style=flat-square)](https://doc.powernukkitx.cn)
