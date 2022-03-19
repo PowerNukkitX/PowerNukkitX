@@ -87,9 +87,9 @@
 
   为了加快合并过程，合作者和团队成员有时会想自己向你的分支推送修改，对代码风格进行细微的调整，或者以其他方式重构代码，而不必煞费苦心地描述他们希望代码是什么样子。勾选 "允许维护者编辑 "复选框可以让他们这样做；如果没有这个复选框，他们就不得不向你报告问题并等待你来处理。
 
-* **Refrain from continually merging the master branch back to the PR.**
+* **不要不断地将PR合并到主分支上。**
 
-  Unless there are merge conflicts that need resolution, there is no need to keep merging `bleeding` back to a branch over and over again. One of the maintainers will merge `bleeding` themselves before merging the PR itself anyway, and continual merge commits can cause CI to get overwhelmed due to queueing up too many builds.
+  除非有合并冲突需要解决，否则没有必要一次又一次地把 `Bleeding` 合并到一个分支。反正在合并PR之前，其中一个维护者会自己合并 `bleeding`，而且持续的合并提交会使CI因排队等待过多的构建而不堪重负。
 
 * **避免强行推送到PR分支。**
 
