@@ -8,6 +8,7 @@ import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.utils.LevelException;
 import cn.nukkit.utils.RedstoneComponent;
 
 /**
@@ -72,13 +73,16 @@ public class ChestInventory extends ContainerInventory {
             }
         }
         super.onClose(who);
-        if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
-            RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
-            this.getHolder().level.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+
+        try {
+            if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                this.getHolder().level.getServer().getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+                }
             }
-        }
+        } catch (LevelException ignored) {}
     }
 
     public void setDoubleInventory(DoubleChestInventory doubleInventory) {
