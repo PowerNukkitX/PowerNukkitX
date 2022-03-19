@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
@@ -35,8 +34,6 @@ public class BlockTrappedChest extends BlockChest {
     public String getName() {
         return "Trapped Chest";
     }
-
-    public boolean isClosing = false;
 
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
@@ -94,16 +91,6 @@ public class BlockTrappedChest extends BlockChest {
         return true;
     }
 
-    @PowerNukkitOnly
-    public void setClosing(boolean closing) {
-        isClosing = closing;
-    }
-
-    @PowerNukkitOnly
-    public boolean isClosing() {
-        return isClosing;
-    }
-
     @Override
     public int getWeakPower(BlockFace face) {
         int playerCount = 0;
@@ -114,7 +101,7 @@ public class BlockTrappedChest extends BlockChest {
             playerCount = ((BlockEntityChest) blockEntity).getInventory().getViewers().size();
         }
 
-        return isClosing() ? 0 : Math.min(playerCount, 15);
+        return Math.min(playerCount, 15);
     }
 
     @Override
