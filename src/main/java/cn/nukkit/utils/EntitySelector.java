@@ -14,6 +14,7 @@ import com.google.common.collect.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class EntitySelector {
 
@@ -63,7 +64,7 @@ public final class EntitySelector {
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
 
         if (matcher.matches()) {
-            Map<String, String> args = null;
+            Map<String, List<String>> args = null;
             try {
                 args = getArgumentMap(matcher.group(2));
             } catch (SelectorSyntaxException e) {
@@ -129,7 +130,7 @@ public final class EntitySelector {
         return Collections.emptyList();
     }
 
-    private static List<Level> getLevels(CommandSender sender, Map<String, String> argumentMap) {
+    private static List<Level> getLevels(CommandSender sender, Map<String, List<String>> argumentMap) {
         List<Level> levels = Lists.newArrayList();
 
         if (hasLevelArgument(argumentMap)) {
@@ -141,44 +142,61 @@ public final class EntitySelector {
         return levels;
     }
 
-    private static boolean isEntityTypeValid(Map<String, String> params) {
-        String type = getArgument(params, ARG_TYPE);
+    private static boolean isEntityTypeValid(Map<String, List<String>> params) {
+        List<String> types = getArgument(params, ARG_TYPE);
 
-        if (type != null) {
-            String identifier = type.startsWith("!") ? type.substring(1) : type;
-            return ENTITY_NAME2ID.containsKey(identifier.startsWith("minecraft:") ? identifier : "minecraft:" + identifier);
+        if (types == null) {
+            return true;
+        }
+
+        for (String type : types) {
+            if (type != null) {
+                String identifier = type.startsWith("!") ? type.substring(1) : type;
+                if(!ENTITY_NAME2ID.containsKey(identifier.startsWith("minecraft:") ? identifier : "minecraft:" + identifier)){
+                    return false;
+                }
+            }
         }
 
         return true;
     }
 
-    private static List<Predicate<Entity>> getTypePredicates(Map<String, String> params, String selectorType) {
-        String type = getArgument(params, ARG_TYPE);
-
-        if (type != null && (selectorType.equals("e") || selectorType.equals("r")|| selectorType.equals("s"))) {
-            boolean inverted;
-            String identifier;
-
-            if (type.startsWith("!")) {
-                inverted = true;
-                type = type.substring(1);
-            } else {
-                inverted = false;
-            }
-
-            if (!type.startsWith("minecraft:")) {
-                identifier = "minecraft:" + type;
-            } else {
-                identifier = type;
-            }
-
-            return Collections.singletonList(entity -> entity != null && (entity instanceof Player && identifier.equals("minecraft:player") || ENTITY_NAME2ID.get(identifier) == entity.getNetworkId()) != inverted);
-        } else {
-            return !selectorType.equals("e") && !selectorType.equals("s") ? Collections.singletonList(entity -> entity instanceof Player) : Collections.emptyList();
+    private static List<Predicate<Entity>> getTypePredicates(Map<String, List<String>> params, String selectorType) {
+        List<String> types = getArgument(params, ARG_TYPE);
+        if (types == null){
+            return Collections.emptyList();
         }
+        List<Predicate<Entity>> predicates = Lists.newArrayList();
+
+        for (String type : types) {
+            if (type != null && (selectorType.equals("e") || selectorType.equals("r") || selectorType.equals("s"))) {
+                boolean inverted;
+                String identifier;
+
+                if (type.startsWith("!")) {
+                    inverted = true;
+                    type = type.substring(1);
+                } else {
+                    inverted = false;
+                }
+
+                if (!type.startsWith("minecraft:")) {
+                    identifier = "minecraft:" + type;
+                } else {
+                    identifier = type;
+                }
+
+                predicates.add(entity -> entity != null && (entity instanceof Player && identifier.equals("minecraft:player") || ENTITY_NAME2ID.get(identifier) == entity.getNetworkId()) != inverted);
+            } else {
+                if(!selectorType.equals("e") && !selectorType.equals("s")){
+                    predicates.add(entity -> entity instanceof Player);
+                }
+            }
+        }
+        return List.of(e -> predicates.stream().anyMatch(predicate -> predicate.apply(e)));
     }
 
-    private static List<Predicate<Entity>> getXpLevelPredicates(Map<String, String> params) {
+    private static List<Predicate<Entity>> getXpLevelPredicates(Map<String, List<String>> params) {
         List<Predicate<Entity>> results = Lists.newArrayList();
 
         int lm = getInt(params, ARG_LM, -1);
@@ -198,10 +216,11 @@ public final class EntitySelector {
         return results;
     }
 
-    private static List<Predicate<Entity>> getGamemodePredicates(Map<String, String> params) {
+    private static List<Predicate<Entity>> getGamemodePredicates(Map<String, List<String>> params) {
         List<Predicate<Entity>> results = Lists.newArrayList();
 
-        String m = getArgument(params, ARG_M);
+        List<String> args = getArgument(params, ARG_M);
+        String m = args != null ? args.get(0) : null;
 
         if (m != null) {
             boolean inverted = m.startsWith("!");
@@ -229,24 +248,29 @@ public final class EntitySelector {
         return results;
     }
 
-    private static List<Predicate<Entity>> getNamePredicates(Map<String, String> params) {
-        List<Predicate<Entity>> results = Lists.newArrayList();
+    private static List<Predicate<Entity>> getNamePredicates(Map<String, List<String>> params) {
+        List<Predicate<Entity>> predicates = Lists.newArrayList();
 
-        String name = getArgument(params, ARG_NAME);
+        List<String> names = getArgument(params, ARG_NAME);
 
-        if (name != null) {
-            boolean inverted = name.startsWith("!");
-            if (inverted) {
-                name = name.substring(1);
-            }
-            String f = name;
-            results.add(entity -> entity != null && entity.getName().equals(f.replaceAll("_"," ")) != inverted);
+        if (names == null) {
+            return predicates;
         }
 
-        return results;
+        for (String name : names) {
+            if (name != null) {
+                boolean inverted = name.startsWith("!");
+                if (inverted) {
+                    name = name.substring(1);
+                }
+                String f = name;
+                predicates.add(entity -> entity != null && entity.getName().replaceAll("_", " ").equals(f.replaceAll("_", " ")) != inverted);
+            }
+        }
+        return List.of(e -> predicates.stream().anyMatch(predicate -> predicate.apply(e)));
     }
 
-    private static List<Predicate<Entity>> getRadiusPredicates(Map<String, String> params, Vector3 vec) {
+    private static List<Predicate<Entity>> getRadiusPredicates(Map<String, List<String>> params, Vector3 vec) {
         double rm = getInt(params, ARG_RM, -1);
         double r = getInt(params, ARG_R, -1);
 
@@ -270,7 +294,7 @@ public final class EntitySelector {
         }
     }
 
-    private static List<Predicate<Entity>> getRotationsPredicates(Map<String, String> params) {
+    private static List<Predicate<Entity>> getRotationsPredicates(Map<String, List<String>> params) {
         List<Predicate<Entity>> results = Lists.newArrayList();
 
         if (params.containsKey(ARG_RYM) || params.containsKey(ARG_RY)) {
@@ -326,16 +350,16 @@ public final class EntitySelector {
         return angle;
     }
 
-    private static List<Entity> filterResults(Map<String, String> params, List<Predicate<Entity>> predicates, String selectorType, Level level, BlockVector3 vec) {
+    private static List<Entity> filterResults(Map<String, List<String>> params, List<Predicate<Entity>> predicates, String selectorType, Level level, BlockVector3 vec) {
         List<Entity> results = Lists.newArrayList();
 
-        String type = getArgument(params, ARG_TYPE);
-        if (type != null && type.startsWith("!")) {
-            type = type.substring(1);
-        }
+        List<String> types = getArgument(params, ARG_TYPE);
+
+        if (types != null) types = types.stream().map(type -> type.startsWith("!") ? type.substring(1) : type).collect(Collectors.toList());
+        ///todo: check what the use of value "types"
 
         boolean playerOnly = !selectorType.equals("e");
-        boolean random = selectorType.equals("r") && type != null;
+        boolean random = selectorType.equals("r") && types != null;
 
         int dx = getInt(params, ARG_DX, 0);
         int dy = getInt(params, ARG_DY, 0);
@@ -373,7 +397,7 @@ public final class EntitySelector {
         return results;
     }
 
-    private static List<Entity> getEntitiesFromPredicates(List<Entity> matchingEntities, Map<String, String> params, CommandSender sender, String selectorType, Vector3 vec) {
+    private static List<Entity> getEntitiesFromPredicates(List<Entity> matchingEntities, Map<String, List<String>> params, CommandSender sender, String selectorType, Vector3 vec) {
         int c = getInt(params, ARG_C, !selectorType.equals("a") && !selectorType.equals("e") ? 1 : 0);
 
         if (!selectorType.equals("p") && !selectorType.equals("a") && !selectorType.equals("e")) {
@@ -412,7 +436,7 @@ public final class EntitySelector {
         return new SimpleAxisAlignedBB(vec.getX() + (negativeX ? dx : 0), vec.getY() + (negativeY ? dy : 0), vec.getZ() + (negativeZ ? dz : 0), vec.getX() + (negativeX ? 0 : dx) + 1, vec.getY() + (negativeY ? 0 : dy) + 1, vec.getZ() + (negativeZ ? 0 : dz) + 1);
     }
 
-    private static BlockVector3 getBlockVectorFromArguments(Map<String, String> params, CommandSender sender) {
+    private static BlockVector3 getBlockVectorFromArguments(Map<String, List<String>> params, CommandSender sender) {
         int defaultX = 0;
         int defaultY = 0;
         int defaultZ = 0;
@@ -424,7 +448,7 @@ public final class EntitySelector {
         return new BlockVector3(getInt(params, ARG_X, defaultX), getInt(params, ARG_Y, defaultY), getInt(params, ARG_Z, defaultZ));
     }
 
-    private static Vector3 getVector3FromArguments(Map<String, String> params, CommandSender sender) {
+    private static Vector3 getVector3FromArguments(Map<String, List<String>> params, CommandSender sender) {
         double defaultX = 0;
         double defaultY = 0;
         double defaultZ = 0;
@@ -436,11 +460,11 @@ public final class EntitySelector {
         return new Vector3(getCoordinate(params, ARG_X, defaultX, true), getCoordinate(params, ARG_Y, defaultY, false), getCoordinate(params, ARG_Z, defaultZ, true));
     }
 
-    private static double getCoordinate(Map<String, String> params, String key, double defaultCoordinate, boolean offset) {
-        return params.containsKey(key) ? getInt(params.get(key), MathHelper.floor(defaultCoordinate)) + (offset ? 0.5D : 0.0D) : defaultCoordinate;
+    private static double getCoordinate(Map<String, List<String>> params, String key, double defaultCoordinate, boolean offset) {
+        return params.containsKey(key) ? getInt(params.get(key).get(0), MathHelper.floor(defaultCoordinate)) + (offset ? 0.5D : 0.0D) : defaultCoordinate;
     }
 
-    private static boolean hasLevelArgument(Map<String, String> params) {
+    private static boolean hasLevelArgument(Map<String, List<String>> params) {
         for (String arg : LEVEL_ARGS) {
             if (params.containsKey(arg)) {
                 return true;
@@ -450,8 +474,8 @@ public final class EntitySelector {
         return false;
     }
 
-    private static int getInt(Map<String, String> params, String key, int defaultValue) {
-        return params.containsKey(key) ? getInt(params.get(key), defaultValue) : defaultValue;
+    private static int getInt(Map<String, List<String>> params, String key, int defaultValue) {
+        return params.containsKey(key) ? getInt(params.get(key).get(0), defaultValue) : defaultValue;
     }
 
     private static int getInt(String value, int defaultValue) {
@@ -462,7 +486,7 @@ public final class EntitySelector {
         }
     }
 
-    private static String getArgument(Map<String, String> params, String key) {
+    private static List<String> getArgument(Map<String, List<String>> params, String key) {
         return params.get(key);
     }
 
@@ -470,7 +494,7 @@ public final class EntitySelector {
         Matcher matcher = ENTITY_SELECTOR.matcher(inputSelector);
 
         if (matcher.matches()) {
-            Map<String, String> map = getArgumentMap(matcher.group(2));
+            Map<String, List<String>> map = getArgumentMap(matcher.group(2));
             String selectorType = matcher.group(1);
             return getInt(map, ARG_C, !"a".equals(selectorType) && !"e".equals(selectorType) ? 1 : 0) != 1;
         }
@@ -482,8 +506,8 @@ public final class EntitySelector {
         return ENTITY_SELECTOR.matcher(inputSelector).matches();
     }
 
-    private static Map<String, String> getArgumentMap(String inputArguments) throws SelectorSyntaxException {
-        Map<String, String> args = Maps.newHashMap();
+    private static Map<String, List<String>> getArgumentMap(String inputArguments) throws SelectorSyntaxException {
+        Map<String,  List<String>> args = Maps.newHashMap();
 
         if (inputArguments != null) {
             for (String arg : ARGUMENT_SEPARATOR.split(inputArguments)) {
@@ -494,7 +518,11 @@ public final class EntitySelector {
                     throw new SelectorSyntaxException(); //Unknown command argument: argName
                 }
 
-                args.put(argName, iterator.hasNext() ? iterator.next() : "");
+                if (!args.containsKey(argName)) {
+                    args.put(argName, Lists.newArrayList(iterator.hasNext() ? iterator.next() : ""));
+                }else{
+                    args.get(argName).add(iterator.hasNext() ? iterator.next() : "");
+                }
             }
         }
 
