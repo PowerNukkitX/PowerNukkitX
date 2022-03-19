@@ -2,10 +2,7 @@ package cn.powernukkitx.bootstrap.util;
 
 import cn.powernukkitx.bootstrap.Bootstrap;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +20,14 @@ public final class ConfigUtils {
             }
         } catch (IOException e) {
             configMap = new HashMap<>(0);
+        }
+        final File configFile = new File("bootstrap.ini");
+        if (configFile.exists() && configFile.isFile()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
+                configMap.putAll(INIUtils.parseINI(reader));
+            } catch (IOException ignore) {
+
+            }
         }
     }
 
@@ -48,5 +53,9 @@ public final class ConfigUtils {
 
     public static String get(String key) {
         return configMap.get(key);
+    }
+
+    public static String forceLang() {
+        return configMap.get("language");
     }
 }
