@@ -28,7 +28,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public int getBlockIdAt(int x, int y, int z, int layer) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.getBlockId(x & 0xf, y & 0xff, z & 0xf, layer);
+            return chunk.getBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
         }
         return 0;
     }
@@ -38,7 +38,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.getBlockState(x & 0xf, y & 0xff, z & 0xf, layer);
+            return chunk.getBlockState(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
         }
         return BlockState.AIR;
     }
@@ -53,7 +53,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public void setBlockIdAt(int x, int y, int z, int layer, int id) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            chunk.setBlockId(x & 0xf, y & 0xff, z & 0xf, layer, id);
+            chunk.setBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer, id);
         }
     }
 
@@ -71,7 +71,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public boolean setBlockAtLayer(int x, int y, int z, int layer, int id, int data) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.setBlockAtLayer(x & 0xf, y & 0xff, z & 0xf, layer, id, data);
+            return chunk.setBlockAtLayer(x & 0xf, ensureY(y, chunk), z & 0xf, layer, id, data);
         }
         return false;
     }
@@ -90,7 +90,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public void setBlockFullIdAt(int x, int y, int z, int layer, int fullId) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            chunk.setFullBlockId(x & 0xf, y & 0xff, z & 0xf, layer, fullId);
+            chunk.setFullBlockId(x & 0xf, ensureY(y, chunk), z & 0xf, layer, fullId);
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public boolean setBlockStateAt(int x, int y, int z, int layer, BlockState state) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.setBlockStateAtLayer(x & 0xf, y & 0xff, z & 0xf, layer, state);
+            return chunk.setBlockStateAtLayer(x & 0xf, ensureY(y, chunk), z & 0xf, layer, state);
         }
         return false;
     }
@@ -119,7 +119,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public int getBlockDataAt(int x, int y, int z, int layer) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            return chunk.getBlockData(x & 0xf, y & 0xff, z & 0xf, layer);
+            return chunk.getBlockData(x & 0xf, ensureY(y, chunk), z & 0xf, layer);
         }
         return 0;
     }
@@ -138,7 +138,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
     public void setBlockDataAt(int x, int y, int z, int layer, int data) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
-            chunk.setBlockData(x & 0xf, y & 0xff, z & 0xf, layer, data);
+            chunk.setBlockData(x & 0xf, ensureY(y, chunk), z & 0xf, layer, data);
         }
     }
 
@@ -158,5 +158,15 @@ public abstract class SimpleChunkManager implements ChunkManager {
 
     public void cleanChunks(long seed) {
         this.seed = seed;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private int ensureY(final int y, final FullChunk chunk) {
+        if (chunk.isOverWorld()) {
+            return Math.max(Math.min(y, 319), -64);
+        } else {
+            return y & 0xff;
+        }
     }
 }

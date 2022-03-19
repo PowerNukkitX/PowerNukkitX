@@ -82,8 +82,9 @@
 
     <repositories>
         <repository>
-            <id>opencollab-repo-release</id>
-            <url>https://repo.opencollab.dev/maven-releases/</url>
+            <id>powernukkitx-terra-binary-maven</id>
+            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>
+            <layout>default</layout>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -95,7 +96,7 @@
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -345,6 +346,16 @@
             <version>4.5.2</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra</artifactId>
+            <version>6.0.1-bukkit</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -512,6 +523,13 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
+                                <exclude>META-INF/services/org.slf4j.spi.SLF4JServiceProvider</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>com.dfsek.terra:Terra</artifact>
+                            <excludes>
+                                <exclude>config.yml</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -521,7 +539,6 @@
                         </transformer>
                     </transformers>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <createSourcesJar>true</createSourcesJar>
                 </configuration>
             </plugin>
             <plugin>
