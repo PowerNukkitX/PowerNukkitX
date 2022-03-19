@@ -46,13 +46,15 @@ public class ChestInventory extends ContainerInventory {
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
         }
-        if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
-            RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
-            this.getHolder().level.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+        try {
+            if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                this.getHolder().level.getServer().getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+                }
             }
-        }
+        } catch (LevelException ignored) {}
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
