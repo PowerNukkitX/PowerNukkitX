@@ -221,7 +221,7 @@ public class Server {
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
-    
+
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
@@ -256,7 +256,7 @@ public class Server {
     private boolean allowNether;
 
     private final Thread currentThread;
-    
+
     private final long launchTime;
 
     private Watchdog watchdog;
@@ -272,11 +272,11 @@ public class Server {
     private boolean forceSkinTrusted = false;
 
     private boolean checkMovement = true;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean allowTheEnd;
-    
+
     /**
      * Minimal initializer for testing
      */
@@ -297,16 +297,16 @@ public class Server {
         File abs = tempDir.getAbsoluteFile();
         filePath = abs.getPath();
         dataPath = filePath;
-        
+
         File dir = new File(tempDir, "plugins");
         pluginPath = dir.getPath();
-        
+
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
         Files.createParentDirs(new File(tempDir, "players"));
-        
+
         baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-        
+
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         properties = new Config();
@@ -315,7 +315,7 @@ public class Server {
         operators = new Config();
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
-        
+
         setMaxPlayers(10);
 
         this.registerEntities();
@@ -365,8 +365,8 @@ public class Server {
                     log.info(line);
                 }
                 languagesCommaList = Stream.of(lines)
-                        .filter(line-> !line.isEmpty())
-                        .map(line-> line.substring(0, 3))
+                        .filter(line -> !line.isEmpty())
+                        .map(line -> line.substring(0, 3))
                         .collect(Collectors.joining(", "));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -386,7 +386,7 @@ public class Server {
                 InputStream conf = this.getClass().getClassLoader().getResourceAsStream("lang/" + lang + "/lang.ini");
                 if (conf != null) {
                     language = lang;
-                } else if(predefinedLanguage != null) {
+                } else if (predefinedLanguage != null) {
                     log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
                     predefinedLanguage = null;
                 }
@@ -427,7 +427,7 @@ public class Server {
                 }
 
                 StringBuilder keyBuilder = new StringBuilder();
-                try(BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
                     String line;
                     LinkedList<String[]> path = new LinkedList<>();
                     Pattern pattern = Pattern.compile("^( *)([a-z-]+):");
@@ -559,9 +559,9 @@ public class Server {
 
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
-        
+
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
-        
+
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
@@ -684,7 +684,7 @@ public class Server {
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
         this.network.registerInterface(new RakNetInterface(this));
-        
+
         try {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
@@ -692,7 +692,7 @@ public class Server {
         } catch (IOException e) {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
-        
+
         this.pluginManager.loadPowerNukkitPlugins();
         this.pluginManager.loadPlugins(this.pluginPath);
 
@@ -705,7 +705,29 @@ public class Server {
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
         Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
         Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
-        //todo: add old generator and hell generator
+
+        //遍历所有世界，转换区块
+        final File[] files = new File(this.getFilePath() + "/worlds").listFiles();
+        if (files != null) {
+            for (final File file : files) {
+                if (file.isDirectory()) {
+                    try {
+                        if (Anvil.is384UpdateRequired(file)) {
+                            this.loadLevel(file.getName(), false);
+                            final Level level = this.getLevelByName(file.getName());
+                            LevelConverter.convert256To384(level);
+                            // 为了防止神必的NPE出现
+                            Generator generator = level.getGenerator();
+                            level.dimension = generator.getDimension();
+                            level.gameRules = level.requireProvider().getGamerules();
+                            level.setTickRate(this.baseTickRate);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
@@ -782,7 +804,7 @@ public class Server {
             this.watchdog = new Watchdog(this, 60000);
             this.watchdog.start();
         }
-        
+
         System.runFinalization();
         this.start();
     }
@@ -871,7 +893,7 @@ public class Server {
         }
     }
 
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
     @Deprecated
     public void batchPackets(Player[] players, DataPacket[] packets) {
@@ -959,8 +981,8 @@ public class Server {
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine, 
-                    new ConcurrentModificationException("Command Dispatched Async: "+commandLine));
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
 
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
             return true;
@@ -1147,7 +1169,7 @@ public class Server {
                 System.gc();
             }
         }, 60);
-        
+
         this.nextTick = System.currentTimeMillis();
         try {
             while (this.isRunning.get()) {
@@ -1269,11 +1291,11 @@ public class Server {
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = this.playerList.values().stream()
                 .map(p -> new PlayerListPacket.Entry(
-                p.getUniqueId(),
-                p.getId(),
-                p.getDisplayName(),
-                p.getSkin(),
-                p.getLoginChainData().getXUID()))
+                        p.getUniqueId(),
+                        p.getId(),
+                        p.getDisplayName(),
+                        p.getSkin(),
+                        p.getLoginChainData().getXUID()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
@@ -1957,7 +1979,7 @@ public class Server {
                 //doing it like this ensures that the playerdata will be saved in a server shutdown
                 @Override
                 public void onCancel() {
-                    if (!this.hasRun)    {
+                    if (!this.hasRun) {
                         this.hasRun = true;
                         saveOfflinePlayerDataInternal(event.getSerializer(), tag, nameLower, event.getUuid().orElse(null));
                     }
@@ -2132,6 +2154,12 @@ public class Server {
     }
 
     public boolean loadLevel(String name) {
+        return loadLevel(name, true);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean loadLevel(String name, boolean init) {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -2169,12 +2197,11 @@ public class Server {
 
         this.levels.put(level.getId(), level);
 
-        level.initLevel();
-
-        this.getPluginManager().callEvent(new LevelLoadEvent(level));
-
-        level.setTickRate(this.baseTickRate);
-
+        if (init) {
+            level.initLevel();
+            this.getPluginManager().callEvent(new LevelLoadEvent(level));
+            level.setTickRate(this.baseTickRate);
+        }
         return true;
     }
 
@@ -2669,14 +2696,14 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isSafeSpawn(){
+    public boolean isSafeSpawn() {
         return safeSpawn;
     }
 
     public static Server getInstance() {
         return instance;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -2686,28 +2713,28 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isForceSkinTrusted(){
+    public boolean isForceSkinTrusted() {
         return forceSkinTrusted;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isCheckMovement(){
+    public boolean isCheckMovement() {
         return checkMovement;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public long getLaunchTime() {
         return launchTime;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
-    
+
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
         @Override

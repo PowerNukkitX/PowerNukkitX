@@ -375,7 +375,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 return y;
             }
         }
-        return 0;
+        return isOverWorld() ? -64 : 0;
     }
 
     @Override
