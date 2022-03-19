@@ -70,12 +70,12 @@ public class ChestInventory extends ContainerInventory {
                 level.addSound(this.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
-            if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
-                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
-                this.getHolder().level.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled()) {
-                    RedstoneComponent.updateAllAroundRedstone(this.getHolder());
-                }
+        }
+        if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
+            RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+            this.getHolder().level.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                RedstoneComponent.updateAllAroundRedstone(this.getHolder());
             }
         }
 
