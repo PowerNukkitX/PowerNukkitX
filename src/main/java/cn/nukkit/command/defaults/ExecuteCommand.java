@@ -22,7 +22,7 @@ public class ExecuteCommand extends VanillaCommand {
         this.commandParameters.put("default",new CommandParameter[]{
                 CommandParameter.newType("origin",CommandParamType.TARGET),
                 CommandParameter.newType("position",CommandParamType.POSITION),
-                CommandParameter.newType("command",CommandParamType.RAWTEXT)
+                CommandParameter.newType("command",CommandParamType.COMMAND)
         });
         this.commandParameters.put("detect",new CommandParameter[]{
                 CommandParameter.newType("origin",CommandParamType.TARGET),
@@ -31,7 +31,7 @@ public class ExecuteCommand extends VanillaCommand {
                 CommandParameter.newType("detectPos",CommandParamType.POSITION),
                 CommandParameter.newType("block",CommandParamType.INT),
                 CommandParameter.newType("data",CommandParamType.INT),
-                CommandParameter.newType("command",CommandParamType.RAWTEXT)
+                CommandParameter.newType("command",CommandParamType.COMMAND)
         });
     }
 
@@ -46,7 +46,7 @@ public class ExecuteCommand extends VanillaCommand {
             List<Entity> entities = parser.parseTargets();
             CommandParser executePosParser = new CommandParser(parser);
             parser.parsePosition();//skip execute position
-            if (!parser.parseString(false).equals("detect")) {
+            if (new CommandParser(this,sender, args).matchCommandForm().equals("default")){
                 String command = parser.parseAllRemain();
                 for (Entity entity : entities) {
                     CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
@@ -55,7 +55,7 @@ public class ExecuteCommand extends VanillaCommand {
                         return false;
                     }
                 }
-            }else{
+            }else{//detect
                 parser.parseString();//skip "detect"
                 CommandParser detectPosParser = new CommandParser(parser);
                 parser.parsePosition();//skip detect position

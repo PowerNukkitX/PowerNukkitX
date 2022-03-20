@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -11,9 +13,16 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CommandParser {
+
+    private static Pattern STRING_PATTERN = Pattern.compile("[A-Za-z]+");//Start and end are not defined
+    private static Pattern NUMBER_PATTERN = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
+    private static Pattern INT_PATTERN = Pattern.compile("^[0-9]*$");
+    private static Pattern FLOAT_PATTERN = Pattern.compile("^(-?\\d+)(\\.\\d+)$");
+    private static Pattern COORDINATE_PATTERN = Pattern.compile("^[~^]?(-?\\d+)?(\\.\\d+)?$");
 
     private final Command command;
     private final CommandSender sender;
@@ -76,6 +85,94 @@ public class CommandParser {
         }
 
         return String.format(TextFormat.RED + "Syntax error: Unexpected \"%2$s\": at \"/%4$s%1$s>>%2$s<<%3$s\"", parameter1, parameter2, parameter3, this.command.getName());
+    }
+
+    public String matchCommandForm() throws CommandSyntaxException {
+        int argsLength = args.length;
+        Map<String, List<ArgType>> commandParameters = new HashMap<>();
+        for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
+            int length = 0;
+            boolean variableLength = false;
+            List<ArgType> argTypes = new ArrayList<>();
+            for (CommandParameter parameter : entry.getValue()){
+                if (parameter.enumData == null) {
+                    switch (parameter.type) {
+                        case INT:
+                        case WILDCARD_INT://I don't know what is the difference between the two
+                            argTypes.add(new ArgType(ArgType.Type.INT));
+                            length++;
+                            break;
+                        case FLOAT:
+                            argTypes.add(new ArgType(ArgType.Type.FLOAT));
+                            length++;
+                            break;
+                        case VALUE:
+                            argTypes.add(new ArgType(ArgType.Type.NUMBER));
+                            length++;
+                            break;
+                        case POSITION:
+                        case BLOCK_POSITION:
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));///three values
+                            length+=3;
+                            break;
+                        case TARGET:
+                        case WILDCARD_TARGET:
+                        case STRING:
+                        case MESSAGE:
+                        case RAWTEXT:
+                        case JSON:
+                        case TEXT:
+                        case FILE_PATH:
+                        case OPERATOR:
+                            argTypes.add(new ArgType(ArgType.Type.STRING));
+                            length++;
+                            break;
+                        case COMMAND:
+                            for (int i = length; i < argsLength; i++) {
+                                argTypes.add(new ArgType(ArgType.Type.COMMAND));
+                            }
+                            variableLength = true;//variable length
+                            break;
+                    }
+                }else{
+                    argTypes.add(new ArgType(ArgType.Type.ENUM, parameter.enumData));
+                    length++;
+                }
+                if (variableLength) break;
+            }
+
+            if (length != argsLength && !variableLength){
+                continue;//not match
+            }
+
+            commandParameters.put(entry.getKey(), argTypes);
+        }
+
+        if (commandParameters.isEmpty()) return null;//no match
+
+        CommandParser parser = new CommandParser(this);
+        while(parser.hasNext()){
+            String next = parser.next();
+            for (Map.Entry<String, List<ArgType>> entry : commandParameters.entrySet().toArray(new Map.Entry[0])){//avoid ConcurrentModificationException
+                List<ArgType> argTypes = entry.getValue();
+                ArgType argType = argTypes.get(parser.cursor);
+                if (argType.type == ArgType.Type.ENUM && argType.enumData.getValues().contains(next)) return entry.getKey();//enum has the highest priority
+                if (argType.type == ArgType.Type.INT && INT_PATTERN.matcher(next).find()) continue;
+                if (argType.type == ArgType.Type.FLOAT && FLOAT_PATTERN.matcher(next).find()) continue;
+                if (argType.type == ArgType.Type.NUMBER && NUMBER_PATTERN.matcher(next).find()) continue;
+                if (argType.type == ArgType.Type.COORDINATE && COORDINATE_PATTERN.matcher(next).find()) continue;
+                if (argType.type == ArgType.Type.STRING && STRING_PATTERN.matcher(next).find()) continue;
+                if (argType.type == ArgType.Type.COMMAND) continue;//The rest are commands so there is no need to check further
+                //no match
+                commandParameters.remove(entry.getKey());
+            }
+        }
+
+        if (commandParameters.isEmpty()) return null;//no match
+        if (commandParameters.size() != 1) throw new CommandSyntaxException();//more than one match
+        return commandParameters.keySet().iterator().next();
     }
 
     public Level getTargetLevel() {
@@ -293,5 +390,29 @@ public class CommandParser {
 
     enum CoordinateType{
         X, Y, Z
+    }
+
+    class ArgType{
+        enum Type {
+            INT,//only 0-9
+            FLOAT,//0-9 and must include "."
+            NUMBER,//int or float
+            COORDINATE,//eq: ~0.1
+            STRING,//must include A-Z or a-z
+            COMMAND,//multiple string
+            ENUM//limited parameter types
+        }
+        //can be null
+        CommandEnum enumData;
+        Type type;
+
+        ArgType(Type type){
+            this(type,null);
+        }
+
+        ArgType(Type type,CommandEnum enumData){
+            this.type = type;
+            this.enumData = enumData;
+        }
     }
 }
