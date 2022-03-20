@@ -136,7 +136,7 @@ public class CommandParser {
                 }
             }
 
-            if (length != argsLength){
+            if (length < argsLength){
                 continue;//not match
             }
 
