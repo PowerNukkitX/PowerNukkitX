@@ -13,17 +13,32 @@ public class BVector3{
     private Vector3 pos;
     private double length;
 
+    //only use the location's pitch and yaw
     public static BVector3 fromLocation(Location location){
         return fromLocation(location,1);
     }
+
     public static BVector3 fromLocation(Location location, double length){
-        return new BVector3(location.getYaw() - 270,-location.getPitch(),length);
+        return new BVector3(location.getYaw()-270,-location.getPitch(),length);
+    }
+
+    public static BVector3 fromAngle(double xzAxisAngle,double yAxisAngle,double length){
+        return new BVector3(xzAxisAngle,yAxisAngle,length);
+    }
+
+    public static BVector3 fromPos(Vector3 pos){
+        return new BVector3(pos);
     }
 
     private BVector3(double xzAxisAngle, double yAxisAngle, double length){
         convertAngle(xzAxisAngle,yAxisAngle);
         this.length = length;
         updatePos();
+    }
+
+    private BVector3(Vector3 pos){
+        this.pos = pos;
+        updateAngle();
     }
 
     public BVector3 extend(double length){
@@ -76,6 +91,14 @@ public class BVector3{
 
     public Vector3 addToPos(Vector3 pos){
         return pos.add(this.pos.x,this.pos.y,this.pos.z);
+    }
+
+    public double getYaw(){
+        return xzAxisAngle+270;
+    }
+
+    public double getPitch(){
+        return -yAxisAngle;
     }
 
     private void updatePos(){
@@ -131,11 +154,11 @@ public class BVector3{
     }
 
     public static double acos(double cos){
-        return 180 * Math.asin(cos) / Math.PI;
+        return 180 * Math.acos(cos) / Math.PI;
     }
 
     public static double atan(double tan){
-        return 180 * Math.asin(tan) / Math.PI;
+        return 180 * Math.atan(tan) / Math.PI;
     }
 
     public static double minAbs(double a,double b){

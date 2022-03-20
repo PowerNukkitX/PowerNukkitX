@@ -46,7 +46,12 @@ public class ExecuteCommand extends VanillaCommand {
             List<Entity> entities = parser.parseTargets();
             CommandParser executePosParser = new CommandParser(parser);
             parser.parsePosition();//skip execute position
-            if (new CommandParser(this,sender, args).matchCommandForm().equals("default")){
+            String form = new CommandParser(this,sender, args).matchCommandForm();
+            if (form == null){
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                return false;
+            }
+            if (form.equals("default")){
                 String command = parser.parseAllRemain();
                 for (Entity entity : entities) {
                     CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
