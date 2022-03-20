@@ -118,7 +118,7 @@ public class TeleportCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
                     List<Entity> destination = p.parseTargets();
-                    if(destination.isEmpty()) {
+                    if(destination.size() != 1) {
                         return false;
                     }
                     Entity target = destination.get(0);
@@ -216,7 +216,40 @@ public class TeleportCommand extends VanillaCommand {
                     }
                 }
                 case "Entity->Pos(FacingEntity)" -> {
-
+                    CommandParser p = new CommandParser(parser);
+                    List<Entity> victims = p.parseTargets();
+                    Position pos = p.parsePosition();
+                    p.parseString();//avoid "facing"
+                    List<Entity> lookAtEntity = p.parseTargets();
+                    if (lookAtEntity.size() != 1){
+                        return false;
+                    }
+                    Position lookAtPosition = lookAtEntity.get(0);
+                    boolean checkForBlocks = false;
+                    if(p.hasNext()){
+                        checkForBlocks = p.parseBoolean();
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    for(Entity victim : victims) {
+                        sb.append(victim.getName()).append(" ");
+                    }
+                    BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
+                    Location target = Location.fromObject(pos,pos.level,Double.isNaN(bv.getYaw()) ? 0 : bv.getYaw(),Double.isNaN(bv.getPitch()) ? 0 : bv.getPitch());
+                    if(checkForBlocks){
+                        if(!target.getLevelBlock().isSolid() && !target.add(0,1,0).getLevelBlock().isSolid()){
+                            for(Entity victim : victims) {
+                                victim.teleport(target);
+                            }
+                            sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.x),String.valueOf(target.y),String.valueOf(target.z)));
+                        }else{
+                            sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.toString()));
+                        }
+                    }else{
+                        for(Entity victim : victims) {
+                            victim.teleport(target);
+                        }
+                        sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.x),String.valueOf(target.y),String.valueOf(target.z)));
+                    }
                 }
                 case "->Pos" -> {
 
