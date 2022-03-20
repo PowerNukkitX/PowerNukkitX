@@ -124,15 +124,10 @@ public class CommandParser {
                         case TEXT:
                         case FILE_PATH:
                         case OPERATOR:
-                            argTypes.add(new ArgType(ArgType.Type.STRING,parameter.optional));
-                            length++;
-                            break;
                         case MESSAGE:
                         case COMMAND:
-                            for (int i = length; i < argsLength; i++) {
-                                argTypes.add(new ArgType(ArgType.Type.COMPOUNDSTRING,parameter.optional));
-                                length++;
-                            }
+                            argTypes.add(new ArgType(ArgType.Type.STRING,parameter.optional));
+                            length++;
                             break;
                     }
                 }else{
@@ -141,7 +136,7 @@ public class CommandParser {
                 }
             }
 
-            if (length < argsLength){
+            if (length != argsLength){
                 continue;//not match
             }
 
@@ -163,7 +158,6 @@ public class CommandParser {
                 if (argType.type == ArgType.Type.NUMBER && NUMBER_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.COORDINATE && COORDINATE_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.STRING && STRING_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.COMPOUNDSTRING) continue;
                 //no match
                 matched = false;
             }
@@ -172,20 +166,7 @@ public class CommandParser {
         }
 
         if (commandParameters.isEmpty()) return null;//no match
-        if (commandParameters.size() > 1) {//more than one match
-            //在一些情况下会出现多个匹配项的情况,例如/execute (两个格式末尾都以COMPOUNDSTRING类型结尾)(事实上我很想强制用户使用" "包装末尾的命令)
-            //这时返回匹配了最多非可选参数(且不能是COMPOUNDSTRING类型)的格式
-            String maxArgForm = commandParameters.keySet().iterator().next();
-            int maxLength = commandParameters.get(maxArgForm).stream().filter(type -> (!type.optional) && type.type != ArgType.Type.COMPOUNDSTRING).toList().size();//Calculate only what is necessary
-            for (Map.Entry<String,List<ArgType>> entry : commandParameters.entrySet()) {
-                int j = entry.getValue().stream().filter(type -> (!type.optional) && type.type != ArgType.Type.COMPOUNDSTRING).toList().size();
-                if (j > maxLength) {
-                    maxLength = j;
-                    maxArgForm = entry.getKey();
-                }
-            }
-            return maxArgForm;
-        }
+        if (commandParameters.size() != 1) throw new CommandSyntaxException();//more than one match
         return commandParameters.keySet().iterator().next();
     }
 
@@ -413,7 +394,6 @@ public class CommandParser {
             NUMBER,//int or float
             COORDINATE,//eq: ~0.1
             STRING,//must include A-Z or a-z
-            COMPOUNDSTRING,//multiple string
             LIMITEDVALUE//limited parameter types
         }
         //can be null
