@@ -128,11 +128,6 @@ public class CommandParser {
                             length++;
                             break;
                         case MESSAGE:
-                            for (int i = length; i < argsLength; i++) {
-                                argTypes.add(new ArgType(ArgType.Type.COMPOUNDSTRING,parameter.optional));
-                                length++;
-                            }
-                            break;
                         case COMMAND:
                             for (int i = length; i < argsLength; i++) {
                                 argTypes.add(new ArgType(ArgType.Type.COMPOUNDSTRING,parameter.optional));
@@ -173,11 +168,13 @@ public class CommandParser {
                 matched = false;
             }
             if(!matched) commandParameters.remove(entry.getKey());
-            if (argTypes.size() > parser.cursor + 1 && !argTypes.get(parser.cursor + 1).optional) commandParameters.remove(entry.getKey());
+            if (argTypes.size() > parser.cursor + 1 && !argTypes.get(parser.cursor + 1).optional) commandParameters.remove(entry.getKey());//排除此格式如果还有必需的参数没有输入
         }
 
         if (commandParameters.isEmpty()) return null;//no match
         if (commandParameters.size() > 1) {//more than one match
+            //在一些情况下会出现多个匹配项的情况,例如/execute (两个格式末尾都以COMPOUNDSTRING类型结尾)(事实上我很想强制用户使用" "包装末尾的命令)
+            //这时返回匹配了最多非可选参数(且不能是COMPOUNDSTRING类型)的格式
             String maxArgForm = commandParameters.keySet().iterator().next();
             int maxLength = commandParameters.get(maxArgForm).stream().filter(type -> (!type.optional) && type.type != ArgType.Type.COMPOUNDSTRING).toList().size();//Calculate only what is necessary
             for (Map.Entry<String,List<ArgType>> entry : commandParameters.entrySet()) {
