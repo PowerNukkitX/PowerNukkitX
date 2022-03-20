@@ -173,6 +173,7 @@ public class CommandParser {
                 matched = false;
             }
             if(!matched) commandParameters.remove(entry.getKey());
+            if (argTypes.size() > parser.cursor + 1 && !argTypes.get(parser.cursor + 1).optional) commandParameters.remove(entry.getKey());
         }
 
         if (commandParameters.isEmpty()) return null;//no match

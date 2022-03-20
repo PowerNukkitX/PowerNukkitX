@@ -81,7 +81,7 @@ public class TeleportCommand extends VanillaCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender) || sender.isEntity()) {
+        if (!this.testPermission(sender) || !sender.isEntity()) {
             return false;
         }
         CommandParser parser = new CommandParser(this,sender,args);
