@@ -92,58 +92,61 @@ public class CommandParser {
         Map<String, List<ArgType>> commandParameters = new HashMap<>();
         for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
             int length = 0;
-            boolean variableLength = false;
             List<ArgType> argTypes = new ArrayList<>();
             for (CommandParameter parameter : entry.getValue()){
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT:
                         case WILDCARD_INT://I don't know what is the difference between the two
-                            argTypes.add(new ArgType(ArgType.Type.INT));
+                            argTypes.add(new ArgType(ArgType.Type.INT,parameter.optional));
                             length++;
                             break;
                         case FLOAT:
-                            argTypes.add(new ArgType(ArgType.Type.FLOAT));
+                            argTypes.add(new ArgType(ArgType.Type.FLOAT,parameter.optional));
                             length++;
                             break;
                         case VALUE:
-                            argTypes.add(new ArgType(ArgType.Type.NUMBER));
+                            argTypes.add(new ArgType(ArgType.Type.NUMBER,parameter.optional));
                             length++;
                             break;
                         case POSITION:
                         case BLOCK_POSITION:
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE));///three values
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));
+                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));///three values
                             length+=3;
                             break;
                         case TARGET:
                         case WILDCARD_TARGET:
                         case STRING:
-                        case MESSAGE:
                         case RAWTEXT:
                         case JSON:
                         case TEXT:
                         case FILE_PATH:
                         case OPERATOR:
-                            argTypes.add(new ArgType(ArgType.Type.STRING));
+                            argTypes.add(new ArgType(ArgType.Type.STRING,parameter.optional));
                             length++;
+                            break;
+                        case MESSAGE:
+                            for (int i = length; i < argsLength; i++) {
+                                argTypes.add(new ArgType(ArgType.Type.COMPOUNDSTRING,parameter.optional));
+                                length++;
+                            }
                             break;
                         case COMMAND:
                             for (int i = length; i < argsLength; i++) {
-                                argTypes.add(new ArgType(ArgType.Type.COMMAND));
+                                argTypes.add(new ArgType(ArgType.Type.COMPOUNDSTRING,parameter.optional));
+                                length++;
                             }
-                            variableLength = true;//variable length
                             break;
                     }
                 }else{
-                    argTypes.add(new ArgType(ArgType.Type.ENUM, parameter.enumData));
+                    argTypes.add(new ArgType(ArgType.Type.LIMITEDVALUE,parameter.optional, parameter.enumData.getValues()));
                     length++;
                 }
-                if (variableLength) break;
             }
 
-            if (length != argsLength && !variableLength){
+            if (length < argsLength){
                 continue;//not match
             }
 
@@ -152,26 +155,39 @@ public class CommandParser {
 
         if (commandParameters.isEmpty()) return null;//no match
 
-        CommandParser parser = new CommandParser(this);
-        while(parser.hasNext()){
-            String next = parser.next();
-            for (Map.Entry<String, List<ArgType>> entry : commandParameters.entrySet().toArray(new Map.Entry[0])){//avoid ConcurrentModificationException
-                List<ArgType> argTypes = entry.getValue();
+        for (Map.Entry<String, List<ArgType>> entry : commandParameters.entrySet().toArray(new Map.Entry[0])){
+            boolean matched = true;
+            CommandParser parser = new CommandParser(this);
+            List<ArgType> argTypes = entry.getValue();
+            while(parser.hasNext()){
+                String next = parser.next();
                 ArgType argType = argTypes.get(parser.cursor);
-                if (argType.type == ArgType.Type.ENUM && argType.enumData.getValues().contains(next)) return entry.getKey();//enum has the highest priority
+                if (argType.type == ArgType.Type.LIMITEDVALUE && argType.limitedValues.contains(next)) continue;
                 if (argType.type == ArgType.Type.INT && INT_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.FLOAT && FLOAT_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.NUMBER && NUMBER_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.COORDINATE && COORDINATE_PATTERN.matcher(next).find()) continue;
                 if (argType.type == ArgType.Type.STRING && STRING_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.COMMAND) continue;//The rest are commands so there is no need to check further
+                if (argType.type == ArgType.Type.COMPOUNDSTRING) continue;
                 //no match
-                commandParameters.remove(entry.getKey());
+                matched = false;
             }
+            if(!matched) commandParameters.remove(entry.getKey());
         }
 
         if (commandParameters.isEmpty()) return null;//no match
-        if (commandParameters.size() != 1) throw new CommandSyntaxException();//more than one match
+        if (commandParameters.size() > 1) {//more than one match
+            String maxArgForm = commandParameters.keySet().iterator().next();
+            int maxLength = commandParameters.get(maxArgForm).stream().filter(type -> (!type.optional) && type.type != ArgType.Type.COMPOUNDSTRING).toList().size();//Calculate only what is necessary
+            for (Map.Entry<String,List<ArgType>> entry : commandParameters.entrySet()) {
+                int j = entry.getValue().stream().filter(type -> (!type.optional) && type.type != ArgType.Type.COMPOUNDSTRING).toList().size();
+                if (j > maxLength) {
+                    maxLength = j;
+                    maxArgForm = entry.getKey();
+                }
+            }
+            return maxArgForm;
+        }
         return commandParameters.keySet().iterator().next();
     }
 
@@ -399,20 +415,26 @@ public class CommandParser {
             NUMBER,//int or float
             COORDINATE,//eq: ~0.1
             STRING,//must include A-Z or a-z
-            COMMAND,//multiple string
-            ENUM//limited parameter types
+            COMPOUNDSTRING,//multiple string
+            LIMITEDVALUE//limited parameter types
         }
         //can be null
-        CommandEnum enumData;
+        List<String> limitedValues;
         Type type;
+        boolean optional;
 
         ArgType(Type type){
-            this(type,null);
+            this(type,false);
         }
 
-        ArgType(Type type,CommandEnum enumData){
+        ArgType(Type type,boolean optional){
+            this(type,optional,null);
+        }
+
+        ArgType(Type type,boolean optional,List<String> limitedValues) {
             this.type = type;
-            this.enumData = enumData;
+            this.optional = optional;
+            this.limitedValues = limitedValues;
         }
     }
 }
