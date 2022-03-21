@@ -1,11 +1,15 @@
 package cn.nukkit.level.format.leveldb.palette;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
 import java.util.Set;
 
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public class IntPalette extends Palette<Integer> {
 
     private final Int2IntOpenHashMap entries;

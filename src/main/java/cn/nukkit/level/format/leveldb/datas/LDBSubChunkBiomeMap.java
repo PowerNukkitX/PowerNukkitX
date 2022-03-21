@@ -1,7 +1,11 @@
 package cn.nukkit.level.format.leveldb.datas;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.format.leveldb.palette.IntPalette;
 
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public final class LDBSubChunkBiomeMap implements Cloneable {
     private IntPalette palette;
     private int[] biomes = new int[4096];

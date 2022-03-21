@@ -246,6 +246,11 @@ public final class BlockState implements Serializable, IBlockState {
     @Nonnull
     private OptionalBoolean valid = OptionalBoolean.empty();
 
+    /**
+     * 此字段仅供LevelDB格式地图使用
+     */
+    private int version;
+
     private BlockState(@Nonnegative int blockId) {
         Validation.checkPositive("blockId", blockId);
         this.blockId = blockId;
@@ -331,6 +336,23 @@ public final class BlockState implements Serializable, IBlockState {
     @Nonnull
     public BlockState withData(@Nonnegative Number data) {
         return of(blockId, data);
+    }
+
+    /**
+     * version只会被LDB使用
+     * @return 版本
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public int getVersion() {
+        return version;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockState setVersion(int version) {
+        this.version = version;
+        return this;
     }
 
     @PowerNukkitOnly

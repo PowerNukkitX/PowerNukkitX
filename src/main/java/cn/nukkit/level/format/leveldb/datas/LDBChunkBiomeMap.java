@@ -1,11 +1,15 @@
 package cn.nukkit.level.format.leveldb.datas;
 
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.format.leveldb.palette.IntPalette;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitOnly
+@Since("1.6.0.0-PNX")
 public final class LDBChunkBiomeMap {
     private final Int2ObjectOpenHashMap<LDBSubChunkBiomeMap> subChunkBiomes = new Int2ObjectOpenHashMap<>();
 
