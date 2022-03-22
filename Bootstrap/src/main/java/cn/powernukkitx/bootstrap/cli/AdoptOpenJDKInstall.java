@@ -83,11 +83,11 @@ public final class AdoptOpenJDKInstall implements Component {
             } catch (IOException e) {
                 Logger.trInfo("display.fail.uncompress", file.getAbsolutePath());
             }
-        } else if ("tar.gz".equals(suffix)) {
+        } else if ("tar.gz".equals(suffix) || "gz".equals(suffix)) {
             try {
                 GzipUtils.uncompressTGzipFile(file, new File("./java"));
                 Logger.trInfo("display.success.uncompress", file.getAbsolutePath());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Logger.trInfo("display.fail.uncompress", file.getAbsolutePath());
             }
         }
