@@ -952,8 +952,28 @@ public class BinaryStream {
     @SneakyThrows(IOException.class)
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
+    public CompoundTag getLTag() {
+        ByteArrayInputStream is = new ByteArrayInputStream(buffer, offset, buffer.length);
+        int initial = is.available();
+        try {
+            return NBTIO.read(is, ByteOrder.LITTLE_ENDIAN);
+        } finally {
+            offset += initial - is.available();
+        }
+    }
+
+    @SneakyThrows(IOException.class)
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
     public void putTag(CompoundTag tag) {
         put(NBTIO.write(tag));
+    }
+
+    @SneakyThrows(IOException.class)
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public void putLTag(CompoundTag tag) {
+        put(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
     }
 
     private void ensureCapacity(int minCapacity) {

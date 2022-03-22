@@ -57,6 +57,7 @@ public class BlockStateRegistry {
 
     private final Int2ObjectMap<String> blockIdToPersistenceName = new Int2ObjectOpenHashMap<>();
     private final Map<String, Integer> persistenceNameToBlockId = new LinkedHashMap<>();
+    private final Int2ObjectMap<CompoundTag> blockIdToDefaultNBT = new Int2ObjectOpenHashMap<>();
     
     private final byte[] blockPaletteBytes;
 
@@ -110,8 +111,10 @@ public class BlockStateRegistry {
                 while (bis.available() > 0) {
                     CompoundTag tag = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
                     tag.putInt("runtimeId", runtimeId++);
-                    tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1));
+                    int bid = persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1);
+                    tag.putInt("blockId", bid);
                     tags.add(tag);
+                    blockIdToDefaultNBT.putIfAbsent(bid, tag);
                     loadingKnownStateIds.add(getStateId(tag));
                 }
             }
@@ -463,6 +466,12 @@ public class BlockStateRegistry {
         
         stateIdRegistration.remove(getStateId(originalState));
         stateIdRegistration.remove(state.getLegacyStateId());
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public CompoundTag getBlockStateNbtTemplate(int blockId) {
+        return blockIdToDefaultNBT.get(blockId);
     }
 
     @PowerNukkitOnly

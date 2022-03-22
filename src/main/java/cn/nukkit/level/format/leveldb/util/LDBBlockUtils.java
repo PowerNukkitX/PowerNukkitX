@@ -1,7 +1,11 @@
 package cn.nukkit.level.format.leveldb.util;
 
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.StringTag;
 
 public final class LDBBlockUtils {
     public static CompoundTag blockState2Nbt(BlockState blockState) {
@@ -9,9 +13,47 @@ public final class LDBBlockUtils {
                 .putString("name", blockState.getPersistenceName())
                 .putInt("version", blockState.getVersion());
         var properties = blockState.getProperties();
-        for(var each:properties.getNames()) {
-            // TODO: 2022/3/21 完成nbt数据值到blockstate的映射
+        BlockState.of("", true).getPersistenceName();
+        var stateTag = BlockStateRegistry.getBlockStateNbtTemplate(blockState.getBlockId());
+        if (stateTag == null) {
+            stateTag = new CompoundTag();
+        } else {
+            if (blockState.getVersion() == -1) {
+                tag.putInt("version", stateTag.getInt("version"));
+            }
+            stateTag = stateTag.getCompound("states");
         }
+        for (var each : properties.getNames()) {
+            var entry = stateTag.get(each);
+            if (entry == null) {
+                continue;
+            }
+            if (entry instanceof IntTag) {
+                stateTag.putInt(each, blockState.getIntValue(each));
+            } else if (entry instanceof ByteTag) {
+                stateTag.putByte(each, blockState.getIntValue(each));
+            } else if (entry instanceof StringTag) {
+                stateTag.putString(each, blockState.getPersistenceValue(each));
+            }
+        }
+        tag.putCompound("states", stateTag);
         return tag;
+    }
+
+    public static BlockState nbt2BlockState(CompoundTag nbt) {
+        var blockState = BlockState.of(nbt.getString("name"), true);
+        blockState.setVersion(nbt.getInt("version"));
+        var stateTag = nbt.getCompound("states");
+        for (var each : stateTag.getTags().entrySet()) {
+            var value = each.getValue();
+            if (value instanceof IntTag intTag) {
+                blockState = blockState.withProperty(each.getKey(), intTag.data);
+            } else if (value instanceof ByteTag byteTag) {
+                blockState = blockState.withProperty(each.getKey(), byteTag.data);
+            } else if (value instanceof StringTag stringTag) {
+                blockState = blockState.withProperty(each.getKey(), stringTag.data);
+            }
+        }
+        return blockState;
     }
 }

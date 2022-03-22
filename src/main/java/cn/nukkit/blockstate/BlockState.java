@@ -249,7 +249,7 @@ public final class BlockState implements Serializable, IBlockState {
     /**
      * 此字段仅供LevelDB格式地图使用
      */
-    private int version;
+    private int version = -1;
 
     private BlockState(@Nonnegative int blockId) {
         Validation.checkPositive("blockId", blockId);

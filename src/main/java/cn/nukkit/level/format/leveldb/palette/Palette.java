@@ -113,10 +113,4 @@ public class Palette<T> implements Cloneable {
             throw new AssertionError("Clone threw exception");
         }
     }
-
-    public void writeTo(BinaryStream stream) {
-        var entries = this.entries.values();
-        stream.putLInt(entries.size());
-        // TODO: 2022/3/21 完成方块写入
-    }
 }

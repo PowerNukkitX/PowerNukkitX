@@ -3,6 +3,7 @@ package cn.nukkit.level.format.leveldb.datas;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.leveldb.palette.Palette;
+import cn.nukkit.level.format.leveldb.util.LDBIO;
 import cn.nukkit.utils.BinaryStream;
 
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public final class LDBLayer {
             }
             stream.putLInt(word);
         }
-        getPalette().writeTo(stream);
+        LDBIO.writePalette(stream, getPalette());
     }
 
     private static int getBlockIndex(int x, int y, int z) {
