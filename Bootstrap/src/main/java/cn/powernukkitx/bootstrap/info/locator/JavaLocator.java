@@ -62,6 +62,20 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
                 }
             }
         }
+        { // where/which探测
+            try {
+                Process process = new ProcessBuilder().command("where", "java").redirectErrorStream(true).start();
+                testSystemJava(binDirs, process);
+            } catch (IOException | InterruptedException ignore) {
+
+            }
+            try {
+                Process process = new ProcessBuilder().command("which", "java").redirectErrorStream(true).start();
+                testSystemJava(binDirs, process);
+            } catch (IOException | InterruptedException ignore) {
+
+            }
+        }
         for (final File binDir : binDirs) {
             Optional<JavaInfo> jv = getJavaVersion(binDir);
             if (jv.isPresent()) {
@@ -77,8 +91,8 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
         }
         // 去重、排序并返回
         final List<Location<JavaInfo>> out = javaExecutableList.stream()
-                .filter(CollectionUtils.distinctByKey(Location::getFile))
-                .sorted((a, b) -> a.getInfo().getMajorVersion().compareTo(b.getInfo().getMajorVersion()))
+                .filter(CollectionUtils.distinctByKey(each -> each.getFile().getAbsolutePath()))
+                .sorted(Comparator.comparing(a -> a.getInfo().getMajorVersion()))
                 .collect(Collectors.toList());
         if(sort4GraalVM) {
             out.sort((a, b) -> {
@@ -95,6 +109,18 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
             });
         }
         return out;
+    }
+
+    private void testSystemJava(List<File> binDirs, Process process) throws InterruptedException, IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        process.waitFor(1000, TimeUnit.MILLISECONDS);
+        String s;
+        while ((s = reader.readLine()) != null) {
+            if (s.contains("java")) {
+                binDirs.add(new File(s).getParentFile());
+            }
+        }
+        process.destroy();
     }
 
     private boolean isJavaDir(File binDir) {
@@ -124,6 +150,7 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
                         if("1".equals(tmp[0])) {
                             majorVersion = tmp[1];
                         }
+                        majorVersion = majorVersion.replace("-internal", "");
                     }
                 } else if (s.contains("Server VM") || s.contains("Runtime")) {
                     vendor = StringUtils.beforeLast(s, " (build");
