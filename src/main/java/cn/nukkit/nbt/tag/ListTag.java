@@ -92,6 +92,11 @@ public class ListTag<T extends Tag> extends Tag {
         return this;
     }
 
+    public ListTag<T> addAll(Collection<T> tags) {
+        tags.forEach(this::add);
+        return this;
+    }
+
     @Override
     public List<Object> parseValue() {
         List<Object> value = new ArrayList<>(this.list.size());

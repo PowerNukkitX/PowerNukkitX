@@ -35,4 +35,8 @@ public final class LDBChunkBiomeMap {
     public List<LDBSubChunkBiomeMap> getSubChunks() {
         return new ArrayList<>(this.subChunkBiomes.values());
     }
+
+    public LDBSubChunkBiomeMap getTopSubChunkBiomeMap() {
+        return this.subChunkBiomes.get(0);
+    }
 }

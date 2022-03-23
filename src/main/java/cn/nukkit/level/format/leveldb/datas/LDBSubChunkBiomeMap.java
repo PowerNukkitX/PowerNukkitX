@@ -61,4 +61,8 @@ public final class LDBSubChunkBiomeMap implements Cloneable {
     private static int getChunkPosIndex(int x, int y, int z) {
         return x << 8 | x << 4 | y;
     }
+
+    public int[] getBiomesArray() {
+        return biomes;
+    }
 }
