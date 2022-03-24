@@ -3,6 +3,7 @@ package cn.nukkit.level.format.leveldb.datas;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.ProtocolInfo;
 
 public final class LDBLevelData implements Cloneable {
     // world specific
@@ -543,5 +544,66 @@ public final class LDBLevelData implements Cloneable {
         } catch (CloneNotSupportedException exception) {
             throw new AssertionError("Clone threw exception");
         }
+    }
+
+    public static LDBLevelData getDefault(String worldName, long seed, int generatorType) {
+        var data = new LDBLevelData();
+        data.setGameRules(GameRules.getDefault());
+        data.setLightningTime(0);
+        data.setCommandsEnabled(true);
+        data.setMinimumCompatibleClientVersion(new int[] {1, 18, 0, 0, 0});
+        data.setPlatform(2);
+        data.setDifficulty(1);
+        data.setHasLockedResourcePack(false);
+        data.setConfirmedPlatformLockedContent(false);
+        data.setTexturePacksRequired(false);
+        data.setBonusChestEnabled(false);
+        data.setFromWorldTemplate(false);
+        data.setPlayerAbilities(LDBPlayerAbilities.getDefault());
+        data.setHasBeenLoadedInCreative(false);
+        data.setLightningLevel(0);
+        data.setXboxLiveBroadcastIntent(0);
+        data.setStartWithMapEnabled(false);
+        data.setBaseGameVersion("*");
+        data.setBonusChestSpawned(false);
+        data.setIsMultiplayerGame(true);
+        data.setIsSingleUseWorld(false);
+        data.setRainLevel(0);
+        data.setPlatformBroadcastIntent(0);
+        data.setLastOpenedWithVersion(new int[] {1, 18, 0, 0, 0});
+        data.setWorldSpawn(new Vector3(128, 64, 128));
+        data.setPrid("");
+        data.setServerChunkTickRange(4);
+        data.setEduOffer(0);
+        data.setWorldStartCount(0);
+        data.setForcedGamemode(false);
+        data.setIsMultiplayerGame(false);
+        data.setName(worldName);
+        data.setIsWorldTemplateOptionsLocked(false);
+        data.setEduEnabled(false);
+        data.setWorldType(generatorType);
+        data.setSeed(seed);
+        data.setProtocol(ProtocolInfo.CURRENT_PROTOCOL);
+        data.setExperiments(new CompoundTag());
+        data.setTime(0);
+        data.setLimitedWorldCoordinates(new Vector3(32767, 32767, 32767));
+        data.setInventoryVersion(ProtocolInfo.MINECRAFT_VERSION_NETWORK);
+        data.setCenterMapsToOrigin(false);
+        data.setLanBroadcastIntent(true);
+        data.setLimitedWorldWidth(16);
+        data.setCurrentTick(0);
+        data.setFromLockedTemplate(false);
+        data.setRainTime(0);
+        data.setBiomeOverride("");
+        data.setSpawnOnlyV1Villagers(false);
+        data.setLanBroadcast(true);
+        data.setLastPlayed(System.currentTimeMillis());
+        data.setNetherScale(8);
+        data.setUseMsaGamerTagsOnly(false);
+        data.setHasLockedBehaviorPack(false);
+        data.setFlatWorldLayers("");
+        data.setStorageVersion(8);
+        data.setImmutable(false);
+        return data;
     }
 }

@@ -34,7 +34,7 @@ public class LDBChunkSection implements ChunkSection {
     private static final int BLOCK_ID_FULL          = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
 
     private final List<LDBLayer> layers;
-    private final int sectionY;
+    private int sectionY;
 
     private LDBLayer layer0 = null;
 
@@ -62,6 +62,10 @@ public class LDBChunkSection implements ChunkSection {
     @Override
     public int getY() {
         return sectionY;
+    }
+
+    public void setY(int sectionY) {
+        this.sectionY = sectionY;
     }
 
     @Override

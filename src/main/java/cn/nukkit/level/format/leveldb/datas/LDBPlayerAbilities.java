@@ -172,4 +172,24 @@ public final class LDBPlayerAbilities {
         this.walkSpeed = walkSpeed;
         return this;
     }
+
+    public static LDBPlayerAbilities getDefault() {
+        return new LDBPlayerAbilities().setIsLightning(false)
+                .setCanMine(true)
+                .setCanFly(false)
+                .setIsOp(false)
+                .setWalkSpeed(0.1f)
+                .setPermissionsLevel(0)
+                .setCanTeleport(false)
+                .setCanAttackPlayers(true)
+                .setFlySpeed(0.05f)
+                .setCanInstaBuild(false)
+                .setIsInvulnerable(false)
+                .setCanBuild(true)
+                .setIsFlying(false)
+                .setCanAttackMobs(true)
+                .setCanOpenContainers(true)
+                .setCanUseDoorsAndSwitches(true)
+                .setPlayerPermissionsLevel(1);
+    }
 }

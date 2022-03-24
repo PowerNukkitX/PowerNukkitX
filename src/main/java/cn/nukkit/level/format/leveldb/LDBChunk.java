@@ -14,6 +14,7 @@ import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.level.format.leveldb.datas.LDBChunkBiomeMap;
 import cn.nukkit.level.format.leveldb.datas.LDBChunkHeightMap;
 import cn.nukkit.level.format.leveldb.datas.LDBSubChunkBiomeMap;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.utils.ChunkException;
 import io.netty.buffer.ByteBufAllocator;
@@ -36,15 +37,12 @@ public class LDBChunk extends BaseChunk {
 
     private byte version;
 
-    private final LDBChunkBiomeMap biomeMap = new LDBChunkBiomeMap();
-    private final LDBChunkHeightMap heightMap = new LDBChunkHeightMap();
+    private LDBChunkBiomeMap biomeMap = new LDBChunkBiomeMap();
+    private LDBChunkHeightMap heightMap = new LDBChunkHeightMap();
 
     private final Int2IntOpenHashMap extraData = new Int2IntOpenHashMap();
 
-    private final ChunkSection[] sections;
-    protected final int sectionLength;
     private LevelProvider levelProvider;
-    private Class<? extends LevelProvider> providerClass;
 
     protected boolean isInit;
     protected BatchPacket chunkPacket;
@@ -82,7 +80,7 @@ public class LDBChunk extends BaseChunk {
     @Override
     public boolean setSection(float fY, ChunkSection section) {
         if (!section.hasBlocks()) {
-            this.sections[(int) fY] = EmptyChunkSection.EMPTY[(int) fY];
+            this.sections[(int) fY] = EmptyChunkSection.EMPTY24[(int) fY];
         } else {
             this.sections[(int) fY] = section;
         }
@@ -170,15 +168,24 @@ public class LDBChunk extends BaseChunk {
         this.heightMap.setHighestBlockAt(x, z, value);
     }
 
+    public void setHeightMap(LDBChunkHeightMap heightMap) {
+        this.heightMap = heightMap;
+    }
+
     @Override
     public int getBiomeId(int x, int z) {
-        return this.biomeMap.getTopSubChunkBiomeMap().getBiomeAt(x, 0, z);
+        var subBiomeMap = this.biomeMap.getTopSubChunkBiomeMap();
+        if (subBiomeMap == null) {
+            return 0;
+        } else {
+            return subBiomeMap.getBiomeAt(x, 0, z);
+        }
     }
 
     @Override
     public void setBiomeId(int x, int z, byte biomeId) {
         for (var each : this.biomeMap.getSubChunks()) {
-            for (int i = 0; i < 16; i++) {
+            for (int i = (getDimension() == 0 ? 0 : -64); i < (getDimension() == 0 ? 256 : 320); i++) {
                 each.setBiomeAt(x, i, z, biomeId);
             }
         }
@@ -391,12 +398,36 @@ public class LDBChunk extends BaseChunk {
         }
     }
 
+    public void addInitialEntityNbt(CompoundTag nbt) {
+        NBTentities.add(nbt);
+    }
+
+    public void addInitialBlockEntityNbt(CompoundTag nbt) {
+        NBTtiles.add(nbt);
+    }
+
     public byte getVersion() {
         return version;
+    }
+
+    public LDBChunkBiomeMap getBiomeMap() {
+        return biomeMap;
+    }
+
+    public void setBiomeMap(LDBChunkBiomeMap biomeMap) {
+        this.biomeMap = biomeMap;
+    }
+
+    public LDBChunkHeightMap getHeightMap() {
+        return heightMap;
     }
 
     public LDBChunk setVersion(byte version) {
         this.version = version;
         return this;
+    }
+
+    public int getDimension() {
+        return dimension;
     }
 }

@@ -167,11 +167,14 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.powernukkit.bedrock.leveldb</groupId>
-            <artifactId>bedrock-leveldb</artifactId>
-            <version>0.11.0-PN</version>
-            <scope>compile</scope>
+            <groupId>net.daporkchop</groupId>
+            <artifactId>leveldb-mcpe-jni</artifactId>
+            <version>0.0.10-SNAPSHOT</version>
             <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>

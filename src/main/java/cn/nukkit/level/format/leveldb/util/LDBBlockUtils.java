@@ -13,7 +13,6 @@ public final class LDBBlockUtils {
                 .putString("name", blockState.getPersistenceName())
                 .putInt("version", blockState.getVersion());
         var properties = blockState.getProperties();
-        BlockState.of("", true).getPersistenceName();
         var stateTag = BlockStateRegistry.getBlockStateNbtTemplate(blockState.getBlockId());
         if (stateTag == null) {
             stateTag = new CompoundTag();
@@ -31,7 +30,12 @@ public final class LDBBlockUtils {
             if (entry instanceof IntTag) {
                 stateTag.putInt(each, blockState.getIntValue(each));
             } else if (entry instanceof ByteTag) {
-                stateTag.putByte(each, blockState.getIntValue(each));
+                var value = blockState.getPropertyValue(each);
+                if (value instanceof Boolean booleanValue) {
+                    stateTag.putByte(each, booleanValue ? 1 : 0);
+                } else {
+                    stateTag.putByte(each, blockState.getIntValue(each));
+                }
             } else if (entry instanceof StringTag) {
                 stateTag.putString(each, blockState.getPersistenceValue(each));
             }
@@ -49,7 +53,11 @@ public final class LDBBlockUtils {
             if (value instanceof IntTag intTag) {
                 blockState = blockState.withProperty(each.getKey(), intTag.data);
             } else if (value instanceof ByteTag byteTag) {
-                blockState = blockState.withProperty(each.getKey(), byteTag.data);
+                if (blockState.getProperty(each.getKey()).getBitSize() == 1) {
+                    blockState = blockState.withProperty(each.getKey(), byteTag.data == 1);
+                } else {
+                    blockState = blockState.withProperty(each.getKey(), byteTag.data);
+                }
             } else if (value instanceof StringTag stringTag) {
                 blockState = blockState.withProperty(each.getKey(), stringTag.data);
             }

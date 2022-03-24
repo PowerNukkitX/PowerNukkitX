@@ -37,6 +37,6 @@ public final class LDBChunkBiomeMap {
     }
 
     public LDBSubChunkBiomeMap getTopSubChunkBiomeMap() {
-        return this.subChunkBiomes.get(0);
+        return subChunkBiomes.get(0);
     }
 }
