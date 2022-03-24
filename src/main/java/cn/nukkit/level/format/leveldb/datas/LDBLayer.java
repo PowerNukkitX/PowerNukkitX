@@ -121,7 +121,7 @@ public final class LDBLayer {
             }
             stream.putLInt(word);
         }
-        LDBIO.writePalette(stream, getPalette());
+        LDBIO.writeNetworkPalette(stream, getPalette());
     }
 
     private static int getBlockIndex(int x, int y, int z) {

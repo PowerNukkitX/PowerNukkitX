@@ -22,6 +22,7 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Add a new block state to this palette.
+     *
      * @param entry the entry to be added
      */
     public void addEntry(T entry) {
@@ -32,6 +33,7 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Retrieve the total palette size.
+     *
      * @return length of the palette
      */
     public int size() {
@@ -40,6 +42,7 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Retrieve all of the current palette entries.
+     *
      * @return set of all block palette entries in this palette
      */
     public Set<T> getEntries() {
@@ -48,6 +51,7 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Remove a entry from the palette.
+     *
      * @param entry the entry to remove
      */
     public void removeEntry(T entry) {
@@ -56,6 +60,7 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Retrieve a entry given the index.
+     *
      * @param index the index of the entry
      * @return the entry associated with that index
      */
@@ -65,11 +70,18 @@ public class Palette<T> implements Cloneable {
 
     /**
      * Retrieve the index associated with the entry.
+     *
      * @param entry the entry
      * @return the index associated with the entry
      */
     public int getPaletteIndex(T entry) {
-        return this.entries.inverse().get(entry);
+        var result = this.entries.inverse().get(entry);
+        if (result == null) {
+            final var currentEntryIndex = this.paletteEntries;
+            this.entries.put(this.paletteEntries++, entry);
+            return currentEntryIndex;
+        }
+        return result;
     }
 
     /**

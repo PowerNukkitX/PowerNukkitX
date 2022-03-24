@@ -1,9 +1,7 @@
 package cn.nukkit.level.format.leveldb.util;
 
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.format.leveldb.LDBChunk;
 import cn.nukkit.level.format.leveldb.LDBChunkSection;
 import cn.nukkit.level.format.leveldb.datas.*;
 import cn.nukkit.level.format.leveldb.palette.IntPalette;
@@ -20,7 +18,6 @@ import io.netty.buffer.*;
 import java.io.*;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,18 +44,18 @@ public final class LDBIO {
         return palette;
     }
 
-    public static void writePalette(BinaryStream stream, Palette<BlockState> palette) {
+    public static void writeNetworkPalette(BinaryStream stream, Palette<BlockState> palette) {
         Set<BlockState> entries = palette.getEntries();
-        stream.putLInt(entries.size());
-        for (BlockState data : entries) {
-            stream.putLTag(LDBBlockUtils.blockState2Nbt(data));
+        stream.putVarInt(entries.size());
+        for (var data : entries) {
+            stream.putVarInt(data.getRuntimeId());
         }
     }
 
     public static void writePalette(ByteBuf buffer, Palette<BlockState> palette) throws IOException {
         var entries = palette.getEntries();
         buffer.writeIntLE(entries.size());
-        for (BlockState data : entries) {
+        for (var data : entries) {
             NBTIO.write(LDBBlockUtils.blockState2Nbt(data), new ByteBufOutputStream(buffer), ByteOrder.LITTLE_ENDIAN, false);
         }
     }

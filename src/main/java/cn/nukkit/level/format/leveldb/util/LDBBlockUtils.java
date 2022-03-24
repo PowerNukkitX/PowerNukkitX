@@ -1,5 +1,7 @@
 package cn.nukkit.level.format.leveldb.util;
 
+import cn.nukkit.blockproperty.ArrayBlockProperty;
+import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -51,7 +53,11 @@ public final class LDBBlockUtils {
         for (var each : stateTag.getTags().entrySet()) {
             var value = each.getValue();
             if (value instanceof IntTag intTag) {
-                blockState = blockState.withProperty(each.getKey(), intTag.data);
+                if (blockState.getProperty(each.getKey()) instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                    blockState = blockState.withProperty(each.getKey(), arrayBlockProperty.getUniverse()[intTag.data]);
+                } else {
+                    blockState = blockState.withProperty(each.getKey(), intTag.data);
+                }
             } else if (value instanceof ByteTag byteTag) {
                 if (blockState.getProperty(each.getKey()).getBitSize() == 1) {
                     blockState = blockState.withProperty(each.getKey(), byteTag.data == 1);

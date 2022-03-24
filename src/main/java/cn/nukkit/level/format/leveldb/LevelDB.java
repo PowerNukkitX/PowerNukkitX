@@ -30,9 +30,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.util.internal.EmptyArrays;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.*;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 
@@ -60,8 +58,8 @@ public final class LevelDB implements LevelProvider {
     private CompoundTag pnxData;
 
     private final Long2ObjectMap<LDBChunk> chunks = new Long2ObjectOpenHashMap<>();
-    private final LongOpenHashSet isChunkGeneratedSet = new LongOpenHashSet();
-    private final LongOpenHashSet isChunkPopulatedSet = new LongOpenHashSet();
+    private final LongSet isChunkGeneratedSet = LongSets.synchronize(new LongOpenHashSet());
+    private final LongSet isChunkPopulatedSet = LongSets.synchronize(new LongOpenHashSet());
     private final AtomicReference<LDBChunk> lastChunk = new AtomicReference<>();
 
     public LevelDB(Level level, String path) throws IOException {
@@ -276,7 +274,7 @@ public final class LevelDB implements LevelProvider {
     }
 
     @Override
-    public void saveChunk(int X, int Z) {
+    public synchronized void saveChunk(int X, int Z) {
         var chunk = this.getChunk(X, Z);
         try {
             saveChunk(chunk);
@@ -286,7 +284,7 @@ public final class LevelDB implements LevelProvider {
     }
 
     @Override
-    public void saveChunk(int X, int Z, FullChunk chunk) {
+    public synchronized void saveChunk(int X, int Z, FullChunk chunk) {
         if (chunk instanceof LDBChunk ldbChunk) {
             ldbChunk.setX(X);
             ldbChunk.setZ(Z);
@@ -409,9 +407,27 @@ public final class LevelDB implements LevelProvider {
         return isChunkPopulatedSet.contains(Level.chunkHash(X, Z));
     }
 
+    public void setChunkGenerated(int x, int z, boolean generated) {
+        if (generated) {
+            this.isChunkGeneratedSet.add(Level.chunkHash(x, z));
+        } else {
+            this.isChunkGeneratedSet.remove(Level.chunkHash(x, z));
+        }
+    }
+
+    public void setChunkPopulated(int x, int z, boolean populated) {
+        if (populated) {
+            this.isChunkPopulatedSet.add(Level.chunkHash(x, z));
+        } else {
+            this.isChunkPopulatedSet.remove(Level.chunkHash(x, z));
+        }
+    }
+
     @Override
     public boolean isChunkLoaded(int X, int Z) {
-        return isChunkLoaded(Level.chunkHash(X, Z));
+        synchronized (chunks) {
+            return isChunkLoaded(Level.chunkHash(X, Z));
+        }
     }
 
     @Override
@@ -546,6 +562,8 @@ public final class LevelDB implements LevelProvider {
             throw new IllegalStateException("This provider is already closed.");
         }
         this.closed = true;
+        this.unloadChunks();
+        this.saveLevelData();
         try {
             this.db.close();
         } catch (IOException e) {
@@ -561,7 +579,9 @@ public final class LevelDB implements LevelProvider {
                     .mapToObj(value -> new LongTag("", value)).collect(Collectors.toSet())));
             this.pnxData.putList(new ListTag<>("chunkPopulated").addAll(isChunkPopulatedSet.longStream()
                     .mapToObj(value -> new LongTag("", value)).collect(Collectors.toSet())));
-            NBTIO.write(pnxData, pnxLevelFile);
+            try (var fos = new FileOutputStream(pnxLevelFile)) {
+                NBTIO.writeGZIPCompressed(pnxData, fos);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -24,6 +24,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,11 @@ public class LDBChunk extends BaseChunk {
         this.sections = new ChunkSection[sectionLength];
         System.arraycopy(getChunkSectionCount() == 24 ? EmptyChunkSection.EMPTY24 : EmptyChunkSection.EMPTY,
                 0, this.sections, 0, getChunkSectionCount());
+        // 加载地形状态
+        if(levelProvider instanceof LevelDB levelDB) {
+            this.terrainGenerated = levelDB.isChunkGenerated(chunkX, chunkZ);
+            this.terrainPopulated = levelDB.isChunkPopulated(chunkX, chunkZ);
+        }
     }
 
     @Override
@@ -204,6 +210,9 @@ public class LDBChunk extends BaseChunk {
     @Override
     public void setPopulated(boolean value) {
         this.terrainPopulated = value;
+        if (this.provider != null && this.provider instanceof LevelDB levelDB) {
+            levelDB.setChunkPopulated(this.getX(), this.getZ(), value);
+        }
     }
 
     @Override
@@ -219,6 +228,9 @@ public class LDBChunk extends BaseChunk {
     @Override
     public void setGenerated(boolean value) {
         this.terrainGenerated = value;
+        if(this.provider != null && this.provider instanceof LevelDB levelDB) {
+            levelDB.setChunkGenerated(this.getX(), this.getZ(), value);
+        }
     }
 
     @Override
@@ -371,6 +383,8 @@ public class LDBChunk extends BaseChunk {
         return false;
     }
 
+
+
     @SuppressWarnings("DuplicatedCode")
     private void removeInvalidTile(int x, int y, int z) {
         var entity = getTile(x, y, z);
@@ -399,10 +413,16 @@ public class LDBChunk extends BaseChunk {
     }
 
     public void addInitialEntityNbt(CompoundTag nbt) {
+        if (NBTentities == null) {
+            NBTentities = new ArrayList<>();
+        }
         NBTentities.add(nbt);
     }
 
     public void addInitialBlockEntityNbt(CompoundTag nbt) {
+        if (NBTtiles == null) {
+            NBTtiles = new ArrayList<>();
+        }
         NBTtiles.add(nbt);
     }
 
