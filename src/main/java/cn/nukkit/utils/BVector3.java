@@ -104,7 +104,7 @@ public class BVector3{
         }else if(-yAxisAngle < -90){
             return -90;
         }
-        return Double.isNaN(yAxisAngle) ? 0 : yAxisAngle;
+        return Double.isNaN(yAxisAngle) ? 0 : -yAxisAngle;
     }
 
     private void updatePos(){

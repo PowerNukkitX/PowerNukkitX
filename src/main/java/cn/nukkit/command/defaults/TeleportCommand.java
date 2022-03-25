@@ -1,21 +1,16 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.entity.EntityTeleportEvent;
-import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -113,6 +108,7 @@ public class TeleportCommand extends VanillaCommand {
                         victim.teleport(target);
                         sender.sendMessage(new TranslationContainer("commands.tp.successVictim", target.getName()));
                     }
+                    return true;
                 }
                 case "Entity->Entity" -> {
                     CommandParser p = new CommandParser(parser);
@@ -145,6 +141,7 @@ public class TeleportCommand extends VanillaCommand {
                         }
                         sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
                     }
+                    return true;
                 }
                 case "Entity->Pos" -> {
                     CommandParser p = new CommandParser(parser);
@@ -152,11 +149,11 @@ public class TeleportCommand extends VanillaCommand {
                     Position pos = p.parsePosition();
                     double yRot = sender.asEntity().pitch;
                     if(p.hasNext()){
-                        yRot = p.parseDouble();
+                        yRot = p.parseOffsetDouble(yRot);
                     }
                     double xRot = sender.asEntity().yaw;
                     if(p.hasNext()){
-                        xRot = p.parseDouble();
+                        xRot = p.parseOffsetDouble(xRot);
                     }
                     boolean checkForBlocks = false;
                     if(p.hasNext()){
@@ -182,6 +179,7 @@ public class TeleportCommand extends VanillaCommand {
                         }
                         sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                     }
+                    return true;
                 }
                 case "Entity->Pos(FacingPos)" -> {
                     CommandParser p = new CommandParser(parser);
@@ -214,6 +212,7 @@ public class TeleportCommand extends VanillaCommand {
                         }
                         sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                     }
+                    return true;
                 }
                 case "Entity->Pos(FacingEntity)" -> {
                     CommandParser p = new CommandParser(parser);
@@ -234,7 +233,7 @@ public class TeleportCommand extends VanillaCommand {
                         sb.append(victim.getName()).append(" ");
                     }
                     BVector3 bv = BVector3.fromPos(new Vector3(lookAtPosition.x - pos.x, lookAtPosition.y - pos.y, lookAtPosition.z - pos.z));
-                    Location target = Location.fromObject(pos,pos.level,Double.isNaN(bv.getYaw()) ? 0 : bv.getYaw(),Double.isNaN(bv.getPitch()) ? 0 : bv.getPitch());
+                    Location target = Location.fromObject(pos,pos.level,bv.getYaw(),bv.getPitch());
                     if(checkForBlocks){
                         if(!target.getLevelBlock().isSolid() && !target.add(0,1,0).getLevelBlock().isSolid()){
                             for(Entity victim : victims) {
@@ -250,15 +249,19 @@ public class TeleportCommand extends VanillaCommand {
                         }
                         sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                     }
+                    return true;
                 }
                 case "->Pos" -> {
 
+                    return true;
                 }
                 case "->Pos(FacingPos)" -> {
 
+                    return true;
                 }
                 case "->Pos(FacingEntity)" -> {
 
+                    return true;
                 }
             }
         } catch (CommandSyntaxException e) {

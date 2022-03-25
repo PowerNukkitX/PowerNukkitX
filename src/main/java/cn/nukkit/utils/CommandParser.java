@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
@@ -18,11 +17,11 @@ import java.util.stream.Collectors;
 
 public class CommandParser {
 
-    private static Pattern STRING_PATTERN = Pattern.compile("[A-Za-z]+");//Start and end are not defined
-    private static Pattern NUMBER_PATTERN = Pattern.compile("^(-?\\d+)(\\.\\d+)?$");
-    private static Pattern INT_PATTERN = Pattern.compile("^[0-9]*$");
-    private static Pattern FLOAT_PATTERN = Pattern.compile("^(-?\\d+)(\\.\\d+)$");
-    private static Pattern COORDINATE_PATTERN = Pattern.compile("^[~^]?(-?\\d+)?(\\.\\d+)?$");
+    private static final Pattern STRING_PATTERN = Pattern.compile("[A-Za-z]+");//Start and end are not defined
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^~?((-?\\d+)(\\.\\d+)?)?$");//float or int
+    private static final Pattern INT_PATTERN = Pattern.compile("^~?(-?[0-9]*)?$");//only int
+    private static final Pattern FLOAT_PATTERN = Pattern.compile("^~?((-?\\d+)(\\.\\d+))?$");//only float
+    private static final Pattern COORDINATE_PATTERN = Pattern.compile("^[~^]?(-?\\d+)?(\\.\\d+)?$");//coordinate part value
 
     private final Command command;
     private final CommandSender sender;
@@ -137,7 +136,7 @@ public class CommandParser {
             }
 
             if (length < argsLength){
-                continue;//not match
+                continue;//no match
             }
 
             commandParameters.put(entry.getKey(), argTypes);
@@ -208,10 +207,14 @@ public class CommandParser {
         }
     }
 
-    public double parseOffset(double base,boolean moveCursor) throws CommandSyntaxException {
+    public double parseOffsetDouble(double base) throws CommandSyntaxException{
+        return parseOffsetDouble(base, true);
+    }
+
+    public double parseOffsetDouble(double base, boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
-            if (arg.startsWith("~")) {
+            if (arg.startsWith("~") && !arg.substring(1).isEmpty()) {
                 double relativeCoordinate = Double.parseDouble(arg.substring(1));
                 return base + relativeCoordinate;
             }

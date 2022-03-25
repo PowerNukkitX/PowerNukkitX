@@ -54,7 +54,7 @@ public class ExecuteCommand extends VanillaCommand {
             if (form.equals("default")){
                 String command = parser.parseAllRemain();
                 for (Entity entity : entities) {
-                    CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
+                    CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false),entity.level,entity.yaw,entity.pitch));
                     if (!Server.getInstance().dispatchCommand(executeSender, command)) {
                         sender.sendMessage(new TranslationContainer("commands.generic.exception"));
                         return false;
@@ -70,7 +70,7 @@ public class ExecuteCommand extends VanillaCommand {
                 for (Entity entity : entities) {
                     Position detectPos = detectPosParser.parsePosition(entity,false);
                     if (detectPos.getLevelBlock().getId() == blockid && detectPos.getLevelBlock().getDamage() == meta) {
-                        CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false)));
+                        CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false),entity.level,entity.yaw,entity.pitch));
                         if (!Server.getInstance().dispatchCommand(executeSender, command)) {
                             sender.sendMessage(new TranslationContainer("commands.generic.exception"));
                             return false;
