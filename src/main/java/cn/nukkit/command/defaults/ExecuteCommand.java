@@ -44,6 +44,10 @@ public class ExecuteCommand extends VanillaCommand {
         try{
             CommandParser parser = new CommandParser(this,sender, args);
             List<Entity> entities = parser.parseTargets();
+            if(entities.isEmpty()) {
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch", this.usageMessage));
+                return false;
+            }
             CommandParser executePosParser = new CommandParser(parser);
             parser.parsePosition();//skip execute position
             String form = new CommandParser(this,sender, args).matchCommandForm();
@@ -72,7 +76,7 @@ public class ExecuteCommand extends VanillaCommand {
                     if (detectPos.getLevelBlock().getId() == blockid && detectPos.getLevelBlock().getDamage() == meta) {
                         CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity, false),entity.level,entity.yaw,entity.pitch));
                         if (!Server.getInstance().dispatchCommand(executeSender, command)) {
-                            sender.sendMessage(new TranslationContainer("commands.generic.exception"));
+                            sender.sendMessage(new TranslationContainer("commands.execute.failed",entity.getName(),command));
                             return false;
                         }
                         return true;

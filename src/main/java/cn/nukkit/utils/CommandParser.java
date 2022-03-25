@@ -218,7 +218,7 @@ public class CommandParser {
                 double relativeCoordinate = Double.parseDouble(arg.substring(1));
                 return base + relativeCoordinate;
             }
-            return base;
+            return Double.parseDouble(arg);
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
