@@ -208,6 +208,19 @@ public class CommandParser {
         }
     }
 
+    public double parseOffset(double base,boolean moveCursor) throws CommandSyntaxException {
+        try {
+            String arg = this.next(moveCursor);
+            if (arg.startsWith("~")) {
+                double relativeCoordinate = Double.parseDouble(arg.substring(1));
+                return base + relativeCoordinate;
+            }
+            return base;
+        } catch (Exception e) {
+            throw new CommandSyntaxException();
+        }
+    }
+
     public boolean parseBoolean() throws CommandSyntaxException {
         return parseBoolean(true);
     }

@@ -219,7 +219,7 @@ public class SimpleCommandMap implements CommandMap {
         return true;
     }
 
-    private ArrayList<String> parseArguments(String cmdLine) {
+    public static ArrayList<String> parseArguments(String cmdLine) {
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
@@ -238,6 +238,9 @@ public class SimpleCommandMap implements CommandMap {
                 }
                 start = i + 1;
             } else if (sb.charAt(i) == '"') {
+                if (sb.substring(i+1,sb.length()).contains("\"") && !notQuoted){
+                    continue;
+                }
                 sb.deleteCharAt(i);
                 --i;
                 notQuoted = !notQuoted;

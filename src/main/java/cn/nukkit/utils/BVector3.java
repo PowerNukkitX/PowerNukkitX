@@ -94,11 +94,17 @@ public class BVector3{
     }
 
     public double getYaw(){
-        return xzAxisAngle+270;
+        double res = Double.isNaN(xzAxisAngle+270) ? 0 : xzAxisAngle+270;
+        return pos.x < 0 ? res + 180 : res;
     }
 
     public double getPitch(){
-        return -yAxisAngle;
+        if (-yAxisAngle > 90){
+            return 90;
+        }else if(-yAxisAngle < -90){
+            return -90;
+        }
+        return Double.isNaN(yAxisAngle) ? 0 : yAxisAngle;
     }
 
     private void updatePos(){
