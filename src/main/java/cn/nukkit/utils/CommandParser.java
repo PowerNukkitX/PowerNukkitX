@@ -6,6 +6,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2;
@@ -83,7 +84,7 @@ public class CommandParser {
             parameter3 = "";
         }
 
-        return String.format(TextFormat.RED + "Syntax error: Unexpected \"%2$s\": at \"/%4$s%1$s>>%2$s<<%3$s\"", parameter1, parameter2, parameter3, this.command.getName());
+        return new TranslationContainer(TextFormat.RED + "commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
     public String matchCommandForm() throws CommandSyntaxException {

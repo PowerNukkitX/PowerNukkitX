@@ -103,6 +103,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.successVictim", target.getName()));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",victim.getName(),target.getName()));
+                            return false;
                         }
                     }else{
                         victim.teleport(target);
@@ -134,6 +135,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.getName()));
+                            return false;
                         }
                     }else{
                         for(Entity victim : victims) {
@@ -172,6 +174,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.toString()));
+                            return false;
                         }
                     }else{
                         for(Entity victim : victims) {
@@ -205,6 +208,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.toString()));
+                            return false;
                         }
                     }else{
                         for(Entity victim : victims) {
@@ -242,6 +246,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.toString()));
+                            return false;
                         }
                     }else{
                         for(Entity victim : victims) {
@@ -273,6 +278,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.getName(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sender.getName(),target.toString()));
+                            return false;
                         }
                     }else{
                         sender.asEntity().teleport(target);
@@ -297,6 +303,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sender.asEntity().getName(),target.toString()));
+                            return false;
                         }
                     }else{
                         sender.asEntity().teleport(target);
@@ -325,6 +332,7 @@ public class TeleportCommand extends VanillaCommand {
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sender.asEntity().getName(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
                             sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sender.asEntity().getName(),target.toString()));
+                            return false;
                         }
                     }else{
                         sender.asEntity().teleport(target);
@@ -334,7 +342,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.usage", this.usageMessage));
+            sender.sendMessage(parser.getErrorMessage());
         }
         return false;
     }

@@ -67,7 +67,7 @@ public class ClearCommand extends VanillaCommand {
             } else if (sender.isPlayer()) {
                 targets = Lists.newArrayList(sender.asPlayer());
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.generic.noTargetMatch"));
                 return false;
             }
 
@@ -93,7 +93,7 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.clear.failure.no.items",target.getName()));
                     } else {
                         sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(count)));
                     }
@@ -114,7 +114,8 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.clear.failure.no.items",target.getName()));
+                        return false;
                     } else {
                         sender.sendMessage(new TranslationContainer("commands.clear.testing",target.getName(),String.valueOf(count)));
                     }
@@ -137,7 +138,8 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.clear.failure.no.items",target.getName()));
+                        return false;
                     } else {
                         sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(count)));
                     }
@@ -173,7 +175,8 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (remaining == maxCount) {
-                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.clear.failure.no.items",target.getName()));
+                        return false;
                     } else {
                         sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(maxCount - remaining)));
                     }
