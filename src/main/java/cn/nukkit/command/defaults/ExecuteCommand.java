@@ -41,8 +41,8 @@ public class ExecuteCommand extends VanillaCommand {
             return false;
         }
 
+        CommandParser parser = new CommandParser(this,sender, args);
         try{
-            CommandParser parser = new CommandParser(this,sender, args);
             List<Entity> entities = parser.parseTargets();
             if(entities.isEmpty()) {
                 sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch", this.usageMessage));
@@ -87,7 +87,7 @@ public class ExecuteCommand extends VanillaCommand {
             }
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            sender.sendMessage(parser.getErrorMessage());
             return false;
         }
     }

@@ -1,9 +1,12 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -20,23 +23,23 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class FillCommand extends VanillaCommand {
 
     public FillCommand(String name) {
-        super(name, "Fills all or parts of a region with a specific block.", "/fill <from: x y z> <to: x y z> <tileId: int> [tileData: int] [outline|hollow|destroy|keep|replace [replaceTileId: int] [replaceDataValue: int]]");
+        super(name, "commands.fill.description", "commands.fill.usage");
         this.setPermission("nukkit.command.fill");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("from",false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to",false,  CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("tileId",false,  CommandParamType.INT),
+                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("tileData",true,  CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"outline","hollow","destroy","keep"}),
         });
         this.addCommandParameters("replace", new CommandParameter[]{
                 CommandParameter.newType("from",false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("tileId",false, CommandParamType.INT),
+                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("tileData",false, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling",false,new String[]{"replace"}),
-                CommandParameter.newType("replaceTileId",true, CommandParamType.INT),
+                CommandParameter.newEnum("replaceTileName",false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("replaceDataValue",true, CommandParamType.INT)
         });
     }
@@ -51,9 +54,12 @@ public class FillCommand extends VanillaCommand {
         try {
             Position from = parser.parsePosition().floor();
             Position to = parser.parsePosition().floor();
-            int tileId = parser.parseInt();
+            String tileName = parser.parseString();
+            tileName = tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName;
+            int tileId = BlockStateRegistry.getBlockId(tileName);
             int tileData = 0;
             FillMode oldBlockHandling = FillMode.REPLACE;
+            String replaceTileName = null;
             int replaceTileId = 0;
             int replaceDataValue = 0;
 
@@ -62,7 +68,9 @@ public class FillCommand extends VanillaCommand {
                 if (args.length > 8) {
                     oldBlockHandling = parser.parseEnum(FillMode.class);
                     if (args.length > 9) {
-                        replaceTileId = parser.parseInt();
+                        replaceTileName = parser.parseString();
+                        replaceTileName = replaceTileName.startsWith("minecraft:") ? replaceTileName : "minecraft:" + replaceTileName;
+                        replaceTileId = BlockStateRegistry.getBlockId(replaceTileName);
                         if (args.length > 10) {
                             replaceDataValue = parser.parseInt();
                         }
@@ -70,24 +78,21 @@ public class FillCommand extends VanillaCommand {
                 }
             }
 
-            try {
-                GlobalBlockPalette.getOrCreateRuntimeId(tileId, tileData);
-                GlobalBlockPalette.getOrCreateRuntimeId(replaceTileId, replaceDataValue);
-            } catch (NoSuchElementException e) {
-                sender.sendMessage(String.format(TextFormat.RED + "There is no such block with ID %1$d:%2$d", tileId, tileData));
+            if (BlockStateRegistry.getBlockId(tileName) == null || replaceTileName == null ? false : BlockStateRegistry.getBlockId(replaceTileName) == null) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
                 return false;
             }
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
 
             if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
-                sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.outOfWorld"));
                 return false;
             }
 
             int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
             if (size > 16 * 16 * 16 * 8) {
-                sender.sendMessage(String.format(TextFormat.RED + "Too many blocks in the specified area (%1$d > %2$d)", size, 16 * 16 * 16 * 8));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 16 * 8)));
                 return false;
             }
 
@@ -96,7 +101,7 @@ public class FillCommand extends VanillaCommand {
             for (int chunkX = NukkitMath.floorDouble(aabb.getMinX()) >> 4; chunkX <= NukkitMath.floorDouble(aabb.getMaxX()) >> 4; chunkX++) {
                 for (int chunkZ = NukkitMath.floorDouble(aabb.getMinZ()) >> 4; chunkZ <= NukkitMath.floorDouble(aabb.getMaxZ()) >> 4; chunkZ++) {
                     if (level.getChunkIfLoaded(chunkX, chunkZ) == null) {
-                        sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
                         return false;
                     }
                 }
@@ -173,10 +178,10 @@ public class FillCommand extends VanillaCommand {
             }
 
             if (count == 0) {
-                sender.sendMessage(TextFormat.RED + "0 blocks filled");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
                 return false;
             } else {
-                sender.sendMessage(String.format("%1$d blocks filled", count));
+                sender.sendMessage(new TranslationContainer("commands.fill.success", String.valueOf(count)));
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());

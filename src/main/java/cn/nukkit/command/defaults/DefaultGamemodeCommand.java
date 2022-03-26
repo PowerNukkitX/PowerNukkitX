@@ -39,7 +39,7 @@ public class DefaultGamemodeCommand extends VanillaCommand {
             sender.getServer().setPropertyInt("gamemode", gameMode);
             sender.sendMessage(new TranslationContainer("commands.defaultgamemode.success", new String[]{Server.getGamemodeString(gameMode)}));
         } else {
-            sender.sendMessage("Unknown game mode"); //
+            sender.sendMessage("Unknown game mode");
         }
         return true;
     }

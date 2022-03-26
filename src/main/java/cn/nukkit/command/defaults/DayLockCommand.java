@@ -13,8 +13,8 @@ import cn.nukkit.utils.CommandSyntaxException;
 public class DayLockCommand extends VanillaCommand {
 
     public DayLockCommand(String name) {
-        super(name, "Locks and unlocks the day-night cycle.", "/daylock [lock: Boolean]", new String[]{"alwaysday"});
-        this.setPermission("vanillacommand.daylock");
+        super(name, "%commands.daylock.description", "%commands.daylock.usage", new String[]{"alwaysday"});
+        this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newEnum("lock", true,new String[]{"true","false"})
