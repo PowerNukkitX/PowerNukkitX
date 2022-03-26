@@ -2,11 +2,14 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.CommandParser;
 import cn.nukkit.utils.CommandSyntaxException;
@@ -19,12 +22,12 @@ import java.util.Map;
 public class ClearCommand extends VanillaCommand {
 
     public ClearCommand(String name) {
-        super(name, "Clears items from player inventory.", "/clear [player: target] [itemId: int] [data: int] [maxCount: int]");
+        super(name, "%commands.clear.description", "%commands.clear.usage");
         this.setPermission("nukkit.command.clear");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("player",true, CommandParamType.TARGET),
-                CommandParameter.newType("itemId",true, CommandParamType.INT),
+                CommandParameter.newEnum("itemName",true, CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("data", true,CommandParamType.INT),
                 CommandParameter.newType("maxCount", true,CommandParamType.INT)
         });
@@ -47,7 +50,7 @@ public class ClearCommand extends VanillaCommand {
                 targets = parser.parseTargetPlayers();
 
                 if (args.length > 1) {
-                    int itemId = parser.parseInt();
+                    String itemName = parser.parseString();
                     int data = -1;
 
                     if (args.length > 2) {
@@ -57,12 +60,14 @@ public class ClearCommand extends VanillaCommand {
                         }
                     }
 
-                    item = Item.get(itemId, data);
+                    itemName = new StringBuilder(itemName).append(":" + data).toString();
+
+                    item = Item.fromString(itemName);
                 }
-            } else if (sender instanceof Player) {
-                targets = Lists.newArrayList((Player) sender);
+            } else if (sender.isPlayer()) {
+                targets = Lists.newArrayList(sender.asPlayer());
             } else {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
 
@@ -88,9 +93,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(String.format(TextFormat.RED + "Could not clear the inventory of %1$s, no items to remove", target.getName()));
+                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
                     } else {
-                        sender.sendMessage(String.format("Cleared the inventory of %1$s, removing %2$d items", target.getName(), count));
+                        sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(count)));
                     }
                 } else if (maxCount == 0) {
                     int count = 0;
@@ -109,9 +114,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(String.format(TextFormat.RED + "Could not clear the inventory of %1$s, no items to remove", target.getName()));
+                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
                     } else {
-                        sender.sendMessage(String.format("%1$s has %2$d items that match the criteria", target.getName(), count));
+                        sender.sendMessage(new TranslationContainer("commands.clear.testing",target.getName(),String.valueOf(count)));
                     }
                 } else if (maxCount == -1) {
                     int count = 0;
@@ -132,9 +137,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(String.format(TextFormat.RED + "Could not clear the inventory of %1$s, no items to remove", target.getName()));
+                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
                     } else {
-                        sender.sendMessage(String.format("Cleared the inventory of %1$s, removing %2$d items", target.getName(), count));
+                        sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(count)));
                     }
                 } else {
                     int remaining = maxCount;
@@ -168,10 +173,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (remaining == maxCount) {
-                        sender.sendMessage(String.format(TextFormat.RED + "Could not clear the inventory of %1$s, no items to remove", target.getName()));
-                        return false;
+                        sender.sendMessage(new TranslationContainer("commands.clear.failure.no.items",target.getName()));
                     } else {
-                        sender.sendMessage(String.format("Cleared the inventory of %1$s, removing %2$d items", target.getName(), maxCount - remaining));
+                        sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(maxCount - remaining)));
                     }
                 }
             }
