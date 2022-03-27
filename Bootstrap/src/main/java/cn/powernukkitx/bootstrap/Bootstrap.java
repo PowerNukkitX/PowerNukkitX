@@ -18,11 +18,19 @@ public final class Bootstrap {
 
         boolean isCLI = ensureConsole();
         boolean isGUI = false;
+        if ("cli".equals(ConfigUtils.get("display"))) {
+            isCLI = true;
+        }
+        if ("gui".equals(ConfigUtils.get("display"))) {
+            isGUI = true;
+        }
         if (CollectionUtils.has(args, "--cli")) {
             isCLI = true;
+            isGUI = false;
         }
         if (CollectionUtils.has(args, "--gui")) {
             isGUI = true;
+            isCLI = false;
         }
         if (isGUI) {
             program = new GUI();
