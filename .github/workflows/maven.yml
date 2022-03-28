@@ -71,7 +71,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
@@ -94,7 +94,7 @@ jobs:
           method: 'POST'
           customHeaders: '{"Authorization": "Bearer ${{ secrets.MINEBBS_API_KEY }}"}'
           contentType: 'application/json'
-          data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ github.event.commits[0].message }}", "new_version": "${{ steps.time.outputs.time }}"}'
+          data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ github.event.commits[0].message }}", "new_version": "${{ steps.time.outputs.time }}", "file_url": "https://ci.lt-name.cn/job/PowerNukkitX/"}'
           escapeData: 'true'
 
   build-bootstrap:
@@ -132,7 +132,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
