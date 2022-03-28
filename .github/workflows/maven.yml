@@ -71,7 +71,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
@@ -79,6 +79,23 @@ jobs:
           bucket: pnx-assets
           asset-path: ./target/powernukkitx.jar
           target-path: /core/${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}/
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        with:
+          timeZone: 8
+          format: 'YYYY/MM/DD-HH:mm:ss'
+      - name: Update MineBBS info
+        uses: fjogeleit/http-request-action@v1
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        with:
+          url: 'https://api.minebbs.com/api/openapi/v1/resources/3668/update'
+          method: 'POST'
+          customHeaders: '{"Authorization": "Bearer ${{ secrets.MINEBBS_API_KEY }}"}'
+          contentType: 'application/json'
+          data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ github.event.commits[0].message }}", "new_version": "${{ steps.time.outputs.time }}", "file_url": "https://ci.lt-name.cn/job/PowerNukkitX/"}'
+          escapeData: 'true'
 
   build-bootstrap:
     name: 构建启动器
@@ -115,7 +132,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
