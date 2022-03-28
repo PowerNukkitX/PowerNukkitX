@@ -88,7 +88,7 @@ jobs:
           format: 'YYYY/MM/DD-HH:mm:ss'
       - name: Update MineBBS info
         uses: fjogeleit/http-request-action@v1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           url: 'https://api.minebbs.com/api/openapi/v1/resources/3668/update'
           method: 'POST'
