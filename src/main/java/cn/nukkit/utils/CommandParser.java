@@ -13,20 +13,25 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CommandParser {
 
-    private static final Pattern STRING_PATTERN = Pattern.compile("[A-Za-z]+");//Start and end are not defined
-    private static final Pattern NUMBER_PATTERN = Pattern.compile("^~?((-?\\d+)(\\.\\d+)?)?$");//float or int
-    private static final Pattern INT_PATTERN = Pattern.compile("^~?(-?[0-9]*)?$");//only int
-    private static final Pattern FLOAT_PATTERN = Pattern.compile("^~?((-?\\d+)(\\.\\d+))?$");//only float
-    private static final Pattern COORDINATE_PATTERN = Pattern.compile("^[~^]?(-?\\d+)?(\\.\\d+)?$");//coordinate part value
+    private static final String STRING_PATTERN = "(\\S+)";
+    private static final String TARGET_PATTERN = "(@\\S+|[A-Za-z]\\S+)";
+    private static final String MULTIPLE_STRING_PATTERN = "(.+)";
+    private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
+    private static final String FLOAT_PATTERN = "(~-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|~)";//float or int
+    private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
+    private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
     private final Command command;
     private final CommandSender sender;
     private final String[] args;
+    private String[] parsedArgs;
+    private String matchedCommandForm;
 
     private int cursor = -1;
 
@@ -34,12 +39,15 @@ public class CommandParser {
         this.command = command;
         this.sender = sender;
         this.args = args;
+        matchCommandForm();
     }
 
     public CommandParser(CommandParser parser){
         this.command = parser.command;
         this.sender = parser.sender;
         this.args = parser.args;
+        this.parsedArgs = parser.parsedArgs;
+        this.matchedCommandForm = parser.matchedCommandForm;
         this.cursor = parser.cursor;
     }
 
@@ -49,16 +57,16 @@ public class CommandParser {
 
     private String next(boolean moveCursor) throws ArrayIndexOutOfBoundsException {
         if (moveCursor)
-            return this.args[++this.cursor];
+            return this.parsedArgs[++this.cursor];
         else
-            return this.args[this.cursor + 1];
+            return this.parsedArgs[this.cursor + 1];
     }
 
     public String getErrorMessage() {
         String parameter1;
         try {
             StringJoiner joiner = new StringJoiner(" ", " ", " ");
-            for (String arg : Arrays.copyOfRange(this.args, 0, this.cursor)) {
+            for (String arg : Arrays.copyOfRange(this.parsedArgs, 0, this.cursor)) {
                 joiner.add(arg);
             }
             parameter1 = joiner.length() < 3 ? "" : joiner.toString();
@@ -68,7 +76,7 @@ public class CommandParser {
 
         String parameter2;
         try {
-            parameter2 = this.args[this.cursor];
+            parameter2 = this.parsedArgs[this.cursor];
         } catch (Exception e) {
             parameter2 = "";
         }
@@ -76,7 +84,7 @@ public class CommandParser {
         String parameter3;
         try {
             StringJoiner joiner = new StringJoiner(" ", " ", "");
-            for (String arg : Arrays.copyOfRange(this.args, this.cursor + 1, this.args.length)) {
+            for (String arg : Arrays.copyOfRange(this.parsedArgs, this.cursor + 1, this.parsedArgs.length)) {
                 joiner.add(arg);
             }
             parameter3 = joiner.toString();
@@ -87,87 +95,147 @@ public class CommandParser {
         return new TranslationContainer(TextFormat.RED + "commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
-    public String matchCommandForm() throws CommandSyntaxException {
-        int argsLength = args.length;
-        Map<String, List<ArgType>> commandParameters = new HashMap<>();
+    public String matchCommandForm(){
+        if (matchedCommandForm != null) return matchedCommandForm;//already got its form
+        Map<String,String> commandPatterns = new HashMap<>();
+        Map<String,Integer> commandArgLength = new HashMap<>();//non-optional args' length
         for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
-            int length = 0;
-            List<ArgType> argTypes = new ArrayList<>();
+            StringBuilder pattern = new StringBuilder();
+            int length = 0;//non-optional args' length
             for (CommandParameter parameter : entry.getValue()){
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
-                        case INT:
-                        case WILDCARD_INT://I don't know what is the difference between the two
-                            argTypes.add(new ArgType(ArgType.Type.INT,parameter.optional));
-                            length++;
-                            break;
-                        case FLOAT:
-                            argTypes.add(new ArgType(ArgType.Type.FLOAT,parameter.optional));
-                            length++;
-                            break;
-                        case VALUE:
-                            argTypes.add(new ArgType(ArgType.Type.NUMBER,parameter.optional));
-                            length++;
-                            break;
-                        case POSITION:
-                        case BLOCK_POSITION:
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));
-                            argTypes.add(new ArgType(ArgType.Type.COORDINATE,parameter.optional));///three values
-                            length+=3;
-                            break;
-                        case TARGET:
-                        case WILDCARD_TARGET:
-                        case STRING:
-                        case RAWTEXT:
-                        case JSON:
-                        case TEXT:
-                        case FILE_PATH:
-                        case OPERATOR:
-                        case MESSAGE:
-                        case COMMAND:
-                            argTypes.add(new ArgType(ArgType.Type.STRING,parameter.optional));
-                            length++;
-                            break;
+                        case INT, WILDCARD_INT -> {//I don't know what is the difference between the two
+                            pattern.append(INT_PATTERN);
+                            if(parameter.optional){
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case FLOAT, VALUE -> {
+                            pattern.append(FLOAT_PATTERN);
+                            if(parameter.optional){
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case POSITION -> {
+                            for (int i = 0; i < 3; i++) {
+                                pattern.append(COORDINATE_PATTERN);
+                                if (parameter.optional) {
+                                    pattern.append("?");
+                                }else{
+                                    length++;
+                                }
+                                pattern.append("\\s*");
+                            }
+                        }
+                        case BLOCK_POSITION -> {
+                            for (int i = 0; i < 3; i++) {
+                                pattern.append(BLOCK_COORDINATE_PATTERN);
+                                if (parameter.optional) {
+                                    pattern.append("?");
+                                }else{
+                                    length++;
+                                }
+                                pattern.append("\\s*");
+                            }
+                        }
+                        case TARGET, WILDCARD_TARGET -> {
+                            pattern.append(TARGET_PATTERN);
+                            if (parameter.optional) {
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case STRING, RAWTEXT, JSON, TEXT, FILE_PATH, OPERATOR -> {
+                            pattern.append(STRING_PATTERN);
+                            if (parameter.optional) {
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case MESSAGE, COMMAND -> {
+                            pattern.append(MULTIPLE_STRING_PATTERN);
+                            if (parameter.optional) {
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
                     }
                 }else{
-                    argTypes.add(new ArgType(ArgType.Type.LIMITEDVALUE,parameter.optional, parameter.enumData.getValues()));
-                    length++;
+                    pattern.append("(");
+                    for (String str : parameter.enumData.getValues()){
+                        pattern.append(str).append("|");
+                    }
+                    pattern.deleteCharAt(pattern.length() - 1);
+                    pattern.append(")");
+                    if (parameter.optional) {
+                        pattern.append("?");
+                    }else{
+                        length++;
+                    }
+                    pattern.append("\\s*");
                 }
             }
 
-            if (length < argsLength){
-                continue;//no match
-            }
-
-            commandParameters.put(entry.getKey(), argTypes);
+            commandPatterns.put(entry.getKey(),pattern.toString());
+            commandArgLength.put(entry.getKey(),length);
         }
 
-        if (commandParameters.isEmpty()) return null;//no match
-
-        for (Map.Entry<String, List<ArgType>> entry : commandParameters.entrySet().toArray(new Map.Entry[0])){
-            boolean matched = true;
-            CommandParser parser = new CommandParser(this);
-            List<ArgType> argTypes = entry.getValue();
-            while(parser.hasNext()){
-                String next = parser.next();
-                ArgType argType = argTypes.get(parser.cursor);
-                if (argType.type == ArgType.Type.LIMITEDVALUE && argType.limitedValues.contains(next)) continue;
-                if (argType.type == ArgType.Type.INT && INT_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.FLOAT && FLOAT_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.NUMBER && NUMBER_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.COORDINATE && COORDINATE_PATTERN.matcher(next).find()) continue;
-                if (argType.type == ArgType.Type.STRING && STRING_PATTERN.matcher(next).find()) continue;
-                //no match
-                matched = false;
+        String argString = String.join(" ", args);
+        for (Map.Entry<String,String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])){
+            Pattern pattern = Pattern.compile(entry.getValue());
+            Matcher matcher = pattern.matcher(argString);
+            if (!matcher.find()){
+                commandPatterns.remove(entry.getKey());
             }
-            if(!matched) commandParameters.remove(entry.getKey());
-            if (argTypes.size() > parser.cursor + 1 && !argTypes.get(parser.cursor + 1).optional) commandParameters.remove(entry.getKey());//排除此格式如果还有必需的参数没有输入
         }
 
-        if (commandParameters.isEmpty()) return null;//no match
-        if (commandParameters.size() != 1) throw new CommandSyntaxException();//more than one match
-        return commandParameters.keySet().iterator().next();
+        String result = null;
+
+        if (commandPatterns.size() == 1) {
+            result = commandPatterns.keySet().iterator().next();
+        } else if (commandPatterns.size() == 0) {
+            result = null;
+        } else if (commandPatterns.size() > 1) {
+            String maxLengthForm = commandPatterns.keySet().iterator().next();
+            int maxLength = commandArgLength.get(maxLengthForm);
+            for (Map.Entry<String,String> entry : commandPatterns.entrySet()){
+                if (commandArgLength.get(entry.getKey()) > maxLength){
+                    maxLength = commandArgLength.get(entry.getKey());
+                    maxLengthForm = entry.getKey();
+                }
+            }
+            result = maxLengthForm;
+        } else {
+            result = null;
+        }
+
+        if (result == null){
+            return null;
+        }
+
+        Matcher matcher = Pattern.compile(commandPatterns.get(result)).matcher(argString);
+        matcher.find();
+        String[] pArg = new String[matcher.groupCount()];
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+            pArg[i-1] = matcher.group(i);
+        }
+        this.parsedArgs = pArg;
+
+        matchedCommandForm = result;
+        return result;
     }
 
     public Level getTargetLevel() {
@@ -179,7 +247,7 @@ public class CommandParser {
     }
 
     public boolean hasNext(){
-        return this.cursor < this.args.length - 1;
+        return this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null;
     }
 
     public int parseInt() throws CommandSyntaxException {
@@ -215,9 +283,13 @@ public class CommandParser {
     public double parseOffsetDouble(double base, boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
-            if (arg.startsWith("~") && !arg.substring(1).isEmpty()) {
-                double relativeCoordinate = Double.parseDouble(arg.substring(1));
-                return base + relativeCoordinate;
+            if (arg.startsWith("~")) {
+                if (!arg.substring(1).isEmpty()) {
+                    double relativeCoordinate = Double.parseDouble(arg.substring(1));
+                    return base + relativeCoordinate;
+                }else{
+                    return base;
+                }
             }
             return Double.parseDouble(arg);
         } catch (Exception e) {
@@ -354,8 +426,8 @@ public class CommandParser {
                 sb.append(this.next()).append(" ");
             }
         }else{
-            for (int i = this.cursor; i < this.args.length; i++) {
-                sb.append(this.args[i]).append(" ");
+            for (int i = this.cursor; i < this.parsedArgs.length; i++) {
+                sb.append(this.parsedArgs[i]).append(" ");
             }
         }
         return sb.toString();
@@ -404,32 +476,32 @@ public class CommandParser {
         X, Y, Z
     }
 
-    class ArgType{
-        enum Type {
-            INT,//only 0-9
-            FLOAT,//0-9 and must include "."
-            NUMBER,//int or float
-            COORDINATE,//eq: ~0.1
-            STRING,//must include A-Z or a-z
-            LIMITEDVALUE//limited parameter types
-        }
-        //can be null
-        List<String> limitedValues;
-        Type type;
-        boolean optional;
-
-        ArgType(Type type){
-            this(type,false);
-        }
-
-        ArgType(Type type,boolean optional){
-            this(type,optional,null);
-        }
-
-        ArgType(Type type,boolean optional,List<String> limitedValues) {
-            this.type = type;
-            this.optional = optional;
-            this.limitedValues = limitedValues;
-        }
-    }
+//    class ArgType{
+//        enum Type {
+//            INT,//only 0-9
+//            FLOAT,//0-9 and must include "."
+//            NUMBER,//int or float
+//            COORDINATE,//eq: ~0.1
+//            STRING,
+//            LIMITEDVALUE//limited parameter types
+//        }
+//        //can be null
+//        List<String> limitedValues;
+//        Type type;
+//        boolean optional;
+//
+//        ArgType(Type type){
+//            this(type,false);
+//        }
+//
+//        ArgType(Type type,boolean optional){
+//            this(type,optional,null);
+//        }
+//
+//        ArgType(Type type,boolean optional,List<String> limitedValues) {
+//            this.type = type;
+//            this.optional = optional;
+//            this.limitedValues = limitedValues;
+//        }
+//    }
 }

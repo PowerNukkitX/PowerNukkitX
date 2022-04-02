@@ -238,9 +238,6 @@ public class SimpleCommandMap implements CommandMap {
                 }
                 start = i + 1;
             } else if (sb.charAt(i) == '"') {
-                if (sb.substring(i+1,sb.length()).contains("\"") && !notQuoted){
-                    continue;
-                }
                 sb.deleteCharAt(i);
                 --i;
                 notQuoted = !notQuoted;
