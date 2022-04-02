@@ -21,7 +21,7 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class CloneCommand extends VanillaCommand {
 
     public CloneCommand(String name) {
-        super(name, "%commands.clone.description", "%commands.clone.usage");
+        super(name, "commands.clone.description", "commands.clone.usage");
         this.setPermission("nukkit.command.clone");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

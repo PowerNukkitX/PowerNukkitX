@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class EffectCommand extends Command {
     public EffectCommand(String name) {
-        super(name, "%commands.effect.description", "%commands.effect.usage");
+        super(name, "commands.effect.description", "commands.effect.usage");
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
 

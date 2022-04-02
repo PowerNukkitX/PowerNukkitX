@@ -24,7 +24,7 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class TestForBlocksCommand extends VanillaCommand {
 
     public TestForBlocksCommand(String name) {
-        super(name, "Tests whether the blocks in two regions match.", "/testforblocks <begin: x y z> <end: x y z> <destination: x y z> [masked|all]");
+        super(name, "commands.testforblocks.description", "commands.testforblocks.usage");
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

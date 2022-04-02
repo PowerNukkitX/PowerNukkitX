@@ -13,7 +13,7 @@ import cn.nukkit.utils.CommandSyntaxException;
 public class DayLockCommand extends VanillaCommand {
 
     public DayLockCommand(String name) {
-        super(name, "%commands.daylock.description", "%commands.daylock.usage", new String[]{"alwaysday"});
+        super(name, "commands.daylock.description", "commands.daylock.usage", new String[]{"alwaysday"});
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

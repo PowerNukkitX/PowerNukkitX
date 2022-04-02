@@ -16,7 +16,7 @@ import java.util.List;
 public class ExecuteCommand extends VanillaCommand {
 
     public ExecuteCommand(String name) {
-        super(name,"%nukkit.command.execute.description", "%commands.execute.usage");
+        super(name,"commands.execute.description", "commands.execute.usage");
         this.setPermission("nukkit.command.execute");
         this.commandParameters.clear();
         this.commandParameters.put("default",new CommandParameter[]{

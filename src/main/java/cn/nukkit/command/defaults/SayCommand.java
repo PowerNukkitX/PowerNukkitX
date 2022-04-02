@@ -21,7 +21,7 @@ import java.util.List;
 public class SayCommand extends VanillaCommand {
 
     public SayCommand(String name) {
-        super(name, "%nukkit.command.say.description", "%commands.say.usage");
+        super(name, "commands.say.description", "commands.say.usage");
         this.setPermission("nukkit.command.say");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

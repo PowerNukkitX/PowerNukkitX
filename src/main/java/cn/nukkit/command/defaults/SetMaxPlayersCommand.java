@@ -10,7 +10,7 @@ import cn.nukkit.utils.CommandSyntaxException;
 public class SetMaxPlayersCommand extends VanillaCommand {
 
     public SetMaxPlayersCommand(String name) {
-        super(name, "Sets the maximum number of players for this game session.", "/setmaxplayers [maxPlayers: int]");
+        super(name, "commands.setmaxplayers.description", "commands.setmaxplayers.usage");
         this.setPermission("nukkit.command.setmaxplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

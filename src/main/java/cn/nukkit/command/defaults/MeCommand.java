@@ -16,7 +16,7 @@ import cn.nukkit.utils.TextFormat;
 public class MeCommand extends VanillaCommand {
 
     public MeCommand(String name) {
-        super(name, "%nukkit.command.me.description", "%commands.me.usage");
+        super(name, "commands.me.description", "commands.me.usage");
         this.setPermission("nukkit.command.me");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class GiveCommand extends VanillaCommand {
     public GiveCommand(String name) {
-        super(name, "%nukkit.command.give.description", "%nukkit.command.give.usage");
+        super(name, "commands.give.description", "commands.give.usage");
         this.setPermission("nukkit.command.give");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

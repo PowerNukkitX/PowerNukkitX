@@ -22,7 +22,7 @@ import java.util.Map;
 public class ClearCommand extends VanillaCommand {
 
     public ClearCommand(String name) {
-        super(name, "%commands.clear.description", "%commands.clear.usage");
+        super(name, "commands.clear.description", "commands.clear.usage");
         this.setPermission("nukkit.command.clear");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

@@ -14,7 +14,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class DefaultGamemodeCommand extends VanillaCommand {
 
     public DefaultGamemodeCommand(String name) {
-        super(name, "%nukkit.command.defaultgamemode.description", "%commands.defaultgamemode.usage");
+        super(name, "commands.defaultgamemode.description", "commands.defaultgamemode.usage");
         this.setPermission("nukkit.command.defaultgamemode");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class TestForCommand extends VanillaCommand {
 
     public TestForCommand(String name) {
-        super(name, "Counts entities (players, mobs, items, etc.) matching specified conditions.", "/testfor <victim: target>");
+        super(name, "commands.testfor.description", "commands.testfor.usage");
         this.setPermission("nukkit.command.testfor");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

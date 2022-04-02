@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PlaySoundCommand extends VanillaCommand {
 
     public PlaySoundCommand(String name) {
-        super("playsound", "Plays a sound.", "/playsound <sound: string> [player: target] [position: x y z] [volume: float] [pitch: float] [minimumVolume: float]");
+        super(name, "commands.playsound.description", "commands.playsound.usage");
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

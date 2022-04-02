@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class TeleportCommand extends VanillaCommand {
     public TeleportCommand(String name) {
-        super(name, "%commands.tp.description", "%commands.tp.usage");
+        super(name, "commands.tp.description", "commands.tp.usage");
         this.setPermission("nukkit.command.teleport");
         this.commandParameters.clear();
         this.commandParameters.put("->Entity", new CommandParameter[]{
@@ -207,7 +207,7 @@ public class TeleportCommand extends VanillaCommand {
                             }
                             sender.sendMessage(new TranslationContainer("commands.tp.success.coordinates", sb.toString(), String.valueOf(target.getFloorX()),String.valueOf(target.getFloorY()),String.valueOf(target.getFloorZ())));
                         }else{
-                            sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.toString()));
+                            sender.sendMessage(new TranslationContainer("commands.tp.safeTeleportFail",sb.toString(),target.getFloorX() + " " + target.getFloorY() + " " + target.getFloorZ()));
                             return false;
                         }
                     }else{

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class TitleCommand extends VanillaCommand {
     public TitleCommand(String name) {
-        super(name, "%nukkit.command.title.description", "%nukkit.command.title.usage");
+        super(name, "commands.title.description", "commands.title.usage");
         this.setPermission("nukkit.command.title");
 
         this.commandParameters.clear();

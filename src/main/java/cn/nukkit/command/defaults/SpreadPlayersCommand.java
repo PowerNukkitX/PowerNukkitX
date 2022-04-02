@@ -19,7 +19,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
     private final ThreadLocalRandom random;
 
     public SpreadPlayersCommand(String name) {
-        super(name, "Teleports entities to random locations.", "/spreadplayers <x: value> <z: value> <spreadDistance: float> <maxRange: float> <victim: target>");
+        super(name, "commands.spreadplayers.description", "commands.spreadplayers.usage");
         this.setPermission("nukkit.command.spreadplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

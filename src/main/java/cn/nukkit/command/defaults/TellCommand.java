@@ -20,7 +20,7 @@ import java.util.Objects;
 public class TellCommand extends VanillaCommand {
 
     public TellCommand(String name) {
-        super(name, "%nukkit.command.tell.description", "%commands.message.usage", new String[]{"w", "msg"});
+        super(name, "commands.tell.description", "commands.message.usage", new String[]{"w", "msg"});
         this.setPermission("nukkit.command.tell");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

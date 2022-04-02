@@ -29,7 +29,7 @@ public class ParticleCommand extends VanillaCommand {
             , "scrape", "electricspark"
     };
     public ParticleCommand(String name) {
-        super(name, "%nukkit.command.particle.description", "%nukkit.command.particle.usage");
+        super(name, "commands.particle.description", "commands.particle.usage");
         this.setPermission("nukkit.command.particle");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

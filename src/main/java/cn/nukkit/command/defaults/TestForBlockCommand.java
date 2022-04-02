@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {
-        super(name, "Tests whether a certain block is in a specific location.", "/testforblock <position: x y z> <tileId: int> [dataValue: int]");
+        super(name, "commands.testforblock.description", "commands.testforblock.usage");
         this.setPermission("nukkit.command.testforblock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class StopSoundCommand extends VanillaCommand {
 
     public StopSoundCommand(String name) {
-        super(name, "Stops a sound.", "/stopsound <player: target> [sound: string]");
+        super(name, "commands.stopsound.description", "commands.stopsound.usage");
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

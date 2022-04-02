@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class SetBlockCommand extends VanillaCommand {
     @PowerNukkitOnly
     public SetBlockCommand(String name) {
-        super(name, "%nukkit.command.setblock.description", "%nukkit.command.setblock.usage");
+        super(name, "commands.setblock.description", "commands.setblock.usage");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
