@@ -4,6 +4,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.CommandParser;
 import cn.nukkit.utils.CommandSyntaxException;
@@ -34,11 +35,11 @@ public class TestForCommand extends VanillaCommand {
             List<Entity> targets = parser.parseTargets();
 
             if (targets.size() == 0) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
 
-            sender.sendMessage(String.format("Found %1$s", targets.stream().map(Entity::getName).collect(Collectors.joining(", "))));
+            sender.sendMessage(new TranslationContainer("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))));
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
             return false;
