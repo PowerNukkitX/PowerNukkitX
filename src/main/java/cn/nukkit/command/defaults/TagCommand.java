@@ -48,6 +48,10 @@ public class TagCommand extends VanillaCommand{
                 return false;
             };
             List<Entity> entities = parser.parseTargets();
+            if (entities.isEmpty()){
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                return false;
+            }
             switch (form){
                 case "add" ->{
                     parser.parseString();//jump over "add"

@@ -268,7 +268,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     }
 
     @Override
-    public boolean execute(int chain) {//todo: add event
+    public boolean execute(int chain) {
         if (this.getLastExecution() != this.getServer().getTick()) {
             this.setConditionMet();
             if (this.isConditionMet() && (this.isAuto() || this.isPowered())) {
@@ -306,11 +306,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                         }
                     }
 
-                    if (this.getSuccessCount() > 0) {
-                        Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
-                        if (block instanceof BlockCommandBlockChain) {
-                            (((BlockCommandBlock) block).getBlockEntity()).trigger(++chain);
-                        }
+                    Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                    if (block instanceof BlockCommandBlockChain chainBlock) {
+                        if ((chainBlock.getBlockEntity().isConditional() && this.successCount > 0) || !chainBlock.getBlockEntity().isConditional()) chainBlock.getBlockEntity().trigger(++chain);
                     }
                 }
 
