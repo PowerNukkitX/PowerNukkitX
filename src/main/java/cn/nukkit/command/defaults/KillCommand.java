@@ -50,7 +50,7 @@ public class KillCommand extends VanillaCommand {
                 return false;
             }
             StringBuilder message = new StringBuilder();
-            boolean successExecute = false;
+            boolean successExecute = true;
             for (Entity entity : entities) {
                 if (entity.getName().equals(sender.getName())) {
                     if (!sender.hasPermission("nukkit.command.kill.self")) {
@@ -63,17 +63,12 @@ public class KillCommand extends VanillaCommand {
                     if (ev.isCancelled()) {
                         continue;
                     }
-                    successExecute = true;
                     player.setLastDamageCause(ev);
                     player.setHealth(0);
                 } else {
                     entity.kill();
                 }
                 message.append(entity.getName()).append(", ");
-            }
-            if (!successExecute) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-                return false;
             }
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message.toString()));
             return true;
