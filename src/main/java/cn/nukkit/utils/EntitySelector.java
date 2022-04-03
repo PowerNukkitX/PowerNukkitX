@@ -51,6 +51,7 @@ public final class EntitySelector {
     private static final String ARG_RY = registerArgument("ry");
     private static final String ARG_RYM = registerArgument("rym");
     private static final String ARG_TYPE = registerArgument("type");
+    private static final String ARG_TAG = registerArgument("tag");
 
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
@@ -89,6 +90,7 @@ public final class EntitySelector {
                         predicates.addAll(getNamePredicates(args));
                         predicates.addAll(getRadiusPredicates(args, vec));
                         predicates.addAll(getRotationsPredicates(args));
+                        predicates.addAll(getTagsPredicates(args));
 
                         if ("s".equalsIgnoreCase(selectorType)) {
                             Entity entity = null;
@@ -267,7 +269,7 @@ public final class EntitySelector {
                 predicates.add(entity -> entity != null && entity.getName().replaceAll("_", " ").equals(f.replaceAll("_", " ")) != inverted);
             }
         }
-        return List.of(e -> predicates.stream().anyMatch(predicate -> predicate.apply(e)));
+        return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
     private static List<Predicate<Entity>> getRadiusPredicates(Map<String, List<String>> params, Vector3 vec) {
@@ -334,6 +336,28 @@ public final class EntitySelector {
         }
 
         return results;
+    }
+
+    private static List<Predicate<Entity>> getTagsPredicates(Map<String, List<String>> params) {
+        List<Predicate<Entity>> predicates = Lists.newArrayList();
+
+        List<String> tags = getArgument(params, ARG_TAG);
+
+        if (tags == null) {
+            return predicates;
+        }
+
+        for (String tag : tags) {
+            if (tag != null) {
+                boolean inverted = tag.startsWith("!");
+                if (inverted) {
+                    tag = tag.substring(1);
+                }
+                String finalTag = tag;
+                predicates.add(entity -> entity != null && entity.containTag(finalTag) != inverted);
+            }
+        }
+        return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
     private static int clampAngle(int angle) {
