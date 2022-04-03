@@ -269,6 +269,15 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean execute(int chain) {
+        if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
+            if(this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0){//jump over because this CB is conditional and the last CB didn't succeed
+                Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                if (next instanceof BlockCommandBlockChain nextChainBlock) {
+                    nextChainBlock.getBlockEntity().trigger(++chain);
+                }
+                return true;
+            }
+        }
         if (this.getLastExecution() != this.getServer().getTick()) {
             this.setConditionMet();
             if (this.isConditionMet() && (this.isAuto() || this.isPowered())) {
@@ -308,7 +317,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
                     Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
                     if (block instanceof BlockCommandBlockChain chainBlock) {
-                        if ((chainBlock.getBlockEntity().isConditional() && this.successCount > 0) || !chainBlock.getBlockEntity().isConditional()) chainBlock.getBlockEntity().trigger(++chain);
+                        chainBlock.getBlockEntity().trigger(++chain);
                     }
                 }
 
