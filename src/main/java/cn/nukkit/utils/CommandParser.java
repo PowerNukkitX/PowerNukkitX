@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
-    private static final String TARGET_PATTERN = "(@\\S+|[A-Za-z]\\S+)";
+    private static final String TARGET_PATTERN = "(@\\S+|[A-Za-z][A-Za-z0-9\\s]+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
     private static final String FLOAT_PATTERN = "(~-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|~)";//float or int
@@ -109,6 +109,7 @@ public class CommandParser {
         Map<String,Integer> commandArgLength = new HashMap<>();//non-optional args' length
         for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
             StringBuilder pattern = new StringBuilder();
+            pattern.append("^");
             int length = 0;//non-optional args' length
             for (CommandParameter parameter : entry.getValue()){
                 if (parameter.enumData == null) {
@@ -197,6 +198,7 @@ public class CommandParser {
                 }
             }
 
+            pattern.append("$");
             commandPatterns.put(entry.getKey(),pattern.toString());
             commandArgLength.put(entry.getKey(),length);
         }
