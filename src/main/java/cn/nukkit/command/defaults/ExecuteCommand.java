@@ -56,11 +56,11 @@ public class ExecuteCommand extends VanillaCommand {
                 return false;
             }
             if (form.equals("default")){
-                String command = parser.parseAllRemain();
+                String command = parser.parseString();
                 for (Entity entity : entities) {
                     CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity.getPosition(), false),entity.level,entity.yaw,entity.pitch));
                     if (!Server.getInstance().dispatchCommand(executeSender, command)) {
-                        sender.sendMessage(new TranslationContainer("commands.generic.exception"));
+                        sender.sendMessage(new TranslationContainer("commands.execute.failed", entity.getName(), command));
                         return false;
                     }
                 }
@@ -70,7 +70,7 @@ public class ExecuteCommand extends VanillaCommand {
                 parser.parsePosition();//skip detect position
                 int blockid = parser.parseInt();
                 int meta = parser.parseInt();
-                String command = parser.parseAllRemain();
+                String command = parser.parseString();
                 for (Entity entity : entities) {
                     Position detectPos = detectPosParser.parsePosition(entity,false);
                     if (detectPos.getLevelBlock().getId() == blockid && detectPos.getLevelBlock().getDamage() == meta) {
