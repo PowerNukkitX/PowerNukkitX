@@ -349,12 +349,16 @@ public final class EntitySelector {
 
         for (String tag : tags) {
             if (tag != null) {
-                boolean inverted = tag.startsWith("!");
-                if (inverted) {
-                    tag = tag.substring(1);
+                if (!tag.isEmpty()) {
+                    boolean inverted = tag.startsWith("!");
+                    if (inverted) {
+                        tag = tag.substring(1);
+                    }
+                    String finalTag = tag;
+                    predicates.add(entity -> entity != null && entity.containTag(finalTag) != inverted);
+                }else{
+                    predicates.add(entity -> entity != null && entity.getAllTags().isEmpty());
                 }
-                String finalTag = tag;
-                predicates.add(entity -> entity != null && entity.containTag(finalTag) != inverted);
             }
         }
         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
