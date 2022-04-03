@@ -27,6 +27,8 @@ public class CommandParser {
     private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
+    private static Map<String,CommandParser> cache = new WeakHashMap<>();//using cache to improve performance
+
     private final Command command;
     private final CommandSender sender;
     private final String[] args;
@@ -96,7 +98,13 @@ public class CommandParser {
     }
 
     public String matchCommandForm(){
+        String argString = String.join(" ", args);
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
+        if (cache.containsKey(argString)){//get from cache to improve performance
+            this.parsedArgs = cache.get(argString).parsedArgs;
+            this.matchedCommandForm = cache.get(argString).matchedCommandForm;
+            return this.matchedCommandForm;
+        }
         Map<String,String> commandPatterns = new HashMap<>();
         Map<String,Integer> commandArgLength = new HashMap<>();//non-optional args' length
         for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
@@ -193,7 +201,6 @@ public class CommandParser {
             commandArgLength.put(entry.getKey(),length);
         }
 
-        String argString = String.join(" ", args);
         for (Map.Entry<String,String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])){
             Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(argString);
@@ -235,6 +242,8 @@ public class CommandParser {
         this.parsedArgs = pArg;
 
         matchedCommandForm = result;
+
+        cache.put(argString,this);
         return result;
     }
 
@@ -476,32 +485,5 @@ public class CommandParser {
         X, Y, Z
     }
 
-//    class ArgType{
-//        enum Type {
-//            INT,//only 0-9
-//            FLOAT,//0-9 and must include "."
-//            NUMBER,//int or float
-//            COORDINATE,//eq: ~0.1
-//            STRING,
-//            LIMITEDVALUE//limited parameter types
-//        }
-//        //can be null
-//        List<String> limitedValues;
-//        Type type;
-//        boolean optional;
-//
-//        ArgType(Type type){
-//            this(type,false);
-//        }
-//
-//        ArgType(Type type,boolean optional){
-//            this(type,optional,null);
-//        }
-//
-//        ArgType(Type type,boolean optional,List<String> limitedValues) {
-//            this.type = type;
-//            this.optional = optional;
-//            this.limitedValues = limitedValues;
-//        }
-//    }
+
 }
