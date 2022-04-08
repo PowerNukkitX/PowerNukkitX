@@ -5,8 +5,8 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.CommandParser;
-import cn.nukkit.utils.CommandSyntaxException;
+import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import java.util.HashSet;
 import java.util.List;

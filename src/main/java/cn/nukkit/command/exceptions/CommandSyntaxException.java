@@ -1,4 +1,4 @@
-package cn.nukkit.utils;
+package cn.nukkit.command.exceptions;
 
 public class CommandSyntaxException extends Exception {
 

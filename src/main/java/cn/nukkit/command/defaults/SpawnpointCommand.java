@@ -9,9 +9,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.utils.CommandParser;
-import cn.nukkit.utils.CommandSyntaxException;
-import cn.nukkit.utils.EntitySelector;
+import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.text.DecimalFormat;

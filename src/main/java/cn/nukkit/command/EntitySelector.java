@@ -1,7 +1,7 @@
-package cn.nukkit.utils;
+package cn.nukkit.command;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.*;

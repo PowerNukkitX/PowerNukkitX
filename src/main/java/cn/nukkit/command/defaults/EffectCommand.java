@@ -9,8 +9,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
-import cn.nukkit.utils.CommandParser;
-import cn.nukkit.utils.CommandSyntaxException;
+import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
 
