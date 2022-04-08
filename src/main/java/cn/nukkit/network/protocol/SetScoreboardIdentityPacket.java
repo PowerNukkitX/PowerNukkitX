@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.UUID;
 
+//May be obsolete, this package is not used now
 public class SetScoreboardIdentityPacket extends DataPacket {
 
     private final List<Entry> entries = new ObjectArrayList<>();

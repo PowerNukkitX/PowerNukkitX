@@ -2,6 +2,10 @@ package cn.nukkit.network.protocol;
 
 public class SetObjectivePacket extends DataPacket {
 
+    public static String DISPLAY_SLOT_SIDEBAR = "sidebar";
+    public static String DISPLAY_SLOT_LIST = "list";
+    public static String DISPLAY_SLOT_BELOW_NAME = "belowName";
+
     public String
             displaySlot,
             objectiveName,

@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 
 public class SetScorePacket extends DataPacket {
-    private Action action;
-    private List<ScoreInfo> infos = new ObjectArrayList<>();
+    public Action action;
+    public List<ScoreInfo> infos = new ObjectArrayList<>();
 
     @Override
     public byte pid() {
@@ -23,6 +23,7 @@ public class SetScorePacket extends DataPacket {
     public void encode() {
         this.reset();
         this.putByte((byte) this.action.ordinal());
+        this.putUnsignedVarInt(this.infos.size());
 
         for (ScoreInfo info : this.infos) {
             this.putVarLong(info.scoreboardId);
@@ -33,7 +34,7 @@ public class SetScorePacket extends DataPacket {
                 switch (info.type) {
                     case ENTITY:
                     case PLAYER:
-                        this.putUnsignedVarLong(info.entityId);
+                        this.putVarLong(info.entityId);
                         break;
                     case FAKE:
                         this.putString(info.name);
