@@ -354,7 +354,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.0.1-bukkit</version>
+            <version>6.0.2-bukkit</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
