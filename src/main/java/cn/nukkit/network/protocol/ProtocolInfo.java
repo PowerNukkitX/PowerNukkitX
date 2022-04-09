@@ -133,7 +133,7 @@ public interface ProtocolInfo {
     byte REMOVE_OBJECTIVE_PACKET = 0x6a;
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    byte SET_OBJECTIVE_PACKET = 0x6b;
+    byte SET_DISPLAY_OBJECTIVE_PACKET = 0x6b;
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     byte SET_SCORE_PACKET = 0x6c;

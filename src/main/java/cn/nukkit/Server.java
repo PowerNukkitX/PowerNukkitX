@@ -81,6 +81,8 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
+import cn.nukkit.scoreboard.ScoreboardManager;
+import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import co.aikar.timings.Timings;
@@ -168,6 +170,8 @@ public class Server {
 
     private ConsoleCommandSender consoleSender;
 
+    private ScoreboardManager scoreboardManager;
+
     private int maxPlayers;
 
     private boolean autoSave = true;
@@ -208,6 +212,7 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    private final String commandDataPath;
 
     private final Set<UUID> uniquePlayers = new HashSet<>();
 
@@ -300,6 +305,9 @@ public class Server {
         
         File dir = new File(tempDir, "plugins");
         pluginPath = dir.getPath();
+
+        File cmdDir = new File(tempDir, "command_data");
+        commandDataPath = cmdDir.getPath();
         
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
@@ -343,6 +351,11 @@ public class Server {
 
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
+
+        if (!new File(commandDataPath).exists()) {
+            new File(commandDataPath).mkdirs();
+        }
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
@@ -644,6 +657,8 @@ public class Server {
 
         this.consoleSender = new ConsoleCommandSender();
         this.commandMap = new SimpleCommandMap(this);
+
+        this.scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         // Initialize metrics
         NukkitMetrics.startNow(this);
@@ -985,6 +1000,10 @@ public class Server {
     //todo: use ticker to check console
     public ConsoleCommandSender getConsoleSender() {
         return consoleSender;
+    }
+
+    public ScoreboardManager getScoreboardManager(){
+        return scoreboardManager;
     }
 
     public void reload() {
@@ -1529,6 +1548,10 @@ public class Server {
 
     public String getPluginPath() {
         return pluginPath;
+    }
+
+    public String getCommandDataPath(){
+        return commandDataPath;
     }
 
     public int getMaxPlayers() {

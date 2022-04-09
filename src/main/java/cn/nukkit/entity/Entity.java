@@ -450,6 +450,10 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.4.0.0-PN")
     public boolean noClip = false;
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private UUID entityUniqueId;
+
     public float getHeight() {
         return 0;
     }
@@ -505,6 +509,14 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected void initEntity() {
+        if (!(this instanceof Player)) {
+            if (this.namedTag.contains("uuid")) {
+                this.entityUniqueId = UUID.fromString(this.namedTag.getString("uuid"));
+            } else {
+                this.entityUniqueId = UUID.randomUUID();
+            }
+        }
+
         if (this.namedTag.contains("ActiveEffects")) {
             ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
             for (CompoundTag e : effects.getAll()) {
@@ -1093,6 +1105,7 @@ public abstract class Entity extends Location implements Metadatable {
                 this.namedTag.remove("CustomNameVisible");
                 this.namedTag.remove("CustomNameAlwaysVisible");
             }
+            this.namedTag.putString("uuid", this.entityUniqueId.toString());
         }
 
         this.namedTag.putList(new ListTag<DoubleTag>("Pos")
@@ -2715,6 +2728,19 @@ public abstract class Entity extends Location implements Metadatable {
 
     public long getId() {
         return this.id;
+    }
+
+    /**
+     * only can be used on entity (not player)
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public UUID getEntityUniqueId(){
+        if(!this.isPlayer){
+            return this.entityUniqueId;
+        }else{
+            return null;
+        }
     }
 
     public void respawnToAll() {

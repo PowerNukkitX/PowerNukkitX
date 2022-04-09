@@ -71,7 +71,9 @@ import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
-import cn.nukkit.scoreboard.interfaces.Scoreboard;
+import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
@@ -109,6 +111,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -1062,6 +1065,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } else {
             updateTrackingPositions(false);
         }
+
+        Server.getInstance().getScoreboardManager().sendAllDisplaySlot(this);
     }
 
     @PowerNukkitOnly
@@ -6442,8 +6447,35 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
     @Override
-    public void sendScoreBoard(Scoreboard scoreboard) {
-        //todo: implement it;
+    public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
+        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        pk.displaySlot = slot;
+        pk.objectiveName = scoreboard.getObjectiveName();
+        pk.displayName = scoreboard.getDisplayName();
+        pk.criteriaName = scoreboard.getCriteriaName();
+        pk.sortOrder = scoreboard.getSortOrder();
+        this.dataPacket(pk);
+
+        //client won't storage the score of a scoreboard,so we should send the score to client
+        SetScorePacket pk2 = new SetScorePacket();
+        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toScoreInfo()).collect(Collectors.toList());
+        pk2.action = SetScorePacket.Action.SET;
+        this.dataPacket(pk2);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void clearScoreboardSlot(DisplaySlot slot) {
+        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        pk.displaySlot = slot;
+        pk.objectiveName = "";
+        pk.displayName = "";
+        pk.criteriaName = "";
+        pk.sortOrder = SortOrder.ASCENDING;
+        this.dataPacket(pk);
     }
 }

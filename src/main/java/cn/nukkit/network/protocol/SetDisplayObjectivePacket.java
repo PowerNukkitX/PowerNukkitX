@@ -1,22 +1,22 @@
 package cn.nukkit.network.protocol;
 
-public class SetObjectivePacket extends DataPacket {
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.data.SortOrder;
 
-    public static String DISPLAY_SLOT_SIDEBAR = "sidebar";
-    public static String DISPLAY_SLOT_LIST = "list";
-    public static String DISPLAY_SLOT_BELOW_NAME = "belowName";
+public class SetDisplayObjectivePacket extends DataPacket {
+
+    public DisplaySlot displaySlot;
 
     public String
-            displaySlot,
             objectiveName,
             displayName,
             criteriaName;
 
-    public int sortOrder;
+    public SortOrder sortOrder;
 
     @Override
     public byte pid() {
-        return ProtocolInfo.SET_OBJECTIVE_PACKET;
+        return ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET;
     }
 
     @Override
@@ -27,10 +27,11 @@ public class SetObjectivePacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putString(this.displaySlot);
+        this.putString(this.displaySlot.getSlotName());
         this.putString(this.objectiveName);
         this.putString(this.displayName);
         this.putString(this.criteriaName);
-        this.putVarInt(this.sortOrder);
+        this.putVarInt(this.sortOrder.ordinal());
     }
+
 }

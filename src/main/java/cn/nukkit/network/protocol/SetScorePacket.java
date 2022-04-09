@@ -1,13 +1,14 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.scoreboard.data.ScorerType;
 import com.nukkitx.network.util.Preconditions;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SetScorePacket extends DataPacket {
     public Action action;
-    public List<ScoreInfo> infos = new ObjectArrayList<>();
+    public List<ScoreInfo> infos = new ArrayList<>();
 
     @Override
     public byte pid() {
@@ -52,7 +53,7 @@ public class SetScorePacket extends DataPacket {
     }
 
     public static class ScoreInfo {
-        public long scoreboardId;//index
+        public long scoreboardId;
         public String objectiveId;
         public int score;
         public ScorerType type;
@@ -85,13 +86,6 @@ public class SetScorePacket extends DataPacket {
             this.type = type;
             this.entityId = entityId;
             this.name = null;
-        }
-
-        public enum ScorerType {
-            INVALID,
-            PLAYER,
-            ENTITY,
-            FAKE
         }
     }
 }

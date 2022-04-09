@@ -22,8 +22,10 @@ public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
     private static final String TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|[A-Za-z][A-Za-z0-9\\s]+)";
+    private static final String WILDCARD_TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|[A-Za-z][A-Za-z0-9\\s]+|\\*)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
+    private static final String WILDCARD_INT_PATTERN = "(~-?\\d+|-?\\d+|~|\\*)";//only int
     private static final String FLOAT_PATTERN = "(~-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|~)";//float or int
     private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
@@ -115,8 +117,17 @@ public class CommandParser {
             for (CommandParameter parameter : entry.getValue()){
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
-                        case INT, WILDCARD_INT -> {//I don't know what is the difference between the two
+                        case INT -> {
                             pattern.append(INT_PATTERN);
+                            if(parameter.optional){
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case WILDCARD_INT -> {
+                            pattern.append(WILDCARD_INT_PATTERN);
                             if(parameter.optional){
                                 pattern.append("?");
                             }else{
@@ -155,8 +166,17 @@ public class CommandParser {
                                 pattern.append("\\s*");
                             }
                         }
-                        case TARGET, WILDCARD_TARGET -> {
+                        case TARGET -> {
                             pattern.append(TARGET_PATTERN);
+                            if (parameter.optional) {
+                                pattern.append("?");
+                            }else{
+                                length++;
+                            }
+                            pattern.append("\\s*");
+                        }
+                        case WILDCARD_TARGET -> {
+                            pattern.append(WILDCARD_TARGET_PATTERN);
                             if (parameter.optional) {
                                 pattern.append("?");
                             }else{
@@ -269,6 +289,8 @@ public class CommandParser {
     public int parseInt(boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
+            if (arg.equals("*"))
+                return Integer.MAX_VALUE;
             return Integer.parseInt(arg);
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -353,6 +375,7 @@ public class CommandParser {
         }
     }
 
+    //only for non-wildcard target selector
     public List<Entity> parseTargets() throws CommandSyntaxException {
         return parseTargets(true);
     }
