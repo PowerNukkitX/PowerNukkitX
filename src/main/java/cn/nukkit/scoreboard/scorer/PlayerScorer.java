@@ -1,6 +1,7 @@
 package cn.nukkit.scoreboard.scorer;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.interfaces.Scorer;
 import lombok.Getter;
@@ -40,5 +41,10 @@ public class PlayerScorer implements Scorer {
             return uuid.equals(playerScorer.uuid);
         }
         return false;
+    }
+
+    @Override
+    public String getName() {
+        return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
     }
 }

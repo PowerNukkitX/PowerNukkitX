@@ -37,4 +37,9 @@ public class EntityScorer implements Scorer {
         }
         return false;
     }
+
+    @Override
+    public String getName() {
+        return String.valueOf(entityUuid.getMostSignificantBits());
+    }
 }

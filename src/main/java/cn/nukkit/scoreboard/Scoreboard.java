@@ -11,6 +11,7 @@ import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class Scoreboard {
     private String objectiveName;
     private String displayName;
     private String criteriaName;
+    @Setter
     private SortOrder sortOrder;
     private ScoreboardStorage storage;
     private int scoreboardId = 0;
@@ -49,7 +51,7 @@ public class Scoreboard {
         if (this.lines.get(scorer).toScoreInfo() != null)
             packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
+        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
             Server.getInstance().getScoreboardManager().updateScoreTag();
         storage.saveScoreboard(this);
     }
@@ -90,13 +92,17 @@ public class Scoreboard {
             if (this.toScoreInfo() != null)
                 packet.infos.add(this.toScoreInfo());
             Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.scoreboard.objectiveName))
+            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.scoreboard.objectiveName))
                 Server.getInstance().getScoreboardManager().updateScoreTag();
             storage.saveScoreboard(scoreboard);
         }
 
         public void addScore(int score){
             setScore(this.score + score);
+        }
+
+        public void removeScore(int score){
+            setScore(this.score - score);
         }
 
         @Nullable

@@ -7,4 +7,5 @@ import cn.nukkit.scoreboard.data.ScorerType;
  */
 public interface Scorer{
     ScorerType getScorerType();
+    String getName();
 }

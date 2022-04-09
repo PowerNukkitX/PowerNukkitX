@@ -30,4 +30,9 @@ public class FakeScorer implements Scorer {
         }
         return false;
     }
+
+    @Override
+    public String getName() {
+        return fakeName;
+    }
 }

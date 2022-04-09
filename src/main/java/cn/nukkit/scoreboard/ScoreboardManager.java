@@ -12,7 +12,6 @@ import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,13 +44,21 @@ public class ScoreboardManager {
         for (Player player : Server.getInstance().getOnlinePlayers().values()) {
             player.dataPacket(pk);
         }
-        if (display.get(DisplaySlot.BELOW_NAME).equals(name))
-            this.updateScoreTag();
         scoreboards.remove(name);
+        if (display.get(DisplaySlot.BELOW_NAME) != null && display.get(DisplaySlot.BELOW_NAME).equals(name)) {
+            display.put(DisplaySlot.BELOW_NAME, null);
+            this.updateScoreTag();
+        }
         storage.removeScoreboard(name);
     }
 
+    public boolean containScoreboard(String name){
+        return scoreboards.containsKey(name);
+    }
+
     public void setDisplaySlot(DisplaySlot slot,String name){
+        display.put(slot,name);
+        storage.saveDisplay(display);
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
             player.sendScoreboard(this.scoreboards.get(name),slot);
         });
@@ -83,11 +90,13 @@ public class ScoreboardManager {
     }
 
     public void clearDisplaySlot(DisplaySlot slot){
-        display.remove(slot);
-        storage.saveDisplay(display);
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
             player.clearScoreboardSlot(slot);
         });
+        display.put(slot,null);
+        storage.saveDisplay(display);
+        if (slot == DisplaySlot.BELOW_NAME)
+            this.updateScoreTag();
     }
 
     public void removeOfflinePlayerScore(Player player){
@@ -109,7 +118,7 @@ public class ScoreboardManager {
     public void updateScoreTag(){
         if (scoreboards == null)
             return;//first time init
-        if (display.get(DisplaySlot.BELOW_NAME) != null) {
+        if (display.get(DisplaySlot.BELOW_NAME) != null && this.containScoreboard(display.get(DisplaySlot.BELOW_NAME))) {
             for (Scorer scorer : scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getLines().keySet()) {
                 if (scorer instanceof PlayerScorer playerScorer) {
                     Optional<Player> player = Server.getInstance().getPlayer(playerScorer.getUuid());
@@ -119,14 +128,9 @@ public class ScoreboardManager {
                 }
             }
         }else{
-            for (Scorer scorer : scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getLines().keySet()) {
-                if (scorer instanceof PlayerScorer playerScorer) {
-                    Optional<Player> player = Server.getInstance().getPlayer(playerScorer.getUuid());
-                    if (!player.isEmpty()) {
-                        player.get().setScoreTag(null);
-                    }
-                }
-            }
+            Server.getInstance().getOnlinePlayers().values().forEach(player -> {
+                player.setScoreTag("");
+            });
         }
     }
 }
