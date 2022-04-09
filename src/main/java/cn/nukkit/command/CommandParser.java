@@ -22,7 +22,7 @@ public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
     private static final String TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|[A-Za-z][A-Za-z0-9\\s]+)";
-    private static final String WILDCARD_TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|[A-Za-z][A-Za-z0-9\\s]+|\\*)";
+    private static final String WILDCARD_TARGET_PATTERN = "(\\S+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
     private static final String WILDCARD_INT_PATTERN = "(~-?\\d+|-?\\d+|~|\\*)";//only int
@@ -206,7 +206,13 @@ public class CommandParser {
                 }else{
                     pattern.append("(");
                     for (String str : parameter.enumData.getValues()){
-                        pattern.append(str).append("|");
+                        for(char c : str.toCharArray()){
+                            if(c=='$' || c=='(' || c==')' || c=='*' || c=='+' || c=='.' || c=='[' || c=='?' || c=='\\' || c=='^' || c== '{' || c=='|'){
+                                pattern.append("\\");
+                            }
+                            pattern.append(c);
+                        }
+                        pattern.append("|");
                     }
                     pattern.deleteCharAt(pattern.length() - 1);
                     pattern.append(")");

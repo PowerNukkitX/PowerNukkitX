@@ -44,21 +44,22 @@ public class ScoreboardCommand extends VanillaCommand {
         });
         this.commandParameters.put("players-add-remove-set", new CommandParameter[]{
                 CommandParameter.newEnum("players",new String[]{"players"}),
-                CommandParameter.newEnum("operation",new String[]{"add","remove","set"}),
+                CommandParameter.newEnum("ars",new String[]{"add","remove","set"}),
                 CommandParameter.newType("player", CommandParamType.WILDCARD_TARGET),//allow *
                 CommandParameter.newType("objective", CommandParamType.STRING),
                 CommandParameter.newType("score", CommandParamType.INT)
         });
         this.commandParameters.put("players-list", new CommandParameter[]{
                 CommandParameter.newEnum("players",new String[]{"players"}),
+                CommandParameter.newEnum("list",new String[]{"list"}),
                 CommandParameter.newType("playername",CommandParamType.WILDCARD_TARGET)//allow *
         });
         this.commandParameters.put("players-operation", new CommandParameter[]{
                 CommandParameter.newEnum("players",new String[]{"players"}),
-                CommandParameter.newEnum("operation",new String[]{"operation"}),
+                CommandParameter.newEnum("op",new String[]{"operation"}),
                 CommandParameter.newType("targetName",CommandParamType.WILDCARD_TARGET),//allow *
                 CommandParameter.newType("targetObjective", CommandParamType.STRING),
-                CommandParameter.newEnum("operation",new String[]{"\\+=","-=","\\*=","/=","%=","=","<",">","><"}),
+                CommandParameter.newEnum("operation",new String[]{"+=","-=","*=","/=","%=","=","<",">","><"}),
                 CommandParameter.newType("selector",CommandParamType.TARGET),
                 CommandParameter.newType("targetObjective", CommandParamType.STRING)
         });
