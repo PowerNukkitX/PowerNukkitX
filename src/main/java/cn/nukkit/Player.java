@@ -4671,11 +4671,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.server.removePlayer(this);
 
-        if(Server.getInstance().getScoreboardManager() != null)//in test environment sometimes the scoreboard manager is null
+        //in test environment sometimes the scoreboard manager is null
+        if(Server.getInstance().getScoreboardManager() != null) {
             Server.getInstance().getScoreboardManager().sendAllDisplaySlot();
-
-        //in order to clear the old score information so that we can avoid "offline player"
-        Server.getInstance().getScoreboardManager().removeOfflinePlayerScore(this);
+            //in order to clear the old score information so that we can avoid "offline player"
+            Server.getInstance().getScoreboardManager().removeOfflinePlayerScore(this);
+        }
     }
 
     public void save() {
