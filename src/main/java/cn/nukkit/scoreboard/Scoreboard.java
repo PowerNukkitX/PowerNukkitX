@@ -2,6 +2,7 @@ package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
 import cn.nukkit.network.protocol.SetScorePacket;
+import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
@@ -48,6 +49,8 @@ public class Scoreboard {
         if (this.lines.get(scorer).toScoreInfo() != null)
             packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
+        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
+            Server.getInstance().getScoreboardManager().updateScoreTag();
         storage.saveScoreboard(this);
     }
 
@@ -57,7 +60,11 @@ public class Scoreboard {
         if (this.lines.get(scorer).toScoreInfo() != null)
             packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
+        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
+            Server.getInstance().getScoreboardManager().updateScoreTag();
         lines.remove(scorer);
+
+
         storage.saveScoreboard(this);
     }
 
@@ -83,6 +90,8 @@ public class Scoreboard {
             if (this.toScoreInfo() != null)
                 packet.infos.add(this.toScoreInfo());
             Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
+            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.scoreboard.objectiveName))
+                Server.getInstance().getScoreboardManager().updateScoreTag();
             storage.saveScoreboard(scoreboard);
         }
 

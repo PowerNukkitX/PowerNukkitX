@@ -8,10 +8,13 @@ import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
+import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Getter
 public class ScoreboardManager {
@@ -22,12 +25,17 @@ public class ScoreboardManager {
 
     public ScoreboardManager(ScoreboardStorage storage) {
         this.storage = storage;
-        scoreboards = storage.readScoreboard();
+    }
+
+    public void init(){
         display = storage.readDisplay();
+        scoreboards = storage.readScoreboard();
     }
 
     public void addScoreboard(Scoreboard scoreboard){
         scoreboards.put(scoreboard.getObjectiveName(),scoreboard);
+        if (display.get(DisplaySlot.BELOW_NAME).equals(scoreboard.getObjectiveName()))
+            this.updateScoreTag();
         storage.saveScoreboard(scoreboard);
     }
 
@@ -37,6 +45,8 @@ public class ScoreboardManager {
         for (Player player : Server.getInstance().getOnlinePlayers().values()) {
             player.dataPacket(pk);
         }
+        if (display.get(DisplaySlot.BELOW_NAME).equals(name))
+            this.updateScoreTag();
         scoreboards.remove(name);
         storage.removeScoreboard(name);
     }
@@ -45,6 +55,8 @@ public class ScoreboardManager {
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
             player.sendScoreboard(this.scoreboards.get(name),slot);
         });
+        if (slot == DisplaySlot.BELOW_NAME)
+            this.updateScoreTag();
     }
 
     public void sendDisplaySlot(DisplaySlot slot){
@@ -91,6 +103,30 @@ public class ScoreboardManager {
 
         for (Player onlinePlayer : Server.getInstance().getOnlinePlayers().values()) {
             onlinePlayer.dataPacket(pk);
+        }
+    }
+
+    public void updateScoreTag(){
+        if (scoreboards == null)
+            return;//first time init
+        if (display.get(DisplaySlot.BELOW_NAME) != null) {
+            for (Scorer scorer : scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getLines().keySet()) {
+                if (scorer instanceof PlayerScorer playerScorer) {
+                    Optional<Player> player = Server.getInstance().getPlayer(playerScorer.getUuid());
+                    if (!player.isEmpty()) {
+                        player.get().setScoreTag(scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getLines().get(scorer).getScore() + " " + scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getDisplayName());
+                    }
+                }
+            }
+        }else{
+            for (Scorer scorer : scoreboards.get(display.get(DisplaySlot.BELOW_NAME)).getLines().keySet()) {
+                if (scorer instanceof PlayerScorer playerScorer) {
+                    Optional<Player> player = Server.getInstance().getPlayer(playerScorer.getUuid());
+                    if (!player.isEmpty()) {
+                        player.get().setScoreTag(null);
+                    }
+                }
+            }
         }
     }
 }

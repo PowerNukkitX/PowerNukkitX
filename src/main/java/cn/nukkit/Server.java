@@ -324,6 +324,7 @@ public class Server {
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+        scoreboardManager.init();
         
         setMaxPlayers(10);
 
@@ -660,6 +661,7 @@ public class Server {
         this.commandMap = new SimpleCommandMap(this);
 
         this.scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+        this.scoreboardManager.init();
 
         // Initialize metrics
         NukkitMetrics.startNow(this);
