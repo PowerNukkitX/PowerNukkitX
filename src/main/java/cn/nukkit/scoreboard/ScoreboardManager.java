@@ -2,6 +2,7 @@ package cn.nukkit.scoreboard;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.network.protocol.RemoveObjectivePacket;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.ScorerType;
@@ -31,6 +32,11 @@ public class ScoreboardManager {
     }
 
     public void removeScoreboard(String name){
+        RemoveObjectivePacket pk = new RemoveObjectivePacket();
+        pk.objectiveName = name;
+        for (Player player : Server.getInstance().getOnlinePlayers().values()) {
+            player.dataPacket(pk);
+        }
         scoreboards.remove(name);
         storage.removeScoreboard(name);
     }
