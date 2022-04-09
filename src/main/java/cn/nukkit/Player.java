@@ -1066,7 +1066,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        Server.getInstance().getScoreboardManager().sendAllDisplaySlot(this);
+        if(Server.getInstance().getScoreboardManager() != null)//in test environment sometimes the scoreboard manager is null
+            Server.getInstance().getScoreboardManager().sendAllDisplaySlot(this);
     }
 
     @PowerNukkitOnly

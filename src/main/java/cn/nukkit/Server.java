@@ -323,6 +323,7 @@ public class Server {
         operators = new Config();
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         
         setMaxPlayers(10);
 
