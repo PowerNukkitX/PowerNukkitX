@@ -20,16 +20,16 @@ import java.util.*;
 @Getter
 public class JSONScoreboardStorage implements ScoreboardStorage {
 
-    private Path nbtFilePath;
+    private Path filePath;
     private Config json;
 
     public JSONScoreboardStorage(String path) {
-        this.nbtFilePath = Paths.get(path);
+        this.filePath = Paths.get(path);
         try {
-            if (!Files.exists(this.nbtFilePath)) {
-                Files.createFile(this.nbtFilePath);
+            if (!Files.exists(this.filePath)) {
+                Files.createFile(this.filePath);
             }
-            json = new Config(this.nbtFilePath.toFile(), Config.JSON);
+            json = new Config(this.filePath.toFile(), Config.JSON);
         } catch (IOException e) {
             e.printStackTrace();
         }

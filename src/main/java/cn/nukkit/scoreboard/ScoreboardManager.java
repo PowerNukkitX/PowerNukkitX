@@ -44,7 +44,8 @@ public class ScoreboardManager {
     }
 
     public void sendDisplaySlot(DisplaySlot slot,ScoreboardSendable sendable){
-        sendable.sendScoreboard(this.scoreboards.get(this.display.get(slot)),slot);
+        if (display.get(slot) != null)
+            sendable.sendScoreboard(this.scoreboards.get(this.display.get(slot)),slot);
     }
 
     public void sendAllDisplaySlot(){

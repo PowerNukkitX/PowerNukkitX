@@ -11,6 +11,7 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -44,7 +45,8 @@ public class Scoreboard {
         lines.put(scorer,new ScoreboardLine(scorer,this,score,++scoreboardId));
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
-        packet.infos.add(this.lines.get(scorer).toScoreInfo());
+        if (this.lines.get(scorer).toScoreInfo() != null)
+            packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
         storage.saveScoreboard(this);
     }
@@ -52,7 +54,8 @@ public class Scoreboard {
     public void removeLine(Scorer scorer){
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.REMOVE;
-        packet.infos.add(this.lines.get(scorer).toScoreInfo());
+        if (this.lines.get(scorer).toScoreInfo() != null)
+            packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
         lines.remove(scorer);
         storage.saveScoreboard(this);
@@ -77,7 +80,8 @@ public class Scoreboard {
             this.score = score;
             SetScorePacket packet = new SetScorePacket();
             packet.action = SetScorePacket.Action.SET;
-            packet.infos.add(this.toScoreInfo());
+            if (this.toScoreInfo() != null)
+                packet.infos.add(this.toScoreInfo());
             Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
             storage.saveScoreboard(scoreboard);
         }
@@ -86,6 +90,7 @@ public class Scoreboard {
             setScore(this.score + score);
         }
 
+        @Nullable
         public SetScorePacket.ScoreInfo toScoreInfo(){
             switch(this.scorer.getScorerType()) {
                 case PLAYER -> {

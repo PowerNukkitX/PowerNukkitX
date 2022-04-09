@@ -6462,7 +6462,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //client won't storage the score of a scoreboard,so we should send the score to client
         SetScorePacket pk2 = new SetScorePacket();
-        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toScoreInfo()).collect(Collectors.toList());
+        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toScoreInfo()).filter(line -> line!=null).collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
         this.dataPacket(pk2);
     }
