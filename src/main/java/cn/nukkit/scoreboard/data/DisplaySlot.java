@@ -6,7 +6,7 @@ public enum DisplaySlot {
 
     SIDEBAR("sidebar"),
     LIST("list"),
-    BELOW_NAME("belowName");
+    BELOW_NAME("belowname");
 
     @Getter
     private String slotName;
