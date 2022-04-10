@@ -28,7 +28,7 @@ public class Scoreboard {
     @Setter
     private SortOrder sortOrder;
     private ScoreboardStorage storage;
-    private int scoreboardId = 0;
+    private static int scoreboardId = 0;
 
     public Scoreboard(String objectiveName, String displayName, String criteriaName, SortOrder sortOrder, ScoreboardStorage storage) {
         this(new HashMap(),objectiveName, displayName, criteriaName,sortOrder,storage);

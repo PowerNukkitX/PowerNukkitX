@@ -33,7 +33,7 @@ public class ScoreboardManager {
 
     public void addScoreboard(Scoreboard scoreboard){
         scoreboards.put(scoreboard.getObjectiveName(),scoreboard);
-        if (display.get(DisplaySlot.BELOW_NAME).equals(scoreboard.getObjectiveName()))
+        if (display.get(DisplaySlot.BELOW_NAME) != null && display.get(DisplaySlot.BELOW_NAME).equals(scoreboard.getObjectiveName()))
             this.updateScoreTag();
         storage.saveScoreboard(scoreboard);
     }
