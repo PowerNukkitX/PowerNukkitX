@@ -70,6 +70,14 @@ public class Scoreboard {
         storage.saveScoreboard(this);
     }
 
+    public ScoreboardLine getLine(Scorer scorer){
+        return lines.get(scorer);
+    }
+
+    public boolean containLine(Scorer scorer){
+        return lines.containsKey(scorer);
+    }
+
     @Getter
     public class ScoreboardLine {
 

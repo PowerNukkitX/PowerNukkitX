@@ -18,11 +18,9 @@ import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import cn.nukkit.utils.TextFormat;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ScoreboardCommand extends VanillaCommand {
@@ -86,8 +84,8 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newEnum("random",new String[]{"random"}),
                 CommandParameter.newType("player",CommandParamType.WILDCARD_TARGET),//allow *
                 CommandParameter.newType("objective", CommandParamType.STRING),
-                CommandParameter.newType("min", CommandParamType.INT),
-                CommandParameter.newType("max", CommandParamType.INT)
+                CommandParameter.newType("min", CommandParamType.WILDCARD_INT),
+                CommandParameter.newType("max", true,CommandParamType.WILDCARD_INT)
         });
         this.commandParameters.put("players-reset", new CommandParameter[]{
                 CommandParameter.newEnum("players",new String[]{"players"}),
@@ -101,7 +99,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 CommandParameter.newType("player",CommandParamType.WILDCARD_TARGET),//allow *
                 CommandParameter.newType("objective", CommandParamType.STRING),
                 CommandParameter.newType("min", CommandParamType.WILDCARD_INT),
-                CommandParameter.newType("max", CommandParamType.WILDCARD_INT)
+                CommandParameter.newType("max", true,CommandParamType.WILDCARD_INT)
         });
     }
 
@@ -210,6 +208,7 @@ public class ScoreboardCommand extends VanillaCommand {
                         scorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toList());
                     }else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                         scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+                        p.parseString();
                     } else {
                         scorers.add(new FakeScorer(wildcard_target_str));
                         p.parseString();
@@ -287,12 +286,15 @@ public class ScoreboardCommand extends VanillaCommand {
                         for (Scoreboard scoreboard : manager.getScoreboards().values()) {
                             scorers.addAll(scoreboard.getLines().keySet());
                         }
+                        p.parseString();
                     }else if (EntitySelector.hasArguments(wildcard_target_str)) {
                         scorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                     }else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
                         scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+                        p.parseString();
                     } else {
                         scorers.add(new FakeScorer(wildcard_target_str));
+                        p.parseString();
                     }
 
                     for (Scorer scorer : scorers) {
@@ -321,13 +323,139 @@ public class ScoreboardCommand extends VanillaCommand {
 
                 }
                 case "players-random" -> {
-
+                    CommandParser p = new CommandParser(parser);
+                    p.parseString();p.parseString();
+                    String wildcard_target_str = p.parseString(false);
+                    Set<Scorer> scorers = new HashSet<>();
+                    if (wildcard_target_str.equals("*")) {
+                        for (Scoreboard scoreboard : manager.getScoreboards().values()) {
+                            scorers.addAll(scoreboard.getLines().keySet());
+                        }
+                        p.parseString();
+                    }else if (EntitySelector.hasArguments(wildcard_target_str)) {
+                        scorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                    }else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
+                        scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+                        p.parseString();
+                    } else {
+                        scorers.add(new FakeScorer(wildcard_target_str));
+                        p.parseString();
+                    }
+                    String objectiveName = p.parseString();
+                    if (!manager.containScoreboard(objectiveName)) {
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
+                        return false;
+                    }
+                    Scoreboard scoreboard = manager.getScoreboards().get(objectiveName);
+                    long min = p.parseWildcardInt(Integer.MIN_VALUE);
+                    long max = Integer.MAX_VALUE;
+                    if (p.hasNext()) {
+                        max = p.parseWildcardInt(Integer.MAX_VALUE);
+                    }
+                    if (min > max) {
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.players.random.invalidRange", String.valueOf(min), String.valueOf(max)));
+                        return false;
+                    }
+                    Random random = new Random();
+                    for (Scorer scorer : scorers) {
+                        int score = (int) (min + random.nextLong(max - min + 1));//avoid "java.lang.IllegalArgumentException: bound must be positive"
+                        if (!scoreboard.getLines().containsKey(scorer)){
+                            scoreboard.addLine(scorer,score);
+                        }
+                        scoreboard.getLines().get(scorer).setScore(score);
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.players.set.success",objectiveName,scorer.getName(),String.valueOf(score)));
+                    }
+                    return true;
                 }
                 case "players-reset" -> {
-
+                    CommandParser p = new CommandParser(parser);
+                    p.parseString();p.parseString();
+                    String wildcard_target_str = p.parseString(false);
+                    Set<Scorer> scorers = new HashSet<>();
+                    if (wildcard_target_str.equals("*")) {
+                        for (Scoreboard scoreboard : manager.getScoreboards().values()) {
+                            scorers.addAll(scoreboard.getLines().keySet());
+                        }
+                        p.parseString();
+                    }else if (EntitySelector.hasArguments(wildcard_target_str)) {
+                        scorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                    }else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
+                        scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+                        p.parseString();
+                    } else {
+                        scorers.add(new FakeScorer(wildcard_target_str));
+                        p.parseString();
+                    }
+                    if (p.hasNext()) {
+                        String objectiveName = p.parseString();
+                        if (!manager.containScoreboard(objectiveName)) {
+                            sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
+                            return false;
+                        }
+                        Scoreboard scoreboard = manager.getScoreboards().get(objectiveName);
+                        for (Scorer scorer : scorers) {
+                            if(scoreboard.containLine(scorer)) {
+                                scoreboard.removeLine(scorer);
+                                sender.sendMessage(new TranslationContainer("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName()));
+                            }
+                        }
+                        return true;
+                    }else{
+                        for (Scoreboard scoreboard : manager.getScoreboards().values()) {
+                            for (Scorer scorer : scorers) {
+                                if(scoreboard.containLine(scorer)) {
+                                    scoreboard.removeLine(scorer);
+                                    sender.sendMessage(new TranslationContainer("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName()));
+                                }
+                            }
+                        }
+                        return true;
+                    }
                 }
                 case "players-test" -> {
-
+                    CommandParser p = new CommandParser(parser);
+                    p.parseString();p.parseString();
+                    String wildcard_target_str = p.parseString(false);
+                    Set<Scorer> scorers = new HashSet<>();
+                    if (wildcard_target_str.equals("*")) {
+                        for (Scoreboard scoreboard : manager.getScoreboards().values()) {
+                            scorers.addAll(scoreboard.getLines().keySet());
+                        }
+                        p.parseString();
+                    }else if (EntitySelector.hasArguments(wildcard_target_str)) {
+                        scorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                    }else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
+                        scorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+                        p.parseString();
+                    } else {
+                        scorers.add(new FakeScorer(wildcard_target_str));
+                        p.parseString();
+                    }
+                    String objectiveName = p.parseString();
+                    if (!manager.containScoreboard(objectiveName)) {
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
+                        return false;
+                    }
+                    Scoreboard scoreboard = manager.getScoreboards().get(objectiveName);
+                    int min = p.parseWildcardInt(Integer.MIN_VALUE);
+                    int max = Integer.MAX_VALUE;
+                    if (p.hasNext()) {
+                        max = p.parseWildcardInt(Integer.MAX_VALUE);
+                    }
+                    for (Scorer scorer : scorers) {
+                        Scoreboard.ScoreboardLine line = scoreboard.getLine(scorer);
+                        if (line == null) {
+                            sender.sendMessage(new TranslationContainer("commands.scoreboard.players.score.notFound",objectiveName,scorer.getName()));
+                            return false;
+                        }
+                        int score = line.getScore();
+                        if (score < min || score > max) {
+                            sender.sendMessage(new TranslationContainer("commands.scoreboard.players.test.failed",String.valueOf(score),String.valueOf(min),String.valueOf(max)));
+                            return false;
+                        }
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.players.test.success",String.valueOf(score),String.valueOf(min),String.valueOf(max)));
+                    }
+                    return true;
                 }
             }
         } catch (CommandSyntaxException e) {

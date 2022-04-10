@@ -97,7 +97,7 @@ public class CommandParser {
             parameter3 = "";
         }
 
-        return new TranslationContainer(TextFormat.RED + "commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
+        return new TranslationContainer("commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
     public String matchCommandForm(){
@@ -295,8 +295,22 @@ public class CommandParser {
     public int parseInt(boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
-            if (arg.equals("*"))
-                return Integer.MAX_VALUE;
+            return Integer.parseInt(arg);
+        } catch (Exception e) {
+            throw new CommandSyntaxException();
+        }
+    }
+
+    public int parseWildcardInt(int defaultValue) throws CommandSyntaxException {
+        return parseWildcardInt(defaultValue,true);
+    }
+
+    public int parseWildcardInt(int defaultValue,boolean moveCursor) throws CommandSyntaxException {
+        try {
+            String arg = this.next(moveCursor);
+            if (arg.equals("*")) {
+                return defaultValue;
+            }
             return Integer.parseInt(arg);
         } catch (Exception e) {
             throw new CommandSyntaxException();
