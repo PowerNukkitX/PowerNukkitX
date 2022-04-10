@@ -350,10 +350,14 @@ public class ScoreboardCommand extends VanillaCommand {
 
                     String operation = p.parseString();
 
-                    Set<Scorer> selectorScorers = p.parseTargets().stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                    String selector_str = p.parseString(false);
+                    Set<Scorer> selectorScorers = p.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                     if (selectorScorers.size() > 1){
                         sender.sendMessage(new TranslationContainer("commands.generic.tooManyTargets"));
                         return false;
+                    }
+                    if (selectorScorers.size() == 0){
+                        selectorScorers.add(new FakeScorer(selector_str));
                     }
                     Scorer seletorScorer = selectorScorers.iterator().next();
 
@@ -406,6 +410,7 @@ public class ScoreboardCommand extends VanillaCommand {
                                 selectorScoreboard.getLines().get(seletorScorer).setScore(targetScore);
                             }
                         }
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.players.operation.success", targetObjectiveName, String.valueOf(targetScorers.size())));
                     }
                     return true;
                 }

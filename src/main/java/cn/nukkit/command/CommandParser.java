@@ -124,7 +124,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case WILDCARD_INT -> {
                             pattern.append(WILDCARD_INT_PATTERN);
@@ -133,7 +133,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case FLOAT, VALUE -> {
                             pattern.append(FLOAT_PATTERN);
@@ -142,7 +142,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case POSITION -> {
                             for (int i = 0; i < 3; i++) {
@@ -152,7 +152,11 @@ public class CommandParser {
                                 }else{
                                     length++;
                                 }
-                                pattern.append("\\s*");
+                                if (i != 2) {
+                                    pattern.append("\\s*");
+                                }else{
+                                    pattern.append("\\s+");
+                                }
                             }
                         }
                         case BLOCK_POSITION -> {
@@ -163,7 +167,11 @@ public class CommandParser {
                                 }else{
                                     length++;
                                 }
-                                pattern.append("\\s*");
+                                if (i != 2) {
+                                    pattern.append("\\s*");
+                                }else{
+                                    pattern.append("\\s+");
+                                }
                             }
                         }
                         case TARGET -> {
@@ -173,7 +181,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case WILDCARD_TARGET -> {
                             pattern.append(WILDCARD_TARGET_PATTERN);
@@ -182,7 +190,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case STRING, RAWTEXT, JSON, TEXT, FILE_PATH, OPERATOR -> {
                             pattern.append(STRING_PATTERN);
@@ -191,7 +199,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                         case MESSAGE, COMMAND -> {
                             pattern.append(MULTIPLE_STRING_PATTERN);
@@ -200,7 +208,7 @@ public class CommandParser {
                             }else{
                                 length++;
                             }
-                            pattern.append("\\s*");
+                            pattern.append("\\s+");
                         }
                     }
                 }else{
@@ -221,10 +229,11 @@ public class CommandParser {
                     }else{
                         length++;
                     }
-                    pattern.append("\\s*");
+                    pattern.append("\\s+");
                 }
             }
 
+            pattern.setCharAt(pattern.length() - 1, '*');
             pattern.append("$");
             commandPatterns.put(entry.getKey(),pattern.toString());
             commandArgLength.put(entry.getKey(),length);
