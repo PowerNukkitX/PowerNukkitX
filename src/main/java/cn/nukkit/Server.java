@@ -40,11 +40,8 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.generator.Flat;
-import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.Nether;
-import cn.nukkit.level.generator.Normal;
-import cn.nukkit.level.generator.TheEnd;
+import cn.nukkit.level.generator.*;
+import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -81,6 +78,8 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
+import cn.nukkit.scoreboard.ScoreboardManager;
+import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import co.aikar.timings.Timings;
@@ -168,6 +167,8 @@ public class Server {
 
     private ConsoleCommandSender consoleSender;
 
+    private ScoreboardManager scoreboardManager;
+
     private int maxPlayers;
 
     private boolean autoSave = true;
@@ -208,6 +209,7 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    private final String commandDataPath;
 
     private final Set<UUID> uniquePlayers = new HashSet<>();
 
@@ -221,7 +223,7 @@ public class Server {
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
-    
+
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
@@ -256,7 +258,7 @@ public class Server {
     private boolean allowNether;
 
     private final Thread currentThread;
-    
+
     private final long launchTime;
 
     private Watchdog watchdog;
@@ -272,11 +274,15 @@ public class Server {
     private boolean forceSkinTrusted = false;
 
     private boolean checkMovement = true;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean allowTheEnd;
-    
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private boolean useTerra;
+
     /**
      * Minimal initializer for testing
      */
@@ -297,9 +303,12 @@ public class Server {
         File abs = tempDir.getAbsoluteFile();
         filePath = abs.getPath();
         dataPath = filePath;
-        
+
         File dir = new File(tempDir, "plugins");
         pluginPath = dir.getPath();
+
+        File cmdDir = new File(tempDir, "command_data");
+        commandDataPath = cmdDir.getPath();
         
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
@@ -315,6 +324,8 @@ public class Server {
         operators = new Config();
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+        scoreboardManager.init();
         
         setMaxPlayers(10);
 
@@ -343,6 +354,11 @@ public class Server {
 
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
+
+        if (!new File(commandDataPath).exists()) {
+            new File(commandDataPath).mkdirs();
+        }
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
@@ -365,8 +381,8 @@ public class Server {
                     log.info(line);
                 }
                 languagesCommaList = Stream.of(lines)
-                        .filter(line-> !line.isEmpty())
-                        .map(line-> line.substring(0, 3))
+                        .filter(line -> !line.isEmpty())
+                        .map(line -> line.substring(0, 3))
                         .collect(Collectors.joining(", "));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -386,7 +402,7 @@ public class Server {
                 InputStream conf = this.getClass().getClassLoader().getResourceAsStream("lang/" + lang + "/lang.ini");
                 if (conf != null) {
                     language = lang;
-                } else if(predefinedLanguage != null) {
+                } else if (predefinedLanguage != null) {
                     log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
                     predefinedLanguage = null;
                 }
@@ -702,6 +718,10 @@ public class Server {
 
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
+        if (useTerra) {
+            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra", Generator.TYPE_INFINITE);
+            PNXPlatform.getInstance();
+        }
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
         Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
         Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
