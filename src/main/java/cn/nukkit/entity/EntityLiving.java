@@ -301,7 +301,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         // Used to check collisions with magma / cactus blocks
-        Block block = this.level.getBlock((int) x, (int) y - 1, (int) z);
+        var block = this.level.getBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         Timings.livingEntityBaseTickTimer.stopTiming();
@@ -436,8 +436,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
 
-        if (event.getKnockBackAttacker() && damager instanceof EntityLiving) {
-            EntityLiving attacker = (EntityLiving) damager;
+        if (event.getKnockBackAttacker() && damager instanceof EntityLiving attacker) {
             double deltaX = attacker.getX() - this.getX();
             double deltaZ = attacker.getZ() - this.getZ();
             attacker.knockBack(this, 0, deltaX, deltaZ);

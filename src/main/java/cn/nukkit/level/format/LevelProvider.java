@@ -122,7 +122,7 @@ public interface LevelProvider {
     }
 
     @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
+    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default int getDimension() {
         final var level = getLevel();
         if (level != null) {
@@ -147,19 +147,19 @@ public interface LevelProvider {
     }
 
     @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
+    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isOverWorld() {
         return getDimension() == 0;
     }
 
     @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
+    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isNether() {
         return getDimension() == 1;
     }
 
     @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
+    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isTheEnd() {
         return getDimension() == 2;
     }

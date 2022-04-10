@@ -5,7 +5,7 @@
     <name>PowerNukkitX</name>
     <description>A fork of PowerNukkit</description>
 
-    <groupId>com.blocklynukkit</groupId>
+    <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
     <version>1.6.0.0-PNX-SNAPSHOT</version>
 
@@ -80,11 +80,35 @@
         <skipGpg>true</skipGpg>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>powernukkitx-terra-binary-maven</id>
+            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>org.powernukkit.bedrock.network</groupId>
+            <groupId>com.nukkitx.network</groupId>
             <artifactId>raknet</artifactId>
-            <version>1.6.25-PN.2</version>
+            <version>1.6.28-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -322,6 +346,21 @@
             <version>4.5.2</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>annotations</artifactId>
+            <version>12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra</artifactId>
+            <version>6.0.2-bukkit</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j18-impl</artifactId>
+            <version>2.17.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -449,6 +488,23 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <excludeScope>provided</excludeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.4.1</version>
                 <dependencies>
@@ -472,6 +528,13 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
+                                <exclude>META-INF/services/org.slf4j.spi.SLF4JServiceProvider</exclude>
+                            </excludes>
+                        </filter>
+                        <filter>
+                            <artifact>com.dfsek.terra:Terra</artifact>
+                            <excludes>
+                                <exclude>config.yml</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -481,7 +544,6 @@
                         </transformer>
                     </transformers>
                     <shadedArtifactAttached>true</shadedArtifactAttached>
-                    <createSourcesJar>true</createSourcesJar>
                 </configuration>
             </plugin>
             <plugin>
