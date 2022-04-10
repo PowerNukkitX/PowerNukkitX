@@ -326,7 +326,7 @@ public class Server {
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         scoreboardManager.init();
-        
+
         setMaxPlayers(10);
 
         this.registerEntities();
@@ -660,6 +660,8 @@ public class Server {
 
         this.consoleSender = new ConsoleCommandSender();
         this.commandMap = new SimpleCommandMap(this);
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+        scoreboardManager.init();
 
         // Initialize metrics
         NukkitMetrics.startNow(this);
@@ -979,7 +981,7 @@ public class Server {
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine, 
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: "+commandLine));
 
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
@@ -990,11 +992,13 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
+        if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
+        }
+
         if (this.commandMap.dispatch(sender, commandLine)) {
             return true;
         }
-
-        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
 
         return false;
     }
@@ -1761,6 +1765,10 @@ public class Server {
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 
     public ServerScheduler getScheduler() {
@@ -2668,6 +2676,8 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.TARGET, BlockEntityTarget.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_PORTAL, BlockEntityEndPortal.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
+        //powernukkitx only
+        BlockEntity.registerBlockEntity(BlockEntity.COMMAND_BLOCK, BlockEntityCommandBlock.class);
     }
 
     public boolean isNetherAllowed() {

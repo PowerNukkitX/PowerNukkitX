@@ -115,6 +115,9 @@ public class CommandParser {
             pattern.append("^");
             int length = 0;//non-optional args' length
             for (CommandParameter parameter : entry.getValue()){
+                if (parameter.optional) {
+                    pattern.setCharAt(pattern.length() - 1, '*');
+                }
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT -> {
