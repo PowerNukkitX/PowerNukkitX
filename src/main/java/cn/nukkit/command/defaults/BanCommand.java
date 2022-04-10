@@ -14,7 +14,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class BanCommand extends VanillaCommand {
 
     public BanCommand(String name) {
-        super(name, "%nukkit.command.ban.player.description", "%commands.ban.usage");
+        super(name, "commands.ban.description", "commands.ban.usage");
         this.setPermission("nukkit.command.ban.player");
         this.commandParameters.clear();
         this.commandParameters.put("default",
@@ -27,7 +27,7 @@ public class BanCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length == 0) {

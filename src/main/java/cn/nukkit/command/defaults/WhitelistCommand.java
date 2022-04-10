@@ -15,7 +15,7 @@ import cn.nukkit.utils.TextFormat;
 public class WhitelistCommand extends VanillaCommand {
 
     public WhitelistCommand(String name) {
-        super(name, "%nukkit.command.whitelist.description", "%commands.whitelist.usage", new String[]{"allowlist"}); // In Minecraft Bedrock v1.18.10 the whitelist was renamed to allowlist
+        super(name, "commands.whitelist.description", "commands.whitelist.usage", new String[]{"allowlist"}); // In Minecraft Bedrock v1.18.10 the whitelist was renamed to allowlist
         this.setPermission(
                 "nukkit.command.whitelist.reload;" +
                         "nukkit.command.whitelist.enable;" +

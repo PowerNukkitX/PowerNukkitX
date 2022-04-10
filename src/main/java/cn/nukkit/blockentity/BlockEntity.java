@@ -67,6 +67,7 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitOnly @Since("1.4.0.0-PN") public static final String TARGET = "Target";
     @PowerNukkitOnly @Since("FUTURE") public static final String END_PORTAL = "EndPortal";
     @PowerNukkitOnly @Since("FUTURE") public static final String END_GATEWAY = "EndGateway";
+    @PowerNukkitOnly @Since("1.6.0.0-PNX") public static final String COMMAND_BLOCK = "CommandBlock";
 
     public static long count = 1;
 

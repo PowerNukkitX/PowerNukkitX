@@ -16,7 +16,7 @@ import cn.nukkit.utils.TextFormat;
 public class OpCommand extends VanillaCommand {
 
     public OpCommand(String name) {
-        super(name, "%nukkit.command.op.description", "%commands.op.description");
+        super(name, "commands.op.description", "commands.op.description");
         this.setPermission("nukkit.command.op.give");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -27,7 +27,7 @@ public class OpCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("commands.op.usage", this.usageMessage));

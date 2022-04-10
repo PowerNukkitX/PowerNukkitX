@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DifficultyCommand extends VanillaCommand {
 
     public DifficultyCommand(String name) {
-        super(name, "%nukkit.command.difficulty.description", "%commands.difficulty.usage");
+        super(name, "commands.difficulty.description", "commands.difficulty.usage");
         this.setPermission("nukkit.command.difficulty");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -32,7 +32,7 @@ public class DifficultyCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length != 1) {
