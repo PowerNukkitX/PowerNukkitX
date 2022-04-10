@@ -40,8 +40,11 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.generator.*;
-import cn.nukkit.level.terra.PNXPlatform;
+import cn.nukkit.level.generator.Flat;
+import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Nether;
+import cn.nukkit.level.generator.Normal;
+import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -218,7 +221,7 @@ public class Server {
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
-
+    
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
@@ -253,7 +256,7 @@ public class Server {
     private boolean allowNether;
 
     private final Thread currentThread;
-
+    
     private final long launchTime;
 
     private Watchdog watchdog;
@@ -269,15 +272,11 @@ public class Server {
     private boolean forceSkinTrusted = false;
 
     private boolean checkMovement = true;
-
+    
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean allowTheEnd;
-
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
-    private boolean useTerra;
-
+    
     /**
      * Minimal initializer for testing
      */
@@ -298,16 +297,16 @@ public class Server {
         File abs = tempDir.getAbsoluteFile();
         filePath = abs.getPath();
         dataPath = filePath;
-
+        
         File dir = new File(tempDir, "plugins");
         pluginPath = dir.getPath();
-
+        
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
         Files.createParentDirs(new File(tempDir, "players"));
-
+        
         baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-
+        
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         properties = new Config();
@@ -316,7 +315,7 @@ public class Server {
         operators = new Config();
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
-
+        
         setMaxPlayers(10);
 
         this.registerEntities();
@@ -366,8 +365,8 @@ public class Server {
                     log.info(line);
                 }
                 languagesCommaList = Stream.of(lines)
-                        .filter(line -> !line.isEmpty())
-                        .map(line -> line.substring(0, 3))
+                        .filter(line-> !line.isEmpty())
+                        .map(line-> line.substring(0, 3))
                         .collect(Collectors.joining(", "));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -387,7 +386,7 @@ public class Server {
                 InputStream conf = this.getClass().getClassLoader().getResourceAsStream("lang/" + lang + "/lang.ini");
                 if (conf != null) {
                     language = lang;
-                } else if (predefinedLanguage != null) {
+                } else if(predefinedLanguage != null) {
                     log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
                     predefinedLanguage = null;
                 }
@@ -428,7 +427,7 @@ public class Server {
                 }
 
                 StringBuilder keyBuilder = new StringBuilder();
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
+                try(BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
                     String line;
                     LinkedList<String[]> path = new LinkedList<>();
                     Pattern pattern = Pattern.compile("^( *)([a-z-]+):");
@@ -548,7 +547,6 @@ public class Server {
                 put("level-type", "DEFAULT");
                 put("allow-nether", true);
                 put("allow-the_end", true);
-                put("use-terra", false);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -561,9 +559,9 @@ public class Server {
 
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
+        
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
-        this.useTerra = this.properties.getBoolean("use-terra", false);
-
+        
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
@@ -686,7 +684,7 @@ public class Server {
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
         this.network.registerInterface(new RakNetInterface(this));
-
+        
         try {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
@@ -694,7 +692,7 @@ public class Server {
         } catch (IOException e) {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
-
+        
         this.pluginManager.loadPowerNukkitPlugins();
         this.pluginManager.loadPlugins(this.pluginPath);
 
@@ -704,10 +702,6 @@ public class Server {
 
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
-        if (useTerra) {
-            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra", Generator.TYPE_INFINITE);
-            PNXPlatform.getInstance();
-        }
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
         Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
         Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
@@ -788,7 +782,7 @@ public class Server {
             this.watchdog = new Watchdog(this, 60000);
             this.watchdog.start();
         }
-
+        
         System.runFinalization();
         this.start();
     }
@@ -877,7 +871,7 @@ public class Server {
         }
     }
 
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
             reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
     @Deprecated
     public void batchPackets(Player[] players, DataPacket[] packets) {
@@ -965,8 +959,8 @@ public class Server {
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine, 
+                    new ConcurrentModificationException("Command Dispatched Async: "+commandLine));
 
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
             return true;
@@ -1153,7 +1147,7 @@ public class Server {
                 System.gc();
             }
         }, 60);
-
+        
         this.nextTick = System.currentTimeMillis();
         try {
             while (this.isRunning.get()) {
@@ -1275,11 +1269,11 @@ public class Server {
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = this.playerList.values().stream()
                 .map(p -> new PlayerListPacket.Entry(
-                        p.getUniqueId(),
-                        p.getId(),
-                        p.getDisplayName(),
-                        p.getSkin(),
-                        p.getLoginChainData().getXUID()))
+                p.getUniqueId(),
+                p.getId(),
+                p.getDisplayName(),
+                p.getSkin(),
+                p.getLoginChainData().getXUID()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
@@ -1963,7 +1957,7 @@ public class Server {
                 //doing it like this ensures that the playerdata will be saved in a server shutdown
                 @Override
                 public void onCancel() {
-                    if (!this.hasRun) {
+                    if (!this.hasRun)    {
                         this.hasRun = true;
                         saveOfflinePlayerDataInternal(event.getSerializer(), tag, nameLower, event.getUuid().orElse(null));
                     }
@@ -2675,14 +2669,14 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isSafeSpawn() {
+    public boolean isSafeSpawn(){
         return safeSpawn;
     }
 
     public static Server getInstance() {
         return instance;
     }
-
+    
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -2692,28 +2686,28 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isForceSkinTrusted() {
+    public boolean isForceSkinTrusted(){
         return forceSkinTrusted;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isCheckMovement() {
+    public boolean isCheckMovement(){
         return checkMovement;
     }
-
+    
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public long getLaunchTime() {
         return launchTime;
     }
-
+    
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
-
+    
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
         @Override

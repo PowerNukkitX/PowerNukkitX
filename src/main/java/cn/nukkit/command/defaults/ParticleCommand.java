@@ -2,10 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
@@ -27,7 +29,7 @@ public class ParticleCommand extends VanillaCommand {
             , "scrape", "electricspark"
     };
     public ParticleCommand(String name) {
-        super(name, "%nukkit.command.particle.description", "%nukkit.command.particle.usage");
+        super(name, "commands.particle.description", "commands.particle.usage");
         this.setPermission("nukkit.command.particle");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -51,11 +53,9 @@ public class ParticleCommand extends VanillaCommand {
         }
 
         Position defaultPosition;
-        if (sender instanceof Player) {
-            defaultPosition = ((Player) sender).getPosition();
-        } else {
-            defaultPosition = new Position(0, 0, 0, sender.getServer().getDefaultLevel());
-        }
+
+        defaultPosition = sender.getPosition();
+
 
         String name = args[0].toLowerCase();
 

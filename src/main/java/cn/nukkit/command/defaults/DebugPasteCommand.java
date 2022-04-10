@@ -66,7 +66,7 @@ public class DebugPasteCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         sender.sendMessage("The /debugpaste is executing, please wait...");
         Server server = Server.getInstance();

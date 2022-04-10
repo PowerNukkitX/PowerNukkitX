@@ -5,9 +5,11 @@ import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.utils.TextFormat;
 import co.aikar.timings.Timing;
@@ -309,6 +311,11 @@ public abstract class Command {
     }
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
+        if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
+            (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
+            return;
+        }
+
         TextContainer m = message.clone();
         String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";
 
@@ -340,5 +347,4 @@ public abstract class Command {
     public String toString() {
         return this.name;
     }
-
 }

@@ -16,7 +16,7 @@ import cn.nukkit.utils.TextFormat;
 public class KickCommand extends VanillaCommand {
 
     public KickCommand(String name) {
-        super(name, "%nukkit.command.kick.description", "%commands.kick.usage");
+        super(name, "commands.kick.description", "commands.kick.usage");
         this.setPermission("nukkit.command.kick");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -28,7 +28,7 @@ public class KickCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));

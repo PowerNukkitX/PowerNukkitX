@@ -10,7 +10,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class StopCommand extends VanillaCommand {
 
     public StopCommand(String name) {
-        super(name, "%nukkit.command.stop.description", "%commands.stop.usage");
+        super(name, "commands.stop.description", "commands.stop.usage");
         this.setPermission("nukkit.command.stop");
         this.commandParameters.clear();
     }

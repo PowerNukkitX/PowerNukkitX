@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -11,7 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.BlockFace;
+import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class SetBlockCommand extends VanillaCommand {
     @PowerNukkitOnly
     public SetBlockCommand(String name) {
-        super(name, "%nukkit.command.setblock.description", "%nukkit.command.setblock.usage");
+        super(name, "commands.setblock.description", "commands.setblock.usage");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -33,34 +33,24 @@ public class SetBlockCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length < 4) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 
-            return true;
+            return false;
         }
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
-            return true;
-        }
-        Player player = (Player) sender;
-
-        double x;
-        double y;
-        double z;
+        CommandParser parser = new CommandParser(this, sender, args);
+        Position position;
         int data = 0;
         try {
-            x = parseTilde(args[0], player.x);
-            y = parseTilde(args[1], player.y);
-            z = parseTilde(args[2], player.z);
-
+            position = parser.parsePosition();
             if (args.length > 4) {
                 data = Integer.parseInt(args[4]);
             }
-        } catch (NumberFormatException|IndexOutOfBoundsException ignored) {
+        } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
@@ -75,7 +65,7 @@ public class SetBlockCommand extends VanillaCommand {
                     break;
                 default:
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                    return true;
+                    return false;
             }
         }
 
@@ -93,43 +83,47 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        if (player.level.isYInRange((int) y)) {
+        if (!sender.getPosition().level.isYInRange((int) position.y)) {
             sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
-            return true;
+            return false;
         }
 
-        Level level = player.getLevel();
+        Level level = sender.getPosition().getLevel();
 
-        Position position = new Position(x, y, z, player.getLevel());
         Block current = level.getBlock(position);
         if (current.getId() != Block.AIR) {
             switch (oldBlockHandling) {
-                case "destroy":
-                    level.useBreakOn(position, null, Item.get(Item.AIR), player, true, true);
+                case "destroy" -> {
+                    if (sender.isPlayer()) {
+                        level.useBreakOn(position, null, Item.get(Item.AIR), sender.asPlayer(), true, true);
+                    } else {
+                        level.useBreakOn(position);
+                    }
                     current = level.getBlock(position);
-                    break;
-                case "keep":
+                }
+                case "keep" -> {
                     sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
-                    return true;
+                    return false;
+                }
             }
         }
 
         if (current.getId() == block.getId() && current.getDamage() == block.getDamage()) {
             sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
-            return true;
+            return false;
         }
 
         Item item = block.toItem();
         block.position(position);
-        if(block.place(item, block, block.down(), BlockFace.UP, 0.5, 0.5, 0.5, player)) {
+        if (level.setBlock(position, block, true, true)) {
             if (args.length > 4) {
-                level.setBlockDataAt((int) x, (int) y, (int) z, data);
+                level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
             }
-        //if (level.setBlock(position, block, true, true)) {
             sender.sendMessage(new TranslationContainer("commands.setblock.success"));
+            return true;
         } else {
             sender.sendMessage(new TranslationContainer("commands.setblock.failed"));
+            return false;
         }
-        return true;
     }
 }

@@ -17,7 +17,7 @@ import java.util.TreeMap;
 public class HelpCommand extends VanillaCommand {
 
     public HelpCommand(String name) {
-        super(name, "%nukkit.command.help.description", "%commands.help.usage", new String[]{"?"});
+        super(name, "commands.help.description", "commands.help.usage", new String[]{"?"});
         this.setPermission("nukkit.command.help");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -28,7 +28,7 @@ public class HelpCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         StringBuilder command = new StringBuilder();
         int pageNumber = 1;
