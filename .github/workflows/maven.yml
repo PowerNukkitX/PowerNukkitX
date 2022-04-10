@@ -86,15 +86,21 @@ jobs:
         with:
           timeZone: 8
           format: 'YYYY/MM/DD-HH:mm:ss'
+      - name: Format ChangeLog
+        uses: mkungla/actions-set-text-output@v1
+        id: get-changelog
+        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        with:
+          text: ${{ github.event.commits[0].message }}
       - name: Update MineBBS info
         uses: fjogeleit/http-request-action@v1
-        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
         with:
           url: 'https://api.minebbs.com/api/openapi/v1/resources/3668/update'
           method: 'POST'
           customHeaders: '{"Authorization": "Bearer ${{ secrets.MINEBBS_API_KEY }}"}'
           contentType: 'application/json'
-          data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ github.event.commits[0].message }}", "new_version": "${{ steps.time.outputs.time }}", "file_url": "https://ci.lt-name.cn/job/PowerNukkitX/"}'
+          data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ steps.get-changelog.outputs.value }}", "new_version": "${{ steps.time.outputs.time }}", "file_url": "https://ci.lt-name.cn/job/PowerNukkitX/"}'
           escapeData: 'true'
 
   build-bootstrap:
