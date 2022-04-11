@@ -1,6 +1,7 @@
 package cn.powernukkitx.bootstrap.info.locator;
 
 import cn.powernukkitx.bootstrap.util.CollectionUtils;
+import cn.powernukkitx.bootstrap.util.Logger;
 import cn.powernukkitx.bootstrap.util.StringUtils;
 
 import java.io.BufferedReader;
@@ -131,6 +132,13 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
 
     private Optional<JavaInfo> getJavaVersion(File binDir) {
         final File javaExecutable = new File(binDir, "java" + Locator.platformSuffix());
+        if(!javaExecutable.canExecute()) {
+            boolean r = javaExecutable.setExecutable(true);
+            if(!r) {
+                Logger.trWarn("display.no-permission");
+                return Optional.empty();
+            }
+        }
         try {
             Process process = new ProcessBuilder().command(javaExecutable.getAbsolutePath(), "-version")
                     .redirectErrorStream(true).start();

@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 import static cn.powernukkitx.bootstrap.Bootstrap.workingDir;
 
@@ -41,8 +42,16 @@ public final class PNXStart implements Component {
             final String fileName = location.getFile().getName();
             Logger.trInfo("display.pnx.starting", fileName);
             final ProcessBuilder processBuilder = new ProcessBuilder();
+            final File javaFile = java.getFile();
+            if(!javaFile.canExecute()) {
+                boolean r = javaFile.setExecutable(true);
+                if(!r) {
+                    Logger.trWarn("display.no-permission");
+                    return;
+                }
+            }
             final String cmd = ConfigUtils.startCommand()
-                    .replace("%JAVA%", java.getFile().getAbsolutePath())
+                    .replace("%JAVA%", javaFile.getAbsolutePath())
                     .replace("%PNX%", fileName)
                     .replace("%CP_SPLIT%", Locator.platformSplitter());
             try {
