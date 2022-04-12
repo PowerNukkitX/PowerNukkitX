@@ -102,6 +102,8 @@ jobs:
           contentType: 'application/json'
           data: '{"title": "${{ github.ref_name }}-${{ steps.vars.outputs.sha_short }}", "description": "${{ steps.get-changelog.outputs.value }}", "new_version": "${{ steps.time.outputs.time }}", "file_url": "https://ci.lt-name.cn/job/PowerNukkitX/"}'
           escapeData: 'true'
+          preventFailureOnNoResponse: 'true'
+          ignoreStatusCodes: '404,401,500'
 
   build-bootstrap:
     name: 构建启动器
