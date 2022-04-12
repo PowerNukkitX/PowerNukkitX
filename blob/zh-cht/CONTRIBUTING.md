@@ -5,11 +5,11 @@
 
 ## 目錄
 
-1. <a href="#目錄-問題#1">   我想提交一個問題!</a>
-2. <a href="#目錄-問題#2">💡 我想提交拉取申請!</a>
-3. <a href="#目錄-多語言文檔">🌐 切換語言 / Switch Languages</a>
+1. <a href="#Catalogs-Faq#1">🧾 我想提交一個問題!</a>
+2. <a href="#Catalogs-Faq#2">💡 我想提交拉取申請!</a>
+3. <a href="#Catalogs-Swlang">🌐 切換語言 / Switch Languages</a>
 
-## <a id="目錄-問題#1"></a>   我想提交一個問題!
+## <a id="Catalogs-Faq#1"></a>   我想提交一個問題!
 
 我們隨時歡迎您提出任何問題，錯誤報告和功能建議，但請記住，如果該問題在可預期的時間點內被認定為不重要，無法解決等，我們也會將其忽略，因此Issues頁面可能會出現長時間未解決或徹底關閉的問題反饋將會是正常情況。
 
@@ -41,7 +41,7 @@
   如果問題已經產生，並且你也遇到過但無法提供任何對我們有幫助的問題細節的話，那您可在相關問題下評論留言。
 
 
-## <a id="目錄-問題#2"></a>我想提交拉取申請!
+## <a id="Catalogs-Faq#2"></a>我想提交拉取申請!
 
 同時我們也歡迎各位開發者們對該項目作出您的貢獻，您可在[問題追踪器](https://github.com/PowerNukkitX/PowerNukkitX/issues)頁面發表您可以解決的問題等，同時我們也會使用[`Good First issue`](https://github.com/PowerNukkitX/PowerNukkitX/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)標籤標記出我們認為對新人有幫助的問題解答等。
 
@@ -107,7 +107,7 @@
   如果你對代碼庫的某些部分或遊戲和框架的某些內部運作不確定，請通過在相關問題或PR中留言，或在[Discord](https://discord.gg/j7UwsaNu4V)&[QQ群](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)發文來聯繫我們。我們會盡可能地幫助你。
 
   說到哪種溝通方式最好，GitHub通常更適合長篇大論，而Discord和QQ群則更適合快速的呼喚和回應。在決定的時候，請盡力斟酌，並儘量將一個討論放在一個地方，而不是來回移動。
-## <a id="目錄-多語言文檔"></a>🌐 多語言文檔
+## <a id="Catalogs-Swlang"></a>🌐 多語言文檔
 
 ---
 Need to switch languages? 
