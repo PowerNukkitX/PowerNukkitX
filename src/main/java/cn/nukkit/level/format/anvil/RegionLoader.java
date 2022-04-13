@@ -109,7 +109,6 @@ public class RegionLoader extends BaseRegionLoader {
                                 }
                             }
                         }
-                        chunk.getBlockEntities().values().forEach(e -> e.setY(e.getY() + 64));
                     }
                 }
                 return chunk;
