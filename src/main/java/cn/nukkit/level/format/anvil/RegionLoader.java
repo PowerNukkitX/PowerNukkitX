@@ -89,7 +89,7 @@ public class RegionLoader extends BaseRegionLoader {
             Chunk chunk = this.unserializeChunk(data);
             if (chunk != null) {
                 //更新256世界到384世界
-                if (levelProvider != null && levelProvider.isOverWorld() && levelProvider instanceof Anvil && ((Anvil) levelProvider).isOldAnvil() && !chunk.isNew384World) {
+                if (levelProvider != null && !chunk.isNew384World && levelProvider.isOverWorld() && levelProvider instanceof Anvil) {
                     //检查重复更新情况
                     if (chunkUpdated == null) {
                         chunkUpdated = LongSets.synchronize(new LongArraySet());
