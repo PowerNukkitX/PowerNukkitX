@@ -249,19 +249,19 @@ public class Nukkit {
     private static String getVersion() {
         InputStream resourceAsStream = Nukkit.class.getClassLoader().getResourceAsStream("VERSION.txt");
         if (resourceAsStream == null) {
-            return "Unknown-PN-SNAPSHOT";
+            return "Unknown-PNX-SNAPSHOT";
         }
         try (InputStream is = resourceAsStream;
              InputStreamReader reader = new InputStreamReader(is);
              BufferedReader buffered = new BufferedReader(reader)) {
             String line = buffered.readLine().trim();
             if ("${project.version}".equalsIgnoreCase(line)) {
-                return "Unknown-PN-SNAPSHOT";
+                return "Unknown-PNX-SNAPSHOT";
             } else {
                 return line;
             }
         } catch (IOException e) {
-            return "Unknown-PN-SNAPSHOT";
+            return "Unknown-PNX-SNAPSHOT";
         }
     }
 

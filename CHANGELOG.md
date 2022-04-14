@@ -8,7 +8,7 @@
 
 1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
 
-## [开发中 1.6.0.0-PNX] - Dev
+## [开发中 1.6.0.0-PNX] - [Dev](https://github.com/PowerNukkitX/PowerNukkitX/actions)
 
 该版本目前支持了Minecraft:BE `1.18.10 (协议版本486)`.
 
@@ -856,7 +856,7 @@ Fixes several anvil issues.
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-30%25-yellow?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-cht/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![English](https://img.shields.io/badge/English-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/README文档-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
