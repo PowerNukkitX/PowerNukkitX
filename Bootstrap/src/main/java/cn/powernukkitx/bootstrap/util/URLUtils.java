@@ -66,6 +66,14 @@ public final class URLUtils {
         }
     }
 
+    public static URL getAssetsLink(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
     public static void downloadWithBar(URL downloadURL, File target, String displayName, Timer timer) {
         try {
             HttpRequest request = HttpRequest.get(downloadURL);
