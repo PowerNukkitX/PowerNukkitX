@@ -252,24 +252,29 @@ public class EntityFishingHook extends EntityProjectile {
             if (!event.isCancelled()) {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
-                    Entity.getDefaultNBT(
-                            new Vector3(this.x, this.getWaterHeight(), this.z),
-                            event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
-                            0
-                    ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
-                            .putShort("Health", 5)
-                            .putShort("PickupDelay", 1));
+                        Entity.getDefaultNBT(
+                                        new Vector3(this.x, this.getWaterHeight(), this.z),
+                                        event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
+                                        0
+                                ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
+                                .putShort("Health", 5)
+                                .putShort("PickupDelay", 1));
 
                 if (itemEntity != null) {
                     itemEntity.setOwner(player.getName());
                     itemEntity.spawnToAll();
                     player.addExperience(event.getExperience());
                 }
-            } else if (this.shootingEntity != null){
-                var eid = this.getDataPropertyLong(DATA_TARGET_EID);
-                var targetEntity = this.getLevel().getEntity(eid);
-                if(targetEntity != null) { // 钓鱼竿收杆应该牵引被钓生物
-                    targetEntity.addMotion((this.x - targetEntity.x) * 0.1, (this.y - targetEntity.y) * 0.1 + 0.4, (this.z - targetEntity.z) * 0.1);
+            }
+        } else if (this.shootingEntity != null) {
+            System.out.println("OK");
+            var eid = this.getDataPropertyLong(DATA_TARGET_EID);
+            var targetEntity = this.getLevel().getEntity(eid);
+            if (targetEntity != null) { // 钓鱼竿收杆应该牵引被钓生物
+                if (targetEntity instanceof Player targetPlayer) {
+                    targetPlayer.addMotion(0, 20, 0);
+                } else {
+                    targetEntity.addMotion((shootingEntity.x - targetEntity.x) * 0.1, (shootingEntity.y - targetEntity.y) * 0.1 + 0.4, (shootingEntity.z - targetEntity.z) * 0.1);
                 }
             }
         }
