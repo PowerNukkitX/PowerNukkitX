@@ -101,11 +101,15 @@ public class CommandParser {
     }
 
     public String matchCommandForm(){
-        String argString = String.join(" ", args);
+        StringBuilder argStringBuilder = new StringBuilder(String.join(" ", args));
+        for (int i = 1;i <= args.length + 1;i++) {//add spaces to make sure the last argument is matched
+            argStringBuilder.append(" ");
+        }
+        String argString = argStringBuilder.toString();
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
-        if (cache.containsKey(argString)){//get from cache to improve performance
-            this.parsedArgs = cache.get(argString).parsedArgs;
-            this.matchedCommandForm = cache.get(argString).matchedCommandForm;
+        if (cache.containsKey(argString.toString())){//get from cache to improve performance
+            this.parsedArgs = cache.get(argString.toString()).parsedArgs;
+            this.matchedCommandForm = cache.get(argString.toString()).matchedCommandForm;
             return this.matchedCommandForm;
         }
         Map<String,String> commandPatterns = new HashMap<>();
@@ -115,9 +119,6 @@ public class CommandParser {
             pattern.append("^");
             int length = 0;//non-optional args' length
             for (CommandParameter parameter : entry.getValue()){
-                if (parameter.optional) {
-                    pattern.setCharAt(pattern.length() - 1, '*');
-                }
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT -> {
@@ -236,7 +237,6 @@ public class CommandParser {
                 }
             }
 
-            pattern.setCharAt(pattern.length() - 1, '*');
             pattern.append("$");
             commandPatterns.put(entry.getKey(),pattern.toString());
             commandArgLength.put(entry.getKey(),length);
@@ -244,7 +244,7 @@ public class CommandParser {
 
         for (Map.Entry<String,String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])){
             Pattern pattern = Pattern.compile(entry.getValue());
-            Matcher matcher = pattern.matcher(argString);
+            Matcher matcher = pattern.matcher(argString.toString());
             if (!matcher.find()){
                 commandPatterns.remove(entry.getKey());
             }
@@ -274,7 +274,7 @@ public class CommandParser {
             return null;
         }
 
-        Matcher matcher = Pattern.compile(commandPatterns.get(result)).matcher(argString);
+        Matcher matcher = Pattern.compile(commandPatterns.get(result)).matcher(argString.toString());
         matcher.find();
         String[] pArg = new String[matcher.groupCount()];
         for (int i = 1; i <= matcher.groupCount(); i++) {
@@ -284,7 +284,7 @@ public class CommandParser {
 
         matchedCommandForm = result;
 
-        cache.put(argString,this);
+        cache.put(argString.toString(),this);
         return result;
     }
 

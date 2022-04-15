@@ -13,6 +13,7 @@ import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -329,6 +330,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                 this.successCount = 0;
             }
 
+            this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
             return true;
         }
 
