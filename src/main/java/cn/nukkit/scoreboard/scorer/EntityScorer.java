@@ -17,7 +17,7 @@ public class EntityScorer implements Scorer {
     }
 
     public EntityScorer(Entity entity){
-        this.entityUuid = entity.getEntityUniqueId();
+        this.entityUuid = entity.getUniqueId();
     }
 
     @Override

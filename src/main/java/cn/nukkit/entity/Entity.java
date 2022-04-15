@@ -550,7 +550,9 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    private UUID entityUniqueId;
+    //spawned by server
+    //player's UUID is sent by client,so this value cannot be used in Player
+    protected UUID entityUniqueId;
 
     public float getHeight() {
         return 0;
@@ -2831,17 +2833,10 @@ public abstract class Entity extends Location implements Metadatable {
         return this.id;
     }
 
-    /**
-     * only can be used on entity (not player)
-     */
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public UUID getEntityUniqueId(){
-        if(!this.isPlayer){
-            return this.entityUniqueId;
-        }else{
-            return null;
-        }
+    public UUID getUniqueId(){
+        return this.entityUniqueId;
     }
 
     public void respawnToAll() {
