@@ -123,7 +123,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
             BlockEntityCommandBlock tile = this.getBlockEntity();
-            if (this.getLevel().isBlockPowered(this)) {
+            if (this.isGettingPower()) {
                 if (!tile.isPowered()) {
                     tile.setPowered();
                     tile.trigger();
