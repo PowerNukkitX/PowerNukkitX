@@ -8,7 +8,6 @@ import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.ScoreboardManager;
@@ -18,7 +17,6 @@ import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,13 +119,13 @@ public class ScoreboardCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     p.parseString();p.parseString();
                     String objectiveName = p.parseString();
-                    if (manager.containScoreboard(objectiveName)){
+                    if (manager.hasScoreboard(objectiveName)){
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.add.alreadyExists", objectiveName));
                         return false;
                     }
                     String criteriaName = p.parseString();
                     String displayName = p.parseString();
-                    manager.addScoreboard(new Scoreboard(objectiveName,displayName,criteriaName,SortOrder.ASCENDING, manager.getStorage()));
+                    manager.addScoreboard(new Scoreboard(objectiveName,displayName,criteriaName,SortOrder.ASCENDING, manager));
                     sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.add.success", objectiveName));
                     return true;
                 }
@@ -155,12 +153,12 @@ public class ScoreboardCommand extends VanillaCommand {
                         default -> DisplaySlot.SIDEBAR;
                     };
                     if (!p.hasNext()){
-                        manager.clearDisplaySlot(slot);
+                        manager.removeDisplay(slot);
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.setdisplay.successCleared", slot.getSlotName()));
                         return true;
                     }else {
                         String objectiveName = p.parseString();
-                        if (!manager.containScoreboard(objectiveName)) {
+                        if (!manager.hasScoreboard(objectiveName)) {
                             sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                             return false;
                         }
@@ -171,7 +169,7 @@ public class ScoreboardCommand extends VanillaCommand {
                             default -> SortOrder.ASCENDING;
                         } : SortOrder.ASCENDING;
                         scoreboard.setSortOrder(order);
-                        manager.setDisplaySlot(slot, objectiveName);
+                        manager.setDisplay(slot, objectiveName);
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.setdisplay.successSet",slot.getSlotName(),objectiveName));
                         return true;
                     }
@@ -180,16 +178,16 @@ public class ScoreboardCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     p.parseString();p.parseString();p.parseString();
                     if (!p.hasNext()){
-                        manager.clearDisplaySlot(DisplaySlot.BELOW_NAME);
+                        manager.removeDisplay(DisplaySlot.BELOW_NAME);
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.setdisplay.successCleared", DisplaySlot.BELOW_NAME.getSlotName()));
                         return true;
                     }else {
                         String objectiveName = p.parseString();
-                        if (!manager.containScoreboard(objectiveName)) {
+                        if (!manager.hasScoreboard(objectiveName)) {
                             sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                             return false;
                         }
-                        manager.setDisplaySlot(DisplaySlot.BELOW_NAME, objectiveName);
+                        manager.setDisplay(DisplaySlot.BELOW_NAME, objectiveName);
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.setdisplay.successSet", DisplaySlot.BELOW_NAME.getSlotName(),objectiveName));
                         return true;
                     }
@@ -214,7 +212,7 @@ public class ScoreboardCommand extends VanillaCommand {
                         p.parseString();
                     }
                     String objectiveName = p.parseString();
-                    if (!manager.containScoreboard(objectiveName)) {
+                    if (!manager.hasScoreboard(objectiveName)) {
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                         return false;
                     }
@@ -342,7 +340,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
 
                     String targetObjectiveName = p.parseString();
-                    if (!manager.containScoreboard(targetObjectiveName)) {
+                    if (!manager.hasScoreboard(targetObjectiveName)) {
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", targetObjectiveName));
                         return false;
                     }
@@ -362,7 +360,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     Scorer seletorScorer = selectorScorers.iterator().next();
 
                     String selectorObjectiveName = p.parseString();
-                    if (!manager.containScoreboard(selectorObjectiveName)) {
+                    if (!manager.hasScoreboard(selectorObjectiveName)) {
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", selectorObjectiveName));
                         return false;
                     }
@@ -434,7 +432,7 @@ public class ScoreboardCommand extends VanillaCommand {
                         p.parseString();
                     }
                     String objectiveName = p.parseString();
-                    if (!manager.containScoreboard(objectiveName)) {
+                    if (!manager.hasScoreboard(objectiveName)) {
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                         return false;
                     }
@@ -480,7 +478,7 @@ public class ScoreboardCommand extends VanillaCommand {
                     }
                     if (p.hasNext()) {
                         String objectiveName = p.parseString();
-                        if (!manager.containScoreboard(objectiveName)) {
+                        if (!manager.hasScoreboard(objectiveName)) {
                             sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                             return false;
                         }
@@ -524,7 +522,7 @@ public class ScoreboardCommand extends VanillaCommand {
                         p.parseString();
                     }
                     String objectiveName = p.parseString();
-                    if (!manager.containScoreboard(objectiveName)) {
+                    if (!manager.hasScoreboard(objectiveName)) {
                         sender.sendMessage(new TranslationContainer("commands.scoreboard.objectiveNotFound", objectiveName));
                         return false;
                     }

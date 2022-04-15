@@ -25,6 +25,14 @@ public class PlayerScorer implements Scorer {
         this.uuid = player.getUniqueId();
     }
 
+    public Player getPlayer() {
+        return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
+    }
+
+    public boolean isOnline() {
+        return getPlayer() != null;
+    }
+
     @Override
     public ScorerType getScorerType() {
         return ScorerType.PLAYER;

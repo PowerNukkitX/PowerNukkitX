@@ -5,6 +5,7 @@ import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.interfaces.AbstractScoreboardManager;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
 import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
@@ -27,20 +28,20 @@ public class Scoreboard {
     private String criteriaName;
     @Setter
     private SortOrder sortOrder;
-    private ScoreboardStorage storage;
+    private AbstractScoreboardManager manager;
     private static int scoreboardId = 0;
 
-    public Scoreboard(String objectiveName, String displayName, String criteriaName, SortOrder sortOrder, ScoreboardStorage storage) {
-        this(new HashMap(),objectiveName, displayName, criteriaName,sortOrder,storage);
+    public Scoreboard(String objectiveName, String displayName, String criteriaName, SortOrder sortOrder,AbstractScoreboardManager manager) {
+        this(new HashMap(),objectiveName, displayName, criteriaName,sortOrder,manager);
     }
 
-    public Scoreboard(Map<Scorer,ScoreboardLine> lines,String objectiveName,String displayName,String criteriaName,SortOrder sortOrder,ScoreboardStorage storage){
+    public Scoreboard(Map<Scorer,ScoreboardLine> lines,String objectiveName,String displayName,String criteriaName,SortOrder sortOrder,AbstractScoreboardManager manager){
         this.lines = lines;
         this.lines.forEach((scorer,line)->line.scoreboardId = ++scoreboardId);//we should reset the scoreboard id of each lines to prevent repetition
         this.objectiveName = objectiveName;
         this.displayName = displayName;
         this.criteriaName = criteriaName;
-        this.storage = storage;
+        this.manager = manager;
         this.sortOrder = sortOrder;
     }
 
@@ -51,9 +52,9 @@ public class Scoreboard {
         if (this.lines.get(scorer).toScoreInfo() != null)
             packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
-            Server.getInstance().getScoreboardManager().updateScoreTag();
-        storage.saveScoreboard(this);
+        if (scorer instanceof PlayerScorer playerScorer && playerScorer.isOnline())
+            manager.updateScoreTag(playerScorer.getPlayer());
+        manager.getStorage().saveScoreboard(this);
     }
 
     public void removeLine(Scorer scorer){
@@ -62,12 +63,10 @@ public class Scoreboard {
         if (this.lines.get(scorer).toScoreInfo() != null)
             packet.infos.add(this.lines.get(scorer).toScoreInfo());
         Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-        if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.objectiveName))
-            Server.getInstance().getScoreboardManager().updateScoreTag();
+        if (scorer instanceof PlayerScorer playerScorer && playerScorer.isOnline())
+            manager.updateScoreTag(playerScorer.getPlayer());
         lines.remove(scorer);
-
-
-        storage.saveScoreboard(this);
+        manager.getStorage().saveScoreboard(this);
     }
 
     public ScoreboardLine getLine(Scorer scorer){
@@ -98,9 +97,9 @@ public class Scoreboard {
             if (this.toScoreInfo() != null)
                 packet.infos.add(this.toScoreInfo());
             Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(Scoreboard.this.objectiveName))
-                Server.getInstance().getScoreboardManager().updateScoreTag();
-            storage.saveScoreboard(Scoreboard.this);
+            if (this.scorer instanceof PlayerScorer playerScorer && playerScorer.isOnline())
+                manager.updateScoreTag(playerScorer.getPlayer());
+            manager.getStorage().saveScoreboard(Scoreboard.this);
         }
 
         public void addScore(int score){
@@ -111,7 +110,6 @@ public class Scoreboard {
             setScore(this.score - score);
         }
 
-        @Nullable
         public SetScorePacket.ScoreInfo toScoreInfo(){
             switch(this.scorer.getScorerType()) {
                 case PLAYER -> {

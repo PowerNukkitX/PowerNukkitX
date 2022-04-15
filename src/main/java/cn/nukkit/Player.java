@@ -1067,8 +1067,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
-            Server.getInstance().getScoreboardManager().sendAllDisplaySlot();
-            Server.getInstance().getScoreboardManager().updateScoreTag();
+            Server.getInstance().getScoreboardManager().onPlayerJoin(this);
         }
     }
 
@@ -4673,9 +4672,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //in test environment sometimes the scoreboard manager is null
         if(Server.getInstance().getScoreboardManager() != null) {
-            Server.getInstance().getScoreboardManager().sendAllDisplaySlot();
-            //in order to clear the old score information so that we can avoid "offline player"
-            Server.getInstance().getScoreboardManager().removeOfflinePlayerScore(this);
+            Server.getInstance().getScoreboardManager().onPlayerQuit(this);
         }
     }
 

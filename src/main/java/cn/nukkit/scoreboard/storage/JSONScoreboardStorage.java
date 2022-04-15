@@ -3,6 +3,7 @@ package cn.nukkit.scoreboard.storage;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.interfaces.AbstractScoreboardManager;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
 import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
@@ -20,8 +21,8 @@ import java.util.*;
 @Getter
 public class JSONScoreboardStorage implements ScoreboardStorage {
 
-    private Path filePath;
-    private Config json;
+    protected Path filePath;
+    protected Config json;
 
     public JSONScoreboardStorage(String path) {
         this.filePath = Paths.get(path);
@@ -57,19 +58,19 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
     }
 
     @Override
-    public Map<String, Scoreboard> readScoreboard() {
+    public Map<String, Scoreboard> readScoreboard(AbstractScoreboardManager manager) {
         Map<String,Object> scoreboards = (Map<String, Object>) json.get("scoreboard");
         Map<String,Scoreboard> result = new HashMap<>();
         if (scoreboards == null) return result;
         for (Map.Entry<String, Object> entry : scoreboards.entrySet()) {
-            result.put(entry.getKey(),deserializeFromMap((Map<String, Object>) entry.getValue()));
+            result.put(entry.getKey(),deserializeFromMap((Map<String, Object>) entry.getValue(),manager));
         }
         return result;
     }
 
     @Override
-    public Scoreboard readScoreboard(String name) {
-        return json.get("scoreboard."+name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard."+name));
+    public Scoreboard readScoreboard(String name, AbstractScoreboardManager manager) {
+        return json.get("scoreboard."+name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard."+name),manager);
     }
 
     @Override
@@ -117,12 +118,12 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
         return map;
     }
 
-    private Scoreboard deserializeFromMap(Map<String,Object> map){
+    private Scoreboard deserializeFromMap(Map<String,Object> map, AbstractScoreboardManager manager){
         String objectiveName = map.get("objectiveName").toString();
         String displayName = map.get("displayName").toString();
         String criteriaName = map.get("criteriaName").toString();
         SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
-        Scoreboard scoreboard = new Scoreboard(objectiveName,displayName,criteriaName,sortOrder,this);
+        Scoreboard scoreboard = new Scoreboard(objectiveName,displayName,criteriaName,sortOrder,manager);
         for (Map<String,Object> line : (List<Map<String,Object>>)map.get("lines")){
             int score = ((Double)line.get("score")).intValue();
             Scorer scorer = null;
