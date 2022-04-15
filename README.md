@@ -4,7 +4,7 @@
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-cht/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
@@ -18,6 +18,8 @@
 注意事项：
 
 * PowerNukkitX要求的最低Java版本为17
+  
+* 补充: 如果您的服务器不能安装Java17，你也可以用使用我们提供的[BootStrap](https://ci.lt-name.com/job/PowerNukkitX/job/master/)
 
 加入我们:
 
@@ -26,10 +28,12 @@
 
 PowerNukkitX的优势：
 
-* 支持1.18.10协议（完善中）。
-* 原生支持384限高（目前仅限主世界，其余则为256格限高）。
-* 原生支持地狱世界，无需另外安装插件补丁等。
-* Todo...
+1. 支持1.18.10协议（完善中）。
+2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
+3. 原生支持地狱世界，无需另外安装插件补丁等。
+4. 原生支持香草命令和命令方块等（完善中）。
+5. 内置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有问题[点此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
+6. Todo...
 
 ---
 

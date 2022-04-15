@@ -1,85 +1,85 @@
-# 更新日志
-本项目所有值得注意的变化都将会记录在这个文件中
+# 更新日誌
+本項目所有值得注意的變化都將會記錄在這個文件中
 
-摘要：该文档的格式基于[Keep a Changelog](https://keepachangelog.com/en/1.0.0/)二次修改,
-并且本项目遵守[Semantic Versioning](https://semver.org/spec/v2.0.0.html)并在主要版本前加上上游的主要版本号，这样我们就能更好的区别于Nukkit 1.X和2.X。
+摘要：該文檔格式基於[Keep a Changelog](https://keepachangelog.com/en/1.0.0/)二次修改,
+並且本項目遵守[Semantic Versioning](https://semver.org/spec/v2.0.0.html)並在主要的版本前加上上游的主要版本號，這樣我們就能更好的區別于Nukkit 1.X和2.X。
 
-## 目录
+## 目錄
 
-1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
-2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
+1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切換語言 </a>
+2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 
-## [开发中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-该版本目前支持了Minecraft:BE `1.18.10 (协议版本486)`.
+## [開發中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
+該版本目前支援了Minecraft:BE `1.18.10 (協議版本486)`.
 
-### 新增内容
+### 新增內容
 
-- [#17] 在PowerNukkitX内实现384限高世界（目前仅限主世界）。
+- [#17] 在PowerNukkitX內實現384限高世界（目前僅限主世界）。
 - [#45] 添加1.18.10版本中新增的物品。
-- [#106] 在PowerNukkitX内初步实现地图。
-- [#146] 为PowerNukkitX添加了Bootstrap启动器，可无需安装Java17即可使用PowerNukkitX。
-- [#161] 在PowerNukkitX内实现并内置了香草命令和命令方块。
-- [#177] 在PowerNukkitX内添加Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
+- [#106] 在PowerNukkitX內初步實現地圖。
+- [#146] 為PowerNukkitX添加了Bootstrap啟動器，可無需安裝Java17即可使用PowerNukkitX。
+- [#161] 在PowerNukkitX實現並內置了香草命令和命令方塊。
+- [#177] 在PowerNukkitX內添加了Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 
-### 修改记录
+### 修改記錄
 
-- [#45] 实现兼容1.18.10（协议版本486）。
+- [#45] 實現支援1.18.10（協議版本486）。
 - [#78] 将新增加的物品添加创造物品栏中。
-- [#132] 将whitelist更改为allowlist。
+- [#132] 將whitelist更改為allowlist。
 
-### BUG修复
+### BUG修復
 
-- [#4] 修复玩家可能会小概率生成在危险位置上的漏洞（PN遗留漏洞）。
-- [#22] 修复主世界方块自燃的问题。
-- [#33] 修复雪等方块可以被打火石点燃的漏洞（PN遗留漏洞）。
-- [#34] 修复末地无法进入的漏洞。
-- [#44] 修复白色染料可以当做骨粉使用的漏洞（PN遗留漏洞）。
-- [#49] 修复地狱中靠近岩浆的方块会自燃的问题。
-- [#55] 修复发光墨囊对告示牌失效的问题。
-- [#93] 修复弩无法使用的漏洞（PN遗留漏洞）。
-- [#112] 修复虚空伤害。
-- [#114] 修复展示框内放入发光展示框，但展示的是生物蛋的漏洞。
-- [#116] 修复发光展示框复制后是普通展示框的漏洞。
-- [#124] 修复站在仙人掌上无伤害的漏洞。
-- [#136] 修复滴水石锥无法填充炼药锅的漏洞。
-- [#141] 修复铁匠台无法使用的漏洞。
-- [#147] 修复活塞漏洞（PN遗留漏洞）。
-- [#152] 修复附魔书效果可以直接使用的漏洞。
-- [#153] 修复海绵不吸水的漏洞。
-- [#155] 修复探测铁轨的漏洞。
-- [#171] 修复陷阱箱无法正常使用的漏洞。
-- [#178] 修复岩浆方块伤害计算偏移。
-- [#188] 修复错误的掉落伤害计算。
-- [#202] 修复EntityArmorChangeEvene无法正常触发。
+- [#4] 修復玩家可能會小概率生成在危險位置上的漏洞（PN遺留漏洞）。
+- [#22] 修復主世界方塊自燃的问题。
+- [#33] 修復雪等方塊可以被打火石點燃的漏洞（PN遺留漏洞）。
+- [#34] 修復末地無法進入的漏洞。
+- [#44] 修復白色染料可以當骨粉使用的漏洞（PN遺留漏洞）。
+- [#49] 修復地獄中靠近岩漿的方塊會自燃的問題。
+- [#55] 修復發光墨囊對告示牌失效的問題。
+- [#93] 修復弩無法使用的漏洞（PN遺留漏洞）。
+- [#112] 修復虛空傷害。
+- [#114] 修復展示框內放入發光展示框，但展示的是生物蛋的漏洞。
+- [#116] 修復發光展示框複製後是普通展示框的漏洞。
+- [#124] 修復站在仙人掌上無傷害的漏洞。
+- [#136] 修復滴水石錐無法填充煉藥鍋的漏洞。
+- [#141] 修復鐵匠台無法使用的漏洞。
+- [#147] 修復活塞漏洞（PN遺留漏洞）。
+- [#152] 修復附魔書效果可以直接使用的漏洞。
+- [#153] 修復海綿不吸水的漏洞。
+- [#155] 修復探測鐵軌的漏洞。
+- [#171] 修復陷阱箱無法正常使用的漏洞。
+- [#178] 修復岩漿方塊傷害計算偏移。
+- [#188] 修復錯誤的掉落傷害計算。
+- [#202] 修復EntityArmorChangeEvene無法正常觸發。
 
-### 安全漏洞修复
+### 安全漏洞修復
 
-- [#16] 将Log4J更新至2.17.1，修复CVE-2021-44832。
-- [#130] 将[Network](https://github.com/CloudburstMC/Network)依赖更新至1.6.28，修复CVE-2020-7238。
+- [#16] 將Log4J更新至2.17.1，修復CVE-2021-44832。
+- [#130] 將[Network](https://github.com/CloudburstMC/Network)依賴更新至1.6.28，修復CVE-2020-7238。
 
-## [Unreleased 1.6.0.0-PN] - Future ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
+## [Unreleased 1.6.0.0-PN] - Future ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
 
 This work in progress version supports Minecraft `1.18.0`.
 
-### 重大变化
+### 重大變化
 - [#PN-1267] Changed Nimbus Jose JWT library from `7.9` to `9.13`
 - [#PN-1267] Removed some deprecated APIs, check the JDiff for details.
 - [#PN-1267] Changed the method signature to customize the boss bar color
 - [#PN-1267] `ItemArmor.TIER_OTHER` is not a constant anymore.
 
-### 折旧问题
+### 折舊問題
 - [#PN-1266] Some APIs become deprecated, check the JDiff for details.
 - [#PN-1266] `ItemTrident.setCreative` and `getCreative` are now deprecated.
 
-### 新增内容
+### 新增內容
 - [#PN-1266] API to get the potion names, level in roman string and tipped arrow potion.
 - [#PN-1266] API for the banner pattern snout (Piglin)
 
-### 修改记录
+### 修改記錄
 - [#PN-1258] Changed supported version to Minecraft Bedrock Edition `1.18.0`.
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-267] Regression of: Fishing hooks without players, loaded from the level save.
 - [#PN-1267] Network decoding of the `MoveEntityDeltaPacket`
 - [#PN-1267] `isOp` param of the `CapturingCommandSender` constructors were not being used
@@ -94,12 +94,12 @@ This work in progress version supports Minecraft `1.18.0`.
 - [#PN-1267] Added all missing `@Override` annotations
 - [#PN-1267] Removed all incorrect `@PowerNukkitOnly` annotations
 
-## [1.5.2.1-PN] - 2021-12-21 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/30?closed=1))
+## [1.5.2.1-PN] - 2021-12-21 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/30?closed=1))
 
-### 安全漏洞修复
+### 安全漏洞修復
 - [#PN-1266], [#PN-1270] Changed Log4J library from `2.13.3` to `2.17.0`
 
-## [1.5.2.0-PN] - 2021-12-01 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
+## [1.5.2.0-PN] - 2021-12-01 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/28?closed=1))
 This new version adds protocol support for Minecraft `1.17.40` as if it was `1.16.221` with some new features and fixes.
 
 We are still working on `1.17` and `1.18` new features, but we plain to release them in December 2021.
@@ -112,16 +112,16 @@ Help us to translate PowerNukkit at https://translate.powernukkit.org
 Want to talk?
 Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/discord
 
-### 新增内容
+### 新增內容
 - [#PN-1233] New API classes and methods were added, check the [JDiff](https://devs.powernukkit.org/jdiff/1.5.2.0-PN_x_1.5.1.0-PN/changes.html) for details.
 - [#PN-1193] Add more damage causes to the API and improve magma block death message
 - [#PN-1233] French translations (thank you for the translations!)
 
-### 修改记录
+### 修改記錄
 - [#PN-1244] Changed the `recipes.json` and `creativeitems.json` format for easier changes, updates, and maintenance (backward compatible)
 - [#PN-1233] Updated Deutsche, Indonesian, Korean, Poland, Russian, Spanish, Turkish, Vietnamese, Brazilian Portuguese, and Simplified Chinese translations. (thank you!)
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-1187] Fixes powered rails do not update in a row
 - [#PN-1191] `SimpleChunkManager.setBlockAtLayer` ignoring the layer
 - [#PN-1174] Fixes Infinite loop with double chest and comparator
@@ -130,7 +130,7 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 - [#PN-1214] Fixed the names for BlockConcrete and BlockConcretePowder
 - [#PN-1172] Fix and improve resource pack related packets
 
-## [1.5.1.0-PN] - 2021-07-05 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/22?closed=1))
+## [1.5.1.0-PN] - 2021-07-05 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/22?closed=1))
 Our goal on this version was to fix bugs, and we did it, we fixed a lot of them!
 
 Thank you for the translations!
@@ -139,7 +139,7 @@ Help us to translate PowerNukkit at https://translate.powernukkit.org
 Want to talk? 
 Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/discord
 
-### 修改记录
+### 修改記錄
 - [#PN-1107] Guava version from `29.0` to `30.1.1`
 - [#PN-1107] SnakeYAML version from `1.26` to `1.28`
 - [#PN-1134] Update the Chinese, Russian, and Turkish translations. Thank you for your contributions!
@@ -155,7 +155,7 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 - [#PN-783] Campfire and Soul campfire now breaks when pushed by piston
 - [#PN-669] Improved the output of the `/kill @e` command
 
-### 新增内容
+### 新增內容
 - [#PN-1146] Added implementation for `AnimateEntityPacket`
 - [#PN-1150] The `freeze_damage` gamerule 
 - [#PN-1150] Mappings for Goat, Glow Squid, and Axolotl entities and spawn eggs
@@ -164,7 +164,7 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 - [#PN-783] Campfire and Soul Campfire can now lit by using an item enchanted with fire aspect
 - [#PN-669] New API methods to get the name of the entity for display
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-1119] `TickSyncPacket` was not registered 
 - [#PN-1120] Entities sometimes gets invisible for some players
 - [#PN-1122] Backward compatibility with plugins setting full bark logs with 17:13
@@ -181,14 +181,14 @@ Talk to us at https://discuss.powernukkit.org and/or https://powernukkit.org/dis
 - [#PN-979] Fixes an issue where the players could not hear each other walking
 - [#PN-576] Swimming in a 1x1 tunnel of water was causing suffocation damage by the block above the player
 
-## [1.5.0.0-PN] - 2021-06-11 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/26?closed=1))
+## [1.5.0.0-PN] - 2021-06-11 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/26?closed=1))
 This was quick! This new version add protocol support for Minecraft `1.17.0` as if it was `1.16.221`.
 
 The new changes will be implemented in `1.5.1.0-PN` and onwards.
 
 This version works with Minecraft `1.16.221`!
 
-### 重大变化!
+### 重大變化!
 ***This version supports a new major Minecraft version, some plugin sources might need to be updated or recompiled!***
 
 - `BlockWall.WallType.END_STONE_BRICK` was renamed to `END_BRICK` to match the property
@@ -204,42 +204,42 @@ This version works with Minecraft `1.16.221`!
 - `MinecraftItemID.DEBUG_STICK` was removed.
 - All deprecated stuff marked to be removed at this version was removed. Except `AnvilDamageEvent.getDamage()`.
 
-### 已废弃
+### 已廢棄
 - This is a reminder that numeric block meta are deprecated. Use the specifc block API to make modifications. Come to Discord if you have questions.
 - A lot of duplicated BlockIDs are being deprecated, follow the `replaceBy` instructions to use the right ones.
 
-### 修改记录
+### 修改記錄
 - All blocks are now using the new block state system.
 - We are no longer using `runtime_block_states.dat` and `runtime+block_states_overrides.dat`, we are now using `canonical_block_states.nbt` from [pmmp/BedrockData](https://github.com/pmmp/BedrockData)
 - `BlockProperties.requireRegisteredProperty` now throws `BlockPropertyNotFoundException` instead of `NoSuchElementException` when the prop is not found.
 - Some `Entity` magic values have changed
 - Game rules now have a flag to determine if it can be changed.
 
-#### 新增内容
+#### 新增內容
 - Event to handle player fishing by plugins. `PlayerFishEvent`.
 - 3 new packets: `AddVolumeEntityPacket`, `RemoveVolumeEntityPacket`, and `SyncEntityPropertyPacket`
 
-### 漏洞修复
+### 漏洞修復
 - Issues with crafting recipes involving charcoal and dyes and ink_sac related items
 
-## [1.4.0.0-PN] - 2021-05-31 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/15?closed=1))
+## [1.4.0.0-PN] - 2021-05-31 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/15?closed=1))
 It's finally here! A stable version of the Nether update! Supporting almost all blocks and items!
 
 It works with Minecraft `1.16.221`!
 
-### 重大变化!
+### 重大變化!
 ***This version supports a new major Minecraft version, some plugin sources might need to be updated or recompiled!***
 
 - Many `final` constants are no longer constants, they are now marked with `dynamic` due to constant changes on updates
 - The size of the block data bits changed back from `6` to `4` to fix backward compatibility with Nukkit plugins
 - New chunk content versioning! Don't keep changing versions back and forth, or you will end up with having some odd block states!
 
-### 已废弃
+### 已廢棄
 - All usage of the numeric block damage system is now deprecated, new code should use the new block state system
 - Direct usage of static mutable arrays in the Block class are now deprecated, use the getters and API methods instead
 - Avoid using `Item.get` to get ItemBlocks! Use `Item.getBlock` or use `MinecraftItemID.<the-id>.get` instead!
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-857] Items in wrong tabs of the creative inventory and at the side of crafting grid screens
 - [#PN-959] Give command not working correctly when using a namespace, like in `/give minecraft:dirt`
 - [#PN-902] NetherPortal block can't be destroyed by liquid flow
@@ -263,7 +263,7 @@ It works with Minecraft `1.16.221`!
 - Enchantment level of the enchantments
 - Many other issues not listed here
 
-### 新增内容
+### 新增內容
 - Block state system and API with backward compatibility to the legacy numeric block damage system
 - [#PN-917] Adds automatic bug reports using Sentry, can be opted out in `server.properties`
 - API to get how long the player has been awake
@@ -274,7 +274,7 @@ It works with Minecraft `1.16.221`!
 - Many new API classes and methods not listed here
 - Emerald ore generation
 
-#### 方块
+#### 方塊
 - Allow
 - Deny
 - Structure Void
@@ -363,7 +363,7 @@ It works with Minecraft `1.16.221`!
 - Record Pigstep
 - Nether Sprouts
 
-#### 实体
+#### 實體
 - Armor Stand
 - Iron Golem
 - Snow Golem
@@ -377,15 +377,15 @@ It works with Minecraft `1.16.221`!
 - Quick Charge
 - Soul Speed
 
-#### 效果状态
+#### 效果狀態
 - Bad Omen
 - Village Hero
 
-#### 药水种类
+#### 藥水種類
 - Slowness II Extended
 - Slowness IV
 
-### 修改记录
+### 修改記錄
 - Translations updated. Help us to translate PowerNukkit at https://translate.powernukkit.org
 - The block system was revamped
 - Optimized the RAM memory usage
@@ -406,42 +406,42 @@ It works with Minecraft `1.16.221`!
 ## [1.3.1.5-PN] - 2020-09-01
 Fixes a critical duplication exploit.
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-544] Duplication exploit by packet manipulation
 
-### 修改记录
+### 修改記錄
 - Translations updated
 
-## [1.3.1.4-PN] - 2020-08-14  ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/20?closed=1))
+## [1.3.1.4-PN] - 2020-08-14  ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/20?closed=1))
 Fixes beehives, client crashes in Nether and improves some error handling
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-467] Players crash when reconnecting in the Nether
 - [#PN-469] Players who don't crash when reconnecting in the Nether, see overworld sky
 - [#PN-462] Beehives and bee nest getting rendered as an "UPDATE!" block
 - [#PN-475] If middle packet inside a batch packet fails processing, the other packets in the batch gets ignored
 
-### 修改记录
+### 修改記錄
 - [#PN-475] Improved error log whilst loading a config file
 - [#PN-475] Improved error log when a batch packet decoding or processing fails
 - [#PN-462] The beehive and bee_nest block data have been changed from `[3-bits BlockFace index, 3-bits honey level]` to `[2-bits BlockFace horizontal index, 3-bits honey level]`
 - [#PN-462] The chunk's content version got increased to 5
 - [#PN-464] The German and the Simplified Chinese translations have been updated
 
-## [1.3.1.3-PN] - 2020-08-11 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/19?closed=1))
+## [1.3.1.3-PN] - 2020-08-11 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/19?closed=1))
 A quick update that adds support to 1.16.20 and updates the translations
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-298] Having the gamemode changed by another player shows a `%s` in the chat
 
-### 修改记录
+### 修改記錄
 - Changed the protocol version to support Minecraft Bedrock Edition 1.16.20
 - The translations have been updated
 
-## [1.3.1.2-PN] - 2020-08-10 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/18?closed=1))
+## [1.3.1.2-PN] - 2020-08-10 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/18?closed=1))
 Very important fixes that you must have. Make a backup before upgrading.
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-404] Issues with inventories, click events, and cursor
 - [#PN-365] Client crashing when FakeInventories
 - [#PN-339] Client crashes when closing some inventories
@@ -477,11 +477,11 @@ Very important fixes that you must have. Make a backup before upgrading.
 - [#PN-430] Iron door not dropping when you break the block under it
 - [#PN-449] Honey block couldn't be used to make a note on noteblock
 
-### 新增内容
+### 新增內容
 - [#PN-287] You can now set yaw and pitch when using the teleport command: `/tp <x> <y> <z> <yaw> <pitch>`
 - [#PN-445] New translation site. Help us to translate PowerNukkit at https://translate.powernukkit.org
 
-### 修改记录
+### 修改記錄
 - [#PN-390] If a compression issue happens, an IOException will be thrown now
 - [#PN-287] Removed the teleport limitation in y-axis with the `/tp` command
 - [#PN-287] Campfire does not allow flowing allow passing through it anymore
@@ -497,18 +497,18 @@ Very important fixes that you must have. Make a backup before upgrading.
 ## [1.3.1.1-PN] - 2020-07-19
 Fixes an important stability issue and improves resource pack compatibility
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-390] Server stop responding due to a compression issue
 - [#PN-368] Improves resource pack compatibility
 
-## [1.3.1.0-PN] - 2020-07-09 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/13?closed=1))
+## [1.3.1.0-PN] - 2020-07-09 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/13?closed=1))
 Security, stability and enchanting table fixes alongside with few additions.
 
 PowerNukkit now has its own [discord guild], click the link below to join and have fun!  
 💬 https://powernukkit.org/discord 💬  
 [![Discord](https://img.shields.io/discord/728280425255927879)](https://powernukkit.org/discord)
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-326] Enchantment table not working
 - [#PN-297] Using the hoe or shovel doesn't emit any sound
 - [#PN-328] ClassCastException and some logic errors while processing the chunk backward compatibility method
@@ -517,14 +517,14 @@ PowerNukkit now has its own [discord guild], click the link below to join and ha
 - [#PN-338] The Dried Kelp Block was not burnable as fuel
 - [#PN-232] The enchanting table level cost is now managed by the server
 
-### 新增内容
+### 新增內容
 - [#PN-330] The [discord guild] link to the readme
 - [#PN-352] The library jsr305 library at version `3.0.2` to add `@Nullable`, `@Nonnull` and related annotations
 - [#PN-326] A couple of new classes, methods and fields to interact with the enchanting table transactions
 - [#PN-326] The entities without AI: Hoglin, Piglin, Zoglin, Strider
 - [#PN-352] Adds default runtime id to the new blocks with meta `0`
 
-### 修改记录
+### 修改記錄
 - [#PN-348] Updated the guava library from `21.0` to `24.1.1`
 - [#PN-347] Updated the JWT library from `4.39.2` to `7.9`
 - [#PN-346] Updated the Log4J library from `2.11.1` to `2.13.3`
@@ -532,48 +532,48 @@ PowerNukkit now has its own [discord guild], click the link below to join and ha
 - [#PN-335] The chunk content version from `1` to `2`, all cobblestone walls will be reprocessed on the chunk first load after the update
 - [#PN-352] The `runtime_block_states_overrides.dat` file has been updated
 
-## [1.3.0.1-PN] - 2020-07-01 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/14?closed=1))
+## [1.3.0.1-PN] - 2020-07-01 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/14?closed=1))
 Improves plugin compatibility and downgrade the RakNet lib to solve a memory leak
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-320] Multiple output crafting, cake for example
 - [#PN-323] Compatibility issue with the regular version of GAC
 
-### 新增内容
+### 新增內容
 - [#PN-315] Hoglin, Piglin, Zoglin and Strider entities without AI
 
-### 修改记录
+### 修改記錄
 - [#PN-319] The RakNet library were downgraded to 1.6.15 due to a potential memory leak issue
 
-## [1.3.0.0-PN] - 2020-07-01 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/11?closed=1))
+## [1.3.0.0-PN] - 2020-07-01 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/11?closed=1))
 Added support for Bedrock Edition 1.16.0 and 1.16.1
 
-### 重大变化!
+### 重大變化!
 ***This version supports a new major Minecraft version, some plugin sources might need to be updated or recompiled!*** 
 
 The following breaking change will be pulled in `1.3.0.0-PN`
 - [8a09f93](https://github.com/PowerNukkit/PowerNukkit/commit/8a09f933f83c9a52531ff8a184a58c6d733c9174) Quick craft implementation. ([NukkitX#1473](https://github.com/NukkitX/Nukkit/pull/1473)) Jedrzej* 05/06/2020
 
-### 二进制不兼容!
+### 二進制不兼容!
 - [#PN-293] A few `Entity` data constant values were changed, plugins which uses them might need to be recompiled, no code change required
 
-### 保存格式发生改变!
+### 保存格式發生改變!
 The save format has been changed to accommodate very high block data values. **Make a world backup before updating!**
 
-### 不完整的更新日志警告!
+### 不完整的更新日誌警告!
 Due to the high amount of changes, and the urgency of this update, this changelog file will be released with outdated information,
 please check the current changelog file in the [updated changelog] online for further details about this update.
 
-### 残缺的功能警告!
+### 殘缺的功能警告!
 * Enchanting table GUI has been temporarily disabled due to an incompatible change to the Bedrock protocol,
 it's planned to be fixed on 1.3.1.0-PN
 * End portal formation has been disabled due to reported crashes, it's planned to be reviewed on 1.3.1.0-PN
 
-### 实验性警告!
+### 實驗性警告!
 This is the first release of a huge set of changes to accommodate the new Bedrock Edition 1.16.0/1.16.1 release,
 please take extra cautions with this version, make constant backups and report any issues you find. 
 
-### 弃用警告!
+### 棄用警告!
 - [#PN-293] Many `Entity` constants are deprecated and might be removed on `1.4.0.0-PN`
 - [#PN-293] `Entity.DATA_FLAG_TRANSITION_SITTING` and `DATA_FLAG_TRANSITION_SETTING` only one of them is correct, the incorrect will be removed
 - [#PN-293] `Network.inflate_raw` and `deflate_raw` does not follow the correct naming convention and will be removed. Use `inflateRaw` and `deflateRaw` instead. 
@@ -582,12 +582,12 @@ please take extra cautions with this version, make constant backups and report a
 - [#PN-293] `TextPacket.TYPE_JSON` was renamed to `TYPE_OBJECT` and will be removed on `1.4.0.0-PN`
 - [#PN-293] `riderInitiated` argument was added to the `EntityLink` constructor. The old constructor will be removed on `1.4.0.0-PN`
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-293] Spectator colliding with vehicles
 - [#PN-293] Ice melting into water in the Nether
 - [#PN-293] `Player.removeWindow` was able to remove permanent windows
 
-### 新增内容
+### 新增內容
 - [#PN-293] End portals can now be formed using Eye of Ender
 - [#PN-293] Setting to make the server ignore specific packets
 - [#PN-293] New compression/decompression methods
@@ -596,7 +596,7 @@ please take extra cautions with this version, make constant backups and report a
 - [#PN-293] 12 new packets, please see the pull request file changes for details
 - [#PN-293] Many new entity data constants, please see the `Entity.java` file in the PR for details
  
-### 修改记录
+### 修改記錄
 - [#PN-293] Thorns can now be applied to any armor while enchanting
 - [#PN-293] The server now requires the clients to playing on Bedrock Edition 1.16.0
 - [#PN-293] Updated RakNet to `1.6.18`
@@ -609,10 +609,10 @@ please take extra cautions with this version, make constant backups and report a
 - [#PN-293] Grindstone now clears only the enchantments and sets the repair cost to `0`, it used to clear all NBT tags
 
 
-## [1.2.1.0-PN] - 2020-06-07 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/9?closed=1))
+## [1.2.1.0-PN] - 2020-06-07 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/9?closed=1))
 Adds new methods to be used by plugins and fixes many issues. 
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-224] Enchantment compatibility rules when merging enchanted items in an anvil
 - [#PN-113] Beehives not dropping in creative when it has bees
 - [#PN-270] Replacing sugarcane's water don't break the sugarcane immediately
@@ -627,7 +627,7 @@ Adds new methods to be used by plugins and fixes many issues.
 - [#PN-285] Nether bricks fence were burnable and flammable
 - [#PN-285] Item on hands disappear (looses one from the stack) when interacting with chest minecarts and hopper minecarts
 
-### 新增内容
+### 新增內容
 - [#PN-227] PlayerJumpEvent called when jump packets are received.
 - [#PN-242] `Item.equalsIgnoringEnchantmentOrder` method for public usage.
 - [#PN-244] `Enchantment.getPowerNukkit().isItemAcceptable(Item)` to check if an enchantment can exist 
@@ -643,17 +643,17 @@ Adds new methods to be used by plugins and fixes many issues.
 - [#PN-279] `Entity.isInEndPortal()` for public usage
 - [#PN-285] `LoginChainData.getRawData()` for public usage
 
-### 修改记录
+### 修改記錄
 - [#PN-227] Sugar canes now fires BlockGrowEvent when growing naturally.
 - [#PN-261] Kicked players can now view the kick reason on kick.
 - [#PN-285] Limit the maximum size of `BookEditPacket`'s text to 256, ignoring the packet if it exceeds the limit
 - [#PN-285] Ender pearls will now be unable to teleport players across different dimensions
 - [#PN-285] `ShortTag.load(NBTInputStream)` now reads a signed short. Used to read an unsigned short.
 
-## [1.2.0.2-PN] - 2020-05-18 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/10?closed=1))
+## [1.2.0.2-PN] - 2020-05-18 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/10?closed=1))
 Contains several fixes, including issues which cause item losses and performance issues
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-239] Anvil fails to merge some enchantments because the ordering mismatches
 - [#PN-240] Anvils were charging fewer levels to merge thorn books
 - [#PN-243] Anvils were charging more levels to merge punch books
@@ -681,7 +681,7 @@ Contains several fixes, including issues which cause item losses and performance
 - [#PN-273] Loosing connection with items in an open grindstone, enchanting table, stone cutter  makes you loose the items
 - [#PN-273] Loosing connection with items in an open crafting table, 2x2 crafting grid makes you loose the items
 
-### 修改记录
+### 修改記錄
 - [#PN-247] Invalid BlockId:Meta combinations now log an error when found. It logs only once
 - [#PN-255] The report issues link has been changed to point to the PowerNukkit repository
 - [#PN-268] The `/xp` command now makes level up sound every 5 levels
@@ -689,14 +689,14 @@ Contains several fixes, including issues which cause item losses and performance
 - [#PN-273] `FakeBlockUIComponent.close(Player)` now calls `onClose(Player)`
 - [#PN-274] `Player.checkInteractNearby()` is now called once every 10 ticks, it was called every tick
 
-## [1.2.0.1-PN] - 2020-05-08 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/8?closed=1))
+## [1.2.0.1-PN] - 2020-05-08 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/8?closed=1))
 Fixes several anvil issues.
 
-### 新增内容
+### 新增內容
 - [#PN-224] Added option to disable watchdog with `-DdisableWatchdog=true`. 
   This should be used **only by developers** to debug the server without interruptions by the crash detection system.
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-224] Anvil not merging enchanted items correctly and destroying the items.
 - [#PN-228] Invalid enchantment order on anvil's results causing the crafting transaction to fail.
 - [#PN-226] Anvil cost calculation not applying bedrock edition reductions
@@ -705,21 +705,21 @@ Fixes several anvil issues.
 - [#PN-234] Failed anvil transactions caused all involved items to be destroyed
 - [#PN-234] Visual desync in the player's experience level when an anvil transaction fails or is cancelled. 
 
-### 修改记录
+### 修改記錄
 - [#PN-234] Anvil's result is no longer stored in the PlayerUIInventory at slot 50 as 
          it was vulnerable to heavy duplication exploits.
 - [#PN-234] `setResult` methods in `AnvilInventory` are now deprecated and marked for removal at 1.3.0.0-PN
          because it's not supported by the client and changing it will fail the transaction.
 
-## [1.2.0.0-PN] - 2020-05-03 ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/6?closed=1))
+## [1.2.0.0-PN] - 2020-05-03 ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/6?closed=1))
 **Note:** Effort has been made to keep this list accurate but some bufixes and new features might be missing here, specially those made by the NukkitX team and contributors.
 
-### 新增内容
+### 新增內容
 - This change log file
 - [#PN-108] EntityMoveByPistonEvent
 - [#PN-140] `isUndead()` method to the entities
 
-### 漏洞修复
+### 漏洞修復
 - [#PN-129] A typo in the BlockBambooSapling class name **(breaking change)**
 - [#PN-102] Leaves decay calculation
 - [#PN-87] Arrows in offhand are black in the first person view
@@ -740,12 +740,12 @@ Fixes several anvil issues.
 - [#PN-93] Nukkit sends a rain time that doesn't matches the server
 - [#PN-210] Issues with old blocks from old NukkitX worlds, specially fully barked logs (log:15 for example)
 
-### 修改记录
+### 修改記錄
 - Make BlockLectern implements Faceable
 - The versioning convention now follows this pattern:<br/>`upstream.major.minor.patch-PN`<br/>[Click here for details.](https://github.com/PowerNukkit/PowerNukkit/blob/7912aa4be68e94a52762361c2d5189b7bbc58d2a/pom.xml#L8-L14)
 
 ## [1.1.1.0-PN] - 2020-01-21
-### 漏洞修复
+### 漏洞修復
 - Piston heads not rendering
 - Cauldron implementation, should be closer to vanilla now
 - Implements hashCode in the NBT Tags, fixes usage with Set and HashMap
@@ -768,14 +768,14 @@ Fixes several anvil issues.
 - [#PN-54] Fixes movement issues on heavy server load
 - [#PN-57] Fixes block placement of Bone Block, End Portal Frame, Jukebox and Observer
 
-### 修改记录
+### 修改記錄
 - Unregistered block states will be shown as 248:0 (minecraft:info_update) now
 - Improves the UI inventories
 - The codename to PowerNukkit to distinct from [NukkitX]'s implementation
 - [#PN-50] The kick message is now more descriptive
 - [#PN-80] Merged the "New RakNet Implementation" pull request which greatly improves the server performance and connections
 
-### 新增内容 
+### 新增內容 
 - Waterlogging support
 - Support with blocks ID higher then 255 to the Anvil save format
 - Support for blocks with 6 bits data value (used to support only 4 bits)
@@ -850,12 +850,12 @@ Fixes several anvil issues.
     - Loom
     - Bamboo
 
-## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我们
+## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我們
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
-## <a id="CataLogs-Swlang"></a>🌐 多语言文档
+## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
 ---
 Need to switch languages? 
@@ -864,8 +864,8 @@ Need to switch languages?
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/README文档-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![PNX-DOC](https://img.shields.io/badge/PNX-DOC文档库-blue?style=flat-square)](https://doc.powernukkitx.cn)
+[![ChangeLog](https://img.shields.io/badge/README文檔-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
+[![PNX-DOC](https://img.shields.io/badge/PNX-DOC文檔庫-blue?style=flat-square)](https://doc.powernukkitx.cn)
 
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
 [discord guild]: https://powernukkit.org/discord
