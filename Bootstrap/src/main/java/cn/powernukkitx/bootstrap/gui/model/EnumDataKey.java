@@ -20,6 +20,7 @@ public enum EnumDataKey {
     JavaLocations,
     PNXLocations,
     LibLocations,
+    ComponentLocations,
 
     // PerformanceView
     PerformanceWindowSize,

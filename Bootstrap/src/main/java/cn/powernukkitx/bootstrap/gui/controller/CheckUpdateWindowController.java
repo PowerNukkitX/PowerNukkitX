@@ -2,16 +2,15 @@ package cn.powernukkitx.bootstrap.gui.controller;
 
 import cn.powernukkitx.bootstrap.gui.model.impl.view.UpdateWindowModel;
 import cn.powernukkitx.bootstrap.gui.model.keys.UpdateWindowDataKeys;
-import cn.powernukkitx.bootstrap.gui.model.values.JarLocationsWarp;
-import cn.powernukkitx.bootstrap.gui.model.values.JavaLocationsWarp;
-import cn.powernukkitx.bootstrap.gui.model.values.LibLocationsWarp;
-import cn.powernukkitx.bootstrap.gui.model.values.Warp;
+import cn.powernukkitx.bootstrap.gui.model.values.*;
 import cn.powernukkitx.bootstrap.gui.view.View;
 import cn.powernukkitx.bootstrap.gui.view.impl.simple.DownloadDialog;
 import cn.powernukkitx.bootstrap.gui.view.impl.update.CheckUpdateWindowView;
+import cn.powernukkitx.bootstrap.info.locator.ComponentsLocator;
 import cn.powernukkitx.bootstrap.info.locator.JarLocator;
 import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
 import cn.powernukkitx.bootstrap.info.locator.LibsLocator;
+import cn.powernukkitx.bootstrap.info.remote.ComponentsHelper;
 import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
 import cn.powernukkitx.bootstrap.util.GzipUtils;
 import cn.powernukkitx.bootstrap.util.StringUtils;
@@ -73,11 +72,11 @@ public final class CheckUpdateWindowController extends CommonController {
     }
 
     public void collectData() {
-        collectData(true, true, true);
+        collectData(true, true, true, true);
     }
 
-    public void collectData(boolean java, boolean pnx, boolean libs) {
-        final int sum = (java ? 1 : 0) + (pnx ? 1 : 0) + (libs ? 1 : 0);
+    public void collectData(boolean java, boolean pnx, boolean libs, boolean components) {
+        final int sum = (java ? 1 : 0) + (pnx ? 1 : 0) + (libs ? 1 : 0) + (components ? 1 : 0);
         updateWindowModel.setData(UpdateWindowDataKeys.TITLE, tr("gui.update-window.title.collecting", "0", String.valueOf(sum)));
         new SwingWorker<Void, Warp<?>>() {
             @Override
@@ -86,6 +85,7 @@ public final class CheckUpdateWindowController extends CommonController {
                 if (pnx)
                     publish(new JarLocationsWarp(new JarLocator(workingDir, "cn.nukkit.api.PowerNukkitOnly").locate()));
                 if (libs) publish(new LibLocationsWarp(new LibsLocator().locate()));
+                if (components) publish(new ComponentLocationsWarp(new ComponentsLocator().locate()));
                 return null;
             }
 
@@ -106,6 +106,8 @@ public final class CheckUpdateWindowController extends CommonController {
                         updateWindowModel.setData(UpdateWindowDataKeys.PNX_LOCATIONS, (JarLocationsWarp) tmp);
                     } else if (tmp instanceof LibLocationsWarp) {
                         updateWindowModel.setData(UpdateWindowDataKeys.LIBS_LOCATIONS, (LibLocationsWarp) tmp);
+                    } else if (tmp instanceof ComponentLocationsWarp) {
+                        updateWindowModel.setData(UpdateWindowDataKeys.COMPONENTS_LOCATIONS, (ComponentLocationsWarp) tmp);
                     }
                 }
             }
@@ -167,7 +169,7 @@ public final class CheckUpdateWindowController extends CommonController {
         final File target = new File("powernukkitx.jar");
         DownloadDialog.openDownloadDialog("PowerNukkitX", downloadLink.toString(), target, dialog -> {
             dialog.dispose();
-            collectData(false, true, false);
+            collectData(false, true, false, false);
         });
     }
 
@@ -176,7 +178,7 @@ public final class CheckUpdateWindowController extends CommonController {
         final File target = new File("libs/" + libName);
         DownloadDialog.openDownloadDialog(libName, downloadLink.toString(), target, dialog -> {
             dialog.dispose();
-            collectData(false, false, true);
+            collectData(false, false, true, false);
         });
     }
 
@@ -197,8 +199,29 @@ public final class CheckUpdateWindowController extends CommonController {
             if (it.hasNext()) {
                 downloadLib(it, it.next());
             } else {
-                collectData(false, false, true);
+                collectData(false, false, true, false);
             }
         });
+    }
+
+    public void onInstallComponent(String componentName) {
+        final List<ComponentsHelper.ComponentEntry> componentEntries = ComponentsHelper.listRemoteComponents();
+        for (ComponentsHelper.ComponentEntry componentEntry : componentEntries) {
+            if (componentEntry.getName().equals(componentName)) {
+                int res = JOptionPane.showConfirmDialog(this.checkUpdateWindowView, tr("gui.update-window.sure-to-install-component", componentEntry.getDescription() + " " + componentEntry.getVersion()),
+                        tr("gui.common.sign"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (res == 0) {
+                    for (ComponentsHelper.ComponentFile componentFile : componentEntry.getComponentFiles()) {
+                        final File target = new File("./components/" + componentEntry.getName() + "/" + componentFile.getFileName());
+                        DownloadDialog.openDownloadDialog(componentEntry.getDescription() + " " + componentEntry.getVersion(),
+                                componentFile.getDownloadPath(), target, dialog -> {
+                                    dialog.dispose();
+                                    collectData(false, false, false, true);
+                                });
+                    }
+                }
+                break;
+            }
+        }
     }
 }
