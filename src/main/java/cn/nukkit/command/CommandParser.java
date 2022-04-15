@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
-    private static final String TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|[A-Za-z][A-Za-z0-9\\s]+)";
+    private static final String TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]+\"|[A-Za-z][A-Za-z0-9]+)";
     private static final String WILDCARD_TARGET_PATTERN = "(\\S+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
@@ -101,7 +101,14 @@ public class CommandParser {
     }
 
     public String matchCommandForm(){
-        StringBuilder argStringBuilder = new StringBuilder(String.join(" ", args));
+        StringBuilder argStringBuilder = new StringBuilder();
+        for (String arg : this.args) {
+            if (!arg.contains(" ")) {
+                argStringBuilder.append(arg).append(" ");
+            }else{
+                argStringBuilder.append("\"").append(arg).append("\" ");
+            }
+        }
         for (int i = 1;i <= args.length + 1;i++) {//add spaces to make sure the last argument is matched
             argStringBuilder.append(" ");
         }
@@ -278,7 +285,18 @@ public class CommandParser {
         matcher.find();
         String[] pArg = new String[matcher.groupCount()];
         for (int i = 1; i <= matcher.groupCount(); i++) {
-            pArg[i-1] = matcher.group(i);
+            if (matcher.group(i) != null) {
+                StringBuilder pArgBuilder = new StringBuilder(matcher.group(i));
+                if (pArgBuilder.charAt(0) == '"') {
+                    pArgBuilder.deleteCharAt(0);
+                }
+                if (pArgBuilder.charAt(pArgBuilder.length() - 1) == '"') {
+                    pArgBuilder.deleteCharAt(pArgBuilder.length() - 1);
+                }
+                pArg[i - 1] = pArgBuilder.toString();
+            }else{
+                pArg[i - 1] = null;
+            }
         }
         this.parsedArgs = pArg;
 
