@@ -20,9 +20,7 @@ This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
 - [#106] Initial implementation of maps within PowerNukkitX.
 - [#146] Added Bootstrap launcher to PowerNukkitX to use PowerNukkitX without installing Java17.
 - [#161] Implemented and built in vanilla commands and command block within PowerNukkitX.
-- [#177] Added Terra generator inside PowerNukkitX.
-
-Translated with www.DeepL.com/Translator (free version)
+- [#177] Added Terra generator inside PowerNukkitX ([FAQ](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)).
 
 ### Changed
 
@@ -862,7 +860,7 @@ Fixes several anvil issues.
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/README-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)

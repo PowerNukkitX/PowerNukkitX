@@ -19,7 +19,7 @@
 - [#106] 在PowerNukkitX内初步实现地图。
 - [#146] 为PowerNukkitX添加了Bootstrap启动器，可无需安装Java17即可使用PowerNukkitX。
 - [#161] 在PowerNukkitX内实现并内置了香草命令和命令方块。
-- [#177] 在PowerNukkitX内添加Terra生成器。
+- [#177] 在PowerNukkitX内添加Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 
 ### 修改记录
 
@@ -35,7 +35,7 @@
 - [#34] 修复末地无法进入的漏洞。
 - [#44] 修复白色染料可以当做骨粉使用的漏洞（PN遗留漏洞）。
 - [#49] 修复地狱中靠近岩浆的方块会自燃的问题。
-- [#55] 修复发光墨囊对告示牌失效问题。
+- [#55] 修复发光墨囊对告示牌失效的问题。
 - [#93] 修复弩无法使用的漏洞（PN遗留漏洞）。
 - [#112] 修复虚空伤害。
 - [#114] 修复展示框内放入发光展示框，但展示的是生物蛋的漏洞。
@@ -55,7 +55,7 @@
 ### 安全漏洞修复
 
 - [#16] 将Log4J更新至2.17.1，修复CVE-2021-44832。
-- [#130] 将[Network](https://github.com/CloudburstMC/Network)依赖更新至为1.6.28，修复CVE-2020-7238。
+- [#130] 将[Network](https://github.com/CloudburstMC/Network)依赖更新至1.6.28，修复CVE-2020-7238。
 
 ## [Unreleased 1.6.0.0-PN] - Future ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -861,7 +861,7 @@ Fixes several anvil issues.
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/README文档-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
