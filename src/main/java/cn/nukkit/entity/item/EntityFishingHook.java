@@ -267,15 +267,10 @@ public class EntityFishingHook extends EntityProjectile {
                 }
             }
         } else if (this.shootingEntity != null) {
-            System.out.println("OK");
             var eid = this.getDataPropertyLong(DATA_TARGET_EID);
             var targetEntity = this.getLevel().getEntity(eid);
-            if (targetEntity != null) { // 钓鱼竿收杆应该牵引被钓生物
-                if (targetEntity instanceof Player targetPlayer) {
-                    targetPlayer.addMotion(0, 20, 0);
-                } else {
-                    targetEntity.addMotion((shootingEntity.x - targetEntity.x) * 0.1, (shootingEntity.y - targetEntity.y) * 0.1 + 0.4, (shootingEntity.z - targetEntity.z) * 0.1);
-                }
+            if (targetEntity != null && targetEntity.isAlive()) { // 钓鱼竿收杆应该牵引被钓生物
+                targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
             }
         }
         this.close();
