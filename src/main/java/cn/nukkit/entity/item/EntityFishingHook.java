@@ -240,8 +240,7 @@ public class EntityFishingHook extends EntityProjectile {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "May create custom EntityItem")
     public void reelLine() {
-        if (this.shootingEntity instanceof Player && this.caught) {
-            Player player = (Player) this.shootingEntity;
+        if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
             Vector3 motion = player.subtract(this).multiply(0.1);
@@ -265,6 +264,12 @@ public class EntityFishingHook extends EntityProjectile {
                     itemEntity.setOwner(player.getName());
                     itemEntity.spawnToAll();
                     player.addExperience(event.getExperience());
+                }
+            } else if (this.shootingEntity != null){
+                var eid = this.getDataPropertyLong(DATA_TARGET_EID);
+                var targetEntity = this.getLevel().getEntity(eid);
+                if(targetEntity != null) { // 钓鱼竿收杆应该牵引被钓生物
+                    targetEntity.addMotion((this.x - targetEntity.x) * 0.1, (this.y - targetEntity.y) * 0.1 + 0.4, (this.z - targetEntity.z) * 0.1);
                 }
             }
         }
