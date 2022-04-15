@@ -2,6 +2,7 @@ package cn.powernukkitx.bootstrap.gui.model.keys;
 
 import cn.powernukkitx.bootstrap.gui.model.DataKey;
 import cn.powernukkitx.bootstrap.gui.model.EnumDataKey;
+import cn.powernukkitx.bootstrap.gui.model.values.ComponentLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.JarLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.JavaLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.LibLocationsWarp;
@@ -21,6 +22,7 @@ public final class UpdateWindowDataKeys {
     public static final JavaLocationsKey JAVA_LOCATIONS = new JavaLocationsKey();
     public static final PNXLocationsKey PNX_LOCATIONS = new PNXLocationsKey();
     public static final LibsLocationsKey LIBS_LOCATIONS = new LibsLocationsKey();
+    public static final ComponentsLocationsKey COMPONENTS_LOCATIONS = new ComponentsLocationsKey();
 
     public static class TitleKey extends DataKey<String> {
         TitleKey() {
@@ -61,6 +63,12 @@ public final class UpdateWindowDataKeys {
     public static class LibsLocationsKey extends DataKey<LibLocationsWarp> {
         LibsLocationsKey() {
             super(EnumDataKey.LibLocations, LibLocationsWarp.class);
+        }
+    }
+
+    public static class ComponentsLocationsKey extends DataKey<ComponentLocationsWarp> {
+        ComponentsLocationsKey() {
+            super(EnumDataKey.ComponentLocations, ComponentLocationsWarp.class);
         }
     }
 }

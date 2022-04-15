@@ -10,7 +10,7 @@ import java.util.*;
 
 public final class ComponentsHelper {
     public static final String OSS_LIST = "https://assets.powernukkitx.cn/components.ini";
-    public static final WeakReference<List<ComponentEntry>> cache = new WeakReference<>(null);
+    public static WeakReference<List<ComponentEntry>> cache = new WeakReference<>(null);
 
     public static List<ComponentEntry> listRemoteComponents() {
         if (cache.get() != null) {
@@ -37,6 +37,7 @@ public final class ComponentsHelper {
                         componentFiles[i] = new ComponentFile(split[i], downloadURLs[i]);
                     }
                     componentEntry.setComponentFiles(componentFiles);
+                    cache = new WeakReference<>(out);
                     out.add(componentEntry);
                 }
                 return out;
