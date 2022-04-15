@@ -58,7 +58,6 @@ public final class PNXStart implements Component {
                 cmd = cmd.replace("%GRAAL_JIT%", "");
             }
             cmd = cmd.replace("--upgrade-module-path=" + Locator.platformSplitter() + " ", "");
-            System.out.println(cmd);
             try {
                 long previousStartTime = 0L;
                 boolean fistTime = true;
