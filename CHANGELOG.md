@@ -9,15 +9,14 @@
 1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 
-## [开发中 1.6.0.0-PNX] - [Dev](https://github.com/PowerNukkitX/PowerNukkitX/actions)
-
+## [开发中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
 该版本目前支持了Minecraft:BE `1.18.10 (协议版本486)`.
 
 ### 新增内容
 
 - [#17] 在PowerNukkitX内实现384限高世界（目前仅限主世界）。
 - [#45] 添加1.18.10版本中新增的物品。
-- [#106] 在PowerNukkitX内初版实现地图。
+- [#106] 在PowerNukkitX内初步实现地图。
 - [#146] 为PowerNukkitX添加了Bootstrap启动器，可无需安装Java17即可使用PowerNukkitX。
 - [#161] 在PowerNukkitX内实现并内置了香草命令和命令方块。
 - [#177] 在PowerNukkitX内添加Terra生成器。
@@ -55,7 +54,7 @@
 
 ### 安全漏洞修复
 
-- [#16] 将Log4J2更新至2.17.1，修复CVE-2021-44832。
+- [#16] 将Log4J更新至2.17.1，修复CVE-2021-44832。
 - [#130] 将[Network](https://github.com/CloudburstMC/Network)依赖更新至为1.6.28，修复CVE-2020-7238。
 
 ## [Unreleased 1.6.0.0-PN] - Future ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
@@ -856,15 +855,14 @@ Fixes several anvil issues.
 * [Discord](https://discord.gg/j7UwsaNu4V)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
-
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
 Need to switch languages? 
 
-[![简体中文](https://img.shields.io/badge/简体中文-30%25-yellow?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
-[![English](https://img.shields.io/badge/English-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/README文档-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC文档库-blue?style=flat-square)](https://doc.powernukkitx.cn)

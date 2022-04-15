@@ -1,10 +1,63 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) 
-with an added upstream's major version number in front of the major version, so we have a better distinction from
-Nukkit 1.X and 2.X.
+Note: The format of this document is based on the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) second revision,
+and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and prefixes the major version with the upstream major version number so that we can better distinguish it from Nukkit 1.X and 2.X.
+
+## CataLogs
+
+1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
+2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
+
+## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
+
+This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
+
+### Added
+
+- [#17] Implemented 384 height-limited worlds within PowerNukkitX (currently main world only).
+- [#45] Added items added in version 1.18.10.
+- [#106] Initial implementation of maps within PowerNukkitX.
+- [#146] Added Bootstrap launcher to PowerNukkitX to use PowerNukkitX without installing Java17.
+- [#161] Implemented and built in vanilla commands and command block within PowerNukkitX.
+- [#177] Added Terra generator inside PowerNukkitX.
+
+Translated with www.DeepL.com/Translator (free version)
+
+### Changed
+
+- [#45] Implemented compatibility with 1.18.10 (protocol version 486).
+- [#78] Add newly added items to the creation item bar.
+- [#132] Change whitelist to allowlist.
+
+### Fixes
+
+- [#4] Fix an exploit where players may spawn on dangerous locations with a small probability (PN Legacy exploit).
+- [#22] Fix an issue with main world cubes spontaneously combusting.
+- [#33] Fix an exploit where snow and other cubes can be ignited by flint (PN Legacy exploit).
+- [#34] Fix an exploit where Mordor is inaccessible.
+- [#44] Fix an exploit where white dye can be used as bone powder (PN Legacy exploit).
+- [#49] Fix an issue where cubes near lava in Inferno will spontaneously combust.
+- [#55] Fix glowing ink sacs not working on notice boards.
+- [#93] Fix an exploit where crossbows don't work (PN legacy exploit).
+- [#112] Fix Void damage.
+- [#114] Fix an exploit where the glowing display box is put in the display box, but the creature egg is displayed.
+- [#116] Fix an exploit where the glowing display frame is a normal display frame after copying.
+- [#124] Fix the bug that standing on a cactus does no damage.
+- [#136] Fix an exploit where dripping stone cone does not fill the pot of alchemy.
+- [#141] Fix the exploit that blacksmith table does not work.
+- [#147] Fix Piston exploit (PN legacy exploit).
+- [#152] Fix the loophole that enchantment book effect can be used directly.
+- [#153] Fix the vulnerability that sponge does not absorb water.
+- [#155] Fix the vulnerability of detecting rail.
+- [#171] Fix the bug that trap boxes don't work properly.
+- [#178] Fix magma cube damage calculation bias.
+- [#188] Fix incorrect drop damage calculation.
+- [#202] Fix EntityArmorChangeEvene not triggering properly.
+
+### CRITICAL SECURITY FIX
+- [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
+- [#130] Changed [Network](https://github.com/CloudburstMC/Network) Library from `1.6.25` to `1.6.28`, fix CVE-2020-7238.
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -799,6 +852,22 @@ Fixes several anvil issues.
     - Loom
     - Bamboo
 
+## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我们
+
+* [Discord](https://discord.gg/j7UwsaNu4V)
+
+## <a id="CataLogs-Swlang"></a>🌐 多语言文档
+
+---
+Need to switch languages? 
+
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-Todo-red?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
+[![ChangeLog](https://img.shields.io/badge/README-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
+
 [updated changelog]:https://github.com/PowerNukkit/PowerNukkit/blob/bleeding/CHANGELOG.md
 [discord guild]: https://powernukkit.org/discord
 
@@ -1001,3 +1070,37 @@ Fixes several anvil issues.
 [#PN-1266]: https://github.com/PowerNukkit/PowerNukkit/issues/1266
 [#PN-1267]: https://github.com/PowerNukkit/PowerNukkit/issues/1267
 [#PN-1270]: https://github.com/PowerNukkit/PowerNukkit/issues/1270
+
+
+[#4]: https://github.com/PowerNukkitX/PowerNukkitX/pull/4
+[#16]: https://github.com/PowerNukkitX/PowerNukkitX/pull/16
+[#17]: https://github.com/PowerNukkitX/PowerNukkitX/issues/17
+[#22]: https://github.com/PowerNukkitX/PowerNukkitX/issues/22
+[#33]: https://github.com/PowerNukkitX/PowerNukkitX/pull/33
+[#34]: https://github.com/PowerNukkitX/PowerNukkitX/pull/34
+[#44]: https://github.com/PowerNukkitX/PowerNukkitX/pull/44
+[#45]: https://github.com/PowerNukkitX/PowerNukkitX/pull/45
+[#49]: https://github.com/PowerNukkitX/PowerNukkitX/issues/49
+[#55]: https://github.com/PowerNukkitX/PowerNukkitX/issues/55
+[#78]: https://github.com/PowerNukkitX/PowerNukkitX/pull/78
+[#93]: https://github.com/PowerNukkitX/PowerNukkitX/pull/93
+[#106]: https://github.com/PowerNukkitX/PowerNukkitX/issues/106
+[#112]: https://github.com/PowerNukkitX/PowerNukkitX/pull/112
+[#114]: https://github.com/PowerNukkitX/PowerNukkitX/issues/114
+[#116]: https://github.com/PowerNukkitX/PowerNukkitX/issues/116
+[#124]: https://github.com/PowerNukkitX/PowerNukkitX/issues/124
+[#130]: https://github.com/PowerNukkitX/PowerNukkitX/pull/130
+[#132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/132
+[#136]: https://github.com/PowerNukkitX/PowerNukkitX/issues/136
+[#141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/141
+[#146]: https://github.com/PowerNukkitX/PowerNukkitX/pull/146
+[#147]: https://github.com/PowerNukkitX/PowerNukkitX/pull/147
+[#152]: https://github.com/PowerNukkitX/PowerNukkitX/issues/152
+[#153]: https://github.com/PowerNukkitX/PowerNukkitX/issues/153
+[#155]: https://github.com/PowerNukkitX/PowerNukkitX/pull/155
+[#161]: https://github.com/PowerNukkitX/PowerNukkitX/pull/161
+[#171]: https://github.com/PowerNukkitX/PowerNukkitX/issues/171
+[#177]: https://github.com/PowerNukkitX/PowerNukkitX/pull/177
+[#178]: https://github.com/PowerNukkitX/PowerNukkitX/pull/178
+[#188]: https://github.com/PowerNukkitX/PowerNukkitX/issues/188
+[#202]: https://github.com/PowerNukkitX/PowerNukkitX/issues/202

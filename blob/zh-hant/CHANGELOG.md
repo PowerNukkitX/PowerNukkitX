@@ -1001,3 +1001,37 @@ Fixes several anvil issues.
 [#PN-1266]: https://github.com/PowerNukkit/PowerNukkit/issues/1266
 [#PN-1267]: https://github.com/PowerNukkit/PowerNukkit/issues/1267
 [#PN-1270]: https://github.com/PowerNukkit/PowerNukkit/issues/1270
+
+
+[#4]: https://github.com/PowerNukkitX/PowerNukkitX/pull/4
+[#16]: https://github.com/PowerNukkitX/PowerNukkitX/pull/16
+[#17]: https://github.com/PowerNukkitX/PowerNukkitX/issues/17
+[#22]: https://github.com/PowerNukkitX/PowerNukkitX/issues/22
+[#33]: https://github.com/PowerNukkitX/PowerNukkitX/pull/33
+[#34]: https://github.com/PowerNukkitX/PowerNukkitX/pull/34
+[#44]: https://github.com/PowerNukkitX/PowerNukkitX/pull/44
+[#45]: https://github.com/PowerNukkitX/PowerNukkitX/pull/45
+[#49]: https://github.com/PowerNukkitX/PowerNukkitX/issues/49
+[#55]: https://github.com/PowerNukkitX/PowerNukkitX/issues/55
+[#78]: https://github.com/PowerNukkitX/PowerNukkitX/pull/78
+[#93]: https://github.com/PowerNukkitX/PowerNukkitX/pull/93
+[#106]: https://github.com/PowerNukkitX/PowerNukkitX/issues/106
+[#112]: https://github.com/PowerNukkitX/PowerNukkitX/pull/112
+[#114]: https://github.com/PowerNukkitX/PowerNukkitX/issues/114
+[#116]: https://github.com/PowerNukkitX/PowerNukkitX/issues/116
+[#124]: https://github.com/PowerNukkitX/PowerNukkitX/issues/124
+[#130]: https://github.com/PowerNukkitX/PowerNukkitX/pull/130
+[#132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/132
+[#136]: https://github.com/PowerNukkitX/PowerNukkitX/issues/136
+[#141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/141
+[#146]: https://github.com/PowerNukkitX/PowerNukkitX/pull/146
+[#147]: https://github.com/PowerNukkitX/PowerNukkitX/pull/147
+[#152]: https://github.com/PowerNukkitX/PowerNukkitX/issues/152
+[#153]: https://github.com/PowerNukkitX/PowerNukkitX/issues/153
+[#155]: https://github.com/PowerNukkitX/PowerNukkitX/pull/155
+[#161]: https://github.com/PowerNukkitX/PowerNukkitX/pull/161
+[#171]: https://github.com/PowerNukkitX/PowerNukkitX/issues/171
+[#177]: https://github.com/PowerNukkitX/PowerNukkitX/pull/177
+[#178]: https://github.com/PowerNukkitX/PowerNukkitX/pull/178
+[#188]: https://github.com/PowerNukkitX/PowerNukkitX/issues/188
+[#202]: https://github.com/PowerNukkitX/PowerNukkitX/issues/202
