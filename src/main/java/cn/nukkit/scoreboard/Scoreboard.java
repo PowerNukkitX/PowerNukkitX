@@ -45,7 +45,7 @@ public class Scoreboard {
     }
 
     public void addLine(Scorer scorer,int score){
-        lines.put(scorer,new ScoreboardLine(scorer,this,score,++scoreboardId));
+        lines.put(scorer,new ScoreboardLine(scorer,score,++scoreboardId));
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
         if (this.lines.get(scorer).toScoreInfo() != null)
@@ -82,13 +82,11 @@ public class Scoreboard {
     public class ScoreboardLine {
 
         private Scorer scorer;
-        private Scoreboard scoreboard;
         private int score;
         private int scoreboardId;
 
-        private ScoreboardLine(Scorer scorer, Scoreboard scoreboard, int score, int scoreboardId) {
+        private ScoreboardLine(Scorer scorer, int score, int scoreboardId) {
             this.scorer = scorer;
-            this.scoreboard = scoreboard;
             this.score = score;
             this.scoreboardId = scoreboardId;
         }
@@ -100,9 +98,9 @@ public class Scoreboard {
             if (this.toScoreInfo() != null)
                 packet.infos.add(this.toScoreInfo());
             Server.getInstance().getOnlinePlayers().values().forEach(player->player.dataPacket(packet));
-            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(this.scoreboard.objectiveName))
+            if (Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME) != null && Server.getInstance().getScoreboardManager().getDisplay().get(DisplaySlot.BELOW_NAME).equals(Scoreboard.this.objectiveName))
                 Server.getInstance().getScoreboardManager().updateScoreTag();
-            storage.saveScoreboard(scoreboard);
+            storage.saveScoreboard(Scoreboard.this);
         }
 
         public void addScore(int score){
@@ -118,15 +116,15 @@ public class Scoreboard {
             switch(this.scorer.getScorerType()) {
                 case PLAYER -> {
                     UUID uuid = ((PlayerScorer) this.scorer).getUuid();
-                    return !Server.getInstance().getPlayer(uuid).isEmpty() ? new SetScorePacket.ScoreInfo(this.scoreboardId, this.scoreboard.getObjectiveName(), this.score, ScorerType.PLAYER,Server.getInstance().getPlayer(uuid).get().getId()) : null;
+                    return !Server.getInstance().getPlayer(uuid).isEmpty() ? new SetScorePacket.ScoreInfo(this.scoreboardId, Scoreboard.this.getObjectiveName(), this.score, ScorerType.PLAYER,Server.getInstance().getPlayer(uuid).get().getId()) : null;
                 }
                 case ENTITY -> {
                     UUID uuid = ((EntityScorer) this.scorer).getEntityUuid();
                     long id = uuid.getMostSignificantBits();
-                    return new SetScorePacket.ScoreInfo(this.scoreboardId, this.scoreboard.getObjectiveName(), this.score, ScorerType.ENTITY, id);
+                    return new SetScorePacket.ScoreInfo(this.scoreboardId, Scoreboard.this.getObjectiveName(), this.score, ScorerType.ENTITY, id);
                 }
                 case FAKE -> {
-                    return new SetScorePacket.ScoreInfo(this.scoreboardId, this.scoreboard.getObjectiveName(), this.score,((FakeScorer) this.scorer).getFakeName());
+                    return new SetScorePacket.ScoreInfo(this.scoreboardId, Scoreboard.this.getObjectiveName(), this.score,((FakeScorer) this.scorer).getFakeName());
                 }
             };
             return null;
