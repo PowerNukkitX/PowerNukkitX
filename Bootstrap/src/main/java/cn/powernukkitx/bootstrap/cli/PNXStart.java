@@ -1,10 +1,7 @@
 package cn.powernukkitx.bootstrap.cli;
 
 import cn.powernukkitx.bootstrap.CLI;
-import cn.powernukkitx.bootstrap.info.locator.JarLocator;
-import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
-import cn.powernukkitx.bootstrap.info.locator.Location;
-import cn.powernukkitx.bootstrap.info.locator.Locator;
+import cn.powernukkitx.bootstrap.info.locator.*;
 import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
 
@@ -43,17 +40,24 @@ public final class PNXStart implements Component {
             Logger.trInfo("display.pnx.starting", fileName);
             final ProcessBuilder processBuilder = new ProcessBuilder();
             final File javaFile = java.getFile();
-            if(!javaFile.canExecute()) {
+            if (!javaFile.canExecute()) {
                 boolean r = javaFile.setExecutable(true);
-                if(!r) {
+                if (!r) {
                     Logger.trWarn("display.no-permission");
                     return;
                 }
             }
-            final String cmd = ConfigUtils.startCommand()
+            String cmd = ConfigUtils.startCommand()
                     .replace("%JAVA%", javaFile.getAbsolutePath())
                     .replace("%PNX%", fileName)
                     .replace("%CP_SPLIT%", Locator.platformSplitter());
+            List<Location<String>> graalJitLocations = new GraalJitLocator().locate();
+            if (graalJitLocations.size() == 2) {
+                cmd = cmd.replace("%GRAAL_JIT%", graalJitLocations.get(0).getFile().getAbsolutePath() + Locator.platformSplitter() + graalJitLocations.get(1).getFile().getAbsolutePath());
+            } else {
+                cmd = cmd.replace("%GRAAL_JIT%", "");
+            }
+            cmd = cmd.replace("--upgrade-module-path=" + Locator.platformSplitter() + " ", "");
             try {
                 long previousStartTime = 0L;
                 boolean fistTime = true;

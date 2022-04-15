@@ -3,6 +3,7 @@ package cn.powernukkitx.bootstrap.gui.view.impl.update;
 import cn.powernukkitx.bootstrap.gui.controller.CheckUpdateWindowController;
 import cn.powernukkitx.bootstrap.gui.controller.Controller;
 import cn.powernukkitx.bootstrap.gui.model.keys.UpdateWindowDataKeys;
+import cn.powernukkitx.bootstrap.gui.model.values.ComponentLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.JarLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.JavaLocationsWarp;
 import cn.powernukkitx.bootstrap.gui.model.values.LibLocationsWarp;
@@ -10,10 +11,8 @@ import cn.powernukkitx.bootstrap.gui.view.SwingView;
 import cn.powernukkitx.bootstrap.gui.view.View;
 import cn.powernukkitx.bootstrap.gui.view.impl.simple.ListChooseDialog;
 import cn.powernukkitx.bootstrap.gui.view.keys.CheckUpdateWindowViewKey;
-import cn.powernukkitx.bootstrap.info.locator.JarLocator;
-import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
-import cn.powernukkitx.bootstrap.info.locator.LibsLocator;
-import cn.powernukkitx.bootstrap.info.locator.Location;
+import cn.powernukkitx.bootstrap.info.locator.*;
+import cn.powernukkitx.bootstrap.info.remote.ComponentsHelper;
 import cn.powernukkitx.bootstrap.info.remote.VersionListHelper;
 import cn.powernukkitx.bootstrap.util.GitUtils;
 
@@ -199,6 +198,35 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                 tree.repaint();
             });
         }
+        {  // 附加组件信息
+            final TreeEntry componentsEntry = createWaitEntry(tr("gui.update-window.components"));
+            final DefaultMutableTreeNode componentsNode = new DefaultMutableTreeNode(componentsEntry);
+            rootNode.add(componentsNode);
+            bind(UpdateWindowDataKeys.COMPONENTS_LOCATIONS, ComponentLocationsWarp.class, value -> {
+                final List<Location<ComponentsLocator.ComponentInfo>> componentLocations = value.get();
+                boolean componentFull = true;
+                safeClearChildren(treeModel, componentsNode);
+                for(Location<ComponentsLocator.ComponentInfo> location : componentLocations) {
+                    final ComponentsLocator.ComponentInfo componentInfo = location.getInfo();
+                    DefaultMutableTreeNode tmpNode;
+                    if(!componentInfo.isInstalled()) {
+                        final TreeEntry tmpEntry = createErrorEntry(componentInfo.getDescription() + " " + componentInfo.getVersion()).setExtra("installComponent:" + componentInfo.getName());
+                        tmpNode = new DefaultMutableTreeNode(tmpEntry);
+                        componentFull = false;
+                    } else {
+                        final TreeEntry tmpEntry = createOkEntry(componentInfo.getDescription() + " " + componentInfo.getVersion());
+                        tmpNode = new DefaultMutableTreeNode(tmpEntry);
+                    }
+                    safeAddChild(treeModel, componentsNode, tmpNode);
+                    if (!componentFull) {
+                        componentsEntry.setIcon(getIcon("warn.png", TreeEntry.SIZE));
+                    } else {
+                        componentsEntry.setIcon(getIcon("ok.png", TreeEntry.SIZE));
+                    }
+                    tree.repaint();
+                }
+            });
+        }
         {  // 根节点隐藏
             tree.setRootVisible(true);
             tree.expandRow(0);
@@ -269,6 +297,10 @@ public final class CheckUpdateWindowView extends JFrame implements SwingView<JFr
                                         controller.onDownloadLib(data.getName());
                                     }
                                     break;
+                                default:
+                                    if(extra.startsWith("installComponent")) {
+                                        controller.onInstallComponent(extra.split(":")[1]);
+                                    }
                             }
                     }
                 }

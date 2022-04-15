@@ -5,11 +5,11 @@
 
 ## 目录
 
-1. <a href="#目录-问题#1">🧾 我想提交一个问题!</a>
-2. <a href="#目录-问题#2">💡 我想提交拉取申请!</a>
-3. <a href="#目录-多语言文档">🌐 切换语言 / Switch Languages</a>
+1. <a href="#Catalogs-Faq#1">🧾 我想提交一个问题!</a>
+2. <a href="#Catalogs-Faq#2">💡 我想提交拉取申请!</a>
+3. <a href="#Catalogs-Swlang">🌐 切换语言 / Switch Languages</a>
 
-## <a id="目录-问题#1"></a>🧾 我想提交一个问题!
+## <a id="Catalogs-Faq#1"></a>🧾 我想提交一个问题!
 
  我们随时欢迎您提出任何问题，错误报告和功能建议，但请记住，如果该问题在可预期的时间点内被认定为不重要，无法解决等，我们也会将其忽略，因此Issues页面可能会出现长时间未解决或彻底关闭的问题反馈将会是正常情况。
 
@@ -41,7 +41,7 @@
   如果问题已经产生，并且你也遇到过但无法提供任何对我们有帮助的问题细节的话，那您可在相关问题下评论留言。
 
 
-## <a id="目录-问题#2"></a>我想提交拉取申请!
+## <a id="Catalogs-Faq#2"></a>我想提交拉取申请!
 
 同时我们也欢迎各位开发者们对该项目作出您的贡献，您可在[问题追踪器](https://github.com/PowerNukkitX/PowerNukkitX/issues)页面发表您可以解决的问题等，同时我们也会使用[`Good First issue`](https://github.com/PowerNukkitX/PowerNukkitX/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)标签标记出我们认为对新人有帮助的问题解答等。
 
@@ -111,13 +111,13 @@
 
   说到哪种沟通方式最好，GitHub通常更适合长篇大论，而Discord和QQ群则更适合快速的呼唤和回应。在决定的时候，请尽力斟酌，并尽量将一个讨论放在一个地方，而不是来回移动。
 
-## <a id="目录-多语言文档"></a>🌐 多语言文档
+## <a id="Catalogs-Swlang"></a>🌐 多语言文档
 
 ---
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-cht/CONTRIBUTING.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
