@@ -28,7 +28,6 @@ import cn.nukkit.utils.Faceable;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import javax.script.ScriptException;
 import java.util.Map;
 import java.util.Set;
 
@@ -271,7 +270,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public boolean execute(int chain) {
         if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
-            if(this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0){//jump over because this CB is conditional and the last CB didn't succeed
+            if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
                 Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
                 if (next instanceof BlockCommandBlockChain nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
@@ -294,9 +293,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                             cmd = cmd.substring(1);
                         }
 
-                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getBlock(),cmd);
+                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getBlock(), cmd);
                         Server.getInstance().getPluginManager().callEvent(event);
-                        if(event.isCancelled()){
+                        if (event.isCancelled()) {
                             return false;
                         }
 
@@ -313,26 +312,26 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                                 this.successCount = 0;
                             }
                         }
-                        }
-                    }
-
-                    Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
-                    if (block instanceof BlockCommandBlockChain chainBlock) {
-                        chainBlock.getBlockEntity().trigger(++chain);
                     }
                 }
 
-                this.lastExecution = this.getServer().getTick();
-                this.lastOutputCommandMode = this.getMode();
-                this.lastOutputCondionalMode = this.isConditional();
-                this.lastOutputRedstoneMode = !this.isAuto();
-            } else {
-                this.successCount = 0;
+                Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                if (block instanceof BlockCommandBlockChain chainBlock) {
+                    chainBlock.getBlockEntity().trigger(++chain);
+                }
             }
 
-            this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
-            return true;
+            this.lastExecution = this.getServer().getTick();
+            this.lastOutputCommandMode = this.getMode();
+            this.lastOutputCondionalMode = this.isConditional();
+            this.lastOutputRedstoneMode = !this.isAuto();
+        } else {
+            this.successCount = 0;
         }
+
+        this.getLevelBlockAround().forEach(block -> block.onUpdate(Level.BLOCK_UPDATE_REDSTONE));//update redstone
+        return true;
+    }
 
     @Override
     public int getMode() {
