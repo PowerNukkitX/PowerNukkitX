@@ -55,7 +55,6 @@ This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
-- [#130] Changed [Network](https://github.com/CloudburstMC/Network) Library from `1.6.25` to `1.6.28`, fix CVE-2020-7238.
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -1087,7 +1086,6 @@ Need to switch languages?
 [#114]: https://github.com/PowerNukkitX/PowerNukkitX/issues/114
 [#116]: https://github.com/PowerNukkitX/PowerNukkitX/issues/116
 [#124]: https://github.com/PowerNukkitX/PowerNukkitX/issues/124
-[#130]: https://github.com/PowerNukkitX/PowerNukkitX/pull/130
 [#132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/132
 [#136]: https://github.com/PowerNukkitX/PowerNukkitX/issues/136
 [#141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/141
