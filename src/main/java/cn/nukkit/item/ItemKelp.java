@@ -21,5 +21,5 @@ public class ItemKelp extends Item {
         super(KELP, meta, count, "Kelp");
         this.block = new BlockKelp();
     }
-    
+
 }

@@ -110,13 +110,13 @@ public abstract class BlockCopperBase extends BlockSolid implements Oxidizable, 
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_COPPER : COPPER_BLOCK;
+                return waxed ? WAXED_COPPER : COPPER_BLOCK;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
+                return waxed ? WAXED_EXPOSED_COPPER : EXPOSED_COPPER;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
+                return waxed ? WAXED_WEATHERED_COPPER : WEATHERED_COPPER;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
+                return waxed ? WAXED_OXIDIZED_COPPER : OXIDIZED_COPPER;
             default:
                 return getId();
         }

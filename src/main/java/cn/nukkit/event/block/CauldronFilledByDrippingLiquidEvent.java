@@ -17,7 +17,7 @@ public class CauldronFilledByDrippingLiquidEvent extends BlockEvent implements C
 
     private int liquidLevelIncrement;
 
-    public CauldronFilledByDrippingLiquidEvent(Block cauldron, CauldronLiquid liquid,int liquidLevelIncrement) {
+    public CauldronFilledByDrippingLiquidEvent(Block cauldron, CauldronLiquid liquid, int liquidLevelIncrement) {
         super(cauldron);
         this.liquid = liquid;
         this.liquidLevelIncrement = liquidLevelIncrement;

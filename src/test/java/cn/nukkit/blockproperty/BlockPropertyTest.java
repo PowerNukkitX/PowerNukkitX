@@ -21,16 +21,16 @@ class BlockPropertyTest {
 
     @Test
     void validateMeta() {
-        assertThrows(InvalidBlockPropertyMetaException.class, ()-> direction.validateMeta(7, 0));
-        assertThrows(InvalidBlockPropertyMetaException.class, ()-> direction.validateMeta(7L, 0));
-        assertThrows(InvalidBlockPropertyMetaException.class, ()-> direction.validateMeta(BigInteger.valueOf(7), 0));
+        assertThrows(InvalidBlockPropertyMetaException.class, () -> direction.validateMeta(7, 0));
+        assertThrows(InvalidBlockPropertyMetaException.class, () -> direction.validateMeta(7L, 0));
+        assertThrows(InvalidBlockPropertyMetaException.class, () -> direction.validateMeta(BigInteger.valueOf(7), 0));
     }
 
     @Test
     void getValue() {
         assertEquals(BlockFace.EAST, direction.getValue(13, 0));
         assertEquals(BlockFace.EAST, direction.getValue(13L, 0));
-        assertEquals(BlockFace.EAST, direction.getValue(BigInteger.valueOf(13), 0));   
+        assertEquals(BlockFace.EAST, direction.getValue(BigInteger.valueOf(13), 0));
     }
 
     @Test

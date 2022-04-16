@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
 
-public class BlockFloweringAzalea extends BlockAzalea{
+public class BlockFloweringAzalea extends BlockAzalea {
 
 
     @PowerNukkitOnly

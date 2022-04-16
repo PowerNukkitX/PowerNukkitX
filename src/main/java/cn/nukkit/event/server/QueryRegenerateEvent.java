@@ -58,7 +58,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.players = server.getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY);
         this.gameType = (server.getGamemode() & 0x01) == 0 ? "SMP" : "CMP";
         this.version = server.getVersion();
-        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " ("+server.getGitCommit()+")";
+        this.server_engine = server.getName() + " " + server.getNukkitVersion() + " (" + server.getGitCommit() + ")";
         this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
         this.numPlayers = this.players.length;
         this.maxPlayers = server.getMaxPlayers();

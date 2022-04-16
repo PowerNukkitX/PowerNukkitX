@@ -14,12 +14,12 @@ public class BlockTrapdoorSpruce extends BlockTrapdoor {
     public BlockTrapdoorSpruce(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return SPRUCE_TRAPDOOR;
     }
-    
+
     @Override
     public String getName() {
         return "Spruce Trapdoor";

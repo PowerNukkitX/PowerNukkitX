@@ -45,7 +45,7 @@ public abstract class BlockFungus extends BlockFlowable {
             level.useBreakOn(this);
             return type;
         }
-        
+
         return 0;
     }
 
@@ -56,7 +56,7 @@ public abstract class BlockFungus extends BlockFlowable {
         }
 
         level.addParticle(new BoneMealParticle(this));
-        
+
         if (player != null && !player.isCreative()) {
             item.count--;
         }
@@ -66,13 +66,13 @@ public abstract class BlockFungus extends BlockFlowable {
             level.useBreakOn(this);
             return true;
         }
-        
+
         if (!canGrowOn(down) || ThreadLocalRandom.current().nextFloat() >= 0.4) {
             return true;
         }
 
         grow(player);
-        
+
         return true;
     }
 

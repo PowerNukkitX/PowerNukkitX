@@ -22,7 +22,7 @@ import java.util.Random;
  * @author MagicDroidX (Nukkit Project)
  */
 public class ItemSpawnEgg extends Item {
-    
+
     public ItemSpawnEgg() {
         this(0, 1);
     }

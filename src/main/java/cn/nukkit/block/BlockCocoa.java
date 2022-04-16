@@ -272,7 +272,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

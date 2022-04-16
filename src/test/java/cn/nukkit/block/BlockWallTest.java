@@ -38,12 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(PowerNukkitExtension.class)
 class BlockWallTest {
     private static final int X = 1, Y = 2, Z = 3;
-    
+
     @MockLevel
     Level level;
-    
+
     BlockWall wall;
-    
+
     Item diamondPickaxe;
 
     @BeforeEach
@@ -59,9 +59,9 @@ class BlockWallTest {
         wall.setWallType(wallType);
         Item[] drops = wall.getDrops(diamondPickaxe);
         assertEquals(1, drops.length);
-        assertEquals(Item.getBlock(BlockID.STONE_WALL, 
-                BlockState.of(BlockID.STONE_WALL)
-                        .withProperty(BlockWall.WALL_BLOCK_TYPE, wallType).getExactIntStorage()), 
+        assertEquals(Item.getBlock(BlockID.STONE_WALL,
+                        BlockState.of(BlockID.STONE_WALL)
+                                .withProperty(BlockWall.WALL_BLOCK_TYPE, wallType).getExactIntStorage()),
                 drops[0]);
     }
 }

@@ -2,7 +2,8 @@
 <Configuration status="WARN">
     <Appenders>
         <TerminalConsole name="Console">
-            <PatternLayout pattern="%cyan{%d{HH:mm:ss}} [%style{%highlight{%-5level}{STYLE=Logback}}] %minecraftFormatting{%msg}%n"/>
+            <PatternLayout
+                    pattern="%cyan{%d{HH:mm:ss}} [%style{%highlight{%-5level}{STYLE=Logback}}] %minecraftFormatting{%msg}%n"/>
         </TerminalConsole>
     </Appenders>
     <Loggers>

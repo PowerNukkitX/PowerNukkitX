@@ -38,7 +38,7 @@ public class BlockKelp extends BlockFlowable {
     public BlockKelp(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return BLOCK_KELP;
@@ -68,7 +68,7 @@ public class BlockKelp extends BlockFlowable {
     public void setAge(int age) {
         setIntValue(KELP_AGE, age);
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = down();
@@ -94,24 +94,24 @@ public class BlockKelp extends BlockFlowable {
             return false;
         }
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block blockLayer1 = getLevelBlockAtLayer(1);
             if (!(blockLayer1 instanceof BlockIceFrosted) &&
-                    (!(blockLayer1 instanceof BlockWater) || !((BlockWater)blockLayer1).isSourceOrFlowingDown())) {
+                    (!(blockLayer1 instanceof BlockWater) || !((BlockWater) blockLayer1).isSourceOrFlowingDown())) {
                 this.getLevel().useBreakOn(this);
                 return type;
             }
-        
+
             Block down = down();
             if ((!down.isSolid() && down.getId() != BLOCK_KELP) || down.getId() == MAGMA || down.getId() == ICE || down.getId() == SOUL_SAND) {
                 this.getLevel().useBreakOn(this);
                 return type;
             }
-        
-            if (blockLayer1 instanceof BlockWater && ((BlockWater)blockLayer1).isFlowingDown()) {
+
+            if (blockLayer1 instanceof BlockWater && ((BlockWater) blockLayer1).isFlowingDown()) {
                 this.getLevel().setBlock(this, 1, get(FLOWING_WATER), true, false);
             }
             return type;
@@ -123,14 +123,14 @@ public class BlockKelp extends BlockFlowable {
         }
         return super.onUpdate(type);
     }
-    
+
     @PowerNukkitOnly
     public boolean grow() {
         int age = getAge();
         int maxValue = KELP_AGE.getMaxValue();
         if (age < maxValue) {
             Block up = up();
-            if (up instanceof BlockWater && ((BlockWater)up).isSourceOrFlowingDown()) {
+            if (up instanceof BlockWater && ((BlockWater) up).isSourceOrFlowingDown()) {
                 Block grown = BlockState.of(BLOCK_KELP, age + 1).getBlock();
                 BlockGrowEvent ev = new BlockGrowEvent(this, grown);
                 Server.getInstance().getPluginManager().callEvent(ev);
@@ -145,7 +145,7 @@ public class BlockKelp extends BlockFlowable {
         }
         return false;
     }
-    
+
     @Override
     public boolean onBreak(Item item) {
         Block down = down();
@@ -155,7 +155,7 @@ public class BlockKelp extends BlockFlowable {
         this.getLevel().setBlock(this, get(AIR), true, true);
         return true;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         //Bone meal
@@ -167,15 +167,15 @@ public class BlockKelp extends BlockFlowable {
                 int blockIdAbove = blockStateAbove.getBlockId();
                 if (blockIdAbove != BLOCK_KELP) {
                     if (blockIdAbove == FLOWING_WATER || blockIdAbove == STILL_WATER) {
-                        if (((BlockWater)blockStateAbove.getBlock()).isSourceOrFlowingDown()) {
+                        if (((BlockWater) blockStateAbove.getBlock()).isSourceOrFlowingDown()) {
                             BlockKelp highestKelp = (BlockKelp) getLevel().getBlock(x, y - 1, z);
                             if (highestKelp.grow()) {
                                 this.level.addParticle(new BoneMealParticle(this));
-    
+
                                 if (player != null && (player.gamemode & 0x01) == 0) {
                                     item.count--;
                                 }
-                                
+
                                 return true;
                             }
                         }
@@ -183,24 +183,24 @@ public class BlockKelp extends BlockFlowable {
                     return false;
                 }
             }
-            
+
             return true;
         }
-        
+
         return false;
     }
-    
+
     @Override
     public Item toItem() {
         return new ItemKelp();
     }
-    
+
     @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;

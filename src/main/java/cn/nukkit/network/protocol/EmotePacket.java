@@ -6,10 +6,13 @@ import lombok.ToString;
 @ToString
 public class EmotePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.EMOTE_PACKET;
-    
-    @Since("1.3.0.0-PN") public long runtimeId;
-    @Since("1.3.0.0-PN") public String emoteID;
-    @Since("1.3.0.0-PN") public byte flags;
+
+    @Since("1.3.0.0-PN")
+    public long runtimeId;
+    @Since("1.3.0.0-PN")
+    public String emoteID;
+    @Since("1.3.0.0-PN")
+    public byte flags;
 
     @Override
     public byte pid() {

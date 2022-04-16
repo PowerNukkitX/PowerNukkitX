@@ -74,12 +74,12 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     public boolean canBeFlowedInto() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return Item.EMPTY_ARRAY;
     }
-    
+
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockAir());
@@ -89,7 +89,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
-    
+
     @Override
     public boolean isBreakable(Item item) {
         return false;
@@ -136,13 +136,13 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
                 } else {
                     entity.motionY = Math.min(1.8, entity.motionY + 0.1);
                 }
-                
+
                 ThreadLocalRandom random = ThreadLocalRandom.current();
-                for(int i = 0; i < 2; ++i) {
+                for (int i = 0; i < 2; ++i) {
                     level.addParticle(new SplashParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                     level.addParticle(new BubbleParticle(add(random.nextFloat(), random.nextFloat() + 1, random.nextFloat())));
                 }
-                
+
             } else {
                 if (getDamage() == 1) {
                     entity.motionY = Math.max(-0.3, entity.motionY - 0.3);
@@ -164,7 +164,7 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
         this.getLevel().setBlock(this, this, true, true);
         return true;
     }
-    
+
     @Override
     public double getHardness() {
         return 100;

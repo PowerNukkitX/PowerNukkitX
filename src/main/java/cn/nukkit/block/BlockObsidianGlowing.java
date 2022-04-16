@@ -75,7 +75,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

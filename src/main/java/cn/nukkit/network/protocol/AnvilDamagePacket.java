@@ -8,12 +8,18 @@ import lombok.ToString;
 @Since("1.4.0.0-PN")
 @ToString
 public class AnvilDamagePacket extends DataPacket {
-    @Since("1.4.0.0-PN") @PowerNukkitOnly public static final byte NETWORK_ID = ProtocolInfo.ANVIL_DAMAGE_PACKET;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final byte NETWORK_ID = ProtocolInfo.ANVIL_DAMAGE_PACKET;
 
-    @Since("1.4.0.0-PN") public int damage;
-    @Since("1.4.0.0-PN") public int x;
-    @Since("1.4.0.0-PN") public int y;
-    @Since("1.4.0.0-PN") public int z;
+    @Since("1.4.0.0-PN")
+    public int damage;
+    @Since("1.4.0.0-PN")
+    public int x;
+    @Since("1.4.0.0-PN")
+    public int y;
+    @Since("1.4.0.0-PN")
+    public int z;
 
     @Override
     public byte pid() {

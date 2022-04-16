@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Stores a sequential range of {@link PositionTracking} objects in a file. The read operation is cached.
  * <p>This object holds a file handler and must be closed when it is no longer needed.</p>
  * <p>Once closed the instance cannot be reused.</p>
+ *
  * @author joserobjr
  */
 @PowerNukkitOnly
@@ -35,22 +36,23 @@ public class PositionTrackingStorage implements Closeable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DEFAULT_MAX_STORAGE = 500;
-    private static final byte[] HEADER = new byte[]{ 12,32,32, 'P', 'N', 'P', 'T', 'D', 'B', '1' };
+    private static final byte[] HEADER = new byte[]{12, 32, 32, 'P', 'N', 'P', 'T', 'D', 'B', '1'};
     private final int startIndex;
     private final int maxStorage;
     private final long garbagePos;
     private final long stringHeapPos;
     private final RandomAccessFile persistence;
-    private final Cache<Integer, Optional<PositionTracking>> cache = CacheBuilder.newBuilder().expireAfterAccess(5,TimeUnit.MINUTES).concurrencyLevel(1).build();
+    private final Cache<Integer, Optional<PositionTracking>> cache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).concurrencyLevel(1).build();
     private int nextIndex;
 
     /**
      * Opens or create the file and all directories in the path automatically. The given start index will be used
      * in new files and will be checked when opening files. If the file being opened don't matches this value
      * internally than an <code>IllegalArgumentException</code> will be thrown.
-     * @param startIndex The number of the first handler. Must be higher than 0 and must match the number of the existing file.
+     *
+     * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
      * @param persistenceFile The file being opened or created. Parent directories will also be created if necessary.
-     * @throws IOException If an error has occurred while reading, parsing or creating the file
+     * @throws IOException              If an error has occurred while reading, parsing or creating the file
      * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
      */
     @PowerNukkitOnly
@@ -63,11 +65,12 @@ public class PositionTrackingStorage implements Closeable {
      * Opens or create the file and all directories in the path automatically. The given start index will be used
      * in new files and will be checked when opening files. If the file being opened don't matches this value
      * internally than an <code>IllegalArgumentException</code> will be thrown.
-     * @param startIndex The number of the first handler. Must be higher than 0 and must match the number of the existing file.
+     *
+     * @param startIndex      The number of the first handler. Must be higher than 0 and must match the number of the existing file.
      * @param persistenceFile The file being opened or created. Parent directories will also be created if necessary.
-     * @param maxStorage The maximum amount of positions that this storage may hold. It cannot be changed after creation. 
-     *                   Ignored when loading an existing file. When zero or negative, a default value will be used.
-     * @throws IOException If an error has occurred while reading, parsing or creating the file
+     * @param maxStorage      The maximum amount of positions that this storage may hold. It cannot be changed after creation.
+     *                        Ignored when loading an existing file. When zero or negative, a default value will be used.
+     * @throws IOException              If an error has occurred while reading, parsing or creating the file
      * @throws IllegalArgumentException If opening an existing file and the internal startIndex don't match the given startIndex
      */
     @PowerNukkitOnly
@@ -78,20 +81,20 @@ public class PositionTrackingStorage implements Closeable {
         if (maxStorage <= 0) {
             maxStorage = DEFAULT_MAX_STORAGE;
         }
-        
+
         boolean created = false;
         if (!persistenceFile.isFile()) {
             if (!persistenceFile.getParentFile().isDirectory() && !persistenceFile.getParentFile().mkdirs()) {
-                throw new FileNotFoundException("Could not create the directory "+persistenceFile.getParent());
+                throw new FileNotFoundException("Could not create the directory " + persistenceFile.getParent());
             }
             if (!persistenceFile.createNewFile()) {
-                throw new FileNotFoundException("Could not create the file "+persistenceFile);
+                throw new FileNotFoundException("Could not create the file " + persistenceFile);
             }
             created = true;
-        } else if(persistenceFile.length() == 0) {
+        } else if (persistenceFile.length() == 0) {
             created = true;
         }
-        
+
         this.persistence = new RandomAccessFile(persistenceFile, "rwd");
         try {
             if (created) {
@@ -127,7 +130,7 @@ public class PositionTrackingStorage implements Closeable {
                     throw new IOException("The file " + persistenceFile + " is not a valid PowerNukkit TrackingPositionDB persistence file.", eof);
                 }
                 if (start != startIndex) {
-                    throw new IllegalArgumentException("The start index "+startIndex+" was given but the file "+persistenceFile+" has start index "+start);
+                    throw new IllegalArgumentException("The start index " + startIndex + " was given but the file " + persistenceFile + " has start index " + start);
                 }
                 this.maxStorage = maxStorage = max;
                 this.nextIndex = next;
@@ -153,7 +156,7 @@ public class PositionTrackingStorage implements Closeable {
 
     private long getAxisPos(int trackingHandler) {
         //                    max str cur  on  nam len  x   y   z 
-        return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long)(trackingHandler - startIndex);
+        return HEADER.length + 4 + 4 + 4 + (1 + 8 + 4 + 8 + 8 + 8) * (long) (trackingHandler - startIndex);
     }
 
     private void validateHandler(int trackingHandler) {
@@ -163,12 +166,13 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     /**
-     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler. 
+     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler.
      * The handler must be valid for this storage.
      * <p>This call may return a cached result but the returned object can be modified freely.</p>
+     *
      * @param trackingHandler A valid handler for this storage
      * @return A clone of the cached result.
-     * @throws IOException If an error has occurred while accessing the file
+     * @throws IOException              If an error has occurred while accessing the file
      * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
      */
     @PowerNukkitOnly
@@ -177,7 +181,7 @@ public class PositionTrackingStorage implements Closeable {
     public PositionTracking getPosition(int trackingHandler) throws IOException {
         validateHandler(trackingHandler);
         try {
-            return cache.get(trackingHandler, ()-> loadPosition(trackingHandler, true))
+            return cache.get(trackingHandler, () -> loadPosition(trackingHandler, true))
                     .map(PositionTracking::clone)
                     .orElse(null);
         } catch (ExecutionException e) {
@@ -186,14 +190,15 @@ public class PositionTrackingStorage implements Closeable {
     }
 
     /**
-     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler. 
+     * Retrieves the {@link PositionTracking} object that is assigned to the given trackingHandler.
      * The handler must be valid for this storage.
      * <p>This call may return a cached result but the returned object can be modified freely.</p>
+     *
      * @param trackingHandler A valid handler for this storage
-     * @param onlyEnabled When false, disabled positions that wasn't invalidated may be returned. 
-     *                    Caching only works when this is set to true 
+     * @param onlyEnabled     When false, disabled positions that wasn't invalidated may be returned.
+     *                        Caching only works when this is set to true
      * @return A clone of the cached result.
-     * @throws IOException If an error has occurred while accessing the file
+     * @throws IOException              If an error has occurred while accessing the file
      * @throws IllegalArgumentException If the trackingHandler is not valid for this storage
      */
     @PowerNukkitOnly
@@ -210,7 +215,8 @@ public class PositionTrackingStorage implements Closeable {
     /**
      * Attempts to reuse an existing and enabled trackingHandler for the given position, if none is found than a new handler is created
      * if the limit was not exceeded.
-     * @param position The position that needs a handler 
+     *
+     * @param position The position that needs a handler
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
@@ -226,7 +232,8 @@ public class PositionTrackingStorage implements Closeable {
 
     /**
      * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     * @param position The position that needs a handler 
+     *
+     * @param position The position that needs a handler
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
@@ -238,8 +245,9 @@ public class PositionTrackingStorage implements Closeable {
 
     /**
      * Adds the given position as a new entry in this storage, even if the position is already registered and enabled.
-     * @param position The position that needs a handler 
-     * @param enabled If the position will be added as enabled or disabled
+     *
+     * @param position The position that needs a handler
+     * @param enabled  If the position will be added as enabled or disabled
      * @return The trackingHandler assigned to the position or an empty OptionalInt if none was found and this storage is full
      * @throws IOException If an error occurred while reading or writing the file
      */
@@ -255,13 +263,13 @@ public class PositionTrackingStorage implements Closeable {
         }
         return handler;
     }
- 
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
     public OptionalInt findTrackingHandler(NamedPosition position) throws IOException {
         OptionalInt cached = cache.asMap().entrySet().stream()
-                .filter(e-> e.getValue().filter(position::matchesNamedPosition).isPresent())
+                .filter(e -> e.getValue().filter(position::matchesNamedPosition).isPresent())
                 .mapToInt(Map.Entry::getKey)
                 .findFirst();
         if (cached.isPresent()) {
@@ -275,7 +283,7 @@ public class PositionTrackingStorage implements Closeable {
         cache.put(found, Optional.of(new PositionTracking(position)));
         return OptionalInt.of(found);
     }
-    
+
     private IOException handleExecutionException(ExecutionException e) {
         Throwable cause = e.getCause();
         if (cause instanceof IOException) {
@@ -322,7 +330,7 @@ public class PositionTrackingStorage implements Closeable {
     public synchronized boolean hasPosition(int trackingHandler) throws IOException {
         return hasPosition(trackingHandler, true);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public synchronized boolean hasPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
@@ -334,7 +342,7 @@ public class PositionTrackingStorage implements Closeable {
         }
         return persistence.readLong() != 0;
     }
-    
+
     private synchronized void invalidatePos(int trackingHandler) throws IOException {
         long pos = getAxisPos(trackingHandler);
         persistence.seek(pos);
@@ -349,7 +357,7 @@ public class PositionTrackingStorage implements Closeable {
         cache.put(trackingHandler, Optional.empty());
         addGarbage(namePos, nameLen);
     }
-    
+
     private synchronized void addGarbage(long pos, int len) throws IOException {
         persistence.seek(garbagePos);
         int count = persistence.readInt();
@@ -382,10 +390,10 @@ public class PositionTrackingStorage implements Closeable {
                     }
                 }
             }
-            
+
             persistence.seek(garbagePos + 4);
         }
-        
+
         for (int attempt = 0; attempt < 15; attempt++) {
             persistence.readFully(buf);
             buffer.rewind();
@@ -401,14 +409,14 @@ public class PositionTrackingStorage implements Closeable {
             }
         }
     }
-    
+
     private synchronized long findSpaceInStringHeap(int len) throws IOException {
         persistence.seek(garbagePos);
         int remaining = persistence.readInt();
         if (remaining <= 0) {
             return persistence.length();
         }
-        
+
         byte[] buf = new byte[4 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(buf);
         for (int attempt = 0; attempt < 15; attempt++) {
@@ -432,7 +440,7 @@ public class PositionTrackingStorage implements Closeable {
         }
         return persistence.length();
     }
-    
+
     private synchronized OptionalInt addNewPos(NamedPosition pos, boolean enabled) throws IOException {
         if (nextIndex - startIndex >= maxStorage) {
             return OptionalInt.empty();
@@ -443,13 +451,13 @@ public class PositionTrackingStorage implements Closeable {
         persistence.writeInt(nextIndex);
         return OptionalInt.of(handler);
     }
-    
+
     private synchronized void writePos(int trackingHandler, NamedPosition pos, boolean enabled) throws IOException {
         byte[] name = pos.getLevelName().getBytes(StandardCharsets.UTF_8);
         long namePos = addLevelName(name);
         persistence.seek(getAxisPos(trackingHandler));
         persistence.write(ByteBuffer.allocate(1 + 8 + 4 + 8 + 8 + 8)
-                .put(enabled? (byte)1 : 0)
+                .put(enabled ? (byte) 1 : 0)
                 .putLong(namePos)
                 .putInt(name.length)
                 .putDouble(pos.x)
@@ -457,7 +465,7 @@ public class PositionTrackingStorage implements Closeable {
                 .putDouble(pos.z)
                 .array());
     }
-    
+
     private synchronized long addLevelName(byte[] name) throws IOException {
         long pos = findSpaceInStringHeap(name.length);
         persistence.seek(pos);
@@ -502,9 +510,9 @@ public class PositionTrackingStorage implements Closeable {
                 if (persistence.skipBytes(36) != 36) throw new EOFException();
                 continue;
             }
-            
+
             persistence.readFully(buf);
-            
+
             buffer.rewind();
             long namePos = buffer.getLong();
             int nameLen = buffer.getInt();
@@ -526,12 +534,12 @@ public class PositionTrackingStorage implements Closeable {
             }
         }
     }
-    
+
     private synchronized Optional<PositionTracking> loadPosition(int trackingHandler, boolean onlyEnabled) throws IOException {
         if (trackingHandler >= nextIndex) {
             return Optional.empty();
         }
-        
+
         persistence.seek(getAxisPos(trackingHandler));
         byte[] buf = new byte[1 + 8 + 4 + 8 + 8 + 8];
         persistence.readFully(buf);

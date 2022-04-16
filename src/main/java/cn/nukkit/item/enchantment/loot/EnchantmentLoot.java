@@ -12,7 +12,8 @@ import cn.nukkit.item.enchantment.EnchantmentType;
 public abstract class EnchantmentLoot extends Enchantment {
 
     @PowerNukkitOnly("Re-added for backward compatibility")
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentLoot(int id, String name, Rarity rarity, EnchantmentType type)")
     protected EnchantmentLoot(int id, String name, int weight, EnchantmentType type) {

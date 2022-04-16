@@ -3,7 +3,7 @@ package cn.nukkit.utils;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -77,6 +77,6 @@ class HumanStringComparatorTest {
     }
 
     private void assertZero(int actual) {
-        assertEquals(0 , actual);
+        assertEquals(0, actual);
     }
 }

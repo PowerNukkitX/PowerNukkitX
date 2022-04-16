@@ -23,7 +23,9 @@ public class BlockBasalt extends BlockSolidMeta {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockBasalt() { this(0); }
+    public BlockBasalt() {
+        this(0);
+    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

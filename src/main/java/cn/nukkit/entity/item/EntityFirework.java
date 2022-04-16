@@ -121,7 +121,7 @@ public class EntityFirework extends Entity {
                 for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
                     collisionBlock.onProjectileHit(this, position, motion);
                 }
-                
+
             } else if (!this.isCollided && this.hadCollision) {
                 this.hadCollision = false;
             }

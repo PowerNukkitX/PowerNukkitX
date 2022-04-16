@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Properties and behaviour definitions of the {@link BlockID#TWISTING_VINES} block.
+ *
  * @author joserobjr
  */
 @PowerNukkitOnly
@@ -44,6 +45,7 @@ public class BlockVinesTwisting extends BlockVinesNether {
 
     /**
      * Creates a {@code twisting_vine} from a meta compatible with {@link #getProperties()}.
+     *
      * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
     @PowerNukkitOnly

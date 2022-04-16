@@ -1,13 +1,13 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -22,11 +22,11 @@ public class SpreadPlayersCommand extends VanillaCommand {
         this.setPermission("nukkit.command.spreadplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("x",false, CommandParamType.VALUE),
-                CommandParameter.newType("z",false, CommandParamType.VALUE),
-                CommandParameter.newType("spreadDistance",false, CommandParamType.FLOAT),
-                CommandParameter.newType("maxRange",false, CommandParamType.FLOAT),
-                CommandParameter.newType("victim",false, CommandParamType.TARGET)
+                CommandParameter.newType("x", false, CommandParamType.VALUE),
+                CommandParameter.newType("z", false, CommandParamType.VALUE),
+                CommandParameter.newType("spreadDistance", false, CommandParamType.FLOAT),
+                CommandParameter.newType("maxRange", false, CommandParamType.FLOAT),
+                CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
         this.random = ThreadLocalRandom.current();
     }

@@ -13,7 +13,7 @@ import cn.nukkit.api.Since;
 public class BlockCopperExposedWaxed extends BlockCopperExposed {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockCopperExposedWaxed( ) {
+    public BlockCopperExposedWaxed() {
         // Does nothing
     }
 

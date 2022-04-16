@@ -62,7 +62,7 @@ public class BlockMoving extends BlockTransparent implements BlockEntityHolder<B
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

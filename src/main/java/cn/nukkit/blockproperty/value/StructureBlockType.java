@@ -33,7 +33,7 @@ public enum StructureBlockType {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     EXPORT("Export Structure Block");
-    
+
     private final String englishName;
 
     @Since("1.4.0.0-PN")

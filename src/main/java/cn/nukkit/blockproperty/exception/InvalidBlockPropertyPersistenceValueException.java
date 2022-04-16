@@ -35,10 +35,10 @@ import javax.annotation.ParametersAreNullableByDefault;
 @ParametersAreNullableByDefault
 public class InvalidBlockPropertyPersistenceValueException extends InvalidBlockPropertyException {
     private static final long serialVersionUID = 1L;
-    
+
     @Nullable
     private final String currentValue;
-    
+
     @Nullable
     private final String invalidValue;
 
@@ -53,7 +53,7 @@ public class InvalidBlockPropertyPersistenceValueException extends InvalidBlockP
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyPersistenceValueException(@Nonnull BlockProperty<?> property, String currentValue, String invalidValue, String message) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message);
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
@@ -61,7 +61,7 @@ public class InvalidBlockPropertyPersistenceValueException extends InvalidBlockP
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyPersistenceValueException(@Nonnull BlockProperty<?> property, String currentValue, String invalidValue, String message, Throwable cause) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message, cause);
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message, cause);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
@@ -73,9 +73,9 @@ public class InvalidBlockPropertyPersistenceValueException extends InvalidBlockP
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
-    
+
     private static String buildMessage(Object currentValue, Object invalidValue) {
-        return "Current Value: "+currentValue+", Invalid Value: "+invalidValue;
+        return "Current Value: " + currentValue + ", Invalid Value: " + invalidValue;
     }
 
 

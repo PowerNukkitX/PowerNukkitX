@@ -26,27 +26,32 @@ import javax.annotation.Nonnull;
 public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Using -1 instead of the overflown 0xFFFF")
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_EMPTY = -1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_NORMAL = 0;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_SPLASH = 1;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_LINGERING = 2;
 
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Magic value", replaceWith = "PotionType")
     @PowerNukkitOnly
     public static final int POTION_TYPE_LAVA = 0xF19B;
@@ -62,13 +67,13 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
             namedTag.putShort("PotionId", 0xffff);
         }
         potionId = namedTag.getShort("PotionId");
-        
-        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+
+        int potionType = (potionId & 0xFFFF) == 0xFFFF ? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
         if (namedTag.getBoolean("SplashPotion")) {
             potionType = POTION_TYPE_SPLASH;
             namedTag.remove("SplashPotion");
         }
-        
+
         if (!namedTag.contains("PotionType")) {
             namedTag.putShort("PotionType", potionType);
         }
@@ -92,12 +97,12 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void setPotionType(int potionType) {
-        this.namedTag.putShort("PotionType", (short)(potionType & 0xFFFF));
+        this.namedTag.putShort("PotionType", (short) (potionType & 0xFFFF));
     }
 
     @PowerNukkitOnly
     public int getPotionType() {
-        return (short)(this.namedTag.getShort("PotionType") & 0xFFFF);
+        return (short) (this.namedTag.getShort("PotionType") & 0xFFFF);
     }
 
     @PowerNukkitOnly
@@ -115,7 +120,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     public boolean isSplashPotion() {
         return namedTag.getShort("PotionType") == POTION_TYPE_SPLASH;
     }
-    
+
     /**
      * @deprecated Use {@link #setPotionType(int)} instead.
      */
@@ -166,7 +171,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         this.level.sendBlocks(viewers, new Vector3[]{block});
         super.spawnToAll();
         Location location = getLocation();
-        Server.getInstance().getScheduler().scheduleTask(null, ()-> {
+        Server.getInstance().getScheduler().scheduleTask(null, () -> {
             if (isValid()) {
                 BlockEntity cauldron = this.level.getBlockEntity(location);
                 if (cauldron == BlockEntityCauldron.this) {
@@ -212,6 +217,7 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         @PowerNukkitOnly @Since("1.4.0.0-PN") UNKNOWN(-2);
         private final int potionTypeData;
         private static final Int2ObjectMap<PotionType> BY_DATA;
+
         static {
             PotionType[] types = values();
             BY_DATA = new Int2ObjectOpenHashMap<>(types.length);

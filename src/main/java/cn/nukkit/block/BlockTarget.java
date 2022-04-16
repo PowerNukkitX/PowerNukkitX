@@ -70,7 +70,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
     @Override
     public int getWeakPower(BlockFace face) {
         BlockEntityTarget target = getBlockEntity();
-        return target == null? 0 : target.getActivePower();
+        return target == null ? 0 : target.getActivePower();
     }
 
     @PowerNukkitOnly
@@ -86,7 +86,7 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
         if (power <= 0 || ticks <= 0) {
             return deactivatePower();
         }
-        
+
         if (!level.getServer().isRedstoneEnabled()) {
             return false;
         }
@@ -146,13 +146,13 @@ public class BlockTarget extends BlockTransparent implements RedstoneComponent, 
             return false;
         }
 
-        Vector3 hitVector = intercept.hitVector.subtract(x*2, y*2, z*2);
+        Vector3 hitVector = intercept.hitVector.subtract(x * 2, y * 2, z * 2);
         List<Axis> axes = new ArrayList<>(Arrays.asList(Axis.values()));
         axes.remove(faceHit.getAxis());
-        
-        double[] coords = new double[] { hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1)) };
 
-        for (int i = 0; i < 2 ; i++) {
+        double[] coords = new double[]{hitVector.getAxis(axes.get(0)), hitVector.getAxis(axes.get(1))};
+
+        for (int i = 0; i < 2; i++) {
             if (coords[i] == 0.5) {
                 coords[i] = 1;
             } else if (coords[i] <= 0 || coords[i] >= 1) {

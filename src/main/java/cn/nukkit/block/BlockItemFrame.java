@@ -167,11 +167,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     public boolean onActivate(@Nonnull Item item, Player player) {
         BlockEntityItemFrame itemFrame = getOrCreateBlockEntity();
         if (itemFrame.getItem().isNull()) {
-        	Item itemOnFrame = item.clone();
-        	if (player != null && !player.isCreative()) {
-        		itemOnFrame.setCount(itemOnFrame.getCount() - 1);
+            Item itemOnFrame = item.clone();
+            if (player != null && !player.isCreative()) {
+                itemOnFrame.setCount(itemOnFrame.getCount() - 1);
                 player.getInventory().setItemInHand(itemOnFrame);
-        	}
+            }
             itemOnFrame.setCount(1);
             itemFrame.setItem(itemOnFrame);
             if (itemOnFrame.getId() == ItemID.MAP) {
@@ -193,7 +193,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @PowerNukkitDifference(info = "Allow to place on walls", since = "1.3.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if ((!(target.isSolid() || target instanceof BlockWall)  && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
+        if ((!(target.isSolid() || target instanceof BlockWall) && !target.equals(block) || (block.isSolid() && !block.canBeReplaced()))) {
             return false;
         }
 
@@ -288,7 +288,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 
@@ -296,16 +296,16 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         double[][] aabb = {
-                {2.0/16, 14.0/16},
-                {2.0/16, 14.0/16},
-                {2.0/16, 14.0/16}
+                {2.0 / 16, 14.0 / 16},
+                {2.0 / 16, 14.0 / 16},
+                {2.0 / 16, 14.0 / 16}
         };
 
         BlockFace facing = getFacing();
         if (facing.getAxisDirection() == POSITIVE) {
             int axis = facing.getAxis().ordinal();
             aabb[axis][0] = 0;
-            aabb[axis][1] = 1.0/16;
+            aabb[axis][1] = 1.0 / 16;
         }
 
         return new SimpleAxisAlignedBB(

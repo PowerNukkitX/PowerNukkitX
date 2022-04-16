@@ -68,13 +68,13 @@ public class PNXWorldHandle implements WorldHandle {
         if (s.equals("minecraft:basalt"))
             s = "minecraft:basalt[axis=y]";//special case
         State jeBlockStateData = new State(s);
-        if(jeBlockStateData.identifier.equals("minecraft:jungle_leaves"))
-            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
-        if(jeBlockStateData.identifier.equals("minecraft:oak_leaves"))
-            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
+        if (jeBlockStateData.identifier.equals("minecraft:jungle_leaves"))
+            jeBlockStateData.attributes.putIfAbsent("distance", "7");//special case
+        if (jeBlockStateData.identifier.equals("minecraft:oak_leaves"))
+            jeBlockStateData.attributes.putIfAbsent("distance", "7");//special case
         if (jeBlockStateData.identifier.equals("minecraft:bee_nest"))
             jeBlockStateData.attributes.putIfAbsent("honey_level", "0");//special case
-        if (jeBlockStateData.identifier.equals("minecraft:vine")){
+        if (jeBlockStateData.identifier.equals("minecraft:vine")) {
             jeBlockStateData.attributes.putIfAbsent("east", "false");
             jeBlockStateData.attributes.putIfAbsent("north", "false");
             jeBlockStateData.attributes.putIfAbsent("south", "false");
@@ -153,7 +153,7 @@ public class PNXWorldHandle implements WorldHandle {
         private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
 
         public State(String str) {
-            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ","").split(",");
+            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ", "").split(",");
             identifier = strings[0];
             if (strings.length > 1) {
                 for (int i = 1; i < strings.length; i++) {
@@ -167,7 +167,7 @@ public class PNXWorldHandle implements WorldHandle {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof State state) {
-                if(equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
+                if (equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
                     if (state.identifier.equals(identifier)) return true;
                 }
                 if (equalsIgnoreWaterlogged || state.equalsIgnoreWaterlogged) {
@@ -177,7 +177,7 @@ public class PNXWorldHandle implements WorldHandle {
                         m1.remove("waterlogged");
                     if (m2.containsKey("waterlogged"))
                         m2.remove("waterlogged");
-                    if(state.identifier.equals(identifier) && m1.equals(m2)) return true;
+                    if (state.identifier.equals(identifier) && m1.equals(m2)) return true;
                 }
                 return state.identifier.equals(identifier) && attributes.equals(state.attributes);
             }
@@ -193,7 +193,7 @@ public class PNXWorldHandle implements WorldHandle {
         @Override
         public String toString() {
             StringBuilder ret = new StringBuilder(identifier).append(";");
-            attributes.forEach((k,v) -> ret.append(k).append("=").append(v).append(";"));
+            attributes.forEach((k, v) -> ret.append(k).append("=").append(v).append(";"));
             return ret.toString();
         }
     }

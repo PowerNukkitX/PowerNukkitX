@@ -114,7 +114,7 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.enchant", "Allows the user to enchant items", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.difficulty", "Allows the user to change the difficulty", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.debug.perform", "Allows the user to use debugpaste command", Permission.DEFAULT_OP), commands);
-        
+
         registerPermission(new Permission(ROOT + ".textcolor", "Allows the user to write colored text", Permission.DEFAULT_OP), commands);
 
         commands.recalculatePermissibles();

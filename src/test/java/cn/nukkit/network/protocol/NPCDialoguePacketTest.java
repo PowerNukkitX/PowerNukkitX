@@ -44,12 +44,12 @@ class NPCDialoguePacketTest {
         packet.setNpcName("npcName");
         packet.setActionJson("json");
         packet.encode();
-        
+
         val packet2 = new NPCDialoguePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(1L, packet2.getRuntimeEntityId());
         assertEquals(NPCDialogAction.CLOSE, packet2.getAction());
         assertEquals("dialog", packet2.getDialogue());

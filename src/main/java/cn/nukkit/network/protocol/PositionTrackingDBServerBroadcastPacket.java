@@ -32,7 +32,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     private Action action;
     private int trackingId;
     private CompoundTag tag;
-    
+
     private CompoundTag requireTag() {
         if (tag == null) {
             tag = new CompoundTag()
@@ -131,7 +131,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         }
         return tag.getByte("dim");
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setDimension(int dimension) {
@@ -144,7 +144,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
         putByte((byte) action.ordinal());
         putVarInt(trackingId);
         try {
-            put(NBTIO.writeNetwork(tag != null? tag : new CompoundTag()));
+            put(NBTIO.writeNetwork(tag != null ? tag : new CompoundTag()));
         } catch (IOException e) {
             throw new EncoderException(e);
         }
@@ -154,7 +154,7 @@ public class PositionTrackingDBServerBroadcastPacket extends DataPacket {
     public void decode() {
         action = ACTIONS[getByte()];
         trackingId = getVarInt();
-        try(FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
+        try (FastByteArrayInputStream inputStream = new FastByteArrayInputStream(get())) {
             tag = NBTIO.readNetworkCompressed(inputStream);
         } catch (IOException e) {
             throw new EncoderException(e);

@@ -39,12 +39,12 @@ class SyncEntityPropertyPacketTest {
         val packet = new SyncEntityPropertyPacket();
         packet.setData(new CompoundTag("A"));
         packet.encode();
-        
+
         val packet2 = new SyncEntityPropertyPacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(new CompoundTag("A"), packet2.getData());
         assertTrue(packet2.feof());
     }

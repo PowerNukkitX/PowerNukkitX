@@ -3,15 +3,15 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 
@@ -24,12 +24,12 @@ public class SetBlockCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 new CommandParameter("position", CommandParamType.POSITION, false),
-                new CommandParameter("tileName", false, Arrays.stream(BlockID.class.getDeclaredFields()).map(f-> f.getName().toLowerCase()).toArray(String[]::new)),
+                new CommandParameter("tileName", false, Arrays.stream(BlockID.class.getDeclaredFields()).map(f -> f.getName().toLowerCase()).toArray(String[]::new)),
                 new CommandParameter("tileData", CommandParamType.INT, true),
                 new CommandParameter("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
     }
-    
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
@@ -73,11 +73,11 @@ public class SetBlockCommand extends VanillaCommand {
         try {
             int blockId = Integer.parseInt(args[3]);
             block = Block.get(blockId, data);
-        } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
+        } catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException ignored) {
             try {
                 int blockId = BlockID.class.getField(args[3].toUpperCase()).getInt(null);
                 block = Block.get(blockId, data);
-            } catch (NullPointerException|IndexOutOfBoundsException|ReflectiveOperationException ignored2) {
+            } catch (NullPointerException | IndexOutOfBoundsException | ReflectiveOperationException ignored2) {
                 sender.sendMessage(new TranslationContainer("commands.setblock.notFound", args[3]));
                 return true;
             }
@@ -117,7 +117,7 @@ public class SetBlockCommand extends VanillaCommand {
         block.position(position);
         if (level.setBlock(position, block, true, true)) {
             if (args.length > 4) {
-                level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
+                level.setBlockDataAt((int) position.x, (int) position.y, (int) position.z, data);
             }
             sender.sendMessage(new TranslationContainer("commands.setblock.success"));
             return true;

@@ -39,6 +39,7 @@ class EntityProjectileTest {
     Level level;
 
     TestProjectile projectile;
+
     @BeforeEach
     void setUp() {
         level.setBlockStateAt(0, 63, 0, BlockState.of(BlockID.STONE));

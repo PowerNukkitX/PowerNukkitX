@@ -167,7 +167,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         BlockEntityChest blockEntity = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt);
         if (blockEntity == null) {
             return false;
@@ -197,14 +197,14 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         if (player == null) {
             return false;
         }
-        
+
         Block top = up();
         if (!top.isTransparent()) {
             return false;
         }
 
         BlockEntityChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

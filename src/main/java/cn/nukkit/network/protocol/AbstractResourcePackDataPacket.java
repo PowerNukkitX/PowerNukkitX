@@ -37,7 +37,7 @@ public abstract class AbstractResourcePackDataPacket extends DataPacket {
         } catch (IllegalArgumentException exception) {
             setPackId(null);
         }
-        setPackVersion((packInfoParts.length > 1)? new Version(packInfoParts[1]) : null);
+        setPackVersion((packInfoParts.length > 1) ? new Version(packInfoParts[1]) : null);
     }
 
     @PowerNukkitOnly

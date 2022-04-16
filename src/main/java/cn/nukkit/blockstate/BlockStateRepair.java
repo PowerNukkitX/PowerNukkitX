@@ -37,7 +37,7 @@ public class BlockStateRepair {
     @Since("1.4.0.0-PN")
     @Nonnull
     BlockProperties properties;
-    
+
     /**
      * The state that was originally received when the repair started.
      */
@@ -87,7 +87,7 @@ public class BlockStateRepair {
     int propertyOffset;
 
     /**
-     * The current invalid int value that is in the property bit space. 
+     * The current invalid int value that is in the property bit space.
      * If the {@link #getProperty()} is {@code null} than it will hold all remaining data that can be stored in an integer
      */
     @PowerNukkitOnly
@@ -103,7 +103,7 @@ public class BlockStateRepair {
     Serializable fixedPropertyValue;
 
     /**
-     * The proposed property int value to fix the current block state, 
+     * The proposed property int value to fix the current block state,
      * if the proposed value is not valid {@link #getFixedPropertyValue()} will be used.
      */
     @PowerNukkitOnly

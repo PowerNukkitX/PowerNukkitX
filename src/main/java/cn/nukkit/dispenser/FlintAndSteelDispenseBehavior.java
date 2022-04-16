@@ -19,7 +19,8 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     @PowerNukkitDifference(info = "Reduce flint and steel usage instead of clearing.", since = "1.4.0.0-PN")
-    public @PowerNukkitOnly Item dispense(BlockDispenser block, BlockFace face, Item item) {
+    public @PowerNukkitOnly
+    Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
         item = item.clone();
 

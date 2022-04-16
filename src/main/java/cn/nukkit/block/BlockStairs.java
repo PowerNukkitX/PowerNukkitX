@@ -35,7 +35,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(STAIRS_DIRECTION, UPSIDE_DOWN);
-    
+
 
     protected BlockStairs(int meta) {
         super(meta);
@@ -71,7 +71,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         if (player != null) {
             setBlockFace(player.getDirection());
         }
-        
+
         if ((fy > 0.5 && face != BlockFace.UP) || face == BlockFace.DOWN) {
             setUpsideDown(true);
         }
@@ -87,7 +87,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         double maxSlabY = 0.5;
         double minHalfSlabY = 0.5;
         double maxHalfSlabY = 1;
-        
+
         if (isUpsideDown()) {
             minSlabY = 0.5;
             maxSlabY = 1;
@@ -160,7 +160,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     public void setUpsideDown(boolean upsideDown) {
         setBooleanValue(UPSIDE_DOWN, upsideDown);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isUpsideDown() {

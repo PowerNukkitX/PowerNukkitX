@@ -99,7 +99,7 @@ public class ItemTrident extends ItemTool {
                 entityShootBowEvent.getProjectile().close();
             } else {
                 entityShootBowEvent.getProjectile().spawnToAll();
-                    player.getLevel().addSound(player, Sound.ITEM_TRIDENT_THROW);
+                player.getLevel().addSound(player, Sound.ITEM_TRIDENT_THROW);
                 if (!player.isCreative()) {
                     this.count--;
                     player.getInventory().setItemInHand(this);

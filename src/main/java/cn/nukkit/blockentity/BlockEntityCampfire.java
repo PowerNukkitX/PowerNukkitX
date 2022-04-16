@@ -41,8 +41,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         this.keepItem = new boolean[4];
 
         for (int i = 1; i <= burnTime.length; i++) {
-            burnTime[i -1] = namedTag.getInt("ItemTime" + i);
-            keepItem[i -1] = namedTag.getBoolean("KeepItem" + 1);
+            burnTime[i - 1] = namedTag.getInt("ItemTime" + i);
+            keepItem[i - 1] = namedTag.getBoolean("KeepItem" + 1);
 
             if (this.namedTag.contains("Item" + i) && this.namedTag.get("Item" + i) instanceof CompoundTag) {
                 inventory.setItem(i - 1, NBTIO.getItemHelper(this.namedTag.getCompound("Item" + i)));
@@ -91,7 +91,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
                         this.level.dropItem(add(random.nextFloat(), 0.5, random.nextFloat()), event.getResult());
                         burnTime[slot] = 0;
                         recipes[slot] = null;
-                    } else if(event.getKeepItem()) {
+                    } else if (event.getKeepItem()) {
                         keepItem[slot] = true;
                         burnTime[slot] = 0;
                         recipes[slot] = null;
@@ -130,13 +130,13 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                namedTag.remove("Item"+i);
+                namedTag.remove("Item" + i);
                 namedTag.putInt("ItemTime" + i, 0);
-                namedTag.remove("KeepItem"+i);
+                namedTag.remove("KeepItem" + i);
             } else {
-                namedTag.putCompound("Item"+i, NBTIO.putItemHelper(item));
+                namedTag.putCompound("Item" + i, NBTIO.putItemHelper(item));
                 namedTag.putInt("ItemTime" + i, burnTime[i - 1]);
-                namedTag.putBoolean("KeepItem"+i, keepItem[i-1]);
+                namedTag.putBoolean("KeepItem" + i, keepItem[i - 1]);
             }
         }
 
@@ -181,9 +181,9 @@ public class BlockEntityCampfire extends BlockEntitySpawnable implements Invento
         for (int i = 1; i <= burnTime.length; i++) {
             Item item = inventory.getItem(i - 1);
             if (item == null || item.getId() == BlockID.AIR || item.getCount() <= 0) {
-                c.remove("Item"+i);
+                c.remove("Item" + i);
             } else {
-                c.putCompound("Item"+i, NBTIO.putItemHelper(item));
+                c.putCompound("Item" + i, NBTIO.putItemHelper(item));
             }
         }
 

@@ -46,15 +46,15 @@ public class ItemIdDumper {
     public static void main(String[] args) throws IOException {
         Gson gson = new Gson();
         JsonArray array;
-        try(InputStream is = Server.class.getResourceAsStream("/runtime_item_ids.json");
-            Reader reader = new InputStreamReader(is, Charsets.UTF_8)
+        try (InputStream is = Server.class.getResourceAsStream("/runtime_item_ids.json");
+             Reader reader = new InputStreamReader(is, Charsets.UTF_8)
         ) {
             array = gson.fromJson(reader, JsonArray.class);
         }
 
         SortedMap<String, String> itemIds = new TreeMap<>(new HumanStringComparator());
         SortedMap<String, String> blockIds = new TreeMap<>(new HumanStringComparator());
-        
+
         for (JsonElement element : array) {
             JsonObject object = (JsonObject) element;
             Integer itemId;
@@ -68,20 +68,20 @@ public class ItemIdDumper {
             } else {
                 itemId = object.get("oldId").getAsInt();
             }
-            OptionalInt oldData = object.has("oldData")? OptionalInt.of(object.get("oldData").getAsInt()) : OptionalInt.empty();
+            OptionalInt oldData = object.has("oldData") ? OptionalInt.of(object.get("oldData").getAsInt()) : OptionalInt.empty();
             String name = object.get("name").getAsString();
-            itemIds.put(itemId + (oldData.isPresent()? "_"+oldData.getAsInt() : ""), name);
-            
+            itemIds.put(itemId + (oldData.isPresent() ? "_" + oldData.getAsInt() : ""), name);
+
             if (itemId <= 255) {
                 int blockId = itemId;
                 if (blockId < 0) {
                     blockId = 255 - blockId;
                 }
-                
-                blockIds.put(blockId + (oldData.isPresent()? "_"+oldData.getAsInt() : ""), name);
+
+                blockIds.put(blockId + (oldData.isPresent() ? "_" + oldData.getAsInt() : ""), name);
             }
         }
-        
+
         try (FileWriter writer = new FileWriter("dumps/item-id-dump.properties")) {
             for (Map.Entry<String, String> entry : itemIds.entrySet()) {
                 writer.write(entry.getKey());

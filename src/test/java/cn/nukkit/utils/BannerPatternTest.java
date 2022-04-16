@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(PowerNukkitExtension.class)
 class BannerPatternTest {
     ItemBannerPattern item;
+
     @Test
     void defaultName() {
         item = new ItemBannerPattern(1000);

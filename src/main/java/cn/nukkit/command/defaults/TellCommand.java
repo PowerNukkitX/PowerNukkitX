@@ -2,11 +2,11 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Collections;
@@ -44,9 +44,9 @@ public class TellCommand extends VanillaCommand {
         String target = args[0].toLowerCase();
 
         List<Entity> entities = null;
-        if(EntitySelector.hasArguments(target)){
+        if (EntitySelector.hasArguments(target)) {
             entities = EntitySelector.matchEntities(sender, target);
-        }else {
+        } else {
             entities = Collections.singletonList(sender.getServer().getPlayer(target));
         }
         if (entities.isEmpty()) {
@@ -71,7 +71,7 @@ public class TellCommand extends VanillaCommand {
                     continue;
                 }
                 sender.sendMessage("[" + sender.getName() + " -> " + entity.getName() + "] " + msg);
-                ((Player)entity).sendMessage("[" + displayName + " -> " + entity.getName() + "] " + msg);
+                ((Player) entity).sendMessage("[" + displayName + " -> " + entity.getName() + "] " + msg);
             }
         }
         return true;

@@ -20,14 +20,16 @@ public enum StoneSlab3Type {
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_DIORITE(BlockColor.QUARTZ_BLOCK_COLOR),
     @PowerNukkitOnly @Since("1.4.0.0-PN") GRANITE(BlockColor.DIRT_BLOCK_COLOR),
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_GRANITE(BlockColor.DIRT_BLOCK_COLOR);
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final ArrayBlockProperty<StoneSlab3Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type_3", true, values());
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final ArrayBlockProperty<StoneSlab3Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type_3", true, values());
     private final BlockColor color;
 
     private final String englishName;
 
     StoneSlab3Type(BlockColor color) {
         this.color = color;
-        englishName = Arrays.stream(name().split("_")).map(name-> name.substring(0, 1) + name.substring(1).toLowerCase()).collect(Collectors.joining(" "));
+        englishName = Arrays.stream(name().split("_")).map(name -> name.substring(0, 1) + name.substring(1).toLowerCase()).collect(Collectors.joining(" "));
     }
 
     @PowerNukkitOnly

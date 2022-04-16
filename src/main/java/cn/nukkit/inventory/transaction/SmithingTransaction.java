@@ -82,15 +82,15 @@ public class SmithingTransaction extends InventoryTransaction {
             return false;
         }
         SmithingInventory grindstoneInventory = (SmithingInventory) inventory;
-        if (outputItem == null || outputItem.isNull() || 
+        if (outputItem == null || outputItem.isNull() ||
                 ((equipmentItem == null || equipmentItem.isNull()) && (ingredientItem == null || ingredientItem.isNull()))) {
             return false;
         }
-        
+
         Item air = Item.get(0);
-        Item equipment = equipmentItem != null? equipmentItem : air;
-        Item ingredient = ingredientItem != null? ingredientItem : air;
-        
+        Item equipment = equipmentItem != null ? equipmentItem : air;
+        Item ingredient = ingredientItem != null ? ingredientItem : air;
+
         return equipment.equals(grindstoneInventory.getEquipment(), true, true)
                 && ingredient.equals(grindstoneInventory.getIngredient(), true, true)
                 && outputItem.equals(grindstoneInventory.getResult(), true, true);
@@ -105,8 +105,8 @@ public class SmithingTransaction extends InventoryTransaction {
         }
         SmithingInventory inventory = (SmithingInventory) getSource().getWindowById(Player.SMITHING_WINDOW_ID);
         Item air = Item.get(0);
-        Item equipment = equipmentItem != null? equipmentItem : air;
-        Item ingredient = ingredientItem != null? ingredientItem : air;
+        Item equipment = equipmentItem != null ? equipmentItem : air;
+        Item ingredient = ingredientItem != null ? ingredientItem : air;
         SmithingTableEvent event = new SmithingTableEvent(inventory, equipment, outputItem, ingredient, source);
         this.source.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -132,24 +132,24 @@ public class SmithingTransaction extends InventoryTransaction {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getEquipmentItem() {
-        return equipmentItem == null? null : equipmentItem.clone();
+        return equipmentItem == null ? null : equipmentItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getIngredientItem() {
-        return ingredientItem == null? null : ingredientItem.clone();
+        return ingredientItem == null ? null : ingredientItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getOutputItem() {
-        return outputItem == null? null : outputItem.clone();
+        return outputItem == null ? null : outputItem.clone();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean checkForItemPart(List<InventoryAction> actions) {
-        return actions.stream().anyMatch(it-> it instanceof SmithingItemAction);
+        return actions.stream().anyMatch(it -> it instanceof SmithingItemAction);
     }
 }

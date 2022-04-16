@@ -104,8 +104,8 @@ public class EntityXPOrb extends Entity {
         return (source.getCause() == DamageCause.VOID ||
                 source.getCause() == DamageCause.FIRE_TICK ||
                 (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
-                source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
-                !this.isInsideOfWater()) && super.attack(source);
+                        source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
+                        !this.isInsideOfWater()) && super.attack(source);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class EntityXPOrb extends Entity {
      * up into multiple orbs when an amount of XP is dropped.
      */
     public static int getMaxOrbSize(int amount) {
-        for (int split : ORB_SPLIT_SIZES){
+        for (int split : ORB_SPLIT_SIZES) {
             if (amount >= split) {
                 return split;
             }

@@ -1,8 +1,8 @@
 <!ELEMENT minecraft-attributes (items)>
 
-<!ELEMENT items (item*)>
+        <!ELEMENT items (item*)>
 
-<!ELEMENT item (item-state*)>
+        <!ELEMENT item (item-state*)>
         <!ATTLIST item
                 namespaced-id ID #REQUIRED
                 numeric-id CDATA #REQUIRED
@@ -32,9 +32,9 @@
                 fertilizer (true|false) "false"
                 food CDATA ""
                 saturation CDATA ""
-        >
+                >
 
-<!ELEMENT item-state EMPTY>
+        <!ELEMENT item-state EMPTY>
         <!ATTLIST item-state
                 namespaced-id ID #IMPLIED
                 numeric-id CDATA #IMPLIED
@@ -63,4 +63,4 @@
                 unbreakable (true|false) #IMPLIED
                 lava-resistant (true|false) #IMPLIED
                 fertilizer (true|false) #IMPLIED
-        >
+                >

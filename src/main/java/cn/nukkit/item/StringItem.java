@@ -67,7 +67,7 @@ public class StringItem extends Item {
 
     @Override
     public Item setCompoundTag(byte[] tags) {
-        CompoundTag compoundTag = (tags == null || tags.length == 0)? new CompoundTag() : parseCompoundTag(tags);
+        CompoundTag compoundTag = (tags == null || tags.length == 0) ? new CompoundTag() : parseCompoundTag(tags);
         return this.setNamedTag(compoundTag);
     }
 

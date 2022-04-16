@@ -32,7 +32,7 @@ public class BlockPressurePlateWood extends BlockPressurePlateBase {
 
     @Override
     public int getToolType() {
-         return ItemTool.TYPE_AXE;
+        return ItemTool.TYPE_AXE;
     }
 
     @Override

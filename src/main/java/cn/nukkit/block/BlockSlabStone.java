@@ -20,7 +20,7 @@ public class BlockSlabStone extends BlockSlab {
             StoneSlab1Type.PROPERTY,
             TOP_SLOT_PROPERTY
     );
-    
+
     public static final int STONE = 0;
     public static final int SANDSTONE = 1;
     public static final int WOODEN = 2;
@@ -85,7 +85,7 @@ public class BlockSlabStone extends BlockSlab {
     public void setSlabType(StoneSlab1Type type) {
         setPropertyValue(StoneSlab1Type.PROPERTY, type);
     }
-    
+
     @Override
     public BlockColor getColor() {
         return getSlabType().getColor();

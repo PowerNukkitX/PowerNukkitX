@@ -22,13 +22,13 @@ public class EnchantmentTridentImpaling extends EnchantmentTrident {
     public int getMaxLevel() {
         return 5;
     }
-    
+
     @Override
     public double getDamageBonus(Entity entity) {
         if (entity.isTouchingWater() || (entity.getLevel().isRaining() && entity.getLevel().canBlockSeeSky(entity))) {
             return 2.5 * getLevel();
         }
-        
+
         return 0;
     }
 }

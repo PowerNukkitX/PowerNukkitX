@@ -54,7 +54,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Set<Block> ignitions;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected double yield;

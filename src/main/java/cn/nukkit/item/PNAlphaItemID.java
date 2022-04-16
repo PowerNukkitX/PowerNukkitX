@@ -144,18 +144,18 @@ public enum PNAlphaItemID {
     @Since("1.4.0.0-PN") @PowerNukkitOnly WATER_BUCKET(905, MinecraftItemID.WATER_BUCKET),
     @Since("1.4.0.0-PN") @PowerNukkitOnly LIGHT_GRAY_DYE(906, MinecraftItemID.LIGHT_GRAY_DYE),
     @Since("1.4.0.0-PN") @PowerNukkitOnly CHARCOAL(907, MinecraftItemID.CHARCOAL),
-    @Since("1.4.0.0-PN") @PowerNukkitOnly AGENT_SPAWN_EGG(908, MinecraftItemID.AGENT_SPAWN_EGG)
-    ;
+    @Since("1.4.0.0-PN") @PowerNukkitOnly AGENT_SPAWN_EGG(908, MinecraftItemID.AGENT_SPAWN_EGG);
     private final int badItemId;
     private final MinecraftItemID minecraftItemId;
-    
+
     private final static Int2ObjectMap<PNAlphaItemID> byId = new Int2ObjectOpenHashMap<>(values().length);
+
     static {
         for (PNAlphaItemID value : values()) {
             byId.put(value.badItemId, value);
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static PNAlphaItemID getBadAlphaId(int id) {

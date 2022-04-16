@@ -62,10 +62,10 @@ import static org.mockito.Mockito.lenient;
 class EntityTest {
     @MockLevel
     Level level;
-    
+
     @Mock
     FullChunk chunk;
-    
+
     Entity entity;
 
     @BeforeEach
@@ -176,13 +176,13 @@ class EntityTest {
             return;
         }
         entity = createEntity(id);
-        assertNotNull(entity, ()-> "Entity " + Entity.getSaveId(id));
+        assertNotNull(entity, () -> "Entity " + Entity.getSaveId(id));
         assertNotNull(entity.getOriginalName(), "Static Name");
         String staticName = entity.getOriginalName();
         assertEquals(staticName, entity.getName());
         assertFalse(entity.hasCustomName(), "Should not have custom");
         assertEquals(entity.getName(), entity.getVisibleName());
-        
+
         if (entity instanceof EntityNameable) {
             EntityNameable nameable = (EntityNameable) entity;
             nameable.setNameTag("Customized");
@@ -191,7 +191,7 @@ class EntityTest {
             assertEquals(staticName, entity.getOriginalName(), "Static name should not change");
             assertEquals("Customized", entity.getName());
             assertNotEquals(entity.getName(), entity.getOriginalName());
-            
+
             nameable.setNameTag(" ");
             assertTrue(entity.hasCustomName());
             assertNotNull(entity.getOriginalName());

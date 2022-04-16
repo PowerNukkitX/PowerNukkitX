@@ -44,12 +44,12 @@ class SetTitlePacketTest {
         packet.setXuid("xuid");
         packet.setPlatformOnlineId("poid");
         packet.encode();
-        
+
         val packet2 = new SetTitlePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(TitleAction.SET_TITLE_MESSAGE, packet2.getTitleAction());
         assertEquals("text", packet2.getText());
         assertEquals(1, packet2.getFadeInTime());

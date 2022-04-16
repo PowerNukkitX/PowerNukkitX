@@ -12,7 +12,10 @@ import cn.nukkit.blockproperty.BlockProperty;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.event.block.SignColorChangeEvent;
 import cn.nukkit.event.block.SignGlowEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSign;
+import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -39,7 +42,7 @@ import static cn.nukkit.math.CompassRoseDirection.*;
 public class BlockSignPost extends BlockTransparentMeta implements Faceable, BlockEntityHolder<BlockEntitySign> {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[] {
+    public static final BlockProperty<CompassRoseDirection> GROUND_SIGN_DIRECTION = new ArrayBlockProperty<>("ground_sign_direction", false, new CompassRoseDirection[]{
             SOUTH, SOUTH_SOUTH_WEST, SOUTH_WEST, WEST_SOUTH_WEST,
             WEST, WEST_NORTH_WEST, NORTH_WEST, NORTH_NORTH_WEST,
             NORTH, NORTH_NORTH_EAST, NORTH_EAST, EAST_NORTH_EAST,
@@ -152,7 +155,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable, Blo
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
 
             BlockState post = BlockState.of(getPostId()).withProperty(GROUND_SIGN_DIRECTION, direction);

@@ -65,7 +65,7 @@ public class BlockConcretePowder extends BlockFallableMeta {
     public int getToolType() {
         return ItemTool.TYPE_SHOVEL;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

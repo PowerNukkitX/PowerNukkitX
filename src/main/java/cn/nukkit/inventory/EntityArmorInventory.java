@@ -18,10 +18,18 @@ public class EntityArmorInventory extends BaseInventory {
 
     private final Entity entity;
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_HEAD = 0;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_CHEST = 1;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_LEGS = 2;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SLOT_FEET = 3;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_HEAD = 0;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_CHEST = 1;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_LEGS = 2;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SLOT_FEET = 3;
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
@@ -57,25 +65,25 @@ public class EntityArmorInventory extends BaseInventory {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getHelmet(){
+    public Item getHelmet() {
         return this.getItem(SLOT_HEAD);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getChestplate(){
+    public Item getChestplate() {
         return this.getItem(SLOT_CHEST);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getLeggings(){
+    public Item getLeggings() {
         return this.getItem(SLOT_LEGS);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public Item getBoots(){
+    public Item getBoots() {
         return this.getItem(SLOT_FEET);
     }
 

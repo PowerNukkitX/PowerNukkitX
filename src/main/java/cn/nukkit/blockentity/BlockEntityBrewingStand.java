@@ -39,7 +39,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     public static final List<Integer> ingredients = new ArrayList<>(Arrays.asList(
             ItemID.NETHER_WART, ItemID.GHAST_TEAR, ItemID.GLOWSTONE_DUST, ItemID.REDSTONE_DUST, ItemID.GUNPOWDER,
             ItemID.MAGMA_CREAM, ItemID.BLAZE_POWDER, ItemID.GOLDEN_CARROT, ItemID.SPIDER_EYE, ItemID.FERMENTED_SPIDER_EYE,
-            ItemID.GLISTERING_MELON, ItemID.SUGAR, ItemID.RABBIT_FOOT, ItemID.PUFFERFISH, ItemID.TURTLE_SHELL, 
+            ItemID.GLISTERING_MELON, ItemID.SUGAR, ItemID.RABBIT_FOOT, ItemID.PUFFERFISH, ItemID.TURTLE_SHELL,
             ItemID.PHANTOM_MEMBRANE, 437));
 
     public BlockEntityBrewingStand(FullChunk chunk, CompoundTag nbt) {
@@ -178,7 +178,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         return inventory;
     }
 
-    @Deprecated @DeprecationDetails(since = "1.3.1.2-PN", reason = "Checks the wrong location")
+    @Deprecated
+    @DeprecationDetails(since = "1.3.1.2-PN", reason = "Checks the wrong location")
     protected boolean checkIngredient(Item ingredient) {
         return ingredients.contains(ingredient.getId());
     }
@@ -197,7 +198,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             stopBrewing();
             return false;
         }
-        
+
         if (brewTime == MAX_BREW_TIME) {
             StartBrewEvent e = new StartBrewEvent(this);
             this.server.getPluginManager().callEvent(e);
@@ -210,11 +211,11 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         }
 
         if (--brewTime > 0) {
-            
+
             if (brewTime % 40 == 0) {
                 sendBrewTime();
             }
-            
+
             return true;
         }
 
@@ -226,7 +227,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             stopBrewing();
             return true;
         }
-        
+
         boolean mixed = false;
         MixRecipe[] recipes = matchRecipes(false);
         for (int i = 0; i < 3; i++) {
@@ -246,7 +247,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
                 mixed = true;
             }
         }
-        
+
         if (mixed) {
             Item ingredient = this.inventory.getIngredient();
             ingredient.count--;
@@ -257,7 +258,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
             this.getLevel().addSound(this, Sound.RANDOM_POTION_BREWED);
         }
-        
+
         stopBrewing();
         return true;
     }
@@ -267,7 +268,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         if (this.fuelAmount > 0 || fuel.getId() != ItemID.BLAZE_POWDER || fuel.getCount() <= 0) {
             return;
         }
-        
+
         fuel.count--;
         this.fuelAmount = 20;
         this.fuelTotal = 20;
@@ -281,9 +282,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         this.sendBrewTime();
         this.brewTime = MAX_BREW_TIME;
     }
-    
+
     private MixRecipe[] matchRecipes(boolean quickTest) {
-        MixRecipe[] recipes = new MixRecipe[quickTest? 1 : 3];
+        MixRecipe[] recipes = new MixRecipe[quickTest ? 1 : 3];
         Item ingredient = inventory.getIngredient();
         CraftingManager craftingManager = getLevel().getServer().getCraftingManager();
         for (int i = 0; i < 3; i++) {
@@ -291,23 +292,23 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             if (potion.isNull()) {
                 continue;
             }
-            
+
             MixRecipe recipe = craftingManager.matchBrewingRecipe(ingredient, potion);
             if (recipe == null) {
                 recipe = craftingManager.matchContainerRecipe(ingredient, potion);
-            } 
+            }
             if (recipe == null) {
                 continue;
             }
-            
+
             if (quickTest) {
                 recipes[0] = recipe;
                 return recipes;
             }
-            
+
             recipes[i] = recipe;
         }
-        
+
         return recipes;
     }
 
@@ -366,7 +367,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
         block.setDamage(meta);
         this.level.setBlock(block, block, false, false);
-        
+
         if (brewTime != MAX_BREW_TIME && matchRecipes(true)[0] == null) {
             stopBrewing();
         }

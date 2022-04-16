@@ -84,7 +84,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
             log.error("Failed to remove the tracking position handler for {}", getLocation());
             return;
         }
-        
+
         int size = handlers.size();
         for (int i = 0; i < size; i++) {
             int handler = handlers.getInt(i);

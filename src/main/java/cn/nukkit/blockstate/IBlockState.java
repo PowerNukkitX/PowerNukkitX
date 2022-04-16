@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static cn.nukkit.blockstate.Loggers.logIBlockState;
@@ -88,7 +88,7 @@ public interface IBlockState {
     BigInteger getHugeDamage();
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -97,9 +97,9 @@ public interface IBlockState {
     Serializable getPropertyValue(String propertyName);
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
-     * @throws ClassCastException If the actual property value don't match the type of the given property 
+     * @throws ClassCastException                 If the actual property value don't match the type of the given property
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -109,7 +109,7 @@ public interface IBlockState {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -120,7 +120,7 @@ public interface IBlockState {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -128,7 +128,7 @@ public interface IBlockState {
     int getIntValue(String propertyName);
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -138,18 +138,18 @@ public interface IBlockState {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property don't hold boolean values
+     * @throws ClassCastException                If the property don't hold boolean values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     boolean getBooleanValue(String propertyName);
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property don't hold boolean values
+     * @throws ClassCastException                If the property don't hold boolean values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -158,7 +158,7 @@ public interface IBlockState {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -167,7 +167,7 @@ public interface IBlockState {
     String getPersistenceValue(String propertyName);
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -233,7 +233,7 @@ public interface IBlockState {
     @Since("1.4.0.0-PN")
     @Nonnull
     default String getLegacyStateId() {
-        return getPersistenceName()+";nukkit-unknown="+getDataStorage();
+        return getPersistenceName() + ";nukkit-unknown=" + getDataStorage();
     }
 
     @PowerNukkitOnly
@@ -303,11 +303,11 @@ public interface IBlockState {
         } catch (Exception e) {
             logIBlockState.error("Unexpected error while trying to set the cached valid state to the block. State: {}, Block: {}", currentState, block, e);
         }
-        
+
         try {
             block.setDataStorage(currentState.getDataStorage(), repair, callback);
         } catch (InvalidBlockStateException e) {
-            throw new InvalidBlockStateException(getCurrentState(), "Invalid block state in layer "+layer+" at: "+new Position(x, y, z, level), e);
+            throw new InvalidBlockStateException(getCurrentState(), "Invalid block state in layer " + layer + " at: " + new Position(x, y, z, level), e);
         }
         return block;
     }
@@ -398,20 +398,20 @@ public interface IBlockState {
     @Nonnull
     default Block getBlockRepairing(@Nullable Level level, int x, int y, int z, int layer, @Nullable Consumer<BlockStateRepair> callback) {
         List<BlockStateRepair> repairs = new ArrayList<>(0);
-        
+
         Consumer<BlockStateRepair> callbackChain = repairs::add;
 
         if (!BlockStateRepairEvent.getHandlers().isEmpty()) {
             PluginManager manager = Server.getInstance().getPluginManager();
             callbackChain = callbackChain.andThen(repair -> manager.callEvent(new BlockStateRepairEvent(repair)));
         }
-        
+
         if (callback != null) {
             callbackChain = callbackChain.andThen(callback);
         }
-        
+
         Block block = getBlock(level, x, y, z, layer, true, callbackChain);
-        
+
         if (!BlockStateRepairFinishEvent.getHandlers().isEmpty()) {
             BlockStateRepairFinishEvent event = new BlockStateRepairFinishEvent(repairs, block);
             Server.getInstance().getPluginManager().callEvent(event);
@@ -424,7 +424,7 @@ public interface IBlockState {
                     new Exception("Stacktrace")
             );
         }
-        
+
         return block;
     }
 
@@ -446,7 +446,7 @@ public interface IBlockState {
     @Deprecated
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "the BlockState itself")
     default long getBigId() {
-        return ((long)getBlockId() << 32) | (getBigDamage() & BlockStateRegistry.BIG_META_MASK);
+        return ((long) getBlockId() << 32) | (getBigDamage() & BlockStateRegistry.BIG_META_MASK);
     }
 
     @PowerNukkitOnly

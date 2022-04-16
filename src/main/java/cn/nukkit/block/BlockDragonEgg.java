@@ -119,7 +119,7 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

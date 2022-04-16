@@ -18,7 +18,7 @@ import java.math.BigInteger;
 @ParametersAreNonnullByDefault
 public abstract class BlockProperty<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = -2594821043880025191L;
-    
+
     private final int bitSize;
     private final String name;
     private final String persistenceName;
@@ -36,13 +36,13 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
         this.persistenceName = persistenceName;
         this.exportedToItem = exportedToItem;
     }
-    
+
     private int computeRightMask(int bitOffset) {
-        return bitOffset == 0? 0 : -1 >>> (32 - bitOffset);
+        return bitOffset == 0 ? 0 : -1 >>> (32 - bitOffset);
     }
-    
+
     private long computeBigRightMask(int bitOffset) {
-        return bitOffset == 0L? 0L : -1L >>> (64 - bitOffset);
+        return bitOffset == 0L ? 0L : -1L >>> (64 - bitOffset);
     }
 
     private BigInteger computeHugeRightMask(int bitOffset) {
@@ -54,10 +54,10 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     private int computeValueMask(int bitOffset) {
         Preconditions.checkArgument(bitOffset >= 0, "Bit offset can not be negative. Got %s", bitOffset);
-        
+
         int maskBits = bitSize + bitOffset;
         Preconditions.checkArgument(0 < maskBits && maskBits <= 32, "The bit offset %s plus the bit size %s causes memory overflow (32 bits)", bitOffset, bitSize);
-        
+
         int rightMask = computeRightMask(bitOffset);
         int leftMask = -1 << maskBits;
         return ~rightMask & ~leftMask;
@@ -68,10 +68,10 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
      */
     private long computeBigValueMask(int bitOffset) {
         Preconditions.checkArgument(bitOffset >= 0, "Bit offset can not be negative. Got %s", bitOffset);
-        
+
         int maskBits = bitSize + bitOffset;
         Preconditions.checkArgument(0 < maskBits && maskBits <= 64, "The bit offset %s plus the bit size %s causes memory overflow (64 bits)", bitOffset, bitSize);
-        
+
         long rightMask = computeBigRightMask(bitOffset);
         long leftMask = -1L << maskBits;
         return ~rightMask & ~leftMask;
@@ -85,15 +85,15 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
         int maskBits = bitSize + bitOffset;
         Preconditions.checkArgument(0 < maskBits, "The bit offset %s plus the bit size %s causes memory overflow (huge)", bitOffset, bitSize);
-        
+
         BigInteger rightMask = computeHugeRightMask(bitOffset);
         BigInteger leftMask = BigInteger.valueOf(-1).shiftLeft(maskBits);
-        
+
         return rightMask.not().andNot(leftMask);
     }
 
     /**
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException           If the offset is negative or would cause memory overflow
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by this property
      */
     @PowerNukkitOnly
@@ -126,7 +126,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by this property
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException           If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -158,7 +158,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by this property
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException           If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -217,7 +217,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -233,7 +233,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -249,7 +249,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -265,7 +265,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -280,7 +280,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -295,7 +295,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -310,7 +310,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -326,7 +326,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -342,7 +342,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -410,7 +410,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException if the value in the meta at the given offset is not valid
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -425,7 +425,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException if the value in the meta at the given offset is not valid
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -440,7 +440,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     /**
      * @throws InvalidBlockPropertyMetaException if the value in the meta at the given offset is not valid
-     * @throws IllegalArgumentException If the offset is negative or would cause memory overflow
+     * @throws IllegalArgumentException          If the offset is negative or would cause memory overflow
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -486,7 +486,7 @@ public abstract class BlockProperty<T extends Serializable> implements Serializa
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"{" +
+        return getClass().getSimpleName() + "{" +
                 "name='" + name + '\'' +
                 ", bitSize=" + bitSize +
                 ", exportedToItem=" + exportedToItem +

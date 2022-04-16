@@ -33,7 +33,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public int getId() {
         return END_GATEWAY;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -41,7 +41,7 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public Class<? extends BlockEntityEndGateway> getBlockEntityClass() {
         return BlockEntityEndGateway.class;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -49,18 +49,18 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public String getBlockEntityType() {
         return BlockEntity.END_GATEWAY;
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
     }
-    
+
     @Override
     public boolean canPassThrough() {
         if (this.getLevel() == null) {
             return false;
         }
-        
+
         if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
             return false;
         } else {
@@ -97,41 +97,41 @@ public class BlockEndGateway extends BlockSolid implements BlockEntityHolder<Blo
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR;
     }
-    
+
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     public boolean canBePulled() {
         return false;
     }
-    
+
     @Override
     public void onEntityCollide(Entity entity) {
         if (this.getLevel() == null) {
             return;
         }
-        
+
         if (this.getLevel().getDimension() != Level.DIMENSION_THE_END) {
             return;
         }
-        
+
         if (entity == null) {
             return;
         }
-        
+
         BlockEntityEndGateway endGateway = getOrCreateBlockEntity();
         if (endGateway == null) {
             return;
         }
-        
+
         if (!endGateway.isTeleportCooldown()) {
             endGateway.teleportEntity(entity);
         }

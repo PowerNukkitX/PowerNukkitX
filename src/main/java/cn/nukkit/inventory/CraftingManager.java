@@ -39,7 +39,7 @@ public class CraftingManager {
             replaceWith = "getPacket()")
     @Since("1.5.0.0-PN")
     public static DataPacket packet = null;
-    
+
     private static int RECIPE_COUNT = 0;
     private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<FurnaceRecipe> furnaceRecipeMap = new Int2ObjectOpenHashMap<>();
@@ -59,7 +59,7 @@ public class CraftingManager {
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
     public final Collection<Recipe> recipes = recipeList;
-    
+
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
     protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = shapedRecipeMap;
@@ -67,7 +67,7 @@ public class CraftingManager {
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
     public final Map<Integer, FurnaceRecipe> furnaceRecipes = furnaceRecipeMap;
-    
+
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
     @PowerNukkitOnly
@@ -129,13 +129,13 @@ public class CraftingManager {
     public Int2ObjectMap<Map<UUID, ShapedRecipe>> getShapedRecipeMap() {
         return shapedRecipeMap;
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public Int2ObjectMap<FurnaceRecipe> getFurnaceRecipesMap() {
         return furnaceRecipeMap;
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public Int2ObjectMap<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
@@ -196,7 +196,7 @@ public class CraftingManager {
     public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
         return smithingRecipeMap;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static DataPacket getCraftingPacket() {
@@ -403,9 +403,9 @@ public class CraftingManager {
             int toPotionMeta = ((Number) potionMix.get("outputMeta")).intValue();
 
             registerBrewingRecipe(new BrewingRecipe(
-                    Item.fromString(fromPotionId+":"+fromPotionMeta),
-                    Item.fromString(ingredient+":"+ingredientMeta),
-                    Item.fromString(toPotionId+":"+toPotionMeta)
+                    Item.fromString(fromPotionId + ":" + fromPotionMeta),
+                    Item.fromString(ingredient + ":" + ingredientMeta),
+                    Item.fromString(toPotionId + ":" + toPotionMeta)
             ));
         }
 
@@ -418,7 +418,7 @@ public class CraftingManager {
 
             registerContainerRecipe(new ContainerRecipe(Item.fromString(fromItemId), Item.fromString(ingredient), Item.fromString(toItemId)));
         }
-        
+
         // Allow to rename without crafting 
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP), Collections.singletonList(Item.get(ItemID.EMPTY_MAP))));
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2), Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2))));
@@ -432,7 +432,7 @@ public class CraftingManager {
         String nbt = (String) data.get("nbt_b64");
         byte[] nbtBytes = nbt != null ? Base64.getDecoder().decode(nbt) : EmptyArrays.EMPTY_BYTES;
 
-        int count = data.containsKey("count")? ((Number)data.get("count")).intValue() : 1;
+        int count = data.containsKey("count") ? ((Number) data.get("count")).intValue() : 1;
         Integer legacyId = null;
         if (data.containsKey("legacyId")) {
             legacyId = Utils.toInt(data.get("legacyId"));
@@ -515,7 +515,7 @@ public class CraftingManager {
                 pk.addShapelessRecipe((ShapelessRecipe) recipe);
             }
         }
-    
+
         for (Map<UUID, CartographyRecipe> map : getCartographyRecipeMap().values()) {
             for (CartographyRecipe recipe : map.values()) {
                 pk.addCartographyRecipe(recipe);
@@ -655,7 +655,7 @@ public class CraftingManager {
     public static int getItemHash(Item item, int meta) {
         int id = item.getId();
         int hash = 31 + (id << 8 | meta & 0xFF);
-        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem? item.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem ? item.getNamespaceId().hashCode() : 0);
         return hash;
     }
 
@@ -686,15 +686,15 @@ public class CraftingManager {
     public void registerCartographyRecipe(CartographyRecipe recipe) {
         List<Item> list = recipe.getIngredientList();
         list.sort(recipeComparator);
-        
+
         UUID hash = getMultiItemHash(list);
-        
+
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, CartographyRecipe> map = getCartographyRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-        
+
         map.put(hash, recipe);
     }
-    
+
     public void registerShapelessRecipe(ShapelessRecipe recipe) {
         List<Item> list = recipe.getIngredientsAggregate();
 
@@ -705,7 +705,7 @@ public class CraftingManager {
 
         map.put(hash, recipe);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void registerSmithingRecipe(@Nonnull SmithingRecipe recipe) {
@@ -735,14 +735,14 @@ public class CraftingManager {
     public SmithingRecipe matchSmithingRecipe(@Nonnull List<Item> inputList) {
         inputList.sort(recipeComparator);
         UUID inputHash = getMultiItemHash(inputList);
-        
-        return getSmithingRecipeMap().values().stream().flatMap(map-> map.entrySet().stream())
-                .filter(entry-> entry.getKey().equals(inputHash))
+
+        return getSmithingRecipeMap().values().stream().flatMap(map -> map.entrySet().stream())
+                .filter(entry -> entry.getKey().equals(inputHash))
                 .map(Map.Entry::getValue)
-                .findFirst().orElseGet(()->
-                        getSmithingRecipeMap().values().stream().flatMap(map-> map.values().stream())
-                        .filter(recipe -> recipe.matchItems(inputList))
-                        .findFirst().orElse(null)
+                .findFirst().orElseGet(() ->
+                        getSmithingRecipeMap().values().stream().flatMap(map -> map.values().stream())
+                                .filter(recipe -> recipe.matchItems(inputList))
+                                .findFirst().orElse(null)
                 );
     }
 
@@ -761,7 +761,7 @@ public class CraftingManager {
         if (!getSmithingRecipeMap().containsKey(outputHash)) {
             return null;
         }
-        
+
         inputList.sort(recipeComparator);
 
         UUID inputHash = getMultiItemHash(inputList);
@@ -792,14 +792,14 @@ public class CraftingManager {
         int potionId = potion.getId();
         int hash = 17;
         hash *= 31 + ingredientId;
-        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM? ingredient.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
         hash *= 31 + potion.getDamage();
         hash *= 31 + potionId;
-        hash *= 31 + (potionId == ItemID.STRING_IDENTIFIED_ITEM? potion.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (potionId == ItemID.STRING_IDENTIFIED_ITEM ? potion.getNamespaceId().hashCode() : 0);
         hash *= 31 + potion.getDamage();
         return hash;
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public static int getContainerHash(@Nonnull Item ingredient, @Nonnull Item container) {
@@ -807,9 +807,9 @@ public class CraftingManager {
         int containerId = container.getId();
         int hash = 17;
         hash *= 31 + ingredientId;
-        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM? ingredient.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
         hash *= 31 + containerId;
-        hash *= 31 + (containerId == ItemID.STRING_IDENTIFIED_ITEM? container.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (containerId == ItemID.STRING_IDENTIFIED_ITEM ? container.getNamespaceId().hashCode() : 0);
         return hash;
     }
 
@@ -848,31 +848,31 @@ public class CraftingManager {
     @PowerNukkitOnly
     public CartographyRecipe matchCartographyRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList) {
         int outputHash = getItemHash(primaryOutput);
-    
+
         if (getCartographyRecipeMap().containsKey(outputHash)) {
             inputList.sort(recipeComparator);
-        
+
             UUID inputHash = getMultiItemHash(inputList);
-        
+
             Map<UUID, CartographyRecipe> recipes = getCartographyRecipeMap().get(outputHash);
-        
+
             if (recipes == null) {
                 return null;
             }
-        
+
             CartographyRecipe recipe = recipes.get(inputHash);
-        
+
             if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))) {
                 return recipe;
             }
-        
+
             for (CartographyRecipe cartographyRecipe : recipes.values()) {
                 if (cartographyRecipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(cartographyRecipe, inputList, primaryOutput, extraOutputList)) {
                     return cartographyRecipe;
                 }
             }
         }
-        
+
         return null;
     }
 

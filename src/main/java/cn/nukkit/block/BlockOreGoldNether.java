@@ -76,7 +76,7 @@ public class BlockOreGoldNether extends BlockOreGold {
                 break;
         }
 
-        return new Item[]{ Item.get(ItemID.GOLD_NUGGET, 0, count) };
+        return new Item[]{Item.get(ItemID.GOLD_NUGGET, 0, count)};
     }
 
     @Since("FUTURE")

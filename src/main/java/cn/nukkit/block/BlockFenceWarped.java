@@ -7,6 +7,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * BlockFenceWarped.java was made by using BlockFence.java and BlockFenceNetherBrick.java
  */
+
 /**
  * @author xtypr
  * @since 2015/12/7
@@ -41,12 +42,12 @@ public class BlockFenceWarped extends BlockFenceBase {
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;
     }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;

@@ -35,7 +35,8 @@ public class Skin {
 
     private final String fullSkinId = UUID.randomUUID().toString();
     private String skinId;
-    @Since("1.4.0.0-PN") private String playFabId = "";
+    @Since("1.4.0.0-PN")
+    private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
     private final List<SkinAnimation> animations = new ArrayList<>();

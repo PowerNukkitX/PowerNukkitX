@@ -32,7 +32,7 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
 
     public BlockHayBale(int meta) {
         super(meta);
-     }
+    }
 
     @Override
     public int getId() {
@@ -114,7 +114,7 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     @PowerNukkitOnly
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
         float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;

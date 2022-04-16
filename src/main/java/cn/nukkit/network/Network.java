@@ -300,7 +300,7 @@ public class Network {
     @PowerNukkitDifference(info = "Handles exception if on of the packets in the list fails")
     public void processPackets(Player player, List<DataPacket> packets) {
         if (packets.isEmpty()) return;
-        packets.forEach(p-> {
+        packets.forEach(p -> {
             try {
                 player.handleDataPacket(p);
             } catch (Exception e) {
@@ -316,14 +316,14 @@ public class Network {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "Changed the id to int without backward compatibility", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Changed the id to int without backward compatibility",
             replaceWith = "getPacket(int id)")
     @PowerNukkitOnly
     public DataPacket getPacket(byte id) {
         return getPacket((int) id);
     }
-    
+
     @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
         Class<? extends DataPacket> clazz = this.packetPool[id];

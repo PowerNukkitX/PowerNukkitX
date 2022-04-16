@@ -126,7 +126,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
                 break;
             default:
                 this.offMinX = 0;
-                this.offMinZ = 1 ;
+                this.offMinZ = 1;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
                 break;
@@ -170,12 +170,12 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
             return false;
         }
-        
+
         this.setDamage(face.getIndex());
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }
-    
+
     private boolean isSupportValid(Block support, BlockFace face) {
         switch (support.getId()) {
             case GLASS:
@@ -219,7 +219,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
@@ -240,7 +240,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

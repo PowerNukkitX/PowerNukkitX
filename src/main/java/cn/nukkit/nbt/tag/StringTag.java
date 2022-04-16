@@ -60,7 +60,7 @@ public class StringTag extends Tag {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), data);

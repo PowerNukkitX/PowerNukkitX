@@ -21,13 +21,14 @@ public abstract class EnchantmentDamage extends Enchantment {
     protected final TYPE damageType;
 
     @PowerNukkitOnly("Re-added for backward compatibility")
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "The signature was changed and it doesn't exists anymore in Cloudburst Nukkit",
             replaceWith = "EnchantmentDamage(int id, String name, Rarity rarity, TYPE type)")
     protected EnchantmentDamage(int id, String name, int weight, TYPE type) {
         this(id, name, Rarity.fromWeight(weight), type);
     }
-    
+
     @Since("1.4.0.0-PN")
     protected EnchantmentDamage(int id, String name, Rarity rarity, TYPE type) {
         super(id, name, rarity, EnchantmentType.SWORD);

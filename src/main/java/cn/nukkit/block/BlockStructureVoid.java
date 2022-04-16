@@ -31,12 +31,12 @@ public class BlockStructureVoid extends BlockSolid {
     public BlockStructureVoid() {
         // Does Nothing
     }
-    
+
     @Override
     public int getId() {
         return STRUCTURE_VOID;
     }
-    
+
     @Override
     public String getName() {
         return "Structure Void";
@@ -67,12 +67,12 @@ public class BlockStructureVoid extends BlockSolid {
     public double getHardness() {
         return 0;
     }
-    
+
     @Override
     public double getResistance() {
         return 0;
     }
-    
+
     @Override
     public boolean canPassThrough() {
         return true;
@@ -89,23 +89,23 @@ public class BlockStructureVoid extends BlockSolid {
     public boolean isBreakable(Item item) {
         return false;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.TRANSPARENT_BLOCK_COLOR;

@@ -118,7 +118,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
         if (face == BlockFace.UP) {
             CompassRoseDirection direction = GROUND_SIGN_DIRECTION.getValueForMeta(
-                    (int) Math.floor((((player != null? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
+                    (int) Math.floor((((player != null ? player.yaw : 0) + 180) * 16 / 360) + 0.5) & 0x0f
             );
             setDirection(direction);
             if (!this.getLevel().setBlock(block, this, true)) {

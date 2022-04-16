@@ -51,11 +51,11 @@ public abstract class BlockNylium extends BlockSolid {
         if (player != null && !player.isCreative()) {
             item.count--;
         }
-        
+
         grow();
 
         level.addParticle(new BoneMealParticle(up));
-        
+
         return true;
     }
 
@@ -79,7 +79,7 @@ public abstract class BlockNylium extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{ Item.get(NETHERRACK) };
+            return new Item[]{Item.get(NETHERRACK)};
         }
         return Item.EMPTY_ARRAY;
     }

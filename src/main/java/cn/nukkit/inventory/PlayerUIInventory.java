@@ -39,12 +39,12 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public void onOpen(Player who) {
-        
+
     }
 
     @Override
     public void onClose(Player who) {
-        
+
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PlayerUIInventory extends BaseInventory {
     public void sendContents(Player... target) {
         //doesn't work here
     }
-    
+
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         switch (player.craftingType) {
@@ -107,7 +107,7 @@ public class PlayerUIInventory extends BaseInventory {
     public void onSlotChangeBase(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
     }
-    
+
     @Override
     public int getSize() {
         return 51;

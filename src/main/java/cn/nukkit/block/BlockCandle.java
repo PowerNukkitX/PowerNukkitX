@@ -53,7 +53,7 @@ public class BlockCandle extends BlockFlowable {
             target.getLevel().setBlock(target, toCakeForm(), true, true);
             return true;
         }
-        if(target.up().getId() == getId()) {
+        if (target.up().getId() == getId()) {
             target = target.up();
         }
         if (target.getId() == getId()) {

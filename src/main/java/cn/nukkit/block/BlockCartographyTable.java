@@ -55,12 +55,12 @@ public class BlockCartographyTable extends BlockSolid {
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
         //if (player != null) {

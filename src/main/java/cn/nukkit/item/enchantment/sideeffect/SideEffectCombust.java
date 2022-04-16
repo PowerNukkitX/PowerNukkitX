@@ -49,7 +49,7 @@ public class SideEffectCombust implements SideEffect {
 
     @Deprecated
     @DeprecationDetails(since = "FUTURE", reason = "clone have problems when defined in an interface", by = "PowerNukkit",
-        replaceWith = "cloneSideEffect")
+            replaceWith = "cloneSideEffect")
     @Since("1.5.1.0-PN")
     @SneakyThrows
     @Override

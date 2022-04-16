@@ -22,7 +22,7 @@ public abstract class BlockWoodStripped extends BlockWood {
     public BlockWoodStripped(int meta) {
         super(meta);
     }
-    
+
     @Override
     public abstract int getId();
 
@@ -49,7 +49,7 @@ public abstract class BlockWoodStripped extends BlockWood {
     @Override
     public void setWoodType(WoodType woodType) {
         if (!woodType.equals(getWoodType())) {
-            throw new InvalidBlockPropertyValueException(WoodType.PROPERTY, getWoodType(), woodType, 
+            throw new InvalidBlockPropertyValueException(WoodType.PROPERTY, getWoodType(), woodType,
                     "Only the current value is supported for this block");
         }
     }
@@ -58,7 +58,7 @@ public abstract class BlockWoodStripped extends BlockWood {
     public boolean canBeActivated() {
         return false;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         return false;

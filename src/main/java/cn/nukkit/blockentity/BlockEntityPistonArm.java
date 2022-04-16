@@ -8,7 +8,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -21,11 +20,8 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
@@ -227,7 +223,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
 
             if (!extending) {
-                if (this.level.getBlock(getSide(facing)).getId() == (sticky? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_HEAD)) {
+                if (this.level.getBlock(getSide(facing)).getId() == (sticky ? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_HEAD)) {
                     this.level.setBlock(getSide(facing), new BlockAir());
                 }
                 this.movable = true;
@@ -240,7 +236,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             this.blocksCalculator.getLockedBlocks().forEach(BlockPistonBase::updatePistonsListenTo);
             this.blocksCalculator.getLockedBlocks().forEach(pos -> {
                 this.level.scheduleUpdate(pos.getLevelBlock(), 1);
-                if (pos.getSide(BlockFace.UP).getLevelBlock() instanceof BlockFallableMeta){
+                if (pos.getSide(BlockFace.UP).getLevelBlock() instanceof BlockFallableMeta) {
                     this.level.scheduleUpdate(pos.getSide(BlockFace.UP).getLevelBlock(), 1);
                 }
             });
@@ -248,7 +244,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
         if (level != null) {
             this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
-        }else{
+        } else {
             return true;
         }
 

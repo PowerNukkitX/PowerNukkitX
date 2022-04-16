@@ -224,7 +224,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y + (2.0/16), z, x + 1, y + 1, z + 1);
+        return new SimpleAxisAlignedBB(x, y + (2.0 / 16), z, x + 1, y + 1, z + 1);
     }
 
     @Override
@@ -249,7 +249,7 @@ public class BlockScaffolding extends BlockFallableMeta {
 
     @Override
     public double getMinY() {
-        return this.y + (14.0/16);
+        return this.y + (14.0 / 16);
     }
 
     @Override

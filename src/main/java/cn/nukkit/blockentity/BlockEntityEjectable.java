@@ -14,7 +14,7 @@ import cn.nukkit.nbt.tag.ListTag;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public abstract class BlockEntityEjectable  extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
+public abstract class BlockEntityEjectable extends BlockEntitySpawnable implements BlockEntityContainer, BlockEntityNameable, InventoryHolder {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -129,7 +129,7 @@ public abstract class BlockEntityEjectable  extends BlockEntitySpawnable impleme
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();
     }
-    
+
     @Override
     public boolean hasName() {
         return this.namedTag.contains("CustomName");

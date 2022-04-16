@@ -42,7 +42,7 @@ public class RuntimeBlockStateDumper {
             }
 
             int count = 0;
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     count++;
@@ -59,7 +59,7 @@ public class RuntimeBlockStateDumper {
                     }
                 }
             } catch (Exception e) {
-                throw new IOException("Error reading the line "+count+" of the block_ids.csv", e);
+                throw new IOException("Error reading the line " + count + " of the block_ids.csv", e);
             }
 
         } catch (IOException e) {
@@ -90,7 +90,7 @@ public class RuntimeBlockStateDumper {
 
         //<editor-fold desc="Dumping runtime_block_states.dat.dump.txt" defaultstate="collapsed">
         TreeMap<String, CompoundTag> states = new TreeMap<>(new HumanStringComparator());
-        
+
         for (CompoundTag block : tags) {
             StringBuilder builder = new StringBuilder(block.getString("name"));
             for (Tag tag : block.getCompound("states").getAllTags()) {
@@ -101,7 +101,8 @@ public class RuntimeBlockStateDumper {
 
         try (FileWriter fos = new FileWriter("dumps/runtime_block_states.dat.dump.txt"); BufferedWriter bos = new BufferedWriter(fos)) {
             bos.write("# WARNING! Don't edit this file! It's automatically regenerated!");
-            bos.newLine(); bos.newLine();
+            bos.newLine();
+            bos.newLine();
             for (Map.Entry<String, CompoundTag> entry : states.entrySet()) {
                 CompoundTag block = entry.getValue();
 
@@ -130,9 +131,9 @@ public class RuntimeBlockStateDumper {
             String name = block.getString("name");
             CompoundTag statesCompound = block.getCompound("states");
             if (statesCompound.isEmpty()) {
-                statesIni.computeIfAbsent(name, k-> new TreeMap<>(humanStringComparator));
+                statesIni.computeIfAbsent(name, k -> new TreeMap<>(humanStringComparator));
             } else {
-                SortedMap<String, SortedSet<String>> registeredProperties = statesIni.computeIfAbsent(name, k-> new TreeMap<>(humanStringComparator));
+                SortedMap<String, SortedSet<String>> registeredProperties = statesIni.computeIfAbsent(name, k -> new TreeMap<>(humanStringComparator));
                 for (Tag tag : statesCompound.getAllTags()) {
                     SortedSet<String> registeredValues = registeredProperties.computeIfAbsent(tag.getName(), k -> new TreeSet<>(humanStringComparator));
                     registeredValues.add(tag.parseValue().toString());
@@ -142,14 +143,16 @@ public class RuntimeBlockStateDumper {
 
         SortedSet<String> properties = new TreeSet<>(humanStringComparator);
 
-        try(FileWriter iniFW = new FileWriter("dumps/block-states.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW);
-            FileWriter txtFW = new FileWriter("dumps/simple-blocks-nukkit.txt"); BufferedWriter txtBuff = new BufferedWriter(txtFW)) {
+        try (FileWriter iniFW = new FileWriter("dumps/block-states.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW);
+             FileWriter txtFW = new FileWriter("dumps/simple-blocks-nukkit.txt"); BufferedWriter txtBuff = new BufferedWriter(txtFW)) {
             iniBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
-            iniBuff.newLine(); iniBuff.newLine();
+            iniBuff.newLine();
+            iniBuff.newLine();
             txtBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
-            txtBuff.newLine(); txtBuff.newLine();
+            txtBuff.newLine();
+            txtBuff.newLine();
             for (Map.Entry<String, SortedMap<String, SortedSet<String>>> topLevelEntry : statesIni.entrySet()) {
-                iniBuff.write("["+topLevelEntry.getKey()+"]");
+                iniBuff.write("[" + topLevelEntry.getKey() + "]");
                 txtBuff.write(topLevelEntry.getKey());
                 txtBuff.newLine();
                 iniBuff.newLine();
@@ -163,9 +166,10 @@ public class RuntimeBlockStateDumper {
             }
         }
 
-        try(FileWriter iniFW = new FileWriter("dumps/block-properties.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW)) {
+        try (FileWriter iniFW = new FileWriter("dumps/block-properties.ini"); BufferedWriter iniBuff = new BufferedWriter(iniFW)) {
             iniBuff.write("# WARNING! Don't edit this file! It's automatically regenerated!");
-            iniBuff.newLine(); iniBuff.newLine();
+            iniBuff.newLine();
+            iniBuff.newLine();
             iniBuff.write("[properties]");
             iniBuff.newLine();
             for (String property : properties) {

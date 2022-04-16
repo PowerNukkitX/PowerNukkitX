@@ -16,9 +16,9 @@ public class PositionTrackingDBClientRequestPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.POS_TRACKING_CLIENT_REQUEST_PACKET;
-    
+
     private static final Action[] ACTIONS = Action.values();
-    
+
     private Action action;
     private int trackingId;
 

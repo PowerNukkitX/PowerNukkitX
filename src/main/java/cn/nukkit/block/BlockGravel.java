@@ -1,9 +1,9 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.NukkitRandom;
 
 /**
@@ -47,32 +47,32 @@ public class BlockGravel extends BlockFallable {
         if (enchantment != null) {
             fortune = enchantment.getLevel();
         }
-        
+
         NukkitRandom nukkitRandom = new NukkitRandom();
         switch (fortune) {
             case 0:
                 if (nukkitRandom.nextRange(0, 9) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
-                    
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
+
                 }
                 break;
             case 1:
                 if (nukkitRandom.nextRange(0, 6) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
                 break;
             case 2:
                 if (nukkitRandom.nextRange(0, 3) == 0) {
-                    return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                    return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
                 }
                 break;
             default:
             case 3:
-                return new Item[]{ Item.get(ItemID.FLINT, 0, 1) };
+                return new Item[]{Item.get(ItemID.FLINT, 0, 1)};
         }
-        return new Item[]{ toItem() };
+        return new Item[]{toItem()};
     }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;

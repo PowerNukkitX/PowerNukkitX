@@ -37,7 +37,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Slab";
     }
 
     @Override
@@ -65,7 +65,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     public int getWaterloggingLevel() {
         return 1;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isOnTop() {

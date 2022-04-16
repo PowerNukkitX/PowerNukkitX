@@ -15,7 +15,7 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockMagma extends BlockSolid {
 
-    public BlockMagma(){
+    public BlockMagma() {
 
     }
 

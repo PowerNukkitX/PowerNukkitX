@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
@@ -10,10 +11,10 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.nukkit.OpenSimplex2S;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
-import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.impl.PopulatorGroundFire;
 import cn.nukkit.level.generator.populator.impl.PopulatorLava;
 import cn.nukkit.level.generator.populator.impl.PopulatorOre;
+import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
@@ -77,7 +78,7 @@ public class Nether extends Generator {
         this.random = new Random();
         this.nukkitRandom.setSeed(this.level.getSeed());
 
-        for (int i = 0; i < noiseGen.length; i++)   {
+        for (int i = 0; i < noiseGen.length; i++) {
             noiseGen[i] = new SimplexF(nukkitRandom, 4, 1 / 4f, 1 / 64f);
         }
 
@@ -131,8 +132,8 @@ public class Nether extends Generator {
                 chunk.setBiomeId(x, z, biome.getId());
 
                 chunk.setBlockId(x, 0, z, Block.BEDROCK);
-                for(int i = 0; i < nukkitRandom.nextBoundedInt(6); i++) {
-                    chunk.setBlockId(x, 126-i, z, biome.getMiddleBlock());
+                for (int i = 0; i < nukkitRandom.nextBoundedInt(6); i++) {
+                    chunk.setBlockId(x, 126 - i, z, biome.getMiddleBlock());
                 }
                 for (int y = 126; y < 127; ++y) {
                     chunk.setBlockId(x, y, z, biome.getMiddleBlock());
@@ -148,7 +149,7 @@ public class Nether extends Generator {
                 }
                 for (int y = 1; y < 127; ++y) {
                     if (getNoise(baseX | x, y, baseZ | z) > 0) {
-                        if(chunk.getBlockId(x, y+1, z) == 0) chunk.setBlockId(x, y, z, biome.getCoverBlock());
+                        if (chunk.getBlockId(x, y + 1, z) == 0) chunk.setBlockId(x, y, z, biome.getCoverBlock());
                     }
                 }
             }
@@ -174,9 +175,9 @@ public class Nether extends Generator {
         return new Vector3(0, 64, 0);
     }
 
-    public float getNoise(int x, int y, int z)  {
+    public float getNoise(int x, int y, int z) {
         float val = 0f;
-        for (int i = 0; i < noiseGen.length; i++)   {
+        for (int i = 0; i < noiseGen.length; i++) {
             val += noiseGen[i].noise3D(x >> i, y, z >> i, true);
         }
         return val;
@@ -185,14 +186,14 @@ public class Nether extends Generator {
     private static final double BIOME_AMPLIFICATION = 512;
 
     public EnumBiome pickBiome(int x, int z) {
-        double value = biomeGen.noise2(x/ BIOME_AMPLIFICATION, z/ BIOME_AMPLIFICATION);
-        if(value >= .6) {
+        double value = biomeGen.noise2(x / BIOME_AMPLIFICATION, z / BIOME_AMPLIFICATION);
+        if (value >= .6) {
             return EnumBiome.BASALT_DELTAS;
-        } else if(value >= .2) {
+        } else if (value >= .2) {
             return EnumBiome.WARPED_FOREST;
-        } else if(value >= -.2) {
+        } else if (value >= -.2) {
             return EnumBiome.HELL;
-        } else if(value >= -.6) {
+        } else if (value >= -.6) {
             return EnumBiome.CRIMSON_FOREST;
         } else {
             return EnumBiome.SOUL_SAND_VALLEY;
@@ -200,11 +201,11 @@ public class Nether extends Generator {
     }
 
     public EnumBiome pickBiomeExperimental(int x, int z) {
-        double value = biomeGen.noise2(x/ BIOME_AMPLIFICATION, z/ BIOME_AMPLIFICATION);
-        double secondaryValue = biomeGen.noise3_XZBeforeY(x/ (BIOME_AMPLIFICATION*2d), 0, z/ (BIOME_AMPLIFICATION*2d));
-        if(value >= 1/3f) {
+        double value = biomeGen.noise2(x / BIOME_AMPLIFICATION, z / BIOME_AMPLIFICATION);
+        double secondaryValue = biomeGen.noise3_XZBeforeY(x / (BIOME_AMPLIFICATION * 2d), 0, z / (BIOME_AMPLIFICATION * 2d));
+        if (value >= 1 / 3f) {
             return secondaryValue >= 0 ? EnumBiome.WARPED_FOREST : EnumBiome.CRIMSON_FOREST;
-        } else if(value >= -1/3f) {
+        } else if (value >= -1 / 3f) {
             return EnumBiome.HELL;
         } else {
             return secondaryValue >= 0 ? EnumBiome.BASALT_DELTAS : EnumBiome.SOUL_SAND_VALLEY;

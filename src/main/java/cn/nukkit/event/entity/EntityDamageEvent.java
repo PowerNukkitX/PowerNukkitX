@@ -31,13 +31,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     private final Map<DamageModifier, Float> originals;
 
     private SideEffect[] sideEffects = SideEffect.EMPTY_ARRAY;
-    
+
     private static Map<DamageModifier, Float> createDamageModifierMap(float baseDamage) {
         Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
         modifiers.put(DamageModifier.BASE, baseDamage);
         return modifiers;
     }
-    
+
     public EntityDamageEvent(Entity entity, DamageCause cause, float damage) {
         this(entity, cause, createDamageModifierMap(damage));
     }
@@ -108,11 +108,11 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
         return damage;
     }
-    
+
     public int getAttackCooldown() {
         return this.attackCooldown;
     }
-    
+
     public void setAttackCooldown(int attackCooldown) {
         this.attackCooldown = attackCooldown;
     }
@@ -128,7 +128,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         return Arrays.stream(sideEffectsArray)
                 .map(SideEffect::cloneSideEffect)
                 .toArray(SideEffect[]::new)
-        ;
+                ;
     }
 
     @PowerNukkitOnly

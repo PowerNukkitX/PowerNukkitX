@@ -59,7 +59,7 @@ public class EntityEnderDragon extends EntityMob {
     public String getOriginalName() {
         return "Ender Dragon";
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     @Override

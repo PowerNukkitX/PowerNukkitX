@@ -53,28 +53,28 @@ class MultiLayerStorageTest {
         assertFalse(storage.hasBlocks());
         BlockStorage blockStorage = getBlockStorage(1);
         assertFalse(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.FIRE);
+        blockStorage.setBlockId(0, 1, 2, BlockID.FIRE);
         assertTrue(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.AIR);
+        blockStorage.setBlockId(0, 1, 2, BlockID.AIR);
         assertTrue(storage.hasBlocks());
         blockStorage.recheckBlocks();
         assertFalse(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.ACACIA_WALL_SIGN);
+        blockStorage.setBlockId(0, 1, 2, BlockID.ACACIA_WALL_SIGN);
         assertTrue(storage.hasBlocks());
     }
-    
+
     private void unexpectedSetStorage(LayerStorage unexpected) {
         fail("Unexpected call setting to " + unexpected);
     }
-    
+
     private int getContentVersion() {
         return ChunkUpdater.getCurrentContentVersion();
     }
-    
+
     private BlockStorage getBlockStorage(int layer) {
         return getBlockStorage(storage, layer);
     }
-    
+
     private BlockStorage getBlockStorage(LayerStorage layerStorage, int layer) {
         return layerStorage.getOrSetStorage(this::unexpectedSetStorage, this::getContentVersion, layer);
     }
@@ -82,21 +82,21 @@ class MultiLayerStorageTest {
     @Test
     void testClone() {
         BlockStorage blockStorage = getBlockStorage(1);
-        blockStorage.setBlockId(0,1,2, BlockID.FIRE);
+        blockStorage.setBlockId(0, 1, 2, BlockID.FIRE);
         MultiLayerStorage clone = storage.clone();
         assertTrue(clone.hasBlocks());
         BlockStorage blockStorageCloned = getBlockStorage(clone, 1);
         assertNotEquals(blockStorage, blockStorageCloned);
         assertNotEquals(storage, clone);
-        blockStorageCloned.setBlockId(2,2,2, BlockID.COBBLESTONE);
-        assertEquals(BlockState.AIR, blockStorage.getBlockState(2,2,2));
+        blockStorageCloned.setBlockId(2, 2, 2, BlockID.COBBLESTONE);
+        assertEquals(BlockState.AIR, blockStorage.getBlockState(2, 2, 2));
     }
 
     @Test
     void getStorageOrEmpty() {
         assertEquals(ImmutableBlockStorage.EMPTY, storage.getStorageOrEmpty(1));
         BlockStorage blockStorage = getBlockStorage(1);
-        blockStorage.setBlockId(1,2,3,BlockID.STRUCTURE_VOID);
+        blockStorage.setBlockId(1, 2, 3, BlockID.STRUCTURE_VOID);
         assertThat(storage.getStorageOrEmpty(1)).isNotNull().isNotInstanceOf(ImmutableBlockStorage.class);
     }
 
@@ -104,17 +104,17 @@ class MultiLayerStorageTest {
     void getOrSetStorage() {
         BlockStorage blockStorage = getBlockStorage(1);
         assertEquals(blockStorage, getBlockStorage(1));
-        blockStorage.setBlockId(1,2,3,BlockID.ACACIA_TRAPDOOR);
+        blockStorage.setBlockId(1, 2, 3, BlockID.ACACIA_TRAPDOOR);
         assertEquals(blockStorage, getBlockStorage(1));
 
-        assertThrows(IndexOutOfBoundsException.class, ()-> storage.getOrSetStorage(this::unexpectedSetStorage, this::getContentVersion, 2));
+        assertThrows(IndexOutOfBoundsException.class, () -> storage.getOrSetStorage(this::unexpectedSetStorage, this::getContentVersion, 2));
     }
 
     @Test
     void getStorageOrNull() {
         assertNull(storage.getStorageOrNull(1));
         BlockStorage blockStorage = getBlockStorage(1);
-        blockStorage.setBlockId(1,2,3,BlockID.STRUCTURE_VOID);
+        blockStorage.setBlockId(1, 2, 3, BlockID.STRUCTURE_VOID);
         assertThat(storage.getStorageOrNull(1)).isNotNull().isNotInstanceOf(ImmutableBlockStorage.class);
     }
 
@@ -144,7 +144,7 @@ class MultiLayerStorageTest {
         };
         storage.compress(toEmpty);
         assertTrue(attemptedToSet.get());
-        
+
         attemptedToSet.set(false);
         getBlockStorage(0);
         storage.compress(toEmpty);
@@ -154,8 +154,8 @@ class MultiLayerStorageTest {
         getBlockStorage(1);
         storage.compress(toEmpty);
         assertTrue(attemptedToSet.get());
-        
-        getBlockStorage(0).setBlockId(1,2,3, BlockID.ACACIA_TRAPDOOR);
+
+        getBlockStorage(0).setBlockId(1, 2, 3, BlockID.ACACIA_TRAPDOOR);
         Consumer<LayerStorage> toSingle = reduced -> {
             assertThat(reduced).isInstanceOf(SingleLayerStorage.class);
             attemptedToSet.set(true);
@@ -163,13 +163,13 @@ class MultiLayerStorageTest {
         attemptedToSet.set(false);
         storage.compress(toSingle);
         assertTrue(attemptedToSet.get());
-        
+
         getBlockStorage(1);
         attemptedToSet.set(false);
         storage.compress(toSingle);
         assertTrue(attemptedToSet.get());
 
-        getBlockStorage(1).setBlockId(1,2,3, BlockID.STILL_WATER);
+        getBlockStorage(1).setBlockId(1, 2, 3, BlockID.STILL_WATER);
         storage.compress(this::unexpectedSetStorage);
     }
 }

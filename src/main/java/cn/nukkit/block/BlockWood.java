@@ -30,7 +30,7 @@ public class BlockWood extends BlockLog {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(OLD_LOG_TYPE, PILLAR_AXIS);
-    
+
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
@@ -73,13 +73,13 @@ public class BlockWood extends BlockLog {
     public WoodType getWoodType() {
         return getPropertyValue(OLD_LOG_TYPE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setWoodType(WoodType woodType) {
         setPropertyValue(OLD_LOG_TYPE, woodType);
     }
-    
+
     @Override
     public String getName() {
         return getWoodType().getEnglishName() + " Log";
@@ -102,7 +102,7 @@ public class BlockWood extends BlockLog {
 
         int exactInt = state.getExactIntStorage();
         if ((exactInt & 0b1100) == 0b1100) {
-            int increment = state.getBlockId() == BlockID.LOG? 0b000 : 0b100;
+            int increment = state.getBlockId() == BlockID.LOG ? 0b000 : 0b100;
             return BlockState.of(BlockID.WOOD_BARK, (exactInt & 0b11) + increment).getBlock(this, layer);
         }
 

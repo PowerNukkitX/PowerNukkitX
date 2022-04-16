@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
  * @author Snake1999
  * @since 2016/1/10
  */
-public class BlockColor  {
+public class BlockColor {
 
     public static final BlockColor TRANSPARENT_BLOCK_COLOR = new BlockColor(0x00, 0x00, 0x00, 0x00);
     public static final BlockColor VOID_BLOCK_COLOR = new BlockColor(0x00, 0x00, 0x00, 0x00);

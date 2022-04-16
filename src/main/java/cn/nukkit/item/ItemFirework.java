@@ -1,8 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.Nukkit;
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
@@ -16,7 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.ArrayList;
@@ -34,7 +31,7 @@ public class ItemFirework extends Item {
     public ItemFirework(Integer meta) {
         this(meta, 1);
     }
-    
+
     @PowerNukkitDifference(info = "Will not add compound tag automatically")
     public ItemFirework(Integer meta, int count) {
         super(FIREWORKS, meta, count, "Firework Rocket");

@@ -63,7 +63,7 @@ class ConfigTest {
         try {
             temp.deleteOnExit();
             config = new Config(-2);
-            assertThrows(IllegalStateException.class, ()-> config.save());
+            assertThrows(IllegalStateException.class, () -> config.save());
             config.load(temp.getAbsolutePath());
 
             config.set("a", 5);
@@ -78,7 +78,7 @@ class ConfigTest {
     }
 
     <T extends AutoCloseable, R> R use(T obj, ThrowingFunction<T, R> consumer) {
-        try(T resource = obj) {
+        try (T resource = obj) {
             return consumer.apply(resource);
         } catch (Throwable e) {
             throw new AssertionError(e);

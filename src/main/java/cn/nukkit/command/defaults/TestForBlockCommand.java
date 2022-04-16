@@ -1,14 +1,14 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.NoSuchElementException;
@@ -20,9 +20,9 @@ public class TestForBlockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testforblock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("position",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("tileId",false, CommandParamType.INT),
-                CommandParameter.newType("dataValue",true, CommandParamType.INT)
+                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("tileId", false, CommandParamType.INT),
+                CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
     }
 

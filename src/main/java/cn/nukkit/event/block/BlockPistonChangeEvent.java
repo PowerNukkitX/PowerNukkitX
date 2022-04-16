@@ -6,7 +6,6 @@ import cn.nukkit.event.HandlerList;
 /**
  * @author CreeperFace
  * @since 2.8.2017
- *
  * @deprecated Use BlockPistonEvent
  */
 @Deprecated

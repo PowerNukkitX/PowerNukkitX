@@ -1,12 +1,12 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ public class TestForCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testfor");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("victim",false, CommandParamType.TARGET)
+                CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
     }
 

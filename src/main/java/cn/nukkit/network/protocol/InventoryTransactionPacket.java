@@ -41,15 +41,18 @@ public class InventoryTransactionPacket extends DataPacket {
     public NetworkInventoryAction[] actions;
     public TransactionData transactionData;
 
-    @Since("1.3.0.0-PN") public int legacyRequestId;
+    @Since("1.3.0.0-PN")
+    public int legacyRequestId;
 
     /**
      * NOTE: THESE FIELDS DO NOT EXIST IN THE PROTOCOL, it's merely used for convenience for us to easily
      * determine whether we're doing a crafting or enchanting transaction.
      */
     public boolean isCraftingPart = false;
-    @Since("1.3.1.0-PN") public boolean isEnchantingPart = false;
-    @Since("1.4.0.0-PN") public boolean isRepairItemPart = false;
+    @Since("1.3.1.0-PN")
+    public boolean isEnchantingPart = false;
+    @Since("1.4.0.0-PN")
+    public boolean isRepairItemPart = false;
 
     @Override
     public byte pid() {

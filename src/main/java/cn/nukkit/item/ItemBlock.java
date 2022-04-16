@@ -45,7 +45,7 @@ public class ItemBlock extends Item {
                 name = block.getName();
             }
         } catch (InvalidBlockStateException e) {
-            log.warn("An ItemBlock for {} was set to have meta {}"+
+            log.warn("An ItemBlock for {} was set to have meta {}" +
                     " but this value is not valid. The item stack is now unsafe.", block.getPersistenceName(), meta, e);
             block = new BlockUnknown(blockId, blockMeta);
             name = block.getName();
@@ -55,7 +55,7 @@ public class ItemBlock extends Item {
         int expected = block.asItemBlock().getDamage();
         if (expected != blockMeta) {
             log.warn("An invalid ItemBlock for {} was set to an valid meta {} for item blocks, " +
-                    "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
+                            "it was expected to have meta {} the stack is now unsafe.\nProperties: {}",
                     block.getPersistenceName(), meta, expected, block.getProperties());
         }
     }

@@ -16,7 +16,7 @@ import javax.annotation.ParametersAreNullableByDefault;
 @ParametersAreNullableByDefault
 public class InvalidBlockStateException extends IllegalStateException {
     private static final long serialVersionUID = 643372054081065905L;
-    
+
     @Nonnull
     private final BlockState state;
 
@@ -47,7 +47,7 @@ public class InvalidBlockStateException extends IllegalStateException {
         super(createMessage(state, null), cause);
         this.state = state;
     }
-    
+
     private static String createMessage(@Nonnull BlockState state, @Nullable String message) {
         StringBuilder sb = new StringBuilder(500);
         sb.append("The block state ").append(state).append(" is invalid");

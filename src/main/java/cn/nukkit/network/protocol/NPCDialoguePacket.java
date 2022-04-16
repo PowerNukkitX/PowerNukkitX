@@ -33,9 +33,9 @@ public class NPCDialoguePacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     public static final byte NETWORK_ID = ProtocolInfo.NPC_DIALOGUE_PACKET;
-    
+
     private static final NPCDialogAction[] ACTIONS = NPCDialogAction.values();
-    
+
     private long runtimeEntityId;
     private NPCDialogAction action = NPCDialogAction.OPEN;
     private String dialogue = "";

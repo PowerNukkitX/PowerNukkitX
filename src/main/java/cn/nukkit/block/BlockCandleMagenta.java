@@ -8,12 +8,18 @@ package cn.nukkit.block;
 
 public class BlockCandleMagenta extends BlockCandle {
 
-    public BlockCandleMagenta() { this(0); }
+    public BlockCandleMagenta() {
+        this(0);
+    }
 
-    public BlockCandleMagenta(int meta) { super(meta); }
+    public BlockCandleMagenta(int meta) {
+        super(meta);
+    }
 
     @Override
-    public int getId() { return BlockID.MAGENTA_CANDLE; }
+    public int getId() {
+        return BlockID.MAGENTA_CANDLE;
+    }
 
     @Override
     protected Block toCakeForm() {

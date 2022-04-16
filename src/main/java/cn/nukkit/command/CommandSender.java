@@ -47,7 +47,8 @@ public interface CommandSender extends Permissible {
      */
     void sendMessage(TextContainer message);
 
-    /**EntitySelector
+    /**
+     * EntitySelector
      * 返回命令发送者所在的服务器。<br>
      * Returns the server of the command sender.
      *
@@ -86,30 +87,46 @@ public interface CommandSender extends Permissible {
      */
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    default boolean isEntity() {return false;};
+    default boolean isEntity() {
+        return false;
+    }
+
+    ;
 
     //return the entity who execute the command if the sender is a entity
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nullable
-    default Entity asEntity() {return null;};
+    default Entity asEntity() {
+        return null;
+    }
+
+    ;
 
     //return the player who execute the command if the sender is a player
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nullable
-    default Player asPlayer() {return null;};
+    default Player asPlayer() {
+        return null;
+    }
+
+    ;
 
     //return the sender's position
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nonnull
-    default Position getPosition() {return new Position(0, 0, 0,Server.getInstance().getDefaultLevel());}
+    default Position getPosition() {
+        return new Position(0, 0, 0, Server.getInstance().getDefaultLevel());
+    }
 
 
     //return the sender's location
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     @Nonnull
-    default Location getLocation() {return new Location(0, 0, 0,Server.getInstance().getDefaultLevel());}
+    default Location getLocation() {
+        return new Location(0, 0, 0, Server.getInstance().getDefaultLevel());
+    }
 }

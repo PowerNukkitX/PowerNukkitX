@@ -52,7 +52,7 @@ public class BlockDeadBush extends BlockFlowable {
     public int getWaterloggingLevel() {
         return 1;
     }
-    
+
     @Override
     public boolean canBeReplaced() {
         return true;
@@ -67,7 +67,7 @@ public class BlockDeadBush extends BlockFlowable {
         }
         return false;
     }
-    
+
     private boolean isSupportValid() {
         switch (down().getId()) {
             case SAND:

@@ -20,17 +20,17 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
  */
 public class BlockBone extends BlockSolidMeta implements Faceable {
     private static final ArrayBlockProperty<String> SPECIAL_PILLAR_AXIS = new ArrayBlockProperty<>("pillar_axis", false,
-        new String[] {
-                "y",
-                "unused1",
-                "unused2",
-                "unused3",
-                "x",
-                "unused5",
-                "unused6",
-                "unused7",
-                "z",
-        }
+            new String[]{
+                    "y",
+                    "unused1",
+                    "unused2",
+                    "unused3",
+                    "x",
+                    "unused5",
+                    "unused6",
+                    "unused7",
+                    "z",
+            }
     );
 
     @PowerNukkitOnly

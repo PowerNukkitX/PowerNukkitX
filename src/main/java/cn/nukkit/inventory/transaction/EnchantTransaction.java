@@ -35,7 +35,7 @@ public class EnchantTransaction extends InventoryTransaction {
         }
         return (inputItem != null && outputItem != null && inputItem.equals(eInv.getInputSlot(), true, true));
     }
-    
+
     private boolean isLapisLazuli(Item item) {
         return (item instanceof ItemDye) && ((ItemDye) item).isLapisLazuli();
     }

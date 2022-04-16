@@ -19,7 +19,6 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,7 +150,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         BlockFace direction = player.getDirection();
         setBlockFace(direction);
-        
+
         if (getSide(direction.rotateY()) instanceof BlockWallBase
                 || getSide(direction.rotateYCCW()) instanceof BlockWallBase) {
             setInWall(true);
@@ -164,7 +163,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         if (level.getServer().isRedstoneEnabled() && !this.isOpen() && this.isGettingPower()) {
             this.setOpen(null, true);
         }
-        
+
         return true;
     }
 
@@ -203,7 +202,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
 
 
         BlockFace originDirection = getBlockFace();
-        
+
         if (player != null) {
             double yaw = player.yaw;
             double rotation = (yaw - 90) % 360;
@@ -232,7 +231,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
                 direction = BlockFace.WEST;
             }
         }
-        
+
         setBlockFace(direction);
         toggleBooleanProperty(OPEN);
         this.level.setBlock(this, this, false, false);
@@ -270,7 +269,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean isOpen() {
         return getBooleanValue(OPEN);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setOpen(boolean open) {
@@ -336,18 +335,18 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
     public boolean isInWall() {
         return getBooleanValue(IN_WALL);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setInWall(boolean inWall) {
         setBooleanValue(IN_WALL, inWall);
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override

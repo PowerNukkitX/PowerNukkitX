@@ -55,7 +55,7 @@ public class ItemMinecartChest extends Item {
                                     .add(new FloatTag("", 0)))
             );
 
-            if(minecart == null) {
+            if (minecart == null) {
                 return false;
             }
 

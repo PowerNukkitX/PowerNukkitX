@@ -20,7 +20,7 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public int getId() {
         return WARPED_DOUBLE_SLAB;
     }
-    
+
     @PowerNukkitOnly
     @Override
     public String getSlabName() {
@@ -49,7 +49,7 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public double getResistance() {
         return 3;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
@@ -59,12 +59,12 @@ public class BlockDoubleSlabWarped extends BlockDoubleSlabBase {
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;

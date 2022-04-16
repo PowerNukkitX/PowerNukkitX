@@ -73,8 +73,8 @@ public class BlockJukebox extends BlockSolid implements BlockEntityHolder<BlockE
         if (jukebox.getRecordItem().getId() != 0) {
             jukebox.dropItem();
             return true;
-        } 
-        
+        }
+
         if (!item.isNull() && item instanceof ItemRecord) {
             Item record = item.clone();
             record.count = 1;

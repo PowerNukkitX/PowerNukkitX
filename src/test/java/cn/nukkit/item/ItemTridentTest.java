@@ -71,7 +71,7 @@ class ItemTridentTest {
     void onReleaseCancelBow() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-            ((Event)call.getArgument(0)).setCancelled();
+            ((Event) call.getArgument(0)).setCancelled();
             return null;
         }).when(pluginManager).callEvent(any(EntityShootBowEvent.class));
         assertTrue(item.onRelease(player, 20));
@@ -83,7 +83,7 @@ class ItemTridentTest {
     void onReleaseCancelProjectLaunch() {
         PluginManager pluginManager = Server.getInstance().getPluginManager();
         doAnswer(call -> {
-            ((Event)call.getArgument(0)).setCancelled();
+            ((Event) call.getArgument(0)).setCancelled();
             return null;
         }).when(pluginManager).callEvent(any(ProjectileLaunchEvent.class));
         assertTrue(item.onRelease(player, 20));

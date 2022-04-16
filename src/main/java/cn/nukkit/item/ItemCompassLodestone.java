@@ -47,7 +47,7 @@ public class ItemCompassLodestone extends Item {
         }
         setTrackingHandle(Server.getInstance().getPositionTrackingService().addOrReusePosition(position));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
@@ -62,7 +62,7 @@ public class ItemCompassLodestone extends Item {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getTrackingHandle() {
-        return hasCompoundTag()? getNamedTag().getInt("trackingHandle") : 0;
+        return hasCompoundTag() ? getNamedTag().getInt("trackingHandle") : 0;
     }
 
     @PowerNukkitOnly

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NetworkTest {
     @Mock
     Server server;
-    
+
     Network network;
 
     @BeforeEach

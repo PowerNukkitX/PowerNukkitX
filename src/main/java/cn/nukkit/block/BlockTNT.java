@@ -118,7 +118,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
         );
-        if(tnt == null) {
+        if (tnt == null) {
             return;
         }
         tnt.spawnToAll();

@@ -13,7 +13,7 @@ import org.mockito.stubbing.Answer;
 @RequiredArgsConstructor
 public class AnswerPositionedBlock implements Answer<Block> {
     private final BlockState state;
-    
+
     @Override
     public Block answer(InvocationOnMock invocationOnMock) {
         Level level = (Level) invocationOnMock.getMock();

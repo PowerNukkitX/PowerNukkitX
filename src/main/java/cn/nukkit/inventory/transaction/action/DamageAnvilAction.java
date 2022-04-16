@@ -15,7 +15,7 @@ import lombok.ToString;
 @PowerNukkitOnly
 @ToString(callSuper = true)
 public class DamageAnvilAction extends InventoryAction {
-    
+
     private final AnvilInventory anvil;
     private boolean shouldDamage;
     private CraftingTransaction transaction;
@@ -27,12 +27,12 @@ public class DamageAnvilAction extends InventoryAction {
         this.shouldDamage = shouldDamage;
         this.transaction = transaction;
     }
-    
+
     @Override
     public boolean isValid(Player source) {
         return true;
     }
-    
+
     @Override
     public boolean execute(Player source) {
         Block levelBlock = anvil.getHolder().getLevelBlock();
@@ -61,14 +61,14 @@ public class DamageAnvilAction extends InventoryAction {
             return levelBlock.getLevel().setBlock(levelBlock, newState, true, true);
         }
     }
-    
+
     @Override
     public void onExecuteSuccess(Player source) {
-    
+
     }
-    
+
     @Override
     public void onExecuteFail(Player source) {
-    
+
     }
 }

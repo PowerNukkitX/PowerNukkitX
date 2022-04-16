@@ -89,7 +89,7 @@ public class ItemBanner extends Item {
     public void removePattern(int index) {
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> patterns = tag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
         }
         this.setNamedTag(tag);
@@ -98,7 +98,7 @@ public class ItemBanner extends Item {
     public int getPatternsSize() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean hasPattern() {
@@ -106,7 +106,7 @@ public class ItemBanner extends Item {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", 
+    @DeprecationDetails(since = "1.4.0.0-PN",
             reason = "Does nothing, used to do a backward compatibility but the content and usage were removed by Cloudburst")
     public void correctNBT() {
 

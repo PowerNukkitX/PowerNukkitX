@@ -49,7 +49,7 @@ public class BlockRespawnAnchor extends BlockMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final IntBlockProperty RESPAWN_ANCHOR_CHARGE = new IntBlockProperty("respawn_anchor_charge", true, 4);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(RESPAWN_ANCHOR_CHARGE);
@@ -96,11 +96,11 @@ public class BlockRespawnAnchor extends BlockMeta {
             getLevel().addSound(this, Sound.RESPAWN_ANCHOR_CHARGE);
             return true;
         }
-        
+
         if (player == null) {
             return false;
         }
-        
+
         if (charge > 0) {
             return attemptToSetSpawn(player);
         } else {
@@ -117,11 +117,11 @@ public class BlockRespawnAnchor extends BlockMeta {
             }
             return true;
         }
-        
+
         if (Objects.equals(player.getSpawnBlock(), this)) {
             return false;
         }
-        
+
         player.setSpawnBlock(this);
         player.setSpawn(player);
         getLevel().addSound(this, Sound.RESPAWN_ANCHOR_SET_SPAWN);
@@ -137,7 +137,7 @@ public class BlockRespawnAnchor extends BlockMeta {
         if (event.isCancelled()) {
             return;
         }
-        
+
         level.setBlock(this, get(AIR));
         Explosion explosion = new Explosion(this, event.getForce(), this);
         explosion.setFireChance(event.getFireChance());
@@ -184,10 +184,14 @@ public class BlockRespawnAnchor extends BlockMeta {
     @Override
     public int getLightLevel() {
         switch (getCharge()) {
-            case 0: return 0;
-            case 1: return 3;
-            case 2: return 7;
-            default: return 15;
+            case 0:
+                return 0;
+            case 1:
+                return 3;
+            case 2:
+                return 7;
+            default:
+                return 15;
         }
     }
 
@@ -222,14 +226,14 @@ public class BlockRespawnAnchor extends BlockMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (canHarvest(item)) {
-            return new Item[]{ Item.getBlock(getId()) };
+            return new Item[]{Item.getBlock(getId())};
         }
         return Item.EMPTY_ARRAY;
     }

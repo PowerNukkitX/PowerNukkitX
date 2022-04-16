@@ -49,7 +49,7 @@ public interface Oxidizable {
             return 0;
         }
 
-        Block block = this instanceof Block? (Block) this : getLocation().getLevelBlock();
+        Block block = this instanceof Block ? (Block) this : getLocation().getLevelBlock();
         Location mutableLocation = block.getLocation();
 
         int odds = 0;
@@ -59,12 +59,12 @@ public interface Oxidizable {
         for (int x = -4; x <= 4; x++) {
             for (int y = -4; y <= 4; y++) {
                 for (int z = -4; z <= 4; z++) {
-                    if (x == 0 && y == 0 && z == 0){
+                    if (x == 0 && y == 0 && z == 0) {
                         continue;
                     }
                     mutableLocation.setComponents(block.x + x, block.y + y, block.z + z);
                     if (block.distanceManhattan(mutableLocation) > 4) {
-                        continue ;
+                        continue;
                     }
                     Block relative = mutableLocation.getLevelBlock();
                     if (!(relative instanceof Oxidizable)) {
@@ -84,8 +84,8 @@ public interface Oxidizable {
             }
         }
 
-        float chance = (float)(cons + 1) / (float)(cons + odds + 1);
-        float multiplier = oxiLvl == 0? 0.75F : 1.0F;
+        float chance = (float) (cons + 1) / (float) (cons + odds + 1);
+        float multiplier = oxiLvl == 0 ? 0.75F : 1.0F;
         chance = chance * chance * multiplier;
         if (random.nextFloat() < chance) {
             Block nextBlock = getStateWithOxidizationLevel(OxidizationLevel.values()[oxiLvl + 1]).getBlock(block);
@@ -115,9 +115,9 @@ public interface Oxidizable {
             return false;
         }
 
-        Position location = this instanceof Block? (Position) this : getLocation();
+        Position location = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
-            item.useOn(this instanceof Block? (Block) this : location.getLevelBlock());
+            item.useOn(this instanceof Block ? (Block) this : location.getLevelBlock());
         }
         location.getValidLevel().addParticle(new ScrapeParticle(location));
         return true;

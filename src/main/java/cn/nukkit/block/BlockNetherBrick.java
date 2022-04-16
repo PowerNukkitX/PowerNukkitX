@@ -8,7 +8,7 @@ import cn.nukkit.api.PowerNukkitDifference;
  * @since 2015/12/7
  */
 @Deprecated
-@DeprecationDetails(since = "1.5.1.0-PN", by = "PowerNukkit", 
+@DeprecationDetails(since = "1.5.1.0-PN", by = "PowerNukkit",
         reason = "Duplicated of BlockBricksNether and the other one is used instead of this one.",
         replaceWith = "BlockBricksNether"
 )

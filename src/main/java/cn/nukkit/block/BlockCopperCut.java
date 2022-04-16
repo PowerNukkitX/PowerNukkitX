@@ -54,13 +54,13 @@ public class BlockCopperCut extends BlockCopperBase {
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_CUT_COPPER : CUT_COPPER;
+                return waxed ? WAXED_CUT_COPPER : CUT_COPPER;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_CUT_COPPER : EXPOSED_CUT_COPPER;
+                return waxed ? WAXED_EXPOSED_CUT_COPPER : EXPOSED_CUT_COPPER;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_CUT_COPPER : WEATHERED_CUT_COPPER;
+                return waxed ? WAXED_WEATHERED_CUT_COPPER : WEATHERED_CUT_COPPER;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_CUT_COPPER : OXIDIZED_CUT_COPPER;
+                return waxed ? WAXED_OXIDIZED_CUT_COPPER : OXIDIZED_CUT_COPPER;
             default:
                 return getId();
         }

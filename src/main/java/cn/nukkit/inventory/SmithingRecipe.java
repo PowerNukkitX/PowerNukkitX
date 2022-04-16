@@ -80,7 +80,7 @@ public class SmithingRecipe extends ShapelessRecipe {
     public Item getResult() {
         return result;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getFinalResult(Item equip) {
@@ -99,7 +99,7 @@ public class SmithingRecipe extends ShapelessRecipe {
         if (damage <= 0) {
             return finalResult;
         }
-        
+
         finalResult.setDamage(Math.min(maxDurability, damage));
         return finalResult;
     }
@@ -148,7 +148,7 @@ public class SmithingRecipe extends ShapelessRecipe {
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;

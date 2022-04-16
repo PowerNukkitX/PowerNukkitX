@@ -51,10 +51,18 @@ public class ItemMap extends Item {
 
     private void updateName() {
         switch (meta) {
-            case 3: this.name = "Ocean Explorer Map"; break;
-            case 4: this.name = "Woodland Explorer Map"; break;
-            case 5: this.name = "Treasure Map"; break;
-            default: this.name = "Map"; break;
+            case 3:
+                this.name = "Ocean Explorer Map";
+                break;
+            case 4:
+                this.name = "Woodland Explorer Map";
+                break;
+            case 5:
+                this.name = "Treasure Map";
+                break;
+            default:
+                this.name = "Map";
+                break;
         }
     }
 

@@ -60,7 +60,7 @@ public class BlockBorder extends BlockWallBase {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

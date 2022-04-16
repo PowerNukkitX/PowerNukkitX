@@ -11,8 +11,10 @@ import cn.nukkit.level.Position;
  */
 public class EnchantInventory extends FakeBlockUIComponent {
 
-    @Since("1.3.1.0-PN") public static final int ENCHANT_INPUT_ITEM_UI_SLOT = 14;
-    @Since("1.3.1.0-PN") public static final int ENCHANT_REAGENT_UI_SLOT = 15;
+    @Since("1.3.1.0-PN")
+    public static final int ENCHANT_INPUT_ITEM_UI_SLOT = 14;
+    @Since("1.3.1.0-PN")
+    public static final int ENCHANT_REAGENT_UI_SLOT = 15;
 
     public EnchantInventory(PlayerUIInventory playerUI, Position position) {
         super(playerUI, InventoryType.ENCHANT_TABLE, 14, position);
@@ -28,7 +30,7 @@ public class EnchantInventory extends FakeBlockUIComponent {
     public void onClose(Player who) {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
-        Item[] drops = new Item[]{ getItem(0), getItem(1) };
+        Item[] drops = new Item[]{getItem(0), getItem(1)};
         drops = who.getInventory().addItem(drops);
         for (Item drop : drops) {
             if (!who.dropItem(drop)) {

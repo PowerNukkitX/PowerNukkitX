@@ -156,11 +156,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 // Activate the minecart/TNT
                 if (block instanceof BlockRailActivator && ((BlockRailActivator) block).isActive()) {
                     activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
-                    if (this.isRideable() && this.getRiding() != null){
+                    if (this.isRideable() && this.getRiding() != null) {
                         this.dismountEntity(this.getRiding());
                     }
                 }
-                if (block instanceof BlockRailDetector detector){
+                if (block instanceof BlockRailDetector detector) {
                     detector.setActive();
                 }
             } else {
@@ -706,20 +706,20 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
      * @param block The block that will changed. Set {@code null} for BlockAir
      * @return {@code true} if the block is normal block
      */
-    public boolean setDisplayBlock(Block block){
+    public boolean setDisplayBlock(Block block) {
         return setDisplayBlock(block, true);
     }
 
     /**
      * Set the minecart display block
      *
-     * @param block The block that will changed. Set {@code null} for BlockAir
+     * @param block  The block that will changed. Set {@code null} for BlockAir
      * @param update Do update for the block. (This state changes if you want to show the block)
      * @return {@code true} if the block is normal block
      */
     @API(usage = Usage.MAINTAINED, definition = Definition.UNIVERSAL)
     public boolean setDisplayBlock(Block block, boolean update) {
-        if(!update){
+        if (!update) {
             if (block.isNormalBlock()) {
                 blockInside = block;
             } else {

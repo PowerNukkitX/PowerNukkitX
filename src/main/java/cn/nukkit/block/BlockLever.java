@@ -30,7 +30,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     @Since("1.4.0.0-PN")
     public static final ArrayBlockProperty<LeverOrientation> LEVER_DIRECTION = new ArrayBlockProperty<>("lever_direction", false,
             LeverOrientation.values(), 3, "lever_direction", false, new String[]{
-                    "down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"
+            "down_east_west", "east", "west", "south", "north", "up_north_south", "up_east_west", "down_north_south"
     });
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -91,7 +91,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public void setPowerOn(boolean powerOn) {
         setBooleanValue(OPEN, powerOn);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-P`N")
     public LeverOrientation getLeverOrientation() {
@@ -110,7 +110,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         toggleBooleanProperty(OPEN);
 
         this.getLevel().setBlock(this, this, false, true);
-        this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f );
+        this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f);
 
         LeverOrientation orientation = getLeverOrientation();
         BlockFace face = orientation.getFacing();
@@ -122,7 +122,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         return true;
     }
 
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks", since = "1.4.0.0-PN")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -136,14 +136,14 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     }
 
     @PowerNukkitDifference(info = "Allows to be placed on walls", since = "1.3.0.0-PN")
-    @PowerNukkitDifference(info = "Now, can be placed on solid blocks and always returns false if the placement fails", since= "1.4.0.0-PN")
+    @PowerNukkitDifference(info = "Now, can be placed on solid blocks and always returns false if the placement fails", since = "1.4.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target.canBeReplaced()) {
             target = target.down();
             face = BlockFace.UP;
         }
-        
+
         if (!isSupportValid(target, face)) {
             return false;
         }
@@ -153,8 +153,9 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     /**
      * Check if the given block and its block face is a valid support for a lever
+     *
      * @param support The block that the lever is being placed against
-     * @param face The face that the torch will be touching the block
+     * @param face    The face that the torch will be touching the block
      * @return If the support and face combinations can hold the lever
      */
     @PowerNukkitOnly
@@ -166,11 +167,11 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
                 return true;
             default:
         }
-        
+
         if (face == BlockFace.DOWN) {
             return support.isSolid(BlockFace.DOWN) && (support.isFullBlock() || !support.isTransparent());
         }
-        
+
         if (support.isSolid(face)) {
             return true;
         }
@@ -178,7 +179,7 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         if (support instanceof BlockWallBase || support instanceof BlockFence) {
             return face == BlockFace.UP;
         }
-        
+
         return false;
     }
 

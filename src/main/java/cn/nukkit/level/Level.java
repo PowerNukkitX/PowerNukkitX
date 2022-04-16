@@ -31,7 +31,6 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -1445,7 +1444,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void scheduleUpdate(Block pos, int delay,boolean checkBlockWhenUpdate) {
+    public void scheduleUpdate(Block pos, int delay, boolean checkBlockWhenUpdate) {
         this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
     }
 
@@ -3477,7 +3476,7 @@ public class Level implements ChunkManager, Metadatable {
             spawn = this.getFuzzySpawnLocation();
         if (spawn == null)
             return null;
-        if (standable(spawn,true))
+        if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
 

@@ -1,16 +1,16 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Arrays;
@@ -25,9 +25,9 @@ public class TestForBlocksCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("mode", true, Arrays.stream(TestForBlocksMode.values()).map(m -> m.name()).collect(Collectors.toList()).toArray(new String[0]))
         });
     }

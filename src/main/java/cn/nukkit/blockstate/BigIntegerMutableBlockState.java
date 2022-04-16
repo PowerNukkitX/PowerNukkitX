@@ -94,7 +94,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(BigInteger state) {
         if (BigInteger.ZERO.equals(state)) {
             return;
@@ -108,7 +108,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
                     "The state have more data bits than specified in the properties. Bits: " + bitLength + ", Max: " + properties.getBitSize()
             );
         }
-        
+
         try {
             for (String name : properties.getNames()) {
                 BlockProperty<?> property = properties.getBlockProperty(name);
@@ -212,7 +212,7 @@ public class BigIntegerMutableBlockState extends MutableBlockState {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @Nonnull

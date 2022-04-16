@@ -44,7 +44,7 @@ class ItemBoatTest {
 
     @Test
     void onActivate() {
-        level.setBlock(0, 64 , 0, Block.get(BlockID.STILL_WATER), true, false);
+        level.setBlock(0, 64, 0, Block.get(BlockID.STILL_WATER), true, false);
         Block water = level.getBlock(0, 64, 0);
         item = new ItemBoat(2);
         item.onActivate(level, player, water.up(), water, BlockFace.UP, 0.5, 0.5, 0.5);

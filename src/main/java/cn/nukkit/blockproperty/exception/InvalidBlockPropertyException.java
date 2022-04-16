@@ -12,7 +12,7 @@ import javax.annotation.ParametersAreNullableByDefault;
 @ParametersAreNullableByDefault
 public class InvalidBlockPropertyException extends IllegalArgumentException {
     private static final long serialVersionUID = -6934630506175381230L;
-    
+
     private final BlockProperty<?> property;
 
     @PowerNukkitOnly
@@ -25,14 +25,14 @@ public class InvalidBlockPropertyException extends IllegalArgumentException {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property, String message) {
-        super(buildMessage(property)+". "+message);
+        super(buildMessage(property) + ". " + message);
         this.property = property;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyException(@Nonnull BlockProperty<?> property, String message, Throwable cause) {
-        super(buildMessage(property)+". "+message, cause);
+        super(buildMessage(property) + ". " + message, cause);
         this.property = property;
     }
 
@@ -44,7 +44,7 @@ public class InvalidBlockPropertyException extends IllegalArgumentException {
     }
 
     private static String buildMessage(@Nonnull BlockProperty<?> property) {
-        return "Property: "+property.getName();
+        return "Property: " + property.getName();
     }
 
     @PowerNukkitOnly

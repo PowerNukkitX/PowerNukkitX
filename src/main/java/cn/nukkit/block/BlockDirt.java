@@ -34,7 +34,7 @@ public class BlockDirt extends BlockSolidMeta {
         this(0);
     }
 
-    public BlockDirt(int meta){
+    public BlockDirt(int meta) {
         super(meta);
     }
 
@@ -50,7 +50,7 @@ public class BlockDirt extends BlockSolidMeta {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -63,12 +63,12 @@ public class BlockDirt extends BlockSolidMeta {
     public void setDirtType(@Nullable DirtType dirtType) {
         setPropertyValue(DIRT_TYPE, dirtType);
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public double getResistance() {
         return 2.5;
@@ -94,7 +94,7 @@ public class BlockDirt extends BlockSolidMeta {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, this.getDamage() == 0 ? get(FARMLAND) : get(DIRT), true);

@@ -24,8 +24,10 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.DIRECTION;
 
 @PowerNukkitOnly
 public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBeehive> {
-    public @PowerNukkitOnly static final IntBlockProperty HONEY_LEVEL = new IntBlockProperty("honey_level", false, 5);
-    public @PowerNukkitOnly static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, HONEY_LEVEL);
+    public @PowerNukkitOnly
+    static final IntBlockProperty HONEY_LEVEL = new IntBlockProperty("honey_level", false, 5);
+    public @PowerNukkitOnly
+    static final BlockProperties PROPERTIES = new BlockProperties(DIRECTION, HONEY_LEVEL);
 
     @PowerNukkitOnly
     public BlockBeehive() {
@@ -100,7 +102,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player == null) {
@@ -108,39 +110,39 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
         } else {
             setBlockFace(player.getDirection().getOpposite());
         }
-    
+
         int honeyLevel = item.hasCustomBlockData() ? item.getCustomBlockData().getByte("HoneyLevel") : 0;
         setHoneyLevel(honeyLevel);
         BlockEntityBeehive beehive = BlockEntityHolder.setBlockAndCreateEntity(this, true, true, item.getCustomBlockData());
-        if(beehive == null) {
+        if (beehive == null) {
             return false;
         }
-        
+
         if (beehive.namedTag.getByte("ShouldSpawnBees") > 0) {
             List<BlockFace> validSpawnFaces = beehive.scanValidSpawnFaces(true);
             for (BlockEntityBeehive.Occupant occupant : beehive.getOccupants()) {
                 beehive.spawnOccupant(occupant, validSpawnFaces);
             }
-    
+
             beehive.namedTag.putByte("ShouldSpawnBees", 0);
         }
         return true;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (item.getId() == ItemID.SHEARS && isFull()) {
             honeyCollected(player);
             level.addSound(add(0.5, 0.5, 0.5), Sound.BLOCK_BEEHIVE_SHEAR);
             item.useOn(this);
-            for(int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 3; ++i) {
                 level.dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
             return true;
         }
         return false;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -166,7 +168,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
             beehive.angerBees(player);
         }
     }
-    
+
     @Override
     public Item toItem() {
         Item item = Item.get(getItemId(), 0, 1);
@@ -183,7 +185,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
         }
         return item;
     }
-    
+
     @Override
     public boolean canSilkTouch() {
         return true;
@@ -213,17 +215,17 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public boolean canHarvestWithHand() {
         return true;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ Item.getBlock(BlockID.BEEHIVE) };
+        return new Item[]{Item.getBlock(BlockID.BEEHIVE)};
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(DIRECTION);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     @Override
@@ -250,12 +252,12 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
     public boolean isFull() {
         return getPropertyValue(HONEY_LEVEL) == HONEY_LEVEL.getMaxValue();
     }
-    
+
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
-    
+
     @Override
     public int getComparatorInputOverride() {
         return getHoneyLevel();

@@ -85,13 +85,13 @@ public class Vector3 implements Cloneable {
     public int getChunkZ() {
         return getFloorZ() >> 4;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getChunkSectionY() {
         return getFloorY() >> 4;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ChunkVector2 getChunkVector() {
@@ -247,7 +247,7 @@ public class Vector3 implements Cloneable {
         double x = Math.abs(pos.getX() - this.getX());
         double y = Math.abs(pos.getY() - this.getY());
         double z = Math.abs(pos.getZ() - this.getZ());
-        return (int)(x + y + z);
+        return (int) (x + y + z);
     }
 
     public double distance(Vector3 pos) {
@@ -443,7 +443,7 @@ public class Vector3 implements Cloneable {
     public Vector3 setComponentsAdding(@Nonnull Vector3 pos, @Nonnull BlockFace face) {
         return setComponentsAdding(pos.x, pos.y, pos.z, face.getXOffset(), face.getYOffset(), face.getZOffset());
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull

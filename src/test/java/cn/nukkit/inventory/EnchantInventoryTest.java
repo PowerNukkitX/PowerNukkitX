@@ -18,10 +18,10 @@ import static org.mockito.Mockito.doCallRealMethod;
  */
 @ExtendWith(PowerNukkitExtension.class)
 class EnchantInventoryTest {
-    
+
     @MockPlayer
     Player player;
-    
+
     PlayerInventory playerInventory;
 
     PlayerUIInventory playerUIInventory;
@@ -51,7 +51,7 @@ class EnchantInventoryTest {
     void setUp() {
         playerInventory = player.getInventory();
         playerUIInventory = player.getUIInventory();
-        
+
         enchantInventory = new EnchantInventory(playerUIInventory, new Position(1, 2, 3, player.getLevel()));
     }
 }

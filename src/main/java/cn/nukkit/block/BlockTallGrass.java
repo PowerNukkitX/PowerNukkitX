@@ -95,7 +95,7 @@ public class BlockTallGrass extends BlockFlowable {
         }
         return false;
     }
-    
+
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will break on block update if the supporting block is invalid")
     @Override
     public int onUpdate(int type) {
@@ -164,11 +164,11 @@ public class BlockTallGrass extends BlockFlowable {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         if (random.nextInt(8) == 0) {
             Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-            int fortuneLevel = fortune != null? fortune.getLevel() : 0;
-            int amount = fortuneLevel == 0? 1 : 1 + random.nextInt(fortuneLevel * 2);
+            int fortuneLevel = fortune != null ? fortune.getLevel() : 0;
+            int amount = fortuneLevel == 0 ? 1 : 1 + random.nextInt(fortuneLevel * 2);
             drops.add(Item.get(ItemID.WHEAT_SEEDS, 0, amount));
         }
-        
+
         return drops.toArray(Item.EMPTY_ARRAY);
     }
 

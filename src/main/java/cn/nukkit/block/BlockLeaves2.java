@@ -21,13 +21,16 @@ public class BlockLeaves2 extends BlockLeaves {
             WoodType.ACACIA, WoodType.DARK_OAK
     }, 2);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BlockProperties NEW_LEAF_PROPERTIES = new BlockProperties(NEW_LEAF_TYPE, PERSISTENT, UPDATE);
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int ACACIA = 0;
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", reason = "Magic value. Use the accessors instead")
     public static final int DARK_OAK = 1;
 
     public BlockLeaves2() {

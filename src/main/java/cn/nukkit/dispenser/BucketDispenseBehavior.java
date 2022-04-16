@@ -18,10 +18,10 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
         if (!(item instanceof ItemBucket)) {
             return super.dispense(block, face, item);
         }
-        
-        ItemBucket bucket = (ItemBucket) item; 
+
+        ItemBucket bucket = (ItemBucket) item;
         Block target = block.getSide(face);
-        
+
         if (!bucket.isEmpty()) {
             if (target.canBeFlowedInto() || target.getId() == BlockID.NETHER_PORTAL) {
                 Block replace = bucket.getTargetBlock();

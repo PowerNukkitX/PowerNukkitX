@@ -13,7 +13,8 @@ import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.DEPRECATED;
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author joserobjr
@@ -40,7 +41,7 @@ class StemStrippedUpdaterTest {
         BlockState updated = chunkSection.getBlockState(1, 2, 3);
         assertEquals(BlockState.of(BlockID.STRIPPED_CRIMSON_HYPHAE).withProperty(PILLAR_AXIS, BlockFace.Axis.Z), updated);
 
-        BlockHyphaeStrippedCrimson block = (BlockHyphaeStrippedCrimson) assertDoesNotThrow(()-> updated.getBlock());
+        BlockHyphaeStrippedCrimson block = (BlockHyphaeStrippedCrimson) assertDoesNotThrow(() -> updated.getBlock());
         assertEquals(BlockFace.Axis.Z, block.getPillarAxis());
     }
 }

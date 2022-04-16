@@ -44,9 +44,12 @@ public class BlockBamboo extends BlockTransparentMeta {
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(STALK_THICKNESS, LEAF_SIZE, AGED);
 
-    public @PowerNukkitOnly static final int LEAF_SIZE_NONE = 0;
-    public @PowerNukkitOnly static final int LEAF_SIZE_SMALL = 1;
-    public @PowerNukkitOnly static final int LEAF_SIZE_LARGE = 2;
+    public @PowerNukkitOnly
+    static final int LEAF_SIZE_NONE = 0;
+    public @PowerNukkitOnly
+    static final int LEAF_SIZE_SMALL = 1;
+    public @PowerNukkitOnly
+    static final int LEAF_SIZE_LARGE = 2;
 
     @PowerNukkitOnly
     public BlockBamboo() {
@@ -123,7 +126,7 @@ public class BlockBamboo extends BlockTransparentMeta {
         int count = 0;
         Optional<Block> opt;
         Block down = this;
-        while ((opt = down.down().firstInLayers(b-> b.getId() == BAMBOO)).isPresent()) {
+        while ((opt = down.down().firstInLayers(b -> b.getId() == BAMBOO)).isPresent()) {
             down = opt.get();
             if (++count >= 16) {
                 break;
@@ -155,7 +158,8 @@ public class BlockBamboo extends BlockTransparentMeta {
                 this.getLevel().addChunkPacket(player.getChunkX(), player.getChunkZ(), animatePacket);
             }
             setLeafSize(LEAF_SIZE_SMALL);
-        } if (down instanceof BlockBamboo) {
+        }
+        if (down instanceof BlockBamboo) {
             BlockBamboo bambooDown = (BlockBamboo) down;
             canGrow = bambooDown.getAge() == 0;
             boolean thick = bambooDown.isThick();
@@ -211,7 +215,7 @@ public class BlockBamboo extends BlockTransparentMeta {
             return false;
         }
 
-        int height = canGrow? countHeight() : 0;
+        int height = canGrow ? countHeight() : 0;
         if (!canGrow || height >= 15 || height >= 11 && ThreadLocalRandom.current().nextFloat() < 0.25F) {
             setAge(1);
         }
@@ -222,7 +226,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public boolean onBreak(Item item) {
-        Optional<Block> down = down().firstInLayers(b-> b instanceof BlockBamboo);
+        Optional<Block> down = down().firstInLayers(b -> b instanceof BlockBamboo);
         if (down.isPresent()) {
             BlockBamboo bambooDown = (BlockBamboo) down.get();
             int height = bambooDown.countHeight();
@@ -271,7 +275,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     public void setThick(boolean thick) {
-        setBambooStalkThickness(thick? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
+        setBambooStalkThickness(thick ? BambooStalkThickness.THICK : BambooStalkThickness.THIN);
     }
 
     @PowerNukkitOnly
@@ -349,7 +353,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
             boolean success = false;
 
-            Block block = this.up(top - (int)y + 1);
+            Block block = this.up(top - (int) y + 1);
             if (block.getId() == BlockID.AIR) {
                 success = grow(block);
             }
@@ -372,7 +376,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @PowerNukkitOnly
     public int getAge() {
-        return getBooleanValue(AGED)? 1 : 0;
+        return getBooleanValue(AGED) ? 1 : 0;
     }
 
     @PowerNukkitOnly

@@ -23,7 +23,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 //special thanks to wode
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public class BlockCommandBlock  extends BlockSolidMeta implements Faceable {
+public class BlockCommandBlock extends BlockSolidMeta implements Faceable {
 
     public static final BooleanBlockProperty CONDITIONAL_BIT = new BooleanBlockProperty("conditional_bit", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);

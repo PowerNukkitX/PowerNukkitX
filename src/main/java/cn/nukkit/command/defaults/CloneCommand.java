@@ -1,17 +1,17 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
@@ -22,19 +22,19 @@ public class CloneCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clone");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin", false,CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false,CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("maskMode",true, new String[]{"masked", "replace"}),
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("maskMode", true, new String[]{"masked", "replace"}),
                 CommandParameter.newEnum("cloneMode", true, new String[]{"force", "move", "normal"})});
         this.addCommandParameters("filtered", new CommandParameter[]{
-                CommandParameter.newType("begin",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("maskMode",false,new String[]{"filtered"}),
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("maskMode", false, new String[]{"filtered"}),
                 CommandParameter.newEnum("cloneMode", false, new String[]{"force", "move", "normal"}),
-                CommandParameter.newType("tileId",false,CommandParamType.INT),
-                CommandParameter.newType("tileData",false, CommandParamType.INT)
+                CommandParameter.newType("tileId", false, CommandParamType.INT),
+                CommandParameter.newType("tileData", false, CommandParamType.INT)
         });
     }
 
@@ -69,7 +69,7 @@ public class CloneCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
             if (size > 16 * 16 * 256 * 8) {
-                sender.sendMessage(new TranslationContainer("commands.clone.tooManyBlocks",String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
+                sender.sendMessage(new TranslationContainer("commands.clone.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
                 return false;
             }
 

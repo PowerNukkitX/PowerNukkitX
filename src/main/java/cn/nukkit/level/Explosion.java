@@ -94,7 +94,7 @@ public class Explosion {
         if (!incendiary) {
             fireChance = 0;
         } else if (fireChance <= 0) {
-            fireChance = 1.0/3.0;
+            fireChance = 1.0 / 3.0;
         }
     }
 
@@ -128,16 +128,16 @@ public class Explosion {
         if (this.size < 0.1) {
             return false;
         }
-        
+
         if (affectedBlocks == null) {
             affectedBlocks = new LinkedHashSet<>();
         }
-        
+
         boolean incendiary = fireChance > 0;
         if (incendiary && fireIgnitions == null) {
             fireIgnitions = new LinkedHashSet<>();
         }
-        
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         Vector3 vector = new Vector3(0, 0, 0);
@@ -202,15 +202,15 @@ public class Explosion {
 
         Vector3 source = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
         double yield = (1d / this.size) * 100d;
-        
+
         if (affectedBlocks == null) {
             affectedBlocks = new LinkedHashSet<>();
         }
-        
+
         if (this.what instanceof Entity) {
             List<Block> affectedBlocksList = new ArrayList<>(this.affectedBlocks);
             EntityExplodeEvent ev = new EntityExplodeEvent((Entity) this.what, this.source, affectedBlocksList, yield);
-            ev.setIgnitions(fireIgnitions == null? new LinkedHashSet<>(0) : fireIgnitions);
+            ev.setIgnitions(fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions);
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return false;
@@ -221,8 +221,8 @@ public class Explosion {
                 fireIgnitions = ev.getIgnitions();
             }
         } else if (this.what instanceof Block) {
-            BlockExplodeEvent ev = new BlockExplodeEvent((Block) this.what, this.source, this.affectedBlocks, 
-                    fireIgnitions == null? new LinkedHashSet<>(0) : fireIgnitions, yield, this.fireChance);
+            BlockExplodeEvent ev = new BlockExplodeEvent((Block) this.what, this.source, this.affectedBlocks,
+                    fireIgnitions == null ? new LinkedHashSet<>(0) : fireIgnitions, yield, this.fireChance);
             this.level.getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return false;
@@ -315,7 +315,7 @@ public class Explosion {
                         }
                     }
                     updateBlocks.add(index);
-                }   
+                }
             }
             send.add(new Vector3(block.x - source.x, block.y - source.y, block.z - source.z));
         }

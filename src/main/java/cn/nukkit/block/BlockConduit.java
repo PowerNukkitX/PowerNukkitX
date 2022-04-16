@@ -96,31 +96,31 @@ public class BlockConduit extends BlockTransparent implements BlockEntityHolder<
 
     @Override
     public double getMinX() {
-        return x + (5.0/16);
+        return x + (5.0 / 16);
     }
 
     @Override
     public double getMinY() {
-        return y + (5.0/16);
+        return y + (5.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (5.0/16);
+        return z + (5.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (11.0/16);
+        return x + (11.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (11.0/16);
+        return y + (11.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (11.0/16);
+        return z + (11.0 / 16);
     }
 }

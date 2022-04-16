@@ -24,6 +24,7 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around this block.
+     *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -35,6 +36,7 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around this block.
+     *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -45,6 +47,7 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around this block.
+     *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -56,6 +59,7 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around this block and also around the blocks of those updated blocks.
+     *
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -70,7 +74,8 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around the given position.
-     * @param pos The middle of the blocks around.
+     *
+     * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -82,7 +87,8 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around the given position.
-     * @param pos The middle of the blocks around.
+     *
+     * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -97,7 +103,8 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around the given position and also around the blocks of those updated blocks.
-     * @param pos The middle of the blocks around.
+     *
+     * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly
@@ -109,7 +116,8 @@ public interface RedstoneComponent {
 
     /**
      * Send a redstone update to all blocks around the given position and also around the blocks of those updated blocks.
-     * @param pos The middle of the blocks around.
+     *
+     * @param pos          The middle of the blocks around.
      * @param ignoredFaces The faces, that shouldn't get updated.
      */
     @PowerNukkitOnly

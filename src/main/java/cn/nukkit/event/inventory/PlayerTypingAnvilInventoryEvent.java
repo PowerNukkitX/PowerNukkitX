@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 
 /**
  * Fired when a player change anything in the item name in an open Anvil inventory window.
- * 
+ *
  * @author joserobjr
  * @since 2021-02-14
  */
@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 @ToString
 public class PlayerTypingAnvilInventoryEvent extends InventoryEvent {
     private static final HandlerList handlers = new HandlerList();
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static HandlerList getHandlers() {

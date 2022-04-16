@@ -41,7 +41,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     /**
      * encoded as:
-     *
+     * <p>
      * (x &lt;&lt; 4) | z
      */
     protected byte[] biomes;
@@ -123,7 +123,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
         return chunkPacket;
     }
-    
+
     @PowerNukkitOnly("Needed for level backward compatibility")
     @Since("1.3.0.0-PN")
     public void backwardCompatibilityUpdate(Level level) {
@@ -176,7 +176,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 this.getProvider().getLevel().timings.syncChunkLoadBlockEntitiesTimer.stopTiming();
                 this.NBTtiles = null;
             }
-            
+
             if (changed) {
                 this.setChanged();
             }
@@ -228,7 +228,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void setProvider(LevelProvider provider) {
         this.provider = provider;
 
-        if(provider != null) {
+        if (provider != null) {
             this.providerClass = provider.getClass();
         }
     }
@@ -332,7 +332,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                     this.setBlockSkyLight(x, y, z, light);
 
                     if (light == 0) { // skipping block checks, because everything under a block that has a skylight value
-                                      // of 0 also has a skylight value of 0
+                        // of 0 also has a skylight value of 0
                         continue;
                     }
 
@@ -340,15 +340,15 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                     int id = this.getBlockId(x, y, z);
 
                     if (!Block.isTransparent(id)) { // if we encounter an opaque block, all the blocks under it will
-                                           // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
+                        // have a skylight value of 0 (the block itself has a value of 15, if it's a top-most block)
                         nextLight = 0;
                     } else if (Block.diffusesSkyLight(id)) {
                         nextDecrease += 1; // skylight value decreases by one for each block under a block
-                                           // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
+                        // that diffuses skylight. The block itself has a value of 15 (if it's a top-most block)
                     } else {
                         nextDecrease -= Block.getLightFilter(id); // blocks under a light filtering block will have a skylight value
-                                                            // decreased by the lightFilter value of that block. The block itself
-                                                            // has a value of 15 (if it's a top-most block)
+                        // decreased by the lightFilter value of that block. The block itself
+                        // has a value of 15 (if it's a top-most block)
                     }
                     // END of checks for the next block
                 }
@@ -708,13 +708,13 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         int offsetX = getX() << 4;
         int offsetZ = getZ() << 4;
         List<Block> results = new ArrayList<>();
-        
+
         BlockVector3 current = new BlockVector3();
 
         int minX = Math.max(0, min.x - offsetX);
         int minY = Math.max(isOverWorld() ? 0 : -64, min.y);
         int minZ = Math.max(0, min.z - offsetZ);
-        
+
         for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
             current.x = offsetX + x;
             for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
@@ -728,7 +728,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 }
             }
         }
-        
+
         return results.stream();
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
  * @author CreeperFace
  */
 public class CommandEnum {
-    
+
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
 

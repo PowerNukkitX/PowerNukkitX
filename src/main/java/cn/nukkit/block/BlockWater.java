@@ -50,12 +50,12 @@ public class BlockWater extends BlockLiquid {
         if (!update) {
             return;
         }
-        
+
         int newId = newBlock.getId();
         if (newId == FLOWING_WATER || newId == STILL_WATER) {
             return;
         }
-        
+
         Block up = up(1, 0);
         for (BlockFace diagonalFace : BlockFace.Plane.HORIZONTAL) {
             Block diagonal = up.getSide(diagonalFace);

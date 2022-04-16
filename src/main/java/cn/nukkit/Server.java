@@ -309,13 +309,13 @@ public class Server {
 
         File cmdDir = new File(tempDir, "command_data");
         commandDataPath = cmdDir.getPath();
-        
+
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
         Files.createParentDirs(new File(tempDir, "players"));
-        
+
         baseLang = new BaseLang(BaseLang.FALLBACK_LANGUAGE);
-        
+
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         properties = new Config();
@@ -442,7 +442,7 @@ public class Server {
                 }
 
                 StringBuilder keyBuilder = new StringBuilder();
-                try(BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(Server.class.getResourceAsStream("/default-nukkit.yml"), StandardCharsets.UTF_8))) {
                     String line;
                     LinkedList<String[]> path = new LinkedList<>();
                     Pattern pattern = Pattern.compile("^( *)([a-z-]+):");
@@ -575,11 +575,11 @@ public class Server {
 
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
-        
+
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
-        
+
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
@@ -703,7 +703,7 @@ public class Server {
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
         this.network.registerInterface(new RakNetInterface(this));
-        
+
         try {
             log.debug("Loading position tracking service");
             this.positionTrackingService = new PositionTrackingService(new File(Nukkit.DATA_PATH, "services/position_tracking_db"));
@@ -711,7 +711,7 @@ public class Server {
         } catch (IOException e) {
             log.fatal("Failed to start the Position Tracking DB service!", e);
         }
-        
+
         this.pluginManager.loadPowerNukkitPlugins();
         this.pluginManager.loadPlugins(this.pluginPath);
 
@@ -805,7 +805,7 @@ public class Server {
             this.watchdog = new Watchdog(this, 60000);
             this.watchdog.start();
         }
-        
+
         System.runFinalization();
         this.start();
     }
@@ -894,7 +894,7 @@ public class Server {
         }
     }
 
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
             reason = "Packet management was refactored, batching is done automatically near the RakNet layer")
     @Deprecated
     public void batchPackets(Player[] players, DataPacket[] packets) {
@@ -983,7 +983,7 @@ public class Server {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
             log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
-                    new ConcurrentModificationException("Command Dispatched Async: "+commandLine));
+                    new ConcurrentModificationException("Command Dispatched Async: " + commandLine));
 
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
             return true;
@@ -1172,7 +1172,7 @@ public class Server {
                 System.gc();
             }
         }, 60);
-        
+
         this.nextTick = System.currentTimeMillis();
         try {
             while (this.isRunning.get()) {
@@ -1294,11 +1294,11 @@ public class Server {
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = this.playerList.values().stream()
                 .map(p -> new PlayerListPacket.Entry(
-                p.getUniqueId(),
-                p.getId(),
-                p.getDisplayName(),
-                p.getSkin(),
-                p.getLoginChainData().getXUID()))
+                        p.getUniqueId(),
+                        p.getId(),
+                        p.getDisplayName(),
+                        p.getSkin(),
+                        p.getLoginChainData().getXUID()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
@@ -1986,7 +1986,7 @@ public class Server {
                 //doing it like this ensures that the playerdata will be saved in a server shutdown
                 @Override
                 public void onCancel() {
-                    if (!this.hasRun)    {
+                    if (!this.hasRun) {
                         this.hasRun = true;
                         saveOfflinePlayerDataInternal(event.getSerializer(), tag, nameLower, event.getUuid().orElse(null));
                     }
@@ -2700,14 +2700,14 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isSafeSpawn(){
+    public boolean isSafeSpawn() {
         return safeSpawn;
     }
 
     public static Server getInstance() {
         return instance;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -2717,28 +2717,28 @@ public class Server {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isForceSkinTrusted(){
+    public boolean isForceSkinTrusted() {
         return forceSkinTrusted;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean isCheckMovement(){
+    public boolean isCheckMovement() {
         return checkMovement;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public long getLaunchTime() {
         return launchTime;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
-    
+
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
         @Override

@@ -27,8 +27,10 @@ public class SetTitlePacket extends DataPacket {
     public int fadeInTime = 0;
     public int stayTime = 0;
     public int fadeOutTime = 0;
-    @Since("FUTURE") public String xuid = "";
-    @Since("FUTURE") public String platformOnlineId = "";
+    @Since("FUTURE")
+    public String xuid = "";
+    @Since("FUTURE")
+    public String platformOnlineId = "";
 
     @Override
     public byte pid() {
@@ -66,7 +68,7 @@ public class SetTitlePacket extends DataPacket {
         if (currentType >= 0 && currentType < TITLE_ACTIONS.length) {
             return TITLE_ACTIONS[currentType];
         }
-        throw new UnsupportedOperationException("Bad type: "+currentType);
+        throw new UnsupportedOperationException("Bad type: " + currentType);
     }
 
     @PowerNukkitOnly

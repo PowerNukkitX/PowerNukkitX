@@ -33,8 +33,10 @@ public abstract class BlockEntity extends Position {
     public static final String CHEST = "Chest";
     public static final String ENDER_CHEST = "EnderChest";
     public static final String FURNACE = "Furnace";
-    @PowerNukkitOnly public static final String BLAST_FURNACE = "BlastFurnace";
-    @PowerNukkitOnly public static final String SMOKER = "Smoker";
+    @PowerNukkitOnly
+    public static final String BLAST_FURNACE = "BlastFurnace";
+    @PowerNukkitOnly
+    public static final String SMOKER = "Smoker";
     public static final String SIGN = "Sign";
     public static final String MOB_SPAWNER = "MobSpawner";
     public static final String ENCHANT_TABLE = "EnchantTable";
@@ -54,20 +56,40 @@ public abstract class BlockEntity extends Position {
     public static final String JUKEBOX = "Jukebox";
     public static final String SHULKER_BOX = "ShulkerBox";
     public static final String BANNER = "Banner";
-    @PowerNukkitOnly public static final String LECTERN = "Lectern";
-    @PowerNukkitOnly public static final String BEEHIVE = "Beehive";
-    @PowerNukkitOnly public static final String CONDUIT = "Conduit";
-    @PowerNukkitOnly public static final String BARREL = "Barrel";
-    @PowerNukkitOnly public static final String CAMPFIRE = "Campfire";
-    @PowerNukkitOnly public static final String BELL = "Bell";
-    @PowerNukkitOnly public static final String DISPENSER = "Dispenser";
-    @PowerNukkitOnly public static final String DROPPER = "Dropper";
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final String NETHER_REACTOR = "NetherReactor";
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final String LODESTONE = "Lodestone";
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final String TARGET = "Target";
-    @PowerNukkitOnly @Since("FUTURE") public static final String END_PORTAL = "EndPortal";
-    @PowerNukkitOnly @Since("FUTURE") public static final String END_GATEWAY = "EndGateway";
-    @PowerNukkitOnly @Since("1.6.0.0-PNX") public static final String COMMAND_BLOCK = "CommandBlock";
+    @PowerNukkitOnly
+    public static final String LECTERN = "Lectern";
+    @PowerNukkitOnly
+    public static final String BEEHIVE = "Beehive";
+    @PowerNukkitOnly
+    public static final String CONDUIT = "Conduit";
+    @PowerNukkitOnly
+    public static final String BARREL = "Barrel";
+    @PowerNukkitOnly
+    public static final String CAMPFIRE = "Campfire";
+    @PowerNukkitOnly
+    public static final String BELL = "Bell";
+    @PowerNukkitOnly
+    public static final String DISPENSER = "Dispenser";
+    @PowerNukkitOnly
+    public static final String DROPPER = "Dropper";
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final String NETHER_REACTOR = "NetherReactor";
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final String LODESTONE = "Lodestone";
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final String TARGET = "Target";
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final String END_PORTAL = "EndPortal";
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static final String END_GATEWAY = "EndGateway";
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static final String COMMAND_BLOCK = "CommandBlock";
 
     public static long count = 1;
 
@@ -81,7 +103,8 @@ public abstract class BlockEntity extends Position {
 
     public boolean closed = false;
     public CompoundTag namedTag;
-    @Deprecated @DeprecationDetails(since = "1.3.1.2-PN", reason = "Not necessary and causes slowdown")
+    @Deprecated
+    @DeprecationDetails(since = "1.3.1.2-PN", reason = "Not necessary and causes slowdown")
     @PowerNukkitDifference(info = "Not updated anymore", since = "1.3.1.2-PN")
     protected long lastUpdate;
     protected Server server;
@@ -111,11 +134,11 @@ public abstract class BlockEntity extends Position {
         }
 
         this.initBlockEntity();
-        
+
         if (closed) {
-            throw new IllegalStateException("Could not create the entity "+getClass().getName()+", the initializer closed it on construction.");
+            throw new IllegalStateException("Could not create the entity " + getClass().getName() + ", the initializer closed it on construction.");
         }
-        
+
         this.chunk.addBlockEntity(this);
         this.getLevel().addBlockEntity(this);
     }
@@ -172,13 +195,13 @@ public abstract class BlockEntity extends Position {
 
             }
             if (blockEntity == null) {
-                Exception cause = new IllegalArgumentException("Could not create a block entity of type "+type, exceptions != null && exceptions.size() > 0? exceptions.get(0) : null);
+                Exception cause = new IllegalArgumentException("Could not create a block entity of type " + type, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
                 if (exceptions != null && exceptions.size() > 1) {
                     for (int i = 1; i < exceptions.size(); i++) {
                         cause.addSuppressed(exceptions.get(i));
                     }
                 }
-                log.error("Could not create a block entity of type {} with {} args", type, args == null? 0 : args.length, cause);
+                log.error("Could not create a block entity of type {} with {} args", type, args == null ? 0 : args.length, cause);
             }
         } else {
             log.debug("Block entity type {} is unknown", type);

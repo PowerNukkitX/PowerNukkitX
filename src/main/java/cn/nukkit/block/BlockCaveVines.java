@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
@@ -72,7 +71,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
     @Override
     public boolean onActivate(@Nonnull Item item) {
         if (item.getId() == ItemID.DYE && item.getDamage() == DyeColor.BONE_MEAL.getDyeData() && this.getId() == CAVE_VINES) {
-            if(up() instanceof BlockCaveVines) {
+            if (up() instanceof BlockCaveVines) {
                 final Block tmp = new BlockCaveVinesBodyWithBerries();
                 tmp.setPropertyValue(BlockCaveVinesBodyWithBerries.AGE_PROPERTY, this.getPropertyValue(AGE_PROPERTY));
                 getLevel().setBlock(this, tmp, true, true);

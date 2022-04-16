@@ -79,7 +79,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
         return 0;
     }
-    
+
     @Nullable
     private BlockFace findValidSupport() {
         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
@@ -100,7 +100,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             target = target.down();
             face = BlockFace.UP;
         }
-        
+
         if (face == BlockFace.DOWN || !BlockLever.isSupportValid(target, face)) {
             BlockFace valid = findValidSupport();
             if (valid == null) {
@@ -108,7 +108,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             }
             face = valid;
         }
-        
+
         this.setBlockFace(face);
         this.getLevel().setBlock(block, this, true, true);
         return true;
@@ -135,7 +135,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         if (torchAttachment == null) {
             throw new InvalidBlockPropertyValueException(TORCH_FACING_DIRECTION, getTorchAttachment(), face, "The give BlockFace can't be mapped to TorchFace");
         }
-        
+
         setTorchAttachment(torchAttachment);
     }
 

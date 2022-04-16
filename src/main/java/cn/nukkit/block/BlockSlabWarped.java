@@ -72,7 +72,7 @@ public class BlockSlabWarped extends BlockSlab {
     public Item toItem() {
         return new ItemBlock(this);
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;

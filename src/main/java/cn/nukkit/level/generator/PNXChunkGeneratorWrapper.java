@@ -146,7 +146,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     private BiomeProvider getBiomeProviderDelegate() {
         final var provider = biomeProvider.get();
-        if(provider != null) {
+        if (provider != null) {
             return provider;
         }
         final var newProvider = pack.getBiomeProvider();
@@ -172,7 +172,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunkManager.getChunk(chunkX, chunkZ).setBiome(x,z,(Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+                chunkManager.getChunk(chunkX, chunkZ).setBiome(x, z, (Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
             }
         }
     }

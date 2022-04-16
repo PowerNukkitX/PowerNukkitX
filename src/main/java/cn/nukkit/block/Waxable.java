@@ -38,15 +38,15 @@ public interface Waxable {
             return false;
         }
 
-        Position location = this instanceof Block? (Position) this : getLocation();
+        Position location = this instanceof Block ? (Position) this : getLocation();
         if (player == null || !player.isCreative()) {
             if (waxed) {
                 item.count--;
             } else {
-                item.useOn(this instanceof Block? (Block) this : location.getLevelBlock());
+                item.useOn(this instanceof Block ? (Block) this : location.getLevelBlock());
             }
         }
-        location.getValidLevel().addParticle(waxed? new WaxOnParticle(location) : new WaxOffParticle(location));
+        location.getValidLevel().addParticle(waxed ? new WaxOnParticle(location) : new WaxOffParticle(location));
         return true;
     }
 

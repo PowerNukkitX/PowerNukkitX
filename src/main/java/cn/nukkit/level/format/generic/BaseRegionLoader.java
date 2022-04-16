@@ -36,12 +36,12 @@ abstract public class BaseRegionLoader {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected final Int2ObjectMap<int[]> primitiveLocationTable = new Int2ObjectOpenHashMap<>();
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Integer boxing was polluting the memory heap", replaceWith = "primitiveLocationTable")
     protected final Map<Integer, Integer[]> locationTable = new ConvertingMapWrapper<>(
             primitiveLocationTable,
-            table-> Arrays.stream(table).mapToInt(Integer::intValue).toArray(),
+            table -> Arrays.stream(table).mapToInt(Integer::intValue).toArray(),
             table -> Arrays.stream(table).boxed().toArray(Integer[]::new)
     );
 
@@ -114,7 +114,7 @@ abstract public class BaseRegionLoader {
     @Deprecated
     @DeprecationDetails(
             since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Unnecessary int-boxing causing heap pollution", 
+            reason = "Unnecessary int-boxing causing heap pollution",
             replaceWith = "getIntLocationIndexes()")
     public Integer[] getLocationIndexes() {
         return this.primitiveLocationTable.keySet().toArray(Utils.EMPTY_INTEGERS);

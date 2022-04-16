@@ -40,7 +40,7 @@ public class BlockStructure extends BlockSolidMeta {
     public BlockStructure(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return STRUCTURE_BLOCK;
@@ -59,7 +59,7 @@ public class BlockStructure extends BlockSolidMeta {
     public StructureBlockType getStructureBlockType() {
         return getPropertyValue(STRUCTURE_BLOCK_TYPE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setStructureBlockType(StructureBlockType type) {
@@ -70,7 +70,7 @@ public class BlockStructure extends BlockSolidMeta {
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (player != null) {
@@ -80,7 +80,7 @@ public class BlockStructure extends BlockSolidMeta {
         }
         return true;
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
@@ -90,43 +90,43 @@ public class BlockStructure extends BlockSolidMeta {
         // TODO: Add Block Entity
         return true;
     }
-    
+
     @Override
     public String getName() {
         return getStructureBlockType().getEnglishName();
     }
-    
+
     @Override
     public double getHardness() {
         return -1;
     }
-    
+
     @Override
     public double getResistance() {
         return 18000000;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public boolean isBreakable(Item item) {
         return false;
     }
-    
+
     @Override
     public boolean canBePushed() {
         return false;
     }
-    
+
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.LIGHT_GRAY_BLOCK_COLOR;

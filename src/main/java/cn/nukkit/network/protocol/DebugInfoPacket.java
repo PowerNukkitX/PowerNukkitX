@@ -8,8 +8,10 @@ import lombok.ToString;
 public class DebugInfoPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.DEBUG_INFO_PACKET;
 
-    @Since("1.3.0.0-PN") public long entityId;
-    @Since("1.3.0.0-PN") public String data;
+    @Since("1.3.0.0-PN")
+    public long entityId;
+    @Since("1.3.0.0-PN")
+    public String data;
 
     @Override
     public byte pid() {

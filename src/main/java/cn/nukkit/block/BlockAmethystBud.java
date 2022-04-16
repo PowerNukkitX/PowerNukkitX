@@ -13,7 +13,6 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
@@ -98,7 +97,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if(!target.isSolid())
+        if (!target.isSolid())
             return false;
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
@@ -107,10 +106,10 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
 
     @Override
     public boolean onBreak(Item item) {
-        if (item.isPickaxe()){
-            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5,0,0.5), item1));
+        if (item.isPickaxe()) {
+            Arrays.stream(this.getDrops(item)).forEach(item1 -> this.level.dropItem(this.add(0.5, 0, 0.5), item1));
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
-        }else {
+        } else {
             this.getLevel().setBlock(this, layer, Block.get(BlockID.AIR), true, true);
         }
         return true;

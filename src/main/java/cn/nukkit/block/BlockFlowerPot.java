@@ -127,7 +127,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
-        
+
         CompoundTag nbt = new CompoundTag()
                 .putShort("item", 0)
                 .putInt("data", 0);
@@ -136,7 +136,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 nbt.put(aTag.getName(), aTag);
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -152,7 +152,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         if (id == 0) {
             return Item.get(0, 0, 0);
         }
-        
+
         int data = blockEntity.namedTag.getInt("data");
         return Item.get(id, data, 1);
     }
@@ -164,7 +164,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             removeFlower();
             return true;
         }
-        
+
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
         int contentId = item.getBlockId();
         if (contentId == -1 || !canPlaceIntoFlowerPot(contentId)) {
@@ -195,7 +195,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
         getLevel().setBlock(this, this, true);
         blockEntity.spawnToAll();
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -207,7 +207,7 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
             if (player == null) {
                 return false;
             }
-            
+
             Item flower = getFlower();
             if (flower.getId() != 0) {
                 removeFlower();
@@ -215,20 +215,20 @@ public class BlockFlowerPot extends BlockFlowable implements BlockEntityHolder<B
                 return true;
             }
         }
-        
+
         if (item.isNull()) {
             return false;
         }
-        
+
         BlockEntityFlowerPot blockEntity = getOrCreateBlockEntity();
         if (blockEntity.namedTag.getShort("item") != 0 || blockEntity.namedTag.getInt("mData") != 0) {
             return false;
         }
-        
+
         if (!setFlower(item)) {
             return false;
         }
-        
+
         if (player == null || !player.isCreative()) {
             item.count--;
         }

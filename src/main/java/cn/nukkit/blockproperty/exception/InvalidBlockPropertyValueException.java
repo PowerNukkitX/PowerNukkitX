@@ -14,10 +14,10 @@ import java.io.Serializable;
 @ParametersAreNullableByDefault
 public class InvalidBlockPropertyValueException extends InvalidBlockPropertyException {
     private static final long serialVersionUID = -1087431932428639175L;
-    
+
     @Nullable
     private final Serializable currentValue;
-    
+
     @Nullable
     private final Serializable invalidValue;
 
@@ -32,7 +32,7 @@ public class InvalidBlockPropertyValueException extends InvalidBlockPropertyExce
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message);
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
@@ -40,7 +40,7 @@ public class InvalidBlockPropertyValueException extends InvalidBlockPropertyExce
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public InvalidBlockPropertyValueException(@Nonnull BlockProperty<?> property, Serializable currentValue, Serializable invalidValue, String message, Throwable cause) {
-        super(property, buildMessage(currentValue, invalidValue)+". "+message, cause);
+        super(property, buildMessage(currentValue, invalidValue) + ". " + message, cause);
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
@@ -52,9 +52,9 @@ public class InvalidBlockPropertyValueException extends InvalidBlockPropertyExce
         this.currentValue = currentValue;
         this.invalidValue = invalidValue;
     }
-    
+
     private static String buildMessage(Object currentValue, Object invalidValue) {
-        return "Current Value: "+currentValue+", Invalid Value: "+invalidValue;
+        return "Current Value: " + currentValue + ", Invalid Value: " + invalidValue;
     }
 
 

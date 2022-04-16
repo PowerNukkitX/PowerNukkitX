@@ -35,7 +35,7 @@ public class BlockWoodBark extends BlockWood {
     public BlockWoodBark(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return WOOD_BARK;
@@ -51,7 +51,7 @@ public class BlockWoodBark extends BlockWood {
 
     @Override
     public String getName() {
-        return (isStripped()? "Stripped ": "") + getWoodType().getEnglishName() + " Wood";
+        return (isStripped() ? "Stripped " : "") + getWoodType().getEnglishName() + " Wood";
     }
 
     @PowerNukkitOnly

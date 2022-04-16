@@ -52,9 +52,9 @@ public class EntityPotionLingering extends EntityPotion {
                         )
                         .putShort("PotionId", potionId)
         );
-    
+
         Effect effect = Potion.getEffect(potionId, true);
-    
+
         if (effect != null && entity != null) {
             entity.cloudEffects.add(effect.setDuration(1).setVisible(false).setAmbient(false));
             entity.spawnToAll();

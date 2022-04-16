@@ -77,8 +77,10 @@ public class EntityThrownTrident extends EntityProjectile {
 
     private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
 
-    @Since("FUTURE") protected int pickupMode;
-    @Since("FUTURE") public boolean alreadyCollided;
+    @Since("FUTURE")
+    protected int pickupMode;
+    @Since("FUTURE")
+    public boolean alreadyCollided;
 
     @Override
     public int getNetworkId() {
@@ -185,14 +187,14 @@ public class EntityThrownTrident extends EntityProjectile {
         this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
         this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
         this.namedTag.putList(new ListTag<DoubleTag>("CollisionPos")
-            .add(new DoubleTag("0", this.collisionPos.x))
-            .add(new DoubleTag("1", this.collisionPos.y))
-            .add(new DoubleTag("2", this.collisionPos.z))
+                .add(new DoubleTag("0", this.collisionPos.x))
+                .add(new DoubleTag("1", this.collisionPos.y))
+                .add(new DoubleTag("2", this.collisionPos.z))
         );
         this.namedTag.putList(new ListTag<IntTag>("StuckToBlockPos")
-            .add(new IntTag("0", this.stuckToBlockPos.x))
-            .add(new IntTag("1", this.stuckToBlockPos.y))
-            .add(new IntTag("2", this.stuckToBlockPos.z))
+                .add(new IntTag("0", this.stuckToBlockPos.x))
+                .add(new IntTag("1", this.stuckToBlockPos.y))
+                .add(new IntTag("2", this.stuckToBlockPos.z))
         );
         this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
         this.namedTag.putBoolean(TAG_PLAYER, this.player);

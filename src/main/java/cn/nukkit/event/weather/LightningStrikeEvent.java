@@ -25,6 +25,7 @@ public class LightningStrikeEvent extends WeatherEvent implements Cancellable {
 
     /**
      * Gets the bolt which is striking the earth.
+     *
      * @return lightning entity
      */
     public EntityLightningStrike getLightning() {

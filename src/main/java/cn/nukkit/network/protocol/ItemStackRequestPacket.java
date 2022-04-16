@@ -30,14 +30,14 @@ public class ItemStackRequestPacket extends DataPacket {
     public void encode() {
 
     }
-    
+
     @Since("1.4.0.0-PN")
     @Value
     public static class Request {
         private final int requestId;
         private final List<ItemStackAction> actions;
     }
-    
+
     @Since("1.4.0.0-PN")
     @Value
     public static class ItemStackAction {

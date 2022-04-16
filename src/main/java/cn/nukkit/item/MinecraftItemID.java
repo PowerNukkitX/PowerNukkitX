@@ -26,13 +26,12 @@ import javax.annotation.Nullable;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * An enum containing all valid vanilla Minecraft items.
- * 
+ *
  * @author joserobjr
  * @since 2020-12-20
  */
@@ -1080,18 +1079,18 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
     ;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
-            .flatMap(id-> 
+            .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))
-                            .map(ns-> new AbstractMap.SimpleEntry<>(ns, id)))
-            .collect(Collectors.toMap(entry-> entry.getKey().toLowerCase(), AbstractMap.SimpleEntry::getValue));
-    
+                            .map(ns -> new AbstractMap.SimpleEntry<>(ns, id)))
+            .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), AbstractMap.SimpleEntry::getValue));
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
     public static MinecraftItemID getByNamespaceId(String namespacedId) {
         return namespacedIdMap.get(namespacedId);
     }
-    
+
     private final String namespacedId;
     private final String itemFormNamespaceId;
     private final boolean technical;
@@ -1105,7 +1104,7 @@ public enum MinecraftItemID {
         edu = false;
         this.aliases = aliases;
     }
-    
+
     MinecraftItemID() {
         namespacedId = "minecraft:" + name().toLowerCase();
         itemFormNamespaceId = namespacedId;
@@ -1121,7 +1120,7 @@ public enum MinecraftItemID {
     MinecraftItemID(boolean blockForm, boolean technical) {
         this(blockForm, technical, false);
     }
-    
+
     MinecraftItemID(boolean blockForm, boolean technical, boolean edu) {
         this.technical = technical;
         this.edu = edu;
@@ -1142,7 +1141,7 @@ public enum MinecraftItemID {
     MinecraftItemID(String namespacedId, String itemFormNamespaceId, boolean technical) {
         this(namespacedId, itemFormNamespaceId, technical, false);
     }
-    
+
     MinecraftItemID(String namespacedId, String itemFormNamespaceId, boolean technical, boolean edu) {
         this.edu = edu;
         this.technical = technical;
@@ -1161,7 +1160,7 @@ public enum MinecraftItemID {
     @Since("1.4.0.0-PN")
     public Item get(int amount, byte[] compoundTag) {
         Item item = get(amount);
-        item.setCompoundTag(compoundTag != null? compoundTag.clone() : null);
+        item.setCompoundTag(compoundTag != null ? compoundTag.clone() : null);
         return item;
     }
 
@@ -1182,7 +1181,7 @@ public enum MinecraftItemID {
     public boolean isTechnical() {
         return technical;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isEducationEdition() {
@@ -1192,6 +1191,6 @@ public enum MinecraftItemID {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public String[] getAliases() {
-        return aliases.length == 0? aliases : aliases.clone();
+        return aliases.length == 0 ? aliases : aliases.clone();
     }
 }

@@ -61,7 +61,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getEyeHeight() {
-        return (float)(boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
+        return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class EntityHuman extends EntityHumanType {
     public String getOriginalName() {
         return "Human";
     }
-    
+
     @Override
     public String getName() {
         return this.getNameTag();

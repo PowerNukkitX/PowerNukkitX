@@ -1,11 +1,11 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -40,12 +40,12 @@ public class SayCommand extends VanillaCommand {
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)){
+            if (EntitySelector.hasArguments(arg)) {
                 List<Entity> entities = EntitySelector.matchEntities(sender, arg);
-                for(Entity entity : entities){
+                for (Entity entity : entities) {
                     msg.append(entity.getName()).append(" ");
                 }
-            }else {
+            } else {
                 msg.append(arg).append(" ");
             }
         }

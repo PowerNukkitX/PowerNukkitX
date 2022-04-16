@@ -123,10 +123,10 @@ public class BlockFlower extends BlockFlowable {
         }
         String persistenceName = getPersistenceName();
         throw new InvalidBlockPropertyValueException(
-                new ArrayBlockProperty<>(persistenceName +"_type", false, new SmallFlowerType[]{acceptsOnly}),
+                new ArrayBlockProperty<>(persistenceName + "_type", false, new SmallFlowerType[]{acceptsOnly}),
                 acceptsOnly,
                 attemptedToSet,
-                persistenceName+" only accepts "+acceptsOnly.name().toLowerCase()
+                persistenceName + " only accepts " + acceptsOnly.name().toLowerCase()
         );
     }
 

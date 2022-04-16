@@ -49,18 +49,18 @@ public class BasicAttributesXmlTest {
             throw new IllegalArgumentException("item.getNamespaceId() failed for " + definition.getAttribute("namespaced-id") + " with damage " + definition.getAttribute("damage"), e);
         }
         final int damage = item.getDamage();
-        String prefix = namespaceId + (damage != 0? ":" + damage : "") + " -> " + item.getClass().getSimpleName() + " -> ";
-        assertEquals(definition.getAttribute("namespaced-id"), namespaceId, ()-> prefix + "Wrong namespaced-id");
-        getInt("numeric-id", definition).ifPresent(id-> assertEquals(id, item.getId(), ()-> prefix + "Wrong numeric-id"));
-        assertEquals(definition.getAttribute("name"), item.getName(), ()-> prefix + "Wrong name test method 1");
+        String prefix = namespaceId + (damage != 0 ? ":" + damage : "") + " -> " + item.getClass().getSimpleName() + " -> ";
+        assertEquals(definition.getAttribute("namespaced-id"), namespaceId, () -> prefix + "Wrong namespaced-id");
+        getInt("numeric-id", definition).ifPresent(id -> assertEquals(id, item.getId(), () -> prefix + "Wrong numeric-id"));
+        assertEquals(definition.getAttribute("name"), item.getName(), () -> prefix + "Wrong name test method 1");
         final int id = item.getId();
         Item item2 = Item.get(id, damage);
-        assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 2");
+        assertEquals(definition.getAttribute("name"), item2.getName(), () -> prefix + "Wrong name test method 2");
         if (id >= 0 && id < Item.list.length) {
             try {
                 Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor(Integer.class);
                 item2 = (Item) constructor.newInstance(damage);
-                assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 3");
+                assertEquals(definition.getAttribute("name"), item2.getName(), () -> prefix + "Wrong name test method 3");
             } catch (ReflectiveOperationException e) {
                 fail(prefix + "Missing constructor (Integer)", e);
             }
@@ -68,7 +68,7 @@ public class BasicAttributesXmlTest {
             try {
                 Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor(Integer.class, Integer.TYPE);
                 item2 = (Item) constructor.newInstance(damage, 1);
-                assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 4");
+                assertEquals(definition.getAttribute("name"), item2.getName(), () -> prefix + "Wrong name test method 4");
             } catch (ReflectiveOperationException e) {
                 fail(prefix + "Missing constructor (Integer, int)", e);
             }
@@ -77,30 +77,30 @@ public class BasicAttributesXmlTest {
                 try {
                     Constructor<?> constructor = ((Class<?>) Item.list[id]).getDeclaredConstructor();
                     item2 = (Item) constructor.newInstance();
-                    assertEquals(definition.getAttribute("name"), item2.getName(), ()-> prefix + "Wrong name test method 5");
+                    assertEquals(definition.getAttribute("name"), item2.getName(), () -> prefix + "Wrong name test method 5");
                 } catch (ReflectiveOperationException e) {
                     fail(prefix + "Missing constructor ()", e);
                 }
             }
         }
-        assertEquals(getInt("stack-size", definition).orElse(64), item.getMaxStackSize(), ()-> prefix + "Wrong stack-size");
-        assertEquals(getInt("durability", definition).orElse(-1), item.getMaxDurability(), ()-> prefix + "Wrong durability");
-        assertEquals(getInt("fuel-time", definition), Optional.ofNullable(item.getFuelTime()).map(OptionalInt::of).orElseGet(OptionalInt::empty), ()-> prefix + "Wrong fuel-time");
+        assertEquals(getInt("stack-size", definition).orElse(64), item.getMaxStackSize(), () -> prefix + "Wrong stack-size");
+        assertEquals(getInt("durability", definition).orElse(-1), item.getMaxDurability(), () -> prefix + "Wrong durability");
+        assertEquals(getInt("fuel-time", definition), Optional.ofNullable(item.getFuelTime()).map(OptionalInt::of).orElseGet(OptionalInt::empty), () -> prefix + "Wrong fuel-time");
         boolean tool = isTool(definition);
         boolean armor = isArmor(definition);
-        assertEquals(tool, item.isTool(), ()-> prefix + "Wrong isTool()");
-        assertEquals(armor, item.isArmor(), ()-> prefix + "Wrong isArmor()");
-        assertEquals(getTier(definition, tool, armor), item.getTier(), ()-> prefix + "Wrong tier");
-        assertEquals(isTrue("axe", definition), item.isAxe(), ()-> prefix + "Wrong isAxe()");
-        assertEquals(isTrue("pickaxe", definition), item.isPickaxe(), ()-> prefix + "Wrong isPickaxe()");
-        assertEquals(isTrue("shovel", definition), item.isShovel(), ()-> prefix + "Wrong isShovel()");
-        assertEquals(isTrue("hoe", definition), item.isHoe(), ()-> prefix + "Wrong isHoe()");
-        assertEquals(isTrue("sword", definition), item.isSword(), ()-> prefix + "Wrong isSword()");
-        assertEquals(isTrue("shears", definition), item.isShears(), ()-> prefix + "Wrong isShears()");
-        assertEquals(isTrue("helmet", definition), item.isHelmet(), ()-> prefix + "Wrong isHelmet()");
-        assertEquals(isTrue("chestplate", definition), item.isChestplate(), ()-> prefix + "Wrong isChestplate()");
-        assertEquals(isTrue("leggings", definition), item.isLeggings(), ()-> prefix + "Wrong isLeggings()");
-        assertEquals(isTrue("boots", definition), item.isBoots(), ()-> prefix + "Wrong isBoots()");
+        assertEquals(tool, item.isTool(), () -> prefix + "Wrong isTool()");
+        assertEquals(armor, item.isArmor(), () -> prefix + "Wrong isArmor()");
+        assertEquals(getTier(definition, tool, armor), item.getTier(), () -> prefix + "Wrong tier");
+        assertEquals(isTrue("axe", definition), item.isAxe(), () -> prefix + "Wrong isAxe()");
+        assertEquals(isTrue("pickaxe", definition), item.isPickaxe(), () -> prefix + "Wrong isPickaxe()");
+        assertEquals(isTrue("shovel", definition), item.isShovel(), () -> prefix + "Wrong isShovel()");
+        assertEquals(isTrue("hoe", definition), item.isHoe(), () -> prefix + "Wrong isHoe()");
+        assertEquals(isTrue("sword", definition), item.isSword(), () -> prefix + "Wrong isSword()");
+        assertEquals(isTrue("shears", definition), item.isShears(), () -> prefix + "Wrong isShears()");
+        assertEquals(isTrue("helmet", definition), item.isHelmet(), () -> prefix + "Wrong isHelmet()");
+        assertEquals(isTrue("chestplate", definition), item.isChestplate(), () -> prefix + "Wrong isChestplate()");
+        assertEquals(isTrue("leggings", definition), item.isLeggings(), () -> prefix + "Wrong isLeggings()");
+        assertEquals(isTrue("boots", definition), item.isBoots(), () -> prefix + "Wrong isBoots()");
     }
 
     static int getTier(Element definition, boolean tool, boolean armor) {
@@ -220,7 +220,7 @@ public class BasicAttributesXmlTest {
                 //noinspection MismatchedQueryAndUpdateOfCollection
                 ElementList<Element> elements = new ElementList<>(itemStates, Element.class);
                 Stream<Element> stream = elements.stream();
-                if (elements.stream().noneMatch(itemState-> "0".equals(itemState.getAttribute("damage")))) {
+                if (elements.stream().noneMatch(itemState -> "0".equals(itemState.getAttribute("damage")))) {
                     stream = Stream.concat(Stream.of(createItemStateZero(itemDefinition)), stream);
                 }
                 return stream
@@ -324,10 +324,10 @@ public class BasicAttributesXmlTest {
 
     @BeforeAll
     static void loadBasicAttributesXml() throws IOException, ParserConfigurationException, SAXException {
-        try(InputStream is = Objects.requireNonNull(ItemTest.class.getClassLoader().getResourceAsStream("cn/nukkit/item/basicItemAttributes.xml"));
-            BufferedInputStream input = new BufferedInputStream(is);
-            InputStream dtdIS = Objects.requireNonNull(ItemTest.class.getClassLoader().getResourceAsStream("cn/nukkit/item/basicAttributes.dtd"));
-            BufferedInputStream dtdInput = new BufferedInputStream(dtdIS)
+        try (InputStream is = Objects.requireNonNull(ItemTest.class.getClassLoader().getResourceAsStream("cn/nukkit/item/basicItemAttributes.xml"));
+             BufferedInputStream input = new BufferedInputStream(is);
+             InputStream dtdIS = Objects.requireNonNull(ItemTest.class.getClassLoader().getResourceAsStream("cn/nukkit/item/basicAttributes.dtd"));
+             BufferedInputStream dtdInput = new BufferedInputStream(dtdIS)
         ) {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilderFactory.setValidating(true);

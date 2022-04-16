@@ -39,14 +39,14 @@ public class BlockBlackstoneGilded extends BlockSolid {
         if (!item.isPickaxe() || item.getTier() < ItemTool.TIER_WOODEN) {
             return Item.EMPTY_ARRAY;
         }
-        
+
         int dropOdds;
         int fortune = 0;
         Enchantment enchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
         if (enchantment != null) {
             fortune = enchantment.getLevel();
         }
-        
+
         switch (fortune) {
             case 0:
                 dropOdds = 10;
@@ -63,10 +63,10 @@ public class BlockBlackstoneGilded extends BlockSolid {
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         if (dropOdds > 1 && random.nextInt(dropOdds) != 0) {
-            return new Item[] { toItem() };
+            return new Item[]{toItem()};
         }
 
-        return new Item[] { Item.get(ItemID.GOLD_NUGGET, 0, random.nextInt(2, 6)) };
+        return new Item[]{Item.get(ItemID.GOLD_NUGGET, 0, random.nextInt(2, 6))};
     }
 
     @Override

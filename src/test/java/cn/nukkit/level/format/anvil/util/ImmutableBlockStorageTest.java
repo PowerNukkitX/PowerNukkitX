@@ -43,42 +43,42 @@ class ImmutableBlockStorageTest {
 
     @Test
     void setBlockId() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.setBlockId(0, 0, 0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> storage.setBlockId(0, 0, 0, 1));
     }
 
     @Test
     void setBlockData() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.setBlockData(0, 0, 0, 1));
+        assertThrows(UnsupportedOperationException.class, () -> storage.setBlockData(0, 0, 0, 1));
     }
 
     @Test
     void setBlock() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.setBlock(0, 0, 0, 1, 2));
+        assertThrows(UnsupportedOperationException.class, () -> storage.setBlock(0, 0, 0, 1, 2));
     }
 
     @Test
     void getAndSetBlock() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.getAndSetBlock(0, 0, 0, 1, 2));
+        assertThrows(UnsupportedOperationException.class, () -> storage.getAndSetBlock(0, 0, 0, 1, 2));
     }
 
     @Test
     void getAndSetBlockState() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.getAndSetBlockState(0, 0, 0, stone));
+        assertThrows(UnsupportedOperationException.class, () -> storage.getAndSetBlockState(0, 0, 0, stone));
     }
 
     @Test
     void setBlockState() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.setBlockState(0, 0, 0, stone));
+        assertThrows(UnsupportedOperationException.class, () -> storage.setBlockState(0, 0, 0, stone));
     }
 
     @Test
     void getAndSetFullBlock() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.getAndSetFullBlock(0, 0, 0, stone.getFullId()));
+        assertThrows(UnsupportedOperationException.class, () -> storage.getAndSetFullBlock(0, 0, 0, stone.getFullId()));
     }
 
     @Test
     void testSetBlockState() {
-        assertThrows(UnsupportedOperationException.class, ()-> storage.setBlockState(0, stone));
+        assertThrows(UnsupportedOperationException.class, () -> storage.setBlockState(0, stone));
     }
 
     @Test

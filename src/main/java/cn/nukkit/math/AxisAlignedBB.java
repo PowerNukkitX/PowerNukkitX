@@ -43,9 +43,7 @@ public interface AxisAlignedBB extends Cloneable {
         return new SimpleAxisAlignedBB(this.getMinX() - x, this.getMinY() - y, this.getMinZ() - z, this.getMaxX() + x, this.getMaxY() + y, this.getMaxZ() + z);
     }
 
-    default AxisAlignedBB expand(double x, double y, double z)
-
-    {
+    default AxisAlignedBB expand(double x, double y, double z) {
         this.setMinX(this.getMinX() - x);
         this.setMinY(this.getMinY() - y);
         this.setMinZ(this.getMinZ() - z);
@@ -309,10 +307,15 @@ public interface AxisAlignedBB extends Cloneable {
 
 
     double getMinX();
+
     double getMinY();
+
     double getMinZ();
+
     double getMaxX();
+
     double getMaxY();
+
     double getMaxZ();
 
     AxisAlignedBB clone();

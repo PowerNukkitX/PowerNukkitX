@@ -21,7 +21,8 @@ import cn.nukkit.utils.Faceable;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.*;
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 
 @PowerNukkitOnly
 public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBarrel> {
@@ -102,7 +103,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -114,7 +115,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
         BlockEntityBarrel barrel = getOrCreateBlockEntity();
 
-        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag 
+        if (barrel.namedTag.contains("Lock") && barrel.namedTag.get("Lock") instanceof StringTag
                 && !barrel.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
@@ -173,7 +174,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntity
 
     @PowerNukkitOnly
     public void setOpen(boolean open) {
-        setDamage((getDamage() & 0x7) | (open? 0x8 : 0x0));
+        setDamage((getDamage() & 0x7) | (open ? 0x8 : 0x0));
     }
 
     @Override

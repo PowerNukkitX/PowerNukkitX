@@ -70,7 +70,7 @@ public class AllResourceUpdater {
     @SuppressWarnings("unchecked")
     private void updateRecipes() {
         Config config = new Config(Config.JSON);
-        try(InputStream recipesStream = getClass().getClassLoader()
+        try (InputStream recipesStream = getClass().getClassLoader()
                 .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/recipes.json")
         ) {
             if (recipesStream == null) {
@@ -126,7 +126,7 @@ public class AllResourceUpdater {
     @SuppressWarnings("unchecked")
     private void updateCreativeItems() {
         Config config = new Config(Config.JSON);
-        try(InputStream recipesStream = getClass().getClassLoader()
+        try (InputStream recipesStream = getClass().getClassLoader()
                 .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/creativeitems.json")
         ) {
             if (recipesStream == null) {
@@ -137,7 +137,7 @@ public class AllResourceUpdater {
             throw new UncheckedIOException(e);
         }
 
-        var newItems = (List<Map<String, Object>>)(Object)config.getMapList("items");
+        var newItems = (List<Map<String, Object>>) (Object) config.getMapList("items");
         newItems = updateItemEntryList(newItems);
         config.set("items", newItems);
 
@@ -156,15 +156,15 @@ public class AllResourceUpdater {
     private Map<String, Object> updateItemEntry(Map<String, Object> itemEntry) {
         var result = updateItemEntry0(itemEntry);
         if ("minecraft:air".equals(result.get("blockState"))) {
-            throw new NoSuchElementException("State not found for: "+itemEntry);
+            throw new NoSuchElementException("State not found for: " + itemEntry);
         }
         return result;
     }
 
     private Map<String, Object> updateItemEntry0(Map<String, Object> itemEntry) {
         itemEntry = new LinkedHashMap<>(itemEntry);
-        Integer damage = itemEntry.containsKey("damage")? Utils.toInt(itemEntry.get("damage")) : null;
-        boolean fuzzy = damage != null && (damage.equals((int)Short.MAX_VALUE) || damage.equals(-1));
+        Integer damage = itemEntry.containsKey("damage") ? Utils.toInt(itemEntry.get("damage")) : null;
+        boolean fuzzy = damage != null && (damage.equals((int) Short.MAX_VALUE) || damage.equals(-1));
         if (itemEntry.containsKey("blockState")) {
             itemEntry.remove("legacyId");
             itemEntry.remove("blockRuntimeId");
@@ -181,7 +181,7 @@ public class AllResourceUpdater {
             try {
                 state = BlockStateRegistry.getBlockStateByRuntimeId(blockRuntimeId);
                 if (state == null || state.equals(BlockState.AIR)) {
-                    throw new NoSuchElementException("State not found for blockRuntimeId: "+blockRuntimeId);
+                    throw new NoSuchElementException("State not found for blockRuntimeId: " + blockRuntimeId);
                 }
                 if (state.getProperties().equals(BlockUnknown.PROPERTIES)) {
                     unknown = true;
@@ -194,7 +194,7 @@ public class AllResourceUpdater {
                     int blockId = BlockStateRegistry.getBlockIdByRuntimeId(blockRuntimeId);
                     BlockState baseState = BlockState.of(blockId);
                     if (baseState.equals(BlockState.AIR)) {
-                        throw new NoSuchElementException("State not found for blockRuntimeId: "+blockRuntimeId);
+                        throw new NoSuchElementException("State not found for blockRuntimeId: " + blockRuntimeId);
                     }
                     if (baseState.getProperties().equals(BlockUnknown.PROPERTIES)) {
                         unknown = true;
@@ -202,7 +202,7 @@ public class AllResourceUpdater {
                     } else {
                         throw e;
                     }
-                }  catch (Exception e2) {
+                } catch (Exception e2) {
                     e2.addSuppressed(e);
                     throw e2;
                 }
@@ -269,7 +269,7 @@ public class AllResourceUpdater {
         Item item = Item.fromString(id);
         if (item.getId() > 255) {
             if (damage != null && !fuzzy && damage != 0) {
-                item = Item.fromString(id+":"+damage);
+                item = Item.fromString(id + ":" + damage);
             }
             itemEntry.remove("legacyId");
             itemEntry.remove("blockRuntimeId");

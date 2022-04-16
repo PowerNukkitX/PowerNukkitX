@@ -137,7 +137,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         public static final MapDecorator[] EMPTY_ARRAY = new MapDecorator[0];
-        
+
         public byte rotation;
         public byte icon;
         public byte offsetX;

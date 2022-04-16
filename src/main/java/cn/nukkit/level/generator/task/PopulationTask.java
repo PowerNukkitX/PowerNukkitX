@@ -104,7 +104,7 @@ public class PopulationTask extends AsyncTask {
                         BaseFullChunk newChunk = manager.getChunk(chunk.getX(), chunk.getZ());
                         newChunk.setGenerated();
                         if (newChunk != chunk) manager.setChunk(chunk.getX(), chunk.getZ(), newChunk);
-                   }
+                    }
                 }
 
                 isPopulated = centerChunk.isPopulated();

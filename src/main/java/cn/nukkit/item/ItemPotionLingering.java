@@ -33,12 +33,12 @@ public class ItemPotionLingering extends ProjectileItem {
             name = ItemPotion.buildName(potionId, "Lingering Potion", true);
         }
     }
-    
+
     @Override
     public int getMaxStackSize() {
         return 1;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;

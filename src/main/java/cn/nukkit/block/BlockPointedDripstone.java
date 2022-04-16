@@ -24,7 +24,6 @@ import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Random;
 
 import static cn.nukkit.potion.Effect.getEffect;
@@ -58,25 +57,25 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public int isHanging(){
+    public int isHanging() {
         return getPropertyValue(HANGING);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setHanging(int value){
+    public void setHanging(int value) {
         setPropertyValue(HANGING, value);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void setThickness(String value){
+    public void setThickness(String value) {
         setPropertyValue(DRIPSTONE_THICKNESS, value);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public String getThickness(){
+    public String getThickness() {
         return getPropertyValue(DRIPSTONE_THICKNESS);
     }
 
@@ -144,10 +143,10 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")){
+        if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")) {
             Random rand = new Random();
             double nextDouble = rand.nextDouble();
-            if (0 <= nextDouble && nextDouble <= 0.011377778){
+            if (0 <= nextDouble && nextDouble <= 0.011377778) {
                 this.grow();
             }
 
@@ -177,7 +176,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         if (AirUp) {
             BlockFallEvent event = new BlockFallEvent(this);
             Server.getInstance().getPluginManager().callEvent(event);
-            if (event.isCancelled()){
+            if (event.isCancelled()) {
                 return;
             }
             BlockPointedDripstone block = (BlockPointedDripstone) blockUp;
@@ -385,67 +384,67 @@ public class BlockPointedDripstone extends BlockFallableMeta {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void drippingLiquid(){//features according to https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
-        if (this.getBlock(this,1) instanceof BlockLiquid || !this.getThickness().equals("tip") || this.isHanging() != 1) {
+    public void drippingLiquid() {//features according to https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
+        if (this.getBlock(this, 1) instanceof BlockLiquid || !this.getThickness().equals("tip") || this.isHanging() != 1) {
             return;
         }
         Block highestPDS = this;
         int height = 1;
-        while(highestPDS.getSide(BlockFace.UP) instanceof BlockPointedDripstone){
+        while (highestPDS.getSide(BlockFace.UP) instanceof BlockPointedDripstone) {
             highestPDS = highestPDS.getSide(BlockFace.UP);
             height++;
         }
 
         boolean isWaterloggingBlock = false;
         if (height >= 11 ||
-            !(highestPDS.getSide(BlockFace.UP,2) instanceof BlockLiquid ||
-            highestPDS.getSide(BlockFace.UP,2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER)
-        ){
+                !(highestPDS.getSide(BlockFace.UP, 2) instanceof BlockLiquid ||
+                        highestPDS.getSide(BlockFace.UP, 2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER)
+        ) {
             return;
         }
 
-        if (highestPDS.getSide(BlockFace.UP,2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER){
+        if (highestPDS.getSide(BlockFace.UP, 2).getLevelBlockAtLayer(1).getId() == BlockID.FLOWING_WATER) {
             isWaterloggingBlock = true;
         }
 
         Block tmp = this;
         BlockCauldron cauldron = null;
-        while(tmp.getSide(BlockFace.DOWN) instanceof BlockAir){
+        while (tmp.getSide(BlockFace.DOWN) instanceof BlockAir) {
             tmp = tmp.getSide(BlockFace.DOWN);
         }
-        if (tmp.getSide(BlockFace.DOWN) instanceof BlockCauldron){
+        if (tmp.getSide(BlockFace.DOWN) instanceof BlockCauldron) {
             cauldron = (BlockCauldron) tmp.getSide(BlockFace.DOWN);
-        }else{
+        } else {
             return;
         }
 
         Random rand = new Random();
         double nextDouble;
-        Block filledWith = isWaterloggingBlock ? highestPDS.getSideAtLayer(1,BlockFace.UP,2) : highestPDS.getSide(BlockFace.UP,2);
-        switch (filledWith.getId()){
+        Block filledWith = isWaterloggingBlock ? highestPDS.getSideAtLayer(1, BlockFace.UP, 2) : highestPDS.getSide(BlockFace.UP, 2);
+        switch (filledWith.getId()) {
             case FLOWING_LAVA:
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 15.0/256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA,1);
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 15.0 / 256.0) {
+                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if(event.isCancelled())
+                    if (event.isCancelled())
                         return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron,cauldron,true,true);
+                    cauldron.level.setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_LAVA_POINTED_DRIPSTONE);
                 }
                 break;
             case FLOWING_WATER:
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 45.0/256.0) {
-                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER,1);
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 45.0 / 256.0) {
+                    CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER, 1);
                     Server.getInstance().getPluginManager().callEvent(event);
-                    if(event.isCancelled())
+                    if (event.isCancelled())
                         return;
                     cauldron.setCauldronLiquid(event.getLiquid());
                     cauldron.setFillLevel(cauldron.getFillLevel() + event.getLiquidLevelIncrement());
-                    cauldron.level.setBlock(cauldron,cauldron,true,true);
+                    cauldron.level.setBlock(cauldron, cauldron, true, true);
                     this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.CAULDRON_DRIP_WATER_POINTED_DRIPSTONE);
                 }
                 break;

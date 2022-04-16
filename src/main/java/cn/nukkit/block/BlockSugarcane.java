@@ -120,14 +120,14 @@ public class BlockSugarcane extends BlockFlowable {
             level.scheduleUpdate(this, 0);
             return type;
         }
-        
+
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!isSupportValid()) {
                 level.useBreakOn(this);
             }
             return type;
         }
-        
+
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (!isSupportValid()) {
                 level.scheduleUpdate(this, 0);
@@ -142,7 +142,7 @@ public class BlockSugarcane extends BlockFlowable {
             if (up.getId() != AIR) {
                 return type;
             }
-            
+
             int height = 0;
             for (Block current = this; height < 3 && current.getId() == REEDS; height++) {
                 current = current.down();
@@ -157,11 +157,11 @@ public class BlockSugarcane extends BlockFlowable {
             if (ev.isCancelled()) {
                 return type;
             }
-            
+
             if (!level.setBlock(up, Block.get(BlockID.REEDS), false)) {
                 return type;
             }
-            
+
             setDamage(0);
             level.setBlock(this, this, false);
             return type;

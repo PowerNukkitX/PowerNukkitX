@@ -123,7 +123,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
         BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
         return brewing != null;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (player != null) {

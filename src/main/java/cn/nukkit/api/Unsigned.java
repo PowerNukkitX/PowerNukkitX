@@ -25,9 +25,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Indicates that the number may be negative in raw form but must be treated as an unsigned value by 
+ * Indicates that the number may be negative in raw form but must be treated as an unsigned value by
  * considering the sign bit as part of the number.
- * 
+ *
  * @author joserobjr
  * @since 2020-10-11
  */

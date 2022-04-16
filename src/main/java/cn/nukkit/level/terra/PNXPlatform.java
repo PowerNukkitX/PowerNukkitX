@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.zip.ZipFile;
@@ -46,7 +45,7 @@ public class PNXPlatform extends AbstractPlatform {
             }
         }
         var targetFile = new File("./terra/config.yml");
-        if(!targetFile.exists()) {
+        if (!targetFile.exists()) {
             var terraDefaultConfigStream = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
             if (terraDefaultConfigStream != null) {
                 try {

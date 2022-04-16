@@ -14,11 +14,11 @@ public interface BlockConnectable {
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     Block getSideAtLayer(int layer, BlockFace face);
-    
+
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     boolean canConnect(Block block);
-    
+
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     default boolean isStraight() {

@@ -54,7 +54,8 @@ public class ChestInventory extends ContainerInventory {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
                 }
             }
-        } catch (LevelException ignored) {}
+        } catch (LevelException ignored) {
+        }
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
@@ -84,7 +85,8 @@ public class ChestInventory extends ContainerInventory {
                     RedstoneComponent.updateAllAroundRedstone(this.getHolder());
                 }
             }
-        } catch (LevelException ignored) {}
+        } catch (LevelException ignored) {
+        }
     }
 
     public void setDoubleInventory(DoubleChestInventory doubleInventory) {

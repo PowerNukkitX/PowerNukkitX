@@ -13,12 +13,12 @@ import java.util.concurrent.Callable;
  */
 public class LogLevelAdjuster {
     private Map<Class<?>, Level> adjustedClasses = new LinkedHashMap<>();
-    
+
     public synchronized void setLevel(Class<?> c, Level level) {
         adjustedClasses.computeIfAbsent(c, this::getLevel);
         applyLevel(c, level);
     }
-    
+
     public void onlyNow(Class<?> c, Level level, Runnable runnable) {
         Level original = getLevel(c);
         setLevel(c, level);
@@ -38,22 +38,22 @@ public class LogLevelAdjuster {
             setLevel(c, original);
         }
     }
-    
+
     public Level getLevel(Class<?> c) {
         return LogManager.getLogger(c).getLevel();
     }
-    
+
     private void applyLevel(Class<?> c, Level level) {
         Configurator.setLevel(LogManager.getLogger(c).getName(), level);
     }
-    
+
     public synchronized void restoreLevel(Class<?> c) {
         Level level = adjustedClasses.remove(c);
         if (level != null) {
             applyLevel(c, level);
         }
     }
-    
+
     public synchronized void restoreLevels() {
         adjustedClasses.forEach(this::applyLevel);
         adjustedClasses.clear();

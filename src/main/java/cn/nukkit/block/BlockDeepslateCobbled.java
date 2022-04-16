@@ -14,7 +14,7 @@ import cn.nukkit.item.ItemTool;
 public class BlockDeepslateCobbled extends BlockSolid {
     @PowerNukkitOnly
     @Since("FUTURE")
-    public BlockDeepslateCobbled(){
+    public BlockDeepslateCobbled() {
     }
 
     @Override

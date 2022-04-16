@@ -42,7 +42,7 @@ public class CraftingTransaction extends InventoryTransaction {
 
     @PowerNukkitOnly
     protected int craftingType;
-    
+
     private boolean readyToExecute;
 
     public CraftingTransaction(Player source, List<InventoryAction> actions) {
@@ -51,9 +51,9 @@ public class CraftingTransaction extends InventoryTransaction {
         this.craftingType = source.craftingType;
         if (source.craftingType == Player.CRAFTING_STONECUTTER) {
             this.gridSize = 1;
-            
+
             this.inputs = new ArrayList<>(1);
-            
+
             this.secondaryOutputs = new ArrayList<>(1);
         } else {
             this.gridSize = (source.getCraftingGrid() instanceof BigCraftingGrid) ? 3 : 2;
@@ -65,7 +65,7 @@ public class CraftingTransaction extends InventoryTransaction {
 
         init(source, actions);
     }
-    
+
     public void setInput(Item item) {
         if (inputs.size() < gridSize * gridSize) {
             for (Item existingInput : this.inputs) {
@@ -106,7 +106,7 @@ public class CraftingTransaction extends InventoryTransaction {
 
     @Deprecated
     @DeprecationDetails(since = "FUTURE", reason = "When the recipe is not a CraftingRecipe, returns null instead of the recipe",
-        by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
+            by = "PowerNukkit", replaceWith = "getTransactionRecipe()")
     @Since("FUTURE")
     @Nullable
     public CraftingRecipe getRecipe() {
@@ -123,7 +123,7 @@ public class CraftingTransaction extends InventoryTransaction {
     @Since("FUTURE")
     protected void setTransactionRecipe(Recipe recipe) {
         this.transactionRecipe = recipe;
-        this.recipe = (recipe instanceof CraftingRecipe)? (CraftingRecipe) recipe: null;
+        this.recipe = (recipe instanceof CraftingRecipe) ? (CraftingRecipe) recipe : null;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class CraftingTransaction extends InventoryTransaction {
                         setTransactionRecipe(smithingRecipe);
                     }
                 }
-                
+
                 break;
             case Player.CRAFTING_ANVIL:
                 inventory = source.getWindowById(Player.ANVIL_WINDOW_ID);

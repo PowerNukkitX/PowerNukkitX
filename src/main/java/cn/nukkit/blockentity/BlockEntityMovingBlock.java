@@ -51,7 +51,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", reason = "renamed", replaceWith = "getMovingBlockEntityCompound()")
     public CompoundTag getBlockEntity() {
         return getMovingBlockEntityCompound();
     }

@@ -87,6 +87,6 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         if (enchantments == null) {
             return null;
         }
-        return enchantments.length > 0? enchantments.clone() : Enchantment.EMPTY_ARRAY;
+        return enchantments.length > 0 ? enchantments.clone() : Enchantment.EMPTY_ARRAY;
     }
 }

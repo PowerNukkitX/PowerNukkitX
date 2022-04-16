@@ -15,9 +15,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     public BlockEntitySkull(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-    
+
     private boolean mouthMoving;
-    
+
     private int mouthTickCount;
 
     @Override

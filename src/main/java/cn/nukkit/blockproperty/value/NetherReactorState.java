@@ -17,9 +17,9 @@ public enum NetherReactorState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     FINISHED;
-    
+
     private static final NetherReactorState[] values = values();
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static NetherReactorState getFromData(int data) {

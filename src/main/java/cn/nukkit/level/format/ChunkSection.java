@@ -53,14 +53,14 @@ public interface ChunkSection {
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     int getFullBlock(int x, int y, int z, int layer);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
     default BlockState getBlockState(int x, int y, int z) {
         return getBlockState(x, y, z, 0);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -80,11 +80,11 @@ public interface ChunkSection {
             replaceWith = "getAndSetBlockState")
     @Nonnull
     Block getAndSetBlock(int x, int y, int z, Block block);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     default BlockState getAndSetBlockState(int x, int y, int z, BlockState state) {
@@ -124,7 +124,7 @@ public interface ChunkSection {
     int getBlockLight(int x, int y, int z);
 
     void setBlockLight(int x, int y, int z, int level);
-    
+
     byte[] getSkyLightArray();
 
     byte[] getLightArray();
@@ -143,7 +143,7 @@ public interface ChunkSection {
 
     @Nonnull
     ChunkSection copy();
-    
+
     @PowerNukkitOnly("Needed for level backward compatibility")
     @Since("1.3.0.0-PN")
     default int getContentVersion() {
@@ -155,7 +155,7 @@ public interface ChunkSection {
     default void setContentVersion(int contentVersion) {
         // Does nothing
     }
-    
+
     @PowerNukkitOnly()
     @Since("1.4.0.0-PN")
     default boolean hasBlocks() {
@@ -189,7 +189,7 @@ public interface ChunkSection {
         List<Block> results = new ArrayList<>();
 
         BlockVector3 current = new BlockVector3();
-        
+
         int minX = Math.max(0, min.x - offsetX);
         int minY = Math.max(0, min.y - offsetY);
         int minZ = Math.max(0, min.z - offsetZ);
@@ -207,7 +207,7 @@ public interface ChunkSection {
                 }
             }
         }
-        
+
         return results;
     }
 

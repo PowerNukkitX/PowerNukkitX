@@ -37,7 +37,7 @@ public class ItemGlassBottle extends Item {
             ((BlockBeehive) target).honeyCollected(player);
             level.addSound(player, Sound.BUCKET_FILL_WATER);
         }
-        
+
         if (filled != null) {
             if (this.count == 1) {
                 player.getInventory().setItemInHand(filled);
@@ -51,7 +51,7 @@ public class ItemGlassBottle extends Item {
                 }
             }
         }
-        
+
         return false;
     }
 }

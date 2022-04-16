@@ -142,7 +142,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                         if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();
                             changes.compute(nextPos, (k, v) -> {
-                                int nextLevel = v == null?
+                                int nextLevel = v == null ?
                                         ((Oxidizable) possibility).getOxidizationLevel().ordinal() - 1 :
                                         v.ordinal() - 1;
                                 return OxidizationLevel.values()[Math.max(0, nextLevel)];
@@ -155,7 +155,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
                 IntConsumer cleanOxidizationAroundLoop = count -> {
                     directionPos.setComponents(down);
-                    for(int i = 0; i < count; ++i) {
+                    for (int i = 0; i < count; ++i) {
                         Vector3 next = cleanOxidizationAround.get();
                         if (next != null) {
                             directionPos.setComponents(next);
@@ -165,7 +165,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                     }
                 };
 
-                for(int scan = 0; scan < scans; ++scan) {
+                for (int scan = 0; scan < scans; ++scan) {
                     int count = random.nextInt(8) + 1;
                     cleanOxidizationAroundLoop.accept(count);
                 }

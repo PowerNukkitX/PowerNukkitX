@@ -26,19 +26,19 @@ import static org.mockito.Mockito.when;
 class BlockEnderChestTest {
     @MockLevel
     Level level;
-    
+
     @MockPlayer
     Player player;
-    
+
     final Vector3 pos = new Vector3(3, 4, 5);
-    
+
     @Test
     void place() {
         Position playerPos = new Position(pos.x, pos.y, pos.z, level);
         when(player.getPosition()).thenReturn(playerPos);
         when(player.getNextPosition()).thenReturn(playerPos.clone());
         when(player.getDirection()).thenReturn(BlockFace.NORTH);
-        
+
         Item item = Item.getBlock(BlockID.ENDER_CHEST);
         assertTrue(level.setBlock(pos.down(), Block.get(BlockID.STONE)));
         Item placed = level.useItemOn(pos.down(), item, BlockFace.UP, .5f, .5f, .5f, player);

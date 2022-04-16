@@ -4,8 +4,8 @@ import java.lang.annotation.*;
 
 /**
  * Indicates that the annotated element works differently in PowerNukkit environment
- * and may cause issues or unexpected behaviour when used in a normal NukkitX server 
- * without PowerNukkit's patches and features. 
+ * and may cause issues or unexpected behaviour when used in a normal NukkitX server
+ * without PowerNukkit's patches and features.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE,

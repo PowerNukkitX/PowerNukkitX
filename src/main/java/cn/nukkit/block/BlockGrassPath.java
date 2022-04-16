@@ -41,7 +41,7 @@ public class BlockGrassPath extends BlockGrass {
     public double getMaxY() {
         return this.y + 1;
     }
-    
+
     @Override
     public double getHardness() {
         return 0.65;
@@ -68,7 +68,7 @@ public class BlockGrassPath extends BlockGrass {
             if (this.up().isSolid()) {
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
             }
-            
+
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;
@@ -79,7 +79,7 @@ public class BlockGrassPath extends BlockGrass {
         if (item.isHoe()) {
             item.useOn(this);
             this.getLevel().setBlock(this, get(FARMLAND), true);
-            if(player != null){
+            if (player != null) {
                 player.getLevel().addSound(player, Sound.USE_GRASS);
             }
             return true;

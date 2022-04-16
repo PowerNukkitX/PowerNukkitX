@@ -8,9 +8,13 @@ package cn.nukkit.block;
 
 public class BlockCandlePink extends BlockCandle {
 
-    public BlockCandlePink() { this(0); }
+    public BlockCandlePink() {
+        this(0);
+    }
 
-    public BlockCandlePink(int meta) { super(meta); }
+    public BlockCandlePink(int meta) {
+        super(meta);
+    }
 
     @Override
     public int getId() {

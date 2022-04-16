@@ -25,7 +25,7 @@ class BlockStateRegistryTest {
         val stateId = wall.getStateId();
         val minimalistStateId = wall.getMinimalistStateId();
         val legacyStateId = wall.getLegacyStateId();
-        val unknownStateId = wall.getPersistenceName()+";unknown="+wall.getDataStorage();
+        val unknownStateId = wall.getPersistenceName() + ";unknown=" + wall.getDataStorage();
 
         assertEquals(stateId, BlockStateRegistry.getKnownBlockStateIdByRuntimeId(runtimeId));
         assertEquals(runtimeId, BlockStateRegistry.getKnownRuntimeIdByBlockStateId(stateId));
@@ -37,7 +37,7 @@ class BlockStateRegistryTest {
 
     @Test
     void getBlockIdByRuntimeId() {
-        assertThrows(NoSuchElementException.class, ()-> BlockStateRegistry.getBlockIdByRuntimeId(999999999));
+        assertThrows(NoSuchElementException.class, () -> BlockStateRegistry.getBlockIdByRuntimeId(999999999));
         int runtimeId = BlockStateRegistry.getKnownRuntimeIdByBlockStateId("minecraft:sculk_shrieker;active=1");
         assertEquals(716, BlockStateRegistry.getBlockIdByRuntimeId(runtimeId));
     }

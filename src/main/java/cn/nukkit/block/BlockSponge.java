@@ -129,7 +129,7 @@ public class BlockSponge extends BlockSolidMeta {
             for (BlockFace face : BlockFace.values()) {
                 Block faceBlock = entry.block.getSideAtLayer(0, face);
                 Block faceBlock1 = faceBlock.getLevelBlockAtLayer(1);
-                
+
                 if (faceBlock instanceof BlockWater) {
                     this.getLevel().setBlockStateAt(faceBlock.getFloorX(), faceBlock.getFloorY(), faceBlock.getFloorZ(), BlockState.AIR);
                     this.getLevel().updateAround(faceBlock);
@@ -150,7 +150,7 @@ public class BlockSponge extends BlockSolidMeta {
                 }
             }
         }
-        
+
         return waterRemoved > 0;
     }
 

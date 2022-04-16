@@ -1,11 +1,11 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 /**
@@ -39,11 +39,11 @@ public class MeCommand extends VanillaCommand {
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)){
-                for (Entity entity : EntitySelector.matchEntities(sender, arg)){
+            if (EntitySelector.hasArguments(arg)) {
+                for (Entity entity : EntitySelector.matchEntities(sender, arg)) {
                     msg.append(entity.getName()).append(" ");
                 }
-            }else {
+            } else {
                 msg.append(arg).append(" ");
             }
         }

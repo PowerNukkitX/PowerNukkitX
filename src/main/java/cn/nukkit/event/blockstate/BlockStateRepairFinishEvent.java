@@ -20,7 +20,7 @@ import java.util.List;
 public class BlockStateRepairFinishEvent extends BlockStateRepairEvent {
     @Nonnull
     private final List<BlockStateRepair> allRepairs;
-    
+
     @Nonnull
     private Block result;
 

@@ -4,7 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 
 /**
- * @author larryTheCoder (Nukkit Project) 
+ * @author larryTheCoder (Nukkit Project)
  * @since 7/5/2017
  */
 public abstract class VehicleEvent extends Event {

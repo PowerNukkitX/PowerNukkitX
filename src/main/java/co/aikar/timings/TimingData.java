@@ -23,9 +23,8 @@
  */
 package co.aikar.timings;
 
-import com.google.gson.JsonArray;
-
 import cn.nukkit.timings.JsonUtil;
+import com.google.gson.JsonArray;
 
 class TimingData {
     private int id;

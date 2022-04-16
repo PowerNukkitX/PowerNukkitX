@@ -30,7 +30,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
     public BlockLodestone() {
         // Does nothing
     }
-    
+
     @Override
     public int getId() {
         return LODESTONE;
@@ -73,7 +73,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
         if (item.hasCompoundTag()) {
             compass.setCompoundTag(item.getCompoundTag().clone());
         }
-        
+
         int trackingHandle;
         try {
             trackingHandle = getOrCreateBlockEntity().requestTrackingHandler();
@@ -95,18 +95,18 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
                 player.getLevel().dropItem(player.getPosition(), failed);
             }
         }
-        
+
         getLevel().addSound(player.getPosition(), Sound.LODESTONE_COMPASS_LINK_COMPASS_TO_LODESTONE);
-        
+
         if (added) {
             try {
                 getLevel().getServer().getPositionTrackingService().startTracking(player, trackingHandle, false);
             } catch (IOException e) {
-                log.warn("Failed to make the player {} track {} at {}", player.getName(), trackingHandle, getLocation(),  e);
+                log.warn("Failed to make the player {} track {} at {}", player.getName(), trackingHandle, getLocation(), e);
             }
             getLevel().getServer().getScheduler().scheduleTask(null, player::updateTrackingPositions);
         }
-        
+
         return true;
     }
 
@@ -149,7 +149,7 @@ public class BlockLodestone extends BlockSolid implements BlockEntityHolder<Bloc
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

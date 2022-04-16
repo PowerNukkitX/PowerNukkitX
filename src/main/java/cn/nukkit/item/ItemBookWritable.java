@@ -57,6 +57,7 @@ public abstract class ItemBookWritable extends Item {
 
     /**
      * Sets the text of a page in the book. Adds the page if the page does not yet exist.
+     *
      * @return boolean indicating success
      */
     public boolean setPageText(int pageId, String pageText) {
@@ -91,6 +92,7 @@ public abstract class ItemBookWritable extends Item {
     /**
      * Adds a new page with the given page ID.
      * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
+     *
      * @return boolean indicating success
      */
     public boolean addPage(int pageId) {
@@ -113,6 +115,7 @@ public abstract class ItemBookWritable extends Item {
 
     /**
      * Deletes an existing page with the given page ID.
+     *
      * @return boolean indicating success
      */
     public boolean deletePage(int pageId) {
@@ -132,6 +135,7 @@ public abstract class ItemBookWritable extends Item {
 
     /**
      * Inserts a new page with the given text and moves other pages upwards.
+     *
      * @return boolean indicating success
      */
     public boolean insertPage(int pageId) {
@@ -140,6 +144,7 @@ public abstract class ItemBookWritable extends Item {
 
     /**
      * Inserts a new page with the given text and moves other pages upwards.
+     *
      * @return boolean indicating success
      */
     public boolean insertPage(int pageId, String pageText) {
@@ -166,8 +171,9 @@ public abstract class ItemBookWritable extends Item {
         return true;
     }
 
-     /**
+    /**
      * Switches the text of two pages with each other.
+     *
      * @return boolean indicating success
      */
     public boolean swapPages(int pageId1, int pageId2) {

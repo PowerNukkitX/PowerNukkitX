@@ -53,28 +53,28 @@ class SingleLayerStorageTest {
         assertFalse(storage.hasBlocks());
         BlockStorage blockStorage = getBlockStorage();
         assertFalse(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.FIRE);
+        blockStorage.setBlockId(0, 1, 2, BlockID.FIRE);
         assertTrue(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.AIR);
+        blockStorage.setBlockId(0, 1, 2, BlockID.AIR);
         assertTrue(storage.hasBlocks());
         blockStorage.recheckBlocks();
         assertFalse(storage.hasBlocks());
-        blockStorage.setBlockId(0,1,2, BlockID.ACACIA_WALL_SIGN);
+        blockStorage.setBlockId(0, 1, 2, BlockID.ACACIA_WALL_SIGN);
         assertTrue(storage.hasBlocks());
     }
-    
+
     private void unexpectedSetStorage(LayerStorage unexpected) {
         fail("Unexpected call setting to " + unexpected);
     }
-    
+
     private int getContentVersion() {
         return ChunkUpdater.getCurrentContentVersion();
     }
-    
+
     private BlockStorage getBlockStorage() {
         return getBlockStorage(storage);
     }
-    
+
     private BlockStorage getBlockStorage(LayerStorage layerStorage) {
         return layerStorage.getOrSetStorage(this::unexpectedSetStorage, this::getContentVersion, 0);
     }
@@ -82,21 +82,21 @@ class SingleLayerStorageTest {
     @Test
     void testClone() {
         BlockStorage blockStorage = getBlockStorage();
-        blockStorage.setBlockId(0,1,2, BlockID.FIRE);
+        blockStorage.setBlockId(0, 1, 2, BlockID.FIRE);
         SingleLayerStorage clone = storage.clone();
         assertTrue(clone.hasBlocks());
         BlockStorage blockStorageCloned = getBlockStorage(clone);
         assertNotEquals(blockStorage, blockStorageCloned);
         assertNotEquals(storage, clone);
-        blockStorageCloned.setBlockId(2,2,2, BlockID.COBBLESTONE);
-        assertEquals(BlockState.AIR, blockStorage.getBlockState(2,2,2));
+        blockStorageCloned.setBlockId(2, 2, 2, BlockID.COBBLESTONE);
+        assertEquals(BlockState.AIR, blockStorage.getBlockState(2, 2, 2));
     }
 
     @Test
     void getStorageOrEmpty() {
         assertEquals(ImmutableBlockStorage.EMPTY, storage.getStorageOrEmpty(0));
         BlockStorage blockStorage = getBlockStorage();
-        blockStorage.setBlockId(1,2,3,BlockID.STRUCTURE_VOID);
+        blockStorage.setBlockId(1, 2, 3, BlockID.STRUCTURE_VOID);
         assertThat(storage.getStorageOrEmpty(0)).isNotNull().isNotInstanceOf(ImmutableBlockStorage.class);
     }
 
@@ -104,7 +104,7 @@ class SingleLayerStorageTest {
     void getOrSetStorage() {
         BlockStorage blockStorage = getBlockStorage();
         assertEquals(blockStorage, getBlockStorage());
-        blockStorage.setBlockId(1,2,3,BlockID.ACACIA_TRAPDOOR);
+        blockStorage.setBlockId(1, 2, 3, BlockID.ACACIA_TRAPDOOR);
         assertEquals(blockStorage, getBlockStorage());
 
         AtomicBoolean attemptedToSet = new AtomicBoolean();
@@ -113,7 +113,7 @@ class SingleLayerStorageTest {
             assertThat(expanded.getStorageOrNull(1)).isNotNull().isNotInstanceOf(ImmutableBlockStorage.class);
             attemptedToSet.set(true);
         }, this::getContentVersion, 1);
-        
+
         assertTrue(attemptedToSet.get());
     }
 
@@ -121,7 +121,7 @@ class SingleLayerStorageTest {
     void getStorageOrNull() {
         assertNull(storage.getStorageOrNull(0));
         BlockStorage blockStorage = getBlockStorage();
-        blockStorage.setBlockId(1,2,3,BlockID.STRUCTURE_VOID);
+        blockStorage.setBlockId(1, 2, 3, BlockID.STRUCTURE_VOID);
         assertThat(storage.getStorageOrNull(0)).isNotNull().isNotInstanceOf(ImmutableBlockStorage.class);
     }
 
@@ -149,13 +149,13 @@ class SingleLayerStorageTest {
         };
         storage.compress(toEmpty);
         assertTrue(attemptedToSet.get());
-        
+
         attemptedToSet.set(false);
         getBlockStorage();
         storage.compress(toEmpty);
         assertTrue(attemptedToSet.get());
-        
-        getBlockStorage().setBlockId(1,2,3, BlockID.ACACIA_TRAPDOOR);
+
+        getBlockStorage().setBlockId(1, 2, 3, BlockID.ACACIA_TRAPDOOR);
         storage.compress(this::unexpectedSetStorage);
     }
 }

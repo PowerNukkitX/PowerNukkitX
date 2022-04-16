@@ -130,7 +130,7 @@ public class JavaPluginLoader implements PluginLoader {
             if (plugin == PowerNukkitPlugin.getInstance()) {
                 throw new UnsupportedOperationException("The PowerNukkitPlugin cannot be disabled");
             }
-            
+
             log.info(this.server.getLanguage().translateString("nukkit.plugin.disable", plugin.getDescription().getFullName()));
 
             this.server.getServiceManager().cancel(plugin);

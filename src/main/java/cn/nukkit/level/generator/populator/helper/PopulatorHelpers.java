@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.populator.helper;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.FullChunk;
-
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -23,9 +22,9 @@ public final class PopulatorHelpers implements BlockID {
         nonSolidBlocks.add(SNOW_LAYER);
         nonSolidBlocks.add(TALL_GRASS);
     }
-    
+
     private static final HashSet<BlockState> nonOceanSolidBlocks = new HashSet<BlockState>(3);
-    
+
     static {
         nonOceanSolidBlocks.add(BlockState.of(AIR));
         nonOceanSolidBlocks.add(BlockState.of(WATER));
@@ -34,7 +33,7 @@ public final class PopulatorHelpers implements BlockID {
         nonOceanSolidBlocks.add(BlockState.of(PACKED_ICE));
         nonOceanSolidBlocks.add(BlockState.of(BLUE_ICE));
     }
-    
+
     private PopulatorHelpers() {
     }
 
@@ -45,7 +44,7 @@ public final class PopulatorHelpers implements BlockID {
     public static boolean isNonSolid(int id) {
         return nonSolidBlocks.contains(id);
     }
-    
+
     public static boolean isNonOceanSolid(BlockState blockState) {
         return nonOceanSolidBlocks.contains(blockState);
     }

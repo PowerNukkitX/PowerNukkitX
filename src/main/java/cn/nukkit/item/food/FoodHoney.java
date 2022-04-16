@@ -12,7 +12,7 @@ public class FoodHoney extends Food {
         this.setRestoreFood(restoreFood);
         this.setRestoreSaturation(restoreSaturation);
     }
-    
+
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);

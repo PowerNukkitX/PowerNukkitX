@@ -34,7 +34,7 @@ public class LongMutableBlockState extends MutableBlockState {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public LongMutableBlockState(int blockId,BlockProperties properties, long state) {
+    public LongMutableBlockState(int blockId, BlockProperties properties, long state) {
         super(blockId, properties);
         this.storage = state;
     }
@@ -84,14 +84,14 @@ public class LongMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(long state) {
         if (state == 0) {
             return;
         }
 
         Validation.checkPositive("state", state);
-        
+
         BlockProperties properties = this.properties;
         int bitLength = NukkitMath.bitLength(state);
         if (bitLength > properties.getBitSize()) {
@@ -223,7 +223,7 @@ public class LongMutableBlockState extends MutableBlockState {
     public int getExactIntStorage() {
         int bits = getBitSize();
         if (bits > 32) {
-            throw new ArithmeticException(storage+" can't be stored in an 32 bits integer. It has "+bits+" bits");
+            throw new ArithmeticException(storage + " can't be stored in an 32 bits integer. It has " + bits + " bits");
         }
         return (int) storage;
     }

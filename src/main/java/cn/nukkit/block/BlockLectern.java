@@ -125,7 +125,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         }
         return power;
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
@@ -140,7 +140,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
             setDamage(getDamage() & (DATA_MASK ^ 0b11) | (horizontalIndex & 0b11));
         }
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         setBlockFace(player != null ? player.getDirection().getOpposite() : BlockFace.SOUTH);
@@ -168,7 +168,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         if (item.getId() != ItemID.WRITTEN_BOOK && item.getId() != ItemID.BOOK_AND_QUILL) {
             return false;
         }
-        
+
         if (player == null || !player.isCreative()) {
             item.count--;
         }
@@ -219,7 +219,7 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
 
     @Override
     public int getWeakPower(BlockFace face) {
-        return isActivated()? 15 : 0;
+        return isActivated() ? 15 : 0;
     }
 
     @Override
@@ -263,13 +263,13 @@ public class BlockLectern extends BlockTransparentMeta implements RedstoneCompon
         if (book.isNull()) {
             return;
         }
-        
+
         LecternDropBookEvent dropBookEvent = new LecternDropBookEvent(player, lectern, book);
         this.getLevel().getServer().getPluginManager().callEvent(dropBookEvent);
         if (dropBookEvent.isCancelled()) {
             return;
         }
-        
+
         lectern.setBook(Item.getBlock(BlockID.AIR));
         lectern.spawnToAll();
         this.level.dropItem(lectern.add(0.5f, 0.6f, 0.5f), dropBookEvent.getBook());

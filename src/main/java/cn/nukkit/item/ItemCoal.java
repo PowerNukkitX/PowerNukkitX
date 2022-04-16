@@ -15,7 +15,7 @@ public class ItemCoal extends Item {
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Charcoal now have it's own id",
-        replaceWith = "ItemCoal() or ItemCharcoal()")
+            replaceWith = "ItemCoal() or ItemCharcoal()")
     public ItemCoal(Integer meta) {
         this(meta, 1);
     }
@@ -47,10 +47,10 @@ public class ItemCoal extends Item {
     public int getDamage() {
         return super.getDamage();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isCharcoal() {
-        return getId() == COAL && super.getDamage() == 1; 
+        return getId() == COAL && super.getDamage() == 1;
     }
 }

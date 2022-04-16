@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResourcePackChunkDataPacketTest {
 
@@ -17,10 +17,10 @@ class ResourcePackChunkDataPacketTest {
 
     @Test
     void encodeDecode() {
-        packet.data = new byte[]{1,2,3};
+        packet.data = new byte[]{1, 2, 3};
         packet.encode();
         packet.getUnsignedVarInt();
         packet.decode();
-        assertEquals(new ByteArrayList(new byte[]{1,2,3}), new ByteArrayList(packet.data));
+        assertEquals(new ByteArrayList(new byte[]{1, 2, 3}), new ByteArrayList(packet.data));
     }
 }

@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 public class UnknownNetworkIdException extends IllegalStateException {
     @Nullable
     private final transient Item item;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public UnknownNetworkIdException() {
@@ -87,15 +87,15 @@ public class UnknownNetworkIdException extends IllegalStateException {
         super(cause);
         this.item = copy(item);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
     public Item getItem() {
-        return item == null? null : item.clone();
+        return item == null ? null : item.clone();
     }
 
     private static Item copy(Item item) {
-        return item == null? null : item.clone();
+        return item == null ? null : item.clone();
     }
 }

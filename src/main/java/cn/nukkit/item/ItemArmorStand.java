@@ -51,16 +51,16 @@ public class ItemArmorStand extends Item {
         if (player.isAdventure()) {
             return false;
         }
-        
+
         FullChunk chunk = block.getChunk();
         if (chunk == null) {
             return false;
         }
-        
+
         if (!block.canBeReplaced() || !block.up().canBeReplaced()) {
             return false;
         }
-        
+
         for (Entity collidingEntity : level.getCollidingEntities(new SimpleAxisAlignedBB(block.x, block.y, block.z, block.x + 1, block.y + 1, block.z + 1))) {
             if (collidingEntity instanceof EntityArmorStand) {
                 return false;
@@ -72,7 +72,7 @@ public class ItemArmorStand extends Item {
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());
         }
-        
+
         if (!removeForPlacement(block) || !removeForPlacement(block.up())) {
             return false;
         }
@@ -81,11 +81,11 @@ public class ItemArmorStand extends Item {
         if (entity == null) {
             return false;
         }
-        
+
         if (!player.isCreative()) {
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
-        
+
         entity.spawnToAll();
         player.getLevel().addSound(entity, Sound.MOB_ARMOR_STAND_PLACE);
         return true;
@@ -105,7 +105,7 @@ public class ItemArmorStand extends Item {
                 return block.canBeReplaced();
             default:
         }
-        
+
         return block.getLevel().setBlock(block, Block.get(BlockID.AIR));
     }
 }

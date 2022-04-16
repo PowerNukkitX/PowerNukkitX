@@ -18,13 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(PowerNukkitExtension.class)
 class ItemBlockTest {
     LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster();
-    
+
     @Test
     void badBlockData() {
         Item stone = Item.getBlock(BlockID.LEVER);
         assertThat(stone).isInstanceOf(ItemBlock.class);
         assertThat(stone.getBlock()).isInstanceOf(BlockLever.class);
-        logLevelAdjuster.onlyNow(ItemBlock.class, Level.ERROR, ()-> 
+        logLevelAdjuster.onlyNow(ItemBlock.class, Level.ERROR, () ->
                 stone.setDamage(1000)
         );
         assertThat(stone.getBlock()).isInstanceOf(BlockUnknown.class);

@@ -24,7 +24,7 @@ public class BlockHyphaeStrippedCrimson extends BlockStemStripped {
     public int getId() {
         return STRIPPED_CRIMSON_HYPHAE;
     }
-    
+
     @Override
     public String getName() {
         return "Crimson Stripped Hyphae";

@@ -11,11 +11,11 @@ public enum CrackState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     NO_CRACKS,
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     CRACKED,
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     MAX_CRACKED {

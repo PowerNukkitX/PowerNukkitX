@@ -4,13 +4,13 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.utils.RedstoneComponent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.utils.RedstoneComponent;
 
 @PowerNukkitOnly
 public class BlockEntityLectern extends BlockEntitySpawnable {
@@ -104,12 +104,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
 
     @PowerNukkitOnly
     public void setLeftPage(int newLeftPage) {
-        setRawPage((newLeftPage - 1) /2);
+        setRawPage((newLeftPage - 1) / 2);
     }
 
     @PowerNukkitOnly
     public void setRightPage(int newRightPage) {
-        setLeftPage(newRightPage -1);
+        setLeftPage(newRightPage - 1);
     }
 
     @PowerNukkitOnly

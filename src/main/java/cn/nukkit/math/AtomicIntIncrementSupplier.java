@@ -28,6 +28,6 @@ public final class AtomicIntIncrementSupplier implements IntSupplier {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public IntStream stream() {
-        return IntStream.generate(this); 
+        return IntStream.generate(this);
     }
 }

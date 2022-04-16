@@ -6,7 +6,9 @@ import cn.nukkit.api.Since;
 import static cn.nukkit.utils.Utils.dynamic;
 
 public interface ItemID {
-    @PowerNukkitOnly @Since("FUTURE") int STRING_IDENTIFIED_ITEM = dynamic(255);
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    int STRING_IDENTIFIED_ITEM = dynamic(255);
     int IRON_SHOVEL = 256;
     int IRON_PICKAXE = 257;
     int IRON_AXE = 258;
@@ -205,7 +207,8 @@ public interface ItemID {
     int DARK_OAK_DOOR = 431;
     int CHORUS_FRUIT = 432;
     int POPPED_CHORUS_FRUIT = 433;
-    @Since("1.2.1.0-PN") int BANNER_PATTERN = 434;
+    @Since("1.2.1.0-PN")
+    int BANNER_PATTERN = 434;
 
     int DRAGON_BREATH = 437;
     int SPLASH_POTION = 438;
@@ -238,12 +241,18 @@ public interface ItemID {
     int TURTLE_SHELL = 469;
     int PHANTOM_MEMBRANE = 470;
     int CROSSBOW = 471;
-    @PowerNukkitOnly int SPRUCE_SIGN = 472;
-    @PowerNukkitOnly int BIRCH_SIGN = 473;
-    @PowerNukkitOnly int JUNGLE_SIGN = 474;
-    @PowerNukkitOnly int ACACIA_SIGN = 475;
-    @PowerNukkitOnly int DARKOAK_SIGN = 476;
-    @PowerNukkitOnly int DARK_OAK_SIGN = 476;
+    @PowerNukkitOnly
+    int SPRUCE_SIGN = 472;
+    @PowerNukkitOnly
+    int BIRCH_SIGN = 473;
+    @PowerNukkitOnly
+    int JUNGLE_SIGN = 474;
+    @PowerNukkitOnly
+    int ACACIA_SIGN = 475;
+    @PowerNukkitOnly
+    int DARKOAK_SIGN = 476;
+    @PowerNukkitOnly
+    int DARK_OAK_SIGN = 476;
     int SWEET_BERRIES = 477;
 
     int RECORD_13 = 500;
@@ -265,41 +274,76 @@ public interface ItemID {
     @PowerNukkitOnly
     int GLOW_ITEM_FRAME = 623;
 
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int GLOW_BERRIES = 638;
 
-    @PowerNukkitOnly int CAMPFIRE = 720;
+    @PowerNukkitOnly
+    int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
 
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 
-    @Since("1.4.0.0-PN") int LODESTONECOMPASS = 741;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int LODESTONE_COMPASS = LODESTONECOMPASS;
-    @Since("1.4.0.0-PN") int NETHERITE_INGOT = 742;
-    @Since("1.4.0.0-PN") int NETHERITE_SWORD = 743;
-    @Since("1.4.0.0-PN") int NETHERITE_SHOVEL = 744;
-    @Since("1.4.0.0-PN") int NETHERITE_PICKAXE = 745;
-    @Since("1.4.0.0-PN") int NETHERITE_AXE = 746;
-    @Since("1.4.0.0-PN") int NETHERITE_HOE = 747;
-    @Since("1.4.0.0-PN") int NETHERITE_HELMET = 748;
-    @Since("1.4.0.0-PN") int NETHERITE_CHESTPLATE = 749;
-    @Since("1.4.0.0-PN") int NETHERITE_LEGGINGS = 750;
-    @Since("1.4.0.0-PN") int NETHERITE_BOOTS = 751;
-    @Since("1.4.0.0-PN") int NETHERITE_SCRAP = 752;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int CRIMSON_SIGN = 753;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int WARPED_SIGN = 754;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int CRIMSON_DOOR = 755;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int WARPED_DOOR = 756;
-    @Since("1.4.0.0-PN") int WARPED_FUNGUS_ON_A_STICK = 757;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int CHAIN = 758;
-    @Since("1.4.0.0-PN") int RECORD_PIGSTEP = 759;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int NETHER_SPROUTS = 760;
+    @Since("1.4.0.0-PN")
+    int LODESTONECOMPASS = 741;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int LODESTONE_COMPASS = LODESTONECOMPASS;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_INGOT = 742;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_SWORD = 743;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_SHOVEL = 744;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_PICKAXE = 745;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_AXE = 746;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_HOE = 747;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_HELMET = 748;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_CHESTPLATE = 749;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_LEGGINGS = 750;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_BOOTS = 751;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_SCRAP = 752;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int CRIMSON_SIGN = 753;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int WARPED_SIGN = 754;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int CRIMSON_DOOR = 755;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int WARPED_DOOR = 756;
+    @Since("1.4.0.0-PN")
+    int WARPED_FUNGUS_ON_A_STICK = 757;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int CHAIN = 758;
+    @Since("1.4.0.0-PN")
+    int RECORD_PIGSTEP = 759;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int NETHER_SPROUTS = 760;
 
-    @Since("1.6.0.0-PNX") int AMETHYST_SHARD = 771;
-    @Since("FUTURE") int SPYGLASS = 772;
+    @Since("1.6.0.0-PNX")
+    int AMETHYST_SHARD = 771;
+    @Since("FUTURE")
+    int SPYGLASS = 772;
 
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int SOUL_CAMPFIRE = 801;
 
 
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;

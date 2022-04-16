@@ -188,7 +188,7 @@ abstract public class PluginBase implements Plugin {
             return null;
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable

@@ -35,7 +35,7 @@ public class BlockAmethystCluster extends BlockAmethystBud {
 
     @Override
     public Item[] getDrops(Item item) {
-        if(item.isPickaxe()){
+        if (item.isPickaxe()) {
             final int fortuneLvl = item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING);
             switch (fortuneLvl) {
                 case 1:
@@ -50,7 +50,7 @@ public class BlockAmethystCluster extends BlockAmethystBud {
                         return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 12)};
                     } else if (bound == 1) {
                         return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 8)};
-                    } else  {
+                    } else {
                         return new Item[]{Item.get(ItemID.AMETHYST_SHARD, 0, 4)};
                     }
                 case 3:

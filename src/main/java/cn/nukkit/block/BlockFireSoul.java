@@ -10,13 +10,13 @@ import cn.nukkit.utils.BlockColor;
 public class BlockFireSoul extends BlockFire {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockFireSoul(){
+    public BlockFireSoul() {
         this(0);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public BlockFireSoul(int meta){
+    public BlockFireSoul(int meta) {
         super(meta);
     }
 

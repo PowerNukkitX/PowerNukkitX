@@ -33,12 +33,12 @@ public class BlockFenceGateCrimson extends BlockFenceGate {
     public BlockColor getColor() {
         return BlockColor.NETHERRACK_BLOCK_COLOR;
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;

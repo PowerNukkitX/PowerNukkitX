@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Properties and behaviour definitions of the {@link BlockID#WEEPING_VINES} block.
+ *
  * @author joserobjr
  */
 @PowerNukkitOnly
@@ -42,6 +43,7 @@ public class BlockVinesWeeping extends BlockVinesNether {
 
     /**
      * Creates a {@code weeping_vine} from a meta compatible with {@link #getProperties()}.
+     *
      * @throws InvalidBlockPropertyMetaException If the meta is incompatible
      */
     @PowerNukkitOnly

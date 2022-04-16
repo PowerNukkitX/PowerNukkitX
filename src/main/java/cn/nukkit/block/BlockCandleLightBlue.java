@@ -6,11 +6,15 @@ package cn.nukkit.block;
  */
 
 
-public class BlockCandleLightBlue extends  BlockCandle {
+public class BlockCandleLightBlue extends BlockCandle {
 
-    public BlockCandleLightBlue() { this(0); }
+    public BlockCandleLightBlue() {
+        this(0);
+    }
 
-    public BlockCandleLightBlue(int meta) { super(meta); }
+    public BlockCandleLightBlue(int meta) {
+        super(meta);
+    }
 
     @Override
     public int getId() {

@@ -224,7 +224,7 @@ public class ServerScheduler {
             }
         }
         this.taskMap.clear();
-        this.queueMap .clear();
+        this.queueMap.clear();
         this.currentTaskId.set(0);
     }
 

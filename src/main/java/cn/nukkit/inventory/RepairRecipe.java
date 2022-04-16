@@ -9,7 +9,7 @@ import java.util.List;
 
 @PowerNukkitOnly
 public class RepairRecipe implements Recipe {
-    
+
     private final Item result;
     private final List<Item> ingredients;
     private final InventoryType inventoryType;
@@ -19,7 +19,7 @@ public class RepairRecipe implements Recipe {
         this.inventoryType = inventoryType;
         this.result = result.clone();
         this.ingredients = new ArrayList<>();
-    
+
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
                 throw new IllegalArgumentException("Recipe Ingredient amount was not 1 (value: " + item.getCount() + ")");
@@ -27,7 +27,7 @@ public class RepairRecipe implements Recipe {
             this.ingredients.add(item.clone());
         }
     }
-    
+
     @Override
     public Item getResult() {
         return result.clone();
@@ -39,15 +39,15 @@ public class RepairRecipe implements Recipe {
         for (Item ingredient : this.ingredients) {
             ingredients.add(ingredient.clone());
         }
-        
+
         return ingredients;
     }
-    
+
     @Override
     public void registerToCraftingManager(CraftingManager manager) {
-    
+
     }
-    
+
     @Override
     public RecipeType getType() {
         return RecipeType.REPAIR;

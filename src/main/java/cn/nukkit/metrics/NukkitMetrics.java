@@ -33,21 +33,22 @@ public class NukkitMetrics {
     private boolean enabled;
     private String serverUUID;
     private boolean logFailedRequests;
-    
+
     private Metrics metrics;
 
     /**
      * Setup the nukkit metrics and starts it if it hadn't started yet.
-     * 
+     *
      * @param server The Nukkit server
      * @deprecated Replace with {@link #startNow(Server)}
      */
     @SuppressWarnings({"DeprecatedIsStillUsed", "java:S1133"})
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", replaceWith = "NukkitMetrics.startNow(Server)",
-        reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method " +
-                "and don't comply with Java standards. Use the static method startNow(server) instead.")
-    @Since("1.4.0.0-PN") public NukkitMetrics(Server server) {
+            reason = "The original cloudburst nukkit constructor implementation behaves like a stateful static method " +
+                    "and don't comply with Java standards. Use the static method startNow(server) instead.")
+    @Since("1.4.0.0-PN")
+    public NukkitMetrics(Server server) {
         this(server, true);
     }
 
@@ -67,22 +68,23 @@ public class NukkitMetrics {
 
     /**
      * Setup the nukkit metrics and starts it if it hadn't started yet.
-     * 
+     *
      * @param server The Nukkit server
      */
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static boolean startNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
         return nukkitMetrics.metrics != null;
     }
-    
+
     private static NukkitMetrics getOrCreateMetrics(@Nonnull final Server server) {
         Map<Server, NukkitMetrics> current = metricsStarted.get();
         NukkitMetrics metrics = current.get(server);
         if (metrics != null) {
             return metrics;
         }
-        
+
         current = metricsStarted.updateAndGet(before -> {
             Map<Server, NukkitMetrics> mutable = before;
             if (before.isEmpty()) {
@@ -91,19 +93,19 @@ public class NukkitMetrics {
             mutable.computeIfAbsent(server, NukkitMetrics::createMetrics);
             return mutable;
         });
-        
+
         metrics = current.get(server);
         assert metrics != null;
         return metrics;
     }
-    
+
     @Nonnull
     private static NukkitMetrics createMetrics(@Nonnull final Server server) {
         NukkitMetrics nukkitMetrics = new NukkitMetrics(server, false);
         if (!nukkitMetrics.enabled) {
             return nukkitMetrics;
         }
-        
+
         final Metrics metrics = new Metrics("Nukkit", nukkitMetrics.serverUUID, nukkitMetrics.logFailedRequests);
         nukkitMetrics.metrics = metrics;
 
@@ -125,12 +127,12 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.DrilldownPie("java_version", new JavaVersionRetriever()));
         return nukkitMetrics;
     }
-    
+
     private static class JavaVersionRetriever implements Callable<Map<String, Map<String, Integer>>> {
         // The following code can be attributed to the PaperMC project
         // https://github.com/PaperMC/Paper/blob/master/Spigot-Server-Patches/0005-Paper-Metrics.patch#L614
         @Override
-        public Map<String, Map<String, Integer>> call()  {
+        public Map<String, Map<String, Integer>> call() {
             Map<String, Map<String, Integer>> map = new HashMap<>();
             String javaVersion = System.getProperty("java.version");
             Map<String, Integer> entry = new HashMap<>();
@@ -203,21 +205,35 @@ public class NukkitMetrics {
 
     private String mapDeviceOSToString(int os) {
         switch (os) {
-            case 1: return "Android";
-            case 2: return "iOS";
-            case 3: return "macOS";
-            case 4: return "FireOS";
-            case 5: return "Gear VR";
-            case 6: return "Hololens";
-            case 7: return "Windows 10";
-            case 8: return "Windows";
-            case 9: return "Dedicated";
-            case 10: return "PS4";
+            case 1:
+                return "Android";
+            case 2:
+                return "iOS";
+            case 3:
+                return "macOS";
+            case 4:
+                return "FireOS";
+            case 5:
+                return "Gear VR";
+            case 6:
+                return "Hololens";
+            case 7:
+                return "Windows 10";
+            case 8:
+                return "Windows";
+            case 9:
+                return "Dedicated";
+            case 10:
+                return "PS4";
             case 11:
-            case 12: return "Switch";
-            case 13: return "Xbox One";
-            case 14: return "Windows Phone";
-            default: return "Unknown"; 
+            case 12:
+                return "Switch";
+            case 13:
+                return "Xbox One";
+            case 14:
+                return "Windows Phone";
+            default:
+                return "Unknown";
         }
     }
 }

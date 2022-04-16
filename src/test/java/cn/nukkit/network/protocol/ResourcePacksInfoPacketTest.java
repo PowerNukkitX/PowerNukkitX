@@ -46,7 +46,7 @@ class ResourcePacksInfoPacketTest {
         when(resourcePack.getPackId()).thenReturn(UUID.randomUUID());
         when(resourcePack.getPackVersion()).thenReturn("1.0");
         when(resourcePack.getPackSize()).thenReturn(1000);
-        
+
         val packet = new ResourcePacksInfoPacket();
         packet.setBehaviourPackEntries(new ResourcePack[]{resourcePack});
         packet.setResourcePackEntries(new ResourcePack[]{resourcePack});
@@ -55,11 +55,11 @@ class ResourcePacksInfoPacketTest {
         packet.setScriptingEnabled(true);
         packet.encode();
         packet.decode();
-        
+
         assertTrue(packet.isForcedToAccept());
         assertTrue(packet.isScriptingEnabled());
         assertTrue(packet.isForcingServerPacksEnabled());
-        
+
         assertEquals(Collections.singletonList(resourcePack), Arrays.asList(packet.getBehaviourPackEntries()));
         assertEquals(Collections.singletonList(resourcePack), Arrays.asList(packet.getResourcePackEntries()));
     }

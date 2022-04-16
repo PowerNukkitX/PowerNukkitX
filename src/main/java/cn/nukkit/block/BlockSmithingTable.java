@@ -37,7 +37,7 @@ public class BlockSmithingTable extends BlockSolid {
         if (player == null) {
             return false;
         }
-        
+
         player.addWindow(new SmithingInventory(player.getUIInventory(), this), Player.SMITHING_WINDOW_ID);
         return true;
     }

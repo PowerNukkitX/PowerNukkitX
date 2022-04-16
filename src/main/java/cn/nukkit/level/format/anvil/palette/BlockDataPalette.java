@@ -86,7 +86,8 @@ public final class BlockDataPalette implements Cloneable {
         if (raw != null) {
             int fullId = raw[index];
             raw[index] = (char) ((fullId & (0xFFF << Block.DATA_BITS)) | data);
-        } if (palette != null && encodedData != null) {
+        }
+        if (palette != null && encodedData != null) {
             char fullId = palette.getKey(encodedData.getAt(index));
             if ((fullId & Block.DATA_MASK) != data) {
                 setPaletteFullBlock(index, (char) ((fullId & (0xFFF << Block.DATA_BITS)) | data));

@@ -11,9 +11,9 @@ import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
-import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider) implements ServerWorld {
+public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack,
+                             BiomeProvider biomeProvider) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
@@ -75,6 +75,6 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1), chunkManager, chunkGenerator, configPack, biomeProvider);
+        return new PNXChunkDelegate(chunkManager.getChunk(i, i1), chunkManager, chunkGenerator, configPack, biomeProvider);
     }
 }

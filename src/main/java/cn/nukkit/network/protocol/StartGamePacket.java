@@ -58,7 +58,8 @@ public class StartGamePacket extends DataPacket {
     public GameRules gameRules;
     public boolean bonusChest = false;
     public boolean hasStartWithMapEnabled = false;
-    @Since("1.3.0.0-PN") public boolean trustingPlayers;
+    @Since("1.3.0.0-PN")
+    public boolean trustingPlayers;
     public int permissionLevel = 1;
     public int serverChunkTickRange = 4;
     public boolean hasLockedBehaviorPack = false;
@@ -78,7 +79,8 @@ public class StartGamePacket extends DataPacket {
     public String premiumWorldTemplateId = "";
     public boolean isTrial = false;
     public boolean isMovementServerAuthoritative;
-    @Since("1.3.0.0-PN") public boolean isInventoryServerAuthoritative;
+    @Since("1.3.0.0-PN")
+    public boolean isInventoryServerAuthoritative;
     public long currentTick;
 
     public int enchantmentSeed;

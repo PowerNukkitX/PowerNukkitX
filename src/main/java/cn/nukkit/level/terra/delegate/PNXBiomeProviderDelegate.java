@@ -1,14 +1,12 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.level.ChunkManager;
 import com.dfsek.terra.api.util.MathUtil;
 import com.dfsek.terra.api.world.biome.Biome;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 
-import java.util.*;
+import java.util.WeakHashMap;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")

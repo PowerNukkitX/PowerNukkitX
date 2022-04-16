@@ -30,45 +30,45 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     public static Map<Position, TiltAction> actions = new HashMap<>();
     public static Set<Position> fullTiltBlocks = new HashSet<>();
 
-    static{
+    static {
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
             for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[0])) {
-                    if (--entry.getValue().delay == 0) {
-                        if (checkTiltAction(entry.getKey())) {
-                            BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
-                            BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf,blockBigDripleaf.getTilt(),entry.getValue().targetState);
-                            Server.getInstance().getPluginManager().callEvent(event);
-                            if (event.isCancelled()) {
-                                return;
-                            }
-                            entry.getValue().targetState = event.getNewTilt();
-                            blockBigDripleaf.setTilt(entry.getValue().targetState);
-                            entry.getKey().getLevel().setBlock(entry.getKey(), blockBigDripleaf, true, true);
-                            if (entry.getValue().targetState == Tilt.FULL_TILT) {
-                                fullTiltBlocks.add(entry.getKey());
-                            }
+                if (--entry.getValue().delay == 0) {
+                    if (checkTiltAction(entry.getKey())) {
+                        BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
+                        BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf, blockBigDripleaf.getTilt(), entry.getValue().targetState);
+                        Server.getInstance().getPluginManager().callEvent(event);
+                        if (event.isCancelled()) {
+                            return;
                         }
-                        actions.remove(entry.getKey());
-                        if (entry.getValue().nextAction != null){
-                            actions.put(entry.getKey(), entry.getValue().nextAction);
+                        entry.getValue().targetState = event.getNewTilt();
+                        blockBigDripleaf.setTilt(entry.getValue().targetState);
+                        entry.getKey().getLevel().setBlock(entry.getKey(), blockBigDripleaf, true, true);
+                        if (entry.getValue().targetState == Tilt.FULL_TILT) {
+                            fullTiltBlocks.add(entry.getKey());
                         }
                     }
+                    actions.remove(entry.getKey());
+                    if (entry.getValue().nextAction != null) {
+                        actions.put(entry.getKey(), entry.getValue().nextAction);
+                    }
+                }
             }
-        },1);
+        }, 1);
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
             for (Position pos : fullTiltBlocks.toArray(new Position[0])) {
                 if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
                     pos.getLevelBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                }else{
+                } else {
                     fullTiltBlocks.remove(pos);
                 }
             }
-        },1);
+        }, 1);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt",false,new Tilt[]{Tilt.NONE, Tilt.PARTIAL_TILT, Tilt.FULL_TILT,Tilt.UNSTABLE});
+    public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt", false, new Tilt[]{Tilt.NONE, Tilt.PARTIAL_TILT, Tilt.FULL_TILT, Tilt.UNSTABLE});
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
@@ -76,25 +76,25 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION,TILT,HEAD);
+    public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION, TILT, HEAD);
 
-    public static boolean checkTiltAction(Position pos){
-        if (!actions.containsKey(pos)){
+    public static boolean checkTiltAction(Position pos) {
+        if (!actions.containsKey(pos)) {
             return true;
         }
         TiltAction action = actions.get(pos);
-        if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.isHead()){
+        if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.isHead()) {
             return true;
         }
         return false;
     }
 
-    public static void addTiltAction(Position pos,TiltAction action){
-        if (!actions.containsKey(pos) ||!checkTiltAction(pos))
-            actions.put(pos,action);
+    public static void addTiltAction(Position pos, TiltAction action) {
+        if (!actions.containsKey(pos) || !checkTiltAction(pos))
+            actions.put(pos, action);
     }
 
-    public static void removeTiltAction(Position pos){
+    public static void removeTiltAction(Position pos) {
         if (actions.containsKey(pos)) {
             actions.remove(pos);
         }
@@ -134,20 +134,20 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         setPropertyValue(CommonBlockProperties.DIRECTION, face);
     }
 
-    public boolean isHead(){
+    public boolean isHead() {
         return this.getBooleanValue(HEAD);
     }
 
-    public void setHead(boolean isHead){
-        this.setBooleanValue(HEAD,isHead);
+    public void setHead(boolean isHead) {
+        this.setBooleanValue(HEAD, isHead);
     }
 
-    public Tilt getTilt(){
+    public Tilt getTilt() {
         return this.getPropertyValue(TILT);
     }
 
-    public void setTilt(Tilt tilt){
-        this.setPropertyValue(TILT,tilt);
+    public void setTilt(Tilt tilt) {
+        this.setPropertyValue(TILT, tilt);
     }
 
     @PowerNukkitOnly
@@ -171,16 +171,16 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         BlockBigDripleaf blockBigDripleafTop = new BlockBigDripleaf();
         blockBigDripleafTop.setHead(true);
         blockBigDripleafTop.setBlockFace(player.getDirection().getOpposite());
-        if(canKeepAlive(block)){
-            this.level.setBlock(block,blockBigDripleafTop,true,true);
+        if (canKeepAlive(block)) {
+            this.level.setBlock(block, blockBigDripleafTop, true, true);
             return true;
         }
         if (block.getSide(BlockFace.DOWN) instanceof BlockBigDripleaf) {
             BlockBigDripleaf blockDown = (BlockBigDripleaf) this.level.getBlock(block.getSide(BlockFace.DOWN));
             blockDown.setHead(false);
             blockBigDripleafTop.setBlockFace(((BlockBigDripleaf) block.getSide(BlockFace.DOWN)).getBlockFace());
-            this.level.setBlock(blockDown,blockDown,true,true);
-            this.level.setBlock(block,blockBigDripleafTop,true,true);
+            this.level.setBlock(blockDown, blockDown, true, true);
+            this.level.setBlock(block, blockBigDripleafTop, true, true);
             return true;
         }
         return false;
@@ -189,8 +189,8 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (item.isFertilizer()) {
-            boolean state = this.grow(this,1);
-            if(state) {
+            boolean state = this.grow(this, 1);
+            if (state) {
                 this.level.addParticleEffect(this.add(0.5, 0.5, 0.5), ParticleEffect.CROP_GROWTH);
                 item.count--;
                 return true;
@@ -205,10 +205,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         removeTiltAction(this);
         this.level.setBlock(this, new BlockAir(), true, true);
         this.level.dropItem(this, this.toItem());
-        if(this.getSide(BlockFace.UP).getId() == BlockID.BIG_DRIPLEAF){
+        if (this.getSide(BlockFace.UP).getId() == BlockID.BIG_DRIPLEAF) {
             this.level.getBlock(this.getSide(BlockFace.UP)).onBreak(null);
         }
-        if(this.getSide(BlockFace.DOWN).getId() == BlockID.BIG_DRIPLEAF){
+        if (this.getSide(BlockFace.DOWN).getId() == BlockID.BIG_DRIPLEAF) {
             this.level.getBlock(this.getSide(BlockFace.DOWN)).onBreak(null);
         }
         return true;
@@ -220,7 +220,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         if (this.isGettingPower()) {
             removeTiltAction(this);
             this.setTilt(Tilt.NONE);
-            this.level.setBlock(this,this,true,true);
+            this.level.setBlock(this, this, true, true);
             return 0;
         }
         if (!canKeepAlive(this)) {
@@ -235,22 +235,22 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                     hasEntityOn.set(true);
             });
             if (hasEntityOn.get() && this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.NONE) {
-                addTiltAction(this, new TiltAction(Tilt.PARTIAL_TILT,15,new TiltAction(Tilt.FULL_TILT,15,null)));
-            }else {
+                addTiltAction(this, new TiltAction(Tilt.PARTIAL_TILT, 15, new TiltAction(Tilt.FULL_TILT, 15, null)));
+            } else {
                 if (this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
-                    addTiltAction(this, new TiltAction(Tilt.NONE,100,null));
+                    addTiltAction(this, new TiltAction(Tilt.NONE, 100, null));
                 }
             }
         }
         return super.onUpdate(type);
     }
 
-    public boolean canKeepAlive(Position pos){
+    public boolean canKeepAlive(Position pos) {
         Block blockDown = this.level.getBlock(pos.getSide(BlockFace.DOWN));
-        if (this.level.getBlock(blockDown) instanceof BlockBigDripleaf && !((BlockBigDripleaf)this.level.getBlock(blockDown)).isHead()){
+        if (this.level.getBlock(blockDown) instanceof BlockBigDripleaf && !((BlockBigDripleaf) this.level.getBlock(blockDown)).isHead()) {
             return true;
         }
-        if (blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMoss || blockDown instanceof BlockClay){
+        if (blockDown instanceof BlockDirt || blockDown instanceof BlockDirtWithRoots || blockDown instanceof BlockMoss || blockDown instanceof BlockClay) {
             return true;
         }
         return false;
@@ -258,7 +258,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public boolean grow(Position pos,int heightIncreased){
+    public boolean grow(Position pos, int heightIncreased) {
         Block block = pos.getLevelBlock();
         if (block instanceof BlockBigDripleaf) {
             while (block.getSide(BlockFace.UP) instanceof BlockBigDripleaf) {
@@ -269,19 +269,19 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
         int maxHeightIncreased = 0;
         Block blockUp = block.getBlock();
-        for(int i = 1;i<=heightIncreased;i++){
+        for (int i = 1; i <= heightIncreased; i++) {
             if ((blockUp = blockUp.getSide(BlockFace.UP)) instanceof BlockAir && blockUp.getY() < 320)
                 maxHeightIncreased++;
         }
         BlockBigDripleaf blockBigDripleafDown = new BlockBigDripleaf();
         BlockBigDripleaf blockBigDripleafHead = new BlockBigDripleaf();
-        blockBigDripleafDown.setBlockFace(((BlockBigDripleaf)block).getBlockFace());
-        blockBigDripleafHead.setBlockFace(((BlockBigDripleaf)block).getBlockFace());
+        blockBigDripleafDown.setBlockFace(((BlockBigDripleaf) block).getBlockFace());
+        blockBigDripleafHead.setBlockFace(((BlockBigDripleaf) block).getBlockFace());
         blockBigDripleafHead.setHead(true);
-        for(int height = 0;height<maxHeightIncreased;height++){
-            this.level.setBlock(block.add(0,height,0),blockBigDripleafDown,true,true);
+        for (int height = 0; height < maxHeightIncreased; height++) {
+            this.level.setBlock(block.add(0, height, 0), blockBigDripleafDown, true, true);
         }
-        this.level.setBlock(block.add(0,maxHeightIncreased,0),blockBigDripleafHead,true,true);
+        this.level.setBlock(block.add(0, maxHeightIncreased, 0), blockBigDripleafHead, true, true);
         return true;
     }
 
@@ -295,7 +295,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     @Override
     public boolean onProjectileHit(@Nonnull Entity projectile, @Nonnull Position position, @Nonnull Vector3 motion) {
         this.setTilt(Tilt.FULL_TILT);
-        this.level.setBlock(this,this,true,true);
+        this.level.setBlock(this, this, true, true);
         return true;
     }
 
@@ -314,7 +314,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return this.y + 0.95;
     }
 
-    public enum Tilt{
+    public enum Tilt {
         NONE,
         PARTIAL_TILT,
         FULL_TILT,
@@ -327,7 +327,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         public int delay;
         public TiltAction nextAction;
 
-        public TiltAction(Tilt targetState, int delay,TiltAction nextAction) {
+        public TiltAction(Tilt targetState, int delay, TiltAction nextAction) {
             this.targetState = targetState;
             this.delay = delay;
             this.nextAction = nextAction;

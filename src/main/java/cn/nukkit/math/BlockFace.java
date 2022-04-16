@@ -82,7 +82,7 @@ public enum BlockFace {
         this.unitVector = unitVector;
     }
 
-    public static BlockFace[] getHorizontals(){
+    public static BlockFace[] getHorizontals() {
         return HORIZONTALS.clone();
     }
 

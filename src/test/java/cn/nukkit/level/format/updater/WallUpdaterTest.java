@@ -40,12 +40,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(PowerNukkitExtension.class)
 class WallUpdaterTest implements BlockID {
     int x = 3, y = 4, z = 5;
-    
+
     @MockLevel
     Level level;
 
     ChunkSection section;
-    
+
     WallUpdater updater;
 
     @Test
@@ -65,7 +65,7 @@ class WallUpdaterTest implements BlockID {
         section = new ChunkSection(0);
         section.setContentVersion(0);
         section.delayPaletteUpdates();
-        
+
         updater = new WallUpdater(level, section);
     }
 }

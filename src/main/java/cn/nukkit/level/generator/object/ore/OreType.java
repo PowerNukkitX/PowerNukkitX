@@ -18,17 +18,19 @@ public class OreType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final OreType[] EMPTY_ARRAY = new OreType[0];
-    
+
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public final int fullId;
-    
+
     @PowerNukkitOnly
-    @Since("1.3.0.0-PN") public final int blockId;
-    
+    @Since("1.3.0.0-PN")
+    public final int blockId;
+
     @PowerNukkitOnly
-    @Since("1.3.0.0-PN") public final int blockData;
-    
+    @Since("1.3.0.0-PN")
+    public final int blockData;
+
     public final int clusterCount;
     public final int clusterSize;
     public final int maxHeight;
@@ -96,7 +98,7 @@ public class OreType {
                 }
             }
         }
-        
+
         return true;
     }
 }

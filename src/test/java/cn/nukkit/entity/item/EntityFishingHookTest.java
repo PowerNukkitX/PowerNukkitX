@@ -187,6 +187,7 @@ class EntityFishingHookTest {
 
     static class CollidedFishingHook extends EntityFishingHook {
         final boolean inWater;
+
         public CollidedFishingHook(FullChunk chunk, CompoundTag nbt, boolean inWater) {
             super(chunk, nbt);
             this.inWater = inWater;

@@ -24,7 +24,8 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     @PowerNukkitDifference(info = "Implement sound.", since = "1.4.0.0-PN")
-    public @PowerNukkitOnly Item dispense(BlockDispenser source, BlockFace face, Item item) {
+    public @PowerNukkitOnly
+    Item dispense(BlockDispenser source, BlockFace face, Item item) {
         Vector3 dispensePos = source.getDispensePosition();
 
         CompoundTag nbt = Entity.getDefaultNBT(dispensePos);

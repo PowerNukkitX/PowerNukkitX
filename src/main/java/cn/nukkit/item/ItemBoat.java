@@ -80,18 +80,18 @@ public class ItemBoat extends Item {
         if (face != BlockFace.UP && !(block instanceof BlockWater)) return false;
         EntityBoat boat = (EntityBoat) Entity.createEntity("Boat",
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", block.getX() + 0.5))
-                        .add(new DoubleTag("", block.getY() - (target instanceof BlockWater ? 0.375 : 0)))
-                        .add(new DoubleTag("", block.getZ() + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
-                        .add(new FloatTag("", 0)))
-                .putInt("Variant", getDamage())
+                        .putList(new ListTag<DoubleTag>("Pos")
+                                .add(new DoubleTag("", block.getX() + 0.5))
+                                .add(new DoubleTag("", block.getY() - (target instanceof BlockWater ? 0.375 : 0)))
+                                .add(new DoubleTag("", block.getZ() + 0.5)))
+                        .putList(new ListTag<DoubleTag>("Motion")
+                                .add(new DoubleTag("", 0))
+                                .add(new DoubleTag("", 0))
+                                .add(new DoubleTag("", 0)))
+                        .putList(new ListTag<FloatTag>("Rotation")
+                                .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
+                                .add(new FloatTag("", 0)))
+                        .putInt("Variant", getDamage())
         );
 
         if (boat == null) {

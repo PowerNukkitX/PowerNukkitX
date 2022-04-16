@@ -25,64 +25,64 @@ class ChunkSectionTest {
     @Test
     void issue1186() throws NoSuchFieldException {
         ChunkSection section = new ChunkSection(2);
-        assertEquals(0, section.getBlockSkyLight(1,2,3));
+        assertEquals(0, section.getBlockSkyLight(1, 2, 3));
         section.hasSkyLight = true;
-        assertEquals(15, section.getBlockSkyLight(1,2,3));
-        assertEquals(0, section.getBlockLight(1,2,3));
-        
-        section.setBlockSkyLight(1,2,3,4);
-        section.setBlockLight(1,2,3,2);
+        assertEquals(15, section.getBlockSkyLight(1, 2, 3));
+        assertEquals(0, section.getBlockLight(1, 2, 3));
+
+        section.setBlockSkyLight(1, 2, 3, 4);
+        section.setBlockLight(1, 2, 3, 2);
         assertTrue(section.compress());
-        
+
         // Corrupting intentionally
         ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
-        section.setBlockSkyLight(1,2,3,5);
-        section.setBlockLight(1,2,3, 7);
+        section.setBlockSkyLight(1, 2, 3, 5);
+        section.setBlockLight(1, 2, 3, 7);
 
-        assertEquals(5, section.getBlockSkyLight(1,2,3));
-        assertEquals(7, section.getBlockLight(1,2,3));
-        
+        assertEquals(5, section.getBlockSkyLight(1, 2, 3));
+        assertEquals(7, section.getBlockLight(1, 2, 3));
+
         section.compress();
-        
+
         // Corrupting intentionally
         ReflectionUtil.setField(section, ChunkSection.class.getDeclaredField("compressedLight"), new byte[3]);
 
-        assertEquals(15, section.getBlockSkyLight(1,2,3));
-        assertEquals(0, section.getBlockLight(1,2,3));
+        assertEquals(15, section.getBlockSkyLight(1, 2, 3));
+        assertEquals(0, section.getBlockLight(1, 2, 3));
     }
 
     @Test
     void omgThatIsHugePersistence() {
         ChunkSection section = new ChunkSection(4);
         BigInteger sixteenBytesData = new BigInteger("86151413121110090807060504030201", 16);
-        section.setBlockState(0,0,0,BlockState.of(BlockID.STONE, sixteenBytesData));
+        section.setBlockState(0, 0, 0, BlockState.of(BlockID.STONE, sixteenBytesData));
         CompoundTag nbt = section.toNBT();
 
         ChunkSection loaded = new ChunkSection(nbt);
-        assertEquals(sixteenBytesData, loaded.getBlockState(0,0,0).getHugeDamage());
+        assertEquals(sixteenBytesData, loaded.getBlockState(0, 0, 0).getHugeDamage());
     }
-    
+
     @Test
     void longPersistence() {
         ChunkSection section = new ChunkSection(4);
-        section.setBlockState(0,0,0,BlockState.of(BlockID.STONE, 0x81_34_00_00L));
+        section.setBlockState(0, 0, 0, BlockState.of(BlockID.STONE, 0x81_34_00_00L));
         CompoundTag nbt = section.toNBT();
 
         ChunkSection loaded = new ChunkSection(nbt);
-        assertEquals(BigInteger.valueOf(0x81_34_00_00L), loaded.getBlockState(0,0,0).getHugeDamage());
+        assertEquals(BigInteger.valueOf(0x81_34_00_00L), loaded.getBlockState(0, 0, 0).getHugeDamage());
     }
-    
+
     @Test
     void negativePersistence() {
         ChunkSection section = new ChunkSection(4);
-        section.setBlockState(0,0,0,BlockState.of(BlockID.STONE, 1));
+        section.setBlockState(0, 0, 0, BlockState.of(BlockID.STONE, 1));
         CompoundTag nbt = section.toNBT();
-        
+
         nbt.getByteArray("Data")[0] = -1;
         assertEquals(-1, nbt.getByteArray("Data")[0]);
-        
+
         ChunkSection loaded = new ChunkSection(nbt);
-        assertEquals(15, loaded.getBlockState(0,0,0).getExactIntStorage());
+        assertEquals(15, loaded.getBlockState(0, 0, 0).getExactIntStorage());
         for (int i = 0; i < EmptyChunkSection.EMPTY_LIGHT_ARR.length; i++) {
             assertEquals(0, EmptyChunkSection.EMPTY_LIGHT_ARR[i]);
         }
@@ -91,21 +91,21 @@ class ChunkSectionTest {
             assertEquals((byte) 255, EmptyChunkSection.EMPTY_SKY_LIGHT_ARR[i]);
         }
     }
-    
+
     @Test
     void issuePowerNukkit698() {
         ChunkSection section = new ChunkSection(4);
         section.delayPaletteUpdates();
         BlockState bigState = BlockState.of(2, 0x01_00_00_00_0_0L);
-        section.setBlockState(1,2,3, bigState);
-        assertEquals(bigState, section.getBlockState(1,2,3));
-        
+        section.setBlockState(1, 2, 3, bigState);
+        assertEquals(bigState, section.getBlockState(1, 2, 3));
+
         CompoundTag tag = section.toNBT();
         ChunkSection loadedSection = new ChunkSection(tag);
-        
-        assertEquals(bigState, loadedSection.getBlockState(1,2,3));
+
+        assertEquals(bigState, loadedSection.getBlockState(1, 2, 3));
     }
-    
+
     @Test
     void hugeIdPersistence() {
         ChunkSection section = new ChunkSection(4);
@@ -132,7 +132,7 @@ class ChunkSectionTest {
 
         int higherBits = 0x71_34_00_00;
         expected |= higherBits;
-        
+
         section.setBlockData(x, y, z, expected);
         assertEquals(BlockID.COBBLE_WALL, section.getBlockId(x, y, z));
         assertEquals(expected, section.getBlockData(x, y, z));

@@ -57,7 +57,7 @@ public class ItemBannerPattern extends Item {
         super.setDamage(meta);
         updateName();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BannerPattern.Type getPatternType() {
@@ -66,13 +66,20 @@ public class ItemBannerPattern extends Item {
         }
         switch (getDamage()) {
             default:
-            case PATTERN_CREEPER_CHARGE: return BannerPattern.Type.PATTERN_CREEPER; 
-            case PATTERN_SKULL_CHARGE: return BannerPattern.Type.PATTERN_SKULL; 
-            case PATTERN_FLOWER_CHARGE: return BannerPattern.Type.PATTERN_FLOWER;
-            case PATTERN_THING: return BannerPattern.Type.PATTERN_MOJANG;
-            case PATTERN_FIELD_MASONED: return BannerPattern.Type.PATTERN_BRICK; 
-            case PATTERN_BORDURE_INDENTED: return BannerPattern.Type.PATTERN_CURLY_BORDER;
-            case PATTERN_SNOUT: return BannerPattern.Type.PATTERN_SNOUT;
+            case PATTERN_CREEPER_CHARGE:
+                return BannerPattern.Type.PATTERN_CREEPER;
+            case PATTERN_SKULL_CHARGE:
+                return BannerPattern.Type.PATTERN_SKULL;
+            case PATTERN_FLOWER_CHARGE:
+                return BannerPattern.Type.PATTERN_FLOWER;
+            case PATTERN_THING:
+                return BannerPattern.Type.PATTERN_MOJANG;
+            case PATTERN_FIELD_MASONED:
+                return BannerPattern.Type.PATTERN_BRICK;
+            case PATTERN_BORDURE_INDENTED:
+                return BannerPattern.Type.PATTERN_CURLY_BORDER;
+            case PATTERN_SNOUT:
+                return BannerPattern.Type.PATTERN_SNOUT;
         }
     }
 

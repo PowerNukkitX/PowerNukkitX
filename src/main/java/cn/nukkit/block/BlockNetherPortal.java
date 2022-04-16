@@ -125,12 +125,12 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         int x = pos.getFloorX();
         int y = pos.getFloorY();
         int z = pos.getFloorZ();
-        
+
         Block air = Block.get(AIR);
         Block obsidian = Block.get(OBSIDIAN);
         Block netherPortal = Block.get(NETHER_PORTAL);
         for (int xx = -1; xx < 4; xx++) {
-            for (int yy = 1; yy < 4; yy++)  {
+            for (int yy = 1; yy < 4; yy++) {
                 for (int zz = -1; zz < 3; zz++) {
                     lvl.setBlock(x + xx, y + yy, z + zz, air, false, true);
                 }
@@ -150,7 +150,7 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         lvl.setBlock(x + 1, y, z, obsidian, false, true);
         lvl.setBlock(x + 2, y, z, obsidian, false, true);
         z--;
-        
+
         for (int i = 0; i < 3; i++) {
             y++;
             lvl.setBlock(x, y, z, obsidian, false, true);

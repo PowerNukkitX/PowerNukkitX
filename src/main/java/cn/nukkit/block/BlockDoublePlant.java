@@ -35,25 +35,32 @@ public class BlockDoublePlant extends BlockFlowable {
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(DOUBLE_PLANT_TYPE, UPPER_BLOCK);
 
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.SUNFLOWER",
-        reason = "Magic values may change in future without backward compatibility.")
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.SUNFLOWER",
+            reason = "Magic values may change in future without backward compatibility.")
     public static final int SUNFLOWER = 0;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LILAC",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LILAC",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int LILAC = 1;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.TALL_GRASS",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.TALL_GRASS",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int TALL_GRASS = 2;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LARGE_FERN",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.LARGE_FERN",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int LARGE_FERN = 3;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.ROSE_BUSH",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.ROSE_BUSH",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int ROSE_BUSH = 4;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.PEONY",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "DoublePlantType.PEONY",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int PEONY = 5;
-    @Deprecated @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "CommonBlockProperties.UPPER_BLOCK",
+    @Deprecated
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", replaceWith = "CommonBlockProperties.UPPER_BLOCK",
             reason = "Magic values may change in future without backward compatibility.")
     public static final int TOP_HALF_BITMASK = 0x8;
 
@@ -181,7 +188,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (isTopHalf()){
+        if (isTopHalf()) {
             return Item.EMPTY_ARRAY;
         }
 

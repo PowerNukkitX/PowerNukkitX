@@ -84,6 +84,7 @@ public enum CompassRoseDirection {
 
     /**
      * Gets the closes direction based on the given {@link cn.nukkit.entity.Entity} yaw.
+     *
      * @param yaw An entity yaw
      * @return The closest direction
      * @since 1.4.0.0-PN
@@ -98,6 +99,7 @@ public enum CompassRoseDirection {
 
     /**
      * Gets the closes direction based on the given {@link cn.nukkit.entity.Entity} yaw.
+     *
      * @param yaw An entity yaw
      * @return The closest direction
      * @since 1.4.0.0-PN
@@ -159,7 +161,7 @@ public enum CompassRoseDirection {
 
             case WEST_SOUTH_WEST:
                 return CompassRoseDirection.EAST_NORTH_EAST;
-            
+
             default:
                 throw new IncompatibleClassChangeError("New values was added to the enum");
         }
@@ -167,6 +169,7 @@ public enum CompassRoseDirection {
 
     /**
      * Gets the {@link cn.nukkit.entity.Entity} yaw that represents this direction.
+     *
      * @return The yaw value that can be used by entities to look at this direction.
      * @since 1.4.0.0-PN
      */

@@ -18,7 +18,9 @@ public enum StoneSlab1Type {
     @PowerNukkitOnly @Since("1.4.0.0-PN") STONE_BRICK("Stone Brick"),
     @PowerNukkitOnly @Since("1.4.0.0-PN") QUARTZ(BlockColor.QUARTZ_BLOCK_COLOR),
     @PowerNukkitOnly @Since("1.4.0.0-PN") NETHER_BRICK(BlockColor.NETHERRACK_BLOCK_COLOR, "Nether Brick");
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final ArrayBlockProperty<StoneSlab1Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type", true, values());
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final ArrayBlockProperty<StoneSlab1Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type", true, values());
     private final BlockColor color;
 
     private final String englishName;
@@ -36,7 +38,7 @@ public enum StoneSlab1Type {
         this.color = color;
         englishName = name().substring(0, 1) + name().substring(1).toLowerCase();
     }
-    
+
     StoneSlab1Type(BlockColor color, String name) {
         this.color = color;
         englishName = name;

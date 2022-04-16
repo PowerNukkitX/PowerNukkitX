@@ -34,14 +34,15 @@ import static com.google.common.base.Verify.verify;
 public class RuntimeItems {
 
     private static final Gson GSON = new Gson();
-    private static final Type ENTRY_TYPE = new TypeToken<ArrayList<Entry>>(){}.getType();
+    private static final Type ENTRY_TYPE = new TypeToken<ArrayList<Entry>>() {
+    }.getType();
 
     private static final RuntimeItemMapping itemPalette;
 
     static {
         log.debug("Loading runtime items...");
         Collection<Entry> entries;
-        try(InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json")) {
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json")) {
             if (stream == null) {
                 throw new AssertionError("Unable to load runtime_item_ids.json");
             }
@@ -80,7 +81,7 @@ public class RuntimeItems {
         }
 
         byte[] itemDataPalette = paletteBuffer.getBuffer();
-        itemPalette = new RuntimeItemMapping(itemDataPalette, legacyNetworkMap, networkLegacyMap, 
+        itemPalette = new RuntimeItemMapping(itemDataPalette, legacyNetworkMap, networkLegacyMap,
                 namespaceNetworkMap, networkNamespaceMap);
     }
 

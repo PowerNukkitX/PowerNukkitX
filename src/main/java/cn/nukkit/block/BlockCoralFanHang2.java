@@ -31,7 +31,7 @@ public class BlockCoralFanHang2 extends BlockCoralFanHang {
     public BlockCoralFanHang2(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN_HANG2;

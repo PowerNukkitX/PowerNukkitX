@@ -49,12 +49,12 @@ public abstract class Tag {
         Tag o = (Tag) obj;
         return getId() == o.getId() && !(name == null && o.name != null || name != null && o.name == null) && !(name != null && !name.equals(o.name));
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(getId(), name);
     }
-    
+
     public void print(PrintStream out) {
         print("", out);
     }

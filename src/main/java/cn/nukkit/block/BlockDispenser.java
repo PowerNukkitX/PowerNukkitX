@@ -194,7 +194,7 @@ public class BlockDispenser extends BlockSolidMeta implements RedstoneComponent,
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 

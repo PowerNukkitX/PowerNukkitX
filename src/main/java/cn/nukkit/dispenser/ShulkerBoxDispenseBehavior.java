@@ -19,7 +19,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
-        
+
         if (!target.canBeReplaced()) {
             success = false;
             return null;
@@ -33,7 +33,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
         shulkerBox.z = target.z;
 
         BlockFace shulkerBoxFace = shulkerBox.down().isTransparent() ? face : BlockFace.UP;
-        
+
         if (success = shulkerBox.place(item, target, target.getSide(shulkerBoxFace.getOpposite()), shulkerBoxFace, 0, 0, 0, null)) {
             block.level.updateComparatorOutputLevel(target);
         }

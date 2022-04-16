@@ -63,13 +63,13 @@ public class BlockSlabCopperCut extends BlockSlabCopperBase {
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_CUT_COPPER_SLAB : CUT_COPPER_SLAB;
+                return waxed ? WAXED_CUT_COPPER_SLAB : CUT_COPPER_SLAB;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_CUT_COPPER_SLAB : EXPOSED_CUT_COPPER_SLAB;
+                return waxed ? WAXED_EXPOSED_CUT_COPPER_SLAB : EXPOSED_CUT_COPPER_SLAB;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_CUT_COPPER_SLAB : WEATHERED_CUT_COPPER_SLAB;
+                return waxed ? WAXED_WEATHERED_CUT_COPPER_SLAB : WEATHERED_CUT_COPPER_SLAB;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_CUT_COPPER_SLAB : OXIDIZED_CUT_COPPER_SLAB;
+                return waxed ? WAXED_OXIDIZED_CUT_COPPER_SLAB : OXIDIZED_CUT_COPPER_SLAB;
             default:
                 return getId();
         }

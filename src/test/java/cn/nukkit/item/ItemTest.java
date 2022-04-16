@@ -10,11 +10,12 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ItemTest {
     static Method loadCreativeItemEntry;
+
     @BeforeAll
     static void beforeAll() throws NoSuchMethodException {
         loadCreativeItemEntry = Item.class.getDeclaredMethod("loadCreativeItemEntry", Map.class);

@@ -8,8 +8,10 @@ import lombok.ToString;
 public class UpdatePlayerGameTypePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.UPDATE_PLAYER_GAME_TYPE_PACKET;
 
-    @Since("1.3.0.0-PN") public GameType gameType;
-    @Since("1.3.0.0-PN") public long entityId;
+    @Since("1.3.0.0-PN")
+    public GameType gameType;
+    @Since("1.3.0.0-PN")
+    public long entityId;
 
     @Override
     public byte pid() {
@@ -28,7 +30,7 @@ public class UpdatePlayerGameTypePacket extends DataPacket {
         this.putVarInt(this.gameType.ordinal());
         this.putVarLong(entityId);
     }
-    
+
     @Since("1.3.0.0-PN")
     public enum GameType {
         SURVIVAL,

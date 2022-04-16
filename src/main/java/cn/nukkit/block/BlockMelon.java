@@ -77,7 +77,7 @@ public class BlockMelon extends BlockSolid {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

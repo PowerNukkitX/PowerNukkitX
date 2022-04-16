@@ -15,7 +15,7 @@ import static cn.nukkit.block.BlockID.END_STONE;
 public class ObjectEndIsland extends BasicGenerator {
 
     private static final BlockState STATE_END_STONE = BlockState.of(END_STONE);
-    
+
     public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
         float n = (float) (rand.nextBoundedInt(3) + 4);
         for (int y = 0; n > 0.5f; y--) {

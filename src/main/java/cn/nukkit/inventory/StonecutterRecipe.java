@@ -14,7 +14,7 @@ public class StonecutterRecipe implements Recipe {
 
     private final Item output;
 
-    private long least,most;
+    private long least, most;
 
     private final Item ingredient;
 

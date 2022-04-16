@@ -25,23 +25,29 @@ public class Effect implements Cloneable {
     public static final int MINING_FATIGUE = 4;
     public static final int STRENGTH = 5;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_HEALTH = 6;
-    @Deprecated @DeprecationDetails(
-            by = "PowerNukkit", since = "1.4.0.0-PN", 
+    @Since("1.4.0.0-PN")
+    public static final int INSTANT_HEALTH = 6;
+    @Deprecated
+    @DeprecationDetails(
+            by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to INSTANT_HEALTH in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "INSTANT_HEALTH")
     public static final int HEALING = INSTANT_HEALTH;
 
-    @Since("1.4.0.0-PN") public static final int INSTANT_DAMAGE = 7;
-    @Deprecated @DeprecationDetails(
+    @Since("1.4.0.0-PN")
+    public static final int INSTANT_DAMAGE = 7;
+    @Deprecated
+    @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to INSTANT_DAMAGE in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "INSTANT_DAMAGE")
     public static final int HARMING = INSTANT_DAMAGE;
 
 
-    @Since("1.4.0.0-PN") public static final int JUMP_BOOST = 8;
-    @Deprecated @DeprecationDetails(
+    @Since("1.4.0.0-PN")
+    public static final int JUMP_BOOST = 8;
+    @Deprecated
+    @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "JUMP_BOOST")
@@ -49,15 +55,18 @@ public class Effect implements Cloneable {
 
 
     public static final int NAUSEA = 9;
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to NAUSEA in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "NAUSEA")
     public static final int CONFUSION = 9;
-    
+
     public static final int REGENERATION = 10;
-    @Since("1.4.0.0-PN") public static final int RESISTANCE = 11;
-    @Deprecated @DeprecationDetails(
+    @Since("1.4.0.0-PN")
+    public static final int RESISTANCE = 11;
+    @Deprecated
+    @DeprecationDetails(
             by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Was renamed to JUMP_BOOST in game, can be removed anytime by Cloudburst Nukkit",
             replaceWith = "JUMP_BOOST")
@@ -86,8 +95,10 @@ public class Effect implements Cloneable {
     @PowerNukkitOnly("Was removed from Cloudburst Nukkit, kept on PowerNukkit for backward compatibility")
     public static final int COUNDIT_POWER = CONDUIT_POWER;
     public static final int SLOW_FALLING = 27;
-    @Since("1.4.0.0-PN") public static final int BAD_OMEN = 28;
-    @Since("1.4.0.0-PN") public static final int VILLAGE_HERO = 29;
+    @Since("1.4.0.0-PN")
+    public static final int BAD_OMEN = 28;
+    @Since("1.4.0.0-PN")
+    public static final int VILLAGE_HERO = 29;
 
     protected static Effect[] effects;
 
@@ -190,7 +201,7 @@ public class Effect implements Cloneable {
         return duration;
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", 
+    @PowerNukkitDifference(since = "1.4.0.0-PN",
             info = "Cloudburst Nukkit always returns false for VILLAGE_HERO, we made the registration register the false value as default instead of this brute-force.")
     public boolean isVisible() {
         return show;

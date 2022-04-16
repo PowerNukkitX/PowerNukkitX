@@ -16,7 +16,8 @@ public class ContainerClosePacket extends DataPacket {
     }
 
     public int windowId;
-    @Since("1.4.0.0-PN") public boolean wasServerInitiated = true;
+    @Since("1.4.0.0-PN")
+    public boolean wasServerInitiated = true;
 
     @Override
     public void decode() {

@@ -36,7 +36,7 @@ public class BlockSeagrass extends BlockFlowable {
     public BlockSeagrass(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return SEAGRASS;
@@ -54,7 +54,7 @@ public class BlockSeagrass extends BlockFlowable {
     public String getName() {
         return "Seagrass";
     }
-    
+
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = down();
@@ -71,7 +71,7 @@ public class BlockSeagrass extends BlockFlowable {
         }
         return false;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -82,7 +82,7 @@ public class BlockSeagrass extends BlockFlowable {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
-            
+
             Block down = down();
             damage = getDamage();
             if (damage == 0 || damage == 2) {
@@ -90,7 +90,7 @@ public class BlockSeagrass extends BlockFlowable {
                     this.getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
-                
+
                 if (damage == 2) {
                     Block up = up();
                     if (up.getId() != getId() || up.getDamage() != 1) {
@@ -100,18 +100,18 @@ public class BlockSeagrass extends BlockFlowable {
             } else if (down.getId() != getId() || down.getDamage() != 2) {
                 this.getLevel().useBreakOn(this);
             }
-            
+
             return Level.BLOCK_UPDATE_NORMAL;
         }
-        
+
         return 0;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return true;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (getDamage() == 0 && item.isFertilizer()) {
@@ -129,40 +129,40 @@ public class BlockSeagrass extends BlockFlowable {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
-            return new Item[] { toItem() };
+            return new Item[]{toItem()};
         } else {
             return Item.EMPTY_ARRAY;
         }
     }
-    
+
     @Override
     public boolean canBeReplaced() {
         return true;
     }
-    
+
     @PowerNukkitOnly
     @Override
     public int getWaterloggingLevel() {
         return 2;
     }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.WATER_BLOCK_COLOR;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_SHEARS;
     }
-    
+
     @Override
     public Item toItem() {
         return new ItemBlock(new BlockSeagrass(), 0);

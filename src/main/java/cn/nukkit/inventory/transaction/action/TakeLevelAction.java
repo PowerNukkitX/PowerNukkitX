@@ -8,7 +8,7 @@ import lombok.ToString;
 @PowerNukkitOnly
 @ToString(callSuper = true)
 public class TakeLevelAction extends InventoryAction {
-    
+
     private final int levels;
 
     @PowerNukkitOnly
@@ -21,12 +21,12 @@ public class TakeLevelAction extends InventoryAction {
     public int getLevels() {
         return levels;
     }
-    
+
     @Override
     public boolean isValid(Player source) {
         return source.isCreative() || source.getExperienceLevel() >= levels;
     }
-    
+
     @Override
     public boolean execute(Player source) {
         if (source.isCreative()) {
@@ -39,14 +39,14 @@ public class TakeLevelAction extends InventoryAction {
         source.setExperience(source.getExperience(), playerLevels - levels, false);
         return true;
     }
-    
+
     @Override
     public void onExecuteSuccess(Player source) {
-    
+
     }
-    
+
     @Override
     public void onExecuteFail(Player source) {
-    
+
     }
 }

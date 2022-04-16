@@ -2,18 +2,18 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
@@ -25,20 +25,20 @@ public class FillCommand extends VanillaCommand {
         this.setPermission("nukkit.command.fill");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("from",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("to",false,  CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData",true,  CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"outline","hollow","destroy","keep"}),
+                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("tileData", true, CommandParamType.INT),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"outline", "hollow", "destroy", "keep"}),
         });
         this.addCommandParameters("replace", new CommandParameter[]{
-                CommandParameter.newType("from",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("to",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData",false, CommandParamType.INT),
-                CommandParameter.newEnum("oldBlockHandling",false,new String[]{"replace"}),
-                CommandParameter.newEnum("replaceTileName",false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("replaceDataValue",true, CommandParamType.INT)
+                CommandParameter.newType("from", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("tileData", false, CommandParamType.INT),
+                CommandParameter.newEnum("oldBlockHandling", false, new String[]{"replace"}),
+                CommandParameter.newEnum("replaceTileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("replaceDataValue", true, CommandParamType.INT)
         });
     }
 
@@ -90,7 +90,7 @@ public class FillCommand extends VanillaCommand {
 
             int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
             if (size > 16 * 16 * 16 * 8) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 16 * 8)));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 16 * 8)));
                 return false;
             }
 
@@ -114,7 +114,7 @@ public class FillCommand extends VanillaCommand {
                         for (int z = NukkitMath.floorDouble(aabb.getMinZ()); z <= NukkitMath.floorDouble(aabb.getMaxZ()); z++) {
                             for (int y = NukkitMath.floorDouble(aabb.getMinY()); y <= NukkitMath.floorDouble(aabb.getMaxY()); y++) {
                                 if (x == from.x || x == to.x || z == from.z || z == to.z || y == from.y || y == to.y) {
-                                    level.setBlock(x, y, z, Block.get(tileId, tileData), false ,true);
+                                    level.setBlock(x, y, z, Block.get(tileId, tileData), false, true);
                                     ++count;
                                 }
                             }
@@ -134,7 +134,7 @@ public class FillCommand extends VanillaCommand {
                                     block = Block.get(Block.AIR);
                                 }
 
-                                level.setBlock(x, y, z, block, false ,true);
+                                level.setBlock(x, y, z, block, false, true);
                                 ++count;
                             }
                         }

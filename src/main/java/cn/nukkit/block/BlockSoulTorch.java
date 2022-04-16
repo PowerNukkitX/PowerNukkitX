@@ -32,5 +32,5 @@ public class BlockSoulTorch extends BlockTorch {
     public int getLightLevel() {
         return 10;
     }
-    
+
 }

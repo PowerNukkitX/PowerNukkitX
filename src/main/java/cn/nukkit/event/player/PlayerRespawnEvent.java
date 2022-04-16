@@ -14,15 +14,15 @@ public class PlayerRespawnEvent extends PlayerEvent {
     }
 
     private Position position;
-    
+
     private Position spawnBlock;
-    
+
     private Position originalSpawnPosition;
-    
+
     private boolean spawnBlockAvailable;
 
     private boolean firstSpawn;
-    
+
     private boolean keepRespawnBlockPosition;
     private boolean keepRespawnPosition;
     private boolean sendInvalidRespawnBlockMessage = true;

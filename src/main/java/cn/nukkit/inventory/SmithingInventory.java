@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 public class SmithingInventory extends FakeBlockUIComponent {
     private static final int EQUIPMENT = 0;
     private static final int INGREDIENT = 1;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int SMITHING_EQUIPMENT_UI_SLOT = 51;
@@ -73,13 +73,13 @@ public class SmithingInventory extends FakeBlockUIComponent {
         Item result;
         SmithingRecipe recipe = matchRecipe();
         if (recipe == null) {
-            result =  Item.get(0);
+            result = Item.get(0);
         } else {
             result = recipe.getFinalResult(getEquipment());
         }
         setResult(result);
     }
-    
+
     private void setResult(Item result) {
         //playerUI.setItem(50, result);
     }
@@ -131,7 +131,7 @@ public class SmithingInventory extends FakeBlockUIComponent {
         who.craftingType = Player.CRAFTING_SMALL;
 
         who.giveItem(getItem(EQUIPMENT), getItem(INGREDIENT));
-        
+
         this.clear(EQUIPMENT);
         this.clear(INGREDIENT);
         playerUI.clear(50);

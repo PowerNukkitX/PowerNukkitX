@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+
 import java.util.function.Function;
 
 @PowerNukkitOnly
@@ -13,18 +14,18 @@ public class CommandBlockExecuteEvent extends BlockEvent implements Cancellable 
 
     private static final HandlerList handlers = new HandlerList();
     private String command;
-    private Function<String,Boolean> processor;
+    private Function<String, Boolean> processor;
 
-    public CommandBlockExecuteEvent(Block block,String command) {
+    public CommandBlockExecuteEvent(Block block, String command) {
         super(block);
         this.command = command;
     }
 
-    public Function<String,Boolean> getProcessor() {
+    public Function<String, Boolean> getProcessor() {
         return processor;
     }
 
-    public void setProcessor(Function<String,Boolean> processor) {
+    public void setProcessor(Function<String, Boolean> processor) {
         this.processor = processor;
     }
 

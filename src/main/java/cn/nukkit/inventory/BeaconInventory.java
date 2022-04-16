@@ -23,7 +23,7 @@ public class BeaconInventory extends FakeBlockUIComponent {
                 this.getHolder().getLevel().dropItem(this.getHolder().add(0.5, 0.5, 0.5), drop);
             }
         }
-        
+
         this.clear(0);
     }
 }

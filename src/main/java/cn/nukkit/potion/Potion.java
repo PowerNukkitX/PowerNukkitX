@@ -66,7 +66,9 @@ public class Potion implements Cloneable {
     public static final int TURTLE_MASTER_II = 39;
     public static final int SLOW_FALLING = 40;
     public static final int SLOW_FALLING_LONG = 41;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly public static final int SLOWNESS_IV = 42;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final int SLOWNESS_IV = 42;
 
     @Since("1.4.0.0-PN")
     @Deprecated
@@ -562,10 +564,10 @@ public class Potion implements Cloneable {
 
     private static void appendRoman(StringBuilder sb, int num) {
         int times;
-        String[] romans = new String[] { "I", "IV", "V", "IX", "X", "XL", "L",
-                "XC", "C", "CD", "D", "CM", "M" };
-        int[] ints = new int[] { 1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500,
-                900, 1000 };
+        String[] romans = new String[]{"I", "IV", "V", "IX", "X", "XL", "L",
+                "XC", "C", "CD", "D", "CM", "M"};
+        int[] ints = new int[]{1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500,
+                900, 1000};
         for (int i = ints.length - 1; i >= 0; i--) {
             times = num / ints[i];
             num %= ints[i];

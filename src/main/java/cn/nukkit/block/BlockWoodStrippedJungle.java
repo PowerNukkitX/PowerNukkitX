@@ -14,7 +14,7 @@ public class BlockWoodStrippedJungle extends BlockWoodStripped {
     public BlockWoodStrippedJungle(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return STRIPPED_JUNGLE_LOG;

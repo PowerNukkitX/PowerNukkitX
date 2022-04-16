@@ -3,11 +3,11 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class XpCommand extends Command {
             List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[1])) {
                 entities = EntitySelector.matchEntities(sender, args[1]);
-            } else if (sender.getServer().getPlayer(args[1]) != null){
+            } else if (sender.getServer().getPlayer(args[1]) != null) {
                 entities = List.of(sender.getServer().getPlayer(args[1]));
             }
 
@@ -71,7 +71,7 @@ public class XpCommand extends Command {
                 List<Entity> entities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
                     entities = EntitySelector.matchEntities(sender, args[1]);
-                } else if(sender.getServer().getPlayer(args[1]) != null){
+                } else if (sender.getServer().getPlayer(args[1]) != null) {
                     entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 

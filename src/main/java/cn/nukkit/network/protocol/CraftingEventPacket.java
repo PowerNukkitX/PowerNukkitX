@@ -42,7 +42,7 @@ public class CraftingEventPacket extends DataPacket {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "The name don't match the packet content")
     public static final int TYPE_SHULKER_BOX = 5;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int TYPE_INVENTORY = 0;

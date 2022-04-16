@@ -12,7 +12,7 @@ public abstract class SandyBiome extends CoveredBiome {
     @Override
     public int getSurfaceDepth(int y) {
         if (useNewRakNetSurfaceDepth()) {
-            return getSurfaceDepth(0,y,0);
+            return getSurfaceDepth(0, y, 0);
         }
         return 3;
     }
@@ -22,7 +22,7 @@ public abstract class SandyBiome extends CoveredBiome {
     @Override
     public int getSurfaceBlock(int y) {
         if (useNewRakNetSurface()) {
-            return getSurfaceId(0,y,0) >> 4;
+            return getSurfaceId(0, y, 0) >> 4;
         }
         return SAND;
     }

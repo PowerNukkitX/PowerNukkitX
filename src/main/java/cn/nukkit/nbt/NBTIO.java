@@ -95,7 +95,7 @@ public class NBTIO {
 
         return item;
     }
-    
+
     @SuppressWarnings("deprecation")
     private static Item fixAlphaItem(int id, int damage, int count) {
         PNAlphaItemID badAlphaId = PNAlphaItemID.getBadAlphaId(id);
@@ -161,8 +161,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream); 
-            InputStream buffered = new BufferedInputStream(gzip)) {
+        try (InputStream gzip = new GZIPInputStream(inputStream);
+             InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
     }
@@ -172,7 +172,7 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data); 
+        try (InputStream bytes = new ByteArrayInputStream(data);
              InputStream gzip = new GZIPInputStream(bytes);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
@@ -184,7 +184,7 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream); 
+        try (InputStream gzip = new GZIPInputStream(inputStream);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
@@ -195,8 +195,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data); 
-             InputStream gzip = new GZIPInputStream(bytes); 
+        try (InputStream bytes = new ByteArrayInputStream(data);
+             InputStream gzip = new GZIPInputStream(bytes);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
         }

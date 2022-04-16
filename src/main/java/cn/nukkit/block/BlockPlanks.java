@@ -68,9 +68,9 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return getWoodType().getEnglishName()+" Wood Planks";
+        return getWoodType().getEnglishName() + " Wood Planks";
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {

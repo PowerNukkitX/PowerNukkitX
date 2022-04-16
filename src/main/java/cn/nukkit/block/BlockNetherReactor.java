@@ -25,7 +25,7 @@ public class BlockNetherReactor extends BlockSolid implements BlockEntityHolder<
     public BlockNetherReactor() {
         // Does nothing
     }
-    
+
     @Override
     public int getId() {
         return NETHER_REACTOR;
@@ -51,22 +51,22 @@ public class BlockNetherReactor extends BlockSolid implements BlockEntityHolder<
     public String getName() {
         return "Nether Reactor Core";
     }
-    
+
     @Override
     public double getHardness() {
         return 10;
     }
-    
+
     @Override
     public double getResistance() {
         return 6;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;

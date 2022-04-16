@@ -31,7 +31,7 @@ public class BlockSlabWood extends BlockSlab {
 
     @Override
     public String getName() {
-        return (isOnTop()? "Upper " : "") + getSlabName() + " Wood Slab";
+        return (isOnTop() ? "Upper " : "") + getSlabName() + " Wood Slab";
     }
 
     @PowerNukkitOnly
@@ -73,7 +73,7 @@ public class BlockSlabWood extends BlockSlab {
     public int getToolType() {
         return ItemTool.TYPE_AXE;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public WoodType getWoodType() {

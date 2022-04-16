@@ -44,7 +44,7 @@ public class StructureGrowEvent extends LevelEvent implements Cancellable {
     @Since("1.4.0.0-PN")
     public void setBlockList(List<Block> blocks) {
         this.blocks.clear();
-        if(blocks != null)
+        if (blocks != null)
             this.blocks.addAll(blocks);
     }
 

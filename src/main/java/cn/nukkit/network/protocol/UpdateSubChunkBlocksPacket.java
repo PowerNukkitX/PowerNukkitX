@@ -39,14 +39,14 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
         putUnsignedVarInt(chunkY);
         putVarInt(chunkZ);
         putVarInt(standardBlocks.size());
-        for(final var each : standardBlocks) {
+        for (final var each : standardBlocks) {
             putBlockVector3(each.blockPos());
             putUnsignedVarInt(each.runtimeID());
             putUnsignedVarInt(each.updateFlags());
             putUnsignedVarLong(each.messageEntityID());
             putUnsignedVarInt(each.messageType().ordinal());
         }
-        for(final var each : extraBlocks) {
+        for (final var each : extraBlocks) {
             putBlockVector3(each.blockPos());
             putUnsignedVarInt(each.runtimeID());
             putUnsignedVarInt(each.updateFlags());

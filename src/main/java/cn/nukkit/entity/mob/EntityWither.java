@@ -57,7 +57,7 @@ public class EntityWither extends EntityMob implements EntitySmite {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override

@@ -14,15 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class NukkitRandomTest {
     NukkitRandom random;
-    
+
     @Test
     void nextRange() {
-        Boolean[] matched = new Boolean[8-2 + 1];
+        Boolean[] matched = new Boolean[8 - 2 + 1];
         Arrays.fill(matched, Boolean.FALSE);
         for (int i = 0; i < 1000; i++) {
             int rand = random.nextRange(2, 8);
             assertThat(rand).isIn(2, 3, 4, 5, 6, 7, 8);
-            matched[rand-2] = Boolean.TRUE;
+            matched[rand - 2] = Boolean.TRUE;
         }
         Boolean[] expected = new Boolean[matched.length];
         Arrays.fill(expected, Boolean.TRUE);
@@ -31,6 +31,6 @@ class NukkitRandomTest {
 
     @BeforeEach
     void setUp() {
-        random = new NukkitRandom(ThreadLocalRandom.current().nextLong()); 
+        random = new NukkitRandom(ThreadLocalRandom.current().nextLong());
     }
 }

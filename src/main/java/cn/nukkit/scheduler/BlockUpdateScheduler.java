@@ -60,7 +60,7 @@ public class BlockUpdateScheduler {
                         updateIterator.remove();
                         if (Block.equals(block, entry.block, false) && entry.checkBlockWhenUpdate) {
                             block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
-                        }else{
+                        } else {
                             block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
                         }
                     } else {

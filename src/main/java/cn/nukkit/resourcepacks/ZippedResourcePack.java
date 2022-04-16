@@ -33,8 +33,8 @@ public class ZippedResourcePack extends AbstractResourcePack {
             ZipEntry entry = zip.getEntry("manifest.json");
             if (entry == null) {
                 entry = zip.stream()
-                        .filter(e-> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
-                        .filter(e-> {
+                        .filter(e -> e.getName().toLowerCase().endsWith("manifest.json") && !e.isDirectory())
+                        .filter(e -> {
                             File fe = new File(e.getName());
                             if (!fe.getName().equalsIgnoreCase("manifest.json")) {
                                 return false;
@@ -42,10 +42,10 @@ public class ZippedResourcePack extends AbstractResourcePack {
                             return fe.getParent() == null || fe.getParentFile().getParent() == null;
                         })
                         .findFirst()
-                        .orElseThrow(()-> new IllegalArgumentException(
+                        .orElseThrow(() -> new IllegalArgumentException(
                                 Server.getInstance().getLanguage().translateString("nukkit.resources.zip.no-manifest")));
             }
-            
+
             this.manifest = new JsonParser()
                     .parse(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                     .getAsJsonObject();

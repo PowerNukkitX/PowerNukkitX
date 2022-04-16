@@ -22,7 +22,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         BlockFace opposite = face.getOpposite();
-        Vector3 pos = block.getSide(face).add(0.5 + opposite.getXOffset()*0.2, 0.5 + opposite.getYOffset()*0.2, 0.5 + opposite.getZOffset()*0.2);
+        Vector3 pos = block.getSide(face).add(0.5 + opposite.getXOffset() * 0.2, 0.5 + opposite.getYOffset() * 0.2, 0.5 + opposite.getZOffset() * 0.2);
 
         CompoundTag nbt = Entity.getDefaultNBT(pos);
         nbt.putCompound("FireworkItem", NBTIO.putItemHelper(item));

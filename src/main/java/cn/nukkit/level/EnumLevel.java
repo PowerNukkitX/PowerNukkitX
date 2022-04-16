@@ -11,8 +11,7 @@ import lombok.extern.log4j.Log4j2;
 public enum EnumLevel {
     OVERWORLD,
     NETHER,
-    THE_END
-    ;
+    THE_END;
 
     Level level;
 
@@ -49,7 +48,7 @@ public enum EnumLevel {
             // Nether is not found or disabled
             log.warn("No level called \"nether\" found or nether is disabled in server properties! Nether functionality will be disabled.");
         }
-        
+
         // The End
         if (Server.getInstance().isTheEndAllowed() && !Server.getInstance().loadLevel("the_end")) {
             Server.getInstance().getLogger().info("No level called \"the_end\" found, creating default the end level.");
@@ -68,7 +67,7 @@ public enum EnumLevel {
         }
     }
 
-    public static Level getOtherNetherPair(Level current)   {
+    public static Level getOtherNetherPair(Level current) {
         if (current == OVERWORLD.level) {
             return NETHER.level;
         } else if (current == NETHER.level) {
@@ -78,7 +77,7 @@ public enum EnumLevel {
         }
     }
 
-    public static Position convertPosBetweenNetherAndOverworld(Position current)   {
+    public static Position convertPosBetweenNetherAndOverworld(Position current) {
         if (NETHER.level == null) {
             return null;
         } else {
@@ -95,10 +94,10 @@ public enum EnumLevel {
     private static final int mRound(int value, int factor) {
         return Math.round((float) value / factor) * factor;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static Level getOtherTheEndPair(Level current)   {
+    public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level) {
             return THE_END.level;
         } else if (current == THE_END.level) {
@@ -107,10 +106,10 @@ public enum EnumLevel {
             throw new IllegalArgumentException("Neither overworld nor the end given!");
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public static Position moveToTheEnd(Position current)   {
+    public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {
             return null;
         } else {

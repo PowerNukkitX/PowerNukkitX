@@ -11,58 +11,56 @@ import cn.nukkit.level.generator.noise.vanilla.d.NoiseGeneratorSimplexD;
 import cn.nukkit.level.generator.populator.impl.PopulatorChorusTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndGateway;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndIsland;
-import cn.nukkit.level.generator.populator.impl.PopulatorEndSpike;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 
 /**
  * @author GoodLucky777
- *         <p>
- *         This generator originally adapted from the Glowstone's
- *         TheEndGenerator
- *         (https://github.com/GlowstoneMC/Glowstone/blob/3de174426cd1e15e78050b9d691a3c1722c83181/src/main/java/net/glowstone/generator/TheEndGenerator.java)
- * 
- *         Glowstone licensed under the following MIT license:
- * 
- *         Glowstone Copyright (C) 2015-2020 The Glowstone Project.
- *         Glowstone Copyright (C) 2011-2014 Tad Hardesty.
- *         Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
- * 
- *         Permission is hereby granted, free of charge, to any person obtaining
- *         a copy
- *         of this software and associated documentation files (the "Software"),
- *         to deal
- *         in the Software without restriction, including without limitation the
- *         rights
- *         to use, copy, modify, merge, publish, distribute, sublicense, and/or
- *         sell
- *         copies of the Software, and to permit persons to whom the Software is
- *         furnished to do so, subject to the following conditions:
- * 
- *         The above copyright notice and this permission notice shall be
- *         included in
- *         all copies or substantial portions of the Software.
- * 
- *         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *         EXPRESS OR
- *         IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- *         MERCHANTABILITY,
- *         FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
- *         SHALL THE
- *         AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- *         OTHER
- *         LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- *         ARISING FROM,
- *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *         DEALINGS IN
- *         THE SOFTWARE.
+ * <p>
+ * This generator originally adapted from the Glowstone's
+ * TheEndGenerator
+ * (https://github.com/GlowstoneMC/Glowstone/blob/3de174426cd1e15e78050b9d691a3c1722c83181/src/main/java/net/glowstone/generator/TheEndGenerator.java)
+ * <p>
+ * Glowstone licensed under the following MIT license:
+ * <p>
+ * Glowstone Copyright (C) 2015-2020 The Glowstone Project.
+ * Glowstone Copyright (C) 2011-2014 Tad Hardesty.
+ * Lightstone Copyright (C) 2010-2011 Graham Edgecombe.
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy
+ * of this software and associated documentation files (the "Software"),
+ * to deal
+ * in the Software without restriction, including without limitation the
+ * rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be
+ * included in
+ * all copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ * SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN
+ * THE SOFTWARE.
  */
 public class TheEnd extends Generator {
 

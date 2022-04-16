@@ -39,12 +39,12 @@ class SimulationTypePacketTest {
         val packet = new SimulationTypePacket();
         packet.setSimulationType(SimulationType.EDITOR);
         packet.encode();
-        
+
         val packet2 = new SimulationTypePacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(SimulationType.EDITOR, packet2.getSimulationType());
         assertTrue(packet2.feof());
     }

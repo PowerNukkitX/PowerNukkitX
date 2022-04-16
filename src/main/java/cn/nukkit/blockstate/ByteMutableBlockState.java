@@ -63,7 +63,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ByteMutableBlockState(int blockId, BlockProperties properties) {
-        this(blockId, properties, (byte)0);
+        this(blockId, properties, (byte) 0);
     }
 
     @PowerNukkitOnly
@@ -132,7 +132,7 @@ public class ByteMutableBlockState extends MutableBlockState {
     @Override
     public void setDataStorageFromInt(@Nonnegative int storage) {
         validate(storage);
-        this.storage = (byte)storage;
+        this.storage = (byte) storage;
     }
 
     @Override
@@ -146,19 +146,19 @@ public class ByteMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(int state) {
         if (state == 0) {
             return;
         }
 
         Validation.checkPositive("state", state);
-        
+
         if (state < 0 || state > Byte.MAX_VALUE) {
-            throw new InvalidBlockStateException(BlockState.of(getBlockId(), state), 
-                    "The state have more bits than the storage space. Storage: Byte, Property Bits: "+properties.getBitSize());
+            throw new InvalidBlockStateException(BlockState.of(getBlockId(), state),
+                    "The state have more bits than the storage space. Storage: Byte, Property Bits: " + properties.getBitSize());
         }
-        
+
         int bitLength = NukkitMath.bitLength(state);
         if (bitLength > properties.getBitSize()) {
             throw new InvalidBlockStateException(
@@ -182,21 +182,21 @@ public class ByteMutableBlockState extends MutableBlockState {
     @PowerNukkitOnly
     @Override
     public void setBooleanValue(String propertyName, boolean value) {
-        storage = (byte)properties.setBooleanValue(storage, propertyName, value);
+        storage = (byte) properties.setBooleanValue(storage, propertyName, value);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public void setPropertyValue(String propertyName, @Nullable Serializable value) {
-        storage = (byte)properties.setValue(storage, propertyName, value);
+        storage = (byte) properties.setValue(storage, propertyName, value);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public void setIntValue(String propertyName, int value) {
-        storage = (byte)properties.setIntValue(storage, propertyName, value);
+        storage = (byte) properties.setIntValue(storage, propertyName, value);
     }
 
     @PowerNukkitOnly

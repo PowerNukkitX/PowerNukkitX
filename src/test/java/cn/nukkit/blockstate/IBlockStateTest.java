@@ -23,8 +23,8 @@ class IBlockStateTest {
     static LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster();
 
     Block pos = BlockState.AIR.getBlock(null, 1, 2, 3);
-    
-    
+
+
     @BeforeAll
     static void beforeAll() {
         logLevelAdjuster.setLevel(MainLogger.class, Level.ERROR);
@@ -67,7 +67,7 @@ class IBlockStateTest {
 
         BlockState invalidBlockState = BlockState.of(PLANKS, 5000);
         assertThrows(InvalidBlockStateException.class, invalidBlockState::getBlock);
-        
+
         Block fixedBlock = invalidBlockState.getBlockRepairing(pos);
         assertEquals(PLANKS, fixedBlock.getId());
         assertEquals(0, fixedBlock.getExactIntStorage());
@@ -88,9 +88,9 @@ class IBlockStateTest {
         wall.setWallType(BlockWall.WallType.MOSSY_STONE_BRICK);
         wall.setWallPost(true);
         wall.setConnection(BlockFace.SOUTH, BlockWall.WallConnectionType.TALL);
-        assertEquals("minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=tall;wall_connection_type_west=none;wall_post_bit=1", 
+        assertEquals("minecraft:cobblestone_wall;wall_block_type=mossy_stone_brick;wall_connection_type_east=none;wall_connection_type_north=none;wall_connection_type_south=tall;wall_connection_type_west=none;wall_post_bit=1",
                 wall.getStateId());
-        
+
         Block block = Block.get(CRIMSON_PLANKS);
         assertEquals("minecraft:crimson_planks", block.getStateId());
 
@@ -103,7 +103,7 @@ class IBlockStateTest {
         assertEquals("blockid:10000", BlockStateRegistry.getPersistenceName(10_000));
         assertEquals(80000, BlockStateRegistry.getBlockId("blockid:80000"));*/
     }
-    
+
     @Test
     void negativeByte() {
         BlockState state = BlockState.of(COBBLE_WALL, 173);

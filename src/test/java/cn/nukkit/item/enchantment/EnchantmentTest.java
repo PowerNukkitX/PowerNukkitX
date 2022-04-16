@@ -62,10 +62,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(PowerNukkitExtension.class)
 class EnchantmentTest {
-    static int[] allIds = Stream.of(getAllItemIds(), 
+    static int[] allIds = Stream.of(getAllItemIds(),
             IntStream.of(255 - BlockID.CARVED_PUMPKIN, BlockID.PUMPKIN, BlockID.JACK_O_LANTERN)
     ).flatMapToInt(Function.identity()).toArray();
-    
+
     @Getter
     static List<EnchantmentData> enchantmentDataList;
 
@@ -134,19 +134,19 @@ class EnchantmentTest {
         assertFalse(enchantment.canEnchant(item));
         assertFalse(enchantment.isItemAcceptable(item));
     }
-    
+
     @SneakyThrows
     public static int unchecked(CheckedIntSupplier supplier) {
         return supplier.getAsInt();
     }
-    
+
     static IntStream getAllItemIds() {
         return Arrays.stream(ItemID.class.getDeclaredFields())
                 .filter(field -> field.getType().equals(int.class))
                 .filter(field -> field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
-                .mapToInt(field -> unchecked(()-> field.getInt(null)));
+                .mapToInt(field -> unchecked(() -> field.getInt(null)));
     }
-    
+
     static Stream<Arguments> getNotAcceptedItems() {
         return enchantmentDataList.parallelStream().flatMap(data -> {
             IntSet acceptedItems = new IntOpenHashSet();
@@ -160,43 +160,43 @@ class EnchantmentTest {
                     });
             Enchantment enchantment = Enchantment.getEnchantment(data.nid);
             IntStream allIdsStream = IntStream.of(allIds);
-            IntStream idStream = notAccepted.isEmpty()? allIdsStream : 
+            IntStream idStream = notAccepted.isEmpty() ? allIdsStream :
                     Stream.of(IntStream.of(allIds), IntStream.of(notAccepted.toIntArray()))
-                            .flatMapToInt(Function.identity()); 
+                            .flatMapToInt(Function.identity());
             return idStream.parallel()
-                    .filter(id-> !acceptedItems.contains(id))
-                    .mapToObj(id-> Arguments.of(enchantment, Item.get(id)));
+                    .filter(id -> !acceptedItems.contains(id))
+                    .mapToObj(id -> Arguments.of(enchantment, Item.get(id)));
         });
     }
 
     static Stream<Arguments> getEnchantmentDataWithSecondaryItems() {
         return enchantmentDataList.stream()
                 .flatMap(data ->
-                        data.secondary.stream().flatMap(type->
+                        data.secondary.stream().flatMap(type ->
                                 Arrays.stream(type.itemIds).mapToObj(Item::get)
                                         .map(item -> Arguments.of(Enchantment.getEnchantment(data.nid), item))));
     }
 
     static Stream<Arguments> getEnchantmentDataWithPrimaryItems() {
         return enchantmentDataList.stream()
-                .flatMap(data -> 
-                        data.primary.stream().flatMap(type->
+                .flatMap(data ->
+                        data.primary.stream().flatMap(type ->
                                 Arrays.stream(type.itemIds).mapToObj(Item::get)
                                         .map(item -> Arguments.of(Enchantment.getEnchantment(data.nid), item))));
     }
-    
+
     static Stream<Arguments> getEnchantmentDataWithLevels() {
         return enchantmentDataList.stream()
                 .flatMap(data -> IntStream.range(0, data.levels.length)
                         .mapToObj(index -> Arguments.of(data, Enchantment.getEnchantment(data.nid), index + 1)));
     }
-    
+
     static Stream<Arguments> getEnchantmentData() {
-        return enchantmentDataList.stream().map( data ->
+        return enchantmentDataList.stream().map(data ->
                 Arguments.of(data, Enchantment.getEnchantment(data.getNid()))
         );
     }
-    
+
     @BeforeAll
     static void beforeAll() throws IOException {
         try (InputStream is = EnchantmentTest.class.getResourceAsStream("enchantments.json");
@@ -209,14 +209,15 @@ class EnchantmentTest {
                     assertTrue(enchantmentData.secondary.stream().noneMatch(Objects::isNull));
                 } catch (AssertionFailedError e) {
                     throw new AssertionFailedError(
-                            "One of the primary or secondary items in enchantment data of the " + 
+                            "One of the primary or secondary items in enchantment data of the " +
                                     enchantmentData.getId() + " enchantment was null", e);
                 }
             }
         }
     }
-    
-    static @Data class EnchantmentData {
+
+    static @Data
+    class EnchantmentData {
         String id;
         int nid;
         String i18n;
@@ -225,12 +226,12 @@ class EnchantmentTest {
         List<ItemType> primary;
         List<ItemType> secondary;
         int[][] levels;
-        
+
         int[] getLevelData(int level) {
             return levels[level - 1];
         }
     }
-    
+
     enum ItemType {
         helmet(LEATHER_CAP, IRON_HELMET, GOLD_HELMET, CHAIN_HELMET, DIAMOND_HELMET, NETHERITE_HELMET, TURTLE_SHELL),
         chestplate(LEATHER_TUNIC, IRON_CHESTPLATE, GOLD_CHESTPLATE, CHAIN_CHESTPLATE, DIAMOND_CHESTPLATE, NETHERITE_CHESTPLATE),
@@ -253,23 +254,26 @@ class EnchantmentTest {
         trident(TRIDENT),
         flint_and_steel(FLINT_AND_STEEL),
         shield(SHIELD),
-        compass(COMPASS)
-        ;
+        compass(COMPASS);
         private final int[] itemIds;
-        private final int[] notAccepted; 
+        private final int[] notAccepted;
+
         ItemType(int... ids) {
             this.itemIds = ids;
             this.notAccepted = EmptyArrays.EMPTY_INTS;
         }
+
         ItemType(int[] notAccepted, int[] ids) {
             this.itemIds = ids;
             this.notAccepted = notAccepted;
         }
     }
-    
-    static class EnchantmentTestList extends ArrayList<EnchantmentData> {}
-    
-    @FunctionalInterface interface CheckedIntSupplier {
+
+    static class EnchantmentTestList extends ArrayList<EnchantmentData> {
+    }
+
+    @FunctionalInterface
+    interface CheckedIntSupplier {
         int getAsInt() throws Exception;
     }
 }

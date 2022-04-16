@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockAzalea extends BlockFlowable {
 
 
-
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly
@@ -204,7 +203,7 @@ public class BlockAzalea extends BlockFlowable {
         Vector3 vector3 = new Vector3();
 
         generator = new ObjectAzaleaTree();
-        vector3 = this.add(0,0,0);
+        vector3 = this.add(0, 0, 0);
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
@@ -214,7 +213,7 @@ public class BlockAzalea extends BlockFlowable {
             return;
         }
 
-        for(Block block : ev.getBlockList()) {
+        for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
         this.level.setBlock(this, Block.get(LOG));

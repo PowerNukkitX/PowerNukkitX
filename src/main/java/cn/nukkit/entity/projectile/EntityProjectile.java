@@ -1,9 +1,9 @@
 package cn.nukkit.entity.projectile;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
@@ -29,9 +29,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
-    @Since("FUTURE") public static final int PICKUP_NONE = 0;
-    @Since("FUTURE") public static final int PICKUP_ANY = 1;
-    @Since("FUTURE") public static final int PICKUP_CREATIVE = 2;
+    @Since("FUTURE")
+    public static final int PICKUP_NONE = 0;
+    @Since("FUTURE")
+    public static final int PICKUP_ANY = 1;
+    @Since("FUTURE")
+    public static final int PICKUP_CREATIVE = 2;
 
     public Entity shootingEntity;
 
@@ -69,8 +72,7 @@ public abstract class EntityProjectile extends Entity {
             this.setDataProperty(new LongEntityData(DATA_SHOOTER_ID, shootingEntity.getId()));
         }
     }
-    
-    
+
 
     @PowerNukkitOnly("Allows to modify the damage based on the entity being damaged")
     @Since("1.4.0.0-PN")

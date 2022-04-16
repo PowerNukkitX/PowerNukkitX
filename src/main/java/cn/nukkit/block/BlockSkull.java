@@ -113,7 +113,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     @Override
     public String getName() {
         int itemMeta = 0;
-        
+
         if (this.level != null) {
             BlockEntitySkull blockEntity = getBlockEntity();
             if (blockEntity != null) {
@@ -167,7 +167,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         if (ev.isCancelled()) {
             return 0;
         }
-        
+
         entity.setMouthMoving(this.isGettingPower());
         return Level.BLOCK_UPDATE_REDSTONE;
     }
@@ -212,7 +212,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }

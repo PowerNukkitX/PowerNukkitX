@@ -43,7 +43,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
     }
 
     @Override
-    public boolean isRideable(){
+    public boolean isRideable() {
         return false;
     }
 

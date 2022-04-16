@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;

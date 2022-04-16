@@ -2,12 +2,12 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.network.protocol.StopSoundPacket;
-import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.network.protocol.StopSoundPacket;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -20,8 +20,8 @@ public class StopSoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player",false, CommandParamType.TARGET),
-                CommandParameter.newType("sound",true, CommandParamType.STRING)
+                CommandParameter.newType("player", false, CommandParamType.TARGET),
+                CommandParameter.newType("sound", true, CommandParamType.STRING)
         });
     }
 

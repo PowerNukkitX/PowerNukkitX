@@ -102,6 +102,7 @@ class EntityFallingBlockTest {
 
     static class TestBlock extends BlockFallable {
         private final int id;
+
         public TestBlock(int id, int x, int y, int z, Level level) {
             this.id = id;
             this.x = x;

@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -11,7 +12,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class GiveCommand extends VanillaCommand {
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if(sender.getServer().getPlayer(args[0]) != null){
+        } else if (sender.getServer().getPlayer(args[0]) != null) {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
@@ -74,12 +74,12 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
-        
+
         if (item.getDamage() < 0) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
-        
+
         if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
             sender.sendMessage(new TranslationContainer("commands.give.block.notFound", args[1]));
             return true;
@@ -105,7 +105,7 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return false;
         }
-        
+
         if (item.isNull()) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;

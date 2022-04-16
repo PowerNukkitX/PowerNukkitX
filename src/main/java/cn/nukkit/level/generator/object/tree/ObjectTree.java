@@ -49,7 +49,7 @@ public abstract class ObjectTree {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value in type", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value in type",
             replaceWith = "growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall)")
     public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type) {
         WoodType woodType;

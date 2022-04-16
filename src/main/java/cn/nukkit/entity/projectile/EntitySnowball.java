@@ -24,9 +24,10 @@ public class EntitySnowball extends EntityProjectile {
     public static final int NETWORK_ID = 81;
     private static final byte[] particleCounts = new byte[24];
     private static int particleIndex = 0;
+
     static {
         for (int i = 0; i < particleCounts.length; i++) {
-            particleCounts[i] = (byte)(ThreadLocalRandom.current().nextInt(10) + 5);
+            particleCounts[i] = (byte) (ThreadLocalRandom.current().nextInt(10) + 5);
         }
     }
 

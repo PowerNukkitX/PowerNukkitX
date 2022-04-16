@@ -42,7 +42,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public BlockCoralFanHang(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN_HANG;
@@ -72,7 +72,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public boolean isDead() {
         return (getDamage() & 0b10) == 0b10;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -91,7 +91,7 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
             return BlockCoral.TYPE_BRAIN;
         }
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         int face = getDamage() >> 2 & 0x3;
@@ -113,9 +113,9 @@ public class BlockCoralFanHang extends BlockCoralFan implements Faceable {
     public BlockFace getRootsFace() {
         return getBlockFace().getOpposite();
     }
-    
+
     @Override
     public Item toItem() {
-        return new ItemBlock(isDead()? new BlockCoralFanDead() : new BlockCoralFan(), getType());
+        return new ItemBlock(isDead() ? new BlockCoralFanDead() : new BlockCoralFan(), getType());
     }
 }

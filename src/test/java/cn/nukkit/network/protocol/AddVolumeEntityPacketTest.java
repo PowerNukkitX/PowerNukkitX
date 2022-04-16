@@ -43,12 +43,12 @@ class AddVolumeEntityPacketTest {
         packet.setIdentifier("");
         packet.setInstanceName("");
         packet.encode();
-        
+
         val packet2 = new AddVolumeEntityPacket();
         packet2.setBuffer(packet.getBuffer());
         packet2.getUnsignedVarInt();
         packet2.decode();
-        
+
         assertEquals(1L, packet2.getId());
         assertEquals(new CompoundTag("A"), packet2.getData());
         assertTrue(packet2.feof());

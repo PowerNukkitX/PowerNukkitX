@@ -22,7 +22,7 @@ import java.util.Set;
 @ParametersAreNonnullByDefault
 public final class ArrayBlockProperty<E extends Serializable> extends BlockProperty<E> {
     private static final long serialVersionUID = 507174531989068430L;
-    
+
     @Nonnull
     private final E[] universe;
 
@@ -30,11 +30,11 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
      * Nullable when {@link #ordinal} is {@code true.
      */
     private final String[] persistenceNames;
-    
+
     private final Class<E> eClass;
-    
+
     private final boolean ordinal;
-    
+
     private static <E> E[] checkUniverseLength(E[] universe) {
         Preconditions.checkNotNull(universe, "universe can't be null");
         Preconditions.checkArgument(universe.length > 0, "The universe can't be empty");
@@ -51,10 +51,10 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ArrayBlockProperty(String name, boolean exportedToItem, E[] universe, int bitSize, String persistenceName, boolean ordinal) {
-        this(name, exportedToItem, universe, bitSize, persistenceName,ordinal, ordinal? null : 
+        this(name, exportedToItem, universe, bitSize, persistenceName, ordinal, ordinal ? null :
                 Arrays.stream(universe).map(Objects::toString).map(String::toLowerCase).toArray(String[]::new));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public ArrayBlockProperty(String name, boolean exportedToItem, E[] universe, int bitSize, String persistenceName, boolean ordinal, @Nullable String[] persistenceNames) {
@@ -157,7 +157,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
         }
         return meta;
     }
-    
+
     @Nonnull
     @PowerNukkitOnly
     @Override
@@ -182,8 +182,8 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
             try {
                 meta = Integer.parseInt(persistenceValue);
                 validateMetaDirectly(meta);
-            } catch (IndexOutOfBoundsException|IllegalArgumentException e) {
-                throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue, 
+            } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+                throw new InvalidBlockPropertyPersistenceValueException(this, null, persistenceValue,
                         "Expected a number from 0 to " + (universe.length - 1), e);
             }
             return meta;
@@ -207,7 +207,7 @@ public final class ArrayBlockProperty<E extends Serializable> extends BlockPrope
                 return;
             }
         }
-        throw new IllegalArgumentException(value+" is not valid for this property");
+        throw new IllegalArgumentException(value + " is not valid for this property");
     }
 
     @PowerNukkitOnly

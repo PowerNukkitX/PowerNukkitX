@@ -56,7 +56,7 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
     public void setYield(double yield) {
         this.yield = yield;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Set<Block> getIgnitions() {

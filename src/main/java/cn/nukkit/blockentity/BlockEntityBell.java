@@ -18,7 +18,8 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     private boolean ringing;
     private int direction;
     private int ticks;
-    @PowerNukkitOnly public final List<Player> spawnExceptions = new ArrayList<>(2);
+    @PowerNukkitOnly
+    public final List<Player> spawnExceptions = new ArrayList<>(2);
 
     @PowerNukkitOnly
     public BlockEntityBell(FullChunk chunk, CompoundTag nbt) {

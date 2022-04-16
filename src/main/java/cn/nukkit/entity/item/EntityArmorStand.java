@@ -140,12 +140,12 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
         if (player.isSpectator() || !isValid()) {
             return false;
         }
-        
+
         // Name tag
         if (!item.isNull() && item.getId() == ItemID.NAME_TAG && playerApplyNameTag(player, item, false)) {
             return true;
         }
-        
+
         //Pose
         if (player.isSneaking()) {
             if (this.getPose() >= 12) {
@@ -155,13 +155,13 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
             }
             return false; // Returning true would consume the item
         }
-        
+
         //Inventory
         boolean isArmor;
-        
+
         boolean hasItemInHand = !item.isNull();
         int slot;
-        
+
         if (hasItemInHand && item instanceof ItemArmor) {
             ItemArmor itemArmor = (ItemArmor) item;
             isArmor = true;
@@ -216,11 +216,11 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
             changed = this.tryChangeEquipment(player, item, slot, true);
             slot = EntityEquipmentInventory.MAIN_HAND;
         }
-        
+
         if (!changed) {
             changed = this.tryChangeEquipment(player, item, slot, false);
         }
-        
+
         if (changed) {
             level.addSound(this, Sound.MOB_ARMOR_STAND_PLACE);
         }
@@ -229,9 +229,9 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
     }
 
     private boolean tryChangeEquipment(Player player, Item handItem, int slot, boolean isArmorSlot) {
-        BaseInventory inventory = isArmorSlot? armorInventory : equipmentInventory;
+        BaseInventory inventory = isArmorSlot ? armorInventory : equipmentInventory;
         Item item = inventory.getItem(slot);
-        
+
         if (item.isNull() && !handItem.isNull()) {
             // Adding item to the armor stand
             Item itemClone = handItem.clone();
@@ -249,17 +249,17 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
                     // Attempted to replace with the same item type
                     return false;
                 }
-                
+
                 if (item.count > 1) {
                     // The armor stand have more items than 1, item swapping is not supported in this situation
                     return false;
                 }
-                
+
                 Item itemToSetToPlayerInv;
                 if (handItem.count > 1) {
                     itemtoAddToArmorStand = handItem.clone();
                     itemtoAddToArmorStand.setCount(1);
-                    
+
                     itemToSetToPlayerInv = handItem.clone();
                     itemToSetToPlayerInv.count--;
                 } else {
@@ -268,7 +268,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
                 }
                 player.getInventory().setItem(player.getInventory().getHeldItemIndex(), itemToSetToPlayerInv);
             }
-            
+
             // Removing item from the armor stand
             Item[] notAdded = player.getInventory().addItem(item);
             if (notAdded.length > 0) {
@@ -278,7 +278,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
                     }
                     return false;
                 }
-                
+
                 Item itemClone = item.clone();
                 itemClone.count -= notAdded[0].count;
                 inventory.setItem(slot, itemClone);
@@ -350,21 +350,21 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
         super.kill();
         EntityDamageEvent lastDamageCause = this.lastDamageCause;
         boolean byAttack = lastDamageCause != null && lastDamageCause.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
-        
+
         Vector3 pos = getPosition();
-        
+
         pos.y += 0.2;
         level.dropItem(pos, armorInventory.getBoots());
-        
+
         pos.y = y + 0.6;
         level.dropItem(pos, armorInventory.getLeggings());
-        
+
         pos.y = y + 1.4;
-        level.dropItem(byAttack? pos : this, Item.get(ItemID.ARMOR_STAND));
+        level.dropItem(byAttack ? pos : this, Item.get(ItemID.ARMOR_STAND));
         level.dropItem(pos, armorInventory.getChestplate());
         equipmentInventory.getContents().values().forEach(items -> this.level.dropItem(this, items));
         equipmentInventory.clearAll();
-        
+
         pos.y = y + 1.8;
         level.dropItem(pos, armorInventory.getHelmet());
         armorInventory.clearAll();
@@ -396,7 +396,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
                 }
             default:
         }
-        
+
         if (source.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             if (namedTag.getByte("InvulnerableTimer") > 0) {
                 source.setCancelled(true);
@@ -407,7 +407,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
             }
             return false;
         }
-        
+
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return false;
@@ -418,10 +418,10 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
             setHealth(0);
             return true;
         }
-        
+
         if (source instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) source;
-            if (event.getDamager() instanceof Player){
+            if (event.getDamager() instanceof Player) {
                 Player player = (Player) event.getDamager();
                 if (player.isCreative()) {
                     this.level.addParticle(new DestroyBlockParticle(this, Block.get(BlockID.PLANKS)));
@@ -433,7 +433,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
 
         setDataProperty(new IntEntityData(DATA_HURT_TIME, 9), true);
         level.addSound(this, Sound.MOB_ARMOR_STAND_HIT);
-        
+
         return true;
     }
 
@@ -492,7 +492,7 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
                 setHealth(getHealth() + 0.001f);
             }
             motionY -= getGravity();
-            
+
             double highestPosition = this.highestPosition;
             move(motionX, motionY, motionZ);
 

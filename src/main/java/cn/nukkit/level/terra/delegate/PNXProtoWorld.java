@@ -2,7 +2,6 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -14,7 +13,8 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider,int centerChunkX,int centerChunkZ) implements ProtoWorld {
+public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack,
+                            BiomeProvider biomeProvider, int centerChunkX, int centerChunkZ) implements ProtoWorld {
     @Override
     public int centerChunkX() {
         return centerChunkX;
@@ -32,9 +32,9 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
+        if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
-                chunkManager.setBlockStateAt(i, i1, i2,1, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(i, i1, i2, 1, pnxBlockState.getHandle());
             chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
         }
     }

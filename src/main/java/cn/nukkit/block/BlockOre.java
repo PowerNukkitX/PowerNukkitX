@@ -40,10 +40,10 @@ public abstract class BlockOre extends BlockSolid {
         }
         int fortuneLevel = NukkitMath.clamp(item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING), 0, 3);
         if (fortuneLevel > 0) {
-            int increase = ThreadLocalRandom.current().nextInt((int)(multiplier * fortuneLevel) + 1);
+            int increase = ThreadLocalRandom.current().nextInt((int) (multiplier * fortuneLevel) + 1);
             amount += increase;
         }
-        return new Item[]{ rawMaterial.get(amount) };
+        return new Item[]{rawMaterial.get(amount)};
     }
 
     @PowerNukkitOnly

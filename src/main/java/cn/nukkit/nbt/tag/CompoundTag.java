@@ -135,7 +135,7 @@ public class CompoundTag extends Tag implements Cloneable {
     public boolean contains(String name) {
         return tags.containsKey(name);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean containsCompound(String name) {
@@ -179,7 +179,7 @@ public class CompoundTag extends Tag implements Cloneable {
         if (!(tag instanceof ListTag)) {
             return false;
         }
-        ListTag<?> list = (ListTag<?>)tag;
+        ListTag<?> list = (ListTag<?>) tag;
         byte listType = list.type;
         return listType == 0 || listType == type;
     }
@@ -350,12 +350,12 @@ public class CompoundTag extends Tag implements Cloneable {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), tags);
     }
-    
+
     /**
      * Check existence of NBT tag
      *

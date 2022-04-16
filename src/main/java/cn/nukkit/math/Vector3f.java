@@ -356,7 +356,7 @@ public class Vector3f implements Cloneable {
         this.z = z;
         return this;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public float getAxis(BlockFace.Axis axis) {

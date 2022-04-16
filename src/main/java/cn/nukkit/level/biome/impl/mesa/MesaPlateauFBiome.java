@@ -23,7 +23,7 @@ public class MesaPlateauFBiome extends MesaPlateauBiome {
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {
-            return getCoverId(0,0) >> 4;
+            return getCoverId(0, 0) >> 4;
         }
         return GRASS;
     }

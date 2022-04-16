@@ -12,8 +12,8 @@ import static cn.nukkit.math.VectorMath.calculateFace;
 
 /**
  * @author xtypr
- * @since 2015/12/6
  * @apiNote Implements BlockConnectable only in PowerNukkit
+ * @since 2015/12/6
  */
 @PowerNukkitDifference(info = "Made it implement BlockConnectable")
 public abstract class BlockThin extends BlockTransparent implements BlockConnectable {

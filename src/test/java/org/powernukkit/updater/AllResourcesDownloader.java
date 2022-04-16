@@ -57,11 +57,11 @@ public class AllResourcesDownloader {
     private void download(String url, String into) {
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-        try(InputStream input = connection.getInputStream();
-            OutputStream fos = new FileOutputStream(into);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try (InputStream input = connection.getInputStream();
+             OutputStream fos = new FileOutputStream(into);
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
         ) {
-            byte[] buffer = new byte[8*1024];
+            byte[] buffer = new byte[8 * 1024];
             int read;
             while ((read = input.read(buffer)) != -1) {
                 bos.write(buffer, 0, read);

@@ -28,24 +28,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(PowerNukkitExtension.class)
 class LevelTest {
-    static final LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster(); 
-    
+    static final LogLevelAdjuster logLevelAdjuster = new LogLevelAdjuster();
+
     File levelFolder;
-    
+
     Level level;
 
     @Test
     void repairing() throws Exception {
-        logLevelAdjuster.onlyNow(BlockStateRegistry.class, org.apache.logging.log4j.Level.OFF, ()->
+        logLevelAdjuster.onlyNow(BlockStateRegistry.class, org.apache.logging.log4j.Level.OFF, () ->
                 level.setBlockStateAt(2, 2, 2, BlockState.of(BlockID.PODZOL, 1))
         );
         Block block = level.getBlock(new Vector3(2, 2, 2));
         assertThat(block).isInstanceOf(BlockPodzol.class);
         assertEquals(BlockID.PODZOL, block.getId());
         assertEquals(0, block.getExactIntStorage());
-        
+
         assertEquals(BlockState.of(BlockID.PODZOL), level.getBlockStateAt(2, 2, 2));
-        
+
         assertTrue(level.unloadChunk(block.getChunkX(), block.getChunkZ()));
 
         assertEquals(BlockState.of(BlockID.PODZOL), level.getBlockStateAt(2, 2, 2));
@@ -55,12 +55,12 @@ class LevelTest {
     void setUp() throws IOException {
         Server server = Server.getInstance();
         levelFolder = new File(server.getDataPath(), "worlds/TestLevel");
-        String path = levelFolder.getAbsolutePath()+File.separator;
+        String path = levelFolder.getAbsolutePath() + File.separator;
         Anvil.generate(path, "TestLevel", 0, Flat.class);
         Timings.init();
         level = new Level(server, "TestLevel", path, Anvil.class);
         level.setAutoSave(true);
-        
+
         server.getLevels().put(level.getId(), level);
         server.setDefaultLevel(level);
     }

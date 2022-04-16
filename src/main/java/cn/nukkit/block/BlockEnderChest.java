@@ -156,14 +156,14 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
         if (player == null) {
             return false;
         }
-        
+
         Block top = this.up();
         if (!top.isTransparent()) {
             return false;
         }
 
         BlockEntityEnderChest chest = getOrCreateBlockEntity();
-        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag 
+        if (chest.namedTag.contains("Lock") && chest.namedTag.get("Lock") instanceof StringTag
                 && !chest.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }
@@ -207,7 +207,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable, B
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return false;
     }
 

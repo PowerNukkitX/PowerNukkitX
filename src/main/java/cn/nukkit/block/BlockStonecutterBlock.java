@@ -129,7 +129,7 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] {  toItem() };
+        return new Item[]{toItem()};
     }
 
     @Override
@@ -140,6 +140,6 @@ public class BlockStonecutterBlock extends BlockTransparentMeta implements Facea
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed the returned value")
     @Override
     public double getMaxY() {
-        return y + 9/16.0;
+        return y + 9 / 16.0;
     }
 }

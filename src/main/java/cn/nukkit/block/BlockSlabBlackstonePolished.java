@@ -70,7 +70,7 @@ public class BlockSlabBlackstonePolished extends BlockSlab {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{ toItem() };
+            return new Item[]{toItem()};
         }
         return Item.EMPTY_ARRAY;
     }

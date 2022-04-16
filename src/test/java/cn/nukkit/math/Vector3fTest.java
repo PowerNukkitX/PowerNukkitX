@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 @Since("FUTURE")
 class Vector3fTest {
     Vector3f vector3;
+
     @Test
     void setGet() {
         vector3 = new Vector3f();

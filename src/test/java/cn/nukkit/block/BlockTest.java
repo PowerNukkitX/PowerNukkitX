@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(PowerNukkitExtension.class)
 class BlockTest {
     @SuppressWarnings("deprecation")
-    private static final int TEST_BLOCK_ID = Block.list.length -2;
+    private static final int TEST_BLOCK_ID = Block.list.length - 2;
     private static final Field MUTABLE_STATE;
     private static UnsignedIntBlockProperty HUGE = new UnsignedIntBlockProperty("huge", false, 0xFFFFFFFF);
 
@@ -60,9 +60,9 @@ class BlockTest {
             throw new ExceptionInInitializerError(e);
         }
     }
-    
+
     BlockTestBlock block;
-    
+
     @BeforeEach
     void setUp() {
         Block.registerBlockImplementation(TEST_BLOCK_ID, BlockTestBlock.class, "test:testblock", false);
@@ -74,7 +74,7 @@ class BlockTest {
     void setGetDamage() {
         assertNull(getDirectMutableState());
         assertEquals(0, block.getDamage());
-        
+
         block.setDamage(0);
         assertNull(getDirectMutableState());
         assertEquals(0, block.getDamage());
@@ -118,11 +118,11 @@ class BlockTest {
 
         assertNull(getDirectMutableState());
         assertNull(getDirectMutableState(b2));
-        
+
         assertTrue(Block.equals(block, b2, true));
         assertNull(getDirectMutableState());
         assertNull(getDirectMutableState(b2));
-        
+
         block.setDamage(1);
         assertFalse(Block.equals(block, b2, true));
         assertNotNull(getDirectMutableState());
@@ -149,7 +149,7 @@ class BlockTest {
     @Test
     void setState() {
         assertNull(getDirectMutableState());
-        
+
         block.setState(BlockState.of(TEST_BLOCK_ID, 0));
         assertNull(getDirectMutableState());
 
@@ -189,7 +189,7 @@ class BlockTest {
         Consumer<BlockStateRepair> blockStateRepairConsumer = repair -> {
             throw new AssertionError("Shouldn't be called");
         };
-        
+
         block.setDataStorage(0, true, blockStateRepairConsumer);
         assertNull(getDirectMutableState());
 
@@ -241,13 +241,13 @@ class BlockTest {
     @Test
     void setGetPropertyValueTypeBool() {
         assertNull(getDirectMutableState());
-        
+
         block.setPropertyValue(TOGGLE, false);
         assertNull(getDirectMutableState());
 
         block.setPropertyValue(TOGGLE.getName(), false);
         assertNull(getDirectMutableState());
-        
+
         assertFalse(block.getPropertyValue(TOGGLE));
         assertNull(getDirectMutableState());
 
@@ -257,7 +257,7 @@ class BlockTest {
         block.setPropertyValue(TOGGLE, true);
         assertNotNull(getDirectMutableState());
         assertTrue(block.getPropertyValue(TOGGLE));
-        
+
         Block b2 = Block.get(TEST_BLOCK_ID);
         b2.setPropertyValue(TOGGLE.getName(), true);
         assertNotNull(getDirectMutableState(b2));
@@ -273,7 +273,7 @@ class BlockTest {
 
         block.setPropertyValue(REDSTONE_SIGNAL.getName(), 0);
         assertNull(getDirectMutableState());
-        
+
         assertEquals(0, block.getPropertyValue(REDSTONE_SIGNAL));
         assertNull(getDirectMutableState());
 
@@ -345,19 +345,19 @@ class BlockTest {
     @Test
     void setGetBooleanValue() {
         assertNull(getDirectMutableState());
-        
+
         block.setBooleanValue(TOGGLE, false);
         assertNull(getDirectMutableState());
 
         block.setBooleanValue(TOGGLE.getName(), false);
         assertNull(getDirectMutableState());
-        
+
         assertFalse(block.getBooleanValue(TOGGLE));
         assertNull(getDirectMutableState());
 
         assertFalse(block.getBooleanValue(TOGGLE.getName()));
         assertNull(getDirectMutableState());
-        
+
         block.setBooleanValue(TOGGLE, true);
         assertNotNull(getDirectMutableState());
         assertTrue(block.getBooleanValue(TOGGLE));
@@ -423,13 +423,13 @@ class BlockTest {
     @Test
     void getPersistenceValue() {
         assertNull(getDirectMutableState());
-        
+
         assertEquals("0", block.getPersistenceValue(FACING_DIRECTION));
         assertNull(getDirectMutableState());
-        
+
         assertEquals("0", block.getPersistenceValue(FACING_DIRECTION.getName()));
         assertNull(getDirectMutableState());
-        
+
         block.setPropertyValue(FACING_DIRECTION, BlockFace.UP);
         assertNotNull(getDirectMutableState());
         assertEquals("1", block.getPersistenceValue(FACING_DIRECTION));
@@ -491,7 +491,7 @@ class BlockTest {
 
     public static class BlockTestBlock extends BlockMeta {
         public static BlockProperties PROPERTIES = new BlockProperties(FACING_DIRECTION, TOGGLE, REDSTONE_SIGNAL, HUGE);
-        
+
         public BlockTestBlock() {
             this(0);
         }
@@ -517,5 +517,5 @@ class BlockTest {
         public BlockProperties getProperties() {
             return PROPERTIES;
         }
-    } 
+    }
 }

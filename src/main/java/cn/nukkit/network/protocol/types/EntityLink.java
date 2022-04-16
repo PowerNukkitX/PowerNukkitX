@@ -16,7 +16,7 @@ public class EntityLink {
     public long toEntityUniquieId;
     public byte type;
     public boolean immediate;
-    
+
     @Since("1.3.0.0-PN")
     public boolean riderInitiated;
 

@@ -9,10 +9,9 @@ import cn.nukkit.utils.Faceable;
 
 /**
  * @author Pub4Game
- * @since 15.01.2016
- *
  * @apiNote Implements {@link Faceable} only on PowerNukkit since 1.3.0.0-PN
  * and extends {@link BlockCropsStem} instead of {@link BlockCrops} only in PowerNukkit since 1.4.0.0-PN
+ * @since 15.01.2016
  */
 @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Implements Faceable only in PowerNukkit")
 @PowerNukkitDifference(since = "1.3.0.0-PN", info = "Will bind to the melon by the server-side")
@@ -57,7 +56,7 @@ public class BlockStemMelon extends BlockCropsStem implements Faceable {
     public BlockFace getBlockFace() {
         return super.getBlockFace();
     }
-    
+
     @Override
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")

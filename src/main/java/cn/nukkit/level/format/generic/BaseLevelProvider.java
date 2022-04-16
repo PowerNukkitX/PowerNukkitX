@@ -57,13 +57,14 @@ public abstract class BaseLevelProvider implements LevelProvider {
         this.path = path;
         File filePath = new File(this.path);
         if (!filePath.exists() && !filePath.mkdirs()) {
-            throw new LevelException("Could not create the directory "+filePath);
+            throw new LevelException("Could not create the directory " + filePath);
         }
 
         CompoundTag levelData;
         File levelDatFile = new File(getPath(), "level.dat");
         try (FileInputStream fos = new FileInputStream(levelDatFile); BufferedInputStream input = new BufferedInputStream(fos)) {
-            levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);;
+            levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);
+            ;
         } catch (Exception e) {
             log.fatal("Failed to load the level.dat file at {}, attempting to load level.dat_old instead!", levelDatFile.getAbsolutePath(), e);
             try {
@@ -87,7 +88,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
                 throw ex;
             }
         }
-        
+
         if (levelData.get("Data") instanceof CompoundTag) {
             this.levelData = levelData.getCompound("Data");
         } else {
@@ -101,7 +102,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         if (!this.levelData.contains("generatorOptions")) {
             this.levelData.putString("generatorOptions", "");
         }
-        
+
         this.levelData.putList(new ListTag<>("ServerBrand").add(new StringTag("", Nukkit.CODENAME)));
 
         this.spawn = new Vector3(this.levelData.getInt("SpawnX"), this.levelData.getInt("SpawnY"), this.levelData.getInt("SpawnZ"));
@@ -352,7 +353,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         File levelDataFile = new File(getPath(), "level.dat");
         try {
             Utils.safeWrite(levelDataFile, file -> {
-                try(FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+                try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
                     NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), out);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);

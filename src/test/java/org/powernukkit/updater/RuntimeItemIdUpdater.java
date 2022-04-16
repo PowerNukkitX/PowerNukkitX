@@ -42,9 +42,9 @@ public class RuntimeItemIdUpdater {
                 .create();
 
         List<RuntimeItem> runtimeItems;
-        try(InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
-            Reader reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
-            JsonReader jsonReader = new JsonReader(reader);
+        try (InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json");
+             Reader reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
+             JsonReader jsonReader = new JsonReader(reader);
         ) {
             runtimeItems = gson.fromJson(jsonReader, LIST);
         }
@@ -56,9 +56,9 @@ public class RuntimeItemIdUpdater {
         }
 
         List<RuntimeItem> requiredItems;
-        try(InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("runtime_item_states.json");
-            Reader reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
-            JsonReader jsonReader = new JsonReader(reader);
+        try (InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("runtime_item_states.json");
+             Reader reader = new InputStreamReader(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
+             JsonReader jsonReader = new JsonReader(reader);
         ) {
             requiredItems = gson.fromJson(jsonReader, LIST);
         }
@@ -75,15 +75,17 @@ public class RuntimeItemIdUpdater {
         runtimeItems = new ArrayList<>(itemNameToNukkitRegistry.values());
 
         try (FileWriter writer = new FileWriter("src/main/resources/runtime_item_ids.json");
-            BufferedWriter bufferedWriter = new BufferedWriter(writer)
+             BufferedWriter bufferedWriter = new BufferedWriter(writer)
         ) {
             gson.toJson(runtimeItems, LIST, bufferedWriter);
         }
     }
 
-    private static Type LIST = new TypeToken<List<RuntimeItem>>(){}.getType();
+    private static Type LIST = new TypeToken<List<RuntimeItem>>() {
+    }.getType();
 
-    @Data class RuntimeItem {
+    @Data
+    class RuntimeItem {
         private String name;
         private Integer id;
         private Integer oldId;

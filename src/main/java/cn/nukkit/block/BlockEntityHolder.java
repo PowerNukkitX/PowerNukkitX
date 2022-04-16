@@ -7,7 +7,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -42,7 +41,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         }
         return null;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -64,12 +63,12 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         } else {
             initialData = initialData.copy();
         }
-        BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk, 
+        BlockEntity created = BlockEntity.createBlockEntity(typeName, chunk,
                 initialData
-                    .putString("id", typeName)
-                    .putInt("x", getFloorX())
-                    .putInt("y", getFloorY())
-                    .putInt("z", getFloorZ()), 
+                        .putString("id", typeName)
+                        .putInt("x", getFloorX())
+                        .putInt("y", getFloorY())
+                        .putInt("z", getFloorZ()),
                 args);
 
         Class<? extends E> entityClass = getBlockEntityClass();
@@ -95,12 +94,12 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         }
         return createBlockEntity();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
     Class<? extends E> getBlockEntityClass();
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -114,7 +113,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     int getFloorX();
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     int getFloorY();
@@ -153,7 +152,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
     static <E extends BlockEntity, H extends BlockEntityHolder<E>> E setBlockAndCreateEntity(
             @Nonnull H holder, boolean direct, boolean update, @Nullable CompoundTag initialData,
             @Nullable Object... args) {
-        Block block = holder.getBlock(); 
+        Block block = holder.getBlock();
         Level level = block.getLevel();
         Block layer0 = level.getBlock(block, 0);
         Block layer1 = level.getBlock(block, 1);
@@ -167,7 +166,7 @@ public interface BlockEntityHolder<E extends BlockEntity> {
                 throw e;
             }
         }
-        
+
         return null;
     }
 

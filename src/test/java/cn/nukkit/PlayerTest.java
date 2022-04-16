@@ -44,10 +44,10 @@ class PlayerTest {
     private final Long clientId = 32L;
     private final String clientIp = "1.2.3.4";
     private final int clientPort = 3232;
-    
+
     @MockLevel
     Level level;
-    
+
     @Mock
     SourceInterface sourceInterface;
 
@@ -58,7 +58,7 @@ class PlayerTest {
     EntityBoat boat;
 
     Skin skin;
-    
+
     Player player;
 
     private MoveEntityAbsolutePacket buildMoveEntityAbsolutePacket(long eid) {
@@ -250,7 +250,7 @@ class PlayerTest {
     void armorDamage() {
         player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.FALL, 1));
         PlayerInventory inventory = player.getInventory();
-        
+
         ////// Block in armor content ////////
         inventory.setArmorContents(new Item[]{
                 Item.getBlock(BlockID.WOOL),
@@ -316,7 +316,7 @@ class PlayerTest {
     void dupeCommand() {
         Item stick = Item.get(ItemID.STICK);
         Item air = Item.getBlock(BlockID.AIR, 0, 0);
-        
+
         player.getInventory().addItem(stick);
         List<NetworkInventoryAction> actions = new ArrayList<>();
         NetworkInventoryAction remove = new NetworkInventoryAction();
@@ -332,7 +332,7 @@ class PlayerTest {
             if (slot > 1) {
                 actions.add(remove);
             }
-            
+
             NetworkInventoryAction add = new NetworkInventoryAction();
             add.sourceType = NetworkInventoryAction.SOURCE_CONTAINER;
             add.windowId = 0;
@@ -340,19 +340,19 @@ class PlayerTest {
             add.inventorySlot = slot;
             add.oldItem = air;
             add.newItem = stick;
-            
+
             actions.add(add);
         }
 
         InventoryTransactionPacket packet = new InventoryTransactionPacket();
         packet.actions = actions.toArray(NetworkInventoryAction.EMPTY_ARRAY);
-        
+
         player.handleDataPacket(packet);
 
         int count = countItems(stick);
         assertEquals(1, count);
     }
-    
+
     private int countItems(Item item) {
         int count = 0;
         for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -367,17 +367,17 @@ class PlayerTest {
     @BeforeEach
     void setUp() {
         /// Setup Level ///
-        doReturn(new Position(100,64,200, level)).when(level).getSafeSpawn();
-        
+        doReturn(new Position(100, 64, 200, level)).when(level).getSafeSpawn();
+
         /// Setup Server ///
         doReturn(level).when(Server.getInstance()).getDefaultLevel();
-        
+
         /// Setup skin ///
         skin = new Skin();
         skin.setSkinId("test");
         skin.setSkinData(new BufferedImage(64, 32, BufferedImage.TYPE_INT_BGR));
         assertTrue(skin.isValid());
-        
+
         /// Make player login ///
         player = new Player(sourceInterface, clientId, clientIp, clientPort);
         LoginPacket loginPacket = new LoginPacket();
@@ -391,9 +391,9 @@ class PlayerTest {
         loginPacket.putLInt(0);
         player.handleDataPacket(loginPacket);
         player.completeLoginSequence();
-        
+
         assertTrue(player.isOnline(), "Failed to make the fake player login");
-        
+
         player.doFirstSpawn();
     }
 }

@@ -11,13 +11,10 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Utils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
 import com.nukkitx.network.raknet.*;
 import com.nukkitx.network.util.DisconnectReason;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,10 +24,8 @@ import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.concurrent.ScheduledFuture;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.io.IOException;
@@ -261,7 +256,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     public void onUnhandledDatagram(ChannelHandlerContext ctx, DatagramPacket datagramPacket) {
         this.server.handlePacket(datagramPacket.sender(), datagramPacket.content());
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
     @Override
@@ -275,7 +270,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
         return null;
     }
-    
+
     @RequiredArgsConstructor
     private class NukkitRakNetSession implements RakNetSessionListener {
         private final RakNetServerSession raknet;
@@ -368,7 +363,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
             byteBuf.writeBytes(payload);
             this.raknet.send(byteBuf);
         }
-        
+
         private void sendPacketImmediately(DataPacket packet) {
             BinaryStream batched = new BinaryStream();
             Preconditions.checkArgument(!(packet instanceof BatchPacket), "Cannot batch BatchPacket");
@@ -386,7 +381,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
                 log.error("Error occured while sending a packet immediately", e);
             }
         }
-        
+
         private void sendResourcePacket(DataPacket packet) {
             BinaryStream batched = new BinaryStream();
             Preconditions.checkArgument(!(packet instanceof BatchPacket), "Cannot batch BatchPacket");

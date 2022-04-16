@@ -15,17 +15,17 @@ import javax.annotation.Nullable;
 @Since("1.4.0.0-PN")
 public class IntBlockProperty extends BlockProperty<Integer> {
     private static final long serialVersionUID = -2239010977496415152L;
-    
+
     private final int minValue;
     private final int maxValue;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public IntBlockProperty(String name, boolean exportedToItem, int maxValue, int minValue, int bitSize, String persistenceName) {
         super(name, exportedToItem, bitSize, persistenceName);
         int delta = maxValue - minValue;
         Preconditions.checkArgument(delta > 0, "maxValue must be higher than minValue. Got min:%s and max:%s", minValue, maxValue);
-        
+
         int mask = -1 >>> (32 - bitSize);
         Preconditions.checkArgument(delta <= mask, "The data range from %s to %s can't be stored in %s bits", minValue, maxValue, bitSize);
 

@@ -47,16 +47,16 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
 
     //https://minecraft.gamepedia.com/Melon_Seeds#Breaking
     private static final double[][] dropChances = new double[][]{
-            {.8130,.1742,.0124,.0003}, //0
-            {.6510,.3004,.0462,.0024}, //1
-            {.5120,.3840,.0960,.0080}, //2
-            {.3944,.4302,.1564,.0190}, //3
-            {.2913,.4444,.2222,.0370}, //4
-            {.2160,.4320,.2880,.0640}, //5
-            {.1517,.3982,.3484,.1016}, //6
-            {.1016,.3484,.3982,.1517}  //7
+            {.8130, .1742, .0124, .0003}, //0
+            {.6510, .3004, .0462, .0024}, //1
+            {.5120, .3840, .0960, .0080}, //2
+            {.3944, .4302, .1564, .0190}, //3
+            {.2913, .4444, .2222, .0370}, //4
+            {.2160, .4320, .2880, .0640}, //5
+            {.1517, .3982, .3484, .1016}, //6
+            {.1016, .3484, .3982, .1517}  //7
     };
-    
+
     static {
         for (double[] dropChance : dropChances) {
             double last = dropChance[0];
@@ -81,7 +81,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public abstract int getFruitId();
@@ -117,16 +117,16 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             }
             return 0;
         }
-        
+
         if (type != Level.BLOCK_UPDATE_RANDOM) {
             return 0;
         }
-        
-        if (ThreadLocalRandom.current().nextInt(1, 3) != 1 
+
+        if (ThreadLocalRandom.current().nextInt(1, 3) != 1
                 || getLevel().getFullLight(this) < MINIMUM_LIGHT_LEVEL) {
             return Level.BLOCK_UPDATE_RANDOM;
         }
-        
+
         int growth = getGrowth();
         if (growth < GROWTH.getMaxValue()) {
             BlockCropsStem block = this.clone();
@@ -138,11 +138,11 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
             }
             return Level.BLOCK_UPDATE_RANDOM;
         }
-        
+
         growFruit();
         return Level.BLOCK_UPDATE_RANDOM;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean growFruit() {
@@ -153,7 +153,7 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
                 return false;
             }
         }
-        
+
         BlockFace sideFace = BlockFace.Plane.HORIZONTAL.random();
         Block side = this.getSide(sideFace);
         Block d = side.down();
@@ -177,17 +177,17 @@ public abstract class BlockCropsStem extends BlockCrops implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         double[] dropChance = dropChances[NukkitMath.clamp(getGrowth(), 0, dropChances.length)];
-        
+
         double dice = ThreadLocalRandom.current().nextDouble();
         int count = 0;
         while (dice > dropChance[count]) {
             count++;
         }
-        
+
         if (count == 0) {
             return Item.EMPTY_ARRAY;
         }
-        
+
         return new Item[]{
                 Item.get(getSeedsId(), 0, count)
         };

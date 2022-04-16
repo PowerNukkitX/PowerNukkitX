@@ -42,9 +42,9 @@ public class BlockTurtleEgg extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<Integer> EGG_COUNT = new ArrayBlockProperty<>("turtle_egg_count", false,
-            new Integer[]{1,2,3,4}, 2, "turtle_egg_count", false,
+            new Integer[]{1, 2, 3, 4}, 2, "turtle_egg_count", false,
             new String[]{"one_egg", "two_egg", "three_egg", "four_egg"});
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final ArrayBlockProperty<CrackState> CRACK_STATE = new ArrayBlockProperty<>("cracked_state", false, CrackState.class);
@@ -52,14 +52,17 @@ public class BlockTurtleEgg extends BlockFlowable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(EGG_COUNT, CRACK_STATE);
-    
-    @PowerNukkitOnly @Deprecated 
+
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.NO_CRACKS")
     public static final int CRACK_STATE_NO_CRACKS = 0;
-    @PowerNukkitOnly @Deprecated
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.CRACKED")
     public static final int CRACK_STATE_CRACKED = 1;
-    @PowerNukkitOnly @Deprecated
+    @PowerNukkitOnly
+    @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "New property system", replaceWith = "CrackState.MAX_CRACKED")
     public static final int CRACK_STATE_MAX_CRACKED = 2;
 
@@ -85,12 +88,12 @@ public class BlockTurtleEgg extends BlockFlowable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @Override
     public String getName() {
         return "Turtle Egg";
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public CrackState getCracks() {
@@ -187,27 +190,27 @@ public class BlockTurtleEgg extends BlockFlowable {
 
     @Override
     public double getMinX() {
-        return x + (3.0/16);
+        return x + (3.0 / 16);
     }
 
     @Override
     public double getMinZ() {
-        return z + (3.0/16);
+        return z + (3.0 / 16);
     }
 
     @Override
     public double getMaxX() {
-        return x + (12.0/16);
+        return x + (12.0 / 16);
     }
 
     @Override
     public double getMaxZ() {
-        return z + (12.0/16);
+        return z + (12.0 / 16);
     }
 
     @Override
     public double getMaxY() {
-        return y + (7.0/16);
+        return y + (7.0 / 16);
     }
 
     @Override

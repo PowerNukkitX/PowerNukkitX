@@ -18,7 +18,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
 public class BlockChain extends BlockTransparent {
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockChain() {
@@ -84,22 +84,22 @@ public class BlockChain extends BlockTransparent {
 
     @Override
     public double getMinX() {
-        return x + 7/16.0;
+        return x + 7 / 16.0;
     }
 
     @Override
     public double getMaxX() {
-        return x + 9/16.0;
+        return x + 9 / 16.0;
     }
 
     @Override
     public double getMinZ() {
-        return z + 7/16.0;
+        return z + 7 / 16.0;
     }
 
     @Override
     public double getMaxZ() {
-        return z + 9/16.0;
+        return z + 9 / 16.0;
     }
 
     @Override
@@ -118,5 +118,5 @@ public class BlockChain extends BlockTransparent {
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
 }

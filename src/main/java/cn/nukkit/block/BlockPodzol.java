@@ -61,7 +61,7 @@ public class BlockPodzol extends BlockDirt {
     @Override
     public void setDirtType(@Nullable DirtType dirtType) {
         if (dirtType != null) {
-            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName()+" don't support DirtType");
+            throw new InvalidBlockPropertyValueException(DIRT_TYPE, null, dirtType, getName() + " don't support DirtType");
         }
     }
 
@@ -75,7 +75,7 @@ public class BlockPodzol extends BlockDirt {
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        
+
         if (item.isShovel()) {
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));

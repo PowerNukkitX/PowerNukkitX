@@ -40,8 +40,8 @@ public class RuntimeItemIdReorder {
     public static void main(String[] args) throws Exception {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonArray array;
-        try(InputStream is = Server.class.getResourceAsStream("/runtime_item_ids.json");
-            Reader reader = new InputStreamReader(is, Charsets.UTF_8)
+        try (InputStream is = Server.class.getResourceAsStream("/runtime_item_ids.json");
+             Reader reader = new InputStreamReader(is, Charsets.UTF_8)
         ) {
             array = gson.fromJson(reader, JsonArray.class);
         }
@@ -53,7 +53,7 @@ public class RuntimeItemIdReorder {
         }
 
         JsonArray sorted = new JsonArray();
-        entries.forEach((k,v)-> sorted.add(v));
+        entries.forEach((k, v) -> sorted.add(v));
         try (FileWriter out = new FileWriter("src/main/resources/runtime_item_ids.json")) {
             gson.toJson(sorted, gson.newJsonWriter(out));
         }

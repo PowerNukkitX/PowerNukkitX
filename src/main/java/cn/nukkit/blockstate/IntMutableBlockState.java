@@ -123,14 +123,14 @@ public class IntMutableBlockState extends MutableBlockState {
     public void validate() {
         validate(storage);
     }
-    
+
     private void validate(int state) {
         if (state == 0) {
             return;
         }
 
         Validation.checkPositive("state", state);
-        
+
         int bitLength = NukkitMath.bitLength(state);
         if (bitLength > properties.getBitSize()) {
             throw new InvalidBlockStateException(

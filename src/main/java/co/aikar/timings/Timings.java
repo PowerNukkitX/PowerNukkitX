@@ -97,10 +97,10 @@ public final class Timings {
         ignoredConfigSections.addAll(Server.getInstance().getConfig().getStringList("timings.ignore"));
 
         log.debug("Timings: \n" +
-                "Enabled - {}\n" +
-                "Verbose - {}\n" +
-                "History Interval - {}\n" +
-                "History Length - {}",
+                        "Enabled - {}\n" +
+                        "Verbose - {}\n" +
+                        "History Interval - {}\n" +
+                        "History Length - {}",
                 isTimingsEnabled(), isVerboseEnabled(), getHistoryInterval(), getHistoryLength());
 
         fullServerTickTimer = new FullServerTickTiming();
@@ -204,7 +204,7 @@ public final class Timings {
             log.warn(
                     "Timings Length too high. Requested {}, max is {}"
                             + ". To get longer history, you must increase your interval. Set Interval to {}"
-                            + " to achieve this length.", 
+                            + " to achieve this length.",
                     length, maxLength, Math.ceil((float) length / MAX_HISTORY_FRAMES));
         }
 

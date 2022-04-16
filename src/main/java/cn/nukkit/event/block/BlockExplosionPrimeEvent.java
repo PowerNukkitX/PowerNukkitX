@@ -49,7 +49,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
     public BlockExplosionPrimeEvent(Block block, double force) {
         this(block, force, 0);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public BlockExplosionPrimeEvent(Block block, double force, double fireChance) {
@@ -95,7 +95,7 @@ public class BlockExplosionPrimeEvent extends BlockEvent implements Cancellable 
         if (!incendiary) {
             fireChance = 0;
         } else if (fireChance <= 0) {
-            fireChance = 1.0/3.0;
+            fireChance = 1.0 / 3.0;
         }
     }
 

@@ -226,7 +226,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
         boolean up = this.isConnectedTo(BlockFace.UP, attachmentType, blockFace);
         boolean down = this.isConnectedTo(BlockFace.DOWN, attachmentType, blockFace);
 
-        double pixels = (2.0/16);
+        double pixels = (2.0 / 16);
 
         double n = north ? 0 : pixels;
         double s = south ? 1 : 1 - pixels;

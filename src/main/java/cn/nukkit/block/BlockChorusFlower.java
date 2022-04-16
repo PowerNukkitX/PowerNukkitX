@@ -18,10 +18,9 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusFlower extends BlockTransparentMeta {
 
@@ -36,11 +35,11 @@ public class BlockChorusFlower extends BlockTransparentMeta {
     public BlockChorusFlower() {
         this(0);
     }
-    
+
     public BlockChorusFlower(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CHORUS_FLOWER;
@@ -128,19 +127,19 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 break;
                             }
                         }
-                        
+
                         if (height < 2 || height <= ThreadLocalRandom.current().nextInt(ground ? 5 : 4)) {
                             growUp = true;
                         }
                     }
-                    
+
                     // Grow Upward
                     if (growUp && this.up(2).getId() == AIR && isHorizontalAir(this.up())) {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.y = this.y + 1;
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
-                        
+
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
                             this.getLevel().setBlock(block, ev.getNewState());
@@ -148,7 +147,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                         } else {
                             return Level.BLOCK_UPDATE_RANDOM;
                         }
-                    // Grow Horizontally
+                        // Grow Horizontally
                     } else if (!isFullyAged()) {
                         for (int i = 0; i < ThreadLocalRandom.current().nextInt(ground ? 5 : 4); i++) {
                             BlockFace face = BlockFace.Plane.HORIZONTAL.random();
@@ -161,7 +160,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 block.setAge(getAge() + 1);
                                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                                 Server.getInstance().getPluginManager().callEvent(ev);
-                                
+
                                 if (!ev.isCancelled()) {
                                     this.getLevel().setBlock(this, Block.get(CHORUS_PLANT));
                                     this.getLevel().setBlock(block, ev.getNewState());
@@ -171,13 +170,13 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                                 }
                             }
                         }
-                    // Death
+                        // Death
                     } else {
                         BlockChorusFlower block = (BlockChorusFlower) this.clone();
                         block.setAge(getMaxAge());
                         BlockGrowEvent ev = new BlockGrowEvent(this, block);
                         Server.getInstance().getPluginManager().callEvent(ev);
-                        
+
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(block, ev.getNewState());
                             this.getLevel().addSound(this.add(0.5, 0.5, 0.5), Sound.BLOCK_CHORUSFLOWER_DEATH);
@@ -190,7 +189,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         }
-        
+
         return 0;
     }
 
@@ -204,7 +203,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ this.toItem() };
+        return new Item[]{this.toItem()};
     }
 
     @Override
@@ -215,10 +214,10 @@ public class BlockChorusFlower extends BlockTransparentMeta {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
@@ -230,31 +229,31 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         }
         return super.onProjectileHit(projectile, position, motion);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getMaxAge() {
         return AGE.getMaxValue();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getAge() {
         return getIntValue(AGE);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setAge(int age) {
         setIntValue(AGE, age);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isFullyAged() {
         return getAge() >= getMaxAge();
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean isHorizontalAir(Block block) {
@@ -265,7 +264,7 @@ public class BlockChorusFlower extends BlockTransparentMeta {
         }
         return true;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean isHorizontalAirExcept(Block block, BlockFace except) {

@@ -40,7 +40,7 @@ public class BlockBeetroot extends BlockCrops {
         if (!isFullyGrown()) {
             return new Item[]{Item.get(ItemID.BEETROOT_SEEDS)};
         }
-        
+
         int seeds = 1;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
         ThreadLocalRandom random = ThreadLocalRandom.current();

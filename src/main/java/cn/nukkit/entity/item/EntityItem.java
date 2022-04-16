@@ -14,7 +14,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
@@ -129,9 +128,9 @@ public class EntityItem extends Entity {
                 source.getCause() == DamageCause.CONTACT ||
                 source.getCause() == DamageCause.FIRE_TICK ||
                 (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
-                source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
-                !this.isInsideOfWater() && (this.item == null ||
-                this.item.getId() != Item.NETHER_STAR)) && super.attack(source);
+                        source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
+                        !this.isInsideOfWater() && (this.item == null ||
+                        this.item.getId() != Item.NETHER_STAR)) && super.attack(source);
     }
 
     @Override
@@ -206,8 +205,8 @@ public class EntityItem extends Entity {
 
             int bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 0);
             if (bid == BlockID.FLOWING_WATER || bid == BlockID.STILL_WATER
-                || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
-                || bid == BlockID.STILL_WATER
+                    || (bid = this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z, 1)) == BlockID.FLOWING_WATER
+                    || bid == BlockID.STILL_WATER
             ) {
                 //item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;

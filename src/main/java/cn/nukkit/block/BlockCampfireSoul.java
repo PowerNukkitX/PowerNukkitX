@@ -36,19 +36,19 @@ public class BlockCampfireSoul extends BlockCampfire {
 
     @Override
     public int getLightLevel() {
-        return isExtinguished()? 0 : 10;
+        return isExtinguished() ? 0 : 10;
     }
 
     @Override
     public Item toItem() {
         return Item.get(ItemID.SOUL_CAMPFIRE);
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[] { MinecraftItemID.SOUL_SOIL.get(1) };
+        return new Item[]{MinecraftItemID.SOUL_SOIL.get(1)};
     }
-    
+
     @Since("1.5.1.0-PN")
     @PowerNukkitOnly
     @Override

@@ -30,7 +30,7 @@ public class BlockAncientDebris extends BlockSolid {
     public int getToolTier() {
         return ItemTool.TIER_DIAMOND;
     }
-    
+
     @Override
     public double getResistance() {
         return 1200;

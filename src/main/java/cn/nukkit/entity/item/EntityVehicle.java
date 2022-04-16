@@ -94,7 +94,7 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
 
             getServer().getPluginManager().callEvent(byEvent);
 
-            if(byEvent.isCancelled())
+            if (byEvent.isCancelled())
                 return false;
 
             instantKill = damagingEntity instanceof Player && ((Player) damagingEntity).isCreative();
@@ -109,13 +109,13 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         }
 
         if (instantKill || getHealth() - source.getFinalDamage() < 1) {
-            if(source instanceof EntityDamageByEntityEvent) {
+            if (source instanceof EntityDamageByEntityEvent) {
                 final Entity damagingEntity = ((EntityDamageByEntityEvent) source).getDamager();
                 final VehicleDestroyByEntityEvent byDestroyEvent = new VehicleDestroyByEntityEvent(this, damagingEntity);
 
                 getServer().getPluginManager().callEvent(byDestroyEvent);
 
-                if(byDestroyEvent.isCancelled())
+                if (byDestroyEvent.isCancelled())
                     return false;
             } else {
 

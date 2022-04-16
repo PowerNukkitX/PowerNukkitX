@@ -15,17 +15,17 @@ public class BlockCoralFanDead extends BlockCoralFan {
     public BlockCoralFanDead(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_FAN_DEAD;
     }
-    
+
     @Override
     public String getName() {
         return "Dead " + super.getName();
     }
-    
+
     @Override
     public BlockColor getColor() {
         return BlockColor.GRAY_BLOCK_COLOR;
@@ -36,7 +36,7 @@ public class BlockCoralFanDead extends BlockCoralFan {
     public boolean isDead() {
         return true;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {

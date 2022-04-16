@@ -32,12 +32,12 @@ public class BlockPumpkinLit extends BlockPumpkin {
     public int getLightLevel() {
         return 15;
     }
-    
+
     @Override
     public boolean canBeActivated() {
         return false;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         return false;

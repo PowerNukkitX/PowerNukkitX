@@ -57,7 +57,7 @@ public class BlockHoney extends BlockSolid {
                         || !((Player) entity).getAdventureSettings().get(AdventureSettings.Type.FLYING))) {
             double ex = Math.abs(x + 0.5D - entity.x);
             double ez = Math.abs(z + 0.5D - entity.z);
-            double width = 0.4375D + (double)(entity.getWidth() / 2.0F);
+            double width = 0.4375D + (double) (entity.getWidth() / 2.0F);
             if (ex + 1.0E-3D > width || ez + 1.0E-3D > width) {
                 Vector3 motion = entity.getMotion();
                 motion.y = -0.05;
@@ -81,7 +81,7 @@ public class BlockHoney extends BlockSolid {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(x, y, z, x+1, y+1, z+1);
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class BlockHoney extends BlockSolid {
     @PowerNukkitOnly
     @Override
     public void onEntityFallOn(Entity entity, float fallDistance) {
-        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST)? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
+        int jumpBoost = entity.hasEffect(Effect.JUMP_BOOST) ? (getEffect(Effect.JUMP_BOOST).getAmplifier() + 1) : 0;
         float damage = (float) Math.floor(fallDistance - 3 - jumpBoost);
 
         damage *= 0.2F;

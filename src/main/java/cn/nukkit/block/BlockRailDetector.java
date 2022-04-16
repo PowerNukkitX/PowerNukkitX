@@ -1,14 +1,11 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
-import cn.nukkit.event.player.PlayerInteractEvent;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -16,25 +13,24 @@ import cn.nukkit.utils.OptionalBoolean;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author CreeperFace (Nukkit Project), larryTheCoder (Minecart and Riding Project)
- * @since 2015/11/22 
+ * @since 2015/11/22
  */
 public class BlockRailDetector extends BlockRail {
 
     public static Set<Position> activeDetectors = new HashSet<>();
 
-    static{
+    static {
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
             for (Position pos : activeDetectors.toArray(new Position[0])) {
                 BlockRailDetector detector;
                 if (pos.getLevel().getBlock(pos) instanceof BlockRailDetector) {
                     detector = (BlockRailDetector) pos.getLevel().getBlock(pos);
-                }else{
+                } else {
                     activeDetectors.remove(pos);
                     return;
                 }
@@ -50,7 +46,7 @@ public class BlockRailDetector extends BlockRail {
                     }
                 }
                 detector.setActive(false);
-                detector.level.setBlock(detector,detector,true,true);
+                detector.level.setBlock(detector, detector, true, true);
                 activeDetectors.remove(detector);
 
                 //update redstone
@@ -105,7 +101,7 @@ public class BlockRailDetector extends BlockRail {
     }
 
     public void setActive() {
-        if (this.isActive()){
+        if (this.isActive()) {
             return;
         }
         setActive(true);

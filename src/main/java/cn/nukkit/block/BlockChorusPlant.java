@@ -70,7 +70,7 @@ public class BlockChorusPlant extends BlockTransparent {
         if (horizontal && horizontalSupported) {
             return true;
         }
-        
+
         return down.getId() == CHORUS_PLANT || down.getId() == END_STONE;
     }
 
@@ -85,7 +85,7 @@ public class BlockChorusPlant extends BlockTransparent {
             level.useBreakOn(this, null, null, true);
             return type;
         }
-        
+
         return 0;
     }
 
@@ -99,7 +99,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public Item[] getDrops(Item item) {
-        return ThreadLocalRandom.current().nextBoolean() ? new Item[]{ Item.get(ItemID.CHORUS_FRUIT, 0, 1) } : Item.EMPTY_ARRAY;
+        return ThreadLocalRandom.current().nextBoolean() ? new Item[]{Item.get(ItemID.CHORUS_FRUIT, 0, 1)} : Item.EMPTY_ARRAY;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 

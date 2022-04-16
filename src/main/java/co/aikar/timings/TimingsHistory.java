@@ -167,7 +167,7 @@ public class TimingsHistory {
     static class MinuteReport {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
-        public static final MinuteReport[] EMPTY_ARRAY = new MinuteReport[0]; 
+        public static final MinuteReport[] EMPTY_ARRAY = new MinuteReport[0];
         final long time = System.currentTimeMillis() / 1000;
 
         final TicksRecord ticksRecord = new TicksRecord();

@@ -15,7 +15,8 @@ import javax.annotation.Nonnull;
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 public class BlockDaylightDetectorInverted extends BlockDaylightDetector {
 
-    public BlockDaylightDetectorInverted() {}
+    public BlockDaylightDetectorInverted() {
+    }
 
     @Override
     public int getId() {

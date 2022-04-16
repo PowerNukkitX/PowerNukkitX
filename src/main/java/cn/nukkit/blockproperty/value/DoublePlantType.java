@@ -36,8 +36,7 @@ public enum DoublePlantType {
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
-    PAEONIA("Peony", false)
-    ;
+    PAEONIA("Peony", false);
     private final String englishName;
     private final boolean replaceable;
 

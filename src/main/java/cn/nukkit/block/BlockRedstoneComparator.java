@@ -102,7 +102,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     @Override
     protected int getRedstoneSignal() {
         BlockEntityComparator comparator = getBlockEntity();
-        return comparator == null? 0 : comparator.getOutputSignal();
+        return comparator == null ? 0 : comparator.getOutputSignal();
     }
 
     @Override
@@ -224,7 +224,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
-        
+
         try {
             createBlockEntity(new CompoundTag().putList(new ListTag<>("Items")));
         } catch (Exception e) {
@@ -233,7 +233,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
             level.setBlock(layer1, 1, layer1, true);
             return false;
         }
-        
+
         onUpdate(Level.BLOCK_UPDATE_REDSTONE);
         return true;
     }

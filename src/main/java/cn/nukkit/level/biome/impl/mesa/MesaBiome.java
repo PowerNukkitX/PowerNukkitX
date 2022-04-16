@@ -23,16 +23,16 @@ public class MesaBiome extends CoveredBiome {
     private static final BlockState STATE_RED_SAND = BlockState.of(SAND, BlockSand.RED);
     private static final BlockState STATE_RED_SANDSTONE = BlockState.of(RED_SANDSTONE);
     private static final BlockState[] STATE_STAINED_TERRACOTTA = new BlockState[16];
-    
-    static final int[]    colorLayer   = new int[64];
+
+    static final int[] colorLayer = new int[64];
     static final SimplexF redSandNoise = new SimplexF(new NukkitRandom(937478913), 2f, 1 / 4f, 1 / 4f);
-    static final SimplexF colorNoise   = new SimplexF(new NukkitRandom(193759875), 2f, 1 / 4f, 1 / 32f);
+    static final SimplexF colorNoise = new SimplexF(new NukkitRandom(193759875), 2f, 1 / 4f, 1 / 32f);
 
     static {
         for (int i = 0; i < STATE_STAINED_TERRACOTTA.length; i++) {
             STATE_STAINED_TERRACOTTA[i] = BlockState.of(STAINED_HARDENED_CLAY, i);
         }
-        
+
         Random random = new Random(29864);
 
         Arrays.fill(colorLayer, -1); // hard clay, other values are stained clay

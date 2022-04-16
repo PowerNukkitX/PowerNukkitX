@@ -9,7 +9,7 @@ public interface ResourcePack {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     ResourcePack[] EMPTY_ARRAY = new ResourcePack[0];
-    
+
     String getPackName();
 
     UUID getPackId();

@@ -54,7 +54,8 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    @PowerNukkitOnly public final static String GIT_COMMIT = getGitCommit();
+    @PowerNukkitOnly
+    public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.13");
     public final static String CODENAME = dynamic("PowerNukkitX");
     @Deprecated
@@ -75,8 +76,8 @@ public class Nukkit {
         AtomicBoolean disableSentry = new AtomicBoolean(false);
         Sentry.init(options -> {
             options.setDsn("https://a99f9e0c50424fff9f96feb2fd94c22f:6891b003c5874fa4bf407fe45035e3f1@o505263.ingest.sentry.io/5593371");
-            options.setRelease(getVersion()+"-"+getGitCommit());
-            options.setBeforeSend((event, hint)-> {
+            options.setRelease(getVersion() + "-" + getGitCommit());
+            options.setBeforeSend((event, hint) -> {
                 if (disableSentry.get()) {
                     return null;
                 }
@@ -140,7 +141,7 @@ public class Nukkit {
         }
 
         // Force IPv4 since Nukkit is not compatible with IPv6
-        System.setProperty("java.net.preferIPv4Stack" , "true");
+        System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
         System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
 
@@ -229,7 +230,7 @@ public class Nukkit {
     private static boolean requiresShortTitle() {
         //Shorter title for windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase();
-        return osName.contains("windows") &&(osName.contains("windows 8") || osName.contains("2012"));
+        return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 
     private static Properties getGitInfo() {

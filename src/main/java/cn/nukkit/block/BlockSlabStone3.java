@@ -17,15 +17,23 @@ public class BlockSlabStone3 extends BlockSlab {
             StoneSlab3Type.PROPERTY,
             TOP_SLOT_PROPERTY
     );
-    
-    @PowerNukkitOnly public static final int END_STONE_BRICKS = 0;
-    @PowerNukkitOnly public static final int SMOOTH_RED_SANDSTONE = 1;
-    @PowerNukkitOnly public static final int POLISHED_ANDESITE = 2;
-    @PowerNukkitOnly public static final int ANDESITE = 3;
-    @PowerNukkitOnly public static final int DIORITE = 4;
-    @PowerNukkitOnly public static final int POLISHED_DIORITE = 5;
-    @PowerNukkitOnly public static final int GRANITE = 6;
-    @PowerNukkitOnly public static final int POLISHED_GRANITE = 7;
+
+    @PowerNukkitOnly
+    public static final int END_STONE_BRICKS = 0;
+    @PowerNukkitOnly
+    public static final int SMOOTH_RED_SANDSTONE = 1;
+    @PowerNukkitOnly
+    public static final int POLISHED_ANDESITE = 2;
+    @PowerNukkitOnly
+    public static final int ANDESITE = 3;
+    @PowerNukkitOnly
+    public static final int DIORITE = 4;
+    @PowerNukkitOnly
+    public static final int POLISHED_DIORITE = 5;
+    @PowerNukkitOnly
+    public static final int GRANITE = 6;
+    @PowerNukkitOnly
+    public static final int POLISHED_GRANITE = 7;
 
     @PowerNukkitOnly
     public BlockSlabStone3() {

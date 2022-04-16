@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 /**
  * An enchantment that can be to applied to an item.
- * 
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class Enchantment implements Cloneable {
@@ -81,10 +81,14 @@ public abstract class Enchantment implements Cloneable {
     public static final int ID_TRIDENT_RIPTIDE = 30;
     public static final int ID_TRIDENT_LOYALTY = 31;
     public static final int ID_TRIDENT_CHANNELING = 32;
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_MULTISHOT = 33;
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_PIERCING = 34;
-    @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
-    @Since("1.4.0.0-PN") public static final int ID_SOUL_SPEED = 36;
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_MULTISHOT = 33;
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_PIERCING = 34;
+    @Since("1.4.0.0-PN")
+    public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
+    @Since("1.4.0.0-PN")
+    public static final int ID_SOUL_SPEED = 36;
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -115,22 +119,23 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_FORTUNE_FISHING] = new EnchantmentLootFishing();
         enchantments[ID_LURE] = new EnchantmentLure();
         enchantments[ID_FROST_WALKER] = new EnchantmentFrostWalker();
-        enchantments[ID_MENDING]  = new EnchantmentMending();
-        enchantments[ID_BINDING_CURSE]  = new EnchantmentBindingCurse();
-        enchantments[ID_VANISHING_CURSE]  = new EnchantmentVanishingCurse();
-        enchantments[ID_TRIDENT_IMPALING]  = new EnchantmentTridentImpaling();
-        enchantments[ID_TRIDENT_RIPTIDE]  = new EnchantmentTridentRiptide();
-        enchantments[ID_TRIDENT_LOYALTY]  = new EnchantmentTridentLoyalty();
-        enchantments[ID_TRIDENT_CHANNELING]  = new EnchantmentTridentChanneling();
-        enchantments[ID_CROSSBOW_MULTISHOT]  = new EnchantmentCrossbowMultishot();
-        enchantments[ID_CROSSBOW_PIERCING]  = new EnchantmentCrossbowPiercing();
-        enchantments[ID_CROSSBOW_QUICK_CHARGE]  = new EnchantmentCrossbowQuickCharge();
-        enchantments[ID_SOUL_SPEED]  = new EnchantmentSoulSpeed();
+        enchantments[ID_MENDING] = new EnchantmentMending();
+        enchantments[ID_BINDING_CURSE] = new EnchantmentBindingCurse();
+        enchantments[ID_VANISHING_CURSE] = new EnchantmentVanishingCurse();
+        enchantments[ID_TRIDENT_IMPALING] = new EnchantmentTridentImpaling();
+        enchantments[ID_TRIDENT_RIPTIDE] = new EnchantmentTridentRiptide();
+        enchantments[ID_TRIDENT_LOYALTY] = new EnchantmentTridentLoyalty();
+        enchantments[ID_TRIDENT_CHANNELING] = new EnchantmentTridentChanneling();
+        enchantments[ID_CROSSBOW_MULTISHOT] = new EnchantmentCrossbowMultishot();
+        enchantments[ID_CROSSBOW_PIERCING] = new EnchantmentCrossbowPiercing();
+        enchantments[ID_CROSSBOW_QUICK_CHARGE] = new EnchantmentCrossbowQuickCharge();
+        enchantments[ID_SOUL_SPEED] = new EnchantmentSoulSpeed();
     }
 
     /**
-     * Returns the enchantment object registered with this ID, any change to the returned object affects 
+     * Returns the enchantment object registered with this ID, any change to the returned object affects
      * the creation of new enchantments as the returned object is not a copy.
+     *
      * @param id The enchantment id.
      * @return The enchantment, if no enchantment is found with that id, {@link UnknownEnchantment} is returned.
      * The UnknownEnchantment will be always a new instance and changes to it does not affects other calls.
@@ -151,6 +156,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The same as {@link #get(int)} but returns a safe copy of the enchantment.
+     *
      * @param id The enchantment id
      * @return A new enchantment object.
      */
@@ -161,10 +167,11 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Gets an array of all registered enchantments, the objects in the array are linked to the registry,
      * it's not safe to change them. Changing them can cause the same issue as documented in {@link #get(int)}
+     *
      * @return An array with the enchantment objects, the array may contain null objects but is very unlikely.
      */
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "The objects returned by this method are not safe to use and the implementation may skip some enchantments",
             replaceWith = "getRegisteredEnchantments()"
     )
@@ -183,6 +190,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Gets a collection with a safe copy of all enchantments that are currently registered.
+     *
      * @return The objects can be modified without affecting the registry and the collection will not have null values.
      */
     @PowerNukkitOnly
@@ -212,21 +220,23 @@ public abstract class Enchantment implements Cloneable {
     protected int level = 1;
 
     /**
-     * The name visible by the player, this is used in conjunction with {@link #getName()}, 
-     * unless modified with an override, the getter will automatically add 
-     * "%enchantment." as prefix to grab the translation key 
+     * The name visible by the player, this is used in conjunction with {@link #getName()},
+     * unless modified with an override, the getter will automatically add
+     * "%enchantment." as prefix to grab the translation key
      */
     protected final String name;
 
     /**
      * Constructs this instance using the given data and with level 1.
-     * @param id The enchantment ID
-     * @param name The translation key without the "%enchantment." suffix
+     *
+     * @param id     The enchantment ID
+     * @param name   The translation key without the "%enchantment." suffix
      * @param weight How rare this enchantment is, from {@code 1} to {@code 10} both inclusive where {@code 1} is the rarest
-     * @param type Where the enchantment can be applied
+     * @param type   Where the enchantment can be applied
      */
     @PowerNukkitOnly("Was removed from Nukkit in 1.4.0.0-PN, keeping it in PowerNukkit for backward compatibility")
-    @Deprecated @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
+    @Deprecated
+    @DeprecationDetails(by = "Cloudburst Nukkit", since = "1.4.0.0-PN", reason = "Changed the signature without backward compatibility",
             replaceWith = "Enchantment(int, String, Rarity, EnchantmentType)")
     protected Enchantment(int id, String name, int weight, EnchantmentType type) {
         this(id, name, Rarity.fromWeight(weight), type);
@@ -234,10 +244,11 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Constructs this instance using the given data and with level 1.
-     * @param id The enchantment ID
-     * @param name The translation key without the "%enchantment." suffix
+     *
+     * @param id     The enchantment ID
+     * @param name   The translation key without the "%enchantment." suffix
      * @param rarity How rare this enchantment is
-     * @param type Where the enchantment can be applied
+     * @param type   Where the enchantment can be applied
      */
     @Since("1.4.0.0-PN")
     protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
@@ -250,6 +261,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The current level of this enchantment. {@code 0} means that the enchantment is not applied.
+     *
      * @return The level starting from {@code 1}.
      */
     public int getLevel() {
@@ -259,7 +271,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Changes the level of this enchantment.
      * The level is clamped between the values returned in {@link #getMinLevel()} and {@link #getMaxLevel()}.
-     * 
+     *
      * @param level The level starting from {@code 1}.
      * @return This object so you can do chained calls
      */
@@ -271,11 +283,11 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Changes the level of this enchantment.
-     * When the {@code safe} param is {@code true}, the level is clamped between the values 
+     * When the {@code safe} param is {@code true}, the level is clamped between the values
      * returned in {@link #getMinLevel()} and {@link #getMaxLevel()}.
      *
      * @param level The level starting from {@code 1}.
-     * @param safe If the level should clamped or applied directly
+     * @param safe  If the level should clamped or applied directly
      * @return This object so you can do chained calls
      */
     @Nonnull
@@ -291,7 +303,7 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * The ID of this enchantment. 
+     * The ID of this enchantment.
      */
     public int getId() {
         return id;
@@ -308,10 +320,11 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * How rare this enchantment is, from {@code 1} to {@code 10} where {@code 1} is the rarest.
+     *
      * @deprecated use {@link Rarity#getWeight()} instead
      */
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "Refactored enchantments and now uses a Rarity enum", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Refactored enchantments and now uses a Rarity enum",
             replaceWith = "getRarity().getWeight()")
     @Deprecated
     public int getWeight() {
@@ -341,6 +354,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The minimum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     *
      * @param level The level being checked
      * @return The minimum value
      */
@@ -350,6 +364,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * The maximum enchantability for the given level as described in https://minecraft.gamepedia.com/Enchanting/Levels
+     *
      * @param level The level being checked
      * @return The maximum value
      */
@@ -379,15 +394,16 @@ public abstract class Enchantment implements Cloneable {
     }
 
     /**
-     * Returns true if and only if this enchantment is compatible with the other and 
-     * the other is also compatible with this enchantment. 
+     * Returns true if and only if this enchantment is compatible with the other and
+     * the other is also compatible with this enchantment.
+     *
      * @param enchantment The enchantment which is being checked
      * @return If both enchantments are compatible
      * @implNote Cloudburst Nukkit added the final modifier, PowerNukkit removed it to maintain backward compatibility.
      * The right way to implement compatibility now is to override {@link #checkCompatibility(Enchantment)}
-     *  and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
+     * and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake
      */
-    @PowerNukkitDifference(since = "1.4.0.0-PN", 
+    @PowerNukkitDifference(since = "1.4.0.0-PN",
             info = "Cloudburst Nukkit added the final modifier, we removed it to maintain backward compatibility. " +
                     "The right way to implement compatibility now is to override checkCompatibility(Enchantment enchantment) " +
                     "and also make sure to keep it protected! Some overrides was incorrectly made public, let's avoid this mistake."
@@ -398,6 +414,7 @@ public abstract class Enchantment implements Cloneable {
 
     /**
      * Checks if this enchantment can be applied to an item that have the give enchantment without doing reverse check.
+     *
      * @param enchantment The enchantment to be checked
      * @return If this enchantment is compatible with the other enchantment.
      */
@@ -413,6 +430,7 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Checks if the given item have a type which is compatible with this enchantment. This method does not check
      * if the item already have incompatible enchantments.
+     *
      * @param item The item to be checked
      * @return If the type of the item is valid for this enchantment
      */
@@ -443,8 +461,10 @@ public abstract class Enchantment implements Cloneable {
     /**
      * Checks if an item can have this enchantment. It's not strict to the enchantment table.
      */
-    @PowerNukkitOnly @Since("1.2.1.0-PN")
-    @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN", 
+    @PowerNukkitOnly
+    @Since("1.2.1.0-PN")
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "1.4.0.0-PN",
             reason = "Does the same as canEnchant(item)", replaceWith = "canEnchant(item)")
     public boolean isItemAcceptable(Item item) {
         return canEnchant(item);
@@ -493,6 +513,7 @@ public abstract class Enchantment implements Cloneable {
 
         /**
          * Converts the weight to the closest rarity using floor semantic.
+         *
          * @param weight The enchantment weight
          * @return The closest rarity
          */

@@ -46,20 +46,20 @@ public class BlockDirtWithRoots extends BlockSolid {
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
-        Vector3 vector = new Vector3(this.x,this.y-1,this.z);
+        Vector3 vector = new Vector3(this.x, this.y - 1, this.z);
         if (!this.up().canBeReplaced()) {
             return false;
         }
-        if (item.isFertilizer() && this.level.getBlock(vector).getId()==BlockID.AIR) {
+        if (item.isFertilizer() && this.level.getBlock(vector).getId() == BlockID.AIR) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            this.level.setBlock(vector,Block.get(BlockID.HANGING_ROOTS));
+            this.level.setBlock(vector, Block.get(BlockID.HANGING_ROOTS));
             return true;
         }
         if (item.isHoe()) {
-            vector.setY(this.y+1);
+            vector.setY(this.y + 1);
             item.useOn(this);
             this.getLevel().setBlock(this, Block.get(BlockID.DIRT), true);
             this.getLevel().dropItem(vector, new ItemBlock(Block.get(BlockID.HANGING_ROOTS)));

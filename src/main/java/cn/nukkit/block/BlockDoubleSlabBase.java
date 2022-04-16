@@ -18,7 +18,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return "Double "+getSlabName()+" Slab";
+        return "Double " + getSlabName() + " Slab";
     }
 
     @Since("1.4.0.0-PN")
@@ -53,7 +53,7 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
         if (isCorrectTool(item)) {
             Item slab = toItem();
             slab.setCount(2);
-            return new Item[]{ slab };
+            return new Item[]{slab};
         } else {
             return Item.EMPTY_ARRAY;
         }

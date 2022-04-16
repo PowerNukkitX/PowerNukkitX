@@ -210,6 +210,6 @@ public class BlockSeaPickle extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{ new ItemBlock(new BlockSeaPickle(), 0, (getDamage() & 0x3) + 1) };
+        return new Item[]{new ItemBlock(new BlockSeaPickle(), 0, (getDamage() & 0x3) + 1)};
     }
 }

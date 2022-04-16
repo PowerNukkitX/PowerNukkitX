@@ -26,12 +26,12 @@ public class ListChunkManager implements ChunkManager {
     public int getBlockIdAt(int x, int y, int z) {
         return getBlockIdAt(x, y, z, 0);
     }
-    
+
     private Optional<Block> findBlockAt(int x, int y, int z, int layer) {
-        return this.blocks.stream().filter(block -> 
-                block.getFloorX() == x 
+        return this.blocks.stream().filter(block ->
+                block.getFloorX() == x
                         && block.getFloorY() == y
-                        && block.getFloorZ() == z 
+                        && block.getFloorZ() == z
                         && block.layer == layer
         ).findAny();
     }
@@ -95,7 +95,7 @@ public class ListChunkManager implements ChunkManager {
     @PowerNukkitOnly
     @Override
     public BlockState getBlockStateAt(int x, int y, int z, int layer) {
-        return findBlockAt(x, y, z, layer).map(Block::getCurrentState).orElseGet(()-> parent.getBlockStateAt(x, y, z, layer));
+        return findBlockAt(x, y, z, layer).map(Block::getCurrentState).orElseGet(() -> parent.getBlockStateAt(x, y, z, layer));
     }
 
     @Override

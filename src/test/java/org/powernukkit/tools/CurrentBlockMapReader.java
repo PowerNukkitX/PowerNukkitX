@@ -22,7 +22,7 @@ public class CurrentBlockMapReader {
     public static void main(String[] args) throws IOException {
         BinaryStream stream = new BinaryStream(Files.readAllBytes(Paths.get("dumps/r12_to_current_block_map.bin")));
         List<CurrentBlockMapEntry> list = new ArrayList<>();
-        while(!stream.feof()){
+        while (!stream.feof()) {
             String id = stream.getString();
             int meta = stream.getLShort();
 
@@ -38,7 +38,8 @@ public class CurrentBlockMapReader {
         Files.write(Paths.get("dumps/r12_to_current_block_map.bin.txt"), list.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    @Value static class CurrentBlockMapEntry {
+    @Value
+    static class CurrentBlockMapEntry {
         String id;
         int meta;
         CompoundTag state;

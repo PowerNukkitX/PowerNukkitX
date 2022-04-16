@@ -35,13 +35,13 @@ public enum GameRule {
     @Since("1.5.1.0-PN") SHOW_DEATH_MESSAGES("showDeathMessages"),
 
     @Deprecated
-    @PowerNukkitOnly("Renamed to SHOW_DEATH_MESSAGE by NukkitX") 
-    @DeprecationDetails(since = "1.5.1.0-PN", 
+    @PowerNukkitOnly("Renamed to SHOW_DEATH_MESSAGE by NukkitX")
+    @DeprecationDetails(since = "1.5.1.0-PN",
             reason = "Added by upstream with a different name",
             replaceWith = "SHOW_DEATH_MESSAGES")
     @SuppressWarnings("DeprecatedIsStillUsed")
     SHOW_DEATH_MESSAGE(SHOW_DEATH_MESSAGES.name, true),
-    
+
     SPAWN_RADIUS("spawnRadius"),
     TNT_EXPLODES("tntExplodes"),
     @PowerNukkitOnly EXPERIMENTAL_GAMEPLAY("experimentalGameplay"),
@@ -70,7 +70,7 @@ public enum GameRule {
             gameRuleString = "showDeathMessages";
         }
 
-        for (GameRule gameRule: values()) {
+        for (GameRule gameRule : values()) {
             if (gameRule.getName().equalsIgnoreCase(gameRuleString)) {
                 return Optional.of(gameRule);
             }

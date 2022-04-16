@@ -13,12 +13,12 @@ public class BlockButtonJungle extends BlockButtonWooden {
     public BlockButtonJungle(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return JUNGLE_BUTTON;
     }
-    
+
     @Override
     public String getName() {
         return "Jungle Button";

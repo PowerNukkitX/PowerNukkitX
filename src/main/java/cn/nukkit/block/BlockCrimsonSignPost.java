@@ -40,12 +40,12 @@ public class BlockCrimsonSignPost extends BlockSignPost {
     public Item toItem() {
         return Item.get(ItemID.CRIMSON_SIGN);
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;

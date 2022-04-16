@@ -135,18 +135,19 @@ public class BlockLava extends BlockLiquid {
 
     /**
      * 用于检验在地狱中岩浆是否可以引燃下界自然方块
+     *
      * @param spreadTarget 目标火焰点燃方块
      * @return 是否可以被点燃
      */
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     private boolean isNetherSpreadNotAllowed(Block spreadTarget) {
-        if(this.getLevel().isNether()) {
+        if (this.getLevel().isNether()) {
             final var id = spreadTarget.getId();
-            if(id >= CRIMSON_ROOTS && id <= NETHER_SPROUTS_BLOCK) {
+            if (id >= CRIMSON_ROOTS && id <= NETHER_SPROUTS_BLOCK) {
                 return false;
             }
-            if(id >= STRIPPED_CRIMSON_STEM && id <= WARPED_DOUBLE_SLAB) {
+            if (id >= STRIPPED_CRIMSON_STEM && id <= WARPED_DOUBLE_SLAB) {
                 return false;
             }
             return id < WARPED_HYPHAE || id > STRIPPED_WARPED_HYPHAE;
@@ -192,34 +193,34 @@ public class BlockLava extends BlockLiquid {
     }
 
     @Override
-    protected void checkForHarden(){ 
+    protected void checkForHarden() {
         Block colliding = null;
         Block down = this.getSide(BlockFace.DOWN);
-        for(int side = 1; side < 6; ++side){ //don't check downwards side
+        for (int side = 1; side < 6; ++side) { //don't check downwards side
             Block blockSide = this.getSide(BlockFace.fromIndex(side));
-            if(blockSide instanceof BlockWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockWater){
+            if (blockSide instanceof BlockWater || blockSide.getLevelBlockAtLayer(1) instanceof BlockWater) {
                 colliding = blockSide;
                 break;
             }
-            if(down instanceof BlockSoulSoil) {
+            if (down instanceof BlockSoulSoil) {
                 if (blockSide instanceof BlockBlueIce) {
                     liquidCollide(this, Block.get(BlockID.BASALT));
                     return;
                 }
             }
         }
-        if(colliding != null){
-            if(this.getDamage() == 0){
+        if (colliding != null) {
+            if (this.getDamage() == 0) {
                 this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN));
-            }else if(this.getDamage() <= 4){
+            } else if (this.getDamage() <= 4) {
                 this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE));
             }
         }
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay){
-        if(block instanceof BlockWater){
+    protected void flowIntoBlock(Block block, int newFlowDecay) {
+        if (block instanceof BlockWater) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
         } else {
             super.flowIntoBlock(block, newFlowDecay);

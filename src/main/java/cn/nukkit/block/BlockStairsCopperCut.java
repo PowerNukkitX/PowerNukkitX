@@ -55,13 +55,13 @@ public class BlockStairsCopperCut extends BlockStairsCopperBase {
         }
         switch (oxidizationLevel) {
             case UNAFFECTED:
-                return waxed? WAXED_CUT_COPPER_STAIRS : CUT_COPPER_STAIRS;
+                return waxed ? WAXED_CUT_COPPER_STAIRS : CUT_COPPER_STAIRS;
             case EXPOSED:
-                return waxed? WAXED_EXPOSED_CUT_COPPER_STAIRS : EXPOSED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_EXPOSED_CUT_COPPER_STAIRS : EXPOSED_CUT_COPPER_STAIRS;
             case WEATHERED:
-                return waxed? WAXED_WEATHERED_CUT_COPPER_STAIRS : WEATHERED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_WEATHERED_CUT_COPPER_STAIRS : WEATHERED_CUT_COPPER_STAIRS;
             case OXIDIZED:
-                return waxed? WAXED_OXIDIZED_CUT_COPPER_STAIRS : OXIDIZED_CUT_COPPER_STAIRS;
+                return waxed ? WAXED_OXIDIZED_CUT_COPPER_STAIRS : OXIDIZED_CUT_COPPER_STAIRS;
             default:
                 return getId();
         }

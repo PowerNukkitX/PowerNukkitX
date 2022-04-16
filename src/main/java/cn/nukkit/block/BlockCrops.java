@@ -42,7 +42,7 @@ public abstract class BlockCrops extends BlockFlowable {
     public BlockProperties getProperties() {
         return PROPERTIES;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getMinimumLightLevel() {

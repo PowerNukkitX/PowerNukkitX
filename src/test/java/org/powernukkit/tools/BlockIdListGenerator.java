@@ -47,18 +47,18 @@ public class BlockIdListGenerator {
                 }
             }
         } catch (Exception e) {
-            throw new IOException("Error reading the line "+count, e);
+            throw new IOException("Error reading the line " + count, e);
         }
-        
+
         for (int id = 0; id < Block.MAX_BLOCK_ID; id++) {
             String persistenceName = BlockStateRegistry.getPersistenceName(id);
-            if (!persistenceName.equals("blockid:"+id)) {
+            if (!persistenceName.equals("blockid:" + id)) {
                 ids.put(id, persistenceName);
             } else {
                 ids.putIfAbsent(id, "");
             }
         }
-        
+
         try (FileWriter fw = new FileWriter(file); BufferedWriter writer = new BufferedWriter(fw)) {
             for (Map.Entry<Integer, String> entry : ids.entrySet()) {
                 writer.write(entry.getKey().toString());

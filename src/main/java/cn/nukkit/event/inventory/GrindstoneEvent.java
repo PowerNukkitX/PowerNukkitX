@@ -43,11 +43,15 @@ public class GrindstoneEvent extends InventoryEvent implements Cancellable {
         return handlers;
     }
 
-    private final @Nonnull Item firstItem;
-    private final @Nonnull Item resultItem;
-    private final @Nonnull Item secondItem;
+    private final @Nonnull
+    Item firstItem;
+    private final @Nonnull
+    Item resultItem;
+    private final @Nonnull
+    Item secondItem;
     private int experienceDropped;
-    private final @Nonnull Player player;
+    private final @Nonnull
+    Player player;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

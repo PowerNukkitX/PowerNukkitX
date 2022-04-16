@@ -43,10 +43,14 @@ public class SmithingTableEvent extends InventoryEvent implements Cancellable {
         return handlers;
     }
 
-    private final @Nonnull Item equipmentItem;
-    private final @Nonnull Item resultItem;
-    private final @Nonnull Item ingredientItem;
-    private final @Nonnull Player player;
+    private final @Nonnull
+    Item equipmentItem;
+    private final @Nonnull
+    Item resultItem;
+    private final @Nonnull
+    Item ingredientItem;
+    private final @Nonnull
+    Player player;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

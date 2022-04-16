@@ -60,13 +60,13 @@ public class BlockNetherrack extends BlockSolid {
         }
 
         IntList options = new IntArrayList(2);
-        for(BlockFace face: BlockFace.Plane.HORIZONTAL) {
+        for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
             int id = getSide(face).getId();
             if ((id == CRIMSON_NYLIUM || id == WARPED_NYLIUM) && !options.contains(id)) {
                 options.add(id);
             }
         }
-        
+
         int nylium;
         int size = options.size();
         if (size == 0) {
@@ -76,7 +76,7 @@ public class BlockNetherrack extends BlockSolid {
         } else {
             nylium = options.getInt(ThreadLocalRandom.current().nextInt(size));
         }
-        
+
         if (level.setBlock(this, Block.get(nylium), true)) {
             if (player == null || !player.isCreative()) {
                 item.count--;

@@ -25,7 +25,7 @@ public class BeehiveUpdater implements Updater {
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {
         int blockId = state.getBlockId();
         if (blockId == BlockID.BEEHIVE || blockId == BlockID.BEE_NEST) {
-            @SuppressWarnings("deprecation") 
+            @SuppressWarnings("deprecation")
             int meta = state.getLegacyDamage();
             BlockFace face;
             int honeyLevel;
@@ -36,11 +36,11 @@ public class BeehiveUpdater implements Updater {
                 face = BlockFace.fromHorizontalIndex(meta & 0b11);
                 honeyLevel = (meta >> 2) & 0b111;
             }
-            
+
             if (honeyLevel > 5) {
                 honeyLevel = 5;
             }
-            
+
             int newMeta = (honeyLevel << 2) | face.getHorizontalIndex();
             if (newMeta != meta) {
                 section.setBlockState(x, y, z, state.withData(newMeta));

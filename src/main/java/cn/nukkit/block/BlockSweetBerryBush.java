@@ -80,7 +80,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public double getHardness() {
-        return getDamage() == 0? 0 : 0.25;
+        return getDamage() == 0 ? 0 : 0.25;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
             return true;
         }
 
-        if (age < 2){
+        if (age < 2) {
             return true;
         }
 
@@ -122,7 +122,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
         BlockHarvestEvent event = new BlockHarvestEvent(this,
                 new BlockSweetBerryBush(1),
-                new Item[]{ new ItemSweetBerries(0, amount) }
+                new Item[]{new ItemSweetBerries(0, amount)}
         );
 
         getLevel().getServer().getPluginManager().callEvent(event);
@@ -173,7 +173,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }
         return false;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static boolean isSupportValid(Block block) {
@@ -207,13 +207,13 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBox() {
-        return getDamage() > 0? this : null;
+        return getDamage() > 0 ? this : null;
     }
 
     @Override
     public Item[] getDrops(Item item) {
         int age = MathHelper.clamp(getDamage(), 0, 3);
-        
+
         int amount = 1;
         if (age > 1) {
             amount = 1 + ThreadLocalRandom.current().nextInt(2);
@@ -222,7 +222,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
             }
         }
 
-        return new Item[]{ new ItemSweetBerries(0, amount) };
+        return new Item[]{new ItemSweetBerries(0, amount)};
     }
 
     @Override

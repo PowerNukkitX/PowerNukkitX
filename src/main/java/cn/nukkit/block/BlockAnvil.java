@@ -36,7 +36,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(
-        DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
+            DIRECTION.exportingToItems(true), DAMAGE.exportingToItems(true)
     );
 
     public BlockAnvil() {
@@ -111,7 +111,7 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @PowerNukkitDifference(info = "Just like sand, it can now be placed anywhere and removed the sound for the player who placed, was duplicated", since = "1.3.0.0-PN")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
-        setBlockFace(player != null? player.getDirection().rotateY() : BlockFace.SOUTH);
+        setBlockFace(player != null ? player.getDirection().rotateY() : BlockFace.SOUTH);
         this.getLevel().setBlock(this, this, true);
         if (player == null) {
             this.getLevel().addSound(this, Sound.RANDOM_ANVIL_LAND, 1, 0.8F);
@@ -165,8 +165,8 @@ public class BlockAnvil extends BlockFallableMeta implements Faceable {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         BlockFace face = getBlockFace().rotateY();
-        double xOffset = Math.abs(face.getXOffset()) * (2/16.0);
-        double zOffset = Math.abs(face.getZOffset()) * (2/16.0);
+        double xOffset = Math.abs(face.getXOffset()) * (2 / 16.0);
+        double zOffset = Math.abs(face.getZOffset()) * (2 / 16.0);
         return new SimpleAxisAlignedBB(x + xOffset, y, z + zOffset, x + 1 - xOffset, y + 1, z + 1 - zOffset);
     }
 }

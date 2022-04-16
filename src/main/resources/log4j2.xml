@@ -2,7 +2,8 @@
 <Configuration status="WARN" packages="org.apache.logging.log4j.core,io.sentry.log4j2">
     <Appenders>
         <TerminalConsole name="Console">
-            <PatternLayout pattern="%cyan{%d{HH:mm:ss}} [%style{%highlight{%-5level}{STYLE=Logback}}] %minecraftFormatting{%msg}%n"/>
+            <PatternLayout
+                    pattern="%cyan{%d{HH:mm:ss}} [%style{%highlight{%-5level}{STYLE=Logback}}] %minecraftFormatting{%msg}%n"/>
         </TerminalConsole>
         <RollingRandomAccessFile name="File" fileName="logs/server.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level - %msg%n"/>
@@ -11,7 +12,7 @@
                 <OnStartupTriggeringPolicy/>
             </Policies>
         </RollingRandomAccessFile>
-        <Sentry name="Sentry" />
+        <Sentry name="Sentry"/>
     </Appenders>
     <Loggers>
         <Root level="INFO">

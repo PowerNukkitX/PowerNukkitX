@@ -24,7 +24,7 @@ public class BlockStone extends BlockSolidMeta {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperties PROPERTIES = new BlockProperties(STONE_TYPE);
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", replaceWith = "getStoneType()", reason = "Use the BlockProperty API instead")
     public static final int NORMAL = 0;
@@ -88,7 +88,7 @@ public class BlockStone extends BlockSolidMeta {
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public StoneType getStoneType() {

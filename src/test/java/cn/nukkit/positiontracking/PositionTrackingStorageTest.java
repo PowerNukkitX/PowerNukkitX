@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author joserobjr
  */
 class PositionTrackingStorageTest {
-    
+
     File temp;
     PositionTrackingStorage storage;
-    
+
     @BeforeEach
     void setUp() throws IOException {
         temp = File.createTempFile("PositionTrackingStorageTest_", ".pnt");
@@ -32,12 +32,12 @@ class PositionTrackingStorageTest {
         if (storage != null) {
             storage.close();
         }
-        assertTrue(!temp.isFile() || temp.delete(), "Failed to delete the temporary file "+temp);
+        assertTrue(!temp.isFile() || temp.delete(), "Failed to delete the temporary file " + temp);
     }
 
     @Test
     void constructor() throws IOException {
-        try(PositionTrackingStorage storage = new PositionTrackingStorage(1, temp, 2)) {
+        try (PositionTrackingStorage storage = new PositionTrackingStorage(1, temp, 2)) {
             assertEquals(1, storage.getStartingHandler());
             assertEquals(2, storage.getMaxHandler());
         }
@@ -46,16 +46,16 @@ class PositionTrackingStorageTest {
             assertEquals(1, storage.getStartingHandler());
             assertEquals(2, storage.getMaxHandler());
         }
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(IllegalArgumentException.class, () -> {
             PositionTrackingStorage storage = new PositionTrackingStorage(2, temp);
             storage.close();
         });
         assertTrue(temp.delete());
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(IllegalArgumentException.class, () -> {
             PositionTrackingStorage storage = new PositionTrackingStorage(0, temp);
             storage.close();
         });
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(IllegalArgumentException.class, () -> {
             PositionTrackingStorage storage = new PositionTrackingStorage(-1, temp);
             storage.close();
         });
@@ -65,7 +65,7 @@ class PositionTrackingStorageTest {
     void close() throws IOException {
         storage = new PositionTrackingStorage(1, temp);
         storage.close();
-        assertThrows(IOException.class, ()-> storage.addNewPosition(new PositionTracking("x", 1, 2, 3)));
+        assertThrows(IOException.class, () -> storage.addNewPosition(new PositionTracking("x", 1, 2, 3)));
         assertTrue(temp.delete());
     }
 
@@ -79,7 +79,7 @@ class PositionTrackingStorageTest {
         result = storage.addNewPosition(pos1);
         assertTrue(result.isPresent());
         assertEquals(11, result.getAsInt());
-        
+
         PositionTracking pos2 = new PositionTracking("test world", 2, 4, 6);
         result = storage.addNewPosition(pos2);
         assertTrue(result.isPresent());
@@ -110,7 +110,7 @@ class PositionTrackingStorageTest {
         assertEquals(pos2, storage.getPosition(13));
         assertEquals(pos2, storage.getPosition(12, false));
         assertEquals(pos2, storage.getPosition(13, false));
-        
+
         assertNull(storage.getPosition(14));
         assertNull(storage.getPosition(15));
         assertNull(storage.getPosition(16));
@@ -124,7 +124,7 @@ class PositionTrackingStorageTest {
         assertEquals(pos1, storage.getPosition(15, false));
         assertEquals(pos2, storage.getPosition(16, false));
         assertEquals(pos2, storage.getPosition(17, false));
-        
+
         assertTrue(storage.hasPosition(10));
         assertTrue(storage.hasPosition(11));
         assertTrue(storage.hasPosition(12));
@@ -138,7 +138,7 @@ class PositionTrackingStorageTest {
         assertTrue(storage.hasPosition(16, false));
         assertTrue(storage.hasPosition(17, false));
         assertFalse(storage.hasPosition(18, false));
-        
+
         assertTrue(storage.isEnabled(10));
         assertTrue(storage.isEnabled(11));
         assertTrue(storage.isEnabled(12));
@@ -148,7 +148,7 @@ class PositionTrackingStorageTest {
         assertFalse(storage.isEnabled(16));
         assertFalse(storage.isEnabled(17));
         assertFalse(storage.isEnabled(18));
-        
+
         storage.close();
         storage = new PositionTrackingStorage(10, temp);
 
@@ -199,7 +199,7 @@ class PositionTrackingStorageTest {
         assertFalse(storage.isEnabled(17));
         assertFalse(storage.isEnabled(18));
     }
-    
+
     @Test
     void sizeLimit() throws IOException {
         PositionTracking pos1 = new PositionTracking("pos1", 1, 2, 3);
@@ -227,7 +227,7 @@ class PositionTrackingStorageTest {
         assertTrue(result.getAsInt() == 6 || result.getAsInt() == 5);
         assertEquals(pos1, storage.getPosition(6));
         assertEquals(pos1, storage.getPosition(5));
-        
+
         // 2
 
         result = storage.addOrReusePosition(pos2);
@@ -242,7 +242,7 @@ class PositionTrackingStorageTest {
 
         result = storage.addNewPosition(pos2);
         assertFalse(result.isPresent());
-        
+
         result = storage.addNewPosition(pos1);
         assertFalse(result.isPresent());
 
@@ -256,7 +256,7 @@ class PositionTrackingStorageTest {
         assertTrue(result.isPresent());
         assertEquals(7, result.getAsInt());
         assertEquals(pos2, storage.getPosition(7));
-        
+
         // 3
 
         result = storage.addNewPosition(pos3);
@@ -275,7 +275,7 @@ class PositionTrackingStorageTest {
 
         IntList handlers2 = new IntArrayList();
         IntList handlers3 = new IntArrayList();
-        
+
         storage = new PositionTrackingStorage(300, temp);
         int handler1 = storage.addNewPosition(pos1).orElseThrow(IOException::new);
         handlers3.add(storage.addNewPosition(pos3).orElseThrow(IOException::new));
@@ -285,7 +285,7 @@ class PositionTrackingStorageTest {
         handlers3.add(storage.addNewPosition(pos3).orElseThrow(IOException::new));
         handlers2.add(storage.addNewPosition(pos2).orElseThrow(IOException::new));
         int handler4 = storage.addNewPosition(pos4, false).orElseThrow(IOException::new);
-        
+
         assertEquals(OptionalInt.of(handler1), storage.findTrackingHandler(pos1));
         assertEquals(handlers2, storage.findTrackingHandlers(pos2));
         assertEquals(handlers3, storage.findTrackingHandlers(pos3));
@@ -294,7 +294,7 @@ class PositionTrackingStorageTest {
         assertEquals(new IntArrayList(), storage.findTrackingHandlers(pos4, true));
         assertEquals(Collections.singletonList(handler1), storage.findTrackingHandlers(pos1));
         assertEquals(Collections.singletonList(handler4), storage.findTrackingHandlers(pos4, false));
-        
+
         assertTrue(handlers2.contains(storage.findTrackingHandler(pos2).orElse(0)));
         assertTrue(handlers3.contains(storage.findTrackingHandler(pos3).orElse(0)));
     }
@@ -308,14 +308,14 @@ class PositionTrackingStorageTest {
         assertTrue(storage.hasPosition(3));
         assertTrue(storage.hasPosition(3, true));
         assertTrue(storage.hasPosition(3, true));
-        
+
         assertFalse(storage.setEnabled(3, true));
         assertTrue(storage.setEnabled(3, false));
         assertFalse(storage.isEnabled(3));
         assertFalse(storage.hasPosition(3));
         assertFalse(storage.hasPosition(3, true));
         assertTrue(storage.hasPosition(3, false));
-        
+
         assertTrue(storage.setEnabled(3, true));
         assertTrue(storage.isEnabled(3));
         assertFalse(storage.setEnabled(3, true));
@@ -323,7 +323,7 @@ class PositionTrackingStorageTest {
         assertTrue(storage.hasPosition(3));
         assertTrue(storage.hasPosition(3, true));
         assertTrue(storage.hasPosition(3, true));
-        
+
         storage.invalidateHandler(3);
         assertFalse(storage.isEnabled(3));
         assertFalse(storage.setEnabled(3, true));
@@ -334,12 +334,12 @@ class PositionTrackingStorageTest {
         storage.close();
 
         long size = temp.length();
-        
+
         storage = new PositionTrackingStorage(3, temp);
         PositionTracking pos2 = new PositionTracking("pos2", 3, 2, 3);
         assertEquals(4, storage.addOrReusePosition(pos2).orElse(0));
         storage.close();
-        
+
         assertEquals(size, temp.length());
 
         storage = new PositionTrackingStorage(3, temp);

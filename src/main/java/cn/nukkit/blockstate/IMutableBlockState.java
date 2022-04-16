@@ -30,9 +30,10 @@ public interface IMutableBlockState extends IBlockState {
      * <p>States that doesn't exists in the other state are ignored.
      * <p>Only properties that matches each other will be copied, for example, if this state have an age property
      * going from 0 to 7 and the other have an age from 0 to 15, the age property won't change.
-     * @throws UnsupportedOperationException If the state is from a different block id and property copying isn't supported by the implementation
-     * @throws InvalidBlockStateException If the given storage has invalid data properties
+     *
      * @param state The states that will have the properties copied.
+     * @throws UnsupportedOperationException If the state is from a different block id and property copying isn't supported by the implementation
+     * @throws InvalidBlockStateException    If the given storage has invalid data properties
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -55,9 +56,10 @@ public interface IMutableBlockState extends IBlockState {
      * <p>If the implementation recognizes that the given state does not match the current set of properties
      * and needs an update, it may update and return a new state with a different block id and different set
      * of properties that represent the expected visual state. The this change can be detected with an {@code ==} operation.
-     * @throws UnsupportedOperationException If the state is from a different block id and property copying isn't supported by the implementation
-     * @throws InvalidBlockStateException If the given storage has invalid data properties
+     *
      * @param state The states that will have the properties copied.
+     * @throws UnsupportedOperationException If the state is from a different block id and property copying isn't supported by the implementation
+     * @throws InvalidBlockStateException    If the given storage has invalid data properties
      */
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -66,9 +68,9 @@ public interface IMutableBlockState extends IBlockState {
         setState(state);
         return this;
     }
-    
+
     /**
-     * @throws InvalidBlockStateException If the given storage has invalid data properties
+     * @throws InvalidBlockStateException         If the given storage has invalid data properties
      * @throws InvalidBlockStateDataTypeException If the storage class type is not supported
      */
     @PowerNukkitOnly
@@ -83,7 +85,7 @@ public interface IMutableBlockState extends IBlockState {
     void setDataStorageFromInt(@Nonnegative int storage);
 
     /**
-     * @throws InvalidBlockStateException If the given storage has invalid data properties
+     * @throws InvalidBlockStateException         If the given storage has invalid data properties
      * @throws InvalidBlockStateDataTypeException If the storage class type is not supported
      */
     @PowerNukkitOnly
@@ -103,7 +105,7 @@ public interface IMutableBlockState extends IBlockState {
 
     /**
      * @return if the storage was repaired
-     * @throws InvalidBlockStateException If repair is false and the storage has an invalid property state
+     * @throws InvalidBlockStateException         If repair is false and the storage has an invalid property state
      * @throws InvalidBlockStateDataTypeException If the storage has an unsupported number type
      */
     @PowerNukkitOnly
@@ -122,7 +124,7 @@ public interface IMutableBlockState extends IBlockState {
                     ex.addSuppressed(e);
                     throw ex;
                 }
-                
+
                 try {
                     setDataStorage(repairStorage(getBlockId(), bigInteger, getProperties(), callback));
                 } catch (InvalidBlockPropertyException | InvalidBlockStateException e2) {
@@ -163,7 +165,7 @@ public interface IMutableBlockState extends IBlockState {
             setDataStorageFromInt(itemBlockMeta);
             return;
         }
-        
+
         MutableBlockState item = itemBlockProperties.createMutableState(getBlockId());
         item.setDataStorageFromInt(itemBlockMeta);
 
@@ -222,10 +224,10 @@ public interface IMutableBlockState extends IBlockState {
     @SuppressWarnings("unchecked")
     @Nonnull
     static BigInteger repairStorage(
-            @Nonnegative int blockId, @Nonnull final BigInteger storage, @Nonnull final BlockProperties properties, 
+            @Nonnegative int blockId, @Nonnull final BigInteger storage, @Nonnull final BlockProperties properties,
             @Nullable final Consumer<BlockStateRepair> callback) {
         Validation.checkPositive("blockId", blockId);
-        
+
         int checkedBits = 0;
         int repairs = 0;
         BigInteger current = storage;
@@ -251,7 +253,7 @@ public interface IMutableBlockState extends IBlockState {
                         try {
                             next = ((BlockProperty<Serializable>) property).setValue(current, offset, proposed);
                         } catch (InvalidBlockPropertyException proposedFailed) {
-                            logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. "+stateRepair, proposedFailed);
+                            logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. " + stateRepair, proposedFailed);
                         }
                     }
                 }
@@ -270,13 +272,13 @@ public interface IMutableBlockState extends IBlockState {
                         null);
                 callback.accept(stateRepair);
                 if (!Integer.valueOf(0).equals(stateRepair.getProposedPropertyValue())) {
-                    logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. "+stateRepair, 
+                    logIMutableBlockState.warn("Could not apply the proposed repair, using the default proposal. " + stateRepair,
                             new IllegalStateException("Attempted to propose a value outside the properties boundary"));
                 }
             }
             current = next;
         }
-        
+
         return current;
     }
 

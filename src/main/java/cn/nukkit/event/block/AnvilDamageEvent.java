@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 @Since("1.1.1.0-PN")
 public class AnvilDamageEvent extends BlockEvent implements Cancellable {
-    
+
     private static final HandlerList handlers = new HandlerList();
 
     @Since("1.1.1.0-PN")
@@ -62,14 +62,14 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
         this.cause = Preconditions.checkNotNull(cause, "cause");
         this.newState = Preconditions.checkNotNull(newState, "newState");
     }
-    
+
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     @Nullable
     public CraftingTransaction getTransaction() {
         return transaction;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -123,7 +123,7 @@ public class AnvilDamageEvent extends BlockEvent implements Cancellable {
     @Since("1.4.0.0-PN")
     public int getNewDamage() {
         BlockState newBlockState = getNewBlockState();
-        return newBlockState.getProperties().contains(BlockAnvil.DAMAGE)? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
+        return newBlockState.getProperties().contains(BlockAnvil.DAMAGE) ? newBlockState.getIntValue(BlockAnvil.DAMAGE) : 0;
     }
 
     @PowerNukkitOnly

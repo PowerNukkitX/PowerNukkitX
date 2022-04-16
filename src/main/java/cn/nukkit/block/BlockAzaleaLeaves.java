@@ -18,12 +18,14 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockAzaleaLeaves extends BlockTransparentMeta{
+public class BlockAzaleaLeaves extends BlockTransparentMeta {
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
 
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
@@ -143,7 +145,7 @@ public class BlockAzaleaLeaves extends BlockTransparentMeta{
         }
         visited.put(hash, distance);
         for (BlockFace face : VISIT_ORDER) {
-            if(findLog(current.getSide(face), distance - 1, visited)) {
+            if (findLog(current.getSide(face), distance - 1, visited)) {
                 return true;
             }
         }

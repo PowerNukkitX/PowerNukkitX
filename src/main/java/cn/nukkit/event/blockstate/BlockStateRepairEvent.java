@@ -19,7 +19,7 @@ public class BlockStateRepairEvent extends Event {
     public static HandlerList getHandlers() {
         return handlers;
     }
-    
+
     private final BlockStateRepair repair;
 
     @PowerNukkitOnly

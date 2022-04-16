@@ -17,14 +17,16 @@ public enum StoneSlab4Type {
     @PowerNukkitOnly @Since("1.4.0.0-PN") STONE(BlockColor.STONE_BLOCK_COLOR),
     @PowerNukkitOnly @Since("1.4.0.0-PN") CUT_SANDSTONE(BlockColor.SAND_BLOCK_COLOR),
     @PowerNukkitOnly @Since("1.4.0.0-PN") CUT_RED_SANDSTONE(BlockColor.ORANGE_BLOCK_COLOR);
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final ArrayBlockProperty<StoneSlab4Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type_4", true, values());
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final ArrayBlockProperty<StoneSlab4Type> PROPERTY = new ArrayBlockProperty<>("stone_slab_type_4", true, values());
     private final BlockColor color;
 
     private final String englishName;
 
     StoneSlab4Type(BlockColor color) {
         this.color = color;
-        englishName = Arrays.stream(name().split("_")).map(name-> name.substring(0, 1) + name.substring(1).toLowerCase()).collect(Collectors.joining(" "));
+        englishName = Arrays.stream(name().split("_")).map(name -> name.substring(0, 1) + name.substring(1).toLowerCase()).collect(Collectors.joining(" "));
     }
 
     @PowerNukkitOnly

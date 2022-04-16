@@ -30,7 +30,7 @@ public class BlockSlabCrimson extends BlockSlab {
     public String getSlabName() {
         return "Crimson";
     }
-    
+
     @Override
     public int getId() {
         return CRIMSON_SLAB;

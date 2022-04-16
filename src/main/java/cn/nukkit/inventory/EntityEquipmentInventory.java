@@ -16,8 +16,12 @@ public class EntityEquipmentInventory extends BaseInventory {
 
     private final Entity entity;
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int MAIN_HAND = 0;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int OFFHAND = 1;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int MAIN_HAND = 0;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int OFFHAND = 1;
 
     /**
      * @param entity an Entity which implements {@link InventoryHolder}.
@@ -45,26 +49,26 @@ public class EntityEquipmentInventory extends BaseInventory {
     public Entity getEntity() {
         return entity;
     }
-    
+
     @Override
     public InventoryHolder getHolder() {
         return this.holder;
     }
 
     @Override
-    public void sendSlot( int index, Player... players ) {
-        for ( Player player : players ) {
-            this.sendSlot( index, player );
+    public void sendSlot(int index, Player... players) {
+        for (Player player : players) {
+            this.sendSlot(index, player);
         }
     }
 
     @Override
-    public void sendSlot( int index, Player player ) {
+    public void sendSlot(int index, Player player) {
         MobEquipmentPacket mobEquipmentPacket = new MobEquipmentPacket();
         mobEquipmentPacket.eid = this.entity.getId();
         mobEquipmentPacket.inventorySlot = mobEquipmentPacket.hotbarSlot = index;
-        mobEquipmentPacket.item = this.getItem( index );
-        player.dataPacket( mobEquipmentPacket );
+        mobEquipmentPacket.item = this.getItem(index);
+        player.dataPacket(mobEquipmentPacket);
     }
 
     @Override
@@ -75,49 +79,49 @@ public class EntityEquipmentInventory extends BaseInventory {
     }
 
     @Override
-    public boolean open( Player who ) {
-        return this.viewers.add( who );
+    public boolean open(Player who) {
+        return this.viewers.add(who);
     }
 
     @Override
-    public void onClose( Player who ) {
-        this.viewers.remove( who );
+    public void onClose(Player who) {
+        this.viewers.remove(who);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getItemInHand() {
-        return this.getItem( MAIN_HAND);
+        return this.getItem(MAIN_HAND);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item getItemInOffhand() {
-        return this.getItem( OFFHAND );
+        return this.getItem(OFFHAND);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean setItemInHand( Item item, boolean send ) {
-        return this.setItem( MAIN_HAND, item, send );
+    public boolean setItemInHand(Item item, boolean send) {
+        return this.setItem(MAIN_HAND, item, send);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public boolean setItemInOffhand(Item item, boolean send ) {
-        return this.setItem( OFFHAND, item, send );
+    public boolean setItemInOffhand(Item item, boolean send) {
+        return this.setItem(OFFHAND, item, send);
     }
 
     @Override
-    public void sendContents( Player target ) {
-        this.sendSlot( MAIN_HAND, target );
-        this.sendSlot( OFFHAND, target );
+    public void sendContents(Player target) {
+        this.sendSlot(MAIN_HAND, target);
+        this.sendSlot(OFFHAND, target);
     }
 
     @Override
-    public void sendContents( Player... target ) {
-        for ( Player player : target ) {
-            this.sendContents( player );
+    public void sendContents(Player... target) {
+        for (Player player : target) {
+            this.sendContents(player);
         }
     }
 }

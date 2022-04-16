@@ -18,7 +18,7 @@ import java.util.Optional;
 @ToString
 @Log4j2
 public class NetworkInventoryAction {
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final NetworkInventoryAction[] EMPTY_ARRAY = new NetworkInventoryAction[0];
@@ -291,7 +291,7 @@ public class NetworkInventoryAction {
                             case SOURCE_TYPE_ANVIL_MATERIAL:
                             case SOURCE_TYPE_ANVIL_RESULT:
                                 return new GrindstoneItemAction(this.oldItem, this.newItem, this.windowId,
-                                        this.windowId != SOURCE_TYPE_ANVIL_RESULT? 0 : ((GrindstoneInventory) inv).getResultExperience()
+                                        this.windowId != SOURCE_TYPE_ANVIL_RESULT ? 0 : ((GrindstoneInventory) inv).getResultExperience()
                                 );
                             default:
                                 return new SlotChangeAction(inv, this.inventorySlot, this.oldItem, this.newItem);

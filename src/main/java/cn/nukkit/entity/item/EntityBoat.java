@@ -67,7 +67,8 @@ public class EntityBoat extends EntityVehicle {
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
-    @Since("1.4.0.0-PN") public int woodID;
+    @Since("1.4.0.0-PN")
+    public int woodID;
 
     public EntityBoat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -324,18 +325,18 @@ public class EntityBoat extends EntityVehicle {
 
     private boolean computeBuoyancy(double waterDiff) {
         boolean hasUpdated = false;
-        waterDiff -= getBaseOffset()/4;
+        waterDiff -= getBaseOffset() / 4;
         if (waterDiff > SINKING_DEPTH && !sinking) {
             sinking = true;
         } else if (waterDiff < -SINKING_DEPTH && sinking) {
             sinking = false;
         }
 
-        if (waterDiff < -SINKING_DEPTH/1.7) {
-            this.motionY = Math.min(0.05/10, this.motionY + 0.005);
+        if (waterDiff < -SINKING_DEPTH / 1.7) {
+            this.motionY = Math.min(0.05 / 10, this.motionY + 0.005);
             hasUpdated = true;
         } else if (waterDiff < 0 || !sinking) {
-            this.motionY = this.motionY > (SINKING_MAX_SPEED/2) ? Math.max(this.motionY - 0.02, (SINKING_MAX_SPEED/2)) : this.motionY + SINKING_SPEED;
+            this.motionY = this.motionY > (SINKING_MAX_SPEED / 2) ? Math.max(this.motionY - 0.02, (SINKING_MAX_SPEED / 2)) : this.motionY + SINKING_SPEED;
             hasUpdated = true;
         }
         return hasUpdated;

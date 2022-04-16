@@ -7,7 +7,10 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -111,7 +114,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         if (!item.isNull()) {
             CompoundTag itemTag = NBTIO.putItemHelper(item);
             int networkFullId = item.getNetworkFullId();
-            int networkDamage = (networkFullId & 0x1) == 0x1? 0 : item.getDamage();
+            int networkDamage = (networkFullId & 0x1) == 0x1 ? 0 : item.getDamage();
             String namespacedId = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(
                     RuntimeItems.getNetworkId(networkFullId)
             );
@@ -176,12 +179,12 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 return null;
             }
         }
-        
+
         setItem(MinecraftItemID.AIR.get(0), true);
         setItemRotation(0);
         spawnToAll();
         level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);
-        
+
         return itemEntity;
     }
 }

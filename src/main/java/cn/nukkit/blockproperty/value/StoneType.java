@@ -42,7 +42,7 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     GRANITE("Granite", DIRT_BLOCK_COLOR),
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     GRANITE_SMOOTH("Polished Granite", DIRT_BLOCK_COLOR),
@@ -50,7 +50,7 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     DIORITE("Diorite", QUARTZ_BLOCK_COLOR),
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     DIORITE_SMOOTH("Polished Diorite", QUARTZ_BLOCK_COLOR),
@@ -62,7 +62,7 @@ public enum StoneType {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     ANDESITE_SMOOTH("Polished Andesite", STONE_BLOCK_COLOR);
-    
+
     private final String englishName;
     private final BlockColor color;
 

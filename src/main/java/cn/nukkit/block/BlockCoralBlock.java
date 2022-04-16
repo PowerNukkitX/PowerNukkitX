@@ -31,7 +31,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
     public BlockCoralBlock(int meta) {
         super(meta);
     }
-    
+
     @Override
     public int getId() {
         return CORAL_BLOCK;
@@ -58,10 +58,10 @@ public class BlockCoralBlock extends BlockSolidMeta {
             setDamage(getDamage() ^ 0x8);
         }
     }
-    
+
     @Override
     public String getName() {
-        String[] names = new String[] {
+        String[] names = new String[]{
                 "Tube Coral Block",
                 "Brain Coral Block",
                 "Bubble Coral Block",
@@ -79,14 +79,14 @@ public class BlockCoralBlock extends BlockSolidMeta {
             return name;
         }
     }
-    
+
     @Override
     public BlockColor getColor() {
         if (isDead()) {
             return BlockColor.GRAY_BLOCK_COLOR;
         }
-    
-        BlockColor[] colors = new BlockColor[] {
+
+        BlockColor[] colors = new BlockColor[]{
                 BlockColor.BLUE_BLOCK_COLOR,
                 BlockColor.PINK_BLOCK_COLOR,
                 BlockColor.PURPLE_BLOCK_COLOR,
@@ -99,27 +99,27 @@ public class BlockCoralBlock extends BlockSolidMeta {
         };
         return colors[getDamage() & 0x7];
     }
-    
+
     @Override
     public double getHardness() {
         return 7;
     }
-    
+
     @Override
     public double getResistance() {
         return 6.0;
     }
-    
+
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_PICKAXE;
     }
-    
+
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
@@ -131,7 +131,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
             if (!isDead()) {
                 for (BlockFace face : BlockFace.values()) {
                     if (getSideAtLayer(0, face) instanceof BlockWater || getSideAtLayer(1, face) instanceof BlockWater
-                        || getSideAtLayer(0, face) instanceof BlockIceFrosted || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
+                            || getSideAtLayer(0, face) instanceof BlockIceFrosted || getSideAtLayer(1, face) instanceof BlockIceFrosted) {
                         return type;
                     }
                 }
@@ -145,14 +145,14 @@ public class BlockCoralBlock extends BlockSolidMeta {
         }
         return 0;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             if (item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null) {
-                return new Item[]{ toItem() };
+                return new Item[]{toItem()};
             } else {
-                return new Item[]{ new ItemBlock(clone(), getDamage() | 0x8) };
+                return new Item[]{new ItemBlock(clone(), getDamage() | 0x8)};
             }
         } else {
             return Item.EMPTY_ARRAY;

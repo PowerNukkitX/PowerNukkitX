@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class ServerTest {
     public static void setInstance(Server server) {
-        assertDoesNotThrow(()-> {
-                    Field instance = Server.class.getDeclaredField("instance");
-                    instance.setAccessible(true);
-                    instance.set(null, server);
-                });
+        assertDoesNotThrow(() -> {
+            Field instance = Server.class.getDeclaredField("instance");
+            instance.setAccessible(true);
+            instance.set(null, server);
+        });
     }
-    
+
     public static void setConfig(Server server, Config config) {
-        assertDoesNotThrow(()-> {
+        assertDoesNotThrow(() -> {
             Field instance = Server.class.getDeclaredField("config");
             instance.setAccessible(true);
             instance.set(server, config);
@@ -26,7 +26,7 @@ public class ServerTest {
     }
 
     public static void setLanguage(Server server, BaseLang lang) {
-        assertDoesNotThrow(()-> {
+        assertDoesNotThrow(() -> {
             Field instance = Server.class.getDeclaredField("baseLang");
             instance.setAccessible(true);
             instance.set(server, lang);
@@ -34,7 +34,7 @@ public class ServerTest {
     }
 
     public static void setPluginManager(Server server, PluginManager pluginManager) {
-        assertDoesNotThrow(()-> {
+        assertDoesNotThrow(() -> {
             Field instance = Server.class.getDeclaredField("pluginManager");
             instance.setAccessible(true);
             instance.set(server, pluginManager);

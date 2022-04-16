@@ -52,7 +52,7 @@ public final class BlockProperties {
         Map<String, RegisteredBlockProperty> registry = new LinkedHashMap<>(properties.length);
         Map<String, RegisteredBlockProperty> byPersistenceName = new LinkedHashMap<>(properties.length);
         int offset = 0;
-        boolean allowItemExport = true;  
+        boolean allowItemExport = true;
         for (BlockProperty<?> property : properties) {
             Preconditions.checkArgument(property != null, "The properties can not contains null values");
             if (property.isExportedToItem()) {
@@ -69,7 +69,7 @@ public final class BlockProperties {
             Preconditions.checkArgument(registry.put(property.getName(), register) == null, "The property %s is duplicated by it's normal name", property.getName());
             Preconditions.checkArgument(byPersistenceName.put(property.getPersistenceName(), register) == null, "The property %s is duplicated by it's persistence name", property.getPersistenceName());
         }
-        
+
         this.byName = Collections.unmodifiableMap(registry);
         bitSize = offset;
     }
@@ -97,7 +97,7 @@ public final class BlockProperties {
             return new BigIntegerMutableBlockState(blockId, this);
         }
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean contains(String propertyName) {
@@ -124,8 +124,8 @@ public final class BlockProperties {
     public BlockProperty<?> getBlockProperty(String propertyName) {
         return requireRegisteredProperty(propertyName).property;
     }
+
     /**
-     * 
      * @throws NoSuchElementException If the property is not registered
      */
     @PowerNukkitOnly
@@ -173,7 +173,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -181,13 +181,13 @@ public final class BlockProperties {
     @SuppressWarnings("unchecked")
     public int setValue(int currentMeta, String propertyName, @Nullable Serializable value) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
-        @SuppressWarnings({"rawtypes", "java:S3740"}) 
+        @SuppressWarnings({"rawtypes", "java:S3740"})
         BlockProperty unchecked = registry.property;
         return unchecked.setValue(currentMeta, registry.offset, value);
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -201,7 +201,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -213,14 +213,14 @@ public final class BlockProperties {
         if (BooleanBlockProperty.class == property.getClass()) {
             return ((BooleanBlockProperty) property).setValue(currentMeta, registry.offset, value);
         }
-        
+
         @SuppressWarnings({"rawtypes", "java:S3740"})
         BlockProperty unchecked = registry.property;
         return unchecked.setValue(currentMeta, registry.offset, value);
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -239,7 +239,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -258,7 +258,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -279,7 +279,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -300,7 +300,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -325,7 +325,7 @@ public final class BlockProperties {
     @Since("1.4.0.0-PN")
     public int setPersistenceValue(int currentMeta, String propertyName, String persistenceValue) {
         RegisteredBlockProperty registry = requireRegisteredProperty(propertyName);
-        @SuppressWarnings("rawtypes") 
+        @SuppressWarnings("rawtypes")
         BlockProperty property = registry.property;
         int meta = property.getMetaForPersistenceValue(persistenceValue);
         Serializable value = property.getValueForMeta(meta);
@@ -357,7 +357,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException             If the property is not registered
      * @throws InvalidBlockPropertyValueException If the new value is not accepted by the property
      */
     @PowerNukkitOnly
@@ -372,7 +372,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -384,7 +384,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -396,7 +396,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -408,9 +408,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property value is not assignable to the given class
+     * @throws ClassCastException                If the property value is not assignable to the given class
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -421,9 +421,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property value is not assignable to the given class
+     * @throws ClassCastException                If the property value is not assignable to the given class
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -434,9 +434,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property value is not assignable to the given class
+     * @throws ClassCastException                If the property value is not assignable to the given class
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -447,7 +447,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -460,7 +460,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -473,7 +473,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -486,7 +486,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -497,7 +497,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -508,7 +508,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
 
@@ -520,7 +520,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -530,7 +530,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -540,7 +540,7 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
      */
     @PowerNukkitOnly
@@ -550,9 +550,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property don't hold boolean values
+     * @throws ClassCastException                If the property don't hold boolean values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -566,9 +566,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property don't hold boolean values
+     * @throws ClassCastException                If the property don't hold boolean values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -582,9 +582,9 @@ public final class BlockProperties {
     }
 
     /**
-     * @throws NoSuchElementException If the property is not registered
+     * @throws NoSuchElementException            If the property is not registered
      * @throws InvalidBlockPropertyMetaException If the meta contains invalid data
-     * @throws ClassCastException If the property don't hold boolean values
+     * @throws ClassCastException                If the property don't hold boolean values
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -753,10 +753,10 @@ public final class BlockProperties {
         public void validateMeta(BigInteger meta) {
             property.validateMeta(meta, offset);
         }
-        
+
         @Override
         public String toString() {
-            return offset+"-"+(offset+property.getBitSize())+":"+property.getName();
+            return offset + "-" + (offset + property.getBitSize()) + ":" + property.getName();
         }
     }
 }

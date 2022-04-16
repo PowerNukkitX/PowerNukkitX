@@ -19,7 +19,7 @@ public class BlockPlanksCrimson extends BlockSolid {
     public int getId() {
         return CRIMSON_PLANKS;
     }
-    
+
     @Override
     public String getName() {
         return "Crimson Planks";
@@ -34,7 +34,7 @@ public class BlockPlanksCrimson extends BlockSolid {
     public double getResistance() {
         return 3;
     }
-    
+
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
@@ -44,12 +44,12 @@ public class BlockPlanksCrimson extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.CRIMSON_STEM_BLOCK_COLOR;
     }
-    
+
     @Override
     public int getBurnChance() {
         return 0;
     }
-    
+
     @Override
     public int getBurnAbility() {
         return 0;

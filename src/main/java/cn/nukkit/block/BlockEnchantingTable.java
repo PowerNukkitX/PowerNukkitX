@@ -89,7 +89,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will return the right BB height")
     @Override
     public double getMaxY() {
-        return getY() + 12/16.0;
+        return getY() + 12 / 16.0;
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
                 nbt.put(tag.getKey(), tag.getValue());
             }
         }
-        
+
         return BlockEntityHolder.setBlockAndCreateEntity(this, true, true, nbt) != null;
     }
 
@@ -122,9 +122,9 @@ public class BlockEnchantingTable extends BlockTransparent implements BlockEntit
         if (player == null) {
             return true;
         }
-        
+
         BlockEntityEnchantTable enchantTable = getOrCreateBlockEntity();
-        if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag 
+        if (enchantTable.namedTag.contains("Lock") && enchantTable.namedTag.get("Lock") instanceof StringTag
                 && !enchantTable.namedTag.getString("Lock").equals(item.getCustomName())) {
             return false;
         }

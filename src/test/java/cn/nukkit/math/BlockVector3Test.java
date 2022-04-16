@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 @Since("FUTURE")
 class BlockVector3Test {
     BlockVector3 vector3;
+
     @Test
     void setGet() {
         vector3 = new BlockVector3();

@@ -88,7 +88,7 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
     @Override
     public int getStrongPower(BlockFace side) {
-        return isPowered() && side == getBlockFace()? 15 : 0;
+        return isPowered() && side == getBlockFace() ? 15 : 0;
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implemented")
@@ -183,13 +183,13 @@ public class BlockObserver extends BlockSolidMeta implements RedstoneComponent, 
     public boolean isPowered() {
         return getBooleanValue(POWERED);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setPowered(boolean powered) {
         setBooleanValue(POWERED, powered);
     }
-    
+
     @Override
     public BlockFace getBlockFace() {
         return getPropertyValue(FACING_DIRECTION);

@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EntityPlayerTest {
     @Mock
     SourceInterface sourceInterface;
-    
+
     @MockLevel
     Level level;
-    
+
     Player testedPlayer;
 
     @BeforeEach

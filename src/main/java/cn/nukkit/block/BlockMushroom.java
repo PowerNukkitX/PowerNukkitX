@@ -92,7 +92,7 @@ public abstract class BlockMushroom extends BlockFlowable {
             if (ev.isCancelled()) {
                 return false;
             }
-            for(Block block : ev.getBlockList()) {
+            for (Block block : ev.getBlockList()) {
                 this.level.setBlockAt(block.getFloorX(), block.getFloorY(), block.getFloorZ(), block.getId(), block.getDamage());
             }
             return true;

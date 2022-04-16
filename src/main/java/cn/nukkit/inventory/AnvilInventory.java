@@ -24,11 +24,15 @@ import java.util.stream.Stream;
  */
 public class AnvilInventory extends FakeBlockUIComponent {
 
-    @Since("1.4.0.0-PN") public static final int ANVIL_INPUT_UI_SLOT = 1;
-    @Since("1.4.0.0-PN") public static final int ANVIL_MATERIAL_UI_SLOT = 2;
-    @Since("1.4.0.0-PN") public static final int ANVIL_OUTPUT_UI_SLOT = CREATED_ITEM_OUTPUT_UI_SLOT;
+    @Since("1.4.0.0-PN")
+    public static final int ANVIL_INPUT_UI_SLOT = 1;
+    @Since("1.4.0.0-PN")
+    public static final int ANVIL_MATERIAL_UI_SLOT = 2;
+    @Since("1.4.0.0-PN")
+    public static final int ANVIL_OUTPUT_UI_SLOT = CREATED_ITEM_OUTPUT_UI_SLOT;
 
-    @PowerNukkitOnly public static final int OFFSET = 1;
+    @PowerNukkitOnly
+    public static final int OFFSET = 1;
     public static final int TARGET = 0;
     public static final int SACRIFICE = 1;
     public static final int RESULT = ANVIL_OUTPUT_UI_SLOT - 1; //1: offset
@@ -55,20 +59,20 @@ public class AnvilInventory extends FakeBlockUIComponent {
         }
     }
      */
-    
+
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Experimenting the new implementation by Nukkit")
     @PowerNukkitOnly
     public void updateResult() {
         Item target = getFirstItem();
         Item sacrifice = getSecondItem();
-        
+
         if (target.isNull() && sacrifice.isNull()) {
             setResult(Item.get(0));
             setLevelCost(0);
             return;
         }
-        
+
         setLevelCost(1);
         int extraCost = 0;
         int costHelper = 0;
@@ -91,21 +95,21 @@ public class AnvilInventory extends FakeBlockUIComponent {
                     setLevelCost(0);
                     return;
                 }
-        
-                for(repair2 = 0; repair > 0 && repair2 < sacrifice.getCount(); ++repair2) {
+
+                for (repair2 = 0; repair > 0 && repair2 < sacrifice.getCount(); ++repair2) {
                     repair3 = result.getDamage() - repair;
                     result.setDamage(repair3);
                     ++extraCost;
                     repair = Math.min(result.getDamage(), result.getMaxDurability() / 4);
                 }
-    
+
             } else {
                 if (!enchantedBook && (result.getId() != sacrifice.getId() || result.getMaxDurability() == -1)) {
                     setResult(Item.get(0));
                     setLevelCost(0);
                     return;
                 }
-        
+
                 if ((result.getMaxDurability() != -1) && !enchantedBook) {
                     repair = target.getMaxDurability() - target.getDamage();
                     repair2 = sacrifice.getMaxDurability() - sacrifice.getDamage();
@@ -115,20 +119,20 @@ public class AnvilInventory extends FakeBlockUIComponent {
                     if (finalDamage < 0) {
                         finalDamage = 0;
                     }
-            
+
                     if (finalDamage < result.getDamage()) {
                         result.setDamage(finalDamage);
                         extraCost += 2;
                     }
                 }
-        
+
                 Enchantment[] sacrificeEnchantments = sacrifice.getEnchantments();
                 boolean compatibleFlag = false;
                 boolean incompatibleFlag = false;
                 Iterator<Enchantment> sacrificeEnchIter = Arrays.stream(sacrificeEnchantments).iterator();
-        
+
                 iter:
-                while(true) {
+                while (true) {
                     Enchantment sacrificeEnchantment;
                     do {
                         if (!sacrificeEnchIter.hasNext()) {
@@ -139,29 +143,29 @@ public class AnvilInventory extends FakeBlockUIComponent {
                             }
                             break iter;
                         }
-                
+
                         sacrificeEnchantment = sacrificeEnchIter.next();
-                    } while(sacrificeEnchantment == null);
+                    } while (sacrificeEnchantment == null);
 
                     Enchantment resultEnchantment = result.getEnchantment(sacrificeEnchantment.id);
-                    int targetLevel = resultEnchantment != null? resultEnchantment.getLevel() : 0;
+                    int targetLevel = resultEnchantment != null ? resultEnchantment.getLevel() : 0;
                     int resultLevel = sacrificeEnchantment.getLevel();
                     resultLevel = targetLevel == resultLevel ? resultLevel + 1 : Math.max(resultLevel, targetLevel);
                     boolean compatible = sacrificeEnchantment.isItemAcceptable(target);
                     if (playerUI.getHolder().isCreative() || target.getId() == Item.ENCHANTED_BOOK) {
                         compatible = true;
                     }
-            
+
                     Iterator<Enchantment> targetEnchIter = Stream.of(target.getEnchantments()).iterator();
-            
-                    while(targetEnchIter.hasNext()) {
+
+                    while (targetEnchIter.hasNext()) {
                         Enchantment targetEnchantment = targetEnchIter.next();
                         if (targetEnchantment.id != sacrificeEnchantment.id && (!sacrificeEnchantment.isCompatibleWith(targetEnchantment) || !targetEnchantment.isCompatibleWith(sacrificeEnchantment))) {
                             compatible = false;
                             ++extraCost;
                         }
                     }
-            
+
                     if (!compatible) {
                         incompatibleFlag = true;
                     } else {
@@ -169,7 +173,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
                         if (resultLevel > sacrificeEnchantment.getMaxLevel()) {
                             resultLevel = sacrificeEnchantment.getMaxLevel();
                         }
-                        
+
                         enchantmentMap.put(sacrificeEnchantment.getId(), Enchantment.getEnchantment(sacrificeEnchantment.getId()).setLevel(resultLevel));
                         int rarity = 0;
                         int weight = sacrificeEnchantment.getWeight();
@@ -182,11 +186,11 @@ public class AnvilInventory extends FakeBlockUIComponent {
                         } else {
                             rarity = 8;
                         }
-                
+
                         if (enchantedBook) {
                             rarity = Math.max(1, rarity / 2);
                         }
-                
+
                         extraCost += rarity * Math.max(0, resultLevel - targetLevel);
                         if (target.getCount() > 1) {
                             extraCost = 40;
@@ -195,7 +199,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
                 }
             }
         }
-        
+
         if (StringUtil.isNullOrEmpty(this.newItemName)) {
             if (target.hasCustomName()) {
                 costHelper = 1;
@@ -207,26 +211,26 @@ public class AnvilInventory extends FakeBlockUIComponent {
             extraCost += costHelper;
             result.setCustomName(this.newItemName);
         }
-        
+
         setLevelCost(levelCost + extraCost);
         if (extraCost <= 0) {
             result = Item.get(0);
         }
-        
+
         if (costHelper == extraCost && costHelper > 0 && getLevelCost() >= 40) {
             setLevelCost(39);
         }
-        
+
         if (getLevelCost() >= 40 && !this.playerUI.getHolder().isCreative()) {
             result = Item.get(0);
         }
-        
+
         if (!result.isNull()) {
             int repairCost = getRepairCost(result);
             if (!sacrifice.isNull() && repairCost < getRepairCost(sacrifice)) {
                 repairCost = getRepairCost(sacrifice);
             }
-    
+
             if (costHelper != extraCost || costHelper == 0) {
                 repairCost = repairCost * 2 + 1;
             }
@@ -244,23 +248,23 @@ public class AnvilInventory extends FakeBlockUIComponent {
         }
         setResult(result);
     }
-    
+
     @Override
     public void onClose(Player who) {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
 
-        Item[] drops = new Item[]{ getFirstItem(), getSecondItem() };
+        Item[] drops = new Item[]{getFirstItem(), getSecondItem()};
         drops = who.getInventory().addItem(drops);
         for (Item drop : drops) {
             if (!who.dropItem(drop)) {
                 this.getHolder().getLevel().dropItem(this.getHolder().add(0.5, 0.5, 0.5), drop);
             }
         }
-        
+
         clear(TARGET);
         clear(SACRIFICE);
-        
+
         who.resetCraftingGridType();
     }
 
@@ -298,7 +302,8 @@ public class AnvilInventory extends FakeBlockUIComponent {
      */
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
             replaceWith = "getInputSlot()"
@@ -313,7 +318,8 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
             replaceWith = "getMaterialSlot()"
@@ -328,7 +334,8 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
             replaceWith = "getOutputSlot()"
@@ -386,13 +393,14 @@ public class AnvilInventory extends FakeBlockUIComponent {
         }
         return true;
     }
-    
+
     private static int getRepairCost(Item item) {
         return item.hasCompoundTag() && item.getNamedTag().contains("RepairCost") ? item.getNamedTag().getInt("RepairCost") : 0;
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
             replaceWith = "getCost()"
@@ -402,7 +410,8 @@ public class AnvilInventory extends FakeBlockUIComponent {
     }
 
     @PowerNukkitOnly
-    @Deprecated @DeprecationDetails(
+    @Deprecated
+    @DeprecationDetails(
             reason = "NukkitX added the samething with other name.",
             by = "PowerNukkit", since = "1.4.0.0-PN",
             replaceWith = "setCost(int)"
@@ -430,7 +439,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
     public void setNewItemName(String newItemName) {
         this.newItemName = newItemName;
     }
-    
+
     private static int getRepairMaterial(Item target) {
         switch (target.getId()) {
             case ItemID.WOODEN_SWORD:
@@ -439,7 +448,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
             case ItemID.WOODEN_AXE:
             case ItemID.WOODEN_HOE:
                 return BlockID.PLANKS;
-        
+
             case ItemID.IRON_SWORD:
             case ItemID.IRON_PICKAXE:
             case ItemID.IRON_SHOVEL:
@@ -454,7 +463,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
             case ItemID.CHAIN_LEGGINGS:
             case ItemID.CHAIN_BOOTS:
                 return ItemID.IRON_INGOT;
-        
+
             case ItemID.GOLD_SWORD:
             case ItemID.GOLD_PICKAXE:
             case ItemID.GOLD_SHOVEL:
@@ -465,7 +474,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
             case ItemID.GOLD_LEGGINGS:
             case ItemID.GOLD_BOOTS:
                 return ItemID.GOLD_INGOT;
-        
+
             case ItemID.DIAMOND_SWORD:
             case ItemID.DIAMOND_PICKAXE:
             case ItemID.DIAMOND_SHOVEL:
@@ -476,13 +485,13 @@ public class AnvilInventory extends FakeBlockUIComponent {
             case ItemID.DIAMOND_LEGGINGS:
             case ItemID.DIAMOND_BOOTS:
                 return ItemID.DIAMOND;
-        
+
             case ItemID.LEATHER_CAP:
             case ItemID.LEATHER_TUNIC:
             case ItemID.LEATHER_PANTS:
             case ItemID.LEATHER_BOOTS:
                 return ItemID.LEATHER;
-                
+
             case ItemID.STONE_SWORD:
             case ItemID.STONE_PICKAXE:
             case ItemID.STONE_SHOVEL:
@@ -500,7 +509,7 @@ public class AnvilInventory extends FakeBlockUIComponent {
             case ItemID.NETHERITE_LEGGINGS:
             case ItemID.NETHERITE_BOOTS:
                 return ItemID.NETHERITE_INGOT;
-                
+
             case ItemID.ELYTRA:
                 return ItemID.PHANTOM_MEMBRANE;
 

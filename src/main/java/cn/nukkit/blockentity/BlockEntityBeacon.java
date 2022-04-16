@@ -102,7 +102,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             return true;
         }
 
-        for(Map.Entry<Long, Player> entry : players.entrySet()) {
+        for (Map.Entry<Long, Player> entry : players.entrySet()) {
             Player p = entry.getValue();
 
             //If the player is in range
@@ -252,7 +252,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         this.getLevel().addSound(this, Sound.BEACON_POWER);
 
-        BeaconInventory inv = (BeaconInventory)player.getWindowById(Player.BEACON_WINDOW_ID);
+        BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
 
         inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
         return true;

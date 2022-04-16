@@ -4,12 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class GamemodeCommand extends VanillaCommand {
 
                 if (EntitySelector.hasArguments(args[1])) {
                     entities = EntitySelector.matchEntities(sender, args[1]);
-                } else if(sender.getServer().getPlayer(args[1]) != null){
+                } else if (sender.getServer().getPlayer(args[1]) != null) {
                     entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
@@ -81,7 +81,6 @@ public class GamemodeCommand extends VanillaCommand {
         } else {
             entities = List.of(sender.asPlayer());
         }
-
 
 
         if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival")) ||

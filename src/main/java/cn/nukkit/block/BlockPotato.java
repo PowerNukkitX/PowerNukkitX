@@ -42,7 +42,7 @@ public class BlockPotato extends BlockCrops {
                     Item.get(ItemID.POTATO)
             };
         }
-        
+
         int drops = 2;
         int attempts = 3 + Math.min(0, item.getEnchantmentLevel(Enchantment.ID_FORTUNE_DIGGING));
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -51,10 +51,10 @@ public class BlockPotato extends BlockCrops {
                 drops++;
             }
         }
-        
+
         if (random.nextInt(5) < 1) { // 1/5, 0.2
             return new Item[]{
-                    Item.get(ItemID.POTATO,0, drops),
+                    Item.get(ItemID.POTATO, 0, drops),
                     Item.get(ItemID.POISONOUS_POTATO)
             };
         } else {

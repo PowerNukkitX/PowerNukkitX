@@ -35,7 +35,7 @@ public class MovingObjectPosition {
     public Vector3 hitVector;
 
     public Entity entityHit;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
@@ -67,7 +67,7 @@ public class MovingObjectPosition {
             sideHit = -1;
             return;
         }
-        
+
         switch (face) {
             case DOWN:
                 sideHit = 0;
