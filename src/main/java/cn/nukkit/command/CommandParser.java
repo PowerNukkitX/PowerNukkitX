@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
-    private static final String TARGET_PATTERN = "(@[aeprs](?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]+\"|[A-Za-z][A-Za-z0-9]+)";
+    private static final String TARGET_PATTERN = "(\"@[aeprs](?:\\[.*])?\"|@[aeprs](?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]+\"|[A-Za-z][A-Za-z0-9]+)";
     private static final String WILDCARD_TARGET_PATTERN = "(\\S+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int

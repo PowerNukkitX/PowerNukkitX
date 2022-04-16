@@ -27,7 +27,7 @@ public final class EntitySelector {
         ENTITY_NAME2ID = builder.build();
     }
 
-    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[([^ ]*)])?$");
+    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[(.*)])?$");
     private static final Splitter ARGUMENT_SEPARATOR = Splitter.on(',').omitEmptyStrings();
     private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
 
@@ -265,8 +265,8 @@ public final class EntitySelector {
                 if (inverted) {
                     name = name.substring(1);
                 }
-                String f = name;
-                predicates.add(entity -> entity != null && entity.getName().replaceAll("_", " ").equals(f.replaceAll("_", " ")) != inverted);
+                String finalName = name;
+                predicates.add(entity -> entity != null && entity.getName().equals(finalName) != inverted);
             }
         }
         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
