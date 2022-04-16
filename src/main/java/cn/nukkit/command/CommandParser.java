@@ -11,7 +11,6 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -30,7 +29,7 @@ public class CommandParser {
     private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
-    private static Map<String,CommandParser> cache = new WeakHashMap<>();//using cache to improve performance
+    private static Map<String, CommandParser> cache = new WeakHashMap<>();//using cache to improve performance
 
     private final Command command;
     private final CommandSender sender;
@@ -47,7 +46,7 @@ public class CommandParser {
         matchCommandForm();
     }
 
-    public CommandParser(CommandParser parser){
+    public CommandParser(CommandParser parser) {
         this.command = parser.command;
         this.sender = parser.sender;
         this.args = parser.args;
@@ -100,57 +99,57 @@ public class CommandParser {
         return new TranslationContainer("commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
-    public String matchCommandForm(){
+    public String matchCommandForm() {
         StringBuilder argStringBuilder = new StringBuilder();
         for (String arg : this.args) {
             if (!arg.contains(" ")) {
                 argStringBuilder.append(arg).append(" ");
-            }else{
+            } else {
                 argStringBuilder.append("\"").append(arg).append("\" ");
             }
         }
-        for (int i = 1;i <= args.length + 1;i++) {//add spaces to make sure the last argument is matched
+        for (int i = 1; i <= args.length + 1; i++) {//add spaces to make sure the last argument is matched
             argStringBuilder.append(" ");
         }
         String argString = argStringBuilder.toString();
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
-        if (cache.containsKey(argString.toString())){//get from cache to improve performance
+        if (cache.containsKey(argString.toString())) {//get from cache to improve performance
             this.parsedArgs = cache.get(argString.toString()).parsedArgs;
             this.matchedCommandForm = cache.get(argString.toString()).matchedCommandForm;
             return this.matchedCommandForm;
         }
-        Map<String,String> commandPatterns = new HashMap<>();
-        Map<String,Integer> commandArgLength = new HashMap<>();//non-optional args' length
-        for (Map.Entry<String,CommandParameter[]> entry : command.getCommandParameters().entrySet()){
+        Map<String, String> commandPatterns = new HashMap<>();
+        Map<String, Integer> commandArgLength = new HashMap<>();//non-optional args' length
+        for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
             StringBuilder pattern = new StringBuilder();
             pattern.append("^");
             int length = 0;//non-optional args' length
-            for (CommandParameter parameter : entry.getValue()){
+            for (CommandParameter parameter : entry.getValue()) {
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT -> {
                             pattern.append(INT_PATTERN);
-                            if(parameter.optional){
+                            if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
                         }
                         case WILDCARD_INT -> {
                             pattern.append(WILDCARD_INT_PATTERN);
-                            if(parameter.optional){
+                            if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
                         }
                         case FLOAT, VALUE -> {
                             pattern.append(FLOAT_PATTERN);
-                            if(parameter.optional){
+                            if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
@@ -160,12 +159,12 @@ public class CommandParser {
                                 pattern.append(COORDINATE_PATTERN);
                                 if (parameter.optional) {
                                     pattern.append("?");
-                                }else{
+                                } else {
                                     length++;
                                 }
                                 if (i != 2) {
                                     pattern.append("\\s*");
-                                }else{
+                                } else {
                                     pattern.append("\\s+");
                                 }
                             }
@@ -175,12 +174,12 @@ public class CommandParser {
                                 pattern.append(BLOCK_COORDINATE_PATTERN);
                                 if (parameter.optional) {
                                     pattern.append("?");
-                                }else{
+                                } else {
                                     length++;
                                 }
                                 if (i != 2) {
                                     pattern.append("\\s*");
-                                }else{
+                                } else {
                                     pattern.append("\\s+");
                                 }
                             }
@@ -189,7 +188,7 @@ public class CommandParser {
                             pattern.append(TARGET_PATTERN);
                             if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
@@ -198,7 +197,7 @@ public class CommandParser {
                             pattern.append(WILDCARD_TARGET_PATTERN);
                             if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
@@ -207,7 +206,7 @@ public class CommandParser {
                             pattern.append(STRING_PATTERN);
                             if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
@@ -216,28 +215,32 @@ public class CommandParser {
                             pattern.append(MULTIPLE_STRING_PATTERN);
                             if (parameter.optional) {
                                 pattern.append("?");
-                            }else{
+                            } else {
                                 length++;
                             }
                             pattern.append("\\s+");
                         }
                     }
-                }else{
-                    pattern.append("(");
-                    for (String str : parameter.enumData.getValues()){
-                        for(char c : str.toCharArray()){
-                            if(c=='$' || c=='(' || c==')' || c=='*' || c=='+' || c=='.' || c=='[' || c=='?' || c=='\\' || c=='^' || c== '{' || c=='|'){
-                                pattern.append("\\");
+                } else {
+                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item")) {
+                        pattern.append(STRING_PATTERN);
+                    } else {
+                        pattern.append("(");
+                        for (String str : parameter.enumData.getValues()) {
+                            for (char c : str.toCharArray()) {
+                                if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '[' || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
+                                    pattern.append("\\");
+                                }
+                                pattern.append(c);
                             }
-                            pattern.append(c);
+                            pattern.append("|");
                         }
-                        pattern.append("|");
+                        pattern.deleteCharAt(pattern.length() - 1);
+                        pattern.append(")");
                     }
-                    pattern.deleteCharAt(pattern.length() - 1);
-                    pattern.append(")");
                     if (parameter.optional) {
                         pattern.append("?");
-                    }else{
+                    } else {
                         length++;
                     }
                     pattern.append("\\s+");
@@ -245,14 +248,14 @@ public class CommandParser {
             }
 
             pattern.append("$");
-            commandPatterns.put(entry.getKey(),pattern.toString());
-            commandArgLength.put(entry.getKey(),length);
+            commandPatterns.put(entry.getKey(), pattern.toString());
+            commandArgLength.put(entry.getKey(), length);
         }
 
-        for (Map.Entry<String,String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])){
+        for (Map.Entry<String, String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])) {
             Pattern pattern = Pattern.compile(entry.getValue());
             Matcher matcher = pattern.matcher(argString.toString());
-            if (!matcher.find()){
+            if (!matcher.find()) {
                 commandPatterns.remove(entry.getKey());
             }
         }
@@ -266,8 +269,8 @@ public class CommandParser {
         } else if (commandPatterns.size() > 1) {
             String maxLengthForm = commandPatterns.keySet().iterator().next();
             int maxLength = commandArgLength.get(maxLengthForm);
-            for (Map.Entry<String,String> entry : commandPatterns.entrySet()){
-                if (commandArgLength.get(entry.getKey()) > maxLength){
+            for (Map.Entry<String, String> entry : commandPatterns.entrySet()) {
+                if (commandArgLength.get(entry.getKey()) > maxLength) {
                     maxLength = commandArgLength.get(entry.getKey());
                     maxLengthForm = entry.getKey();
                 }
@@ -277,7 +280,7 @@ public class CommandParser {
             result = null;
         }
 
-        if (result == null){
+        if (result == null) {
             return null;
         }
 
@@ -294,7 +297,7 @@ public class CommandParser {
                     pArgBuilder.deleteCharAt(pArgBuilder.length() - 1);
                 }
                 pArg[i - 1] = pArgBuilder.toString();
-            }else{
+            } else {
                 pArg[i - 1] = null;
             }
         }
@@ -302,7 +305,7 @@ public class CommandParser {
 
         matchedCommandForm = result;
 
-        cache.put(argString.toString(),this);
+        cache.put(argString.toString(), this);
         return result;
     }
 
@@ -314,7 +317,7 @@ public class CommandParser {
         return level == null ? this.sender.getServer().getDefaultLevel() : level;
     }
 
-    public boolean hasNext(){
+    public boolean hasNext() {
         return this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null;
     }
 
@@ -332,10 +335,10 @@ public class CommandParser {
     }
 
     public int parseWildcardInt(int defaultValue) throws CommandSyntaxException {
-        return parseWildcardInt(defaultValue,true);
+        return parseWildcardInt(defaultValue, true);
     }
 
-    public int parseWildcardInt(int defaultValue,boolean moveCursor) throws CommandSyntaxException {
+    public int parseWildcardInt(int defaultValue, boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
             if (arg.equals("*")) {
@@ -360,7 +363,7 @@ public class CommandParser {
         }
     }
 
-    public double parseOffsetDouble(double base) throws CommandSyntaxException{
+    public double parseOffsetDouble(double base) throws CommandSyntaxException {
         return parseOffsetDouble(base, true);
     }
 
@@ -371,7 +374,7 @@ public class CommandParser {
                 if (!arg.substring(1).isEmpty()) {
                     double relativeCoordinate = Double.parseDouble(arg.substring(1));
                     return base + relativeCoordinate;
-                }else{
+                } else {
                     return base;
                 }
             }
@@ -416,7 +419,7 @@ public class CommandParser {
         return parseEnum(enumType, true);
     }
 
-    public <T extends Enum<T>> T parseEnum(Class<T> enumType,boolean moveCursor) throws CommandSyntaxException {
+    public <T extends Enum<T>> T parseEnum(Class<T> enumType, boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
             return Enum.valueOf(enumType, arg.toUpperCase());
@@ -435,7 +438,7 @@ public class CommandParser {
             String arg = this.parseString(moveCursor);
             if (EntitySelector.hasArguments(arg)) {
                 return EntitySelector.matchEntities(this.sender, arg);
-            }else{
+            } else {
                 return Collections.singletonList(Server.getInstance().getPlayer(arg));
             }
         } catch (Exception e) {
@@ -463,8 +466,8 @@ public class CommandParser {
         return this.parsePosition(baseVector, true);
     }
 
-    public Position parsePosition(Vector3 baseVector,boolean moveCursor) throws CommandSyntaxException {
-        return Position.fromObject(this.parseVector3(baseVector,moveCursor), this.getTargetLevel());
+    public Position parsePosition(Vector3 baseVector, boolean moveCursor) throws CommandSyntaxException {
+        return Position.fromObject(this.parseVector3(baseVector, moveCursor), this.getTargetLevel());
     }
 
     public Vector3 parseVector3() throws CommandSyntaxException {
@@ -475,13 +478,13 @@ public class CommandParser {
         return parseVector3(bv, true);
     }
 
-    public Vector3 parseVector3(Vector3 bv,boolean moveCursor) throws CommandSyntaxException {
+    public Vector3 parseVector3(Vector3 bv, boolean moveCursor) throws CommandSyntaxException {
         Vector3 baseVector = bv == null ? sender.getPosition() : bv;
-        baseVector = parseCoordinate(baseVector,CoordinateType.X);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Y);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Z);
-        if (!moveCursor){
-            this.cursor-=3;
+        baseVector = parseCoordinate(baseVector, CoordinateType.X);
+        baseVector = parseCoordinate(baseVector, CoordinateType.Y);
+        baseVector = parseCoordinate(baseVector, CoordinateType.Z);
+        if (!moveCursor) {
+            this.cursor -= 3;
         }
         return baseVector;
     }
@@ -492,25 +495,25 @@ public class CommandParser {
 
     public Vector2 parseVector2(boolean moveCursor) throws CommandSyntaxException {
         Vector3 baseVector = sender.getPosition();
-        baseVector = parseCoordinate(baseVector,CoordinateType.X,moveCursor);
-        baseVector = parseCoordinate(baseVector,CoordinateType.Z,moveCursor);
-        if (!moveCursor){
-            this.cursor-=2;
+        baseVector = parseCoordinate(baseVector, CoordinateType.X, moveCursor);
+        baseVector = parseCoordinate(baseVector, CoordinateType.Z, moveCursor);
+        if (!moveCursor) {
+            this.cursor -= 2;
         }
-        return new Vector2(baseVector.x,baseVector.z);
+        return new Vector2(baseVector.x, baseVector.z);
     }
 
-    public String parseAllRemain(){
+    public String parseAllRemain() {
         return parseAllRemain(true);
     }
 
-    public String parseAllRemain(boolean moveCursor){
+    public String parseAllRemain(boolean moveCursor) {
         StringBuilder sb = new StringBuilder();
         if (moveCursor) {
             while (this.hasNext()) {
                 sb.append(this.next()).append(" ");
             }
-        }else{
+        } else {
             for (int i = this.cursor; i < this.parsedArgs.length; i++) {
                 sb.append(this.parsedArgs[i]).append(" ");
             }
@@ -518,11 +521,11 @@ public class CommandParser {
         return sb.toString();
     }
 
-    private Vector3 parseCoordinate(Vector3 baseVector3,CoordinateType type) throws CommandSyntaxException {
-        return parseCoordinate(baseVector3,type,true);
+    private Vector3 parseCoordinate(Vector3 baseVector3, CoordinateType type) throws CommandSyntaxException {
+        return parseCoordinate(baseVector3, type, true);
     }
 
-    private Vector3 parseCoordinate(Vector3 baseVector3,CoordinateType type,boolean moveCursor) throws CommandSyntaxException {
+    private Vector3 parseCoordinate(Vector3 baseVector3, CoordinateType type, boolean moveCursor) throws CommandSyntaxException {
         try {
             String arg = this.next(moveCursor);
             if (arg.startsWith("~")) {
@@ -557,7 +560,7 @@ public class CommandParser {
         }
     }
 
-    enum CoordinateType{
+    enum CoordinateType {
         X, Y, Z
     }
 
