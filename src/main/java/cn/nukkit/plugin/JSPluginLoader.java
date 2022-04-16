@@ -37,7 +37,8 @@ public class JSPluginLoader implements PluginLoader {
         log.info(this.server.getLanguage().translateString("nukkit.plugin.load", pluginDescription.getFullName()));
         var jsPlugin = new CommonJSPlugin();
         jsPlugin.init(this, file, pluginDescription);
-        return null;
+        jsPlugin.onLoad();
+        return jsPlugin;
     }
 
     @Override

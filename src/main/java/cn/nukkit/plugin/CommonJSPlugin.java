@@ -33,7 +33,7 @@ public class CommonJSPlugin implements Plugin {
         this.jsPluginLoader = jsPluginLoader;
         this.server = jsPluginLoader.server;
         this.pluginDir = pluginDir;
-        this.mainJSFile = new File(pluginDir, "main.js");
+        this.mainJSFile = new File(pluginDir, pluginDescription.getMain());
         if (!mainJSFile.exists()) {
             try {
                 //noinspection ResultOfMethodCallIgnored
