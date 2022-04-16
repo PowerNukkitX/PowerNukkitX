@@ -32,7 +32,7 @@ public final class ESMFileSystem implements FileSystem {
     @Override
     public Path parsePath(String path) {
         if (path.startsWith("@")) {
-            path = path.replaceFirst("@", Server.getInstance().getPluginPath() + "/");
+            return Path.of(Server.getInstance().getPluginPath(), path);
         } else if (path.startsWith(":")) {
             return Path.of("inner-module", path.substring(1));
         }
