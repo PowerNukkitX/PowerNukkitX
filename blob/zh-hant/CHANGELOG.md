@@ -55,7 +55,6 @@
 ### 安全漏洞修復
 
 - [#16] 將Log4J更新至2.17.1，修復CVE-2021-44832。
-- [#130] 將[Network](https://github.com/CloudburstMC/Network)依賴更新至1.6.28，修復CVE-2020-7238。
 
 ## [Unreleased 1.6.0.0-PN] - Future ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -1087,7 +1086,6 @@ Need to switch languages?
 [#114]: https://github.com/PowerNukkitX/PowerNukkitX/issues/114
 [#116]: https://github.com/PowerNukkitX/PowerNukkitX/issues/116
 [#124]: https://github.com/PowerNukkitX/PowerNukkitX/issues/124
-[#130]: https://github.com/PowerNukkitX/PowerNukkitX/pull/130
 [#132]: https://github.com/PowerNukkitX/PowerNukkitX/pull/132
 [#136]: https://github.com/PowerNukkitX/PowerNukkitX/issues/136
 [#141]: https://github.com/PowerNukkitX/PowerNukkitX/pull/141
