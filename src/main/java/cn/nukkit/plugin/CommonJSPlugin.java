@@ -1,8 +1,10 @@
 package cn.nukkit.plugin;
 
+import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.plugin.js.ESMFileSystem;
 import cn.nukkit.utils.Config;
 import org.graalvm.polyglot.*;
 
@@ -11,8 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class CommonJSPlugin implements Plugin {
-
-    public static Engine jsEngine = null;
 
     protected String pluginName;
     protected File pluginDir;
@@ -27,7 +27,7 @@ public class CommonJSPlugin implements Plugin {
     private PluginLogger logger;
 
     protected Context jsContext = null;
-    protected Value jsGlobal = null;
+    protected Value jsExports = null;
 
     public final void init(JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
         this.jsPluginLoader = jsPluginLoader;
@@ -45,17 +45,24 @@ public class CommonJSPlugin implements Plugin {
         this.pluginName = pluginDescription.getName();
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
-        if (jsEngine == null) {
-            jsEngine = Engine.newBuilder().allowExperimentalOptions(true).build();
-        }
-        jsContext = Context.newBuilder("js")
+        var cbd = Context.newBuilder("js")
+                .fileSystem(new ESMFileSystem(pluginDir))
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLoading(true)
                 .allowHostClassLookup(className -> true)
-                .engine(jsEngine)
+                .allowIO(true)
+                .allowExperimentalOptions(true)
                 .option("js.nashorn-compat", "true")
-                .build();
+                .option("js.esm-eval-returns-exports", "true");
+        if(Nukkit.CHROME_DEBUG_PORT != -1) {
+            cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
+                    .option("inspect.Path", description.getName())
+                    .option("inspect.Suspend", "false")
+                    .option("inspect.Internal", "true")
+                    .option("inspect.SourcePath", pluginDir.getAbsolutePath());
+        }
+        jsContext = cbd.build();
         this.initialized = true;
     }
 
@@ -67,8 +74,9 @@ public class CommonJSPlugin implements Plugin {
     @Override
     public void onLoad() {
         try {
-            jsContext.eval(Source.newBuilder("js", mainJSFile).build());
-            jsGlobal = jsContext.getBindings("js");
+            jsExports = jsContext.eval(Source.newBuilder("js", mainJSFile)
+                    .name(mainJSFile.getName())
+                    .mimeType("application/javascript+module").build());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +84,7 @@ public class CommonJSPlugin implements Plugin {
 
     @Override
     public void onEnable() {
-        var mainFunc = jsGlobal.getMember("main");
+        var mainFunc = jsExports.getMember("main");
         if (mainFunc != null && mainFunc.canExecute()) {
             mainFunc.executeVoid();
         }
@@ -90,9 +98,10 @@ public class CommonJSPlugin implements Plugin {
 
     @Override
     public void onDisable() {
-        var closeFunc = jsGlobal.getMember("close");
-        if(closeFunc != null && closeFunc.canExecute()) {
+        var closeFunc = jsExports.getMember("close");
+        if (closeFunc != null && closeFunc.canExecute()) {
             closeFunc.executeVoid();
+            jsContext.close();
         }
         isEnabled = false;
     }

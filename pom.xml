@@ -409,6 +409,15 @@
                     <exclude>**/VERSION.txt</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>src/main/js</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.js</include>
+                    <include>**/*.mjs</include>
+                    <include>**/*.ts</include>
+                </includes>
+            </resource>
         </resources>
         <plugins>
             <plugin>

@@ -27,6 +27,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,8 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    @PowerNukkitOnly public final static String GIT_COMMIT = getGitCommit();
+    @PowerNukkitOnly
+    public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.13");
     public final static String CODENAME = dynamic("PowerNukkitX");
     @Deprecated
@@ -70,13 +72,14 @@ public class Nukkit {
     public static boolean TITLE = false;
     public static boolean shortTitle = requiresShortTitle();
     public static int DEBUG = 1;
+    public static int CHROME_DEBUG_PORT = -1;
 
     public static void main(String[] args) {
         AtomicBoolean disableSentry = new AtomicBoolean(false);
         Sentry.init(options -> {
             options.setDsn("https://a99f9e0c50424fff9f96feb2fd94c22f:6891b003c5874fa4bf407fe45035e3f1@o505263.ingest.sentry.io/5593371");
-            options.setRelease(getVersion()+"-"+getGitCommit());
-            options.setBeforeSend((event, hint)-> {
+            options.setRelease(getVersion() + "-" + getGitCommit());
+            options.setBeforeSend((event, hint) -> {
                 if (disableSentry.get()) {
                     return null;
                 }
@@ -140,7 +143,7 @@ public class Nukkit {
         }
 
         // Force IPv4 since Nukkit is not compatible with IPv6
-        System.setProperty("java.net.preferIPv4Stack" , "true");
+        System.setProperty("java.net.preferIPv4Stack", "true");
         System.setProperty("log4j.skipJansi", "false");
         System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
 
@@ -160,6 +163,7 @@ public class Nukkit {
         OptionSpec<String> vSpec = parser.accepts("v", "Set verbosity of logging").withRequiredArg().ofType(String.class);
         OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
         OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
+        OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -192,6 +196,10 @@ public class Nukkit {
         }
 
         String language = options.valueOf(languageSpec);
+
+        if (options.has(chromeDebugPortSpec)) {
+            CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
+        }
 
         try {
             if (TITLE) {
@@ -229,7 +237,7 @@ public class Nukkit {
     private static boolean requiresShortTitle() {
         //Shorter title for windows 8/2012
         String osName = System.getProperty("os.name").toLowerCase();
-        return osName.contains("windows") &&(osName.contains("windows 8") || osName.contains("2012"));
+        return osName.contains("windows") && (osName.contains("windows 8") || osName.contains("2012"));
     }
 
     private static Properties getGitInfo() {
