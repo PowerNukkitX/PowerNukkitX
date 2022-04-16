@@ -16,7 +16,7 @@ public class EntityScorer implements Scorer {
         this.entityUuid = uuid;
     }
 
-    public EntityScorer(Entity entity) {
+    public EntityScorer(Entity entity){
         this.entityUuid = entity.getUniqueId();
     }
 

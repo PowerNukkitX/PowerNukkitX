@@ -14,7 +14,7 @@ import java.util.Optional;
 public abstract class AbstractScoreboardManager {
 
     protected Map<String, Scoreboard> scoreboards;
-    protected Map<DisplaySlot, String> display;
+    protected Map<DisplaySlot,String> display;
     protected ScoreboardStorage storage;
     @Getter
     protected boolean reading = true;
@@ -38,15 +38,15 @@ public abstract class AbstractScoreboardManager {
         return new HashMap<>(scoreboards);
     }
 
-    public Scoreboard getScoreboard(String name) {
+    public Scoreboard getScoreboard(String name){
         return scoreboards.get(name);
     }
 
-    public boolean hasScoreboard(String name) {
+    public boolean hasScoreboard(String name){
         return scoreboards.containsKey(name);
     }
 
-    public abstract void setDisplay(DisplaySlot slot, String name);
+    public abstract void setDisplay(DisplaySlot slot,String name);
 
     public abstract void removeDisplay(DisplaySlot slot);
 
@@ -54,28 +54,28 @@ public abstract class AbstractScoreboardManager {
         return new HashMap<>(display);
     }
 
-    public String getDisplay(DisplaySlot slot) {
+    public String getDisplay(DisplaySlot slot){
         return display.get(slot);
     }
 
-    public DisplaySlot getDisplaySlot(String name) {
-        for (DisplaySlot slot : display.keySet()) {
-            if (display.get(slot).equals(name)) {
+    public DisplaySlot getDisplaySlot(String name){
+        for(DisplaySlot slot : display.keySet()){
+            if(display.get(slot).equals(name)){
                 return slot;
             }
         }
         return null;
     }
 
-    public boolean isScoreboardOnDisplay(String name) {
+    public boolean isScoreboardOnDisplay(String name){
         return display.containsValue(name);
     }
 
-    public boolean isScoreboardOnDisplaySlot(String name, DisplaySlot slot) {
+    public boolean isScoreboardOnDisplaySlot(String name,DisplaySlot slot){
         return display.get(slot) != null && display.get(slot).equals(name);
     }
 
-    public boolean hasScoreboardOnDisplaySlot(DisplaySlot slot) {
+    public boolean hasScoreboardOnDisplaySlot(DisplaySlot slot){
         return display.get(slot) != null;
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractScoreboardManager {
 
     public abstract void onPlayerQuit(Player player);
 
-    public void updateAllScoreTag() {
+    public void updateAllScoreTag(){
         if (reading)
             return;
         if (hasScoreboardOnDisplaySlot(DisplaySlot.BELOW_NAME) && hasScoreboard(display.get(DisplaySlot.BELOW_NAME))) {
@@ -96,14 +96,14 @@ public abstract class AbstractScoreboardManager {
                     }
                 }
             }
-        } else {
+        }else{
             Server.getInstance().getOnlinePlayers().values().forEach(player -> {
                 player.setScoreTag("");
             });
         }
     }
 
-    public void updateScoreTag(Player player) {
+    public void updateScoreTag(Player player){
         if (reading)
             return;
         if (hasScoreboardOnDisplaySlot(DisplaySlot.BELOW_NAME) && hasScoreboard(display.get(DisplaySlot.BELOW_NAME))) {
@@ -117,7 +117,7 @@ public abstract class AbstractScoreboardManager {
                     }
                 }
             }
-        } else {
+        }else{
             player.setScoreTag("");
         }
     }

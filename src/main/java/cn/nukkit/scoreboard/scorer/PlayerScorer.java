@@ -21,7 +21,7 @@ public class PlayerScorer implements Scorer {
         this.uuid = UUID.fromString(uuid);
     }
 
-    public PlayerScorer(Player player) {
+    public PlayerScorer(Player player){
         this.uuid = player.getUniqueId();
     }
 
@@ -45,7 +45,7 @@ public class PlayerScorer implements Scorer {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PlayerScorer playerScorer) {
+        if(obj instanceof PlayerScorer playerScorer) {
             return uuid.equals(playerScorer.uuid);
         }
         return false;

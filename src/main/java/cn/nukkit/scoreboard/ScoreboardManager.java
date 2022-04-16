@@ -18,79 +18,79 @@ public class ScoreboardManager extends AbstractScoreboardManager {
     }
 
     @Override
-    public void addScoreboard(Scoreboard scoreboard) {
-        scoreboards.put(scoreboard.getObjectiveName(), scoreboard);
+    public void addScoreboard(Scoreboard scoreboard){
+        scoreboards.put(scoreboard.getObjectiveName(),scoreboard);
         storage.saveScoreboard(scoreboard);
     }
 
     @Override
-    public void removeScoreboard(String name) {
+    public void removeScoreboard(String name){
         RemoveObjectivePacket pk = new RemoveObjectivePacket();
         pk.objectiveName = name;
         for (Player player : Server.getInstance().getOnlinePlayers().values()) {
             player.dataPacket(pk);
         }
         scoreboards.remove(name);
-        if (isScoreboardOnDisplay(name)) {
+        if (isScoreboardOnDisplay(name)){
             removeDisplay(getDisplaySlot(name));
         }
         storage.removeScoreboard(name);
     }
 
     @Override
-    public void setDisplay(DisplaySlot slot, String name) {
-        display.put(slot, name);
+    public void setDisplay(DisplaySlot slot, String name){
+        display.put(slot,name);
         storage.saveDisplay(display);
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
-            player.sendScoreboard(this.scoreboards.get(name), slot);
+            player.sendScoreboard(this.scoreboards.get(name),slot);
         });
         if (slot == DisplaySlot.BELOW_NAME)
             this.updateAllScoreTag();
     }
 
     @Override
-    public void removeDisplay(DisplaySlot slot) {
+    public void removeDisplay(DisplaySlot slot){
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
             player.clearScoreboardSlot(slot);
         });
-        display.put(slot, null);
+        display.put(slot,null);
         storage.saveDisplay(display);
         if (slot == DisplaySlot.BELOW_NAME)
             this.updateAllScoreTag();
     }
 
     @Override
-    public void onPlayerJoin(Player player) {
+    public void onPlayerJoin(Player player){
         sendAllDisplayTo(player);
         updateScoreTag(player);
     }
 
     @Override
-    public void onPlayerQuit(Player player) {
+    public void onPlayerQuit(Player player){
         //in order to clear the old score information so that we can avoid "offline player"
         hideOfflinePlayerScore(player);
     }
 
-    private void sendDisplayToAll(DisplaySlot slot) {
+    private void sendDisplayToAll(DisplaySlot slot){
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
-            sendDisplayTo(slot, player);
+            sendDisplayTo(slot,player);
         });
     }
 
-    private void sendDisplayTo(DisplaySlot slot, ScoreboardSendable sendable) {
+    private void sendDisplayTo(DisplaySlot slot, ScoreboardSendable sendable){
         if (display.get(slot) != null)
-            sendable.sendScoreboard(this.scoreboards.get(this.display.get(slot)), slot);
+            sendable.sendScoreboard(this.scoreboards.get(this.display.get(slot)),slot);
     }
 
-    private void sendAllDisplayToAll() {
+    private void sendAllDisplayToAll(){
         Server.getInstance().getOnlinePlayers().values().forEach(player -> {
             sendAllDisplayTo(player);
         });
     }
 
-    private void sendAllDisplayTo(ScoreboardSendable sendable) {
-        for (DisplaySlot slot : DisplaySlot.values()) {
-            sendDisplayTo(slot, sendable);
+    private void sendAllDisplayTo(ScoreboardSendable sendable){
+        for(DisplaySlot slot : DisplaySlot.values()){
+            sendDisplayTo(slot,sendable);
         }
     }
 
