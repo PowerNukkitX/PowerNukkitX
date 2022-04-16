@@ -223,21 +223,25 @@ public class CommandParser {
                         }
                     }
                 }else{
-                    pattern.append("(");
-                    for (String str : parameter.enumData.getValues()){
-                        for(char c : str.toCharArray()){
-                            if(c=='$' || c=='(' || c==')' || c=='*' || c=='+' || c=='.' || c=='[' || c=='?' || c=='\\' || c=='^' || c== '{' || c=='|'){
-                                pattern.append("\\");
+                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item")) {
+                        pattern.append(STRING_PATTERN);
+                    } else {
+                        pattern.append("(");
+                        for (String str : parameter.enumData.getValues()) {
+                            for (char c : str.toCharArray()) {
+                                if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '[' || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
+                                    pattern.append("\\");
+                                }
+                                pattern.append(c);
                             }
-                            pattern.append(c);
+                            pattern.append("|");
                         }
-                        pattern.append("|");
+                        pattern.deleteCharAt(pattern.length() - 1);
+                        pattern.append(")");
                     }
-                    pattern.deleteCharAt(pattern.length() - 1);
-                    pattern.append(")");
                     if (parameter.optional) {
                         pattern.append("?");
-                    }else{
+                    } else {
                         length++;
                     }
                     pattern.append("\\s+");
