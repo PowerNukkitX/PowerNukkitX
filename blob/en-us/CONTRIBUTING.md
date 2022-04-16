@@ -6,11 +6,11 @@
 
 ## CataLogs
 
-1. <a href="#CataLogs-Faq#1">🧾 I would like to submit an issue!</a>
-2. <a href="#CataLogs-Faq#2">💡 I would like to submit a pull request!</a>
-3. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
+1. <a href="#Catalogs-Faq#1">🧾 I would like to submit an issue!</a>
+2. <a href="#Catalogs-Faq#2">💡 I would like to submit a pull request!</a>
+3. <a href="#Catalogs-Swlang">🌐 Switch Languages / 切换语言</a>
 
-## <a id="CataLogs-Faq#1"></a>🧾 I would like to submit an issue!
+## <a id="Catalogs-Faq#1"></a>🧾 I would like to submit an issue!
 
 Issues, bug reports and feature suggestions are welcomed, though please keep in mind that at any point in time, hundreds of issues are open, which vary in severity and the amount of time needed to address them. As such it's not uncommon for issues to remain unresolved for a long time or even closed outright if they are deemed not important enough to fix in the foreseeable future.
 
@@ -41,7 +41,7 @@ Issues, bug reports and feature suggestions are welcomed, though please keep in 
 
   If an issue has already been created, saying that you also experience it without providing any additional details doesn't really help us in any way. To express support for a proposal or indicate that you are also affected by a particular bug, you can use comment reactions instead.
 
-## <a id="CataLogs-Faq#2"></a>💡  I would like to submit a pull request! 
+## <a id="Catalogs-Faq#2"></a>💡  I would like to submit a pull request! 
 <!--修改链接-->
 We also welcome pull requests from unaffiliated contributors. The [issue tracker](https://github.com/powernukkitx/powernukkitx/issues) should provide plenty of issues that you can work on; we also mark issues that we think would be good for newcomers with the [`good first issue`](https://github.com/powernukkitx/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue) label.
 
@@ -111,13 +111,13 @@ Here are some key things to note before jumping in:
 
   When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
 
-## <a id="CataLogs-Swlang"></a>🌐 Multilingual documentation
+## <a id="Catalogs-Swlang"></a>🌐 Multilingual documentation
 
 ---
 Need to switch languages? 
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-cht/CONTRIBUTING.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)

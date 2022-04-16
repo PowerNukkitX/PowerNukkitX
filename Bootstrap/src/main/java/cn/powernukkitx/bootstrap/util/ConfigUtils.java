@@ -75,4 +75,12 @@ public final class ConfigUtils {
     public static String forceLang() {
         return configMap.get("language");
     }
+
+    public static String preferredJVM() {
+        return configMap.getOrDefault("preferredJVM", "GraalVM");
+    }
+
+    public static boolean displayLaunchCommand() {
+        return Boolean.parseBoolean(configMap.getOrDefault("displayLaunchCommand", "false"));
+    }
 }

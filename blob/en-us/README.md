@@ -4,7 +4,7 @@
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-cht/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
@@ -20,16 +20,20 @@ Attention:
 
 *  PowerNukkitX requires a minimum Java version of 17
 
+* Add: If your server cannot install Java17, you can also use the [BootStrap](https://ci.lt-name.com/job/PowerNukkitX/job/master/) that we provide
+
 Join US:
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
 
 What's new in PowerNukkitX? Let's See：
 
-* Support for 1.18.10 protocol (under refinement).
-* Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
-* Native support for The Nether world, no need to install additional plug-in patches, etc.
-* Todo...
+1. Support for 1.18.10 protocol (under refinement).
+2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
+3. Native support for The Nether world, no need to install additional plug-in patches, etc.
+4. Native support for vanilla commands and command block, etc. (under refinement)
+5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
+6. Todo...
 
 ---
 

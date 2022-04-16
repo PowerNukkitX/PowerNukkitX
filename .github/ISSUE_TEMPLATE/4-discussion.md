@@ -1,5 +1,5 @@
 ---
-name: "\U0001F4AC Start a discussion about PowerNukkit"
+name: "\U0001F4AC Start a discussion about PowerNukkitX"
 about: Discuss ideas, solutions, give feedback, cheers, etc
 title: ''
 labels: 'Type: dialog'
@@ -14,9 +14,9 @@ assignees: ''
 
 ### 📋 Debug information
 <!-- ⚠ This information may help us to give you better answers but they are not required ⚠ -->
-<!-- Use the 'debugpaste upload' command in PowerNukkit -->
+<!-- Use the 'debugpaste upload' command in PowerNukkitX -->
 <!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
-* PowerNukkit version: ✍
+* PowerNukkitX version: ✍
 * Debug link: ✍
 
 ### 💬 Anything else we should know?

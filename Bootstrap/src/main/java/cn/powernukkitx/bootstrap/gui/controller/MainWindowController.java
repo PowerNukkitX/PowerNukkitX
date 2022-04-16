@@ -7,10 +7,7 @@ import cn.powernukkitx.bootstrap.gui.model.values.TerminalTty;
 import cn.powernukkitx.bootstrap.gui.view.View;
 import cn.powernukkitx.bootstrap.gui.view.impl.main.MainWindowView;
 import cn.powernukkitx.bootstrap.gui.view.impl.main.TerminalView;
-import cn.powernukkitx.bootstrap.info.locator.JarLocator;
-import cn.powernukkitx.bootstrap.info.locator.JavaLocator;
-import cn.powernukkitx.bootstrap.info.locator.Location;
-import cn.powernukkitx.bootstrap.info.locator.Locator;
+import cn.powernukkitx.bootstrap.info.locator.*;
 import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import com.jediterm.terminal.util.Pair;
 
@@ -128,13 +125,34 @@ public final class MainWindowController extends CommonController {
                 final String fileName;
                 try {
                     fileName = get().getSecond().getFile().getName();
-                    final String cmd = ConfigUtils.startCommand()
+                    String cmd = ConfigUtils.startCommand()
                             .replace("%JAVA%", get().getFirst().getFile().getAbsolutePath())
                             .replace("%PNX%", fileName)
                             .replace("%CP_SPLIT%", Locator.platformSplitter());
+                    // 添加GraalJIT
+                    List<Location<String>> graalJitLocations = new GraalJitLocator().locate();
+                    if (graalJitLocations.size() == 2) {
+                        cmd = cmd.replace("%GRAAL_JIT%", graalJitLocations.get(0).getFile().getAbsolutePath() + Locator.platformSplitter() + graalJitLocations.get(1).getFile().getAbsolutePath());
+                    } else {
+                        cmd = cmd.replace("%GRAAL_JIT%", "").replace("-XX:+EnableJVMCI -XX:+UseJVMCICompiler ", "");
+                    }
+                    cmd = cmd.replace("--upgrade-module-path=" + Locator.platformSplitter() + " ", "");
+                    // 添加Graal Module
+                    List<Location<Void>> graalModuleLocations = new GraalModuleLocator().locate();
+                    if (graalModuleLocations.size() != 0) {
+                        StringBuilder sb = new StringBuilder();
+                        for(Location<Void> graalModuleLocation : graalModuleLocations) {
+                            sb.append(Locator.platformSplitter()).append(graalModuleLocation.getFile().getAbsolutePath());
+                        }
+                        cmd = cmd.replace("%GRAAL_SDK%", sb.toString().replaceFirst(Locator.platformSplitter(), ""));
+                    } else {
+                        cmd = cmd.replace("%GRAAL_SDK%", "");
+                    }
+                    cmd = cmd.replace("--module-path=" + Locator.platformSplitter() + " ", "");
+                    final String finalCmd = cmd;
                     pnxThread = new Thread(() -> {
                         try {
-                            final Process process = new ProcessBuilder(cmd.split(" ")).start();
+                            final Process process = new ProcessBuilder(finalCmd.split(" +")).start();
                             terminalTty = new TerminalTty(process, terminalView.getActualComponent().getTerminal(), terminalView.getTerminalWidget().getTerminalTextBuffer());
                             mainWindowViewModel.setData(MainWindowDataKeys.TERMINAL_TTY, terminalTty);
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, true);
