@@ -562,6 +562,7 @@ public class Server {
                 put("level-type", "DEFAULT");
                 put("allow-nether", true);
                 put("allow-the_end", true);
+                put("use-terra", false);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -576,6 +577,8 @@ public class Server {
         this.allowNether = this.properties.getBoolean("allow-nether", true);
         
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
+
+        this.useTerra = this.properties.getBoolean("use-terra", false);
         
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
