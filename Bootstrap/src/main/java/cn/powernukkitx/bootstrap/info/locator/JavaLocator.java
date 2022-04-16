@@ -1,6 +1,7 @@
 package cn.powernukkitx.bootstrap.info.locator;
 
 import cn.powernukkitx.bootstrap.util.CollectionUtils;
+import cn.powernukkitx.bootstrap.util.ConfigUtils;
 import cn.powernukkitx.bootstrap.util.Logger;
 import cn.powernukkitx.bootstrap.util.StringUtils;
 
@@ -98,8 +99,8 @@ public class JavaLocator extends Locator<JavaLocator.JavaInfo> {
         if(sort4GraalVM) {
             out.sort((a, b) -> {
                 if (a.equals(b)) return 0;
-                final boolean a1 = a.getInfo().getVendor().contains("GraalVM");
-                final boolean b1 = b.getInfo().getVendor().contains("GraalVM");
+                final boolean a1 = a.getInfo().getVendor().contains(ConfigUtils.preferredJVM());
+                final boolean b1 = b.getInfo().getVendor().contains(ConfigUtils.preferredJVM());
                 if (a1 && !b1) {
                     return -1;
                 } else if (!a1 && b1) {
