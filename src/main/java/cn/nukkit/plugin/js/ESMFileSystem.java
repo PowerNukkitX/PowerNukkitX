@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
@@ -17,11 +18,13 @@ import java.util.WeakHashMap;
 
 public final class ESMFileSystem implements FileSystem {
     private final File baseDir;
+    private final int pluginId;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
 
-    public ESMFileSystem(File baseDir) {
+    public ESMFileSystem(File baseDir, int pluginId) {
         this.baseDir = baseDir;
+        this.pluginId = pluginId;
     }
 
     @Override
@@ -82,15 +85,19 @@ public final class ESMFileSystem implements FileSystem {
         if (path.startsWith("inner-module")) {
             byte[] contents = new byte[0];
             var moduleName = path.toString().substring(13);
-            if (innerModuleCache.containsKey(moduleName)) {
-                contents = innerModuleCache.get(moduleName);
+            if ("plugin-id".equals(moduleName)) {
+                contents = ("export const id = " + pluginId).getBytes(StandardCharsets.UTF_8);
             } else {
-                try (var ins = Nukkit.class.getClassLoader().getResourceAsStream("inner-module/" + moduleName + ".js")) {
-                    if (ins != null)
-                        contents = ins.readAllBytes();
-                }
-                if (contents.length != 0) {
-                    innerModuleCache.put(moduleName, contents);
+                if (innerModuleCache.containsKey(moduleName)) {
+                    contents = innerModuleCache.get(moduleName);
+                } else {
+                    try (var ins = Nukkit.class.getClassLoader().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                        if (ins != null)
+                            contents = ins.readAllBytes();
+                    }
+                    if (contents.length != 0) {
+                        innerModuleCache.put(moduleName, contents);
+                    }
                 }
             }
             return new SeekableInMemoryByteChannel(contents);

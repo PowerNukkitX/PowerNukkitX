@@ -4,15 +4,20 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.js.ESMFileSystem;
 import cn.nukkit.utils.Config;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.graalvm.polyglot.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class CommonJSPlugin implements Plugin {
+public class CommonJSPlugin implements Plugin, Listener {
+
+    public static final Int2ObjectOpenHashMap<CommonJSPlugin> jsPluginIdMap = new Int2ObjectOpenHashMap<>();
+    public static int globalMaxId = 0;
 
     protected String pluginName;
     protected File pluginDir;
@@ -28,6 +33,8 @@ public class CommonJSPlugin implements Plugin {
 
     protected Context jsContext = null;
     protected Value jsExports = null;
+
+    public final int id = globalMaxId++;
 
     public final void init(JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
         this.jsPluginLoader = jsPluginLoader;
@@ -46,7 +53,7 @@ public class CommonJSPlugin implements Plugin {
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
         var cbd = Context.newBuilder("js")
-                .fileSystem(new ESMFileSystem(pluginDir))
+                .fileSystem(new ESMFileSystem(pluginDir, this.id))
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLoading(true)
@@ -63,6 +70,7 @@ public class CommonJSPlugin implements Plugin {
                     .option("inspect.SourcePath", pluginDir.getAbsolutePath());
         }
         jsContext = cbd.build();
+        jsPluginIdMap.put(id, this);
         this.initialized = true;
     }
 
@@ -85,10 +93,15 @@ public class CommonJSPlugin implements Plugin {
     @Override
     public void onEnable() {
         var mainFunc = jsExports.getMember("main");
-        if (mainFunc != null && mainFunc.canExecute()) {
-            mainFunc.executeVoid();
-        }
         isEnabled = true;
+        try {
+            if (mainFunc != null && mainFunc.canExecute()) {
+                mainFunc.executeVoid();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            isEnabled = false;
+        }
     }
 
     @Override
@@ -104,6 +117,7 @@ public class CommonJSPlugin implements Plugin {
             jsContext.close();
         }
         isEnabled = false;
+        jsPluginIdMap.remove(id);
     }
 
     @Override
