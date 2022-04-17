@@ -35,6 +35,7 @@ public class CommonJSPlugin implements Plugin, Listener {
     private JSPluginLoader jsPluginLoader;
     private PluginLogger logger;
 
+    protected ESMFileSystem fileSystem;
     protected Context jsContext = null;
     protected Value jsExports = null;
 
@@ -57,7 +58,7 @@ public class CommonJSPlugin implements Plugin, Listener {
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
         var cbd = Context.newBuilder("js")
-                .fileSystem(new ESMFileSystem(pluginDir, this.id))
+                .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this.id))
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLoading(true)
@@ -211,5 +212,9 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     public Value getJsExports() {
         return jsExports;
+    }
+
+    public ESMFileSystem getFileSystem() {
+        return fileSystem;
     }
 }

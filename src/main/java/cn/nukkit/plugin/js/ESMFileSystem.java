@@ -5,8 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.utils.SeekableInMemoryByteChannel;
 import org.graalvm.polyglot.io.FileSystem;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +16,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public final class ESMFileSystem implements FileSystem {
-    private final File baseDir;
+    final File baseDir;
     private final int pluginId;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
@@ -103,6 +102,27 @@ public final class ESMFileSystem implements FileSystem {
             return new SeekableInMemoryByteChannel(contents);
         }
         return Files.newByteChannel(path, options, attrs);
+    }
+
+    public Reader newReader(Path path) throws IOException {
+        if (path.startsWith("inner-module")) {
+            String contents = "";
+            var moduleName = path.toString().substring(13);
+            if ("plugin-id".equals(moduleName)) {
+                contents = "export const id = " + pluginId;
+            } else {
+                if (innerModuleCache.containsKey(moduleName)) {
+                    contents = new String(innerModuleCache.get(moduleName));
+                } else {
+                    try (var ins = Nukkit.class.getClassLoader().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                        if (ins != null)
+                            return new InputStreamReader(ins);
+                    }
+                }
+            }
+            return new StringReader(contents);
+        }
+        return Files.newBufferedReader(path, StandardCharsets.UTF_8);
     }
 
     @Override
