@@ -9,9 +9,10 @@ import cn.nukkit.plugin.js.ESMFileSystem;
 import cn.nukkit.plugin.js.JSProxyLogger;
 import cn.nukkit.utils.Config;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.graalvm.polyglot.*;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
-import org.graalvm.polyglot.proxy.ProxyObject;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.Value;
 
 import java.io.File;
 import java.io.IOException;
