@@ -44,15 +44,6 @@ public class BlockCaveVinesBodyWithBerries extends BlockCaveVines {
     }
 
     @Override
-    public boolean onActivate(@Nonnull Item item) {
-        final Block tmp = new BlockCaveVinesBodyWithBerries();
-        tmp.setPropertyValue(BlockCaveVinesBodyWithBerries.AGE_PROPERTY, this.getPropertyValue(AGE_PROPERTY));
-        getLevel().setBlock(this, tmp, true, true);
-        getLevel().dropItem(this, Item.get(ItemID.GLOW_BERRIES));
-        return true;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return new Item[]{Item.get(ItemID.GLOW_BERRIES)};
     }
