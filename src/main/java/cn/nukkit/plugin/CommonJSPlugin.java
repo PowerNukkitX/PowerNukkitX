@@ -61,8 +61,9 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .allowIO(true)
                 .allowExperimentalOptions(true)
                 .option("js.nashorn-compat", "true")
-                .option("js.esm-eval-returns-exports", "true");
-        if(Nukkit.CHROME_DEBUG_PORT != -1) {
+                .option("js.esm-eval-returns-exports", "true")
+                .option("js.foreign-object-prototype", "true");
+        if (Nukkit.CHROME_DEBUG_PORT != -1) {
             cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
                     .option("inspect.Path", description.getName())
                     .option("inspect.Suspend", "false")
@@ -83,7 +84,7 @@ public class CommonJSPlugin implements Plugin, Listener {
     public void onLoad() {
         try {
             jsExports = jsContext.eval(Source.newBuilder("js", mainJSFile)
-                    .name(mainJSFile.getName())
+                    .name("@" + description.getName() + "/" + mainJSFile.getName())
                     .mimeType("application/javascript+module").build());
         } catch (IOException e) {
             e.printStackTrace();
@@ -197,5 +198,13 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public Context getJsContext() {
+        return jsContext;
+    }
+
+    public Value getJsExports() {
+        return jsExports;
     }
 }
