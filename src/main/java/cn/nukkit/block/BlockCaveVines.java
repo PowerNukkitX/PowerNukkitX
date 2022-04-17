@@ -71,8 +71,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
             if (!isValidSupport(this.up())) {
                 this.getLevel().useBreakOn(this);
             }
-        }
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             //random mature,The feature that I added.
             if (ThreadLocalRandom.current().nextInt(3) == 0) {
                 int growth = getGrowth();
