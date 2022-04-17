@@ -8,6 +8,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.command.ListenDefiner;
 import cn.nukkit.event.block.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
@@ -27,11 +28,16 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.Faceable;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityNameable {
+
+    @Getter
+    protected static Map<BlockEntityCommandBlock, Map<String, String>> listenMap = new HashMap<>();
 
     protected boolean conditionalMode;
     protected boolean auto;
@@ -281,7 +287,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.getLastExecution() != this.getServer().getTick()) {
             this.setConditionMet();
             if (this.isConditionMet() && (this.isAuto() || this.isPowered())) {
-                String cmd = this.getCommand();
+                String cmd = ListenDefiner.clearDefinition(this.getCommand());
                 if (!Strings.isNullOrEmpty(cmd)) {
                     if (cmd.equalsIgnoreCase("Searge")) {
                         this.lastOutput = "#itzlipofutzli";
@@ -355,6 +361,10 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void setCommand(String command) {
         this.command = command;
+        if (ListenDefiner.existDefinition(command)) {
+            Map<String, String> arguments = ListenDefiner.getDefinedEvents(command);
+            listenMap.put(this, arguments);
+        }
         this.successCount = 0;
     }
 
@@ -612,5 +622,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void onBreak() {
         super.onBreak();
+        listenMap.remove(this);
     }
 }
