@@ -65,7 +65,6 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)
                 .allowExperimentalOptions(true)
-                .option("js.nashorn-compat", "true")
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.foreign-object-prototype", "true");
         if (Nukkit.CHROME_DEBUG_PORT != -1) {

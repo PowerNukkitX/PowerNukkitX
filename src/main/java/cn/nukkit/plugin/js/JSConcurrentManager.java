@@ -5,10 +5,13 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.proxy.ProxyExecutable;
 
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 
 public final class JSConcurrentManager {
     public static final Object PROMISE_FAILED = new Object();
+    private static final Map<Context, Value> promiseConstructorCache = new WeakHashMap<>();
 
     private final CommonJSPlugin jsPlugin;
 
@@ -25,8 +28,12 @@ public final class JSConcurrentManager {
     }
 
     static Value wrapPromise(Context context, CompletableFuture<?> javaFuture) {
-        Value global = context.getBindings("js");
-        Value promiseConstructor = global.getMember("Promise");
+        var global = context.getBindings("js");
+        var promiseConstructor = promiseConstructorCache.get(context);
+        if (promiseConstructor == null) {
+            promiseConstructor = global.getMember("Promise");
+            promiseConstructorCache.put(context, promiseConstructor);
+        }
         return promiseConstructor.newInstance((ProxyExecutable) arguments -> {
             Value resolve = arguments[0];
             Value reject = arguments[1];
