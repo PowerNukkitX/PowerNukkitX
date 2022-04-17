@@ -1,11 +1,16 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scorer.EntityScorer;
+import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
@@ -52,6 +57,7 @@ public final class EntitySelector {
     private static final String ARG_RYM = registerArgument("rym");
     private static final String ARG_TYPE = registerArgument("type");
     private static final String ARG_TAG = registerArgument("tag");
+    private static final String ARG_SCORE = registerArgument("scores");
 
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
@@ -91,6 +97,7 @@ public final class EntitySelector {
                         predicates.addAll(getRadiusPredicates(args, vec));
                         predicates.addAll(getRotationsPredicates(args));
                         predicates.addAll(getTagsPredicates(args));
+                        predicates.addAll(getScoresPredicate(args));
 
                         if ("s".equalsIgnoreCase(selectorType)) {
                             Entity entity = null;
@@ -361,6 +368,87 @@ public final class EntitySelector {
                 }
             }
         }
+        return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
+    }
+
+    private static final Splitter SCORE_SEPARATOR = Splitter.on(',').omitEmptyStrings();
+    private static final Splitter SCORE_JOINER = Splitter.on('=').limit(2);
+    private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
+
+    private static List<Predicate<Entity>> getScoresPredicate(Map<String, List<String>> params) {
+        List<Predicate<Entity>> predicates = Lists.newArrayList();
+
+        List<String> scores = getArgument(params, ARG_SCORE);
+
+        if (scores == null) {
+            return predicates;
+        }
+
+        for (String score_part : scores) {
+            if (score_part != null) {
+                score_part = score_part.substring(1, score_part.length() - 1);
+                for(String score_entry : SCORE_SEPARATOR.splitToList(score_part)){
+                    Iterator<String> score_entry_split = SCORE_JOINER.split(score_entry).iterator();
+                    String objective = score_entry_split.next();
+                    Scoreboard scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
+                    if(scoreboard == null){
+                        predicates.add(entity -> false);
+                        return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
+                    }
+                    String score = score_entry_split.next();
+                    boolean inverted = score.startsWith("!");
+                    if (inverted) {
+                        score = score.substring(1);
+                    }
+                    if (score.contains("..")) {
+                        int min = Integer.MIN_VALUE;
+                        int max = Integer.MAX_VALUE;
+                        Iterator<String> score_scope_split = SCORE_SCOPE_SEPARATOR.split(score).iterator();
+                        String min_str = score_scope_split.next();
+                        if (!min_str.isEmpty()) {
+                            min = Integer.parseInt(min_str);
+                        }
+                        String max_str = score_scope_split.next();
+                        if (!max_str.isEmpty()) {
+                            max = Integer.parseInt(max_str);
+                        }
+                        final int finalMin = min;
+                        final int finalMax = max;
+                        predicates.add(entity -> {
+                            Scorer scorer;
+                            if (entity instanceof Player) {
+                                scorer = new PlayerScorer((Player) entity);
+                            }else{
+                                scorer = new EntityScorer(entity);
+                            }
+                            if (scoreboard.getLine(scorer) != null) {
+                                int currentScore = scoreboard.getLine(scorer).getScore();
+                                return (currentScore >= finalMin && currentScore <= finalMax) != inverted;
+                            }else{
+                                return false;
+                            }
+                        });
+                    }else{
+                        final int finalScore = Integer.parseInt(score);
+                        predicates.add(entity -> {
+                            Scorer scorer;
+                            if (entity instanceof Player) {
+                                scorer = new PlayerScorer((Player) entity);
+                            }else{
+                                scorer = new EntityScorer(entity);
+                            }
+                            if (scoreboard.getLine(scorer) != null) {
+                                int currentScore = scoreboard.getLine(scorer).getScore();
+                                return (currentScore == finalScore) != inverted;
+                            }else{
+                                return false;
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
