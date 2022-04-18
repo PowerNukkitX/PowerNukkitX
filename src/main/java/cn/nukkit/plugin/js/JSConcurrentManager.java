@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public final class JSConcurrentManager {
     public static final Object PROMISE_FAILED = new Object();
     private static final Map<Context, Value> promiseConstructorCache = new WeakHashMap<>();
+    private long lockTimeout = 30000;
 
     private final CommonJSPlugin jsPlugin;
 
@@ -20,11 +21,20 @@ public final class JSConcurrentManager {
     }
 
     public JSSafeObject warpSafe(Object object) {
-        return new JSSafeObject(jsPlugin.getJsContext(), object);
+        return new JSSafeObject(jsPlugin.getJsContext(), object, lockTimeout);
     }
 
     public JSWorker createWorker(String sourcePath) {
         return new JSWorker(jsPlugin.getJsContext(), jsPlugin.getFileSystem(), sourcePath);
+    }
+
+    public long getLockTimeout() {
+        return lockTimeout;
+    }
+
+    public JSConcurrentManager setLockTimeout(long lockTimeout) {
+        this.lockTimeout = lockTimeout;
+        return this;
     }
 
     static Value wrapPromise(Context context, CompletableFuture<?> javaFuture) {

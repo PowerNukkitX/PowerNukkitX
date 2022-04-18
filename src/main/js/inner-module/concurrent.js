@@ -16,6 +16,22 @@ export function atomic(obj) {
     return concurrentManager.warpSafe(obj);
 }
 
+/**
+ * 获取原子对象等待最长时间，单位ms，默认30000
+ * @type {number}
+ */
+export function getAtomicTimeout() {
+    return concurrentManager.getLockTimeout();
+}
+
+/**
+ * 设置原子对象等待最长时间，单位ms，默认30000
+ * @param timeout {number}
+ */
+export function setAtomicTimeout(timeout) {
+    return concurrentManager.setLockTimeout(timeout);
+}
+
 export class Worker {
     /**
      * 创建一个Worker
