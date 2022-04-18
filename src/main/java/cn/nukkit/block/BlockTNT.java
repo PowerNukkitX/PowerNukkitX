@@ -148,7 +148,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
             if (!player.isCreative()) item.count--;
             this.prime(80, player);
             return true;
-        } else if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        } else if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT) && item.applyEnchantments()) {
             item.useOn(this);
             this.prime(80, player);
             return true;

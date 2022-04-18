@@ -235,6 +235,11 @@ public class PlayerInventory extends BaseInventory {
         return setItem(index, item, true, false);
     }
 
+    @Override
+    public boolean setItem(int index, Item item, boolean send) {
+        return setItem(index, item, send, false);
+    }
+
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;

@@ -240,8 +240,7 @@ public class EntityFishingHook extends EntityProjectile {
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "May create custom EntityItem")
     public void reelLine() {
-        if (this.shootingEntity instanceof Player && this.caught) {
-            Player player = (Player) this.shootingEntity;
+        if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
             Vector3 motion = player.subtract(this).multiply(0.1);
@@ -253,19 +252,25 @@ public class EntityFishingHook extends EntityProjectile {
             if (!event.isCancelled()) {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
-                    Entity.getDefaultNBT(
-                            new Vector3(this.x, this.getWaterHeight(), this.z),
-                            event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
-                            0
-                    ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
-                            .putShort("Health", 5)
-                            .putShort("PickupDelay", 1));
+                        Entity.getDefaultNBT(
+                                        new Vector3(this.x, this.getWaterHeight(), this.z),
+                                        event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
+                                        0
+                                ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
+                                .putShort("Health", 5)
+                                .putShort("PickupDelay", 1));
 
                 if (itemEntity != null) {
                     itemEntity.setOwner(player.getName());
                     itemEntity.spawnToAll();
                     player.addExperience(event.getExperience());
                 }
+            }
+        } else if (this.shootingEntity != null) {
+            var eid = this.getDataPropertyLong(DATA_TARGET_EID);
+            var targetEntity = this.getLevel().getEntity(eid);
+            if (targetEntity != null && targetEntity.isAlive()) { // 钓鱼竿收杆应该牵引被钓生物
+                targetEntity.setMotion(this.shootingEntity.subtract(targetEntity).divide(8).add(0, 0.3, 0));
             }
         }
         this.close();

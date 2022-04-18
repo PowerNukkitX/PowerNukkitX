@@ -38,7 +38,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BooleanBlockProperty ACTIVE = new BooleanBlockProperty("rail_data_bit", false);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockProperty<Rail.Orientation> UNCURVED_RAIL_DIRECTION = new ArrayBlockProperty<>("rail_direction", false, new Rail.Orientation[]{
@@ -117,6 +117,11 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean sticksToPiston() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
@@ -124,6 +129,28 @@ public class BlockRail extends BlockFlowable implements Faceable {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
+        }
+        if (type == Level.BLOCK_UPDATE_REDSTONE && this.getRailDirection().isCurved()) {
+            var connect = checkRailsConnected().values();
+            List<BlockFace> railFace = new ArrayList<>();
+            for (BlockFace face : connect) {
+                if (this.getSide(face.getOpposite()).getId() == BlockID.RAIL) {
+                    railFace.add(face.getOpposite());
+                } else {
+                    railFace.add(face);
+                }
+            }
+            Orientation orient;
+            if (railFace.contains(SOUTH)) {
+                if (railFace.contains(EAST)) {
+                    orient = CURVED_SOUTH_EAST;
+                } else orient = CURVED_SOUTH_WEST;
+            } else {
+                if (railFace.contains(EAST)) {
+                    orient = CURVED_NORTH_EAST;
+                } else orient = CURVED_NORTH_WEST;
+            }
+            setOrientation(orient);
         }
         return 0;
     }
@@ -190,7 +217,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         if (!isAbstract()) {
             level.scheduleUpdate(this, this, 0);
         }
-        
+
         return true;
     }
 
@@ -276,7 +303,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public boolean canPowered() {
         return this.canBePowered;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
@@ -286,6 +313,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     /**
      * Changes the rail direction without changing anything else.
+     *
      * @param orientation The new orientation
      */
     @PowerNukkitOnly
@@ -300,16 +328,16 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     /**
      * Changes the rail direction and update the state in the world if the orientation changed in a single call.
-     * 
+     * <p>
      * Note that the level block won't change if the current block has already the given orientation.
-     * 
-     * @see #setRailDirection(Orientation) 
-     * @see Level#setBlock(Vector3, int, Block, boolean, boolean) 
+     *
+     * @see #setRailDirection(Orientation)
+     * @see Level#setBlock(Vector3, int, Block, boolean, boolean)
      */
     public void setOrientation(Orientation o) {
         if (o != getOrientation()) {
             setRailDirection(o);
-            this.level.setBlock(this, this, false, true);
+            this.level.setBlock(this, this, true, true);
         }
     }
 
@@ -334,10 +362,10 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     /**
      * Changes the active flag and update the state in the world in a single call.
-     * 
-     * The active flag will not change if the block state don't have the {@link #ACTIVE} property, 
-     * and it will not throw exceptions related to missing block properties. 
-     *
+     * <p>
+     * The active flag will not change if the block state don't have the {@link #ACTIVE} property,
+     * and it will not throw exceptions related to missing block properties.
+     * <p>
      * The level block will always update.
      *
      * @see #setRailDirection(Orientation)
@@ -349,12 +377,12 @@ public class BlockRail extends BlockFlowable implements Faceable {
         }
         level.setBlock(this, this, true, true);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public OptionalBoolean isRailActive() {
-        return getProperties().contains(ACTIVE)? 
-                OptionalBoolean.of(getBooleanValue(ACTIVE)) : 
+        return getProperties().contains(ACTIVE) ?
+                OptionalBoolean.of(getBooleanValue(ACTIVE)) :
                 OptionalBoolean.empty();
     }
 
@@ -387,7 +415,13 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean canBePulled() {
+    public boolean canBePulled() {
         return true;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean breaksWhenMoved() {
+        return false;
     }
 }

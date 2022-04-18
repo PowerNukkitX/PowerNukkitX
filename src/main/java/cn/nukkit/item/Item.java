@@ -971,6 +971,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         return null;
     }
 
+    //Whether to apply the enchantment effect when using this item
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public boolean applyEnchantments(){
+        return true;
+    }
+
     public boolean hasEnchantments() {
         if (!this.hasCompoundTag()) {
             return false;

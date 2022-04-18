@@ -2,10 +2,14 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.block.BlockTrappedChest;
 import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
+import cn.nukkit.utils.LevelException;
+import cn.nukkit.utils.RedstoneComponent;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -42,6 +46,15 @@ public class ChestInventory extends ContainerInventory {
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
         }
+        try {
+            if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                this.getHolder().level.getServer().getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+                }
+            }
+        } catch (LevelException ignored) {}
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
@@ -61,8 +74,17 @@ public class ChestInventory extends ContainerInventory {
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, pk);
             }
         }
-
         super.onClose(who);
+
+        try {
+            if (this.getHolder().getBlock() instanceof BlockTrappedChest trappedChest) {
+                RedstoneUpdateEvent event = new RedstoneUpdateEvent(trappedChest);
+                this.getHolder().level.getServer().getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    RedstoneComponent.updateAllAroundRedstone(this.getHolder());
+                }
+            }
+        } catch (LevelException ignored) {}
     }
 
     public void setDoubleInventory(DoubleChestInventory doubleInventory) {

@@ -5,10 +5,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.API.Definition;
 import cn.nukkit.api.API.Usage;
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockRail;
-import cn.nukkit.block.BlockRailActivator;
-import cn.nukkit.block.BlockRailPowered;
+import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
@@ -159,6 +156,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 // Activate the minecart/TNT
                 if (block instanceof BlockRailActivator && ((BlockRailActivator) block).isActive()) {
                     activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
+                    if (this.isRideable() && this.getRiding() != null){
+                        this.dismountEntity(this.getRiding());
+                    }
+                }
+                if (block instanceof BlockRailDetector detector){
+                    detector.setActive();
                 }
             } else {
                 setFalling();

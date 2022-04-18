@@ -40,11 +40,8 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.generator.Flat;
-import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.Nether;
-import cn.nukkit.level.generator.Normal;
-import cn.nukkit.level.generator.TheEnd;
+import cn.nukkit.level.generator.*;
+import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -81,6 +78,8 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
+import cn.nukkit.scoreboard.ScoreboardManager;
+import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import co.aikar.timings.Timings;
@@ -168,6 +167,8 @@ public class Server {
 
     private ConsoleCommandSender consoleSender;
 
+    private ScoreboardManager scoreboardManager;
+
     private int maxPlayers;
 
     private boolean autoSave = true;
@@ -208,6 +209,7 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    private final String commandDataPath;
 
     private final Set<UUID> uniquePlayers = new HashSet<>();
 
@@ -221,7 +223,7 @@ public class Server {
     private final Map<InetSocketAddress, Player> players = new HashMap<>();
 
     private final Map<UUID, Player> playerList = new HashMap<>();
-    
+
     private PositionTrackingService positionTrackingService;
 
     private final Map<Integer, Level> levels = new HashMap<Integer, Level>() {
@@ -256,7 +258,7 @@ public class Server {
     private boolean allowNether;
 
     private final Thread currentThread;
-    
+
     private final long launchTime;
 
     private Watchdog watchdog;
@@ -272,11 +274,15 @@ public class Server {
     private boolean forceSkinTrusted = false;
 
     private boolean checkMovement = true;
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean allowTheEnd;
-    
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    private boolean useTerra;
+
     /**
      * Minimal initializer for testing
      */
@@ -297,9 +303,12 @@ public class Server {
         File abs = tempDir.getAbsoluteFile();
         filePath = abs.getPath();
         dataPath = filePath;
-        
+
         File dir = new File(tempDir, "plugins");
         pluginPath = dir.getPath();
+
+        File cmdDir = new File(tempDir, "command_data");
+        commandDataPath = cmdDir.getPath();
         
         Files.createParentDirs(dir);
         Files.createParentDirs(new File(tempDir, "worlds"));
@@ -315,7 +324,8 @@ public class Server {
         operators = new Config();
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
-        
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+
         setMaxPlayers(10);
 
         this.registerEntities();
@@ -343,6 +353,11 @@ public class Server {
 
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.commandDataPath = new File(dataPath).getAbsolutePath() + "/command_data";
+
+        if (!new File(commandDataPath).exists()) {
+            new File(commandDataPath).mkdirs();
+        }
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
@@ -365,8 +380,8 @@ public class Server {
                     log.info(line);
                 }
                 languagesCommaList = Stream.of(lines)
-                        .filter(line-> !line.isEmpty())
-                        .map(line-> line.substring(0, 3))
+                        .filter(line -> !line.isEmpty())
+                        .map(line -> line.substring(0, 3))
                         .collect(Collectors.joining(", "));
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -386,7 +401,7 @@ public class Server {
                 InputStream conf = this.getClass().getClassLoader().getResourceAsStream("lang/" + lang + "/lang.ini");
                 if (conf != null) {
                     language = lang;
-                } else if(predefinedLanguage != null) {
+                } else if (predefinedLanguage != null) {
                     log.warn("No language found for predefined language: {}, please choose a valid language", predefinedLanguage);
                     predefinedLanguage = null;
                 }
@@ -547,6 +562,7 @@ public class Server {
                 put("level-type", "DEFAULT");
                 put("allow-nether", true);
                 put("allow-the_end", true);
+                put("use-terra", false);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -561,6 +577,8 @@ public class Server {
         this.allowNether = this.properties.getBoolean("allow-nether", true);
         
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
+
+        this.useTerra = this.properties.getBoolean("use-terra", false);
         
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
@@ -644,6 +662,7 @@ public class Server {
 
         this.consoleSender = new ConsoleCommandSender();
         this.commandMap = new SimpleCommandMap(this);
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         // Initialize metrics
         NukkitMetrics.startNow(this);
@@ -702,6 +721,10 @@ public class Server {
 
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
+        if (useTerra) {
+            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra", Generator.TYPE_INFINITE);
+            PNXPlatform.getInstance();
+        }
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
         Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
         Generator.addGenerator(TheEnd.class, "the_end", Generator.TYPE_THE_END);
@@ -959,7 +982,7 @@ public class Server {
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine, 
+            log.warn("Command Dispatched Async: {}\nPlease notify author of plugin causing this execution to fix this bug!", commandLine,
                     new ConcurrentModificationException("Command Dispatched Async: "+commandLine));
 
             this.scheduler.scheduleTask(null, () -> dispatchCommand(sender, commandLine));
@@ -970,11 +993,13 @@ public class Server {
             throw new ServerException("CommandSender is not valid");
         }
 
+        if (this.commandMap.getCommand((commandLine.startsWith("/") ? commandLine.substring(1) : commandLine).split(" ")[0]) == null) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
+        }
+
         if (this.commandMap.dispatch(sender, commandLine)) {
             return true;
         }
-
-        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.unknown", commandLine));
 
         return false;
     }
@@ -1747,6 +1772,10 @@ public class Server {
 
     public ResourcePackManager getResourcePackManager() {
         return resourcePackManager;
+    }
+
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
     }
 
     public ServerScheduler getScheduler() {
@@ -2654,6 +2683,8 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.TARGET, BlockEntityTarget.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_PORTAL, BlockEntityEndPortal.class);
         BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
+        //powernukkitx only
+        BlockEntity.registerBlockEntity(BlockEntity.COMMAND_BLOCK, BlockEntityCommandBlock.class);
     }
 
     public boolean isNetherAllowed() {

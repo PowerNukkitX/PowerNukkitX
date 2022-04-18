@@ -38,7 +38,7 @@ public class BlockRootsHanging extends BlockRoots {
 
     @Override
     protected boolean isSupportValid() {
-        if (this.up().getBlock() instanceof BlockSolid) {
+        if (this.up().isSolid()) {
             return true;
         }
         return false;

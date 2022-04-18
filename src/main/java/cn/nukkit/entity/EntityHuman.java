@@ -84,6 +84,7 @@ public class EntityHuman extends EntityHumanType {
         return skin;
     }
 
+    @Override
     public UUID getUniqueId() {
         return uuid;
     }

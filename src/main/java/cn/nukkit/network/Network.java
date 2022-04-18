@@ -489,5 +489,12 @@ public class Network {
         this.registerPacket(ProtocolInfo.PLAYER_START_ITEM_COOL_DOWN_PACKET, PlayerStartItemCoolDownPacket.class);
         this.registerPacket(ProtocolInfo.CODE_BUILDER_SOURCE_PACKET, CodeBuilderSourcePacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_SUB_CHUNK_BLOCKS_PACKET, UpdateSubChunkBlocksPacket.class);
+        //powernukkitx only
+        this.registerPacket(ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET, CommandBlockUpdatePacket.class);
+        this.registerPacket(ProtocolInfo.SET_SCORE_PACKET, SetScorePacket.class);
+        this.registerPacket(ProtocolInfo.SET_DISPLAY_OBJECTIVE_PACKET, SetDisplayObjectivePacket.class);
+        this.registerPacket(ProtocolInfo.REMOVE_OBJECTIVE_PACKET, RemoveObjectivePacket.class);
+        this.registerPacket(ProtocolInfo.SET_SCOREBOARD_IDENTITY_PACKET, SetScoreboardIdentityPacket.class);
+        //powernukkitx only
     }
 }

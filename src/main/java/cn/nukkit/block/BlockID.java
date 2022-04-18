@@ -315,7 +315,9 @@ public interface BlockID {
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
             replaceWith = "JUNGLE_STAIRS", reason = "Wrong Minecraft block name")
     int JUNGLE_WOODEN_STAIRS = JUNGLE_STAIRS;
-    // TODO 137 - command_block
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int COMMAND_BLOCK = 137;
     int BEACON = 138;
     int COBBLE_WALL = 139;
     int STONE_WALL = 139;
@@ -381,6 +383,12 @@ public interface BlockID {
     int FENCE_GATE_JUNGLE = 185;
     int FENCE_GATE_DARK_OAK = 186;
     int FENCE_GATE_ACACIA = 187;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int REPEATING_COMMAND_BLOCK = 188;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int CHAIN_COMMAND_BLOCK = 189;
 
     int SPRUCE_DOOR_BLOCK = 193;
     int BIRCH_DOOR_BLOCK = 194;
