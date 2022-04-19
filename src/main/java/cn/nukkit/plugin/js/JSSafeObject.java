@@ -28,7 +28,7 @@ public final class JSSafeObject {
         throw new InterruptedException();
     }
 
-    public Value use() {
+    public Object use() {
         return JSConcurrentManager.wrapPromise(jsContext, CompletableFuture.supplyAsync(() -> {
             try {
                 if (lock.tryLock(timeout, TimeUnit.MILLISECONDS)) {

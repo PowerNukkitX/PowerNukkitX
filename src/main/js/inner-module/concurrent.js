@@ -55,6 +55,31 @@ export class Worker {
     }
 
     /**
+     * 启动尚未启动的worker
+     */
+    start() {
+        this.jsWorker.start();
+    }
+
+    /**
+     * 向Worker发送信息，返回Worker的onmessage函数的返回值
+     * @param values
+     * @returns {any}
+     */
+    postMessage(...values) {
+        return this.jsWorker.postMessage(values);
+    }
+
+    /**
+     * 向Worker发送异步信息，返回一个Promise
+     * @param values
+     * @returns {Promise<any>}
+     */
+    postMessageAsync(...values) {
+        return this.jsWorker.postMessageAsync(values);
+    }
+
+    /**
      * 终结（强制停止）此Worker
      */
     terminate() {

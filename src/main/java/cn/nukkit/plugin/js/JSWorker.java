@@ -37,7 +37,6 @@ public final class JSWorker implements AutoCloseable {
     public void init() throws IOException {
         var engine = sourceContext.getEngine();
         this.workerContext = Context.newBuilder("js")
-                .engine(engine)
                 .fileSystem(fileSystem)
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.ALL)
@@ -45,7 +44,6 @@ public final class JSWorker implements AutoCloseable {
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)
                 .allowExperimentalOptions(true)
-                .option("js.nashorn-compat", "true")
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.foreign-object-prototype", "true")
                 .build();
@@ -70,6 +68,10 @@ public final class JSWorker implements AutoCloseable {
     }
 
     public void start() {
+        if (this.workerThread != null && workerThread.isAlive()) {
+            workerContext.close(true);
+            workerThread.interrupt();
+        }
         this.workerThread = new Thread(() -> {
             try {
                 var exports = workerContext.eval(Source.newBuilder("js", sourceReader,
@@ -115,10 +117,11 @@ public final class JSWorker implements AutoCloseable {
     }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
-    public Value postMessageAsync(Value... arguments) {
+    public JSConcurrentManager.JPromise postMessageAsync(Value... arguments) {
         return wrapPromise(sourceContext, CompletableFuture.supplyAsync(() -> {
             synchronized (workerContext) {
                 if (workerReceiveCallback != null) {
+                    System.out.println("IN");
                     return workerReceiveCallback.execute((Object[]) arguments);
                 } else {
                     return PROMISE_FAILED;

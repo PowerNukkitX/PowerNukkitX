@@ -3,15 +3,11 @@ package cn.nukkit.plugin.js;
 import cn.nukkit.plugin.CommonJSPlugin;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 
 public final class JSConcurrentManager {
     public static final Object PROMISE_FAILED = new Object();
-    private static final Map<Context, Value> promiseConstructorCache = new WeakHashMap<>();
     private long lockTimeout = 30000;
 
     private final CommonJSPlugin jsPlugin;
@@ -37,24 +33,52 @@ public final class JSConcurrentManager {
         return this;
     }
 
-    static Value wrapPromise(Context context, CompletableFuture<?> javaFuture) {
-        var global = context.getBindings("js");
-        var promiseConstructor = promiseConstructorCache.get(context);
-        if (promiseConstructor == null) {
-            promiseConstructor = global.getMember("Promise");
-            promiseConstructorCache.put(context, promiseConstructor);
+    public interface Thenable {
+        void then(Value onResolve, Value onReject);
+    }
+
+    @FunctionalInterface
+    public interface Executable {
+        void onPromiseCreation(Value onResolve, Value onReject);
+    }
+
+    static JPromise wrapPromise(Context context, CompletableFuture<?> javaFuture) {
+        return new JPromise(context, javaFuture);
+    }
+
+    public static final class JPromise implements Thenable, Executable {
+        private final Context context;
+        private final CompletableFuture<?> javaFuture;
+
+        public JPromise(Context context, CompletableFuture<?> javaFuture) {
+            this.context = context;
+            this.javaFuture = javaFuture;
         }
-        return promiseConstructor.newInstance((ProxyExecutable) arguments -> {
-            Value resolve = arguments[0];
-            Value reject = arguments[1];
+
+        public void then(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {
-                if (result != PROMISE_FAILED) {
-                    resolve.execute(result);
-                } else {
-                    reject.execute(ex);
+                System.out.println("OK");
+                synchronized (context) {
+                    if (result != PROMISE_FAILED) {
+                        onResolve.execute(result);
+                    } else {
+                        onReject.execute(ex);
+                    }
                 }
             });
-            return null;
-        });
+        }
+
+        public void onPromiseCreation(Value onResolve, Value onReject) {
+            javaFuture.whenComplete((result, ex) -> {
+                System.out.println("OK");
+                synchronized (context) {
+                    if (result != PROMISE_FAILED) {
+                        onResolve.execute(result);
+                    } else {
+                        onReject.execute(ex);
+                    }
+                }
+            });
+        }
     }
 }
