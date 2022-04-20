@@ -20533,7 +20533,7 @@ blockId=249
 runtimeId=7750
 
 minecraft:invisible_bedrock
-blockId=-1
+blockId=95
 runtimeId=955
 
 minecraft:iron_bars
