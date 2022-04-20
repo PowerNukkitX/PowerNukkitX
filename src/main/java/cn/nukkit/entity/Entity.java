@@ -34,9 +34,6 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.Task;
-import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.interfaces.Scorer;
-import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
@@ -283,6 +280,9 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
     @Since("1.5.0.0-PN")
     public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(125); // ???
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(126); // ???
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(127); // ???
 
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
@@ -433,6 +433,14 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CROAKING = dynamic(100);
     @Since("1.6.0.0-PNX")
     public static final int DATA_FLAG_EAT_MOB = dynamic(101);
+    @Since("1.6.0.0-PNX")
+    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(102);
+    @Since("1.6.0.0-PNX")
+    public static final int DATA_FLAG_EMERGING = dynamic(103);
+    @Since("1.6.0.0-PNX")
+    public static final int DATA_FLAG_SNIFFING = dynamic(104);
+    @Since("1.6.0.0-PNX")
+    public static final int DATA_FLAG_DIGGING = dynamic(105);
 
     public static long entityCount = 1;
 

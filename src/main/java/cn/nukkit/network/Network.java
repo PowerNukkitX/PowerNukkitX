@@ -496,5 +496,10 @@ public class Network {
         this.registerPacket(ProtocolInfo.REMOVE_OBJECTIVE_PACKET, RemoveObjectivePacket.class);
         this.registerPacket(ProtocolInfo.SET_SCOREBOARD_IDENTITY_PACKET, SetScoreboardIdentityPacket.class);
         //powernukkitx only
+
+        this.registerPacket(ProtocolInfo.AGENT_ACTION_EVENT_PACKET, AgentActionEventPacket.class);
+        this.registerPacket(ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET, ChangeMobPropertyPacket.class);
+        this.registerPacket(ProtocolInfo.DIMENSION_DATA_PACKET, DimensionDataPacket.class);
+        this.registerPacket(ProtocolInfo.TICKING_AREAS_LOAD_STATUS_PACKET, TickingAreasLoadStatusPacket.class);
     }
 }

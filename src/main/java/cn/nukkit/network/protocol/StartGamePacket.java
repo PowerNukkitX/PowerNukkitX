@@ -34,7 +34,7 @@ public class StartGamePacket extends DataPacket {
     public float z;
     public float yaw;
     public float pitch;
-    public int seed;
+    public long seed;
     public byte dimension;
     public int generator = 1;
     public int worldGamemode;
@@ -100,7 +100,7 @@ public class StartGamePacket extends DataPacket {
         this.putLFloat(this.yaw);
         this.putLFloat(this.pitch);
 
-        this.putVarInt(this.seed);
+        this.putLong(this.seed);
         this.putLShort(0x00); // SpawnBiomeType - Default
         this.putString("plains"); // UserDefinedBiomeName
         this.putVarInt(this.dimension);

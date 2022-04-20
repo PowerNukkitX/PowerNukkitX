@@ -17,12 +17,12 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(486);
+    int CURRENT_PROTOCOL = dynamic(503);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION = dynamic("v1.18.10");
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.18.10");
+    String MINECRAFT_VERSION = dynamic("v1.18.30");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.18.30");
 
     byte LOGIN_PACKET = 0x01;
     byte PLAY_STATUS_PACKET = 0x02;
@@ -183,26 +183,75 @@ public interface ProtocolInfo {
     @Since("1.3.0.0-PN") byte POS_TRACKING_CLIENT_REQUEST_PACKET = (byte) 0x9a;
     @Since("1.3.0.0-PN") byte DEBUG_INFO_PACKET = (byte) 0x9b;
     @Since("1.3.0.0-PN") byte PACKET_VIOLATION_WARNING_PACKET = (byte) 0x9c;
-    @Since("1.4.0.0-PN") byte MOTION_PREDICTION_HINTS_PACKET = (byte) 0x9d;
-    @Since("1.4.0.0-PN") byte ANIMATE_ENTITY_PACKET = (byte) 0x9e;
-    @Since("1.4.0.0-PN") byte CAMERA_SHAKE_PACKET = (byte) 0x9f;
-    @Since("1.4.0.0-PN") byte PLAYER_FOG_PACKET = (byte) 0xa0;
-    @Since("1.4.0.0-PN") byte CORRECT_PLAYER_MOVE_PREDICTION_PACKET = (byte) 0xa1;
-    @Since("1.4.0.0-PN") byte ITEM_COMPONENT_PACKET = (byte) 0xa2;
-    @Since("1.4.0.0-PN") byte FILTER_TEXT_PACKET = (byte) 0xa3;
-    @Since("1.4.0.0-PN") byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
-    @Since("1.5.2.0-PN") @PowerNukkitOnly byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;
-    @Since("1.5.2.0-PN") @PowerNukkitOnly byte ADD_VOLUME_ENTITY_PACKET = (byte) 0xa6;
-    @Since("1.5.2.0-PN") @PowerNukkitOnly byte REMOVE_VOLUME_ENTITY_PACKET = (byte) 0xa7;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "SYNC_ENTITY_PROPERTY_PACKET") byte SYNC_ENTITY_PROPERTY = SYNC_ENTITY_PROPERTY_PACKET;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "ADD_VOLUME_ENTITY_PACKET") byte ADD_VOLUME_ENTITY = ADD_VOLUME_ENTITY_PACKET;
-    @Since("1.5.0.0-PN") @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "REMOVE_VOLUME_ENTITY_PACKET") byte REMOVE_VOLUME_ENTITY = REMOVE_VOLUME_ENTITY_PACKET;
-    @Since("1.5.2.0-PN") @PowerNukkitOnly byte SIMULATION_TYPE_PACKET = (byte) 0xa8;
-    @Since("1.5.2.0-PN") @PowerNukkitOnly byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte UPDATE_SUB_CHUNK_BLOCKS_PACKET = (byte) 0xac;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte SCRIPT_MESSAGE_PACKET = (byte) 0xb1;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly byte CODE_BUILDER_SOURCE_PACKET = (byte) 0xb2;
-
+    @Since("1.4.0.0-PN")
+    byte MOTION_PREDICTION_HINTS_PACKET = (byte) 0x9d;
+    @Since("1.4.0.0-PN")
+    byte ANIMATE_ENTITY_PACKET = (byte) 0x9e;
+    @Since("1.4.0.0-PN")
+    byte CAMERA_SHAKE_PACKET = (byte) 0x9f;
+    @Since("1.4.0.0-PN")
+    byte PLAYER_FOG_PACKET = (byte) 0xa0;
+    @Since("1.4.0.0-PN")
+    byte CORRECT_PLAYER_MOVE_PREDICTION_PACKET = (byte) 0xa1;
+    @Since("1.4.0.0-PN")
+    byte ITEM_COMPONENT_PACKET = (byte) 0xa2;
+    @Since("1.4.0.0-PN")
+    byte FILTER_TEXT_PACKET = (byte) 0xa3;
+    @Since("1.4.0.0-PN")
+    byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    byte ADD_VOLUME_ENTITY_PACKET = (byte) 0xa6;
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    byte REMOVE_VOLUME_ENTITY_PACKET = (byte) 0xa7;
+    @Since("1.5.0.0-PN")
+    @PowerNukkitOnly
+    @Deprecated
+    @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "SYNC_ENTITY_PROPERTY_PACKET")
+    byte SYNC_ENTITY_PROPERTY = SYNC_ENTITY_PROPERTY_PACKET;
+    @Since("1.5.0.0-PN")
+    @PowerNukkitOnly
+    @Deprecated
+    @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "ADD_VOLUME_ENTITY_PACKET")
+    byte ADD_VOLUME_ENTITY = ADD_VOLUME_ENTITY_PACKET;
+    @Since("1.5.0.0-PN")
+    @PowerNukkitOnly
+    @Deprecated
+    @DeprecationDetails(since = "1.5.2.0-PN", reason = "Incorrect naming convention", by = "PowerNukkit", replaceWith = "REMOVE_VOLUME_ENTITY_PACKET")
+    byte REMOVE_VOLUME_ENTITY = REMOVE_VOLUME_ENTITY_PACKET;
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    byte SIMULATION_TYPE_PACKET = (byte) 0xa8;
+    @Since("1.5.2.0-PN")
+    @PowerNukkitOnly
+    byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte UPDATE_SUB_CHUNK_BLOCKS_PACKET = (byte) 0xac;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte SCRIPT_MESSAGE_PACKET = (byte) 0xb1;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte CODE_BUILDER_SOURCE_PACKET = (byte) 0xb2;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte AGENT_ACTION_EVENT_PACKET = (byte) 0xb3;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte CHANGE_MOB_PROPERTY_PACKET = (byte) 0xb4;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte DIMENSION_DATA_PACKET = (byte) 0xb5;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    byte TICKING_AREAS_LOAD_STATUS_PACKET = (byte) 0xb6;
     byte BATCH_PACKET = (byte) 0xff;
 }

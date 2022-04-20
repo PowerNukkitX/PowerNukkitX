@@ -2,7 +2,6 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import lombok.ToString;
 
 /**
@@ -59,19 +58,39 @@ public class EntityEventPacket extends DataPacket {
     public static final int DEATH_SMOKE_CLOUD = 61;
     public static final int COMPLETE_TRADE = 62;
     public static final int REMOVE_LEASH = 63;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int CARAVAN = 64;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int CARAVAN = 64;
     public static final int CONSUME_TOTEM = 65;
     public static final int PLAYER_CHECK_TREASURE_HUNTER_ACHIEVEMENT = 66;
     public static final int ENTITY_SPAWN = 67;
     public static final int DRAGON_PUKE = 68;
     public static final int MERGE_ITEMS = 69;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int START_SWIMMING = 70;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int BALLOON_POP = 71;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int TREASURE_HUNT = 72;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int SUMMON_AGENT = 73;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int FINISHED_CHARGING_CROSSBOW = 74;
-    @PowerNukkitOnly @Since("1.4.0.0-PN") public static final int LANDED_ON_GROUND = 75;
-    
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int START_SWIMMING = 70;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int BALLOON_POP = 71;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int TREASURE_HUNT = 72;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SUMMON_AGENT = 73;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int FINISHED_CHARGING_CROSSBOW = 74;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int LANDED_ON_GROUND = 75;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int ENTITY_GROW_UP = 76;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int VIBRATION_DETECTE = 77;
+
     @Override
     public byte pid() {
         return NETWORK_ID;
