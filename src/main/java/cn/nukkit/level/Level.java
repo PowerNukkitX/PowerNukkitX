@@ -3987,7 +3987,9 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public int getDimension() {
-        return dimensionData.getDimensionId();
+        if (dimensionData == null) {
+            return 0;
+        } else return dimensionData.getDimensionId();
     }
 
     @PowerNukkitOnly
