@@ -18,6 +18,7 @@ import java.util.WeakHashMap;
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
     private final int pluginId;
+    private ClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
 
@@ -37,8 +38,27 @@ public final class ESMFileSystem implements FileSystem {
             return Path.of(Server.getInstance().getPluginPath(), path);
         } else if (path.startsWith(":")) {
             return Path.of("inner-module", path.substring(1));
+        } else if ((!path.equals(".js") && getDots(path) > 1)) {
+            if(mainClassLoader == null)
+                mainClassLoader = Thread.currentThread().getContextClassLoader();
+            try {
+                mainClassLoader.loadClass(path);
+                return Path.of("java-class", path);
+            } catch (ClassNotFoundException ignore) {
+
+            }
         }
         return baseDir.toPath().resolve(path);
+    }
+
+    private static int getDots(String originStr) {
+        var res = 0;
+        var i = originStr.indexOf('.');
+        while (i != -1) {
+            i = originStr.indexOf('.', i + 1);
+            res++;
+        }
+        return res;
     }
 
     @Override
