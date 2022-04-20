@@ -916,52 +916,52 @@
       "blockState": "minecraft:carpet;color=pink"
     },
     {
-      "blockState": "minecraft:concretepowder"
+      "blockState": "minecraft:concrete_powder"
     },
     {
-      "blockState": "minecraft:concretepowder;color=silver"
+      "blockState": "minecraft:concrete_powder;color=silver"
     },
     {
-      "blockState": "minecraft:concretepowder;color=gray"
+      "blockState": "minecraft:concrete_powder;color=gray"
     },
     {
-      "blockState": "minecraft:concretepowder;color=black"
+      "blockState": "minecraft:concrete_powder;color=black"
     },
     {
-      "blockState": "minecraft:concretepowder;color=brown"
+      "blockState": "minecraft:concrete_powder;color=brown"
     },
     {
-      "blockState": "minecraft:concretepowder;color=red"
+      "blockState": "minecraft:concrete_powder;color=red"
     },
     {
-      "blockState": "minecraft:concretepowder;color=orange"
+      "blockState": "minecraft:concrete_powder;color=orange"
     },
     {
-      "blockState": "minecraft:concretepowder;color=yellow"
+      "blockState": "minecraft:concrete_powder;color=yellow"
     },
     {
-      "blockState": "minecraft:concretepowder;color=lime"
+      "blockState": "minecraft:concrete_powder;color=lime"
     },
     {
-      "blockState": "minecraft:concretepowder;color=green"
+      "blockState": "minecraft:concrete_powder;color=green"
     },
     {
-      "blockState": "minecraft:concretepowder;color=cyan"
+      "blockState": "minecraft:concrete_powder;color=cyan"
     },
     {
-      "blockState": "minecraft:concretepowder;color=light_blue"
+      "blockState": "minecraft:concrete_powder;color=light_blue"
     },
     {
-      "blockState": "minecraft:concretepowder;color=blue"
+      "blockState": "minecraft:concrete_powder;color=blue"
     },
     {
-      "blockState": "minecraft:concretepowder;color=purple"
+      "blockState": "minecraft:concrete_powder;color=purple"
     },
     {
-      "blockState": "minecraft:concretepowder;color=magenta"
+      "blockState": "minecraft:concrete_powder;color=magenta"
     },
     {
-      "blockState": "minecraft:concretepowder;color=pink"
+      "blockState": "minecraft:concrete_powder;color=pink"
     },
     {
       "blockState": "minecraft:concrete"
@@ -3418,7 +3418,7 @@
       "blockState": "minecraft:redstone_lamp"
     },
     {
-      "blockState": "minecraft:sealantern"
+      "blockState": "minecraft:sea_lantern"
     },
     {
       "id": "minecraft:oak_sign"
