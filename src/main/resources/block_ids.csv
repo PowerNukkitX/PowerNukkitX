@@ -32,7 +32,7 @@
 31,minecraft:tallgrass
 32,minecraft:deadbush
 33,minecraft:piston
-34,minecraft:pistonarmcollision
+34,minecraft:piston_arm_collision
 35,minecraft:wool
 36,minecraft:element_0
 37,minecraft:yellow_flower
@@ -130,7 +130,7 @@
 129,minecraft:emerald_ore
 130,minecraft:ender_chest
 131,minecraft:tripwire_hook
-132,minecraft:tripwire
+132,minecraft:trip_wire
 133,minecraft:emerald_block
 134,minecraft:spruce_stairs
 135,minecraft:birch_stairs
@@ -167,7 +167,7 @@
 166,minecraft:glow_stick
 167,minecraft:iron_trapdoor
 168,minecraft:prismarine
-169,minecraft:sealantern
+169,minecraft:sea_lantern
 170,minecraft:hay_block
 171,minecraft:carpet
 172,minecraft:hardened_clay
@@ -235,7 +235,7 @@
 234,minecraft:red_glazed_terracotta
 235,minecraft:black_glazed_terracotta
 236,minecraft:concrete
-237,minecraft:concretepowder
+237,minecraft:concrete_powder
 238,minecraft:chemistry_table
 239,minecraft:underwater_torch
 240,minecraft:chorus_plant
@@ -248,7 +248,7 @@
 247,minecraft:netherreactor
 248,minecraft:info_update
 249,minecraft:info_update2
-250,minecraft:movingblock
+250,minecraft:moving_block
 251,minecraft:observer
 252,minecraft:structure_block
 253,minecraft:hard_glass
@@ -470,7 +470,7 @@
 469,minecraft:lit_blast_furnace
 470,minecraft:light_block
 471,minecraft:wither_rose
-472,minecraft:stickypistonarmcollision
+472,minecraft:sticky_piston_arm_collision
 473,minecraft:bee_nest
 474,minecraft:beehive
 475,minecraft:honey_block
@@ -723,7 +723,7 @@
 722,minecraft:mysterious_frame_slot
 723,
 724,
-725,minecraft:frog_egg
+725,minecraft:frog_spawn
 726,minecraft:ochre_froglight
 727,minecraft:pearlescent_froglight
 728,minecraft:verdant_froglight
