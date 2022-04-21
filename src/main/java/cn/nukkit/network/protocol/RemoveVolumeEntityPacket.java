@@ -11,6 +11,10 @@ public class RemoveVolumeEntityPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.REMOVE_VOLUME_ENTITY_PACKET;
 
     private long id;
+    /**
+     * @since v503
+     */
+    private int dimension;
 
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")

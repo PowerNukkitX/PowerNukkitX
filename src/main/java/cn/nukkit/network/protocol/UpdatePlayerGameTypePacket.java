@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.Since;
+import cn.nukkit.network.protocol.types.GameType;
 import lombok.ToString;
 
 @Since("1.3.0.0-PN")
@@ -27,22 +28,5 @@ public class UpdatePlayerGameTypePacket extends DataPacket {
         this.reset();
         this.putVarInt(this.gameType.ordinal());
         this.putVarLong(entityId);
-    }
-    
-    @Since("1.3.0.0-PN")
-    public enum GameType {
-        SURVIVAL,
-        CREATIVE,
-        ADVENTURE,
-        SURVIVAL_VIEWER,
-        CREATIVE_VIEWER,
-        DEFAULT,
-        WORLD_DEFAULT;
-
-        private static final GameType[] VALUES = values();
-
-        public static GameType from(int id) {
-            return VALUES[id];
-        }
     }
 }

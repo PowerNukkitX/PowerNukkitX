@@ -60,7 +60,7 @@ class LevelTest {
         Timings.init();
         level = new Level(server, "TestLevel", path, Anvil.class);
         level.setAutoSave(true);
-        
+        level.initLevel();
         server.getLevels().put(level.getId(), level);
         server.setDefaultLevel(level);
     }

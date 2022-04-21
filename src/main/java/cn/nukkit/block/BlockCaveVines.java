@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitOnly
@@ -57,7 +58,8 @@ public class BlockCaveVines extends BlockTransparentMeta {
     }
 
     public static boolean isValidSupport(Block block) {
-        return block.isSolid() || block instanceof BlockCaveVines;
+        if (block instanceof BlockLiquid) return false;
+        else return block.up().isSolid() || block.up() instanceof BlockCaveVines;
     }
 
     @Override
@@ -68,12 +70,14 @@ public class BlockCaveVines extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!isValidSupport(this.up())) {
+            if (!isValidSupport(this)) {
                 this.getLevel().useBreakOn(this);
             }
+            return type;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+            Random random = ThreadLocalRandom.current();
             //random mature,The feature that I added.
-            if (ThreadLocalRandom.current().nextInt(3) == 0) {
+            if (random.nextInt(4) == 0) {
                 int growth = getGrowth();
                 if (growth + 4 < getMaxGrowth()) {
                     BlockCaveVines block = (BlockCaveVines) this.clone();
@@ -83,7 +87,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
                     } else {
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return type;
                     }
                 } else {
                     BlockCaveVines block;
@@ -96,12 +100,12 @@ public class BlockCaveVines extends BlockTransparentMeta {
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(this, ev.getNewState(), false, true);
                     } else {
-                        return Level.BLOCK_UPDATE_RANDOM;
+                        return type;
                     }
                 }
             }
             //random grow feature,according to wiki in https://minecraft.fandom.com/wiki/Glow_Berries#Growth
-            if (down().getId() == AIR && ThreadLocalRandom.current().nextInt(10) == 0) {
+            if (down().getId() == AIR && random.nextInt(10) == 0) {
                 BlockCaveVines block;
                 if (this.up() instanceof BlockCaveVines && !(this.down() instanceof BlockCaveVines)) {
                     block = new BlockCaveVinesHeadWithBerries();
@@ -112,7 +116,7 @@ public class BlockCaveVines extends BlockTransparentMeta {
                 if (!ev.isCancelled()) {
                     this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
                 } else {
-                    return Level.BLOCK_UPDATE_RANDOM;
+                    return type;
                 }
             } else if (down().getId() == AIR) {
                 BlockCaveVines block = new BlockCaveVines();
@@ -121,10 +125,9 @@ public class BlockCaveVines extends BlockTransparentMeta {
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     this.getLevel().setBlock(this.down(), ev.getNewState(), false, true);
-                } else {
-                    return Level.BLOCK_UPDATE_RANDOM;
                 }
             }
+            return type;
         }
         return 0;
     }
