@@ -14,6 +14,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
@@ -21,6 +22,7 @@ public final class ESMFileSystem implements FileSystem {
     private ClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
+    final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 
     public ESMFileSystem(File baseDir, int pluginId) {
         this.baseDir = baseDir;
@@ -39,10 +41,16 @@ public final class ESMFileSystem implements FileSystem {
         } else if (path.startsWith(":")) {
             return Path.of("inner-module", path.substring(1));
         } else if ((!path.equals(".js") && getDots(path) > 1)) {
-            if(mainClassLoader == null)
+            if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
             try {
-                mainClassLoader.loadClass(path);
+                if (javaClassCache.containsKey(path)) {
+                    return Path.of("java-class", path);
+                }
+                var clazz = mainClassLoader.loadClass(path);
+                if (clazz != null) {
+                    javaClassCache.put(path, clazz);
+                }
                 return Path.of("java-class", path);
             } catch (ClassNotFoundException ignore) {
 
@@ -69,6 +77,12 @@ public final class ESMFileSystem implements FileSystem {
                     throw new IOException("Inner module cannot be accessed.");
                 }
             }
+        } else if (path.startsWith("java-class")) {
+            for (var each : modes) {
+                if (each != AccessMode.READ) {
+                    throw new IOException("Java class cannot be accessed.");
+                }
+            }
         } else {
             path = path.toRealPath(linkOptions);
             for (var each : modes) {
@@ -85,7 +99,7 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
-        if (dir.startsWith("inner-module")) {
+        if (dir.startsWith("inner-module") || dir.startsWith("java-class")) {
             throw new IOException("Inner module cannot be accessed.");
         }
         Files.createDirectories(dir, attrs);
@@ -93,7 +107,7 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public void delete(Path path) throws IOException {
-        if (path.startsWith("inner-module")) {
+        if (path.startsWith("inner-module") || path.startsWith("java-class")) {
             throw new IOException("Inner module cannot be accessed.");
         }
         Files.delete(path);
@@ -120,6 +134,9 @@ public final class ESMFileSystem implements FileSystem {
                 }
             }
             return new SeekableInMemoryByteChannel(contents);
+        } else if (path.startsWith("java-class")) {
+            var className = path.toString().substring(11);
+            return new SeekableInMemoryByteChannel(ESMJavaExporter.exportJava(javaClassCache.get(className)).getBytes(StandardCharsets.UTF_8));
         }
         return Files.newByteChannel(path, options, attrs);
     }
@@ -141,13 +158,16 @@ public final class ESMFileSystem implements FileSystem {
                 }
             }
             return new StringReader(contents);
+        } else if (path.startsWith("java-class")) {
+            var className = path.toString().substring(11);
+            return new StringReader(ESMJavaExporter.exportJava(javaClassCache.get(className)));
         }
         return Files.newBufferedReader(path, StandardCharsets.UTF_8);
     }
 
     @Override
     public DirectoryStream<Path> newDirectoryStream(Path dir, DirectoryStream.Filter<? super Path> filter) throws IOException {
-        if (dir.startsWith("inner-module")) {
+        if (dir.startsWith("inner-module") || dir.startsWith("java-class")) {
             throw new IOException("Inner module cannot be accessed.");
         }
         return Files.newDirectoryStream(dir, filter);
@@ -155,7 +175,7 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public Path toAbsolutePath(Path path) {
-        if (path.startsWith("inner-module")) {
+        if (path.startsWith("inner-module") || path.startsWith("java-class")) {
             return path;
         }
         return path.toAbsolutePath();
@@ -163,7 +183,7 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public Path toRealPath(Path path, LinkOption... linkOptions) throws IOException {
-        if (path.startsWith("inner-module")) {
+        if (path.startsWith("inner-module") || path.startsWith("java-class")) {
             return path;
         }
         return path.toRealPath(linkOptions);
@@ -171,7 +191,7 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
-        if (path.startsWith("inner-module")) {
+        if (path.startsWith("inner-module") || path.startsWith("java-class")) {
             throw new IOException("Inner module cannot be accessed.");
         }
         return Files.readAttributes(path, attributes, options);

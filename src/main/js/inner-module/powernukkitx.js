@@ -1,11 +1,10 @@
 // noinspection JSUnresolvedVariable
 
 import {id} from ":plugin-id"
-
-const NukkitClass = Java.type("cn.nukkit.Nukkit");
-const CommonJSPluginClass = Java.type("cn.nukkit.plugin.CommonJSPlugin");
-const JSEventManager = Java.type("cn.nukkit.plugin.js.JSEventManager");
-const EventPriorityClass = Java.type("cn.nukkit.event.EventPriority");
+import {Nukkit as NukkitClass} from "cn.nukkit.Nukkit"
+import {CommonJSPlugin as CommonJSPluginClass} from "cn.nukkit.plugin.CommonJSPlugin"
+import {JSEventManager} from "cn.nukkit.plugin.js.JSEventManager"
+import {EventPriority as EventPriorityClass} from "cn.nukkit.event.EventPriority"
 
 const jsPlugin = CommonJSPluginClass.jsPluginIdMap.get(id);
 const eventManager = new JSEventManager(jsPlugin);

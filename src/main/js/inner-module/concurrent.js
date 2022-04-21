@@ -2,8 +2,8 @@
 
 import {id} from ":plugin-id"
 
-const CommonJSPluginClass = Java.type("cn.nukkit.plugin.CommonJSPlugin");
-const JSConcurrentManagerClass = Java.type("cn.nukkit.plugin.js.JSConcurrentManager");
+import {CommonJSPlugin as CommonJSPluginClass} from "cn.nukkit.plugin.CommonJSPlugin"
+import {JSConcurrentManager as JSConcurrentManagerClass} from "cn.nukkit.plugin.js.JSConcurrentManager"
 
 const jsPlugin = CommonJSPluginClass.jsPluginIdMap.get(id);
 const concurrentManager = new JSConcurrentManagerClass(jsPlugin);
