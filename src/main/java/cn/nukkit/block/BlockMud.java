@@ -15,7 +15,7 @@ public class BlockMud extends BlockSolid {
 
     @Override
     public int getId() {
-        return SCULK;
+        return MUD;
     }
 
     @Override
