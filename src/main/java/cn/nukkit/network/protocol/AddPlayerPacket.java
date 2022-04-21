@@ -1,8 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
-import cn.nukkit.network.protocol.types.GameType;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
@@ -34,14 +34,11 @@ public class AddPlayerPacket extends DataPacket {
     public float pitch;
     public float yaw;
     public Item item;
+    public int gameType = Server.getInstance().getGamemode();
     public EntityMetadata metadata = new EntityMetadata();
     //public EntityLink links = new EntityLink[0];
     public String deviceId = "";
     public int buildPlatform = -1;
-    /**
-     * @since v503
-     */
-    private GameType gameType;
 
     @Override
     public void decode() {
@@ -62,6 +59,7 @@ public class AddPlayerPacket extends DataPacket {
         this.putLFloat(this.yaw); //TODO headrot
         this.putLFloat(this.yaw);
         this.putSlot(this.item);
+        this.putVarInt(this.gameType);
         this.put(Binary.writeMetadata(this.metadata));
         this.putUnsignedVarInt(0); //TODO: Adventure settings
         this.putUnsignedVarInt(0);
@@ -72,6 +70,5 @@ public class AddPlayerPacket extends DataPacket {
         this.putUnsignedVarInt(0); //TODO: Entity links
         this.putString(deviceId);
         this.putLInt(buildPlatform);
-        this.putByte((byte) gameType.ordinal());
     }
 }
