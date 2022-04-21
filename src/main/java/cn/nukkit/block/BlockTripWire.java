@@ -48,7 +48,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @Override
     public int getId() {
-        return TRIPWIRE;
+        return TRIP_WIRE;
     }
 
     @Since("1.4.0.0-PN")
@@ -175,7 +175,7 @@ public class BlockTripWire extends BlockTransparentMeta {
                     break;
                 }
 
-                if (block.getId() != Block.TRIPWIRE) {
+                if (block.getId() != Block.TRIP_WIRE) {
                     break;
                 }
             }

@@ -2315,7 +2315,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.z = (float) this.z;
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
-        startGamePacket.seed = -1;
+        startGamePacket.seed = -1L;
         startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();

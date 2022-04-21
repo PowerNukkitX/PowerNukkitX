@@ -30,6 +30,6 @@ public class BlockPiston extends BlockPistonBase {
     @PowerNukkitOnly
     @Override
     public int getPistonHeadBlockId() {
-        return PISTON_HEAD;
+        return PISTON_ARM_COLLISION;
     }
 }
