@@ -37,7 +37,7 @@ public class ItemGlowBerries extends ItemEdible {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (BlockCaveVines.isValidSupport(target) && face.equals(BlockFace.DOWN)) {
+        if (BlockCaveVines.isValidSupport(block) && face.equals(BlockFace.DOWN)) {
             var tmp = new BlockCaveVines();
             tmp.setPropertyValue(BlockCaveVines.AGE_PROPERTY, ThreadLocalRandom.current().nextInt(26));
             level.setBlock(target.down(), tmp);

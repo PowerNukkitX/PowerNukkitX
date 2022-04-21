@@ -828,7 +828,10 @@ public interface BlockID {
     int INFESTED_DEEPSLATE = 709;
 
 
-    @Since("1.6.0.0-PNX")
+    @Since("FUTURE")
     @PowerNukkitOnly
     int SCULK = 713;
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    int MUD = 728;
 }
