@@ -2,6 +2,7 @@ package cn.nukkit.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
@@ -108,9 +109,6 @@ public class CommandParser {
                 argStringBuilder.append("\"").append(arg).append("\" ");
             }
         }
-        for (int i = 1; i <= args.length + 1; i++) {//add spaces to make sure the last argument is matched
-            argStringBuilder.append(" ");
-        }
         String argString = argStringBuilder.toString();
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
         if (cache.containsKey(argString.toString())) {//get from cache to improve performance
@@ -125,43 +123,24 @@ public class CommandParser {
             pattern.append("^");
             int length = 0;//non-optional args' length
             for (CommandParameter parameter : entry.getValue()) {
+                pattern.append("(?:");
                 if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT -> {
                             pattern.append(INT_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case WILDCARD_INT -> {
                             pattern.append(WILDCARD_INT_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case FLOAT, VALUE -> {
                             pattern.append(FLOAT_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case POSITION -> {
                             for (int i = 0; i < 3; i++) {
                                 pattern.append(COORDINATE_PATTERN);
-                                if (parameter.optional) {
-                                    pattern.append("?");
-                                } else {
-                                    length++;
-                                }
                                 if (i != 2) {
                                     pattern.append("\\s*");
                                 } else {
@@ -172,11 +151,6 @@ public class CommandParser {
                         case BLOCK_POSITION -> {
                             for (int i = 0; i < 3; i++) {
                                 pattern.append(BLOCK_COORDINATE_PATTERN);
-                                if (parameter.optional) {
-                                    pattern.append("?");
-                                } else {
-                                    length++;
-                                }
                                 if (i != 2) {
                                     pattern.append("\\s*");
                                 } else {
@@ -186,38 +160,18 @@ public class CommandParser {
                         }
                         case TARGET -> {
                             pattern.append(TARGET_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case WILDCARD_TARGET -> {
                             pattern.append(WILDCARD_TARGET_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case STRING, RAWTEXT, JSON, TEXT, FILE_PATH, OPERATOR -> {
                             pattern.append(STRING_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                         case MESSAGE, COMMAND -> {
                             pattern.append(MULTIPLE_STRING_PATTERN);
-                            if (parameter.optional) {
-                                pattern.append("?");
-                            } else {
-                                length++;
-                            }
                             pattern.append("\\s+");
                         }
                     }
@@ -238,12 +192,17 @@ public class CommandParser {
                         pattern.deleteCharAt(pattern.length() - 1);
                         pattern.append(")");
                     }
-                    if (parameter.optional) {
-                        pattern.append("?");
+                    pattern.append("\\s+");
+                }
+                pattern.append(")");
+                if (!parameter.optional) {
+                    if (parameter.type == CommandParamType.POSITION || parameter.type == CommandParamType.BLOCK_POSITION) {
+                        length += 3;
                     } else {
                         length++;
                     }
-                    pattern.append("\\s+");
+                }else{
+                    pattern.append("?");
                 }
             }
 
