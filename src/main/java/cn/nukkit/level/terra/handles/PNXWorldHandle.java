@@ -118,7 +118,7 @@ public class PNXWorldHandle implements WorldHandle {
         }
         var identifier = (String) mappedData.get("bedrock_identifier");
         if (identifier.equals("minecraft:concretePowder"))//specific case
-            identifier = "minecraft:concretepowder";
+            identifier = "minecraft:concrete_powder";
         final var data = new StringBuilder();
         data.append(identifier);
         if (hasStates) {
