@@ -4249,7 +4249,7 @@
   },
   {
     "name": "minecraft:spawn_egg",
-    "id": 636,
+    "id": 643,
     "oldId": 383
   },
   {
@@ -5258,51 +5258,46 @@
     "oldId": 623
   },
   {
-    "name": "minecraft:goat_horn",
-    "id": 624,
-    "oldId": 761
-  },
-  {
     "name": "minecraft:amethyst_shard",
-    "id": 625,
+    "id": 624,
     "oldId": 771
   },
   {
     "name": "minecraft:spyglass",
-    "id": 626,
+    "id": 625,
     "oldId": 772
   },
   {
     "name": "minecraft:boat",
-    "id": 633,
+    "id": 640,
     "oldId": 333,
     "deprecated": true
   },
   {
     "name": "minecraft:dye",
-    "id": 634,
+    "id": 641,
     "oldId": 351,
     "deprecated": true
   },
   {
     "name": "minecraft:banner_pattern",
-    "id": 635,
+    "id": 642,
     "oldId": 434,
     "deprecated": true
   },
   {
     "name": "minecraft:end_crystal",
-    "id": 637,
+    "id": 644,
     "oldId": 426
   },
   {
     "name": "minecraft:glow_berries",
-    "id": 638,
+    "id": 645,
     "oldId": 638
   },
   {
     "name": "minecraft:allay_spawn_egg",
-    "id": 631
+    "id": 630
   },
   {
     "name": "minecraft:black_candle",
@@ -5363,12 +5358,8 @@
     "id": 632
   },
   {
-    "name": "minecraft:frog_egg",
-    "id": -468
-  },
-  {
     "name": "minecraft:frog_spawn_egg",
-    "id": 628
+    "id": 627
   },
   {
     "name": "minecraft:globe_banner_pattern",
@@ -5436,7 +5427,7 @@
   },
   {
     "name": "minecraft:music_disc_otherside",
-    "id": 627
+    "id": 626
   },
   {
     "name": "minecraft:mysterious_frame",
@@ -5512,11 +5503,11 @@
   },
   {
     "name": "minecraft:tadpole_bucket",
-    "id": 630
+    "id": 629
   },
   {
     "name": "minecraft:tadpole_spawn_egg",
-    "id": 629
+    "id": 628
   },
   {
     "name": "minecraft:verdant_froglight",
@@ -5541,5 +5532,113 @@
     "name": "minecraft:yellow_candle_cake",
     "id": -434,
     "oldId": -434
+  },
+  {
+    "name": "minecraft:acacia_chest_boat",
+    "id": 637
+  },
+  {
+    "name": "minecraft:birch_chest_boat",
+    "id": 634
+  },
+  {
+    "name": "minecraft:chest_boat",
+    "id": 639
+  },
+  {
+    "name": "minecraft:dark_oak_chest_boat",
+    "id": 638
+  },
+  {
+    "name": "minecraft:frog_spawn",
+    "id": -468
+  },
+  {
+    "name": "minecraft:invisible_bedrock",
+    "id": 95
+  },
+  {
+    "name": "minecraft:item.brewing_stand",
+    "id": 117
+  },
+  {
+    "name": "minecraft:jungle_chest_boat",
+    "id": 635
+  },
+  {
+    "name": "minecraft:mangrove_leaves",
+    "id": -472
+  },
+  {
+    "name": "minecraft:mangrove_propagule",
+    "id": -474
+  },
+  {
+    "name": "minecraft:mangrove_propagule_hanging",
+    "id": -476
+  },
+  {
+    "name": "minecraft:moving_block",
+    "id": 250
+  },
+  {
+    "name": "minecraft:mud",
+    "id": -473
+  },
+  {
+    "name": "minecraft:mud_brick_double_slab",
+    "id": -479
+  },
+  {
+    "name": "minecraft:mud_brick_slab",
+    "id": -478
+  },
+  {
+    "name": "minecraft:mud_brick_stairs",
+    "id": -480
+  },
+  {
+    "name": "minecraft:mud_brick_wall",
+    "id": -481
+  },
+  {
+    "name": "minecraft:mud_bricks",
+    "id": -475
+  },
+  {
+    "name": "minecraft:oak_chest_boat",
+    "id": 633
+  },
+  {
+    "name": "minecraft:packed_mud",
+    "id": -477
+  },
+  {
+    "name": "minecraft:piston_arm_collision",
+    "id": 34
+  },
+  {
+    "name": "minecraft:reinforced_deepslate",
+    "id": -466
+  },
+  {
+    "name": "minecraft:sea_lantern",
+    "id": 169
+  },
+  {
+    "name": "minecraft:spruce_chest_boat",
+    "id": 636
+  },
+  {
+    "name": "minecraft:sticky_piston_arm_collision",
+    "id": -217
+  },
+  {
+    "name": "minecraft:trip_wire",
+    "id": 132
+  },
+  {
+    "name": "minecraft:warden_spawn_egg",
+    "id": 631
   }
 ]

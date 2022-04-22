@@ -139,7 +139,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
                 break;
             }
 
-            if (b.getId() != Block.TRIPWIRE && i != pos) {
+            if (b.getId() != Block.TRIP_WIRE && i != pos) {
                 blocks[i] = null;
                 canConnect = false;
             } else {

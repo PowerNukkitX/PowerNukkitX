@@ -1,5 +1,5 @@
 {
-    "version" : 486,
+    "version" : 503,
     "recipes" : [
         {
             "id" : "minecraft:smithingtable_diamond_axe_to_netherite_axe",
@@ -14384,7 +14384,7 @@
             "type" : 1,
             "input" : {
                 "A" : {
-                    "legacyId" : 625,
+                    "legacyId" : 624,
                     "id" : "minecraft:amethyst_shard",
                     "damage" : 32767
                 }
@@ -21497,7 +21497,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 637,
+                    "legacyId" : 644,
                     "id" : "minecraft:end_crystal"
                 }
             ],
@@ -30610,7 +30610,7 @@
             "output" : [
                 {
                     "legacyId" : 169,
-                    "id" : "minecraft:sealantern"
+                    "id" : "minecraft:sea_lantern"
                 }
             ],
             "shape" : [
@@ -32901,7 +32901,7 @@
             "type" : 1,
             "input" : {
                 "A" : {
-                    "legacyId" : 625,
+                    "legacyId" : 624,
                     "id" : "minecraft:amethyst_shard",
                     "damage" : 32767
                 },
@@ -32913,7 +32913,7 @@
             },
             "output" : [
                 {
-                    "legacyId" : 626,
+                    "legacyId" : 625,
                     "id" : "minecraft:spyglass"
                 }
             ],
@@ -34180,7 +34180,7 @@
             "type" : 1,
             "input" : {
                 "A" : {
-                    "legacyId" : 625,
+                    "legacyId" : 624,
                     "id" : "minecraft:amethyst_shard",
                     "damage" : 32767
                 },
