@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -12,6 +13,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,7 +46,7 @@ public class KillCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return true;
             }
-            List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : null;
+            List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
             if (entities == null) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return false;
