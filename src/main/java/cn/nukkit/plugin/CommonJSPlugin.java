@@ -96,13 +96,16 @@ public class CommonJSPlugin implements Plugin, Listener {
         }
     }
 
+    @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
     public void onEnable() {
         var mainFunc = jsExports.getMember("main");
         isEnabled = true;
         try {
             if (mainFunc != null && mainFunc.canExecute()) {
-                mainFunc.executeVoid();
+                synchronized (jsContext) {
+                    mainFunc.executeVoid();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,12 +118,15 @@ public class CommonJSPlugin implements Plugin, Listener {
         return isEnabled;
     }
 
+    @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
     public void onDisable() {
         var closeFunc = jsExports.getMember("close");
         if (closeFunc != null && closeFunc.canExecute()) {
-            closeFunc.executeVoid();
-            jsContext.close();
+            synchronized (jsContext) {
+                closeFunc.executeVoid();
+                jsContext.close();
+            }
         }
         isEnabled = false;
         jsPluginIdMap.remove(id);

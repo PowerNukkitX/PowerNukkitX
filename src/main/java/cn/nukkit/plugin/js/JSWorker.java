@@ -35,7 +35,6 @@ public final class JSWorker implements AutoCloseable {
     }
 
     public void init() throws IOException {
-        var engine = sourceContext.getEngine();
         this.workerContext = Context.newBuilder("js")
                 .fileSystem(fileSystem)
                 .allowAllAccess(true)
@@ -121,7 +120,6 @@ public final class JSWorker implements AutoCloseable {
         return wrapPromise(sourceContext, CompletableFuture.supplyAsync(() -> {
             synchronized (workerContext) {
                 if (workerReceiveCallback != null) {
-                    System.out.println("IN");
                     return workerReceiveCallback.execute((Object[]) arguments);
                 } else {
                     return PROMISE_FAILED;
