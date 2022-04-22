@@ -5208,7 +5208,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        if (this.isSpectator() || (this.isCreative() && source.getCause() != DamageCause.SUICIDE)) {
+        if (this.isSpectator() || this.isCreative()) {
             //source.setCancelled();
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {

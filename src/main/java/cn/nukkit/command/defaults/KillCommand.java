@@ -59,12 +59,7 @@ public class KillCommand extends VanillaCommand {
                 }
                 if (entity instanceof Player player) {
                     EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000);
-                    sender.getServer().getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) {
-                        continue;
-                    }
-                    player.setLastDamageCause(ev);
-                    player.setHealth(0);
+                    player.attack(ev);
                 } else {
                     entity.kill();
                 }
@@ -73,19 +68,13 @@ public class KillCommand extends VanillaCommand {
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message.toString()));
             return true;
         }
-        if (sender instanceof Player) {
+        if (sender.isPlayer()) {
             if (!sender.hasPermission("nukkit.command.kill.self")) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return true;
             }
-            EntityDamageEvent ev = new EntityDamageEvent((Player) sender, DamageCause.SUICIDE, 1000);
-            sender.getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return true;
-            }
-            ((Player) sender).setLastDamageCause(ev);
-            ((Player) sender).setHealth(0);
-            sender.sendMessage(new TranslationContainer("commands.kill.successful", sender.getName()));
+            EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000);
+            sender.asPlayer().attack(ev);
         } else {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
