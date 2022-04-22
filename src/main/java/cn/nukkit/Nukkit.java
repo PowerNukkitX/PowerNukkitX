@@ -3,6 +3,7 @@ package cn.nukkit;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ProtocolInfo;
+import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
@@ -214,6 +215,9 @@ public class Nukkit {
             System.out.print((char) 0x1b + "]0;Stopping Server..." + (char) 0x07);
         }
         log.info("Stopping other threads");
+
+        // 停止JS定时器
+        JSIInitiator.jsTimer.cancel();
 
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {

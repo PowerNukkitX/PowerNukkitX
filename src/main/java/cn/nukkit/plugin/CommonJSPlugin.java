@@ -6,6 +6,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.js.ESMFileSystem;
+import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.js.JSProxyLogger;
 import cn.nukkit.utils.Config;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -66,6 +67,7 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .allowIO(true)
                 .allowExperimentalOptions(true)
                 .option("js.esm-eval-returns-exports", "true")
+                .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true");
         if (Nukkit.CHROME_DEBUG_PORT != -1) {
             cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
@@ -75,6 +77,7 @@ public class CommonJSPlugin implements Plugin, Listener {
                     .option("inspect.SourcePath", pluginDir.getAbsolutePath());
         }
         jsContext = cbd.build();
+        JSIInitiator.init(jsContext);
         jsContext.getBindings("js").putMember("console", new JSProxyLogger(logger));
         jsPluginIdMap.put(id, this);
         this.initialized = true;
@@ -125,6 +128,9 @@ public class CommonJSPlugin implements Plugin, Listener {
         if (closeFunc != null && closeFunc.canExecute()) {
             synchronized (jsContext) {
                 closeFunc.executeVoid();
+            }
+            JSIInitiator.closeContext(jsContext);
+            synchronized (jsContext) {
                 jsContext.close();
             }
         }

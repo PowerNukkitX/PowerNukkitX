@@ -38,8 +38,10 @@ public final class JSJob implements AutoCloseable {
                 .allowIO(true)
                 .allowExperimentalOptions(true)
                 .option("js.esm-eval-returns-exports", "true")
+                .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true")
                 .build();
+        JSIInitiator.init(jobContext);
         this.sourcePath = fileSystem.parsePath(jobSourcePath);
         this.sourceReader = fileSystem.newReader(sourcePath);
     }

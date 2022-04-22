@@ -44,8 +44,10 @@ public final class JSWorker implements AutoCloseable {
                 .allowIO(true)
                 .allowExperimentalOptions(true)
                 .option("js.esm-eval-returns-exports", "true")
+                .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true")
                 .build();
+        JSIInitiator.init(workerContext);
         var workerGlobal = workerContext.getBindings("js");
         workerGlobal.putMember("postMessage", (ProxyExecutable) arguments -> {
             synchronized (sourceContext) {
