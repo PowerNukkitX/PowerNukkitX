@@ -76,7 +76,7 @@ export class Worker {
      * @returns {Promise<any>}
      */
     postMessageAsync(...values) {
-        return this.jsWorker.postMessageAsync(values);
+        return new Promise(this.jsWorker.postMessageAsync(values));
     }
 
     /**
@@ -84,5 +84,36 @@ export class Worker {
      */
     terminate() {
         this.jsWorker.close();
+    }
+}
+
+export class Job {
+    /**
+     * 创建一个Job
+     * @param sourcePath {string} Job源代码路径
+     * @param startImmediately {boolean} 是否立即启动job，默认true
+     */
+    constructor(sourcePath, startImmediately = true) {
+        this.job = concurrentManager.createJob(sourcePath);
+        this.job.init();
+        if (startImmediately) {
+            this.job.start();
+        }
+    }
+
+    /**
+     * 执行Job的main函数并传入指定参数
+     * @param args {...any}
+     * @returns {Promise<any>}
+     */
+    work(...args) {
+        return new Promise(this.job.work(args));
+    }
+
+    /**
+     * 终结（强制停止）此Job
+     */
+    terminate() {
+        this.job.close();
     }
 }

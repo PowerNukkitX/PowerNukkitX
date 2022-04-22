@@ -128,9 +128,12 @@ public final class JSWorker implements AutoCloseable {
         }));
     }
 
+    @SuppressWarnings("SynchronizeOnNonFinalField")
     @Override
     public void close() throws Exception {
-        workerContext.close(true);
+        synchronized (workerContext) {
+            workerContext.close(true);
+        }
         this.workerThread.interrupt();
         this.workerThread = null;
     }

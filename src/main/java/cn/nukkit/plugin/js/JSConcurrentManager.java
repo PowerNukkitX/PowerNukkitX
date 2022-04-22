@@ -24,6 +24,10 @@ public final class JSConcurrentManager {
         return new JSWorker(jsPlugin.getJsContext(), jsPlugin.getFileSystem(), sourcePath);
     }
 
+    public JSJob createJob(String sourcePath) {
+        return new JSJob(jsPlugin.getJsContext(), jsPlugin.getFileSystem(), sourcePath);
+    }
+
     public long getLockTimeout() {
         return lockTimeout;
     }
@@ -57,7 +61,6 @@ public final class JSConcurrentManager {
 
         public void then(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {
-                System.out.println("OK");
                 synchronized (context) {
                     if (result != PROMISE_FAILED) {
                         onResolve.execute(result);
@@ -70,7 +73,6 @@ public final class JSConcurrentManager {
 
         public void onPromiseCreation(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {
-                System.out.println("OK");
                 synchronized (context) {
                     if (result != PROMISE_FAILED) {
                         onResolve.execute(result);
