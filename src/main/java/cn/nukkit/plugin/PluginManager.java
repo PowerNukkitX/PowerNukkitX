@@ -188,7 +188,7 @@ public class PluginManager {
                     }
                     return false;
                 })) {
-                    if (file.isDirectory() && !includeDir) {
+                    if ((file.isDirectory() && !file.getName().startsWith("@")) && !includeDir) {
                         continue;
                     }
                     try {
