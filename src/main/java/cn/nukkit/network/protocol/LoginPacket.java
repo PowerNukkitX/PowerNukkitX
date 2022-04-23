@@ -68,7 +68,6 @@ public class LoginPacket extends DataPacket {
         List<String> chains = map.get("chain");
         for (String c : chains) {
             JsonObject chainMap = decodeToken(c);
-            System.out.println(GSON.toJson(chainMap));
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
                 if (chainMap.has("iat")) {
