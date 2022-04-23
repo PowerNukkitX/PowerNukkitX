@@ -5,10 +5,7 @@ import cn.nukkit.utils.PersonaPiece;
 import cn.nukkit.utils.PersonaPieceTint;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import lombok.ToString;
 
@@ -23,12 +20,14 @@ import java.util.*;
 public class LoginPacket extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public String username;
     public int protocol;
     public UUID clientUUID;
     public long clientId;
     public Skin skin;
+    public long issueUnixTime = -1;
 
     @Override
     public byte pid() {
@@ -62,15 +61,19 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = new Gson().fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
+        Map<String, List<String>> map = GSON.fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
         List<String> chains = map.get("chain");
         for (String c : chains) {
             JsonObject chainMap = decodeToken(c);
+            System.out.println(GSON.toJson(chainMap));
             if (chainMap == null) continue;
             if (chainMap.has("extraData")) {
+                if (chainMap.has("iat")) {
+                    this.issueUnixTime = chainMap.get("iat").getAsLong() * 1000;
+                }
                 JsonObject extra = chainMap.get("extraData").getAsJsonObject();
                 if (extra.has("displayName")) this.username = extra.get("displayName").getAsString();
                 if (extra.has("identity")) this.clientUUID = UUID.fromString(extra.get("identity").getAsString());
