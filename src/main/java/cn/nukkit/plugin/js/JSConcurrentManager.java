@@ -46,7 +46,7 @@ public final class JSConcurrentManager {
         void onPromiseCreation(Value onResolve, Value onReject);
     }
 
-    static JPromise wrapPromise(Context context, CompletableFuture<?> javaFuture) {
+    public static JPromise wrapPromise(Context context, CompletableFuture<?> javaFuture) {
         return new JPromise(context, javaFuture);
     }
 
