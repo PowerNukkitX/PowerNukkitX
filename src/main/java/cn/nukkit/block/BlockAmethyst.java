@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
+import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nonnull;
 
@@ -74,5 +74,10 @@ public class BlockAmethyst extends BlockSolid {
     @Override
     public boolean isLavaResistant() {
         return true;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.PURPLE_BLOCK_COLOR;
     }
 }
