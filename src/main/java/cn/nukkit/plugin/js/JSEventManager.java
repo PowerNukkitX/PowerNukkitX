@@ -29,7 +29,7 @@ public final class JSEventManager {
         if (callback.canExecute()) {
             try {
                 var clazz = Class.forName(fullEventName);
-                if (!clazz.isAssignableFrom(Event.class)) {
+                if (!Event.class.isAssignableFrom(clazz)) {
                     return false;
                 }
                 Server.getInstance().getPluginManager().registerEvent((Class<? extends Event>) clazz, jsPlugin, priority, (listener, event) -> {
