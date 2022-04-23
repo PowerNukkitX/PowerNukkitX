@@ -76,17 +76,16 @@ public class BlockFarmland extends BlockTransparentMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
-            Vector3 v = new Vector3();
-
-            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)) instanceof BlockCrops) {
-                return 0;
-            }
-
-            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)).isSolid()) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (this.up().isSolid()) {
                 this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
 
-                return Level.BLOCK_UPDATE_RANDOM;
+                return type;
+            }
+        } else if (type == Level.BLOCK_UPDATE_RANDOM) {
+            Vector3 v = new Vector3();
+            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)) instanceof BlockCrops) {
+                return 0;
             }
 
             boolean found = false;
