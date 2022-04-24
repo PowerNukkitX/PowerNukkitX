@@ -1,10 +1,7 @@
 package cn.nukkit.item.food;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
@@ -228,14 +225,25 @@ public abstract class Food {
     public int getEatingTick() {
         return eatingTick;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public Food setEatingTick(int eatingTick) {
         this.eatingTick = eatingTick;
         return this;
     }
-    
+
+    @PowerNukkitXOnly
+    public Item getItem() {
+        var nodeid = (NodeIDMeta) Food.registryDefault
+                .entrySet()
+                .stream()
+                .filter(entry -> this.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .toArray()[0];
+        return Item.get(nodeid.id);
+    }
+
     static class NodeIDMeta {
         final int id;
         final int meta;
