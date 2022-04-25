@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityEffectRemoveEvent;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
@@ -17,6 +18,7 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
+import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nullable;
 
@@ -390,7 +392,16 @@ public class ItemBucket extends Item {
             player.getInventory().setItemInHand(Item.get(ItemID.BUCKET));
         }
 
-        player.removeAllEffects();
+        boolean isCancel = false;
+        if (!player.getEffects().isEmpty()) {
+            for (Effect effect : player.getEffects().values()) {
+                EntityEffectRemoveEvent effectRemoveEvent = new EntityEffectRemoveEvent(player, effect);
+                player.getServer().getPluginManager().callEvent(effectRemoveEvent);
+                isCancel = effectRemoveEvent.isCancelled();
+            }
+        }
+
+        if (!isCancel) player.removeAllEffects();
         return true;
     }
 }
