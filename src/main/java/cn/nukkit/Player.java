@@ -1083,7 +1083,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 CompoundTag data = itemCustom.getComponentsData();
                 data.putShort("minecraft:identifier", i);
 
-                entries[i] = new ItemComponentPacket.Entry((/*"customitem:" + */item.getName()).toLowerCase(), data);
+                entries[i] = new ItemComponentPacket.Entry(item.getNamespaceId(), data);
 
                 i++;
             }

@@ -139,11 +139,13 @@ public class RuntimeItemMapping {
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(entry.isComponentItem); // Component item
         }
+        int i = 10000;
         for (String id : this.customItems) {
             Item item = Item.fromString(id);
-            paletteBuffer.putString((/*"customitem:" + */item.getName()).toLowerCase());
-            paletteBuffer.putLShort(item.id);
+            paletteBuffer.putString(item.getNamespaceId());
+            paletteBuffer.putLShort(item.id + i);
             paletteBuffer.putBoolean(true); // Component item
+            i++;
         }
 
         this.itemDataPalette = paletteBuffer.getBuffer();

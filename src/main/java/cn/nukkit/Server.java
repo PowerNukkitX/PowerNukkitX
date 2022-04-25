@@ -1166,7 +1166,7 @@ public class Server {
     public void tickProcessor() {
         //TODO 测试完成后删除这里
         try {
-            Item.registerCustomItem(test.class);
+            Item.registerCustomItem(ItemCustomTest.class);
         }catch (Exception e) {
             e.printStackTrace();
         }
