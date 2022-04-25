@@ -1164,6 +1164,7 @@ public class Server {
     private int lastLevelGC;
 
     public void tickProcessor() {
+        //TODO 测试完成后删除这里
         try {
             Item.registerCustomItem(test.class);
         }catch (Exception e) {
