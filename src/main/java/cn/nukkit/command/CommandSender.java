@@ -1,20 +1,28 @@
 package cn.nukkit.command;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permissible;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * 能发送命令的人。<br>
+ * 能发送命令的对象。<br>
  * Who sends commands.
  *
- * <p>可以是一个玩家或者一个控制台。<br>
+ * <p>可以是一个玩家或者一个控制台或者一个实体或者其他。<br>
  * That can be a player or a console.</p>
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author smartcmd(code) @ PowerNukkitX Project
  * @see cn.nukkit.command.CommandExecutor#onCommand
  * @since Nukkit 1.0 | Nukkit API 1.0.0
  */
@@ -39,7 +47,7 @@ public interface CommandSender extends Permissible {
      */
     void sendMessage(TextContainer message);
 
-    /**
+    /**EntitySelector
      * 返回命令发送者所在的服务器。<br>
      * Returns the server of the command sender.
      *
@@ -71,4 +79,37 @@ public interface CommandSender extends Permissible {
 
     boolean isPlayer();
 
+    /**
+     * @return whether the sender is an entity <br>
+     * please use this method to check whether the sender is an entity instead of using code {@code "xxx instanceof Entity"} <br>
+     * because the sender may not an instance of {@code "Entity"} but in fact it is executing commands identity as an entity(eg: {@code "ExecutorCommandSender"})
+     */
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    default boolean isEntity() {return false;};
+
+    //return the entity who execute the command if the sender is a entity
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nullable
+    default Entity asEntity() {return null;};
+
+    //return the player who execute the command if the sender is a player
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nullable
+    default Player asPlayer() {return null;};
+
+    //return the sender's position
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nonnull
+    default Position getPosition() {return new Position(0, 0, 0,Server.getInstance().getDefaultLevel());}
+
+
+    //return the sender's location
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Nonnull
+    default Location getLocation() {return new Location(0, 0, 0,Server.getInstance().getDefaultLevel());}
 }

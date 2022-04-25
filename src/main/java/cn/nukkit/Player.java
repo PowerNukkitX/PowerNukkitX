@@ -6,10 +6,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.*;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityItemFrame;
-import cn.nukkit.blockentity.BlockEntityLectern;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
@@ -75,6 +72,10 @@ import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
+import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -111,6 +112,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -118,7 +120,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Log4j2
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
+public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, ScoreboardSendable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
@@ -723,6 +725,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    @Override
+    public Player asPlayer() {
+        return this;
+    }
+
+    @Override
+    public boolean isEntity() {
+        return true;
+    }
+
+    @Override
+    public Entity asEntity() {
+        return this;
+    }
+
     public void removeAchievement(String achievementId) {
         achievements.remove(achievementId);
     }
@@ -1073,6 +1090,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             itemComponentPacket.setEntries(entries);
 
             this.dataPacket(itemComponentPacket);
+
+        if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
+            Server.getInstance().getScoreboardManager().onPlayerJoin(this);
         }
     }
 
@@ -1528,15 +1548,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         boolean endPortal = false;
         for (Block block : this.getCollisionBlocks()) {
             switch (block.getId()) {
-                case BlockID.NETHER_PORTAL:
-                    portal = true;
-                    break;
-                case BlockID.SCAFFOLDING:
-                    scaffolding = true;
-                    break;
-                case BlockID.END_PORTAL:
-                    endPortal = true;
-                    break;
+                case BlockID.NETHER_PORTAL -> portal = true;
+                case BlockID.SCAFFOLDING -> scaffolding = true;
+                case BlockID.END_PORTAL -> endPortal = true;
             }
 
             block.onEntityCollide(this);
@@ -2326,7 +2340,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.z = (float) this.z;
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
-        startGamePacket.seed = -1;
+        startGamePacket.seed = -1L;
         startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();
@@ -2449,6 +2463,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.dataPacketImmediately(batch);
                             // Still want to run close() to allow the player to be removed properly
                         }
+                        this.close("", message, false);
+                        break;
+                    }
+
+                    if (loginPacket.issueUnixTime != -1 && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
+                        message = "disconnectionScreen.noReason";
+                        this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         this.close("", message, false);
                         break;
                     }
@@ -3298,6 +3319,58 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.server.dispatchCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage().substring(1));
                     Timings.playerCommandTimer.stopTiming();
                     break;
+                case ProtocolInfo.COMMAND_BLOCK_UPDATE_PACKET:
+                    CommandBlockUpdatePacket cmdpk = (CommandBlockUpdatePacket) packet;
+                    if (this.isOp() && this.isCreative()) {
+                        if (cmdpk.isBlock) {
+                            BlockEntity blockEntity = this.level.getBlockEntity(new Vector3(cmdpk.x, cmdpk.y, cmdpk.z));
+                            if (blockEntity instanceof BlockEntityCommandBlock) {
+                                BlockEntityCommandBlock commandBlock = (BlockEntityCommandBlock) blockEntity;
+                                Block cmdBlock = commandBlock.getLevelBlock();
+
+                                //change commandblock type
+                                switch (cmdpk.commandBlockMode) {
+                                    case ICommandBlock.MODE_REPEATING:
+                                        if (cmdBlock.getId() != BlockID.REPEATING_COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.REPEATING_COMMAND_BLOCK, cmdBlock.getDamage());
+                                            commandBlock.scheduleUpdate();
+                                        }
+                                        break;
+                                    case ICommandBlock.MODE_CHAIN:
+                                        if (cmdBlock.getId() != BlockID.CHAIN_COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.CHAIN_COMMAND_BLOCK, cmdBlock.getDamage());
+                                        }
+                                        break;
+                                    case ICommandBlock.MODE_NORMAL:
+                                    default:
+                                        if (cmdBlock.getId() != BlockID.COMMAND_BLOCK) {
+                                            cmdBlock = Block.get(BlockID.COMMAND_BLOCK, cmdBlock.getDamage());
+                                        }
+                                        break;
+                                }
+
+                                boolean conditional = cmdpk.isConditional;
+                                cmdBlock.setPropertyValue(BlockCommandBlock.CONDITIONAL_BIT, conditional);
+
+                                this.level.setBlock(commandBlock, cmdBlock, true);
+
+                                commandBlock.setCommand(cmdpk.command);
+                                commandBlock.setName(cmdpk.name);
+                                commandBlock.setTrackOutput(cmdpk.shouldTrackOutput);
+                                commandBlock.setConditional(conditional);
+                                commandBlock.setTickDelay(cmdpk.tickDelay);
+                                commandBlock.setExecutingOnFirstTick(cmdpk.executingOnFirstTick);
+
+                                //redstone mode / auto
+                                boolean isRedstoneMode = cmdpk.isRedstoneMode;
+                                commandBlock.setAuto(!isRedstoneMode);
+                                if (!isRedstoneMode && cmdpk.commandBlockMode == ICommandBlock.MODE_NORMAL) {
+                                    commandBlock.trigger();
+                                }
+                            }
+                        }
+                    }
+                    break;
                 case ProtocolInfo.TEXT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -4021,23 +4094,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         }
                                     }
 
-                                    Enchantment[] enchantments = item.getEnchantments();
-
                                     float itemDamage = item.getAttackDamage();
-                                    for (Enchantment enchantment : enchantments) {
-                                        itemDamage += enchantment.getDamageBonus(target);
+                                    Enchantment[] enchantments = item.getEnchantments();
+                                    if(item.applyEnchantments()) {
+                                        for (Enchantment enchantment : enchantments) {
+                                            itemDamage += enchantment.getDamageBonus(target);
+                                        }
                                     }
 
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
                                     float knockBack = 0.3f;
-                                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                                    if (knockBackEnchantment != null) {
-                                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                    if(item.applyEnchantments()) {
+                                        Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                                        if (knockBackEnchantment != null) {
+                                            knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                        }
                                     }
 
-                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, enchantments);
+                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -4065,8 +4141,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         sideEffect.doPostAttack(this, entityDamageByEntityEvent, target);
                                     }
 
-                                    for (Enchantment enchantment : item.getEnchantments()) {
-                                        enchantment.doPostAttack(this, target);
+                                    if(item.applyEnchantments()) {
+                                        for (Enchantment enchantment : item.getEnchantments()) {
+                                            enchantment.doPostAttack(this, target);
+                                        }
                                     }
 
                                     if (item.isTool() && (this.isSurvival() || this.isAdventure())) {
@@ -4632,6 +4710,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.chunk = null;
 
         this.server.removePlayer(this);
+
+        //in test environment sometimes the scoreboard manager is null
+        if(Server.getInstance().getScoreboardManager() != null) {
+            Server.getInstance().getScoreboardManager().onPlayerQuit(this);
+        }
     }
 
     public void save() {
@@ -4861,7 +4944,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 for (Item item : ev.getDrops()) {
-                    if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                    if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE) && item.applyEnchantments()) {
                         this.level.dropItem(this, item, null, true, 40);
                     }
                 }
@@ -5166,7 +5249,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        if (this.isSpectator() || (this.isCreative() && source.getCause() != DamageCause.SUICIDE)) {
+        if (this.isSpectator() || this.isCreative()) {
             //source.setCancelled();
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
@@ -6410,5 +6493,37 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         return true;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
+        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        pk.displaySlot = slot;
+        pk.objectiveName = scoreboard.getObjectiveName();
+        pk.displayName = scoreboard.getDisplayName();
+        pk.criteriaName = scoreboard.getCriteriaName();
+        pk.sortOrder = scoreboard.getSortOrder();
+        this.dataPacket(pk);
+
+        //client won't storage the score of a scoreboard,so we should send the score to client
+        SetScorePacket pk2 = new SetScorePacket();
+        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toScoreInfo()).filter(line -> line!=null).collect(Collectors.toList());
+        pk2.action = SetScorePacket.Action.SET;
+        this.dataPacket(pk2);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void clearScoreboardSlot(DisplaySlot slot) {
+        SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
+        pk.displaySlot = slot;
+        pk.objectiveName = "";
+        pk.displayName = "";
+        pk.criteriaName = "";
+        pk.sortOrder = SortOrder.ASCENDING;
+        this.dataPacket(pk);
     }
 }

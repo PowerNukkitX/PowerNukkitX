@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.block.BigDripleafTiltChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -31,10 +32,16 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     static{
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            for (Map.Entry<Position, TiltAction> entry : actions.entrySet()) {
+            for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[0])) {
                     if (--entry.getValue().delay == 0) {
                         if (checkTiltAction(entry.getKey())) {
                             BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
+                            BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf,blockBigDripleaf.getTilt(),entry.getValue().targetState);
+                            Server.getInstance().getPluginManager().callEvent(event);
+                            if (event.isCancelled()) {
+                                return;
+                            }
+                            entry.getValue().targetState = event.getNewTilt();
                             blockBigDripleaf.setTilt(entry.getValue().targetState);
                             entry.getKey().getLevel().setBlock(entry.getKey(), blockBigDripleaf, true, true);
                             if (entry.getValue().targetState == Tilt.FULL_TILT) {

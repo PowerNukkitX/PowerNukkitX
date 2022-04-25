@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
@@ -108,7 +109,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (this.noDamageTicks > 0) {
+        if (this.noDamageTicks > 0 && source.getCause() != DamageCause.SUICIDE) {//ignore it if the cause is SUICIDE
             return false;
         } else if (this.attackTime > 0 && !attackTimeByShieldKb) {
             EntityDamageEvent lastCause = this.getLastDamageCause();
@@ -299,9 +300,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        // Used to check collisions with magma blocks
-        Block block = this.level.getBlock((int) x, (int) y - 1, (int) z);
-        if (block instanceof BlockMagma) block.onEntityCollide(this);
+        // Used to check collisions with magma / cactus blocks
+        var block = this.level.getBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
+        if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         Timings.livingEntityBaseTickTimer.stopTiming();
 
@@ -435,8 +436,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             return false;
         }
 
-        if (event.getKnockBackAttacker() && damager instanceof EntityLiving) {
-            EntityLiving attacker = (EntityLiving) damager;
+        if (event.getKnockBackAttacker() && damager instanceof EntityLiving attacker) {
             double deltaX = attacker.getX() - this.getX();
             double deltaZ = attacker.getZ() - this.getZ();
             attacker.knockBack(this, 0, deltaX, deltaZ);

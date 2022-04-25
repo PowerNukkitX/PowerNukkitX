@@ -110,12 +110,18 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return 1;
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public static boolean isSupportValid(Block block, BlockFace blockFace) {
+        return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;
+    }
+
     @PowerNukkitDifference(info = "Allow to be placed on top of the walls", since = "1.3.0.0-PN")
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
+            if (!isSupportValid(down(), BlockFace.UP)) {
                 this.level.useBreakOn(this, ItemTool.getBestTool(getToolType()));
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -133,7 +139,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
-        if (!BlockLever.isSupportValid(down(), BlockFace.UP)) {
+        if (!isSupportValid(down(), BlockFace.UP)) {
             return false;
         }
 
@@ -156,7 +162,6 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
 
         if (power == 0) {
             Event ev;
-
             if (entity instanceof Player) {
                 ev = new PlayerInteractEvent((Player) entity, null, this, null, Action.PHYSICAL);
             } else {

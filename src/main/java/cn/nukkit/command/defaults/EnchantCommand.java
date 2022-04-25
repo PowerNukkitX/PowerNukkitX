@@ -6,12 +6,16 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
+
+import java.util.List;
 
 /**
  * @author Pub4Game
@@ -20,7 +24,7 @@ import cn.nukkit.utils.TextFormat;
 public class EnchantCommand extends VanillaCommand {
 
     public EnchantCommand(String name) {
-        super(name, "%nukkit.command.enchant.description", "%commands.enchant.usage");
+        super(name, "commands.enchant.description", "commands.enchant.usage");
         this.setPermission("nukkit.command.enchant");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -43,17 +47,26 @@ public class EnchantCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
         if (args.length < 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
+            return false;
         }
-        Player player = sender.getServer().getPlayer(args[0]);
-        if (player == null) {
+
+        List<Entity> entities = List.of();
+        if (EntitySelector.hasArguments(args[0])) {
+            entities = EntitySelector.matchEntities(sender, args[0]);
+        } else if(sender.getServer().getPlayer(args[0]) != null){
+            entities = List.of(sender.getServer().getPlayer(args[0]));
+        }
+
+        List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
+        if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return true;
+            return false;
         }
+
         int enchantId;
         int enchantLevel;
         try {
@@ -64,112 +77,85 @@ public class EnchantCommand extends VanillaCommand {
             return true;
         }
         Enchantment enchantment = Enchantment.getEnchantment(enchantId);
+
         if (enchantment == null) {
             sender.sendMessage(new TranslationContainer("commands.enchant.notFound", String.valueOf(enchantId)));
+            return false;
+        }
+
+        boolean successExecute = false;
+        for (Entity entity : entities) {
+            Player player = (Player) entity;
+            enchantment.setLevel(enchantLevel);
+            Item item = player.getInventory().getItemInHand();
+            if (item.getId() == 0) {
+                sender.sendMessage(new TranslationContainer("commands.enchant.noItem"));
+                continue;
+            }
+            if (item.getId() != ItemID.BOOK) {
+                item.addEnchantment(enchantment);
+                player.getInventory().setItemInHand(item);
+            } else {
+                successExecute = true;
+                Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
+                enchanted.addEnchantment(enchantment);
+                Item clone = item.clone();
+                clone.count--;
+                PlayerInventory inventory = player.getInventory();
+                inventory.setItemInHand(clone);
+                player.giveItem(enchanted);
+            }
+            if (!successExecute) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                return false;
+            }
+            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.enchant.success", args[1]));
             return true;
         }
-        enchantment.setLevel(enchantLevel);
-        Item item = player.getInventory().getItemInHand();
-        if (item.getId() == 0) {
-            sender.sendMessage(new TranslationContainer("commands.enchant.noItem"));
-            return true;
-        }
-        if (item.getId() != ItemID.BOOK) {
-            item.addEnchantment(enchantment);
-            player.getInventory().setItemInHand(item);
-        } else {
-            Item enchanted = Item.get(ItemID.ENCHANTED_BOOK, 0, 1, item.getCompoundTag());
-            enchanted.addEnchantment(enchantment);
-            Item clone = item.clone();
-            clone.count--;
-            PlayerInventory inventory = player.getInventory();
-            inventory.setItemInHand(clone);
-            player.giveItem(enchanted);
-        }
-        Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.enchant.success", args[1]));
-        return true;
+        return false;
     }
 
     public int getIdByName(String value) throws NumberFormatException {
         value = value.toLowerCase();
-        switch (value) {
-            case "protection":
-                return 0;
-            case "fire_protection":
-                return 1;
-            case "feather_falling":
-                return 2;
-            case "blast_protection":
-                return 3;
-            case "projectile_projection":
-                return 4;
-            case "thorns":
-                return 5;
-            case "respiration":
-                return 6;
-            case "aqua_affinity":
-                return 7;
-            case "depth_strider":
-                return 8;
-            case "sharpness":
-                return 9;
-            case "smite":
-                return 10;
-            case "bane_of_arthropods":
-                return 11;
-            case "knockback":
-                return 12;
-            case "fire_aspect":
-                return 13;
-            case "looting":
-                return 14;
-            case "efficiency":
-                return 15;
-            case "silk_touch":
-                return 16;
-            case "durability":
-            case "unbreaking":
-                return 17;
-            case "fortune":
-                return 18;
-            case "power":
-                return 19;
-            case "punch":
-                return 20;
-            case "flame":
-                return 21;
-            case "infinity":
-                return 22;
-            case "luck_of_the_sea":
-                return 23;
-            case "lure":
-                return 24;
-            case "frost_walker":
-                return 25;
-            case "mending":
-                return 26;
-            case "binding_curse":
-                return 27;
-            case "vanishing_curse":
-                return 28;
-            case "impaling":
-                return 29;
-            case "riptide":
-                return 30;
-            case "loyalty":
-                return 31;
-            case "channeling":
-                return 32;
-            case "multishot":
-                return 33;
-            case "piercing":
-                return 34;
-            case "quick_charge":
-                return 35;
-            case "soul_speed":
-                return 36;
-            default:
-                return Integer.parseInt(value);
-        }
+        return switch (value) {
+            case "protection" -> 0;
+            case "fire_protection" -> 1;
+            case "feather_falling" -> 2;
+            case "blast_protection" -> 3;
+            case "projectile_projection" -> 4;
+            case "thorns" -> 5;
+            case "respiration" -> 6;
+            case "aqua_affinity" -> 7;
+            case "depth_strider" -> 8;
+            case "sharpness" -> 9;
+            case "smite" -> 10;
+            case "bane_of_arthropods" -> 11;
+            case "knockback" -> 12;
+            case "fire_aspect" -> 13;
+            case "looting" -> 14;
+            case "efficiency" -> 15;
+            case "silk_touch" -> 16;
+            case "durability", "unbreaking" -> 17;
+            case "fortune" -> 18;
+            case "power" -> 19;
+            case "punch" -> 20;
+            case "flame" -> 21;
+            case "infinity" -> 22;
+            case "luck_of_the_sea" -> 23;
+            case "lure" -> 24;
+            case "frost_walker" -> 25;
+            case "mending" -> 26;
+            case "binding_curse" -> 27;
+            case "vanishing_curse" -> 28;
+            case "impaling" -> 29;
+            case "riptide" -> 30;
+            case "loyalty" -> 31;
+            case "channeling" -> 32;
+            case "multishot" -> 33;
+            case "piercing" -> 34;
+            case "quick_charge" -> 35;
+            case "soul_speed" -> 36;
+            default -> Integer.parseInt(value);
+        };
     }
 }

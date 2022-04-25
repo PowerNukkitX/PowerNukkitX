@@ -44,6 +44,9 @@ public enum InventoryType {
     @PowerNukkitOnly SMOKER(3, "Smoker", 28),
     @PowerNukkitOnly STONECUTTER(2, "Stonecutter", 29), // Should be 29 but it's totally driven by the client, so setting to -1 = UI
     @PowerNukkitOnly CARTOGRAPHY(3, "Cartography Table", 30),
+    @PowerNukkitOnly HUD(9, "Cartography Table", 31),
+    //@PowerNukkitOnly JIGSAW_EDITOR(3, "Cartography Table", 32),
+    @PowerNukkitOnly CHEST_BOAT(27, "Cartography Table", 34),
     @PowerNukkitOnly BARREL(27, "Barrel", 0),
     @PowerNukkitOnly CAMPFIRE(4, "Campfire", -9), // -9 = NONE
     @PowerNukkitOnly @Since("1.4.0.0-PN") ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER

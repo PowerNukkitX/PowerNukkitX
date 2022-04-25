@@ -34,9 +34,9 @@ assignees: ''
 
 
 ### 📋 Debug information
-<!-- Use the 'debugpaste upload' and 'timings paste' command in PowerNukkit -->
+<!-- Use the 'debugpaste upload' and 'timings paste' command in PowerNukkitX -->
 <!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
-* PowerNukkit version: ✍
+* PowerNukkitX version: ✍
 * Debug link: ✍
 * Timings link (if relevant): ✍ 
 

@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.command.PluginCommand;
 import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.event.*;
@@ -17,6 +18,7 @@ import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 
+import javax.script.ScriptEngine;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -186,7 +188,7 @@ public class PluginManager {
                     }
                     return false;
                 })) {
-                    if (file.isDirectory() && !includeDir) {
+                    if ((file.isDirectory() && !file.getName().startsWith("@")) && !includeDir) {
                         continue;
                     }
                     try {
@@ -562,6 +564,15 @@ public class PluginManager {
     }
 
     public void callEvent(Event event) {
+        //Used for event listeners inside command blocks
+        String eventName = event.getClass().getSimpleName();
+        for (BlockEntityCommandBlock cb : BlockEntityCommandBlock.getListenMap().keySet()) {
+            BlockEntityCommandBlock.getListenMap().get(cb).forEach((k, v) -> {
+                if (eventName.equals(k)) {
+                    cb.execute();
+                }
+            });
+        }
         try {
             for (RegisteredListener registration : getEventListeners(event.getClass()).getRegisteredListeners()) {
                 if (!registration.getPlugin().isEnabled()) {

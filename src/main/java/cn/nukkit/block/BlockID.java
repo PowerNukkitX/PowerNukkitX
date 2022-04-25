@@ -74,7 +74,7 @@ public interface BlockID {
     int BUSH = 32;
     int DEAD_BUSH = 32;
     int PISTON = 33;
-    int PISTON_HEAD = 34;
+    int PISTON_ARM_COLLISION = 34;
     int WOOL = 35;
     int DANDELION = 37;
     int RED_FLOWER = 38;
@@ -292,7 +292,7 @@ public interface BlockID {
     int EMERALD_ORE = 129;
     int ENDER_CHEST = 130;
     int TRIPWIRE_HOOK = 131;
-    int TRIPWIRE = 132;
+    int TRIP_WIRE = 132;
     int EMERALD_BLOCK = 133;
     @Since("FUTURE") @PowerNukkitOnly int SPRUCE_STAIRS = 134;
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
@@ -315,7 +315,9 @@ public interface BlockID {
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
             replaceWith = "JUNGLE_STAIRS", reason = "Wrong Minecraft block name")
     int JUNGLE_WOODEN_STAIRS = JUNGLE_STAIRS;
-    // TODO 137 - command_block
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int COMMAND_BLOCK = 137;
     int BEACON = 138;
     int COBBLE_WALL = 139;
     int STONE_WALL = 139;
@@ -381,6 +383,12 @@ public interface BlockID {
     int FENCE_GATE_JUNGLE = 185;
     int FENCE_GATE_DARK_OAK = 186;
     int FENCE_GATE_ACACIA = 187;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int REPEATING_COMMAND_BLOCK = 188;
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    int CHAIN_COMMAND_BLOCK = 189;
 
     int SPRUCE_DOOR_BLOCK = 193;
     int BIRCH_DOOR_BLOCK = 194;
@@ -555,9 +563,12 @@ public interface BlockID {
      @PowerNukkitOnly int COMPOSTER = 468;
      @PowerNukkitOnly int LIT_BLAST_FURNACE = 469;
      @PowerNukkitOnly int LIGHT_BLOCK = 470;
-     @PowerNukkitOnly int WITHER_ROSE = 471;
-     @PowerNukkitOnly int STICKYPISTONARMCOLLISION = 472;
-     @PowerNukkitOnly int PISTON_HEAD_STICKY = 472;
+    @PowerNukkitOnly
+    int WITHER_ROSE = 471;
+    @PowerNukkitOnly
+    int STICKY_PISTON_ARM_COLLISION = 472;
+    @PowerNukkitOnly
+    int PISTON_HEAD_STICKY = 472;
      @PowerNukkitOnly int BEE_NEST = 473;
      @PowerNukkitOnly int BEEHIVE = 474;
      @PowerNukkitOnly int HONEY_BLOCK = 475;
@@ -785,14 +796,42 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int BROWN_CANDLE_CAKE = 697;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int GREEN_CANDLE_CAKE = 698;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int RED_CANDLE_CAKE = 699;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int BLACK_CANDLE_CAKE = 700;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int WAXED_OXIDIZED_COPPER = 701;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER = 702;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int WAXED_OXIDIZED_CUT_COPPER_SLAB = 704;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 705;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int RAW_IRON_BLOCK = 706;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int RAW_COPPER_BLOCK = 707;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int RAW_GOLD_BLOCK = 708;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int INFESTED_DEEPSLATE = 709;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int BLACK_CANDLE_CAKE = 700;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int WAXED_OXIDIZED_COPPER = 701;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int WAXED_OXIDIZED_CUT_COPPER = 702;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int WAXED_OXIDIZED_CUT_COPPER_STAIRS = 703;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int WAXED_OXIDIZED_CUT_COPPER_SLAB = 704;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB = 705;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int RAW_IRON_BLOCK = 706;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int RAW_COPPER_BLOCK = 707;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int RAW_GOLD_BLOCK = 708;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int INFESTED_DEEPSLATE = 709;
+
+
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    int SCULK = 713;
+    @Since("FUTURE")
+    @PowerNukkitOnly
+    int MUD = 728;
 }

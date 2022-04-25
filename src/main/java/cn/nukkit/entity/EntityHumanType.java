@@ -206,8 +206,10 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
         double epf = 0;
 
-        for (Enchantment ench : item.getEnchantments()) {
-            epf += ench.getProtectionFactor(source);
+        if(item.applyEnchantments()) {
+            for (Enchantment ench : item.getEnchantments()) {
+                epf += ench.getProtectionFactor(source);
+            }
         }
 
         return epf;
@@ -247,8 +249,10 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
-                for (Enchantment enchantment : armor.getEnchantments()) {
-                    enchantment.doPostAttack(damager, this);
+                if(armor.applyEnchantments()) {
+                    for (Enchantment enchantment : armor.getEnchantments()) {
+                        enchantment.doPostAttack(damager, this);
+                    }
                 }
             }
 

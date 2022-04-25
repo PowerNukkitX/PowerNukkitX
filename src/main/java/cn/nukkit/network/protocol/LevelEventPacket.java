@@ -79,14 +79,30 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_TURTLE_EGG = 2034;
     public static final int EVENT_PARTICLE_SCULK_SHRIEK = 2035;
     public static final int EVENT_PARTICLE_SCULK_CATALYST_BLOOM = 2036;
+    public static final int EVENT_PARTICLE_SCULK_CHARGE = 2037;
+    public static final int EVENT_PARTICLE_SCULK_CHARGE_POP = 2038;
 
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_VIBRATION_SIGNAL = 2027;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_DRIPSTONE_DRIP = 2028;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_FIZZ_EFFECT = 2029;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_WAX_ON = 2030;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_WAX_OFF = 2031;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_SCRAPE = 2032;
-    @PowerNukkitOnly @Since("1.5.0.0-PN") public static final int EVENT_PARTICLE_ELECTRIC_SPARK = 2033;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_VIBRATION_SIGNAL = 2027;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_DRIPSTONE_DRIP = 2028;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_FIZZ_EFFECT = 2029;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_WAX_ON = 2030;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_WAX_OFF = 2031;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_SCRAPE = 2032;
+    @PowerNukkitOnly
+    @Since("1.5.0.0-PN")
+    public static final int EVENT_PARTICLE_ELECTRIC_SPARK = 2033;
 
     public static final int EVENT_SOUND_BUTTON_CLICK = 3500;
     public static final int EVENT_SOUND_EXPLODE = 3501;

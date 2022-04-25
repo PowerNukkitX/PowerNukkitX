@@ -82,6 +82,10 @@ public enum BlockFace {
         this.unitVector = unitVector;
     }
 
+    public static BlockFace[] getHorizontals(){
+        return HORIZONTALS.clone();
+    }
+
     /**
      * Get a BlockFace by it's index (0-5). The order is D-U-N-S-W-E
      *

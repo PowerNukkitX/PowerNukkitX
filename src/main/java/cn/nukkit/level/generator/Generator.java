@@ -2,6 +2,8 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.DimensionData;
+import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
@@ -23,6 +25,14 @@ public abstract class Generator implements BlockID {
 
     public int getDimension() {
         return Level.DIMENSION_OVERWORLD;
+    }
+
+    public DimensionData getDimensionData() {
+        DimensionData dimensionData = DimensionEnum.getDataFromId(this.getDimension());
+        if (dimensionData == null) {
+            dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
+        }
+        return dimensionData;
     }
 
     private static final Map<String, Class<? extends Generator>> nameList = new HashMap<>();

@@ -202,7 +202,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[TALL_GRASS] = BlockTallGrass.class; //31
             list[DEAD_BUSH] = BlockDeadBush.class; //32
             list[PISTON] = BlockPiston.class; //33
-            list[PISTON_HEAD] = BlockPistonHead.class; //34
+            list[PISTON_ARM_COLLISION] = BlockPistonHead.class; //34
             list[WOOL] = BlockWool.class; //35
             list[DANDELION] = BlockDandelion.class; //37
             list[RED_FLOWER] = BlockFlower.class; //38
@@ -299,11 +299,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[EMERALD_ORE] = BlockOreEmerald.class; //129
             list[ENDER_CHEST] = BlockEnderChest.class; //130
             list[TRIPWIRE_HOOK] = BlockTripWireHook.class;
-            list[TRIPWIRE] = BlockTripWire.class; //132
+            list[TRIP_WIRE] = BlockTripWire.class; //132
             list[EMERALD_BLOCK] = BlockEmerald.class; //133
             list[SPRUCE_STAIRS] = BlockStairsSpruce.class; //134
             list[BIRCH_STAIRS] = BlockStairsBirch.class; //135
             list[JUNGLE_STAIRS] = BlockStairsJungle.class; //136
+            list[COMMAND_BLOCK] = BlockCommandBlock.class; //137
 
             list[BEACON] = BlockBeacon.class; //138
             list[STONE_WALL] = BlockWall.class; //139
@@ -356,6 +357,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[FENCE_GATE_JUNGLE] = BlockFenceGateJungle.class; //185
             list[FENCE_GATE_DARK_OAK] = BlockFenceGateDarkOak.class; //186
             list[FENCE_GATE_ACACIA] = BlockFenceGateAcacia.class; //187
+
+            list[CHAIN_COMMAND_BLOCK] = BlockCommandBlockChain.class; //189
+            list[REPEATING_COMMAND_BLOCK] = BlockCommandBlockRepeating.class; //190
 
             list[SPRUCE_DOOR_BLOCK] = BlockDoorSpruce.class; //193
             list[BIRCH_DOOR_BLOCK] = BlockDoorBirch.class; //194
@@ -520,8 +524,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[LIT_BLAST_FURNACE] = BlockBlastFurnaceBurning.class; //469
             list[LIGHT_BLOCK] = BlockLight.class; //470
             list[WITHER_ROSE] = BlockWitherRose.class; //471
-            
-            list[STICKYPISTONARMCOLLISION] = BlockPistonHeadSticky.class; //472
+
+            list[STICKY_PISTON_ARM_COLLISION] = BlockPistonHeadSticky.class; //472
             list[BEE_NEST] = BlockBeeNest.class; //473
             list[BEEHIVE] = BlockBeehive.class; //474
             list[HONEY_BLOCK] = BlockHoney.class; //475
@@ -745,8 +749,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[RAW_GOLD_BLOCK] = BlockRawGold.class; //708
             list[INFESTED_DEEPSLATE] = BlockInfestedDeepslate.class; //709
 
+            //list[SCULK] = BlockSculk.class; //713
+
+            //list[MUD] = BlockMud.class; //728
             initializing = true;
-            
+
             for (int id = 0; id < MAX_BLOCK_ID; id++) {
                 Class<? extends Block> c = list[id];
                 if (c != null) {

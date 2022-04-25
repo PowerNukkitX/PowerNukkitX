@@ -6,7 +6,6 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.math.NukkitRandom;
 
 import javax.annotation.Nonnull;
 
@@ -42,15 +41,6 @@ public class BlockCaveVinesHeadWithBerries extends BlockCaveVines {
     @Override
     public int getLightLevel() {
         return 14;
-    }
-
-    @Override
-    public boolean onActivate(@Nonnull Item item) {
-        final Block tmp = new BlockCaveVinesBodyWithBerries();
-        tmp.setPropertyValue(BlockCaveVinesBodyWithBerries.AGE_PROPERTY, this.getPropertyValue(AGE_PROPERTY));
-        getLevel().setBlock(this, tmp, true, true);
-        getLevel().dropItem(this, Item.get(ItemID.GLOW_BERRIES));
-        return true;
     }
 
     @Override

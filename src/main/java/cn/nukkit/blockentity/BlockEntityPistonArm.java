@@ -4,14 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockPistonBase;
+import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -24,11 +20,8 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
@@ -230,22 +223,30 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
 
             if (!extending) {
-                if (this.level.getBlock(getSide(facing)).getId() == (sticky? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_HEAD)) {
+                if (this.level.getBlock(getSide(facing)).getId() == (sticky ? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_ARM_COLLISION)) {
                     this.level.setBlock(getSide(facing), new BlockAir());
                 }
                 this.movable = true;
             }
 
-            this.getLevelBlock().onUpdate(BLOCK_UPDATE_NORMAL);
             this.attachedBlocks.clear();
             hasUpdate = false;
             this.finished = true;
             this.blocksCalculator.unlockBlocks();
-            Position pistonPos = blocksCalculator.getPistonPos();
-            BlockPistonBase.updatePistonsListenTo(new Position(pistonPos.getX(), pistonPos.getY(), pistonPos.getZ(), this.level));
+            this.blocksCalculator.getLockedBlocks().forEach(BlockPistonBase::updatePistonsListenTo);
+            this.blocksCalculator.getLockedBlocks().forEach(pos -> {
+                this.level.scheduleUpdate(pos.getLevelBlock(), 1);
+                if (pos.getSide(BlockFace.UP).getLevelBlock() instanceof BlockFallableMeta){
+                    this.level.scheduleUpdate(pos.getSide(BlockFace.UP).getLevelBlock(), 1);
+                }
+            });
         }
 
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        if (level != null) {
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        }else{
+            return true;
+        }
 
         return super.onUpdate() || hasUpdate;
     }
@@ -257,7 +258,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     @Override
     public boolean isBlockEntityValid() {
         int id = getLevelBlock().getId();
-        return id == BlockID.PISTON || id == BlockID.STICKY_PISTON; 
+        return id == BlockID.PISTON || id == BlockID.STICKY_PISTON;
     }
 
     @Override
