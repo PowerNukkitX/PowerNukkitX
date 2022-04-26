@@ -9,6 +9,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
+import cn.nukkit.event.player.PlayerEffectRemoveEvent;
+import cn.nukkit.event.player.PlayerEffectUpdateEvent;
 import cn.nukkit.network.protocol.MobEffectPacket;
 import cn.nukkit.utils.ServerException;
 
@@ -282,7 +284,11 @@ public class Effect implements Cloneable {
         }
         if (entity instanceof Player) {
             Player player = (Player) entity;
-
+            if (oldEffect != null) {
+                PlayerEffectUpdateEvent event = new PlayerEffectUpdateEvent(player, oldEffect);
+                player.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) return;
+            }
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
             pk.effectId = this.getId();
@@ -324,11 +330,18 @@ public class Effect implements Cloneable {
     }
 
     public void remove(Entity entity) {
-        if (entity instanceof Player) {
+        if (entity instanceof Player player) {
+
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
             pk.effectId = this.getId();
             pk.eventId = MobEffectPacket.EVENT_REMOVE;
+
+
+            PlayerEffectRemoveEvent event = new PlayerEffectRemoveEvent(player, this);
+            player.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) return;
+
 
             ((Player) entity).dataPacket(pk);
 

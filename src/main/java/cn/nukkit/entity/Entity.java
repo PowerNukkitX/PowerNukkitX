@@ -1670,9 +1670,7 @@ public abstract class Entity extends Location implements Metadatable {
                 effect.setDuration(effect.getDuration() - tickDiff);
 
                 if (effect.getDuration() <= 0) {
-                    EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(this, effect);
-                    this.getServer().getPluginManager().callEvent(event);
-                    if (!event.isCancelled()) this.removeEffect(effect.getId());
+                    this.removeEffect(effect.getId());
                 }
             }
         }
