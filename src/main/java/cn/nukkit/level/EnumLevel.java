@@ -69,9 +69,9 @@ public enum EnumLevel {
     }
 
     public static Level getOtherNetherPair(Level current)   {
-        if (current == OVERWORLD.level) {
+        if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return NETHER.level;
-        } else if (current == NETHER.level) {
+        } else if (current == NETHER.level || current.getDimension() == Level.DIMENSION_NETHER) {
             return OVERWORLD.level;
         } else {
             throw new IllegalArgumentException("Neither overworld nor nether given!");
@@ -99,9 +99,9 @@ public enum EnumLevel {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static Level getOtherTheEndPair(Level current)   {
-        if (current == OVERWORLD.level) {
+        if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return THE_END.level;
-        } else if (current == THE_END.level) {
+        } else if (current == THE_END.level || current.getDimension() == Level.DIMENSION_THE_END) {
             return OVERWORLD.level;
         } else {
             throw new IllegalArgumentException("Neither overworld nor the end given!");
@@ -114,9 +114,9 @@ public enum EnumLevel {
         if (THE_END.level == null) {
             return null;
         } else {
-            if (current.level == OVERWORLD.level) {
+            if (current.level == OVERWORLD.level || current.level.getDimension() == Level.DIMENSION_OVERWORLD) {
                 return new Position(100, 49, 0, THE_END.level);
-            } else if (current.level == THE_END.level) {
+            } else if (current.level == THE_END.level || current.level.getDimension() == Level.DIMENSION_THE_END) {
                 return OVERWORLD.level.getSpawnLocation();
             } else {
                 throw new IllegalArgumentException("Neither overworld nor the end given!");
