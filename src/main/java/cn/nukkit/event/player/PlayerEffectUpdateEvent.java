@@ -1,10 +1,12 @@
 package cn.nukkit.event.player;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.potion.Effect;
 
+@PowerNukkitXOnly
 public class PlayerEffectUpdateEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
