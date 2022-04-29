@@ -1,6 +1,7 @@
 package cn.nukkit.potion;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -9,9 +10,9 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.entity.EntityEffectRemoveEvent;
 import cn.nukkit.event.entity.EntityEffectUpdateEvent;
+import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.network.protocol.MobEffectPacket;
 import cn.nukkit.utils.ServerException;
 
@@ -285,7 +286,7 @@ public class Effect implements Cloneable {
         }
 
         EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(entity, oldEffect, this);
-        entity.getServer().getPluginManager().callEvent(event);
+        Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
@@ -347,7 +348,7 @@ public class Effect implements Cloneable {
 
     public void remove(Entity entity) {
         EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(entity, this);
-        entity.getServer().getPluginManager().callEvent(event);
+        Server.getInstance().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
