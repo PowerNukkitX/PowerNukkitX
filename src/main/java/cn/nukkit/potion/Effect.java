@@ -9,8 +9,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
-import cn.nukkit.event.player.PlayerEffectRemoveEvent;
-import cn.nukkit.event.player.PlayerEffectUpdateEvent;
+import cn.nukkit.event.entity.EntityEffectRemoveEvent;
+import cn.nukkit.event.entity.EntityEffectUpdateEvent;
 import cn.nukkit.network.protocol.MobEffectPacket;
 import cn.nukkit.utils.ServerException;
 
@@ -282,13 +282,14 @@ public class Effect implements Cloneable {
                         && this.getDuration() < oldEffect.getDuration())) {
             return;
         }
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
-            if (oldEffect != null) {
-                PlayerEffectUpdateEvent event = new PlayerEffectUpdateEvent(player, oldEffect);
-                player.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) return;
-            }
+
+        EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(entity, oldEffect, this);
+        entity.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
+        if (entity instanceof Player player) {
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
             pk.effectId = this.getId();
@@ -330,26 +331,26 @@ public class Effect implements Cloneable {
     }
 
     public void remove(Entity entity) {
+        EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(entity, this);
+        entity.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (entity instanceof Player player) {
 
             MobEffectPacket pk = new MobEffectPacket();
-            pk.eid = entity.getId();
+            pk.eid = player.getId();
             pk.effectId = this.getId();
             pk.eventId = MobEffectPacket.EVENT_REMOVE;
 
-
-            PlayerEffectRemoveEvent event = new PlayerEffectRemoveEvent(player, this);
-            player.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
-
-
-            ((Player) entity).dataPacket(pk);
+            player.dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
+                player.setMovementSpeed(player.getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
             }
             if (this.id == Effect.SLOWNESS) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
+                player.setMovementSpeed(player.getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
             }
             if (this.id == Effect.HEALTH_BOOST) {
                 float max = entity.getMaxHealth();
