@@ -10,18 +10,24 @@ import cn.nukkit.potion.Effect;
 public class EntityEffectUpdateEvent extends EntityEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    private Effect updateEffect;
+    private Effect oldEffect;
+    private Effect newEffect;
 
-    public EntityEffectUpdateEvent(Entity entity, Effect effect) {
+    public EntityEffectUpdateEvent(Entity entity, Effect oldEffect, Effect newEffect) {
         this.entity = entity;
-        this.updateEffect = effect;
+        this.oldEffect = oldEffect;
+        this.newEffect = newEffect;
     }
 
     public static HandlerList getHandlers() {
         return handlers;
     }
 
-    public Effect getUpdateEffect() {
-        return updateEffect;
+    public Effect getOldEffect() {
+        return this.oldEffect;
+    }
+
+    public Effect getNewEffect() {
+        return this.newEffect;
     }
 }

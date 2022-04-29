@@ -6,11 +6,12 @@ import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.entity.EntityEffectRemoveEvent;
 import cn.nukkit.event.entity.EntityEffectUpdateEvent;
-import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.network.protocol.MobEffectPacket;
 import cn.nukkit.utils.ServerException;
 
@@ -282,13 +283,14 @@ public class Effect implements Cloneable {
                         && this.getDuration() < oldEffect.getDuration())) {
             return;
         }
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
-            if (oldEffect != null) {
-                EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(player, oldEffect);
-                player.getServer().getPluginManager().callEvent(event);
-                if (event.isCancelled()) return;
-            }
+
+        EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(entity, oldEffect, this);
+        entity.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
+        if (entity instanceof Player player) {
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
             pk.effectId = this.getId();
@@ -316,6 +318,20 @@ public class Effect implements Cloneable {
                 }
                 player.setMovementSpeed(player.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
             }
+        }else if (entity instanceof EntityLiving entityLiving) {
+            if (this.id == Effect.SPEED && (oldEffect == null || oldEffect.amplifier != this.amplifier)) {
+                if (oldEffect != null) {
+                    entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 + 0.2f * (oldEffect.amplifier + 1)));
+                }
+                entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() * (1 + 0.2f * (this.amplifier + 1)));
+            }
+
+            if (this.id == Effect.SLOWNESS && (oldEffect == null || oldEffect.amplifier != this.amplifier)) {
+                if (oldEffect != null) {
+                    entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)));
+                }
+                entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
+            }
         }
 
         if (this.id == Effect.INVISIBILITY) {
@@ -330,26 +346,27 @@ public class Effect implements Cloneable {
     }
 
     public void remove(Entity entity) {
-        if (entity instanceof Player player) {
+        EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(entity, this);
+        entity.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
 
-            MobEffectPacket pk = new MobEffectPacket();
-            pk.eid = entity.getId();
-            pk.effectId = this.getId();
-            pk.eventId = MobEffectPacket.EVENT_REMOVE;
+        if (entity instanceof EntityLiving entityLiving) {
+            if (entityLiving instanceof Player player) {
+                MobEffectPacket pk = new MobEffectPacket();
+                pk.eid = player.getId();
+                pk.effectId = this.getId();
+                pk.eventId = MobEffectPacket.EVENT_REMOVE;
 
-
-            EntityEffectRemoveEvent event = new EntityEffectRemoveEvent(player, this);
-            player.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) return;
-
-
-            ((Player) entity).dataPacket(pk);
+                player.dataPacket(pk);
+            }
 
             if (this.id == Effect.SPEED) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
+                entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
             }
             if (this.id == Effect.SLOWNESS) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
+                entityLiving.setMovementSpeed(entityLiving.getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
             }
             if (this.id == Effect.HEALTH_BOOST) {
                 float max = entity.getMaxHealth();
