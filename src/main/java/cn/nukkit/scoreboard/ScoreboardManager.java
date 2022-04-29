@@ -9,7 +9,11 @@ import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.interfaces.AbstractScoreboardManager;
 import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
+import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScoreboardManager extends AbstractScoreboardManager {
 
@@ -25,10 +29,19 @@ public class ScoreboardManager extends AbstractScoreboardManager {
 
     @Override
     public void removeScoreboard(String name) {
-        RemoveObjectivePacket pk = new RemoveObjectivePacket();
-        pk.objectiveName = name;
+        Scoreboard scoreboard = getScoreboard(name);
+        for (Scorer scorer : scoreboard.getLines().keySet()) {
+            if (scorer instanceof PlayerScorer playerScorer && playerScorer.getPlayer() != null) {
+                SetScorePacket setScorePacket = new SetScorePacket();
+                setScorePacket.action = SetScorePacket.Action.REMOVE;
+                setScorePacket.infos = scoreboard.getLines().values().stream().map(line -> line.toRemovedScoreInfo()).collect(Collectors.toList());
+                playerScorer.getPlayer().dataPacket(setScorePacket);
+            }
+        }
+        RemoveObjectivePacket removeObjectivePacket = new RemoveObjectivePacket();
+        removeObjectivePacket.objectiveName = name;
         for (Player player : Server.getInstance().getOnlinePlayers().values()) {
-            player.dataPacket(pk);
+            player.dataPacket(removeObjectivePacket);
         }
         scoreboards.remove(name);
         if (isScoreboardOnDisplay(name)) {
