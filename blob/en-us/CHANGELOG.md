@@ -8,10 +8,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切换语言 </a>
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
+3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
 
-This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
+This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`.
 
 ### Added
 
@@ -21,12 +22,14 @@ This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
 - [#146] Added Bootstrap launcher to PowerNukkitX to use PowerNukkitX without installing Java17.
 - [#161] Implemented and built in vanilla commands and command block within PowerNukkitX.
 - [#177] Added Terra generator inside PowerNukkitX ([FAQ](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)).
+- [#236] Initial implementation and completion of JavaScript plugin support in PowerNukkitX [(click here for development documentation)](https://doc.powernukkitx.cn/en-us/plugin-dev/js/%E6%A6%82%E8%BF%B0_en-us.html).
 
 ### Changed
 
 - [#45] Implemented compatibility with 1.18.10 (protocol version 486).
 - [#78] Add newly added items to the creation item bar.
 - [#132] Change whitelist to allowlist.
+- [#243] Implemented to be compatible with 1.18.30 (protocol version 503).
 
 ### Fixes
 
@@ -52,9 +55,14 @@ This work in progress version supports Minecraft:BE `1.18.10 (Protocol Ver486)`.
 - [#178] Fix magma cube damage calculation bias.
 - [#188] Fix incorrect drop damage calculation.
 - [#202] Fix EntityArmorChangeEvene not triggering properly.
+- [#251] Fix an issue where plowing does not change back to dirt when a square is placed on a plowed field.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
+- [#255] Preliminary re-login attack issue.
+
+### Documentation
+- [#235] Added all missing `@PowerNukkitXOnly` annotations
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -853,6 +861,11 @@ Fixes several anvil issues.
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
 
+## <a id="CataLogs-Version-history"></a>🔖 Version history / 历史版本
+
+1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Ver 486)
+2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Ver 503)
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1100,3 +1113,16 @@ Need to switch languages?
 [#178]: https://github.com/PowerNukkitX/PowerNukkitX/pull/178
 [#188]: https://github.com/PowerNukkitX/PowerNukkitX/issues/188
 [#202]: https://github.com/PowerNukkitX/PowerNukkitX/issues/202
+[#235]: https://github.com/PowerNukkitX/PowerNukkitX/pull/235
+[#236]: https://github.com/PowerNukkitX/PowerNukkitX/pull/236
+[#243]: https://github.com/PowerNukkitX/PowerNukkitX/pull/243
+[#251]: https://github.com/PowerNukkitX/PowerNukkitX/pull/251
+[#255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/255
+
+<!--PowerNukkitX Version history-->
+
+<!--Protocol Version 486-->
+[#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
+
+<!--Protocol Version 503-->
+[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions
