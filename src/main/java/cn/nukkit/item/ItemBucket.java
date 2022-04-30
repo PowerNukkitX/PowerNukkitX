@@ -174,7 +174,8 @@ public class ItemBucket extends Item {
                 }
             }
             if ((target instanceof BlockLiquid || target instanceof BlockPowderSnow) && target.getDamage() == 0) {
-                Item result = target instanceof BlockPowderSnow ? Item.get(BUCKET, 11, 1) : Item.get(BUCKET, getDamageByTarget(target.getId()), 1);
+                Item result = target instanceof BlockPowderSnow ? Item.get(BUCKET, 11, 1) :
+                        (target instanceof BlockLavaStill ? Item.get(BUCKET, 10, 1) : Item.get(BUCKET, getDamageByTarget(target.getId()), 1));
                 PlayerBucketFillEvent ev;
                 player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, target, this, result));
                 if (!ev.isCancelled()) {
@@ -186,7 +187,7 @@ public class ItemBucket extends Item {
                         Block b = target.getSideAtLayer(0, side);
                         if (b.getId() == STILL_WATER) {
                             level.setBlock(b, Block.get(BlockID.FLOWING_WATER));
-                        }
+                        } else if (b.getId() == BlockID.STILL_LAVA) level.setBlock(b, Block.get(BlockID.FLOWING_LAVA));
                     }
 
                     if (player.isSurvival()) {
