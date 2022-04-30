@@ -37,12 +37,16 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
-        //do nothing
+        if(entity instanceof Player){
+            ((Player) entity).sendMessage(message);
+        }
     }
 
     @Override
     public void sendMessage(TextContainer message) {
-        //do nothing
+        if(entity instanceof Player){
+            ((Player) entity).sendMessage(message);
+        }
     }
 
     @Override

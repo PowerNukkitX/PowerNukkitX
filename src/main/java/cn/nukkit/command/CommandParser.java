@@ -12,6 +12,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -97,7 +98,7 @@ public class CommandParser {
             parameter3 = "";
         }
 
-        return new TranslationContainer("commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
+        return new TranslationContainer(TextFormat.RED + "%commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
     public String matchCommandForm() {
