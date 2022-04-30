@@ -12,7 +12,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class PardonCommand extends VanillaCommand {
 
     public PardonCommand(String name) {
-        super(name, "commands.unban.player.description", "commands.unban.usage");
+        super(name, "unban a player");
         this.setPermission("nukkit.command.unban.player");
         this.setAliases(new String[]{"unban"});
         this.commandParameters.clear();
