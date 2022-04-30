@@ -72,6 +72,9 @@ public final class PNXStart implements Component {
             }
             cmd = cmd.replace("--module-path=" + Locator.platformSplitter() + " ", "");
 
+            // 设置最大内存
+            cmd = cmd.replace("%MEMORY_SIZE_MB%", String.valueOf(CLI.systemInfo.getHardware().getMemory().getTotal() / 1024 / 1024));
+
             if (ConfigUtils.displayLaunchCommand()) {
                 Logger.info(cmd);
             }

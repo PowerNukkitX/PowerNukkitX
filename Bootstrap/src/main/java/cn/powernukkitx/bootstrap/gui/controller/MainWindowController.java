@@ -1,7 +1,9 @@
 package cn.powernukkitx.bootstrap.gui.controller;
 
+import cn.powernukkitx.bootstrap.CLI;
 import cn.powernukkitx.bootstrap.gui.model.impl.CommonModel;
 import cn.powernukkitx.bootstrap.gui.model.impl.view.MainWindowModel;
+import cn.powernukkitx.bootstrap.gui.model.impl.view.PerformanceWindowModel;
 import cn.powernukkitx.bootstrap.gui.model.keys.MainWindowDataKeys;
 import cn.powernukkitx.bootstrap.gui.model.values.TerminalTty;
 import cn.powernukkitx.bootstrap.gui.view.View;
@@ -141,7 +143,7 @@ public final class MainWindowController extends CommonController {
                     List<Location<Void>> graalModuleLocations = new GraalModuleLocator().locate();
                     if (graalModuleLocations.size() != 0) {
                         StringBuilder sb = new StringBuilder();
-                        for(Location<Void> graalModuleLocation : graalModuleLocations) {
+                        for (Location<Void> graalModuleLocation : graalModuleLocations) {
                             sb.append(Locator.platformSplitter()).append(graalModuleLocation.getFile().getAbsolutePath());
                         }
                         cmd = cmd.replace("%GRAAL_SDK%", sb.toString().replaceFirst(Locator.platformSplitter(), ""));
@@ -149,6 +151,8 @@ public final class MainWindowController extends CommonController {
                         cmd = cmd.replace("%GRAAL_SDK%", "");
                     }
                     cmd = cmd.replace("--module-path=" + Locator.platformSplitter() + " ", "");
+                    // 设置最大内存
+                    cmd = cmd.replace("%MEMORY_SIZE_MB%", String.valueOf(PerformanceWindowModel.systemInfo.getHardware().getMemory().getTotal() / 1024 / 1024));
                     final String finalCmd = cmd;
                     pnxThread = new Thread(() -> {
                         try {
@@ -161,15 +165,17 @@ public final class MainWindowController extends CommonController {
                             process.destroy();
                             mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, false);
                             mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
-                        } catch (IOException | InterruptedException e) {
-                            JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+                        } catch (Exception e) {
+                            mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, false);
                             mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
+                            JOptionPane.showMessageDialog(mainWindowView, tr("failed-to-start-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
                         }
                     });
                     pnxThread.start();
                 } catch (InterruptedException | ExecutionException e) {
-                    JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
+                    mainWindowViewModel.setData(MainWindowDataKeys.SERVER_RUNNING, false);
                     mainWindowViewModel.setData(MainWindowDataKeys.TITLE, tr("gui.main-window.title"));
+                    JOptionPane.showMessageDialog(mainWindowView, tr("gui.std-dialog.error.no-pnx"), tr("gui.std-dialog.error.launch-error", e.getMessage()), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }.execute();
