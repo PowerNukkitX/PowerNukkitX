@@ -1,10 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
@@ -6491,5 +6488,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.criteriaName = "";
         pk.sortOrder = SortOrder.ASCENDING;
         this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void shakeCamera(float intensity, int duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
+        CameraShakePacket packet = new CameraShakePacket();
+        packet.intensity = intensity;
+        packet.duration = duration;
+        packet.shakeType = shakeType;
+        packet.shakeAction = shakeAction;
+        this.dataPacket(packet);
     }
 }
