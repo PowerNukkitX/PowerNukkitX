@@ -113,7 +113,7 @@ public class HelpCommand extends VanillaCommand {
             }
 
             sender.sendMessage(TextFormat.RED + "No help for " + command.toString().toLowerCase());
-            return true;
+            return false;
         }
     }
 }
