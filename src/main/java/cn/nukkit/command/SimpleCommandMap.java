@@ -33,6 +33,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit",new ExecuteCommand("execute"));
         this.register("nukkit",new AbilityCommand("ability"));
         this.register("nukkit",new ScoreboardCommand("scoreboard"));
+        this.register("nukkit",new CameraShakeCommand("camerashake"));
         this.register("nukkit",new TagCommand("tag"));
         this.register("nukkit",new TestForCommand("testfor"));
         this.register("nukkit",new TestForBlockCommand("testforblock"));

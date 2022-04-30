@@ -33,6 +33,7 @@ public class AbilityCommand extends VanillaCommand {
 
         CommandParser parser = new CommandParser(this,sender,args);
         if(parser.matchCommandForm() == null){
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;
         }
 
