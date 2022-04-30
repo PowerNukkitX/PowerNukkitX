@@ -4,8 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.permission.Permission;
@@ -37,6 +39,8 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(String message) {
+        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
+            return;
         if(entity instanceof Player){
             ((Player) entity).sendMessage(message);
         }
@@ -44,6 +48,8 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(TextContainer message) {
+        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
+            return;
         if(entity instanceof Player){
             ((Player) entity).sendMessage(message);
         }
