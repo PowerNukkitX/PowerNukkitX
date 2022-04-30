@@ -2442,7 +2442,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    if (loginPacket.issueUnixTime != -1 && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
+                    if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
                         message = "disconnectionScreen.noReason";
                         this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         this.close("", message, false);
