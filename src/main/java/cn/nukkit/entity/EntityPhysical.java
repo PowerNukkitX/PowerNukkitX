@@ -2,9 +2,13 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockLava;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 @PowerNukkitXOnly
@@ -38,6 +42,8 @@ public abstract class EntityPhysical extends EntityCreature {
         // 处理运动
         handleGravity();
         handleFrictionMovement();
+        handleLiquidMovement();
+        handleFloatingMovement();
         return super.onUpdate(currentTick);
     }
 
@@ -53,11 +59,18 @@ public abstract class EntityPhysical extends EntityCreature {
 
     protected void handleGravity() {
         if (!this.onGround) {
-            final int fallingTick = getFallingTick();
-            if (fallingTick == 0) {
-                this.motionY -= this.getGravity();
+            if (this.hasWaterAt(getFootHeight())) {
+                resetFallDistance();
             } else {
-                this.motionY += (StrictMath.pow(this.getGravity() * 12.25, fallingTick * 0.5) - 1) * 3.92;
+                if (this.motionY > -4 * this.getGravity() && this.motionY < -this.getGravity() * 0.75) {
+                    if (this.hasWaterAt((float) motionY) && this.hasWaterAt(getFootHeight())) {
+                        this.motionY = 0;
+                    } else {
+                        this.motionY -= this.getGravity();
+                    }
+                } else {
+                    this.motionY -= this.getGravity();
+                }
             }
         }
     }
@@ -98,6 +111,45 @@ public abstract class EntityPhysical extends EntityCreature {
         } else {
             this.motionZ = 0;
         }
+    }
+
+    protected void handleLiquidMovement() {
+        final var tmp = new Vector3();
+        BlockLiquid blockLiquid = null;
+        for (final var each : this.getLevel().getCollisionBlocks(getOffsetBoundingBox(),
+                false, true, block -> block instanceof BlockLiquid)) {
+            blockLiquid = (BlockLiquid) each;
+            final var flowVector = blockLiquid.getFlowVector();
+            tmp.x += flowVector.x;
+            tmp.y += flowVector.y;
+            tmp.z += flowVector.z;
+        }
+        if (blockLiquid != null) {
+            final var len = tmp.length();
+            final var speed = getLiquidMovementSpeed(blockLiquid) * 0.3f;
+            if (len > 0) {
+                this.motionX += tmp.x / len * speed;
+                this.motionY += tmp.y / len * speed;
+                this.motionZ += tmp.z / len * speed;
+            }
+        }
+    }
+
+    protected void handleFloatingMovement() {
+        if (this.isTouchingWater()) {
+            this.motionY += this.getGravity() * 0.075;
+        }
+    }
+
+    protected final float getLiquidMovementSpeed(BlockLiquid liquid) {
+        if (liquid instanceof BlockLava) {
+            return 0.02f;
+        }
+        return 0.05f;
+    }
+
+    public float getFootHeight() {
+        return getCurrentHeight() / 2 - 0.1f;
     }
 
     protected void calculateOffsetBoundingBox() {
