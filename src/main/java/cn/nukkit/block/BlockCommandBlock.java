@@ -11,19 +11,22 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+import static cn.nukkit.blockentity.ICommandBlock.MODE_REPEATING;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 //special thanks to wode
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public class BlockCommandBlock  extends BlockSolidMeta implements Faceable {
+public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityCommandBlock>{
 
     public static final BooleanBlockProperty CONDITIONAL_BIT = new BooleanBlockProperty("conditional_bit", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(CONDITIONAL_BIT, CommonBlockProperties.FACING_DIRECTION);
@@ -153,6 +156,22 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable {
         return this.createBlockEntity(null);
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public Class<? extends BlockEntityCommandBlock> getBlockEntityClass() {
+        return BlockEntityCommandBlock.class;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public String getBlockEntityType() {
+        return BlockEntity.COMMAND_BLOCK;
+    }
+
     protected BlockEntityCommandBlock createBlockEntity(Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMMAND_BLOCK);
         if (item != null) {
@@ -171,5 +190,37 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable {
 
     protected CompoundTag createCompoundTag(CompoundTag nbt) {
         return nbt;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public Block cloneTo(Position pos) {
+        BlockCommandBlock clone = (BlockCommandBlock) super.cloneTo(pos);
+        BlockEntity source = this.level.getBlockEntity(this);
+        if (source != null) {
+            BlockEntityCommandBlock cb = (BlockEntityCommandBlock) source;
+            clone.getOrCreateBlockEntity();
+            BlockEntityCommandBlock cloneEntity = (BlockEntityCommandBlock) clone.getBlockEntity();
+            cloneEntity.setConditional(cb.isConditional());
+            cloneEntity.setAuto(cb.isAuto());
+            cloneEntity.setCommand(cb.getCommand());
+            cloneEntity.setLastExecution(cb.getLastExecution());
+            cloneEntity.setTrackOutput(cb.isTrackOutput());
+            cloneEntity.setLastOutput(cb.getLastOutput());
+            cloneEntity.setLastOutputParams(cb.getLastOutputParams());
+            cloneEntity.setLastOutputCommandMode(cb.getLastOutputCommandMode());
+            cloneEntity.setLastOutputCondionalMode(cb.isLastOutputCondionalMode());
+            cloneEntity.setLastOutputRedstoneMode(cb.isLastOutputRedstoneMode());
+            cloneEntity.setSuccessCount(cb.getSuccessCount());
+            cloneEntity.setConditional(cb.isConditional());
+            cloneEntity.setTickDelay(cb.getTickDelay());
+            cloneEntity.setExecutingOnFirstTick(cb.isExecutingOnFirstTick());
+
+            if (cloneEntity.getMode() == MODE_REPEATING) {
+                cloneEntity.scheduleUpdate();
+            }
+        }
+        return clone;
     }
 }

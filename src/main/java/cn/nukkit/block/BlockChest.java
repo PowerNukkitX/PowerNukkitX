@@ -252,7 +252,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
         if (source != null) {
             BlockEntityChest chest = (BlockEntityChest)source;
             if (!chest.isPaired() ||chest.holdingDoubleInventory()) {
-                clone.createBlockEntity();
+                clone.getOrCreateBlockEntity();
                 clone.getBlockEntity().getInventory().setContents(chest.getInventory().getContents());
             }
         }
