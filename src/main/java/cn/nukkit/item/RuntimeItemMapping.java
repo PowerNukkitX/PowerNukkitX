@@ -181,7 +181,7 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getNetworkFullId(Item item) {
-        if (item instanceof ItemCustom) {
+        if (item instanceof StringItem) {
             return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty())
                     .orElseThrow(()-> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
         }

@@ -46,37 +46,6 @@ public class RuntimeItems {
         }
 
         itemPalette = new RuntimeItemMapping(entries);
-
-        /*BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(entries.size());
-
-        Int2IntMap legacyNetworkMap = new Int2IntOpenHashMap();
-        Int2IntMap networkLegacyMap = new Int2IntOpenHashMap();
-        Map<String, Integer> namespaceNetworkMap = new LinkedHashMap<>();
-        Int2ObjectMap<String> networkNamespaceMap = new Int2ObjectOpenHashMap<>();
-        for (Entry entry : entries) {
-            paletteBuffer.putString(entry.name.replace("minecraft:", ""));
-            paletteBuffer.putLShort(entry.id);
-            paletteBuffer.putBoolean(false); // Component item
-            namespaceNetworkMap.put(entry.name, entry.id);
-            networkNamespaceMap.put(entry.id, entry.name);
-            if (entry.oldId != null) {
-                boolean hasData = entry.oldData != null;
-                int fullId = getFullId(entry.oldId, hasData ? entry.oldData : 0);
-                if (entry.deprecated != Boolean.TRUE) {
-                    verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
-                            "Conflict while registering an item runtime id!"
-                    );
-                }
-                verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
-                        "Conflict while registering an item runtime id!"
-                );
-            }
-        }
-
-        byte[] itemDataPalette = paletteBuffer.getBuffer();
-        itemPalette = new RuntimeItemMapping(itemDataPalette, legacyNetworkMap, networkLegacyMap, 
-                namespaceNetworkMap, networkNamespaceMap);*/
     }
 
     @PowerNukkitOnly
