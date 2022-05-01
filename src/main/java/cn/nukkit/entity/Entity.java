@@ -1216,6 +1216,9 @@ public abstract class Entity extends Location implements Metadatable {
                 this.namedTag.remove("CustomNameVisible");
                 this.namedTag.remove("CustomNameAlwaysVisible");
             }
+            if (this.entityUniqueId == null) {
+                this.entityUniqueId = UUID.randomUUID();
+            }
             this.namedTag.putString("uuid", this.entityUniqueId.toString());
         }
 
@@ -2846,7 +2849,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public UUID getUniqueId(){
+    public UUID getUniqueId() {
         return this.entityUniqueId;
     }
 
@@ -3131,26 +3134,26 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public void addTag(String tag) {
-        this.namedTag.putList(this.namedTag.getList("Tags",StringTag.class).add(new StringTag("",tag)));
+        this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public void removeTag(String tag) {
-        ListTag<StringTag> tags = this.namedTag.getList("Tags",StringTag.class);
-        tags.remove(new StringTag("",tag));
+        ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
+        tags.remove(new StringTag("", tag));
         this.namedTag.putList(tags);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public boolean containTag(String tag) {
-        return this.namedTag.getList("Tags",StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
+        return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public List<StringTag> getAllTags() {
-        return this.namedTag.getList("Tags",StringTag.class).getAll();
+        return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
 }
