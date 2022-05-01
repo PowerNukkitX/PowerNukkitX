@@ -1067,7 +1067,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        if (!Item.getCustomItems().isEmpty()) {
+        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
 
@@ -2604,13 +2604,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
-                            //TODO 服务器配置加个开关 或者其他限制
-                            stackPacket.experiments.add(
-                                    new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
-                            );
-                            stackPacket.experiments.add(
-                                    new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
-                            );
+                            if (this.getServer().isEnableCustomItem()) {
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
+                                );
+                            }
 
                             this.dataResourcePacket(stackPacket);
                             break;

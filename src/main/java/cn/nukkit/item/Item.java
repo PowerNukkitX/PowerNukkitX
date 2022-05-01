@@ -106,6 +106,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                     (e1, e2) -> e1, LinkedHashMap::new
             ));
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
+
     protected Block block = null;
     protected final int id;
     protected int meta;
@@ -579,10 +583,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitXOnly
-    private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
-
-    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableCustomItem()) {
+            log.warn("The server does not have the custom item feature enabled. " + c.getName() + "Unable to register!");
+            return;
+        }
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
         CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
         RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
@@ -590,6 +596,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public static void deleteCustomItem(String namespaceId) {
         if (CUSTOM_ITEMS.containsKey(namespaceId)) {
             ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
@@ -601,6 +608,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public static HashMap<String, Class<? extends Item>> getCustomItems() {
         return new HashMap<>(CUSTOM_ITEMS);
     }

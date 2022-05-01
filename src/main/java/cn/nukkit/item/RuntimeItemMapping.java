@@ -38,7 +38,7 @@ import static com.google.common.base.Verify.verify;
 @Since("1.4.0.0-PN")
 public class RuntimeItemMapping {
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final Collection<RuntimeItems.Entry> entries;
 
@@ -51,7 +51,7 @@ public class RuntimeItemMapping {
 
     private final Map<String, Supplier<Item>> namespacedIdItem = new LinkedHashMap<>();
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final HashMap<String, RuntimeItems.Entry> customItemEntrys = new HashMap<>();
 
