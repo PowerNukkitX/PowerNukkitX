@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class EffectCommand extends Command {
     public EffectCommand(String name) {
-        super(name, "commands.effect.description", "commands.effect.usage");
+        super(name, "commands.effect.description");
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
 
@@ -138,6 +138,7 @@ public class EffectCommand extends Command {
             }
             return successExecute;
         } catch (CommandSyntaxException e) {
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             e.printStackTrace();
             return false;
         }
