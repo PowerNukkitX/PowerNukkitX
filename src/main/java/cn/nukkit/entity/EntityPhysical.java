@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -62,8 +61,9 @@ public abstract class EntityPhysical extends EntityCreature {
             if (this.hasWaterAt(getFootHeight())) {
                 resetFallDistance();
             } else {
-                if (this.motionY > -4 * this.getGravity() && this.motionY < -this.getGravity() * 0.75) {
-                    if (this.hasWaterAt((float) motionY) && this.hasWaterAt(getFootHeight())) {
+                // TODO: 2022/5/1 修改这个trick以符合原版实体浮力
+                if (this.motionY > -4 * this.getGravity() && this.motionY < -this.getGravity() * 0.85) {
+                    if (this.hasWaterAt((float) motionY)) {
                         this.motionY = 0;
                     } else {
                         this.motionY -= this.getGravity();
