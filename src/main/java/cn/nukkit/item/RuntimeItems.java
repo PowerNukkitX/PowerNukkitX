@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
@@ -116,6 +117,7 @@ public class RuntimeItems {
 
     @ToString
     @RequiredArgsConstructor
+    @AllArgsConstructor
     public static class Entry {
         String name;
         int id;

@@ -578,8 +578,10 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
+    @PowerNukkitXOnly
     private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
 
+    @PowerNukkitXOnly
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
         CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
@@ -587,6 +589,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         addCreativeItem(itemCustom);
     }
 
+    @PowerNukkitXOnly
     public static void deleteCustomItem(String namespaceId) {
         if (CUSTOM_ITEMS.containsKey(namespaceId)) {
             ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
@@ -595,6 +598,11 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
+    }
+
+    @PowerNukkitXOnly
+    public static HashMap<String, Class<? extends Item>> getCustomItems() {
+        return new HashMap<>(CUSTOM_ITEMS);
     }
 
     public static void clearCreativeItems() {

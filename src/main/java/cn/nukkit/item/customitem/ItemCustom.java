@@ -2,6 +2,7 @@ package cn.nukkit.item.customitem;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
@@ -19,8 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Since("1.6.0.0-PNX")
 public abstract class ItemCustom extends StringItem {
 
-    //TODO 移到Item类或者RuntimeItemMapping类
-    //为每个自定义物品分配一个单独的运行时id
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
 
     @Getter
@@ -33,7 +32,13 @@ public abstract class ItemCustom extends StringItem {
     public ItemCustom(@Nonnull String id, @Nullable String name) {
         super(id.toLowerCase(Locale.ENGLISH), name);
         if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(this.getNamespaceId())) {
-            INTERNAL_ALLOCATION_ID_MAP.put(this.getNamespaceId(), INTERNAL_ALLOCATION_ID_MAP.size() + 10000);
+            int newRuntiemId;
+            int i = 10000;
+            do {
+                i++;
+                newRuntiemId = INTERNAL_ALLOCATION_ID_MAP.size() + i;
+            }while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(newRuntiemId) != null);
+            INTERNAL_ALLOCATION_ID_MAP.put(this.getNamespaceId(), newRuntiemId);
         }
         this.runtimeId = INTERNAL_ALLOCATION_ID_MAP.get(this.getNamespaceId());
     }

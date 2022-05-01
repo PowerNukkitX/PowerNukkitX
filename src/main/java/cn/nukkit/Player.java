@@ -1067,26 +1067,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        ArrayList<String> customItems = RuntimeItems.getRuntimeMapping().getCustomItems();
-        if (!customItems.isEmpty()) {
+        if (!Item.getCustomItems().isEmpty()) {
             ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-            ItemComponentPacket.Entry[] entries = new ItemComponentPacket.Entry[customItems.size()];
+            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
 
             int i = 0;
-            for (String id : customItems) {
-                Item item = Item.fromString(id);
-                if (!(item instanceof ItemCustom itemCustom)) {
-                    continue;
+            for (String id : Item.getCustomItems().keySet()) {
+                try {
+                    Item item = Item.fromString(id);
+                    if (item instanceof ItemCustom itemCustom) {
+                        CompoundTag data = itemCustom.getComponentsData();
+                        data.putShort("minecraft:identifier", i);
+
+                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
+
+                        i++;
+                    }
+                }catch (Exception e) {
+                    log.error("ItemComponentPacket encoding error", e);
                 }
-
-                CompoundTag data = itemCustom.getComponentsData();
-                data.putShort("minecraft:identifier", i);
-
-                entries[i] = new ItemComponentPacket.Entry(item.getNamespaceId(), data);
-
-                i++;
             }
-            itemComponentPacket.setEntries(entries);
+
+            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
 
             this.dataPacket(itemComponentPacket);
         }

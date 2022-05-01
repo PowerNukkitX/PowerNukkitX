@@ -53,7 +53,7 @@ public class RuntimeItemMapping {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    private final ArrayList<String> customItems = new ArrayList<>();
+    private final HashMap<String, RuntimeItems.Entry> customItemEntrys = new HashMap<>();
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -127,33 +127,33 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private void generatePalette() {
+    private synchronized void generatePalette() {
         if (this.entries == null) {
             return;
         }
         BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(this.entries.size() + this.customItems.size());
-
-        //TODO 合并两个for循环
+        paletteBuffer.putUnsignedVarInt(this.entries.size());
         for (RuntimeItems.Entry entry : this.entries) {
             paletteBuffer.putString(entry.name.replace("minecraft:", ""));
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(entry.isComponentItem); // Component item
         }
-        for (String id : this.customItems) {
-            ItemCustom item = (ItemCustom) Item.fromString(id);
-            paletteBuffer.putString(item.getNamespaceId());
-            paletteBuffer.putLShort(item.getRuntimeId());
-            paletteBuffer.putBoolean(true); // Component item
-        }
-
         this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    synchronized void registerCustomItem(ItemCustom itemCustom) {
-        this.customItems.add(itemCustom.getNamespaceId());
+    public synchronized void registerCustomItem(ItemCustom itemCustom) {
+        RuntimeItems.Entry entry = new RuntimeItems.Entry(
+                itemCustom.getNamespaceId(),
+                itemCustom.getRuntimeId(),
+                null,
+                null,
+                false,
+                true
+        );
+        this.customItemEntrys.put(itemCustom.getNamespaceId(), entry);
+        this.entries.add(entry);
         this.registerNamespacedIdItem(itemCustom);
         this.namespaceNetworkMap.put(itemCustom.getNamespaceId(), OptionalInt.of(itemCustom.getRuntimeId()));
         this.networkNamespaceMap.put(itemCustom.getRuntimeId(), itemCustom.getNamespaceId());
@@ -162,17 +162,14 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    synchronized void deleteCustomItem(ItemCustom itemCustom) {
-        this.customItems.remove(itemCustom.getNamespaceId());
-        this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
-        this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
-        this.generatePalette();
-    }
-
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
-    public ArrayList<String> getCustomItems() {
-        return new ArrayList<>(customItems);
+    public synchronized void deleteCustomItem(ItemCustom itemCustom) {
+        RuntimeItems.Entry entry = this.customItemEntrys.remove(itemCustom.getNamespaceId());
+        if (entry != null) {
+            this.entries.remove(entry);
+            this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
+            this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
+            this.generatePalette();
+        }
     }
 
     /**
