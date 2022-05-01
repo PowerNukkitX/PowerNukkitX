@@ -42,6 +42,7 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.TextContainer;
@@ -1064,6 +1065,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.respawn();
         } else {
             updateTrackingPositions(false);
+        }
+
+        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
+            ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
+
+            int i = 0;
+            for (String id : Item.getCustomItems().keySet()) {
+                try {
+                    Item item = Item.fromString(id);
+                    if (item instanceof ItemCustom itemCustom) {
+                        CompoundTag data = itemCustom.getComponentsData();
+                        data.putShort("minecraft:identifier", i);
+
+                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
+
+                        i++;
+                    }
+                }catch (Exception e) {
+                    log.error("ItemComponentPacket encoding error", e);
+                }
+            }
+
+            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
+
+            this.dataPacket(itemComponentPacket);
         }
 
         if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
@@ -2576,6 +2603,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
+
+                            if (this.getServer().isEnableCustomItem()) {
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
+                                );
+                            }
+
                             this.dataResourcePacket(stackPacket);
                             break;
                         case ResourcePackClientResponsePacket.STATUS_COMPLETED:
