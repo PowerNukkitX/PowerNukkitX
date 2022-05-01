@@ -61,16 +61,7 @@ public abstract class EntityPhysical extends EntityCreature {
             if (this.hasWaterAt(getFootHeight())) {
                 resetFallDistance();
             } else {
-                // TODO: 2022/5/1 修改这个trick以符合原版实体浮力
-                if (this.motionY > -4 * this.getGravity() && this.motionY < -this.getGravity() * 0.85) {
-                    if (this.hasWaterAt((float) motionY)) {
-                        this.motionY = 0;
-                    } else {
-                        this.motionY -= this.getGravity();
-                    }
-                } else {
-                    this.motionY -= this.getGravity();
-                }
+                this.motionY -= this.getGravity();
             }
         }
     }
@@ -137,6 +128,9 @@ public abstract class EntityPhysical extends EntityCreature {
 
     protected void handleFloatingMovement() {
         if (this.isTouchingWater()) {
+            if (this.motionY < -this.getGravity() && this.hasWaterAt(getFootHeight())) {
+                this.motionY += this.getGravity() * 0.3;
+            }
             this.motionY += this.getGravity() * 0.075;
         }
     }
