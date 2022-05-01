@@ -2463,7 +2463,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public Block cloneTo(Position pos){
-        pos.level.setBlock(pos,this.layer,this);
+        pos.level.setBlock(pos,this.layer,this.clone());
         return pos.getLevelBlock();
     }
 }
