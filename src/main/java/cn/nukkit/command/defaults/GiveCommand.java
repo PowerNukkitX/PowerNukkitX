@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class GiveCommand extends VanillaCommand {
     public GiveCommand(String name) {
-        super(name, "commands.give.description", "commands.give.usage");
+        super(name, "commands.give.description");
         this.setPermission("nukkit.command.give");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -65,7 +65,7 @@ public class GiveCommand extends VanillaCommand {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
-        List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
+        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
         Item item;
 
         try {

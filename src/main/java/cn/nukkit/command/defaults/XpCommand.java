@@ -41,8 +41,8 @@ public class XpCommand extends Command {
         //  "/xp <amount> [player]"  for adding exp
         //  "/xp <amount>L [player]" for adding exp level
         String amountString;
-        List<Entity> players;
-        if (!(sender instanceof Player)) {
+        List<Player> players;
+        if (!sender.isPlayer()) {
             if (args.length != 2) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return false;
@@ -55,7 +55,7 @@ public class XpCommand extends Command {
                 entities = List.of(sender.getServer().getPlayer(args[1]));
             }
 
-            players = entities.stream().filter(entity -> entity instanceof Player).toList();
+            players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
             if (players.size() == 0) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return false;
@@ -65,7 +65,7 @@ public class XpCommand extends Command {
             if (args.length == 1) {
                 amountString = args[0];
                 players = new ArrayList<>();
-                players.add((Entity) sender);
+                players.add(sender.asPlayer());
             } else if (args.length == 2) {
                 amountString = args[0];
                 List<Entity> entities = List.of();
@@ -75,7 +75,7 @@ public class XpCommand extends Command {
                     entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
-                players = entities.stream().filter(entity -> entity instanceof Player).toList();
+                players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
                 if (players.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
