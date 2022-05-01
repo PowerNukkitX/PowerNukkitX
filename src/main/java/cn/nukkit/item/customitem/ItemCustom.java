@@ -35,7 +35,7 @@ public abstract class ItemCustom extends StringItem {
         if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(this.getNamespaceId())) {
             do {
                 nextRuntiemId++;
-            }while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntiemId) != null);
+            } while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntiemId) != null);
             INTERNAL_ALLOCATION_ID_MAP.put(this.getNamespaceId(), nextRuntiemId);
         }
         this.runtimeId = INTERNAL_ALLOCATION_ID_MAP.get(this.getNamespaceId());

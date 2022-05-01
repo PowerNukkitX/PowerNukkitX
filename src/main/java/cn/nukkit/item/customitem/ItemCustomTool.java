@@ -228,9 +228,9 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
         destroy_speeds.add(new CompoundTag()
                 .putCompound("block",
                         new CompoundTag()
-                                .putString("tags",
-                                        "q.any_tag('stone', 'metal', 'diamond_pick_diggable', 'mob_spawner', 'rail')"))
-                .putInt("speed",speed));
+                                .putString("tags", "q.any_tag('stone', 'metal', 'diamond_pick_diggable', 'mob_spawner', 'rail')")
+                )
+                .putInt("speed", speed));
         return diggerRoot.putList(destroy_speeds);
     }
 
