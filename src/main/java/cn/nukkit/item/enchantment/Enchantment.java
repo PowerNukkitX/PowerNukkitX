@@ -1,9 +1,6 @@
 package cn.nukkit.item.enchantment;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
@@ -28,6 +25,7 @@ import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
 import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
 import cn.nukkit.math.NukkitMath;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -45,46 +43,87 @@ public abstract class Enchantment implements Cloneable {
     public static final Enchantment[] EMPTY_ARRAY = new Enchantment[0];
 
     protected static Enchantment[] enchantments;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    protected static Map<String,Integer> enchantmentName2IDMap = new Object2IntArrayMap<>();
 
     //http://minecraft.gamepedia.com/Enchanting#Aqua_Affinity
 
     public static final int ID_PROTECTION_ALL = 0;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_ALL = "protection";
     public static final int ID_PROTECTION_FIRE = 1;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_FIRE = "fire_protection";
     public static final int ID_PROTECTION_FALL = 2;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_FALL = "feather_falling";
     public static final int ID_PROTECTION_EXPLOSION = 3;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_EXPLOSION = "blast_protection";
     public static final int ID_PROTECTION_PROJECTILE = 4;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_PROJECTILE = "projectile_protection";
     public static final int ID_THORNS = 5;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_THORNS = "thorns";
     public static final int ID_WATER_BREATHING = 6;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_BREATHING = "respiration";
     public static final int ID_WATER_WALKER = 7;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_WALKER = "depth_strider";
     public static final int ID_WATER_WORKER = 8;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_WATER_WORKER = "aqua_affinity";
     public static final int ID_DAMAGE_ALL = 9;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_ALL = "sharpness";
     public static final int ID_DAMAGE_SMITE = 10;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_SMITE = "smite";
     public static final int ID_DAMAGE_ARTHROPODS = 11;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DAMAGE_ARTHROPODS = "bane_of_arthropods";
     public static final int ID_KNOCKBACK = 12;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_KNOCKBACK = "knockback";
     public static final int ID_FIRE_ASPECT = 13;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FIRE_ASPECT = "fire_aspect";
     public static final int ID_LOOTING = 14;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_LOOTING = "looting";
     public static final int ID_EFFICIENCY = 15;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_EFFICIENCY = "efficiency";
     public static final int ID_SILK_TOUCH = 16;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SILK_TOUCH = "silk_touch";
     public static final int ID_DURABILITY = 17;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_DURABILITY = "unbreaking";
     public static final int ID_FORTUNE_DIGGING = 18;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FORTUNE_DIGGING = "fortune";
     public static final int ID_BOW_POWER = 19;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_POWER = "power";
     public static final int ID_BOW_KNOCKBACK = 20;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_KNOCKBACK = "punch";
     public static final int ID_BOW_FLAME = 21;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_FLAME = "flame";
     public static final int ID_BOW_INFINITY = 22;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BOW_INFINITY = "infinity";
     public static final int ID_FORTUNE_FISHING = 23;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FORTUNE_FISHING = "luck_of_the_sea";
     public static final int ID_LURE = 24;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_LURE = "lure";
     public static final int ID_FROST_WALKER = 25;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_FROST_WALKER = "frost_walker";
+
     public static final int ID_MENDING = 26;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_MENDING = "mending";
     public static final int ID_BINDING_CURSE = 27;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_BINDING_CURSE = "binding";
     public static final int ID_VANISHING_CURSE = 28;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_VANISHING_CURSE = "vanishing";
     public static final int ID_TRIDENT_IMPALING = 29;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_IMPALING = "impaling";
     public static final int ID_TRIDENT_RIPTIDE = 30;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_RIPTIDE = "riptide";
     public static final int ID_TRIDENT_LOYALTY = 31;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_LOYALTY = "loyalty";
     public static final int ID_TRIDENT_CHANNELING = 32;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_TRIDENT_CHANNELING = "channeling";
     @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_MULTISHOT = 33;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_MULTISHOT = "multishot";
     @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_PIERCING = 34;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_PIERCING = "piercing";
     @Since("1.4.0.0-PN") public static final int ID_CROSSBOW_QUICK_CHARGE = 35;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_QUICK_CHARGE = "quick_charge";
     @Since("1.4.0.0-PN") public static final int ID_SOUL_SPEED = 36;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SOUL_SPEED = "soul_speed";
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -126,6 +165,46 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_CROSSBOW_PIERCING]  = new EnchantmentCrossbowPiercing();
         enchantments[ID_CROSSBOW_QUICK_CHARGE]  = new EnchantmentCrossbowQuickCharge();
         enchantments[ID_SOUL_SPEED]  = new EnchantmentSoulSpeed();
+
+
+        enchantmentName2IDMap.put(NAME_PROTECTION_ALL, ID_PROTECTION_ALL);
+        enchantmentName2IDMap.put(NAME_PROTECTION_FIRE, ID_PROTECTION_FIRE);
+        enchantmentName2IDMap.put(NAME_PROTECTION_FALL, ID_PROTECTION_FALL);
+        enchantmentName2IDMap.put(NAME_PROTECTION_EXPLOSION, ID_PROTECTION_EXPLOSION);
+        enchantmentName2IDMap.put(NAME_PROTECTION_PROJECTILE, ID_PROTECTION_PROJECTILE);
+        enchantmentName2IDMap.put(NAME_THORNS, ID_THORNS);
+        enchantmentName2IDMap.put(NAME_WATER_BREATHING, ID_WATER_BREATHING);
+        enchantmentName2IDMap.put(NAME_WATER_WORKER, ID_WATER_WORKER);
+        enchantmentName2IDMap.put(NAME_WATER_WALKER, ID_WATER_WALKER);
+        enchantmentName2IDMap.put(NAME_DAMAGE_ALL, ID_DAMAGE_ALL);
+        enchantmentName2IDMap.put(NAME_DAMAGE_SMITE, ID_DAMAGE_SMITE);
+        enchantmentName2IDMap.put(NAME_DAMAGE_ARTHROPODS, ID_DAMAGE_ARTHROPODS);
+        enchantmentName2IDMap.put(NAME_KNOCKBACK, ID_KNOCKBACK);
+        enchantmentName2IDMap.put(NAME_FIRE_ASPECT, ID_FIRE_ASPECT);
+        enchantmentName2IDMap.put(NAME_LOOTING, ID_LOOTING);
+        enchantmentName2IDMap.put(NAME_EFFICIENCY, ID_EFFICIENCY);
+        enchantmentName2IDMap.put(NAME_SILK_TOUCH, ID_SILK_TOUCH);
+        enchantmentName2IDMap.put(NAME_DURABILITY, ID_DURABILITY);
+        enchantmentName2IDMap.put(NAME_FORTUNE_DIGGING, ID_FORTUNE_DIGGING);
+        enchantmentName2IDMap.put(NAME_BOW_POWER, ID_BOW_POWER);
+        enchantmentName2IDMap.put(NAME_BOW_KNOCKBACK, ID_BOW_KNOCKBACK);
+        enchantmentName2IDMap.put(NAME_BOW_FLAME, ID_BOW_FLAME);
+        enchantmentName2IDMap.put(NAME_BOW_INFINITY, ID_BOW_INFINITY);
+        enchantmentName2IDMap.put(NAME_FORTUNE_FISHING, ID_FORTUNE_FISHING);
+        enchantmentName2IDMap.put(NAME_LURE, ID_LURE);
+        enchantmentName2IDMap.put(NAME_FROST_WALKER, ID_FROST_WALKER);
+        enchantmentName2IDMap.put(NAME_MENDING, ID_MENDING);
+        enchantmentName2IDMap.put(NAME_BINDING_CURSE, ID_BINDING_CURSE);
+        enchantmentName2IDMap.put(NAME_VANISHING_CURSE, ID_VANISHING_CURSE);
+        enchantmentName2IDMap.put(NAME_TRIDENT_IMPALING, ID_TRIDENT_IMPALING);
+        enchantmentName2IDMap.put(NAME_TRIDENT_RIPTIDE, ID_TRIDENT_RIPTIDE);
+        enchantmentName2IDMap.put(NAME_TRIDENT_LOYALTY, ID_TRIDENT_LOYALTY);
+        enchantmentName2IDMap.put(NAME_TRIDENT_CHANNELING, ID_TRIDENT_CHANNELING);
+        enchantmentName2IDMap.put(NAME_CROSSBOW_MULTISHOT, ID_CROSSBOW_MULTISHOT);
+        enchantmentName2IDMap.put(NAME_CROSSBOW_PIERCING, ID_CROSSBOW_PIERCING);
+        enchantmentName2IDMap.put(NAME_CROSSBOW_QUICK_CHARGE, ID_CROSSBOW_QUICK_CHARGE);
+        enchantmentName2IDMap.put(NAME_SOUL_SPEED, ID_SOUL_SPEED);
+        enchantmentName2IDMap = Collections.unmodifiableMap(enchantmentName2IDMap);
     }
 
     /**
@@ -156,6 +235,12 @@ public abstract class Enchantment implements Cloneable {
      */
     public static Enchantment getEnchantment(int id) {
         return get(id).clone();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static Enchantment getEnchantment(String name) {
+        return getEnchantment(enchantmentName2IDMap.get(name));
     }
 
     /**
@@ -192,6 +277,12 @@ public abstract class Enchantment implements Cloneable {
                 .filter(Objects::nonNull)
                 .map(Enchantment::clone)
                 .collect(Collectors.toList());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static Map<String,Integer> getEnchantmentName2IDMap() {
+        return enchantmentName2IDMap;
     }
 
     /**
@@ -406,8 +497,15 @@ public abstract class Enchantment implements Cloneable {
         return this != enchantment;
     }
 
+    //return the translation key for the enchantment
     public String getName() {
         return "%enchantment." + this.name;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public String getOriginalName(){
+        return this.name;
     }
 
     /**
