@@ -1764,9 +1764,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public enum ItemLockMode{
-        LOCK_IN_INVENTORY,
+        NONE,//only used in server
         LOCK_IN_SLOT,
-        NONE//only used in server
+        LOCK_IN_INVENTORY
     }
 
     @PowerNukkitXOnly
