@@ -24,4 +24,8 @@ public abstract class EntityAnimal extends EntityPhysical implements EntityAgeab
         return item.getId() == Item.WHEAT; //default
     }
 
+    @Override
+    protected double getStepHeight() {
+        return 0.5;
+    }
 }

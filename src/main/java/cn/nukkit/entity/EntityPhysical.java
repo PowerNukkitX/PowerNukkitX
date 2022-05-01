@@ -1,5 +1,6 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockLava;
@@ -40,6 +41,7 @@ public abstract class EntityPhysical extends EntityCreature {
         this.calculateOffsetBoundingBox();
         // 处理运动
         handleGravity();
+        handleCollideMovement();
         handleFrictionMovement();
         handleLiquidMovement();
         handleFloatingMovement();
@@ -133,6 +135,46 @@ public abstract class EntityPhysical extends EntityCreature {
             }
             this.motionY += this.getGravity() * 0.075;
         }
+    }
+
+    protected void handleCollideMovement() {
+        var collidingEntities = this.level.getCollidingEntities(getOffsetBoundingBox(), this);
+        if (collidingEntities.length == 0) {
+            return;
+        }
+        double dxPositive = 0;
+        double dxNegative = 0;
+        double dzPositive = 0;
+        double dzNegative = 0;
+        for (var each : collidingEntities) {
+            AxisAlignedBB targetAABB;
+            var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
+            if (each instanceof EntityPhysical entityPhysical) {
+                targetAABB = entityPhysical.getOffsetBoundingBox();
+            } else if (each instanceof Player player) {
+                targetAABB = player.reCalcOffsetBoundingBox();
+            } else {
+                continue;
+            }
+            // 计算碰撞箱
+            double centerXWidth = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
+            double centerZWidth = (targetAABB.getMaxZ() + targetAABB.getMinZ() - selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5;
+            if (centerXWidth > 0) {
+                dxPositive = Math.max(dxPositive, (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth);
+            } else {
+                dxNegative = Math.max(dxNegative, (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth);
+            }
+            if (centerZWidth > 0) {
+                dzPositive = Math.max(dzPositive, (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth);
+            } else {
+                dzNegative = Math.max(dzNegative, (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
+            }
+        }
+        double resultX = dxPositive - dxNegative;
+        double resultZ = dzPositive - dzNegative;
+        double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
+        this.motionX -= resultX / len * getMovementSpeed() * 0.43;
+        this.motionZ -= resultZ / len * getMovementSpeed() * 0.43;
     }
 
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {

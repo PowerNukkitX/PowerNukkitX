@@ -502,6 +502,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
+    public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     public boolean onGround;
     public boolean inBlock = false;
     public boolean positionChanged;

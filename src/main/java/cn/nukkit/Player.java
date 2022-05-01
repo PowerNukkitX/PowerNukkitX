@@ -1,10 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
@@ -1514,6 +1511,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.isCollided = this.onGround;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public AxisAlignedBB reCalcOffsetBoundingBox() {
+        float dx = this.getWidth() / 2;
+        float dz = this.getWidth() / 2;
+        return this.offsetBoundingBox.setBounds(
+                this.x - dx, this.y, this.z - dz,
+                this.x + dx, this.y + this.getHeight(), this.z + dz
+        );
     }
 
     @Override
