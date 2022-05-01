@@ -11,7 +11,7 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 public class DayLockCommand extends VanillaCommand {
 
     public DayLockCommand(String name) {
-        super(name, "commands.daylock.description", "commands.daylock.usage", new String[]{"alwaysday"});
+        super(name, "commands.daylock.description", "", new String[]{"alwaysday"});
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -40,11 +40,9 @@ public class DayLockCommand extends VanillaCommand {
                 rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 level.stopTime();
                 level.setTime(5000);
-                sender.sendMessage("Day-Night cycle locked");
             } else {
                 rules.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
                 level.startTime();
-                sender.sendMessage("Day-Night cycle unlocked");
             }
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());
