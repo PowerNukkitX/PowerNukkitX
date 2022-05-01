@@ -122,8 +122,11 @@ public class Scoreboard {
                     return new SetScorePacket.ScoreInfo(this.scoreboardId, Scoreboard.this.getObjectiveName(), this.score, ((FakeScorer) this.scorer).getFakeName());
                 }
             }
-            ;
             return null;
+        }
+
+        public SetScorePacket.ScoreInfo toRemovedScoreInfo(){
+            return new SetScorePacket.ScoreInfo(this.scoreboardId,Scoreboard.this.getObjectiveName(), this.score,ScorerType.INVALID,-1);
         }
     }
 }

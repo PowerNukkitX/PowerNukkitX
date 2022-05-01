@@ -28,12 +28,13 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.18.10 protocol (under refinement).
+1. Support for 1.18.30 protocol (under refinement).
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Native support for vanilla commands and command block, etc. (under refinement)
 5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
-6. Todo...
+6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
+7. Todo...
 
 ---
 
@@ -49,7 +50,7 @@ What's new in PowerNukkitX? Let's See：
 ---
 <!-- Just Do it :-D -->
 <!--使用DeepL暴力翻译-->
-**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit) Plugin compatibility (TODO), etc.
+**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit) (TODO), [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin compatibility, etc.
 
 * Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to read the rules in the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
 

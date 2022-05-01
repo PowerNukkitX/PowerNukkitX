@@ -8,6 +8,7 @@ import cn.powernukkitx.bootstrap.util.LanguageUtils;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import oshi.SystemInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Timer;
 
 public final class CLI implements Program {
     public final Timer timer = new Timer();
+    public static final SystemInfo systemInfo = new SystemInfo();
     private boolean startPNX = true;
 
     private final Map<String, Component> components = new HashMap<>();

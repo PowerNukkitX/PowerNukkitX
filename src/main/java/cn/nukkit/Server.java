@@ -172,6 +172,8 @@ public class Server {
 
     private boolean redstoneEnabled = true;
 
+    public boolean checkLoginTime = true;
+
     private RCON rcon;
 
     private EntityMetadataStore entityMetadata;
@@ -566,6 +568,7 @@ public class Server {
                 put("auto-save", true);
                 put("force-resources", false);
                 put("xbox-auth", true);
+                put("check-login-time", true);
                 put("disable-auto-bug-report", false);
             }
         });
@@ -576,6 +579,8 @@ public class Server {
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
+
+        this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
         
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));

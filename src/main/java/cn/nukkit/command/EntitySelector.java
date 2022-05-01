@@ -33,7 +33,7 @@ public final class EntitySelector {
     }
 
     private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[(.*)])?$");
-    private static final Splitter ARGUMENT_SEPARATOR = Splitter.on(',').omitEmptyStrings();
+//    private static final Splitter ARGUMENT_SEPARATOR = Splitter.on(',').omitEmptyStrings();
     private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
 
     private static final Set<String> ARGS = Sets.newHashSet();
@@ -626,7 +626,7 @@ public final class EntitySelector {
         Map<String,  List<String>> args = Maps.newHashMap();
 
         if (inputArguments != null) {
-            for (String arg : ARGUMENT_SEPARATOR.split(inputArguments)) {
+            for (String arg : separateArguments(inputArguments)) {
                 Iterator<String> iterator = ARGUMENT_JOINER.split(arg).iterator();
                 String argName = iterator.next();
 
@@ -643,6 +643,33 @@ public final class EntitySelector {
         }
 
         return args;
+    }
+
+    private static List<String> separateArguments(String inputArguments) {
+        boolean go_on = false;
+        List<String> result = new ArrayList<String>();
+        int start = 0;
+
+        for (int i = 0; i < inputArguments.length(); i++) {
+            if(inputArguments.charAt(i) == ',' && !go_on) {
+                result.add(inputArguments.substring(start, i));
+                start = i + 1;
+            }
+            if(inputArguments.charAt(i) == '{') {
+                go_on = true;
+            }
+            if(inputArguments.charAt(i) == '}') {
+                go_on = false;
+                i++;
+                result.add(inputArguments.substring(start, i));
+                start = i + 1;
+            }
+        }
+
+        if (start < inputArguments.length())
+            result.add(inputArguments.substring(start));
+
+        return result.stream().filter(s -> !s.isEmpty()).toList();
     }
 
     private static List<Entity> getEntities(Level level, Predicate<Entity> filter) {

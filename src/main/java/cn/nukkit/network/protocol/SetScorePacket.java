@@ -79,7 +79,6 @@ public class SetScorePacket extends DataPacket {
         }
 
         public ScoreInfo(long scoreboardId, String objectiveId, int score, ScorerType type, long entityId) {
-            Preconditions.checkArgument(type == ScorerType.ENTITY || type == ScorerType.PLAYER, "Must be player or entity");
             this.scoreboardId = scoreboardId;
             this.objectiveId = objectiveId;
             this.score = score;

@@ -27,12 +27,13 @@
 PowerNukkitX的優勢：
 
 
-1. 支持1.18.10協議（完善中）。
+1. 支持1.18.30協議（完善中）。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
 4. 原生支持香草命令和命令方塊等（完善中）。
 5. 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
-6. Todo...
+6. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
+7. Todo...
 
 ---
 
@@ -47,7 +48,7 @@ PowerNukkitX的優勢：
 📌 聲明
 ---
 
-**PowerNukkitX**是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)插件兼容（TODO）等。
+**PowerNukkitX**是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)（TODO），[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)（完善中）插件兼容等。
 
 * 請注意**PowerNukkitX**非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)（同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
 

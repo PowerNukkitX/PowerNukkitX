@@ -8,9 +8,10 @@
 
 1. <a href="#CataLogs-Swlang">🌐 Switch Languages / 切換語言 </a>
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
+3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [開發中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-該版本目前支援了Minecraft:BE `1.18.10 (協議版本486)`.
+該版本目前支援了Minecraft:BE `1.18.30 (協議版本503)`.
 
 ### 新增內容
 
@@ -20,12 +21,14 @@
 - [#146] 為PowerNukkitX添加了Bootstrap啟動器，可無需安裝Java17即可使用PowerNukkitX。
 - [#161] 在PowerNukkitX實現並內置了香草命令和命令方塊。
 - [#177] 在PowerNukkitX內添加了Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
+- [#236] 在PowerNukkitX中初步實現並完成了JavaScript插件支持[（點此查看開發文檔）](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)。
 
 ### 修改記錄
 
 - [#45] 實現支援1.18.10（協議版本486）。
 - [#78] 将新增加的物品添加创造物品栏中。
 - [#132] 將whitelist更改為allowlist。
+- [#243] 實現支援1.18.30（協議版本503）。
 
 ### BUG修復
 
@@ -51,10 +54,16 @@
 - [#178] 修復岩漿方塊傷害計算偏移。
 - [#188] 修復錯誤的掉落傷害計算。
 - [#202] 修復EntityArmorChangeEvene無法正常觸發。
+- [#251] 修復耕地上放置方塊，耕地無法變回泥土的問題。
 
 ### 安全漏洞修復
 
 - [#16] 將Log4J更新至2.17.1，修復CVE-2021-44832。
+- [#255] 初步重登錄攻擊問題。
+
+### 文檔內容
+
+- [#235] 添加缺失的`@PowerNukkitXOnly`
 
 ## [Unreleased 1.6.0.0-PN] - Future ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -854,6 +863,11 @@ Fixes several anvil issues.
 * [Discord](https://discord.gg/j7UwsaNu4V)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
+## <a id="CataLogs-Version-history"></a>🔖 Version history / 歷史版本
+
+1. [#V1-dev] PNX-1.6.0.0-dev (協議版本486)
+2. [#V2-dev] PNX-1.6.0.0-dev (協議版本503)
+
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
 ---
@@ -1100,3 +1114,16 @@ Need to switch languages?
 [#178]: https://github.com/PowerNukkitX/PowerNukkitX/pull/178
 [#188]: https://github.com/PowerNukkitX/PowerNukkitX/issues/188
 [#202]: https://github.com/PowerNukkitX/PowerNukkitX/issues/202
+[#235]: https://github.com/PowerNukkitX/PowerNukkitX/pull/235
+[#236]: https://github.com/PowerNukkitX/PowerNukkitX/pull/236
+[#243]: https://github.com/PowerNukkitX/PowerNukkitX/pull/243
+[#251]: https://github.com/PowerNukkitX/PowerNukkitX/pull/251
+[#255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/255
+
+<!--PowerNukkitX Version history-->
+
+<!--Protocol Version 486-->
+[#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
+
+<!--Protocol Version 503-->
+[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions
