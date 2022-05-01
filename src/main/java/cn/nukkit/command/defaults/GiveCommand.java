@@ -1,9 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -15,16 +12,12 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.EntitySelector;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.StringTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TextFormat;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -39,19 +32,8 @@ public class GiveCommand extends VanillaCommand {
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });
-        this.commandParameters.put("toPlayerById", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("itemId", CommandParamType.INT),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });
-        this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("itemAndData", CommandParamType.STRING),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON)
         });
     }
 
@@ -110,6 +92,15 @@ public class GiveCommand extends VanillaCommand {
         }
         item.setCount(count);
 
+        if (args.length >= 4) {
+            item.setDamage(Integer.parseInt(args[3]));
+        }
+
+        if (args.length >= 5) {
+            Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(Arrays.stream(Arrays.copyOfRange(args, 4, args.length)).collect(Collectors.joining("")));
+            item.readItemJsonComponents(components);
+        }
+
         if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return false;
@@ -119,11 +110,7 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;
         }
-        //debug
-        item.setItemLockMode(Item.ItemLockMode.LOCK_IN_SLOT);
-        item.addCanPlaceOn(Block.get(BlockID.GRASS));
-        item.addCanDestroy(Block.get(BlockID.GRASS));
-        //debug
+
         for (Entity entity : players) {
             Player player = (Player) entity;
             Item[] returns = player.getInventory().addItem(item.clone());
@@ -158,33 +145,5 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
         return false;
-    }
-
-    public static class ItemInfo{
-        private static Gson gson = new Gson();
-        public static class CanPlaceOn{
-            public String[] blocks;
-        }
-        public static class CanDestory{
-            public String[] blocks;
-        }
-        public static class ItemLock{
-            public static String LOCK_IN_INVENTORY = "lock_in_inventory";
-            public static String LOCK_IN_SLOT = "lock_in_slot";
-            String mode;
-        }
-        public static ItemInfo fromJson(String json){
-            return gson.fromJson(json, ItemInfo.class);
-        }
-        public static class KeepOnDeath{}
-        private ItemInfo(){}
-        @SerializedName("minecraft:can_place_on")
-        public CanPlaceOn canPlaceOn;
-        @SerializedName("minecraft:can_destroy")
-        public CanDestory canDestroy;
-        @SerializedName("minecraft:item_lock")
-        public ItemLock itemLock;
-        @SerializedName("minecraft:keep_on_death")
-        public KeepOnDeath keepOnDeath;
     }
 }

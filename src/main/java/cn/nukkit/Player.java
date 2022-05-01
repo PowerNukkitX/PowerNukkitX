@@ -4913,10 +4913,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    this.inventory.clearAll();
+                    new HashMap<>(this.inventory.slots).forEach((slot,item) -> {
+                        if(!item.keepOnDeath()){
+                            this.inventory.clear(slot);
+                        }
+                    });
                 }
                 if (this.offhandInventory != null) {
-                    this.offhandInventory.clearAll();
+                    new HashMap<>(this.offhandInventory.slots).forEach((slot,item) -> {
+                        if(!item.keepOnDeath()){
+                            this.offhandInventory.clear(slot);
+                        }
+                    });
                 }
             }
 

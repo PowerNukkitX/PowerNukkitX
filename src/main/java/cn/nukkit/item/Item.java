@@ -24,6 +24,8 @@ import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.Utils;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -1787,5 +1789,71 @@ public class Item implements Cloneable, BlockID, ItemID {
             return ItemLockMode.values()[tag.getByte("minecraft:item_lock")];
         }
         return ItemLockMode.NONE;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setKeepOnDeath(boolean keepOnDeath) {
+        CompoundTag tag = getOrCreateNamedTag();
+        if (keepOnDeath) {
+            tag.putByte("minecraft:keep_on_death", 1);
+        }else{
+            tag.remove("minecraft:keep_on_death");
+        }
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean keepOnDeath(){
+        CompoundTag tag = getOrCreateNamedTag();
+        return tag.contains("minecraft:keep_on_death");
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static class ItemJsonComponents {
+        private static Gson gson = new Gson();
+        public static class CanPlaceOn{
+            public String[] blocks;
+        }
+        public static class CanDestory{
+            public String[] blocks;
+        }
+        public static class ItemLock{
+            public static final String LOCK_IN_INVENTORY = "lock_in_inventory";
+            public static final String LOCK_IN_SLOT = "lock_in_slot";
+            String mode;
+        }
+        public static ItemJsonComponents fromJson(String json){
+            return gson.fromJson(json, ItemJsonComponents.class);
+        }
+        public static class KeepOnDeath{}
+        private ItemJsonComponents(){}
+        @SerializedName("minecraft:can_place_on")
+        public CanPlaceOn canPlaceOn;
+        @SerializedName("minecraft:can_destroy")
+        public CanDestory canDestroy;
+        @SerializedName("minecraft:item_lock")
+        public ItemLock itemLock;
+        @SerializedName("minecraft:keep_on_death")
+        public KeepOnDeath keepOnDeath;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void readItemJsonComponents(ItemJsonComponents components){
+        if (components.canPlaceOn != null)
+            this.setCanPlaceOn(Arrays.stream(components.canPlaceOn.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
+        if (components.canDestroy != null)
+            this.setCanDestroy(Arrays.stream(components.canDestroy.blocks).map(str -> Block.get(BlockStateRegistry.getBlockId(str.startsWith("minecraft:") ? str : "minecraft:" + str))).collect(Collectors.toList()).toArray(new Block[0]));
+        if (components.itemLock != null)
+            this.setItemLockMode(switch(components.itemLock.mode){
+                case ItemJsonComponents.ItemLock.LOCK_IN_SLOT -> Item.ItemLockMode.LOCK_IN_SLOT;
+                case ItemJsonComponents.ItemLock.LOCK_IN_INVENTORY -> Item.ItemLockMode.LOCK_IN_INVENTORY;
+                default -> Item.ItemLockMode.NONE;
+            });
+        if (components.keepOnDeath != null)
+            this.setKeepOnDeath(components.keepOnDeath != null);
     }
 }
