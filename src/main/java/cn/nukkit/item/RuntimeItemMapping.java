@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
@@ -10,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -88,7 +88,7 @@ public class RuntimeItemMapping {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public RuntimeItemMapping(Collection<RuntimeItems.Entry> entries) {
         this.entries = entries;
@@ -125,7 +125,7 @@ public class RuntimeItemMapping {
         this.generatePalette();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private void generatePalette() {
         if (this.entries == null) {
@@ -134,61 +134,40 @@ public class RuntimeItemMapping {
         BinaryStream paletteBuffer = new BinaryStream();
         paletteBuffer.putUnsignedVarInt(this.entries.size() + this.customItems.size());
 
+        //TODO 合并两个for循环
         for (RuntimeItems.Entry entry : this.entries) {
             paletteBuffer.putString(entry.name.replace("minecraft:", ""));
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(entry.isComponentItem); // Component item
         }
-        int i = 10000;
         for (String id : this.customItems) {
-            Item item = Item.fromString(id);
+            ItemCustom item = (ItemCustom) Item.fromString(id);
             paletteBuffer.putString(item.getNamespaceId());
-            paletteBuffer.putLShort(item.id + i);
+            paletteBuffer.putLShort(item.getRuntimeId());
             paletteBuffer.putBoolean(true); // Component item
-            i++;
         }
 
         this.itemDataPalette = paletteBuffer.getBuffer();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    synchronized boolean registerCustomItem(ItemCustom itemCustom) {
-        if (this.customItems.contains(itemCustom.getNamespaceId())) {
-            return false;
-        }
+    synchronized void registerCustomItem(ItemCustom itemCustom) {
         this.customItems.add(itemCustom.getNamespaceId());
-
-        //int fullId = RuntimeItems.getFullId(itemCustom.getId(), 0);
-
         this.registerNamespacedIdItem(itemCustom);
-
-        /*legacyNetworkMap.put(fullId, (itemCustom.id << 1));
-        networkLegacyMap.put(itemCustom.id, fullId);
-        namespaceNetworkMap.put(itemCustom.name.toLowerCase(), OptionalInt.of(itemCustom.id));
-        networkNamespaceMap.put(itemCustom.id, itemCustom.name.toLowerCase());*/
-
+        this.namespaceNetworkMap.put(itemCustom.getNamespaceId(), OptionalInt.of(itemCustom.getRuntimeId()));
+        this.networkNamespaceMap.put(itemCustom.getRuntimeId(), itemCustom.getNamespaceId());
         this.generatePalette();
-
-        return true;
     }
 
-/*    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    synchronized boolean deleteCustomItem(ItemCustom itemCustom) {
-        if (!this.customItems.contains(itemCustom.getId())) {
-            return false;
-        }
-
-        legacyNetworkMap.remove(RuntimeItems.getFullId(itemCustom.getId(), 0));
-        networkLegacyMap.remove(itemCustom.id);
-        namespaceNetworkMap.remove(itemCustom.name.toLowerCase());
-        networkNamespaceMap.remove(itemCustom.id);
-
+    synchronized void deleteCustomItem(ItemCustom itemCustom) {
+        this.customItems.remove(itemCustom.getNamespaceId());
+        this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
+        this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
         this.generatePalette();
-
-        return true;
-    }*/
+    }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
@@ -205,7 +184,7 @@ public class RuntimeItemMapping {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getNetworkFullId(Item item) {
-        if (item instanceof StringItem) {
+        if (item instanceof ItemCustom) {
             return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty())
                     .orElseThrow(()-> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
         }

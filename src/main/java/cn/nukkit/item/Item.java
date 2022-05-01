@@ -578,27 +578,24 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
-    private static final HashMap<String, Class<? extends Item>> customItems = new HashMap<>();
+    private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
 
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
-        customItems.put(itemCustom.getNamespaceId(), c);
+        CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
         RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
         addCreativeItem(itemCustom);
     }
 
-/*    public static boolean deleteCustomItem(int id) {
-        if (customItems.containsKey(id)) {
-            removeCreativeItem(get(id));
-            customItems.remove(id);
-            list[id] = null;
+    public static void deleteCustomItem(String namespaceId) {
+        if (CUSTOM_ITEMS.containsKey(namespaceId)) {
+            ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
+            removeCreativeItem(itemCustom);
+            CUSTOM_ITEMS.remove(namespaceId);
 
-            ItemCustom item = (ItemCustom) get(id);
-            return RuntimeItems.getRuntimeMapping().deleteCustomItem(item);
-        }else {
-            return false;
+            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
-    }*/
+    }
 
     public static void clearCreativeItems() {
         Item.creative.clear();
@@ -766,8 +763,20 @@ public class Item implements Cloneable, BlockID, ItemID {
             } else {
                 namespacedId = "minecraft:" + name;
             }
-            if (customItems.containsKey(namespacedId)) {
-               return RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+            if (CUSTOM_ITEMS.containsKey(namespacedId)) {
+               ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+               if (itemCustom == null) {
+                   return get(AIR);
+               }
+                if (meta.isPresent()) {
+                    int damage = meta.getAsInt();
+                    if (damage < 0) {
+                        itemCustom = (ItemCustom) itemCustom.createFuzzyCraftingRecipe();
+                    } else {
+                        itemCustom.setDamage(damage);
+                    }
+                }
+                return itemCustom;
             }
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {

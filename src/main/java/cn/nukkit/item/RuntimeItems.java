@@ -2,14 +2,10 @@ package cn.nukkit.item;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BinaryStream;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
@@ -23,10 +19,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static com.google.common.base.Verify.verify;
 
 @Since("1.4.0.0-PN")
 @UtilityClass
@@ -132,7 +124,7 @@ public class RuntimeItems {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         Boolean deprecated;
-        @PowerNukkitOnly
+        @PowerNukkitXOnly
         @Since("1.6.0.0-PNX")
         Boolean isComponentItem = false;
     }
