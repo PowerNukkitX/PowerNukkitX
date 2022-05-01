@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class XpCommand extends Command {
     public XpCommand(String name) {
-        super(name, "commands.xp.description", "commands.xp.usage");
+        super(name, "commands.xp.description");
         this.setPermission("nukkit.command.xp");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
