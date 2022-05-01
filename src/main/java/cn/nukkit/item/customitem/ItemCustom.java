@@ -30,6 +30,10 @@ public abstract class ItemCustom extends StringItem {
     @Getter
     private String textureName;
 
+    @Setter
+    @Getter
+    private int textureSize = 16;
+
     public ItemCustom(@Nonnull String id, @Nullable String name) {
         super(id.toLowerCase(Locale.ENGLISH), name);
         if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(this.getNamespaceId())) {
@@ -57,14 +61,39 @@ public abstract class ItemCustom extends StringItem {
     public CompoundTag getComponentsData() {
         CompoundTag data = new CompoundTag();
         data.putCompound("components", new CompoundTag()
-                .putCompound("item_properties", new CompoundTag()
+                .putCompound("minecraft:display_name", new CompoundTag()
+                        .putString("value", this.getName())
+                ).putCompound("item_properties", new CompoundTag()
                         .putBoolean("allow_off_hand", this.allowOffHand())
                         .putBoolean("hand_equipped", this.isTool())
                         .putInt("creative_category", this.getCreativeCategory())
                         .putInt("max_stack_size", this.getMaxStackSize())
                         .putCompound("minecraft:icon", new CompoundTag()
-                                .putString("texture", this.getTextureName() != null ? this.getTextureName() : this.name))));
+                                .putString("texture", this.getTextureName() != null ? this.getTextureName() : this.name)
+                        )
+                )
+        );
+        if (this.getTextureSize() != 16) {
+            float scale1 = (float) (0.075 / (this.getTextureSize() / 16f));
+            float scale2 = (float) (0.125 / (this.getTextureSize() / 16f));
+            float scale3 = (float) (0.075 / (this.getTextureSize() / 16f * 2.4f));
+
+            data.getCompound("components")
+                    .putCompound("minecraft:render_offsets", new CompoundTag()
+                            .putCompound("main_hand", new CompoundTag()
+                                    .putCompound("first_person", xyzToCompoundTag(scale3, scale3, scale3))
+                                    .putCompound("third_person", xyzToCompoundTag(scale1, scale2, scale1))
+                            ).putCompound("off_hand", new CompoundTag()
+                                    .putCompound("first_person", xyzToCompoundTag(scale1, scale2, scale1))
+                                    .putCompound("third_person", xyzToCompoundTag(scale1, scale2, scale1))
+                            )
+                    );
+        }
         return data;
+    }
+
+    private static CompoundTag xyzToCompoundTag(float x, float y, float z) {
+        return new CompoundTag().putCompound("scale", new CompoundTag().putFloat("x", x).putFloat("y", y).putFloat("z", z));
     }
 
     @Override
