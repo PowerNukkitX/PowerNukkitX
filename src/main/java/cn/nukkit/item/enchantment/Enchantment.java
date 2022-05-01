@@ -47,8 +47,6 @@ public abstract class Enchantment implements Cloneable {
     @Since("1.6.0.0-PNX")
     protected static Map<String,Integer> enchantmentName2IDMap = new Object2IntArrayMap<>();
 
-    //http://minecraft.gamepedia.com/Enchanting#Aqua_Affinity
-
     public static final int ID_PROTECTION_ALL = 0;
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_PROTECTION_ALL = "protection";
     public static final int ID_PROTECTION_FIRE = 1;
@@ -204,7 +202,6 @@ public abstract class Enchantment implements Cloneable {
         enchantmentName2IDMap.put(NAME_CROSSBOW_PIERCING, ID_CROSSBOW_PIERCING);
         enchantmentName2IDMap.put(NAME_CROSSBOW_QUICK_CHARGE, ID_CROSSBOW_QUICK_CHARGE);
         enchantmentName2IDMap.put(NAME_SOUL_SPEED, ID_SOUL_SPEED);
-        enchantmentName2IDMap = Collections.unmodifiableMap(enchantmentName2IDMap);
     }
 
     /**
