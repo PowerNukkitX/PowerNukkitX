@@ -138,7 +138,8 @@ public abstract class EntityPhysical extends EntityCreature {
     }
 
     protected void handleCollideMovement() {
-        var collidingEntities = this.level.getCollidingEntities(getOffsetBoundingBox(), this);
+        var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
+        var collidingEntities = this.level.getCollidingEntities(selfAABB, this);
         if (collidingEntities.length == 0) {
             return;
         }
@@ -148,7 +149,6 @@ public abstract class EntityPhysical extends EntityCreature {
         double dzNegative = 0;
         for (var each : collidingEntities) {
             AxisAlignedBB targetAABB;
-            var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
             if (each instanceof EntityPhysical entityPhysical) {
                 targetAABB = entityPhysical.getOffsetBoundingBox();
             } else if (each instanceof Player player) {
@@ -173,8 +173,8 @@ public abstract class EntityPhysical extends EntityCreature {
         double resultX = dxPositive - dxNegative;
         double resultZ = dzPositive - dzNegative;
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
-        this.motionX -= resultX / len * getMovementSpeed() * 0.43;
-        this.motionZ -= resultZ / len * getMovementSpeed() * 0.43;
+        this.motionX -= resultX / len * getMovementSpeed() * 0.32;
+        this.motionZ -= resultZ / len * getMovementSpeed() * 0.32;
     }
 
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {
