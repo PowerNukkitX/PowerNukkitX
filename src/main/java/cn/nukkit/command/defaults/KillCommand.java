@@ -23,7 +23,7 @@ import java.util.List;
 public class KillCommand extends VanillaCommand {
 
     public KillCommand(String name) {
-        super(name, "commands.kill.description", "commands.kill.usage", new String[]{"suicide"});
+        super(name, "commands.kill.description");
         this.setPermission("nukkit.command.kill.self;"
                 + "nukkit.command.kill.other");
         this.commandParameters.clear();
@@ -38,7 +38,7 @@ public class KillCommand extends VanillaCommand {
             return true;
         }
         if (args.length >= 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         if (args.length == 1) {
@@ -47,8 +47,8 @@ public class KillCommand extends VanillaCommand {
                 return true;
             }
             List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
-            if (entities == null) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+            if (entities == null || entities.isEmpty()) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
             StringBuilder message = new StringBuilder();
@@ -78,7 +78,7 @@ public class KillCommand extends VanillaCommand {
             EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000);
             sender.asPlayer().attack(ev);
         } else {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         return true;

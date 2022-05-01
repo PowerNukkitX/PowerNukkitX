@@ -45,7 +45,7 @@ public class EnchantCommand extends VanillaCommand {
             return false;
         }
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
@@ -60,7 +60,7 @@ public class EnchantCommand extends VanillaCommand {
         try {
             enchantLevel = args.length == 3 ? Integer.parseInt(args[2]) : 1;
         } catch (NumberFormatException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

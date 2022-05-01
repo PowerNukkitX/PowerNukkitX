@@ -48,7 +48,7 @@ public class WhitelistCommand extends VanillaCommand {
         }
 
         if (args.length == 0 || args.length > 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
 
@@ -85,11 +85,11 @@ public class WhitelistCommand extends VanillaCommand {
                     return true;
 
                 case "add":
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return true;
 
                 case "remove":
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return true;
             }
         } else if (args.length == 2) {

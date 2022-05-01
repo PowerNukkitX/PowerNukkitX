@@ -41,7 +41,7 @@ public class BanListCommand extends VanillaCommand {
                     list = sender.getServer().getNameBans();
                     break;
                 default:
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
             }
         } else {

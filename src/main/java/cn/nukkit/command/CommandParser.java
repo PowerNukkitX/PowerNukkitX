@@ -68,39 +68,6 @@ public class CommandParser {
             return this.parsedArgs[this.cursor + 1];
     }
 
-    public String getErrorMessage() {
-        String parameter1;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", " ");
-            for (String arg : Arrays.copyOfRange(this.parsedArgs, 0, this.cursor)) {
-                joiner.add(arg);
-            }
-            parameter1 = joiner.length() < 3 ? "" : joiner.toString();
-        } catch (Exception e) {
-            parameter1 = "";
-        }
-
-        String parameter2;
-        try {
-            parameter2 = this.parsedArgs[this.cursor];
-        } catch (Exception e) {
-            parameter2 = "";
-        }
-
-        String parameter3;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", "");
-            for (String arg : Arrays.copyOfRange(this.parsedArgs, this.cursor + 1, this.parsedArgs.length)) {
-                joiner.add(arg);
-            }
-            parameter3 = joiner.toString();
-        } catch (Exception e) {
-            parameter3 = "";
-        }
-
-        return new TranslationContainer(TextFormat.RED + "%commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
-    }
-
     public String matchCommandForm() {
         StringBuilder argStringBuilder = new StringBuilder();
         for (String arg : this.args) {

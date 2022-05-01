@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
@@ -45,7 +46,7 @@ public class DayLockCommand extends VanillaCommand {
                 level.startTime();
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

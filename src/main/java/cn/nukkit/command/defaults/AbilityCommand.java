@@ -33,14 +33,14 @@ public class AbilityCommand extends VanillaCommand {
 
         CommandParser parser = new CommandParser(this,sender,args);
         if(parser.matchCommandForm() == null){
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
         try {
             List<Player> players = parser.parseTargetPlayers();
             if(players.size() == 0){
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
 

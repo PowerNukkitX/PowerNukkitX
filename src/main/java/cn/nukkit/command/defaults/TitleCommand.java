@@ -50,7 +50,7 @@ public class TitleCommand extends VanillaCommand {
             return true;
         }
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         List<Player> players = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender, args[0]).stream().filter(e -> e instanceof Player).map(e -> (Player) e).toList() : null;
@@ -72,7 +72,7 @@ public class TitleCommand extends VanillaCommand {
                         sender.sendMessage(new TranslationContainer("nukkit.command.title.reset", player.getName()));
                         break;
                     default:
-                        sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                        sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                         return false;
                 }
             } else if (args.length == 3) {
@@ -91,7 +91,7 @@ public class TitleCommand extends VanillaCommand {
                         sender.sendMessage(new TranslationContainer("nukkit.command.title.actionbar", new String[]{TextFormat.clean(args[2]), player.getName()}));
                         break;
                     default:
-                        sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                        sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                         return false;
                 }
             } else if (args.length == 5) {
@@ -103,11 +103,11 @@ public class TitleCommand extends VanillaCommand {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.title.times.fail"));
                     }
                 } else {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
         }

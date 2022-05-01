@@ -86,18 +86,7 @@ public class HelpCommand extends VanillaCommand {
             int i = 1;
             for (Command command1 : commands.values()) {
                 if (i >= (pageNumber - 1) * pageHeight + 1 && i <= Math.min(commands.size(), pageNumber * pageHeight)) {
-                    for (String form : command1.getCommandParameters().keySet()) {
-                        CommandParameter[] commandParameters = command1.getCommandParameters().get(form);
-                        StringBuilder builder = new StringBuilder("/" + command1.getName());
-                        for (CommandParameter commandParameter : commandParameters) {
-                            if (!commandParameter.optional) {
-                                builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
-                            }else{
-                                builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
-                            }
-                        }
-                        sender.sendMessage(builder.toString());
-                    }
+                    sender.sendMessage(command1.getCommandFormatTips());
                 }
                 i++;
             }
@@ -111,17 +100,7 @@ public class HelpCommand extends VanillaCommand {
                     sender.sendMessage(TextFormat.YELLOW + cmd.getName());
                     sender.sendMessage(new TranslationContainer(TextFormat.YELLOW + "%" + cmd.getDescription()));
                     sender.sendMessage(new TranslationContainer("commands.generic.usage.noparam"));
-                    for (String form : cmd.getCommandParameters().keySet()) {
-                        StringBuilder builder = new StringBuilder("- /" + cmd.getName());
-                        for (CommandParameter commandParameter : cmd.getCommandParameters(form)) {
-                            if (!commandParameter.optional) {
-                                builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
-                            }else{
-                                builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
-                            }
-                        }
-                        sender.sendMessage(builder.toString());
-                    }
+                    sender.sendMessage(cmd.getCommandFormatTips());
                     return true;
                 }
             }

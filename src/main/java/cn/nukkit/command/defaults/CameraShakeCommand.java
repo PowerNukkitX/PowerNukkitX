@@ -41,7 +41,7 @@ public class CameraShakeCommand extends VanillaCommand {
 
         String form = parser.matchCommandForm();
         if(form == null){
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

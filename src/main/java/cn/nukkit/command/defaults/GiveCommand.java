@@ -53,7 +53,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return true;
         }
@@ -71,12 +71,12 @@ public class GiveCommand extends VanillaCommand {
         try {
             item = Item.fromString(args[1]);
         } catch (Exception e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
         
         if (item.getDamage() < 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
         
@@ -96,7 +96,7 @@ public class GiveCommand extends VanillaCommand {
             count = 1;
         }
         if (count <= 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         item.setCount(count);

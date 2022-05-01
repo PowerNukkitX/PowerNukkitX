@@ -15,7 +15,7 @@ import cn.nukkit.utils.TextFormat;
 public class MeCommand extends VanillaCommand {
 
     public MeCommand(String name) {
-        super(name, "commands.me.description", "commands.me.usage");
+        super(name, "commands.me.description");
         this.setPermission("nukkit.command.me");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -30,7 +30,7 @@ public class MeCommand extends VanillaCommand {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return false;
         }

@@ -182,7 +182,7 @@ public class FillCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.fill.success", String.valueOf(count)));
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

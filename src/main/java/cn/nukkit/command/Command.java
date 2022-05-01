@@ -2,9 +2,7 @@ package cn.nukkit.command;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
 import cn.nukkit.lang.TextContainer;
@@ -246,6 +244,25 @@ public abstract class Command {
 
     public String getUsage() {
         return usageMessage;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public String getCommandFormatTips(){
+        StringBuilder builder = new StringBuilder();
+        for (String form : this.getCommandParameters().keySet()) {
+            CommandParameter[] commandParameters = this.getCommandParameters().get(form);
+            builder.append("- /" + this.getName());
+            for (CommandParameter commandParameter : commandParameters) {
+                if (!commandParameter.optional) {
+                    builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
+                }else{
+                    builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
+                }
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 
     public void setAliases(String[] aliases) {

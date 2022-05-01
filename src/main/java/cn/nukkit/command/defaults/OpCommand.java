@@ -35,7 +35,7 @@ public class OpCommand extends VanillaCommand {
             return false;
         }
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.op.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

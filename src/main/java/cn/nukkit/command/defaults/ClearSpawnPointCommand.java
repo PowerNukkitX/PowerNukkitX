@@ -33,7 +33,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
 
         CommandParser parser = new CommandParser(this,sender,args);
         if(parser.matchCommandForm() == null){
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

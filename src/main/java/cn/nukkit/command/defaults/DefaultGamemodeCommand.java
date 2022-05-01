@@ -32,7 +32,7 @@ public class DefaultGamemodeCommand extends VanillaCommand {
             return false;
         }
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", new String[]{this.usageMessage}));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         int gameMode = Server.getGamemodeFromString(args[0]);

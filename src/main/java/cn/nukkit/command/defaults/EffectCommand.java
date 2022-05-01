@@ -55,7 +55,7 @@ public class EffectCommand extends Command {
             return false;
         }
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         CommandParser parser = new CommandParser(this, sender, args);
@@ -92,7 +92,7 @@ public class EffectCommand extends Command {
                 try {
                     duration = Integer.parseInt(args[2]);
                 } catch (NumberFormatException a) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
                 if (!(effect instanceof InstantEffect)) {
@@ -105,7 +105,7 @@ public class EffectCommand extends Command {
                 try {
                     amplification = Integer.parseInt(args[3]);
                 } catch (NumberFormatException a) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
             }
@@ -138,7 +138,7 @@ public class EffectCommand extends Command {
             }
             return successExecute;
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             e.printStackTrace();
             return false;
         }

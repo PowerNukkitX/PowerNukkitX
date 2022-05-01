@@ -44,7 +44,7 @@ public class XpCommand extends Command {
         List<Player> players;
         if (!sender.isPlayer()) {
             if (args.length != 2) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
 
@@ -81,7 +81,7 @@ public class XpCommand extends Command {
                     return false;
                 }
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
         }
@@ -97,7 +97,7 @@ public class XpCommand extends Command {
         try {
             amount = Integer.parseInt(amountString);
         } catch (NumberFormatException e1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
@@ -120,7 +120,7 @@ public class XpCommand extends Command {
 
             } else {
                 if (amount < 0) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
                 player.addExperience(amount);
