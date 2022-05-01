@@ -91,7 +91,7 @@ public class FillCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
             if (size > 16 * 16 * 16 * 8) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 16 * 8)));
-                return false;
+                sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
             Level level = from.getLevel();
