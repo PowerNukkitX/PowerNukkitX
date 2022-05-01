@@ -1177,13 +1177,6 @@ public class Server {
     private int lastLevelGC;
 
     public void tickProcessor() {
-        //TODO 测试完成后删除这里
-        try {
-            Item.registerCustomItem(ItemCustomTest.class);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-
         getScheduler().scheduleDelayedTask(new Task() {
             @Override
             public void onRun(int currentTick) {
