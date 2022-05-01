@@ -1257,6 +1257,17 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.cachedNBT;
     }
 
+    public CompoundTag getOrCreateNamedTag() {
+        if (!hasCompoundTag()) {
+            CompoundTag tag = new CompoundTag();
+            tag.setName(null);
+
+            this.cachedNBT = tag;
+            this.tags = writeCompoundTag(tag);
+        }
+        return getNamedTag();
+    }
+
     public Item setNamedTag(CompoundTag tag) {
         if (tag.isEmpty()) {
             return this.clearNamedTag();
@@ -1674,5 +1685,107 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.4.0.0-PN")
     public final int getNetworkId() throws UnknownNetworkIdException {
         return RuntimeItems.getNetworkId(getNetworkFullId());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addCanPlaceOn(Block block) {
+        CompoundTag tag = getOrCreateNamedTag();
+        ListTag<StringTag> canPlaceOn = tag.getList("CanPlaceOn", StringTag.class);
+        tag.putList(canPlaceOn.add(new StringTag("", block.toItem().getNamespaceId())));
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addCanPlaceOn(Block[] blocks){
+        for (Block block : blocks) {
+            addCanPlaceOn(block);
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setCanPlaceOn(Block[] blocks){
+        CompoundTag tag = getOrCreateNamedTag();
+        ListTag<StringTag> canPlaceOn = new ListTag<>("CanPlaceOn");
+        for (Block block : blocks) {
+            canPlaceOn.add(new StringTag("", block.toItem().getNamespaceId()));
+        }
+        tag.putList(canPlaceOn);
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public ListTag<StringTag> getCanPlaceOn(){
+        CompoundTag tag = getOrCreateNamedTag();
+        return tag.getList("CanPlaceOn", StringTag.class);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addCanDestroy(Block block) {
+        CompoundTag tag = getOrCreateNamedTag();
+        ListTag<StringTag> canDestroy = tag.getList("CanDestroy", StringTag.class);
+        tag.putList(canDestroy.add(new StringTag("", block.toItem().getNamespaceId())));
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addCanDestroy(Block[] blocks){
+        for (Block block : blocks) {
+            addCanDestroy(block);
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setCanDestroy(Block[] blocks){
+        CompoundTag tag = getOrCreateNamedTag();
+        ListTag<StringTag> canDestroy = new ListTag<>("CanDestroy");
+        for (Block block : blocks) {
+            canDestroy.add(new StringTag("", block.toItem().getNamespaceId()));
+        }
+        tag.putList(canDestroy);
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public ListTag<StringTag> getCanDestroy(){
+        CompoundTag tag = getOrCreateNamedTag();
+        return tag.getList("CanDestroy", StringTag.class);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public enum ItemLockMode{
+        LOCK_IN_INVENTORY,
+        LOCK_IN_SLOT,
+        NONE//only used in server
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setItemLockMode(ItemLockMode mode){
+        CompoundTag tag = getOrCreateNamedTag();
+        if (mode == ItemLockMode.NONE){
+            tag.remove("minecraft:item_lock");
+        }else{
+            tag.putByte("minecraft:item_lock", mode.ordinal());
+        }
+        this.setCompoundTag(tag);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public ItemLockMode getItemLockMode(){
+        CompoundTag tag = getOrCreateNamedTag();
+        if (tag.contains("minecraft:item_lock")){
+            return ItemLockMode.values()[tag.getByte("minecraft:item_lock")];
+        }
+        return ItemLockMode.NONE;
     }
 }

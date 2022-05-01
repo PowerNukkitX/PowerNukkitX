@@ -2,6 +2,8 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -13,6 +15,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.EntitySelector;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -113,6 +119,11 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;
         }
+        //debug
+        item.setItemLockMode(Item.ItemLockMode.LOCK_IN_SLOT);
+        item.addCanPlaceOn(Block.get(BlockID.GRASS));
+        item.addCanDestroy(Block.get(BlockID.GRASS));
+        //debug
         for (Entity entity : players) {
             Player player = (Player) entity;
             Item[] returns = player.getInventory().addItem(item.clone());
