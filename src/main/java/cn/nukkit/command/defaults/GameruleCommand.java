@@ -13,7 +13,7 @@ import java.util.*;
 public class GameruleCommand extends VanillaCommand {
 
     public GameruleCommand(String name) {
-        super(name, "commands.gamerule.description", "commands.gamerule.usage");
+        super(name, "commands.gamerule.description");
         this.setPermission("nukkit.command.gamerule");
         this.commandParameters.clear();
 
@@ -83,7 +83,7 @@ public class GameruleCommand extends VanillaCommand {
                 Optional<GameRule> gameRule = GameRule.parseString(args[0]);
                 if (gameRule.isEmpty() || !rules.hasRule(gameRule.get())) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule", args[0]));
-                    return true;
+                    return false;
                 }
                 sender.sendMessage(gameRule.get().getName().toLowerCase() + " = " + rules.getString(gameRule.get()));
                 return true;
@@ -93,13 +93,14 @@ public class GameruleCommand extends VanillaCommand {
                 if (optionalRule.isEmpty()) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax",
                             "/gamerule ", args[0], " " + String.join(" ", Arrays.copyOfRange(args, 1, args.length))));
-                    return true;
+                    return false;
                 }
                 try {
                     rules.setGameRules(optionalRule.get(), args[1]);
                     sender.sendMessage(new TranslationContainer("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), args[1]));
                 } catch (IllegalArgumentException e) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule " + args[0] + " ", args[1], " " + String.join(" ", Arrays.copyOfRange(args, 2, args.length))));
+                    return false;
                 }
                 return true;
             }
