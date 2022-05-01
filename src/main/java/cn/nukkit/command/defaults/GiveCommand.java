@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -13,6 +14,8 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,5 +147,33 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
         return false;
+    }
+
+    public static class ItemInfo{
+        private static Gson gson = new Gson();
+        public static class CanPlaceOn{
+            public String[] blocks;
+        }
+        public static class CanDestory{
+            public String[] blocks;
+        }
+        public static class ItemLock{
+            public static String LOCK_IN_INVENTORY = "lock_in_inventory";
+            public static String LOCK_IN_SLOT = "lock_in_slot";
+            String mode;
+        }
+        public static ItemInfo fromJson(String json){
+            return gson.fromJson(json, ItemInfo.class);
+        }
+        public static class KeepOnDeath{}
+        private ItemInfo(){}
+        @SerializedName("minecraft:can_place_on")
+        public CanPlaceOn canPlaceOn;
+        @SerializedName("minecraft:can_destroy")
+        public CanDestory canDestroy;
+        @SerializedName("minecraft:item_lock")
+        public ItemLock itemLock;
+        @SerializedName("minecraft:keep_on_death")
+        public KeepOnDeath keepOnDeath;
     }
 }
