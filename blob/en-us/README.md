@@ -81,14 +81,14 @@ dependencies {
 ```xml
 <repositories>
     <repository>
-        <id>maven-powernukkitx-cn</id>
-        <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
-        <releases>
-          <enabled>false</enabled>
-        </releases>
-        <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
+      <id>maven-powernukkitx-cn</id>
+      <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
 </repositories>
 
