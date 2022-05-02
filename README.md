@@ -18,7 +18,7 @@
 注意事项：
 
 * PowerNukkitX要求的最低Java版本为17
-  
+
 * 补充: 如果您的服务器不能安装Java17，你也可以用使用我们提供的[BootStrap](https://ci.lt-name.com/job/PowerNukkitX/job/master/)
 
 加入我们:
@@ -140,7 +140,7 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
 
-🎨  数据统计
+🎨 数据统计
 ---
 
 [![Issues](https://img.shields.io/github/issues/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/issues)
