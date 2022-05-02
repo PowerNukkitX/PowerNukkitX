@@ -276,6 +276,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean execute(int chain) {
+        if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
+            return false;
+        }
         if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
             if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
                 Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
