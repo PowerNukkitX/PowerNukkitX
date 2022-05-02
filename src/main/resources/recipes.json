@@ -14171,7 +14171,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 4
         }
       ],
       "shape": [
@@ -14194,7 +14195,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 4
         }
       ],
       "shape": [
@@ -15118,7 +15120,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 2
         }
       ],
       "shape": [
@@ -15141,7 +15144,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 2
         }
       ],
       "shape": [
@@ -20252,7 +20256,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 5
         }
       ],
       "shape": [
@@ -20275,7 +20280,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 5
         }
       ],
       "shape": [
@@ -24316,7 +24322,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 3
         }
       ],
       "shape": [
@@ -24339,7 +24346,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 3
         }
       ],
       "shape": [
@@ -32722,7 +32730,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 1
         }
       ],
       "shape": [
@@ -32745,7 +32754,8 @@
         {
           "legacyId": 5,
           "id": "minecraft:planks",
-          "count": 4
+          "count": 4,
+          "damage": 1
         }
       ],
       "shape": [
