@@ -11,7 +11,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class ListCommand extends VanillaCommand {
 
     public ListCommand(String name) {
-        super(name, "commands.list.description", "commands.players.usage");
+        super(name, "commands.list.description");
         this.setPermission("nukkit.command.list");
         this.commandParameters.clear();
     }

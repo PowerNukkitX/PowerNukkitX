@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class TeleportCommand extends VanillaCommand {
     public TeleportCommand(String name) {
-        super(name, "commands.tp.description", "commands.tp.usage");
+        super(name, "commands.tp.description");
         this.setPermission("nukkit.command.teleport");
         this.commandParameters.clear();
         this.commandParameters.put("->Entity", new CommandParameter[]{
@@ -76,18 +76,22 @@ public class TeleportCommand extends VanillaCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!this.testPermission(sender) || !sender.isEntity()) {
+        if (!this.testPermission(sender)) {
             return false;
         }
         CommandParser parser = new CommandParser(this,sender,args);
         try {
             String form = parser.matchCommandForm();
             if (form == null){
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             };
             switch (form) {
                 case "->Entity" -> {
+                    if (!sender.isEntity()) {
+                        sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     CommandParser p = new CommandParser(parser);
                     List<Entity> destination = p.parseTargets();
                     if(destination.isEmpty()) {
@@ -151,11 +155,11 @@ public class TeleportCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
                     Position pos = p.parsePosition();
-                    double yRot = sender.asEntity().pitch;
+                    double yRot = sender.getLocation().pitch;
                     if(p.hasNext()){
                         yRot = p.parseOffsetDouble(yRot);
                     }
-                    double xRot = sender.asEntity().yaw;
+                    double xRot = sender.getLocation().yaw;
                     if(p.hasNext()){
                         xRot = p.parseOffsetDouble(xRot);
                     }
@@ -259,6 +263,10 @@ public class TeleportCommand extends VanillaCommand {
                     return true;
                 }
                 case "->Pos" -> {
+                    if (!sender.isEntity()) {
+                        sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     CommandParser p = new CommandParser(parser);
                     Position pos = p.parsePosition();
                     double yRot = sender.asEntity().pitch;
@@ -289,6 +297,10 @@ public class TeleportCommand extends VanillaCommand {
                     return true;
                 }
                 case "->Pos(FacingPos)" -> {
+                    if (!sender.isEntity()) {
+                        sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     CommandParser p = new CommandParser(parser);
                     Position pos = p.parsePosition();
                     p.parseString();//avoid "facing"
@@ -314,6 +326,10 @@ public class TeleportCommand extends VanillaCommand {
                     return true;
                 }
                 case "->Pos(FacingEntity)" -> {
+                    if (!sender.isEntity()) {
+                        sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     CommandParser p = new CommandParser(parser);
                     Position pos = p.parsePosition();
                     p.parseString();//avoid "facing"
@@ -344,7 +360,7 @@ public class TeleportCommand extends VanillaCommand {
                 }
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         }
         return false;
     }

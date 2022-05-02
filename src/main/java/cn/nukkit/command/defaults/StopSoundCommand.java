@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.network.protocol.StopSoundPacket;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
@@ -55,7 +56,7 @@ public class StopSoundCommand extends VanillaCommand {
 
             sender.sendMessage(String.format(packet.stopAll ? "Stopped all sounds for %2$s" : "Stopped sound '%1$s' for %2$s", sound, targets.stream().map(Player::getName).collect(Collectors.joining(", "))));
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

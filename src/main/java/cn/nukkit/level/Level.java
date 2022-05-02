@@ -2328,7 +2328,7 @@ public class Level implements ChunkManager, Metadatable {
             breakTime -= 0.15;
 
             Item[] eventDrops;
-            if (!mustDrop && !setBlockDestroy && !player.isSurvival()) {
+            if (!mustDrop && !setBlockDestroy && !player.isSurvival() && !player.isAdventure()) {
                 eventDrops = Item.EMPTY_ARRAY;
             } else if (mustSilkTouch || isSilkTouch && target.canSilkTouch()) {
                 eventDrops = new Item[]{target.toItem()};
@@ -2341,7 +2341,7 @@ public class Level implements ChunkManager, Metadatable {
                 BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(),
                         fastBreak);
 
-                if (player.isSurvival() && !target.isBreakable(item)) {
+                if (player.isSurvival() && !target.isBreakable(item) ) {
                     ev.setCancelled();
                 } else if (!player.isOp() && isInSpawnRadius(target)) {
                     ev.setCancelled();
@@ -2413,11 +2413,11 @@ public class Level implements ChunkManager, Metadatable {
 
         if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
 
-            if (!isSilkTouch && (mustDrop || player != null && (player.isSurvival() || setBlockDestroy)) && dropExp > 0 && drops.length != 0) {
+            if (!isSilkTouch && (mustDrop || player != null && ((player.isSurvival() || player.isAdventure()) || setBlockDestroy)) && dropExp > 0 && drops.length != 0) {
                 this.dropExpOrb(vector.add(0.5, 0.5, 0.5), dropExp);
             }
 
-            if (mustDrop || player == null || setBlockDestroy || player.isSurvival()) {
+            if (mustDrop || player == null || setBlockDestroy || (player.isSurvival() || player.isAdventure())) {
                 for (Item drop : drops) {
                     if (drop.getCount() > 0) {
                         this.dropItem(vector.add(0.5, 0.5, 0.5), drop);

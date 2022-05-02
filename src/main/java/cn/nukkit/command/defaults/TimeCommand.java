@@ -43,7 +43,7 @@ public class TimeCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return false;
         }
@@ -92,7 +92,7 @@ public class TimeCommand extends VanillaCommand {
 
 
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return false;
         }
@@ -121,7 +121,7 @@ public class TimeCommand extends VanillaCommand {
                 try {
                     value = Math.max(0, Integer.parseInt(args[1]));
                 } catch (Exception e) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return true;
                 }
             }
@@ -143,7 +143,7 @@ public class TimeCommand extends VanillaCommand {
             try {
                 value = Math.max(0, Integer.parseInt(args[1]));
             } catch (Exception e) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return true;
             }
 
@@ -154,7 +154,7 @@ public class TimeCommand extends VanillaCommand {
             }
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.time.added", String.valueOf(value)));
         } else {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         }
 
         return true;

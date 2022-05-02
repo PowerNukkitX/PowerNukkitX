@@ -1,6 +1,7 @@
 package cn.nukkit.event.entity;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
@@ -320,5 +321,12 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         @PowerNukkitOnly
         @Since("1.5.2.0-PN")
         FREEZING,
+
+        /**
+         * Damage caused by no reason (eg: /damage command with cause NONE)
+         */
+        @PowerNukkitXOnly
+        @Since("1.6.0.0-PNX")
+        NONE
     }
 }

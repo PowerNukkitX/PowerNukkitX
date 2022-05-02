@@ -69,7 +69,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 try {
                     position = parser.parsePosition();
                 } catch (CommandSyntaxException e1) {
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
                 if(level.isOverWorld()) {
@@ -103,7 +103,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 return false;
             }
         }
-        sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+        sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         return false;
     }
 }

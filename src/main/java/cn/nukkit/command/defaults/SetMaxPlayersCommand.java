@@ -5,6 +5,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.lang.TranslationContainer;
 
 public class SetMaxPlayersCommand extends VanillaCommand {
 
@@ -41,7 +42,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
                 sender.sendMessage("(Bound to minimum allowed connections)");
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

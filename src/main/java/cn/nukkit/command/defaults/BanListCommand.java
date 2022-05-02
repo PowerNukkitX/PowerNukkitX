@@ -15,7 +15,7 @@ import java.util.Iterator;
  */
 public class BanListCommand extends VanillaCommand {
     public BanListCommand(String name) {
-        super(name, "commands.banlist.description", "commands.banlist.usage");
+        super(name, "list all the banned players or IPs");
         this.setPermission("nukkit.command.ban.list");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -41,7 +41,7 @@ public class BanListCommand extends VanillaCommand {
                     list = sender.getServer().getNameBans();
                     break;
                 default:
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
             }
         } else {

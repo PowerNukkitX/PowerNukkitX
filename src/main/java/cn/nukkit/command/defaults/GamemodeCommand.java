@@ -13,6 +13,7 @@ import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -21,7 +22,7 @@ import java.util.List;
 public class GamemodeCommand extends VanillaCommand {
 
     public GamemodeCommand(String name) {
-        super(name, "commands.gamemode.description", "commands.gamemode.usage",
+        super(name, "commands.gamemode.description", "",
                 new String[]{"gm"});
         this.setPermission("nukkit.command.gamemode.survival;" +
                 "nukkit.command.gamemode.creative;" +
@@ -42,32 +43,27 @@ public class GamemodeCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
         int gameMode = Server.getGamemodeFromString(args[0]);
         if (gameMode == -1) {
-            sender.sendMessage("Unknown game mode");
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.gamemode.fail.invalid", args[0]));
             return false;
         }
 
-        List<Entity> entities = List.of();
+        List<Player> players = List.of();
         if (args.length > 1) {
             if (sender.hasPermission("nukkit.command.gamemode.other")) {
 
                 if (EntitySelector.hasArguments(args[1])) {
-                    entities = EntitySelector.matchEntities(sender, args[1]);
+                    players = EntitySelector.matchEntities(sender, args[1]).stream().filter(p -> p instanceof Player).map(p -> (Player)p).collect(Collectors.toList());
                 } else if(sender.getServer().getPlayer(args[1]) != null){
-                    entities = List.of(sender.getServer().getPlayer(args[1]));
+                    players = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
-                if (entities == null) {
-                    return false;
-                }
-
-                entities.stream().filter(entity -> entity instanceof Player).toList();
-                if (entities.size() == 0) {
+                if (players.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;
                 }
@@ -75,11 +71,11 @@ public class GamemodeCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return false;
             }
-        } else if (!(sender instanceof Player)) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+        } else if (!sender.isPlayer()) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return false;
         } else {
-            entities = List.of(sender.asPlayer());
+            players = List.of(sender.asPlayer());
         }
 
 
@@ -92,24 +88,14 @@ public class GamemodeCommand extends VanillaCommand {
             return false;
         }
 
-        boolean successExecute = false;
-        for (Entity target : entities) {
-
-            if (!((Player) target).setGamemode(gameMode)) {
-                sender.sendMessage("Game mode update for " + target.getName() + " failed");
+        for (Player target : players) {
+            target.setGamemode(gameMode);
+            if (target.equals(sender.asPlayer())) {
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
             } else {
-                successExecute = true;
-                if (target.equals(sender)) {
-                    Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
-                } else {
-                    ((Player) target).sendMessage(new TranslationContainer("gameMode.changed", Server.getGamemodeString(gameMode)));
-                    Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
-                }
+                target.sendMessage(new TranslationContainer("gameMode.changed", Server.getGamemodeString(gameMode)));
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
             }
-        }
-        if (!successExecute) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return false;
         }
         return true;
     }

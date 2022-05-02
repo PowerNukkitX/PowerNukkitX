@@ -141,13 +141,11 @@ public class CommandParameter {
         return new CommandParameter(name, optional, CommandParamType.RAWTEXT, data, null);
     }
 
-    //crash client!!!
     @Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, String postfix) {
         return newPostfix(name, false, postfix);
     }
 
-    //crash client!!!
     @Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
         return new CommandParameter(name, optional, CommandParamType.RAWTEXT, null, postfix);

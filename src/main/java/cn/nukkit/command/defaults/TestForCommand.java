@@ -39,7 +39,7 @@ public class TestForCommand extends VanillaCommand {
 
             sender.sendMessage(new TranslationContainer("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))));
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

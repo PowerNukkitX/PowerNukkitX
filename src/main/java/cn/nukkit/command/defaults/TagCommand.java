@@ -44,7 +44,7 @@ public class TagCommand extends VanillaCommand{
         try{
             String form = parser.matchCommandForm();
             if (form == null){
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             };
             List<Entity> entities = parser.parseTargets();
@@ -112,7 +112,7 @@ public class TagCommand extends VanillaCommand{
                 }
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         }
         return false;
     }

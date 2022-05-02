@@ -671,8 +671,6 @@ public class Server {
         log.info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
 
         this.consoleSender = new ConsoleCommandSender();
-        this.commandMap = new SimpleCommandMap(this);
-        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         // Initialize metrics
         NukkitMetrics.startNow(this);
@@ -690,6 +688,9 @@ public class Server {
         Attribute.init();
         DispenseBehaviorRegister.init();
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
+
+        this.commandMap = new SimpleCommandMap(this);
+        scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         // Convert legacy data before plugins get the chance to mess with it.
         try {

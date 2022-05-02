@@ -14,7 +14,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class BanCommand extends VanillaCommand {
 
     public BanCommand(String name) {
-        super(name, "commands.ban.description", "commands.ban.usage");
+        super(name, "commands.ban.description", "%commands.ban.usage");
         this.setPermission("nukkit.command.ban.player");
         this.commandParameters.clear();
         this.commandParameters.put("default",
@@ -31,7 +31,7 @@ public class BanCommand extends VanillaCommand {
         }
 
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return false;
         }

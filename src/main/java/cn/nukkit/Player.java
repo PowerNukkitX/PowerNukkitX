@@ -1,10 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
@@ -2469,6 +2466,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.close("", message, false);
                         break;
                     }
+
 
                     if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
                         message = "disconnectionScreen.noReason";
@@ -4962,10 +4960,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    this.inventory.clearAll();
+                    new HashMap<>(this.inventory.slots).forEach((slot,item) -> {
+                        if(!item.keepOnDeath()){
+                            this.inventory.clear(slot);
+                        }
+                    });
                 }
                 if (this.offhandInventory != null) {
-                    this.offhandInventory.clearAll();
+                    new HashMap<>(this.offhandInventory.slots).forEach((slot,item) -> {
+                        if(!item.keepOnDeath()){
+                            this.offhandInventory.clear(slot);
+                        }
+                    });
                 }
             }
 
@@ -6537,5 +6543,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.criteriaName = "";
         pk.sortOrder = SortOrder.ASCENDING;
         this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void shakeCamera(float intensity, int duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
+        CameraShakePacket packet = new CameraShakePacket();
+        packet.intensity = intensity;
+        packet.duration = duration;
+        packet.shakeType = shakeType;
+        packet.shakeAction = shakeAction;
+        this.dataPacket(packet);
     }
 }

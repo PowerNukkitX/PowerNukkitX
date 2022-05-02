@@ -17,7 +17,7 @@ import java.util.TreeMap;
 public class HelpCommand extends VanillaCommand {
 
     public HelpCommand(String name) {
-        super(name, "commands.help.description", "commands.help.usage", new String[]{"?"});
+        super(name, "commands.help.description", "%commands.help.usage", new String[]{"?"});
         this.setPermission("nukkit.command.help");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -82,38 +82,31 @@ public class HelpCommand extends VanillaCommand {
                 pageNumber = 1;
             }
 
-            sender.sendMessage(new TranslationContainer("commands.help.header", String.valueOf(pageNumber), String.valueOf(totalPage)));
+            sender.sendMessage(new TranslationContainer(TextFormat.DARK_GREEN + "%commands.help.header", String.valueOf(pageNumber), String.valueOf(totalPage)));
             int i = 1;
             for (Command command1 : commands.values()) {
                 if (i >= (pageNumber - 1) * pageHeight + 1 && i <= Math.min(commands.size(), pageNumber * pageHeight)) {
-                    sender.sendMessage(TextFormat.DARK_GREEN + "/" + command1.getName() + ": " + TextFormat.WHITE + command1.getDescription());
+                    sender.sendMessage(command1.getCommandFormatTips());
                 }
                 i++;
             }
+            sender.sendMessage(new TranslationContainer(TextFormat.DARK_GREEN + "%commands.help.footer"));
 
             return true;
         } else {
             Command cmd = sender.getServer().getCommandMap().getCommand(command.toString().toLowerCase());
             if (cmd != null) {
                 if (cmd.testPermissionSilent(sender)) {
-                    String message = TextFormat.YELLOW + "--------- " + TextFormat.WHITE + " Help: /" + cmd.getName() + TextFormat.YELLOW + " ---------\n";
-                    message += TextFormat.GOLD + "Description: " + TextFormat.WHITE + cmd.getDescription() + "\n";
-                    StringBuilder usage = new StringBuilder();
-                    String[] usages = cmd.getUsage().split("\n");
-                    for (String u : usages) {
-                        if (!usage.toString().equals("")) {
-                            usage.append("\n" + TextFormat.WHITE);
-                        }
-                        usage.append(u);
-                    }
-                    message += TextFormat.GOLD + "Usage: " + TextFormat.WHITE + usage + "\n";
-                    sender.sendMessage(message);
+                    sender.sendMessage(TextFormat.YELLOW + cmd.getName());
+                    sender.sendMessage(new TranslationContainer(TextFormat.YELLOW + "%" + cmd.getDescription()));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage.noparam"));
+                    sender.sendMessage(cmd.getCommandFormatTips());
                     return true;
                 }
             }
 
             sender.sendMessage(TextFormat.RED + "No help for " + command.toString().toLowerCase());
-            return true;
+            return false;
         }
     }
 }

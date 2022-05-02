@@ -21,7 +21,7 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class FillCommand extends VanillaCommand {
 
     public FillCommand(String name) {
-        super(name, "commands.fill.description", "commands.fill.usage");
+        super(name, "commands.fill.description");
         this.setPermission("nukkit.command.fill");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -77,21 +77,21 @@ public class FillCommand extends VanillaCommand {
             }
 
             if (BlockStateRegistry.getBlockId(tileName) == null || replaceTileName == null ? false : BlockStateRegistry.getBlockId(replaceTileName) == null) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.failed"));
                 return false;
             }
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
 
             if (aabb.getMinY() < -64 || aabb.getMaxY() > 320) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.outOfWorld"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.outOfWorld"));
                 return false;
             }
 
             int size = NukkitMath.floorDouble((aabb.getMaxX() - aabb.getMinX() + 1) * (aabb.getMaxY() - aabb.getMinY() + 1) * (aabb.getMaxZ() - aabb.getMinZ() + 1));
             if (size > 16 * 16 * 16 * 8) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 16 * 8)));
-                return false;
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 16 * 8)));
+                sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
             Level level = from.getLevel();
@@ -99,7 +99,7 @@ public class FillCommand extends VanillaCommand {
             for (int chunkX = NukkitMath.floorDouble(aabb.getMinX()) >> 4; chunkX <= NukkitMath.floorDouble(aabb.getMaxX()) >> 4; chunkX++) {
                 for (int chunkZ = NukkitMath.floorDouble(aabb.getMinZ()) >> 4; chunkZ <= NukkitMath.floorDouble(aabb.getMaxZ()) >> 4; chunkZ++) {
                     if (level.getChunkIfLoaded(chunkX, chunkZ) == null) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.failed"));
                         return false;
                     }
                 }
@@ -176,13 +176,13 @@ public class FillCommand extends VanillaCommand {
             }
 
             if (count == 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.fill.failed"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.failed"));
                 return false;
             } else {
                 sender.sendMessage(new TranslationContainer("commands.fill.success", String.valueOf(count)));
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

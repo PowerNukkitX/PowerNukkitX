@@ -1,6 +1,8 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockEntityHolder;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -12,13 +14,14 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.utils.TextFormat;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
 public class CloneCommand extends VanillaCommand {
 
     public CloneCommand(String name) {
-        super(name, "commands.clone.description", "commands.clone.usage");
+        super(name, "commands.clone.description");
         this.setPermission("nukkit.command.clone");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -69,19 +72,19 @@ public class CloneCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
             if (size > 16 * 16 * 256 * 8) {
-                sender.sendMessage(new TranslationContainer("commands.clone.tooManyBlocks",String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
-                return false;
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clone.tooManyBlocks",String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
+                sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
             Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
             AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
 
             if (blocksAABB.getMinY() < -64 || blocksAABB.getMaxY() > 320 || destinationAABB.getMinY() < -64 || destinationAABB.getMaxY() > 320) {
-                sender.sendMessage(new TranslationContainer("commands.generic.outOfWorld"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.outOfWorld"));
                 return false;
             }
             if (blocksAABB.intersectsWith(destinationAABB) && cloneMode != CloneMode.FORCE) {
-                sender.sendMessage(new TranslationContainer("commands.clone.noOverlap"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clone.noOverlap"));
                 return false;
             }
 
@@ -90,11 +93,11 @@ public class CloneCommand extends VanillaCommand {
             for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
                 for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                     if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
-                        sender.sendMessage(new TranslationContainer("commands.generic.outOfWorld"));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.outOfWorld"));
                         return false;
                     }
                     if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
-                        sender.sendMessage(new TranslationContainer("commands.generic.outOfWorld"));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.outOfWorld"));
                         return false;
                     }
                 }
@@ -111,7 +114,7 @@ public class CloneCommand extends VanillaCommand {
                         Block block = blocks[i];
                         Block destinationBlock = destinationBlocks[i];
 
-                        level.setBlock(destinationBlock, Block.get(block.getId(), block.getDamage()));
+                        block.cloneTo(destinationBlock);
 
                         ++count;
 
@@ -127,7 +130,7 @@ public class CloneCommand extends VanillaCommand {
                         Block destinationBlock = destinationBlocks[i];
 
                         if (block.getId() != Block.AIR) {
-                            level.setBlock(destinationBlock, Block.get(block.getId(), block.getDamage()));
+                            block.cloneTo(destinationBlock);
                             ++count;
 
                             if (move) {
@@ -143,7 +146,7 @@ public class CloneCommand extends VanillaCommand {
                         Block destinationBlock = destinationBlocks[i];
 
                         if (block.getId() == tileId && block.getDamage() == tileData) {
-                            level.setBlock(destinationBlock, Block.get(block.getId(), block.getDamage()));
+                            block.cloneTo(destinationBlock);
                             ++count;
 
                             if (move) {
@@ -156,13 +159,13 @@ public class CloneCommand extends VanillaCommand {
             }
 
             if (count == 0) {
-                sender.sendMessage(new TranslationContainer("commands.clone.failed"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clone.failed"));
                 return false;
             } else {
                 sender.sendMessage(new TranslationContainer("commands.clone.success", String.valueOf(count)));
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

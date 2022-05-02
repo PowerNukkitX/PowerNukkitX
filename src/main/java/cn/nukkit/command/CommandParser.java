@@ -12,6 +12,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -65,39 +66,6 @@ public class CommandParser {
             return this.parsedArgs[++this.cursor];
         else
             return this.parsedArgs[this.cursor + 1];
-    }
-
-    public String getErrorMessage() {
-        String parameter1;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", " ");
-            for (String arg : Arrays.copyOfRange(this.parsedArgs, 0, this.cursor)) {
-                joiner.add(arg);
-            }
-            parameter1 = joiner.length() < 3 ? "" : joiner.toString();
-        } catch (Exception e) {
-            parameter1 = "";
-        }
-
-        String parameter2;
-        try {
-            parameter2 = this.parsedArgs[this.cursor];
-        } catch (Exception e) {
-            parameter2 = "";
-        }
-
-        String parameter3;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", "");
-            for (String arg : Arrays.copyOfRange(this.parsedArgs, this.cursor + 1, this.parsedArgs.length)) {
-                joiner.add(arg);
-            }
-            parameter3 = joiner.toString();
-        } catch (Exception e) {
-            parameter3 = "";
-        }
-
-        return new TranslationContainer("commands.generic.syntax", parameter1, parameter2, parameter3, this.command.getName()).toString();
     }
 
     public String matchCommandForm() {
@@ -166,11 +134,11 @@ public class CommandParser {
                             pattern.append(WILDCARD_TARGET_PATTERN);
                             pattern.append("\\s+");
                         }
-                        case STRING, RAWTEXT, JSON, TEXT, FILE_PATH, OPERATOR -> {
+                        case STRING, TEXT, FILE_PATH, OPERATOR -> {
                             pattern.append(STRING_PATTERN);
                             pattern.append("\\s+");
                         }
-                        case MESSAGE, COMMAND -> {
+                        case MESSAGE, COMMAND, RAWTEXT, JSON  -> {
                             pattern.append(MULTIPLE_STRING_PATTERN);
                             pattern.append("\\s+");
                         }

@@ -15,7 +15,9 @@ import cn.nukkit.command.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -23,26 +25,15 @@ import java.util.List;
  */
 public class GiveCommand extends VanillaCommand {
     public GiveCommand(String name) {
-        super(name, "commands.give.description", "commands.give.usage");
+        super(name, "commands.give.description");
         this.setPermission("nukkit.command.give");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });
-        this.commandParameters.put("toPlayerById", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("itemId", CommandParamType.INT),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });
-        this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("itemAndData", CommandParamType.STRING),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON)
         });
     }
 
@@ -53,7 +44,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return true;
         }
@@ -65,18 +56,18 @@ public class GiveCommand extends VanillaCommand {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
-        List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
+        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
         Item item;
 
         try {
             item = Item.fromString(args[1]);
         } catch (Exception e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
         
         if (item.getDamage() < 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
         
@@ -96,10 +87,19 @@ public class GiveCommand extends VanillaCommand {
             count = 1;
         }
         if (count <= 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         item.setCount(count);
+
+        if (args.length >= 4) {
+            item.setDamage(Integer.parseInt(args[3]));
+        }
+
+        if (args.length >= 5) {
+            Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(Arrays.stream(Arrays.copyOfRange(args, 4, args.length)).collect(Collectors.joining("")));
+            item.readItemJsonComponents(components);
+        }
 
         if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
@@ -110,6 +110,7 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;
         }
+
         for (Entity entity : players) {
             Player player = (Player) entity;
             Item[] returns = player.getInventory().addItem(item.clone());

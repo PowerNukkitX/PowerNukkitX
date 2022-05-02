@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public abstract class EntityHumanType extends EntityCreature implements InventoryHolder {
 
@@ -149,7 +150,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         if (this.inventory != null) {
             List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
             drops.addAll(this.offhandInventory.getContents().values());
-            return drops.toArray(Item.EMPTY_ARRAY);
+            return drops.stream().filter(item -> !item.keepOnDeath()).toList().toArray(Item.EMPTY_ARRAY);
         }
         return Item.EMPTY_ARRAY;
     }

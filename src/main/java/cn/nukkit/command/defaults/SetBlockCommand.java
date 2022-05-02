@@ -37,7 +37,7 @@ public class SetBlockCommand extends VanillaCommand {
         }
 
         if (args.length < 4) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
 
             return false;
         }
@@ -51,7 +51,7 @@ public class SetBlockCommand extends VanillaCommand {
                 data = Integer.parseInt(args[4]);
             }
         } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
 
@@ -64,7 +64,7 @@ public class SetBlockCommand extends VanillaCommand {
                 case "replace":
                     break;
                 default:
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
             }
         }

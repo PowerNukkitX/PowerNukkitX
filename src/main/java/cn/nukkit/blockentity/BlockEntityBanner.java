@@ -93,4 +93,6 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(color);
     }
+
+
 }

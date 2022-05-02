@@ -45,14 +45,14 @@ public class ExecuteCommand extends VanillaCommand {
         try{
             List<Entity> entities = parser.parseTargets();
             if(entities.isEmpty()) {
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
             CommandParser executePosParser = new CommandParser(parser);
             parser.parsePosition();//skip execute position
             String form = new CommandParser(this,sender, args).matchCommandForm();
             if (form == null){
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
             if (form.equals("default")){
@@ -87,7 +87,7 @@ public class ExecuteCommand extends VanillaCommand {
             }
             return true;
         }catch (Exception e){
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
     }

@@ -112,7 +112,7 @@ public class ScoreboardCommand extends VanillaCommand {
         try{
             String form = parser.matchCommandForm();
             if (form == null){
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             };
             switch(form){
@@ -550,7 +550,7 @@ public class ScoreboardCommand extends VanillaCommand {
                 }
             }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(parser.getErrorMessage());
+             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
         }
         return false;
     }
