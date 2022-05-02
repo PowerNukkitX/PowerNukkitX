@@ -30,6 +30,7 @@ import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
+import cn.nukkit.form.handler.FormResponseHandler;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.inventory.*;
@@ -39,6 +40,7 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.TextContainer;
@@ -1061,6 +1063,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.respawn();
         } else {
             updateTrackingPositions(false);
+        }
+
+        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
+            ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
+
+            int i = 0;
+            for (String id : Item.getCustomItems().keySet()) {
+                try {
+                    Item item = Item.fromString(id);
+                    if (item instanceof ItemCustom itemCustom) {
+                        CompoundTag data = itemCustom.getComponentsData();
+                        data.putShort("minecraft:identifier", i);
+
+                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
+
+                        i++;
+                    }
+                }catch (Exception e) {
+                    log.error("ItemComponentPacket encoding error", e);
+                }
+            }
+
+            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
+
+            this.dataPacket(itemComponentPacket);
         }
 
         if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
@@ -2439,7 +2467,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    if (loginPacket.issueUnixTime != -1 && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
+
+                    if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
                         message = "disconnectionScreen.noReason";
                         this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         this.close("", message, false);
@@ -2573,6 +2602,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
+
+                            if (this.getServer().isEnableCustomItem()) {
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
+                                );
+                            }
+
                             this.dataResourcePacket(stackPacket);
                             break;
                         case ResourcePackClientResponsePacket.STATUS_COMPLETED:
@@ -3038,11 +3077,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         FormWindow window = formWindows.remove(modalFormPacket.formId);
                         window.setResponse(modalFormPacket.data.trim());
 
+                        for (FormResponseHandler handler : window.getHandlers()) {
+                            handler.handle(this, modalFormPacket.formId);
+                        }
+
                         PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);
                     } else if (serverSettings.containsKey(modalFormPacket.formId)) {
                         FormWindow window = serverSettings.get(modalFormPacket.formId);
                         window.setResponse(modalFormPacket.data.trim());
+
+                        for (FormResponseHandler handler : window.getHandlers()) {
+                            handler.handle(this, modalFormPacket.formId);
+                        }
 
                         PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);

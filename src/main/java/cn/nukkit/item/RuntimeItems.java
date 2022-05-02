@@ -2,14 +2,11 @@ package cn.nukkit.item;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.utils.BinaryStream;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
@@ -23,10 +20,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import static com.google.common.base.Verify.verify;
 
 @Since("1.4.0.0-PN")
 @UtilityClass
@@ -52,36 +45,7 @@ public class RuntimeItems {
             throw new UncheckedIOException(e);
         }
 
-        BinaryStream paletteBuffer = new BinaryStream();
-        paletteBuffer.putUnsignedVarInt(entries.size());
-
-        Int2IntMap legacyNetworkMap = new Int2IntOpenHashMap();
-        Int2IntMap networkLegacyMap = new Int2IntOpenHashMap();
-        Map<String, Integer> namespaceNetworkMap = new LinkedHashMap<>();
-        Int2ObjectMap<String> networkNamespaceMap = new Int2ObjectOpenHashMap<>();
-        for (Entry entry : entries) {
-            paletteBuffer.putString(entry.name.replace("minecraft:", ""));
-            paletteBuffer.putLShort(entry.id);
-            paletteBuffer.putBoolean(false); // Component item
-            namespaceNetworkMap.put(entry.name, entry.id);
-            networkNamespaceMap.put(entry.id, entry.name);
-            if (entry.oldId != null) {
-                boolean hasData = entry.oldData != null;
-                int fullId = getFullId(entry.oldId, hasData ? entry.oldData : 0);
-                if (entry.deprecated != Boolean.TRUE) {
-                    verify(legacyNetworkMap.put(fullId, (entry.id << 1) | (hasData ? 1 : 0)) == 0,
-                            "Conflict while registering an item runtime id!"
-                    );
-                }
-                verify(networkLegacyMap.put(entry.id, fullId | (hasData ? 1 : 0)) == 0,
-                        "Conflict while registering an item runtime id!"
-                );
-            }
-        }
-
-        byte[] itemDataPalette = paletteBuffer.getBuffer();
-        itemPalette = new RuntimeItemMapping(itemDataPalette, legacyNetworkMap, networkLegacyMap, 
-                namespaceNetworkMap, networkNamespaceMap);
+        itemPalette = new RuntimeItemMapping(entries);
     }
 
     @PowerNukkitOnly
@@ -122,7 +86,8 @@ public class RuntimeItems {
 
     @ToString
     @RequiredArgsConstructor
-    static class Entry {
+    @AllArgsConstructor
+    public static class Entry {
         String name;
         int id;
         Integer oldId;
@@ -130,5 +95,8 @@ public class RuntimeItems {
         @PowerNukkitOnly
         @Since("1.4.0.0-PN")
         Boolean deprecated;
+        @PowerNukkitXOnly
+        @Since("1.6.0.0-PNX")
+        Boolean isComponentItem = false;
     }
 }

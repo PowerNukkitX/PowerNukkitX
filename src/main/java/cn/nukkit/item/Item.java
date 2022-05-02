@@ -14,6 +14,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
+import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.Level;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -105,6 +107,10 @@ public class Item implements Cloneable, BlockID, ItemID {
                     },
                     (e1, e2) -> e1, LinkedHashMap::new
             ));
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
 
     protected Block block = null;
     protected final int id;
@@ -578,6 +584,37 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableCustomItem()) {
+            log.warn("The server does not have the custom item feature enabled. " + c.getName() + "Unable to register!");
+            return;
+        }
+        ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
+        CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
+        RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
+        addCreativeItem(itemCustom);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void deleteCustomItem(String namespaceId) {
+        if (CUSTOM_ITEMS.containsKey(namespaceId)) {
+            ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
+            removeCreativeItem(itemCustom);
+            CUSTOM_ITEMS.remove(namespaceId);
+
+            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static HashMap<String, Class<? extends Item>> getCustomItems() {
+        return new HashMap<>(CUSTOM_ITEMS);
+    }
+
     public static void clearCreativeItems() {
         Item.creative.clear();
     }
@@ -743,6 +780,21 @@ public class Item implements Cloneable, BlockID, ItemID {
                 namespacedId = namespaceGroup + ":" + name;
             } else {
                 namespacedId = "minecraft:" + name;
+            }
+            if (CUSTOM_ITEMS.containsKey(namespacedId)) {
+               ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+               if (itemCustom == null) {
+                   return get(AIR);
+               }
+                if (meta.isPresent()) {
+                    int damage = meta.getAsInt();
+                    if (damage < 0) {
+                        itemCustom = (ItemCustom) itemCustom.createFuzzyCraftingRecipe();
+                    } else {
+                        itemCustom.setDamage(damage);
+                    }
+                }
+                return itemCustom;
             }
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {

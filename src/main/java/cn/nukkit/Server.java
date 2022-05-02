@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
@@ -172,6 +173,8 @@ public class Server {
 
     private boolean redstoneEnabled = true;
 
+    public boolean checkLoginTime = true;
+
     private RCON rcon;
 
     private EntityMetadataStore entityMetadata;
@@ -276,9 +279,13 @@ public class Server {
     @Since("1.4.0.0-PN")
     private boolean allowTheEnd;
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private boolean useTerra;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private boolean enableCustomItem;
 
     /**
      * Minimal initializer for testing
@@ -560,12 +567,14 @@ public class Server {
                 put("allow-nether", true);
                 put("allow-the_end", true);
                 put("use-terra", false);
+                put("enable-custom-item", false);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
                 put("auto-save", true);
                 put("force-resources", false);
                 put("xbox-auth", true);
+                put("check-login-time", true);
                 put("disable-auto-bug-report", false);
             }
         });
@@ -576,6 +585,10 @@ public class Server {
         this.allowTheEnd = this.properties.getBoolean("allow-the_end", true);
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
+
+        this.enableCustomItem = this.properties.getBoolean("enable-custom-item", false);
+
+        this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
         
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
@@ -2738,7 +2751,13 @@ public class Server {
     public boolean isTheEndAllowed() {
         return this.allowTheEnd;
     }
-    
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean isEnableCustomItem() {
+        return this.enableCustomItem;
+    }
+
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
         @Override
