@@ -71,17 +71,24 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.github.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX-SNAPSHOT'
 }
 ```
 
 [点此查看完整的Maven示例](https://github.com/PowerNukkitX/ExamplePlugin-Maven)
 ```xml
+<repositories>
+    <repository>
+        <id>maven-powernukkitx-cn</id>
+        <url>http://maven.powernukkitx.cn/</url>
+    </repository>
+</repositories>
+
 <dependencies>
     <dependency>
-      <groupId>com.github.powernukkitx</groupId>
+      <groupId>cn.powernukkitx</groupId>
       <artifactId>powernukkitx</artifactId>
-      <version>1.6.0.0-PNX</version>
+      <version>1.6.0.0-PNX-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
