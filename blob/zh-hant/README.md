@@ -80,7 +80,13 @@ dependencies {
 <repositories>
     <repository>
         <id>maven-powernukkitx-cn</id>
-        <url>http://maven.powernukkitx.cn/</url>
+        <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
     </repository>
 </repositories>
 
