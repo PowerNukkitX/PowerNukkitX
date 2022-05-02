@@ -71,7 +71,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX-SNAPSHOT'
 }
 ```
 
@@ -80,7 +80,13 @@ dependencies {
 <repositories>
     <repository>
         <id>maven-powernukkitx-cn</id>
-        <url>https://maven.powernukkitx.cn/</url>
+        <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
     </repository>
 </repositories>
 
@@ -88,7 +94,7 @@ dependencies {
     <dependency>
       <groupId>cn.powernukkitx</groupId>
       <artifactId>powernukkitx</artifactId>
-      <version>1.6.0.0-PNX</version>
+      <version>1.6.0.0-PNX-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
