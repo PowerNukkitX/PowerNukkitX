@@ -53,7 +53,7 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private final HashMap<String, RuntimeItems.Entry> customItemEntrys = new HashMap<>();
+    private final HashMap<String, RuntimeItems.Entry> customItemEntries = new HashMap<>();
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -152,7 +152,7 @@ public class RuntimeItemMapping {
                 false,
                 true
         );
-        this.customItemEntrys.put(itemCustom.getNamespaceId(), entry);
+        this.customItemEntries.put(itemCustom.getNamespaceId(), entry);
         this.entries.add(entry);
         this.registerNamespacedIdItem(itemCustom);
         this.namespaceNetworkMap.put(itemCustom.getNamespaceId(), OptionalInt.of(itemCustom.getRuntimeId()));
@@ -163,7 +163,7 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public synchronized void deleteCustomItem(ItemCustom itemCustom) {
-        RuntimeItems.Entry entry = this.customItemEntrys.remove(itemCustom.getNamespaceId());
+        RuntimeItems.Entry entry = this.customItemEntries.remove(itemCustom.getNamespaceId());
         if (entry != null) {
             this.entries.remove(entry);
             this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
