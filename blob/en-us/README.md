@@ -73,7 +73,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.powernukkit', name: 'powernukkit', version: '1.5.2.1-PN'
+    compile group: 'com.github.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX'
 }
 ```
 
@@ -81,9 +81,9 @@ dependencies {
 ```xml
 <dependencies>
     <dependency>
-        <groupId>org.powernukkit</groupId>
-        <artifactId>powernukkit</artifactId>
-        <version>1.5.2.1-PN</version>
+      <groupId>com.github.powernukkitx</groupId>
+      <artifactId>powernukkitx</artifactId>
+      <version>1.6.0.0-PNX</version>
     </dependency>
 </dependencies>
 ```
