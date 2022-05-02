@@ -58,8 +58,8 @@ public class FillCommand extends VanillaCommand {
             int tileData = 0;
             FillMode oldBlockHandling = FillMode.REPLACE;
             String replaceTileName = null;
-            int replaceTileId = 0;
-            int replaceDataValue = 0;
+            int replaceTileId = -1;
+            int replaceDataValue = -1;
 
             if (args.length > 7) {
                 tileData = parser.parseInt();
@@ -145,7 +145,12 @@ public class FillCommand extends VanillaCommand {
                     blocks = getLevelBlocks(level, aabb);
 
                     for (Block block : blocks) {
-                        if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
+                        if (replaceTileId != -1 && replaceDataValue != -1) {
+                            if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
+                                level.setBlock(block, Block.get(tileId, tileData));
+                                ++count;
+                            }
+                        }else{
                             level.setBlock(block, Block.get(tileId, tileData));
                             ++count;
                         }
