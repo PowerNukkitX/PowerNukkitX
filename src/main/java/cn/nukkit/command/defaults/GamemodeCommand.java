@@ -49,7 +49,7 @@ public class GamemodeCommand extends VanillaCommand {
 
         int gameMode = Server.getGamemodeFromString(args[0]);
         if (gameMode == -1) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.gamemode.fail.invalid", args[0]));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.gamemode.fail.invalid", args[0]));
             return false;
         }
 
