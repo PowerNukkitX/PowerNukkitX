@@ -15,6 +15,7 @@ import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -255,9 +256,17 @@ public abstract class Command {
             builder.append("- /" + this.getName());
             for (CommandParameter commandParameter : commandParameters) {
                 if (!commandParameter.optional) {
-                    builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
+                    if (commandParameter.enumData == null) {
+                        builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
+                    }else{
+                        builder.append(" <").append(commandParameter.enumData.getValues().stream().collect(Collectors.joining("|"))).append(">");
+                    }
                 }else{
-                    builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
+                    if (commandParameter.enumData == null) {
+                        builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
+                    }else{
+                        builder.append(" [").append(commandParameter.enumData.getValues().stream().collect(Collectors.joining("|"))).append("]");
+                    }
                 }
             }
             builder.append("\n");
