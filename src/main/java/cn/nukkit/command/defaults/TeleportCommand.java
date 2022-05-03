@@ -102,23 +102,23 @@ public class TeleportCommand extends VanillaCommand {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                         return false;
                     }
-                    Entity target = destination.get(0);
+                    Entity victim = sender.asEntity();
+                    Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
                     boolean checkForBlocks = false;
                     if(p.hasNext()){
                         checkForBlocks = p.parseBoolean();
                     }
-                    Entity victim = sender.asEntity();
                     if(checkForBlocks){
                         if(!target.getLevelBlock().isSolid() && !target.add(0,1,0).getLevelBlock().isSolid()){
                             victim.teleport(target);
-                            sender.sendMessage(new TranslationContainer("commands.tp.successVictim", target.getName()));
+                            sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
                         }else{
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail",victim.getName(),target.getName()));
+                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail",victim.getName(),destination.get(0).getName()));
                             return false;
                         }
                     }else{
                         victim.teleport(target);
-                        sender.sendMessage(new TranslationContainer("commands.tp.successVictim", target.getName()));
+                        sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
                     }
                     return true;
                 }
@@ -146,7 +146,7 @@ public class TeleportCommand extends VanillaCommand {
                     if(checkForBlocks){
                         if(!target.getLevelBlock().isSolid() && !target.add(0,1,0).getLevelBlock().isSolid()){
                             for(Entity victim : victims) {
-                                victim.teleport(target);
+                                victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
                             }
                             sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
                         }else{
@@ -155,7 +155,7 @@ public class TeleportCommand extends VanillaCommand {
                         }
                     }else{
                         for(Entity victim : victims) {
-                            victim.teleport(target);
+                            victim.teleport(target.getLocation().setYaw(victim.getYaw()).setPitch(victim.getPitch()));
                         }
                         sender.sendMessage(new TranslationContainer("commands.tp.success", sb.toString(), target.getName()));
                     }

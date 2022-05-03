@@ -87,6 +87,8 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
+            if (!player.isCreative())
+                return false;
             if (Math.abs(player.getFloorX() - this.x) < 2 && Math.abs(player.getFloorZ() - this.z) < 2) {
                 double y = player.y + player.getEyeHeight();
                 if (y - this.y > 2) {
