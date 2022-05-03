@@ -20,7 +20,7 @@ import java.util.Objects;
 public class TellCommand extends VanillaCommand {
 
     public TellCommand(String name) {
-        super(name, "commands.tell.description", "commands.message.usage", new String[]{"w", "msg"});
+        super(name, "commands.tell.description", "", new String[]{"w", "msg"});
         this.setPermission("nukkit.command.tell");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -43,15 +43,15 @@ public class TellCommand extends VanillaCommand {
 
         String target = args[0].toLowerCase();
 
-        List<Entity> entities = null;
+        List<Player> players = null;
         if(EntitySelector.hasArguments(target)){
-            entities = EntitySelector.matchEntities(sender, target);
+            players = EntitySelector.matchEntities(sender, target).stream().filter(p -> p instanceof Player).map(p -> (Player) p).toList();
         }else {
-            entities = Collections.singletonList(sender.getServer().getPlayer(target));
+            players = Collections.singletonList(sender.getServer().getPlayer(target));
         }
-        if (entities.isEmpty()) {
-            sender.sendMessage(new TranslationContainer("commands.generic.player.notFound"));
-            return true;
+        if (players.isEmpty()) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+            return false;
         }
 
         StringBuilder msg = new StringBuilder();
@@ -62,17 +62,9 @@ public class TellCommand extends VanillaCommand {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 
-        String displayName = (sender instanceof Player ? ((Player) sender).getDisplayName() : sender.getName());
-
-        for (Entity entity : entities) {
-            if (entity instanceof Player) {
-                if (Objects.equals(entity, sender.asEntity())) {
-                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.message.sameTarget"));
-                    continue;
-                }
-                sender.sendMessage("[" + sender.getName() + " -> " + entity.getName() + "] " + msg);
-                ((Player)entity).sendMessage("[" + displayName + " -> " + entity.getName() + "] " + msg);
-            }
+        for (Player player : players) {
+            sender.sendMessage(new TranslationContainer("commands.message.display.outgoing", player.getName(), msg.toString()));
+            player.sendMessage(new TranslationContainer("commands.message.display.incoming",sender.getName(),msg.toString()));
         }
         return true;
     }
