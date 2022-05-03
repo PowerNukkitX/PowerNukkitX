@@ -1882,13 +1882,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         public static class KeepOnDeath{}
         private ItemJsonComponents(){}
-        @SerializedName("minecraft:can_place_on")
+        @SerializedName(value = "minecraft:can_place_on",alternate = {"can_place_on"})
         public CanPlaceOn canPlaceOn;
-        @SerializedName("minecraft:can_destroy")
+        @SerializedName(value = "minecraft:can_destroy",alternate = {"can_destroy"})
         public CanDestory canDestroy;
-        @SerializedName("minecraft:item_lock")
+        @SerializedName(value = "minecraft:item_lock",alternate = {"item_lock"})
         public ItemLock itemLock;
-        @SerializedName("minecraft:keep_on_death")
+        @SerializedName(value = "minecraft:keep_on_death",alternate = {"keep_on_death"})
         public KeepOnDeath keepOnDeath;
     }
 

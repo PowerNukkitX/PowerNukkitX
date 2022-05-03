@@ -3,7 +3,9 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.item.Item;
@@ -12,6 +14,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.Arrays;
 
@@ -19,14 +22,14 @@ import java.util.Arrays;
 public class SetBlockCommand extends VanillaCommand {
     @PowerNukkitOnly
     public SetBlockCommand(String name) {
-        super(name, "commands.setblock.description", "commands.setblock.usage");
+        super(name, "commands.setblock.description");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                new CommandParameter("position", CommandParamType.POSITION, false),
-                new CommandParameter("tileName", false, Arrays.stream(BlockID.class.getDeclaredFields()).map(f-> f.getName().toLowerCase()).toArray(String[]::new)),
-                new CommandParameter("tileData", CommandParamType.INT, true),
-                new CommandParameter("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
+                CommandParameter.newType("position", CommandParamType.POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("tileData",true,CommandParamType.INT),
+                CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
     }
     
@@ -75,22 +78,28 @@ public class SetBlockCommand extends VanillaCommand {
             block = Block.get(blockId, data);
         } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
             try {
-                int blockId = BlockID.class.getField(args[3].toUpperCase()).getInt(null);
+                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : "minecraft:" + args[3]).getBlockId();
                 block = Block.get(blockId, data);
-            } catch (NullPointerException|IndexOutOfBoundsException|ReflectiveOperationException ignored2) {
-                sender.sendMessage(new TranslationContainer("commands.setblock.notFound", args[3]));
+            } catch (NullPointerException|IndexOutOfBoundsException ignored2) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", args[3]));
                 return true;
             }
         }
 
         if (!sender.getPosition().level.isYInRange((int) position.y)) {
-            sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.outOfWorld"));
             return false;
         }
 
         Level level = sender.getPosition().getLevel();
 
         Block current = level.getBlock(position);
+
+        if (current.getId() == block.getId() && current.getDamage() == block.getDamage()) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.noChange"));
+            return false;
+        }
+
         if (current.getId() != Block.AIR) {
             switch (oldBlockHandling) {
                 case "destroy" -> {
@@ -99,31 +108,21 @@ public class SetBlockCommand extends VanillaCommand {
                     } else {
                         level.useBreakOn(position);
                     }
-                    current = level.getBlock(position);
                 }
                 case "keep" -> {
-                    sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
+                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.noChange"));
                     return false;
                 }
             }
         }
 
-        if (current.getId() == block.getId() && current.getDamage() == block.getDamage()) {
-            sender.sendMessage(new TranslationContainer("commands.setblock.noChange"));
-            return false;
-        }
-
         Item item = block.toItem();
         block.position(position);
-        if (level.setBlock(position, block, true, true)) {
-            if (args.length > 4) {
-                level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
-            }
-            sender.sendMessage(new TranslationContainer("commands.setblock.success"));
-            return true;
-        } else {
-            sender.sendMessage(new TranslationContainer("commands.setblock.failed"));
-            return false;
+        level.setBlock(position, block, true, true);
+        if (args.length > 4) {
+            level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
         }
+        sender.sendMessage(new TranslationContainer("commands.setblock.success"));
+        return true;
     }
 }

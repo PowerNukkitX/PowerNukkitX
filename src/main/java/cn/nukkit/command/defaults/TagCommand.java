@@ -7,6 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class TagCommand extends VanillaCommand{
     public TagCommand(String name){
-        super(name, "commands.tag.description", "commands.tag.usage");
+        super(name, "commands.tag.description");
         this.setPermission("nukkit.command.tag");
         this.commandParameters.clear();
         this.commandParameters.put("add",new CommandParameter[]{
@@ -49,19 +50,23 @@ public class TagCommand extends VanillaCommand{
             };
             List<Entity> entities = parser.parseTargets();
             if (entities.isEmpty()){
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
             switch (form){
                 case "add" ->{
                     parser.parseString();//jump over "add"
                     String tag = parser.parseString();
+                    int success_count = 0;
                     for (Entity entity : entities) {
-                        if (entity.containTag(tag)){
-                            sender.sendMessage(new TranslationContainer("commands.tag.add.failed"));
-                            return false;
-                        }
+                        if (entity.containTag(tag))
+                            continue;
                         entity.addTag(tag);
+                        success_count++;
+                    }
+                    if (success_count == 0){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tag.add.failed"));
+                        return false;
                     }
                     if (entities.size() == 1){
                         sender.sendMessage(new TranslationContainer("commands.tag.add.success.single",tag,entities.get(0).getName()));
@@ -73,17 +78,21 @@ public class TagCommand extends VanillaCommand{
                 case "remove" ->{
                     parser.parseString();//jump over "remove"
                     String tag = parser.parseString();
+                    int success_count = 0;
                     for (Entity entity : entities) {
-                        if (!entity.containTag(tag)){
-                            sender.sendMessage(new TranslationContainer("commands.tag.remove.failed"));
-                            return false;
-                        }
+                        if (!entity.containTag(tag))
+                            continue;
                         entity.removeTag(tag);
+                        success_count++;
+                    }
+                    if (success_count == 0){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tag.remove.failed"));
+                        return false;
                     }
                     if (entities.size() == 1){
-                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.single",entities.get(0).getName(),tag));
+                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.single",tag,entities.get(0).getName()));
                     }else{
-                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.multiple",String.valueOf(entities.size()),tag));
+                        sender.sendMessage(new TranslationContainer("commands.tag.remove.success.multiple",tag,String.valueOf(entities.size())));
                     }
                     return true;
                 }
@@ -93,7 +102,7 @@ public class TagCommand extends VanillaCommand{
                         tagSet.addAll(entity.getAllTags().stream().map(t -> t.data).collect(Collectors.toSet()));
                     }
                     int tagCount = tagSet.size();
-                    String tagStr = tagSet.stream().collect(Collectors.joining(","));
+                    String tagStr = tagSet.stream().collect(Collectors.joining(" "));
 
                     if (tagStr.isEmpty()){
                         if (entities.size() == 1){

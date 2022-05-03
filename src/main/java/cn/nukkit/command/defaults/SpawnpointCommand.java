@@ -16,6 +16,7 @@ import cn.nukkit.utils.TextFormat;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class SpawnpointCommand extends VanillaCommand {
     public SpawnpointCommand(String name) {
-        super(name, "commands.spawnpoint.description", "commands.spawnpoint.usage");
+        super(name, "commands.spawnpoint.description");
         this.setPermission("nukkit.command.spawnpoint");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -37,25 +38,22 @@ public class SpawnpointCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return false;
         }
-        List<Entity> entities = List.of();
+        List<Player> players = List.of();
         if (args.length == 0) {
             if (sender.isPlayer()) {
-                entities = List.of(sender.asPlayer());
+                players = List.of(sender.asPlayer());
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
         } else {
-
             if (EntitySelector.hasArguments(args[0])) {
-                entities = EntitySelector.matchEntities(sender, args[0]);
+                players = EntitySelector.matchEntities(sender, args[0]).stream().filter(e -> e instanceof Player).map(e -> (Player)e).toList();
             } else if (sender.getServer().getPlayer(args[0]) != null) {
-                entities = List.of(sender.getServer().getPlayer(args[0]));
+                players = List.of(sender.getServer().getPlayer(args[0]));
             }
-
-            List<Entity> players = entities.stream().filter(entity -> entity instanceof Player).toList();
             if (players.size() == 0) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
         }
@@ -67,6 +65,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 Position position;
                 CommandParser parser = new CommandParser(this, sender, args);
                 try {
+                    parser.parseString();//jump over target
                     position = parser.parsePosition();
                 } catch (CommandSyntaxException e1) {
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
@@ -79,27 +78,26 @@ public class SpawnpointCommand extends VanillaCommand {
                     if (position.y < 0) position.y = 0;
                     if (position.y > 255) position.y = 255;
                 }
-                for (Entity entity : entities) {
-                    Player target = (Player) entity;
-                    target.setSpawn(position);
-                    Command.broadcastCommandMessage(sender, new TranslationContainer("commands.spawnpoint.success", target.getName(),
-                            round2.format(position.x),
-                            round2.format(position.y),
-                            round2.format(position.z)));
+                for (Player player : players) {
+                    player.setSpawn(position);
                 }
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.spawnpoint.success.multiple.specific", players.stream().map(Player::getName).collect(Collectors.joining(" ")),
+                        round2.format(position.x),
+                        round2.format(position.y),
+                        round2.format(position.z)));
                 return true;
             }
         } else if (args.length <= 1) {
-            if (sender instanceof Player) {
+            if (sender.isPlayer()) {
                 Position pos = sender.getPosition();
                 sender.asPlayer().setSpawn(pos);
-                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.spawnpoint.success", entities.size() + "players",
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.spawnpoint.success.single", sender.getName(),
                         round2.format(pos.x),
                         round2.format(pos.y),
                         round2.format(pos.z)));
                 return true;
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
         }

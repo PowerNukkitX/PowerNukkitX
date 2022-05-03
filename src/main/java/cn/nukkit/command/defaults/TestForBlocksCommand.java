@@ -22,14 +22,14 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class TestForBlocksCommand extends VanillaCommand {
 
     public TestForBlocksCommand(String name) {
-        super(name, "commands.testforblocks.description", "commands.testforblocks.usage");
+        super(name, "commands.testforblocks.description");
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("begin",false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("end",false, CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("mode", true, Arrays.stream(TestForBlocksMode.values()).map(m -> m.name()).collect(Collectors.toList()).toArray(new String[0]))
+                CommandParameter.newEnum("mode", true, new String[]{"all","masked"})
         });
     }
 
@@ -47,6 +47,7 @@ public class TestForBlocksCommand extends VanillaCommand {
             TestForBlocksMode mode = TestForBlocksMode.ALL;
 
             if (args.length > 9) {
+
                 mode = parser.parseEnum(TestForBlocksMode.class);
             }
 
@@ -54,15 +55,15 @@ public class TestForBlocksCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
             if (size > 16 * 16 * 256 * 8) {
-                sender.sendMessage(String.format(TextFormat.RED + "Too many blocks in the specified area (%1$d > %2$d)", size, 16 * 16 * 256 * 8));
-                return false;
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 256 * 8)));
+                sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
             Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
             AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
 
             if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
-                sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                 return false;
             }
 
@@ -71,11 +72,11 @@ public class TestForBlocksCommand extends VanillaCommand {
             for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
                 for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
                     if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
-                        sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                         return false;
                     }
                     if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
-                        sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                         return false;
                     }
                 }
@@ -91,10 +92,10 @@ public class TestForBlocksCommand extends VanillaCommand {
                         Block block = blocks[i];
                         Block destinationBlock = destinationBlocks[i];
 
-                        if (block.getId() == destinationBlock.getId() && block.getDamage() == destinationBlock.getDamage()) {
+                        if (block.equals(destinationBlock)) {
                             ++count;
                         } else {
-                            sender.sendMessage(TextFormat.RED + "Source and destination are not identical");
+                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));
                             return false;
                         }
                     }
@@ -105,10 +106,10 @@ public class TestForBlocksCommand extends VanillaCommand {
                         Block block = blocks[i];
                         Block destinationBlock = destinationBlocks[i];
 
-                        if (block.getId() == destinationBlock.getId() && block.getDamage() == destinationBlock.getDamage()) {
+                        if (block.equals(destinationBlock)) {
                             ++count;
                         } else if (block.getId() != Block.AIR) {
-                            sender.sendMessage(TextFormat.RED + "Source and destination are not identical");
+                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));
                             return false;
                         }
                     }
@@ -116,7 +117,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                     break;
             }
 
-            sender.sendMessage(String.format("%1$d blocks compared", count));
+            sender.sendMessage(new TranslationContainer("%commands.compare.success", String.valueOf(count)));
         } catch (CommandSyntaxException e) {
              sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;

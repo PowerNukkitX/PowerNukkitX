@@ -17,7 +17,7 @@ import cn.nukkit.utils.TextFormat;
 public class TimeCommand extends VanillaCommand {
 
     public TimeCommand(String name) {
-        super(name, "commands.time.description", "commands.time.usage");
+        super(name, "commands.time.description");
         this.setPermission("nukkit.command.time.add;" +
                 "nukkit.command.time.set;" +
                 "nukkit.command.time.start;" +

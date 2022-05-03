@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class TestForCommand extends VanillaCommand {
 
     public TestForCommand(String name) {
-        super(name, "commands.testfor.description", "commands.testfor.usage");
+        super(name, "commands.testfor.description");
         this.setPermission("nukkit.command.testfor");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{

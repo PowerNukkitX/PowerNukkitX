@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class PlaySoundCommand extends VanillaCommand {
 
     public PlaySoundCommand(String name) {
-        super(name, "commands.playsound.description", "commands.playsound.usage");
+        super(name, "commands.playsound.description");
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -65,14 +65,14 @@ public class PlaySoundCommand extends VanillaCommand {
             } else if (sender.isPlayer()) {
                 targets = Lists.newArrayList(sender.asPlayer());
             } else {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
 
             position = sender.getPosition();
 
             if (targets.size() == 0) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
 
@@ -85,8 +85,8 @@ public class PlaySoundCommand extends VanillaCommand {
 
                 if (position.distance(player) > maxDistance) {
                     if (minimumVolume <= 0) {
-                        sender.sendMessage(String.format(TextFormat.RED + "Player %1$s is too far away to hear the sound", name));
-                        continue;
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.playsound.playerTooFar", name));
+                        return false;
                     }
 
                     packet.volume = (float) minimumVolume;
@@ -107,7 +107,7 @@ public class PlaySoundCommand extends VanillaCommand {
                 successes.add(name);
             }
 
-            sender.sendMessage(String.format("Played sound '%1$s' to %2$s", sound, String.join(", ", successes)));
+            sender.sendMessage(new TranslationContainer("commands.playsound.success", sound, String.join(", ", successes)));
         } catch (CommandSyntaxException e) {
              sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;

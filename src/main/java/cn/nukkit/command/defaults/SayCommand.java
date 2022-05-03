@@ -17,7 +17,7 @@ import java.util.List;
 public class SayCommand extends VanillaCommand {
 
     public SayCommand(String name) {
-        super(name, "commands.say.description", "commands.say.usage");
+        super(name, "commands.say.description");
         this.setPermission("nukkit.command.say");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -55,8 +55,8 @@ public class SayCommand extends VanillaCommand {
 
 
         sender.getServer().broadcastMessage(new TranslationContainer(
-                TextFormat.LIGHT_PURPLE + "%chat.type.announcement",
-                senderString, TextFormat.LIGHT_PURPLE + msg.toString()));
+                "%chat.type.announcement",
+                senderString, msg.toString()));
         return true;
     }
 }
