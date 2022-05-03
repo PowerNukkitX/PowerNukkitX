@@ -19,7 +19,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
     private final ThreadLocalRandom random;
 
     public SpreadPlayersCommand(String name) {
-        super(name, "commands.spreadplayers.description", "commands.spreadplayers.usage");
+        super(name, "commands.spreadplayers.description");
         this.setPermission("nukkit.command.spreadplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -46,15 +46,15 @@ public class SpreadPlayersCommand extends VanillaCommand {
             List<Player> targets = parser.parseTargetPlayers();
 
             if (spreadDistance < 0) {
-                sender.sendMessage(String.format(TextFormat.RED + "The number you have entered (%1$.2f) is too small, it must be at least %2$.2f", spreadDistance, 0f));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.double.tooSmall", String.valueOf(spreadDistance), "0"));
                 return false;
             } else if (maxRange < spreadDistance) {
-                sender.sendMessage(String.format(TextFormat.RED + "The number you have entered (%1$.2f) is too small, it must be at least %2$.2f", maxRange, spreadDistance + 1));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.double.tooSmall", String.valueOf(maxRange), String.valueOf(spreadDistance + 1)));
                 return false;
             }
 
             if (targets.size() == 0) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
 
@@ -64,7 +64,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
                 target.teleport(vec3);
             }
 
-            sender.sendMessage(String.format("Successfully spread %1$d players around %2$.2f,%3$.2f", targets.size(), vec2.getX(), vec2.getY()));
+            sender.sendMessage(new TranslationContainer("commands.spreadplayers.success.players",String.valueOf(targets.size()), String.valueOf(vec2.getFloorX()), String.valueOf(vec2.getFloorY())));
         } catch (CommandSyntaxException e) {
              sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
