@@ -94,7 +94,12 @@ public class TeleportCommand extends VanillaCommand {
                     }
                     CommandParser p = new CommandParser(parser);
                     List<Entity> destination = p.parseTargets();
-                    if(destination.isEmpty()) {
+                    if(destination.size() == 0) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
+                    if (destination.size() > 1){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                         return false;
                     }
                     Entity target = destination.get(0);
@@ -121,7 +126,12 @@ public class TeleportCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
                     List<Entity> destination = p.parseTargets();
-                    if(destination.size() != 1) {
+                    if(destination.size() == 0) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
+                    if (destination.size() > 1){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                         return false;
                     }
                     Entity target = destination.get(0);
@@ -334,7 +344,12 @@ public class TeleportCommand extends VanillaCommand {
                     Position pos = p.parsePosition();
                     p.parseString();//avoid "facing"
                     List<Entity> lookAtEntity = p.parseTargets();
-                    if (lookAtEntity.size() != 1){
+                    if(lookAtEntity.size() == 0) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
+                    if (lookAtEntity.size() > 1){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                         return false;
                     }
                     Position lookAtPosition = lookAtEntity.get(0);
