@@ -16,7 +16,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")

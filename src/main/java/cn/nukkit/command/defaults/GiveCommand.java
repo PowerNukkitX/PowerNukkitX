@@ -111,8 +111,7 @@ public class GiveCommand extends VanillaCommand {
             return false;
         }
 
-        for (Entity entity : players) {
-            Player player = (Player) entity;
+        for (Player player : players) {
             Item[] returns = player.getInventory().addItem(item.clone());
             List<Item> drops = new ArrayList<>();
             for (Item returned : returns) {
@@ -141,9 +140,8 @@ public class GiveCommand extends VanillaCommand {
                     "%commands.give.success",
                     item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                     String.valueOf(item.getCount()),
-                    player.getName()));
-            return true;
+                    players.stream().map(p -> p.getName()).collect(Collectors.joining(" "))));
         }
-        return false;
+        return true;
     }
 }

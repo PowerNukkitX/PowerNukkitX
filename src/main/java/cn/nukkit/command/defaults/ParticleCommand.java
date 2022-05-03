@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -54,18 +55,15 @@ public class ParticleCommand extends VanillaCommand {
 
         String name = args[0].toLowerCase();
 
-        double x;
-        double y;
-        double z;
+        CommandParser parser = new CommandParser(this,sender,args);
 
+        Position position = null;
         try {
-            x = parseTilde(args[1], defaultPosition.getX());
-            y = parseTilde(args[2], defaultPosition.getY());
-            z = parseTilde(args[3], defaultPosition.getZ());
+            parser.parseString();
+            position = parser.parsePosition();
         } catch (Exception e) {
             return false;
         }
-        Position position = new Position(x, y, z, defaultPosition.getLevel());
 
         int count = 1;
         if (args.length > 4) {

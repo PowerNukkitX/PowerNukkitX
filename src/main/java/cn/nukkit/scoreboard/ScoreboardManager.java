@@ -74,7 +74,7 @@ public class ScoreboardManager extends AbstractScoreboardManager {
 
     @Override
     public void onPlayerJoin(Player player) {
-        sendAllDisplayTo(player);
+        sendAllDisplayToAll();
         updateScoreTag(player);
     }
 

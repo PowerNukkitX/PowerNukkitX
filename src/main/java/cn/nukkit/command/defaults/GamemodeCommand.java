@@ -49,7 +49,7 @@ public class GamemodeCommand extends VanillaCommand {
 
         int gameMode = Server.getGamemodeFromString(args[0]);
         if (gameMode == -1) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "commands.gamemode.fail.invalid", args[0]));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.gamemode.fail.invalid", args[0]));
             return false;
         }
 
@@ -94,7 +94,7 @@ public class GamemodeCommand extends VanillaCommand {
                 Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(gameMode)));
             } else {
                 target.sendMessage(new TranslationContainer("gameMode.changed", Server.getGamemodeString(gameMode)));
-                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", target.getName(), Server.getGamemodeString(gameMode)));
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.gamemode.success.other", Server.getGamemodeString(gameMode), target.getName()));
             }
         }
         return true;
