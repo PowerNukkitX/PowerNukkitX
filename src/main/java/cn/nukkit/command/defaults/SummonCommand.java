@@ -31,7 +31,7 @@ public class SummonCommand extends VanillaCommand {
                 CommandParameter.newEnum("entityType",false, entity_key.toArray(new String[0])),
                 CommandParameter.newType("spawnPos",true, CommandParamType.POSITION),
                 CommandParameter.newType("nameTag",true, CommandParamType.STRING),
-                CommandParameter.newEnum("nameTagVisible",true,CommandEnum.ENUM_BOOLEAN)
+                CommandParameter.newEnum("nameTagAlwaysVisible",true,CommandEnum.ENUM_BOOLEAN)
         });
     }
 
@@ -57,7 +57,7 @@ public class SummonCommand extends VanillaCommand {
             }
             Position pos = sender.getPosition();
             String nameTag = null;
-            boolean nameTagVisible = false;
+            boolean nameTagAlwaysVisible = false;
             if (parser.hasNext()) {
                 pos = parser.parsePosition();
             }
@@ -69,12 +69,12 @@ public class SummonCommand extends VanillaCommand {
                 nameTag = parser.parseString();
             }
             if (parser.hasNext()) {
-                nameTagVisible = parser.parseBoolean();
+                nameTagAlwaysVisible = parser.parseBoolean();
             }
             Entity entity = Entity.createEntity(entityId,pos);
             if (nameTag != null) {
                 entity.setNameTag(nameTag);
-                entity.setNameTagVisible(nameTagVisible);
+                entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);
             }
             entity.spawnToAll();
             sender.sendMessage(new TranslationContainer("commands.summon.success"));
