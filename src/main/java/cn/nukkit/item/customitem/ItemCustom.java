@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ItemCustom extends StringItem {
 
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
-    private static int nextRuntiemId = 10000;
+    private static int nextRuntimeId = 10000;
 
     @Getter
     private final int runtimeId;
@@ -38,9 +38,9 @@ public abstract class ItemCustom extends StringItem {
         super(id.toLowerCase(Locale.ENGLISH), name);
         if (!INTERNAL_ALLOCATION_ID_MAP.containsKey(this.getNamespaceId())) {
             do {
-                nextRuntiemId++;
-            } while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntiemId) != null);
-            INTERNAL_ALLOCATION_ID_MAP.put(this.getNamespaceId(), nextRuntiemId);
+                nextRuntimeId++;
+            } while (RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(nextRuntimeId) != null);
+            INTERNAL_ALLOCATION_ID_MAP.put(this.getNamespaceId(), nextRuntimeId);
         }
         this.runtimeId = INTERNAL_ALLOCATION_ID_MAP.get(this.getNamespaceId());
     }

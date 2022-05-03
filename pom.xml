@@ -81,6 +81,19 @@
         <graalvm.version>22.0.0.2</graalvm.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Releases</name>
+            <url>http://124.221.146.224:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Snapshot</name>
+            <url>http://124.221.146.224:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>powernukkitx-terra-binary-maven</id>
