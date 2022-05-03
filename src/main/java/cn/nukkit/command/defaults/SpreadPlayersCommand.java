@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
@@ -43,7 +44,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
             Vector2 vec2 = parser.parseVector2();
             float spreadDistance = (float) parser.parseDouble(); //TODO
             float maxRange = (float) parser.parseDouble();
-            List<Player> targets = parser.parseTargetPlayers();
+            List<Entity> targets = parser.parseTargets();
 
             if (spreadDistance < 0) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.double.tooSmall", String.valueOf(spreadDistance), "0"));
@@ -58,7 +59,7 @@ public class SpreadPlayersCommand extends VanillaCommand {
                 return false;
             }
 
-            for (Player target : targets) {
+            for (Entity target : targets) {
                 Vector3 vec3 = this.nextXZ(vec2.getX(), vec2.getY(), (int) maxRange);
                 vec3.y = target.getLevel().getHighestBlockAt(vec3.getFloorX(), vec3.getFloorZ()) + 1;
                 target.teleport(vec3);
