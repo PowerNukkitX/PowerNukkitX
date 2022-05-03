@@ -141,8 +141,7 @@ public class GiveCommand extends VanillaCommand {
                     item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
                     String.valueOf(item.getCount()),
                     players.stream().map(p -> p.getName()).collect(Collectors.joining(" "))));
-            return true;
         }
-        return false;
+        return true;
     }
 }
