@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class TeleportCommand extends VanillaCommand {
     public TeleportCommand(String name) {
-        super(name, "commands.tp.description");
+        super(name, "commands.tp.description","commands.tp.usage", new String[]{"teleport"});
         this.setPermission("nukkit.command.teleport");
         this.commandParameters.clear();
         this.commandParameters.put("->Entity", new CommandParameter[]{
