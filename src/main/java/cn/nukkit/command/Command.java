@@ -259,13 +259,13 @@ public abstract class Command {
                     if (commandParameter.enumData == null) {
                         builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
                     }else{
-                        builder.append(" <").append(commandParameter.enumData.getValues().stream().collect(Collectors.joining("|"))).append(">");
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
                 }else{
                     if (commandParameter.enumData == null) {
                         builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
                     }else{
-                        builder.append(" [").append(commandParameter.enumData.getValues().stream().collect(Collectors.joining("|"))).append("]");
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }

@@ -74,8 +74,8 @@ public class AbilityCommand extends VanillaCommand {
                 return true;
             }
         } catch (CommandSyntaxException e) {
-            e.printStackTrace();
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return false;
         }
-        return false;
     }
 }

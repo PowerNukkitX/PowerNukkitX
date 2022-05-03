@@ -134,11 +134,11 @@ public class CommandParser {
                             pattern.append(WILDCARD_TARGET_PATTERN);
                             pattern.append("\\s+");
                         }
-                        case STRING, TEXT, FILE_PATH, OPERATOR -> {
+                        case STRING, FILE_PATH, OPERATOR -> {
                             pattern.append(STRING_PATTERN);
                             pattern.append("\\s+");
                         }
-                        case MESSAGE, COMMAND, RAWTEXT, JSON  -> {
+                        case MESSAGE, TEXT, COMMAND, RAWTEXT, JSON  -> {
                             pattern.append(MULTIPLE_STRING_PATTERN);
                             pattern.append("\\s+");
                         }
