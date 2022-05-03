@@ -13,7 +13,7 @@ import cn.nukkit.level.Level;
 public class SaveCommand extends VanillaCommand {
 
     public SaveCommand(String name) {
-        super(name, "commands.save.description", "commands.save.usage");
+        super(name, "Save the server (levels and players)");
         this.setPermission("nukkit.command.save.perform");
         this.commandParameters.clear();
     }
