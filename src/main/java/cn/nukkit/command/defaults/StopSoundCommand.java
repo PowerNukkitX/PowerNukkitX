@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class StopSoundCommand extends VanillaCommand {
 
     public StopSoundCommand(String name) {
-        super(name, "commands.stopsound.description", "commands.stopsound.usage");
+        super(name, "commands.stopsound.description");
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
@@ -42,7 +42,7 @@ public class StopSoundCommand extends VanillaCommand {
             }
 
             if (targets.size() == 0) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
 
@@ -54,7 +54,13 @@ public class StopSoundCommand extends VanillaCommand {
 
             Server.broadcastPacket(targets, packet);
 
-            sender.sendMessage(String.format(packet.stopAll ? "Stopped all sounds for %2$s" : "Stopped sound '%1$s' for %2$s", sound, targets.stream().map(Player::getName).collect(Collectors.joining(", "))));
+            String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
+
+            if(packet.stopAll){
+                sender.sendMessage(new TranslationContainer("commands.stopsound.success.all", players_str));
+            }else{
+                sender.sendMessage(new TranslationContainer("commands.stopsound.success", sound, players_str));
+            }
         } catch (CommandSyntaxException e) {
              sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
