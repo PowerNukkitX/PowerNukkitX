@@ -46,7 +46,15 @@ public class SummonCommand extends VanillaCommand {
             String entityType = parser.parseString();
             if (!entityType.startsWith("minecraft:"))
                 entityType = "minecraft:" + entityType;
-            int entityId = EntitySelector.ENTITY_NAME2ID.get(entityType);
+            if (entityType.equals("minecraft:player")) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.summon.failed"));
+                return false;
+            }
+            Integer entityId = EntitySelector.ENTITY_NAME2ID.get(entityType);
+            if (entityId == null) {
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.summon.failed"));
+                return false;
+            }
             Position pos = sender.getPosition();
             String nameTag = null;
             boolean nameTagVisible = false;
