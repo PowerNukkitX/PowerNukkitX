@@ -10,7 +10,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class SeedCommand extends VanillaCommand {
 
     public SeedCommand(String name) {
-        super(name, "commands.seed.description", "commands.seed.usage");
+        super(name, "Show the level's seed");//no translation in client
         this.setPermission("nukkit.command.seed");
         this.commandParameters.clear();
     }
