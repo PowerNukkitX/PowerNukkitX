@@ -10,6 +10,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -27,6 +28,8 @@ public abstract class EntityPhysical extends EntityCreature {
      */
     protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
+    protected final Vector3 previousCollideMotion = new Vector3();
+
     public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -41,11 +44,18 @@ public abstract class EntityPhysical extends EntityCreature {
         this.calculateOffsetBoundingBox();
         // 处理运动
         handleGravity();
-        handleCollideMovement();
+        if (this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0) {
+            handleCollideMovement();
+        }
+        addTmpMoveMotionXZ(previousCollideMotion);
         handleFrictionMovement();
-        handleLiquidMovement();
         handleFloatingMovement();
         return super.onUpdate(currentTick);
+    }
+
+    @Override
+    public boolean canBeMovedByCurrents() {
+        return true;
     }
 
     @Override
@@ -56,6 +66,17 @@ public abstract class EntityPhysical extends EntityCreature {
         }
         super.updateMovement();
         this.move(this.motionX, this.motionY, this.motionZ);
+    }
+
+    public final void addTmpMoveMotion(Vector3 tmpMotion) {
+        this.motionX += tmpMotion.x;
+        this.motionY += tmpMotion.y;
+        this.motionZ += tmpMotion.z;
+    }
+
+    public final void addTmpMoveMotionXZ(Vector3 tmpMotion) {
+        this.motionX += tmpMotion.x;
+        this.motionZ += tmpMotion.z;
     }
 
     protected void handleGravity() {
@@ -106,6 +127,9 @@ public abstract class EntityPhysical extends EntityCreature {
         }
     }
 
+    /**
+     * 默认使用nk内置实现，这只是个后备算法
+     */
     protected void handleLiquidMovement() {
         final var tmp = new Vector3();
         BlockLiquid blockLiquid = null;
@@ -139,42 +163,45 @@ public abstract class EntityPhysical extends EntityCreature {
 
     protected void handleCollideMovement() {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
-        var collidingEntities = this.level.getCollidingEntities(selfAABB, this);
-        if (collidingEntities.length == 0) {
+        var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
+        var size = collidingEntities.size();
+        if (size == 0) {
+            this.previousCollideMotion.setX(0);
+            this.previousCollideMotion.setZ(0);
             return;
         }
-        double dxPositive = 0;
-        double dxNegative = 0;
-        double dzPositive = 0;
-        double dzNegative = 0;
-        for (var each : collidingEntities) {
+        var dxPositives = new DoubleArrayList(size);
+        var dxNegatives = new DoubleArrayList(size);
+        var dzPositives = new DoubleArrayList(size);
+        var dzNegatives = new DoubleArrayList(size);
+        collidingEntities.parallelStream().forEach(each -> {
             AxisAlignedBB targetAABB;
             if (each instanceof EntityPhysical entityPhysical) {
                 targetAABB = entityPhysical.getOffsetBoundingBox();
             } else if (each instanceof Player player) {
                 targetAABB = player.reCalcOffsetBoundingBox();
             } else {
-                continue;
+                return;
             }
             // 计算碰撞箱
             double centerXWidth = (targetAABB.getMaxX() + targetAABB.getMinX() - selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5;
             double centerZWidth = (targetAABB.getMaxZ() + targetAABB.getMinZ() - selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5;
             if (centerXWidth > 0) {
-                dxPositive = Math.max(dxPositive, (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth);
+                dxPositives.add((targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 - centerXWidth);
             } else {
-                dxNegative = Math.max(dxNegative, (targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth);
+                dxNegatives.add((targetAABB.getMaxX() - targetAABB.getMinX()) + (selfAABB.getMaxX() - selfAABB.getMinX()) * 0.5 + centerXWidth);
             }
             if (centerZWidth > 0) {
-                dzPositive = Math.max(dzPositive, (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth);
+                dzPositives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 - centerZWidth);
             } else {
-                dzNegative = Math.max(dzNegative, (targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
+                dzNegatives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
             }
-        }
-        double resultX = dxPositive - dxNegative;
-        double resultZ = dzPositive - dzNegative;
+        });
+        double resultX = dxPositives.doubleParallelStream().max().orElse(0) - dxNegatives.doubleParallelStream().max().orElse(0);
+        double resultZ = dzPositives.doubleParallelStream().max().orElse(0) - dzNegatives.doubleParallelStream().max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
-        this.motionX -= resultX / len * getMovementSpeed() * 0.32;
-        this.motionZ -= resultZ / len * getMovementSpeed() * 0.32;
+        this.previousCollideMotion.setX(-(resultX / len * getMovementSpeed() * 0.32));
+        this.previousCollideMotion.setZ(-(resultZ / len * getMovementSpeed() * 0.32));
     }
 
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {

@@ -76,6 +76,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -292,6 +293,10 @@ public class Level implements ChunkManager, Metadatable {
     private int tickRate;
     public int tickRateTime = 0;
     public int tickRateCounter = 0;
+    /**
+     * 当tps过低的时候，tps优化延迟会上升，计算密集型任务应当每隔此tick才运行一次
+     */
+    public int tickRateOptDelay = 1;
 
     private Class<? extends Generator> generatorClass;
     private IterableThreadLocal<Generator> generators = new IterableThreadLocal<Generator>() {
@@ -482,6 +487,16 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setTickRate(int tickRate) {
         this.tickRate = tickRate;
+    }
+
+    public int recalcTickOptDelay() {
+        if (tickRateTime > 50) {
+            return Math.min(tickRateOptDelay << 1, 8);
+        } else if (tickRateOptDelay == 1) {
+            return 1;
+        } else {
+            return tickRateOptDelay >> 1;
+        }
     }
 
     public void initLevel() {
@@ -1446,7 +1461,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void scheduleUpdate(Block pos, int delay,boolean checkBlockWhenUpdate) {
+    public void scheduleUpdate(Block pos, int delay, boolean checkBlockWhenUpdate) {
         this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
     }
 
@@ -1621,6 +1636,44 @@ public class Level implements ChunkManager, Metadatable {
         return collides.toArray(AxisAlignedBB.EMPTY_ARRAY);
     }
 
+    public List<AxisAlignedBB> fastCollisionCubes(Entity entity, AxisAlignedBB bb) {
+        return this.fastCollisionCubes(entity, bb, true);
+    }
+
+    public List<AxisAlignedBB> fastCollisionCubes(Entity entity, AxisAlignedBB bb, boolean entities) {
+        return fastCollisionCubes(entity, bb, entities, false);
+    }
+
+    public List<AxisAlignedBB> fastCollisionCubes(Entity entity, AxisAlignedBB bb, boolean entities, boolean solidEntities) {
+        int minX = NukkitMath.floorDouble(bb.getMinX());
+        int minY = NukkitMath.floorDouble(bb.getMinY());
+        int minZ = NukkitMath.floorDouble(bb.getMinZ());
+        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
+        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
+        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+
+        List<AxisAlignedBB> collides = new ArrayList<>();
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
+                    if (!block.canPassThrough() && block.collidesWithBB(bb)) {
+                        collides.add(block.getBoundingBox());
+                    }
+                }
+            }
+        }
+
+        if (entities || solidEntities) {
+            var grownBB = bb.grow(0.25f, 0.25f, 0.25f);
+            collides.addAll(this.streamCollidingEntities(grownBB, entity)
+                    .filter(ent -> solidEntities && !ent.canPassThrough()).map(ent -> ent.boundingBox.clone()).toList());
+        }
+
+        return collides;
+    }
+
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Rounds the AABB to have precision 4 before checking for collision, fix PowerNukkit#506")
     public boolean hasCollision(Entity entity, AxisAlignedBB bb, boolean entities) {
         int minX = NukkitMath.floorDouble(NukkitMath.round(bb.getMinX(), 4));
@@ -1642,7 +1695,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (entities) {
-            return this.getCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity).length > 0;
+            return this.fastCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity).size() > 0;
         }
         return false;
     }
@@ -2721,6 +2774,60 @@ public class Level implements ChunkManager, Metadatable {
         return getEntitiesFromBuffer(index, overflow);
     }
 
+    public List<Entity> fastCollidingEntities(AxisAlignedBB bb) {
+        return this.fastCollidingEntities(bb, null);
+    }
+
+    public List<Entity> fastCollidingEntities(AxisAlignedBB bb, Entity entity) {
+        var result = new ArrayList<Entity>();
+
+        if (entity == null || entity.canCollide()) {
+            int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
+            int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+            int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
+            int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+
+            var allEntities = new ArrayList<Entity>();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int z = minZ; z <= maxZ; ++z) {
+                    allEntities.addAll(this.getChunkEntities(x, z, false).values());
+                }
+            }
+
+            for (var each : allEntities) {
+                if ((entity == null || (each != entity && entity.canCollideWith(each)))
+                        && each.boundingBox.intersectsWith(bb)) {
+                    result.add(each);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public Stream<Entity> streamCollidingEntities(AxisAlignedBB bb, Entity entity) {
+        if (entity == null || entity.canCollide()) {
+            int minX = NukkitMath.floorDouble((bb.getMinX() - 2) / 16);
+            int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) / 16);
+            int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
+            int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
+
+            var allEntities = new ArrayList<Entity>();
+
+            for (int x = minX; x <= maxX; ++x) {
+                for (int z = minZ; z <= maxZ; ++z) {
+                    allEntities.addAll(this.getChunkEntities(x, z, false).values());
+                }
+            }
+
+            return allEntities.stream().filter(each -> (entity == null || (each != entity && entity.canCollideWith(each)))
+                    && each.boundingBox.intersectsWith(bb));
+        } else {
+            return Stream.empty();
+        }
+    }
+
     public Entity[] getNearbyEntities(AxisAlignedBB bb) {
         return this.getNearbyEntities(bb, null);
     }
@@ -3478,7 +3585,7 @@ public class Level implements ChunkManager, Metadatable {
             spawn = this.getFuzzySpawnLocation();
         if (spawn == null)
             return null;
-        if (standable(spawn,true))
+        if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
 

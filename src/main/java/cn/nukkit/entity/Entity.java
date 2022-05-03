@@ -1544,7 +1544,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.level.getCollisionCubes(this, this.getBoundingBox(), false).length == 0 || this.noClip) {
+        if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
             return false;
         }
 
@@ -2396,7 +2396,7 @@ public abstract class Entity extends Location implements Metadatable {
 
             AxisAlignedBB axisalignedbb = this.boundingBox.clone();
 
-            AxisAlignedBB[] list = this.noClip ? AxisAlignedBB.EMPTY_ARRAY : this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+            var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
             for (AxisAlignedBB bb : list) {
                 dy = bb.calculateYOffset(this.boundingBox, dy);
@@ -2430,7 +2430,7 @@ public abstract class Entity extends Location implements Metadatable {
 
                 this.boundingBox.setBB(axisalignedbb);
 
-                list = this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+                list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
                 for (AxisAlignedBB bb : list) {
                     dy = bb.calculateYOffset(this.boundingBox, dy);
