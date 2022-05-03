@@ -15,6 +15,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.collect.*;
+import lombok.Getter;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -22,9 +23,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class EntitySelector {
-
-    private static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;
-    private static final Map<String, Integer> ENTITY_NAME2ID;
+    public static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;
+    public static final Map<String, Integer> ENTITY_NAME2ID;
 
     static {
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();

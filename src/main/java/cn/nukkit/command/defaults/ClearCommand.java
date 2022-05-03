@@ -181,7 +181,7 @@ public class ClearCommand extends VanillaCommand {
                 }
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
