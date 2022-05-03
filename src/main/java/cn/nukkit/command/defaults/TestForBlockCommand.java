@@ -1,7 +1,10 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -17,12 +20,12 @@ import java.util.NoSuchElementException;
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {
-        super(name, "commands.testforblock.description", "commands.testforblock.usage");
+        super(name, "commands.testforblock.description");
         this.setPermission("nukkit.command.testforblock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newType("position",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("tileId",false, CommandParamType.INT),
+                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
                 CommandParameter.newType("dataValue",true, CommandParamType.INT)
         });
     }
@@ -36,7 +39,8 @@ public class TestForBlockCommand extends VanillaCommand {
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             Position position = parser.parsePosition();
-            int tileId = parser.parseInt();
+            String tileName = parser.parseString();
+            int tileId = BlockState.of(tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName).getBlockId();
             int dataValue = 0;
 
             if (args.length > 4) {
@@ -46,14 +50,14 @@ public class TestForBlockCommand extends VanillaCommand {
             try {
                 GlobalBlockPalette.getOrCreateRuntimeId(tileId, dataValue);
             } catch (NoSuchElementException e) {
-                sender.sendMessage(String.format(TextFormat.RED + "There is no such block with ID %1$s:%2$s", tileId, dataValue));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.block.notFound", String.valueOf(tileId)));
                 return false;
             }
 
             Level level = position.getLevel();
 
             if (level.getChunkIfLoaded(position.getChunkX(), position.getChunkZ()) == null) {
-                sender.sendMessage(TextFormat.RED + "Cannot test for block outside of the world");
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
                 return false;
             }
 
@@ -62,16 +66,15 @@ public class TestForBlockCommand extends VanillaCommand {
             int meta = block.getDamage();
 
             if (id == tileId && meta == dataValue) {
-                sender.sendMessage(String.format("Successfully found the block at %1$f,%2$f,%3$f.", position.getX(), position.getY(), position.getZ()));
+                sender.sendMessage(new TranslationContainer("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())));
                 return true;
             } else {
-                sender.sendMessage(String.format(TextFormat.RED + "The block at %1$f,%2$f,%3$f is %4$d:%5$d (expected: %6$d:%7$d).", position.getX(), position.getY(), position.getZ(), id, meta, tileId, dataValue));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.failed.tile",String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ()), String.valueOf(id),String.valueOf(tileId)));
                 return false;
             }
         } catch (CommandSyntaxException e) {
              sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+             return false;
         }
-
-        return true;
     }
 }

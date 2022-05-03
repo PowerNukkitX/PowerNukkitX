@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -77,9 +78,9 @@ public class SetBlockCommand extends VanillaCommand {
             block = Block.get(blockId, data);
         } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
             try {
-                int blockId = BlockID.class.getField(args[3].toUpperCase()).getInt(null);
+                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : "minecraft:" + args[3]).getBlockId();
                 block = Block.get(blockId, data);
-            } catch (NullPointerException|IndexOutOfBoundsException|ReflectiveOperationException ignored2) {
+            } catch (NullPointerException|IndexOutOfBoundsException ignored2) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", args[3]));
                 return true;
             }

@@ -2466,4 +2466,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         pos.level.setBlock(pos,this.layer,this.clone());
         return pos.getLevelBlock();
     }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Block otherBlock) {
+            return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage();
+        }
+        return false;
+    }
 }
