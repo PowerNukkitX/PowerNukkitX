@@ -28,7 +28,9 @@ public abstract class EntityPhysical extends EntityCreature {
      */
     protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
+    protected boolean needsRecalcMovement = true;
     protected final Vector3 previousCollideMotion = new Vector3();
+    protected final Vector3 previousCurrentMotion = new Vector3();
 
     public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -36,6 +38,8 @@ public abstract class EntityPhysical extends EntityCreature {
 
     @Override
     public boolean onUpdate(int currentTick) {
+        // 计算是否需要重新计算高开销实体运动
+        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0;
         // 记录最大高度，用于计算坠落伤害
         if (!this.onGround && this.y > highestPosition) {
             this.highestPosition = this.y;
@@ -44,7 +48,7 @@ public abstract class EntityPhysical extends EntityCreature {
         this.calculateOffsetBoundingBox();
         // 处理运动
         handleGravity();
-        if (this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0) {
+        if (needsRecalcMovement) {
             handleCollideMovement();
         }
         addTmpMoveMotionXZ(previousCollideMotion);
@@ -152,6 +156,10 @@ public abstract class EntityPhysical extends EntityCreature {
         }
     }
 
+    protected void addPreviousLiquidMovement() {
+        addTmpMoveMotion(previousCurrentMotion);
+    }
+
     protected void handleFloatingMovement() {
         if (this.isTouchingWater()) {
             if (this.motionY < -this.getGravity() && this.hasWaterAt(getFootHeight())) {
@@ -202,8 +210,8 @@ public abstract class EntityPhysical extends EntityCreature {
                 dzNegatives.add((targetAABB.getMaxZ() - targetAABB.getMinZ()) + (selfAABB.getMaxZ() - selfAABB.getMinZ()) * 0.5 + centerZWidth);
             }
         });
-        double resultX = dxPositives.doubleParallelStream().max().orElse(0) - dxNegatives.doubleParallelStream().max().orElse(0);
-        double resultZ = dzPositives.doubleParallelStream().max().orElse(0) - dzNegatives.doubleParallelStream().max().orElse(0);
+        double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
+        double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
         this.previousCollideMotion.setX(-(resultX / len * getMovementSpeed() * 0.32));
         this.previousCollideMotion.setZ(-(resultZ / len * getMovementSpeed() * 0.32));

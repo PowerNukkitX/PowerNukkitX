@@ -2561,38 +2561,47 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
 
+        boolean needsRecalcCurrent = true;
+        if (this instanceof EntityPhysical entityPhysical) {
+            needsRecalcCurrent = entityPhysical.needsRecalcMovement;
+        }
+
         Vector3 vector = new Vector3(0, 0, 0);
         boolean portal = false;
         boolean scaffolding = false;
         boolean endPortal = false;
         for (Block block : this.getCollisionBlocks()) {
             switch (block.getId()) {
-                case Block.NETHER_PORTAL:
-                    portal = true;
-                    break;
-                case BlockID.SCAFFOLDING:
-                    scaffolding = true;
-                    break;
-                case BlockID.END_PORTAL:
-                    endPortal = true;
-                    break;
+                case Block.NETHER_PORTAL -> portal = true;
+                case BlockID.SCAFFOLDING -> scaffolding = true;
+                case BlockID.END_PORTAL -> endPortal = true;
             }
 
             block.onEntityCollide(this);
             block.getLevelBlockAtLayer(1).onEntityCollide(this);
-            block.addVelocityToEntity(this, vector);
+            if (needsRecalcCurrent)
+                block.addVelocityToEntity(this, vector);
         }
 
         setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, scaffolding);
 
-        AxisAlignedBB scanBoundingBox = boundingBox.getOffsetBoundingBox(0, -0.125, 0);
-        scanBoundingBox.setMaxY(boundingBox.getMinY());
-        Block[] scaffoldingUnder = level.getCollisionBlocks(
-                scanBoundingBox,
-                true, true,
-                b -> b.getId() == BlockID.SCAFFOLDING
-        );
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, scaffoldingUnder.length > 0);
+        if (Math.abs(this.y % 1) > 0.125) {
+            int minX = NukkitMath.floorDouble(boundingBox.getMinX());
+            int minZ = NukkitMath.floorDouble(boundingBox.getMinZ());
+            int maxX = NukkitMath.ceilDouble(boundingBox.getMaxX());
+            int maxZ = NukkitMath.ceilDouble(boundingBox.getMaxZ());
+            int Y = (int) y;
+
+            outerScaffolding:
+            for (int i = minX; i <= maxX; i++) {
+                for (int j = minZ; j <= maxZ; j++) {
+                    if (level.getBlockIdAt(i, Y, j) == BlockID.SCAFFOLDING) {
+                        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, true);
+                        break outerScaffolding;
+                    }
+                }
+            }
+        }
 
         if (endPortal) {
             if (!inEndPortal) {
@@ -2643,13 +2652,29 @@ public abstract class Entity extends Location implements Metadatable {
             this.inPortalTicks = 0;
         }
 
-        if (vector.lengthSquared() > 0) {
-            vector = vector.normalize();
-            double d = 0.014d;
-            this.motionX += vector.x * d;
-            this.motionY += vector.y * d;
-            this.motionZ += vector.z * d;
-        }
+        if (needsRecalcCurrent)
+            if (vector.lengthSquared() > 0) {
+                vector = vector.normalize();
+                double d = 0.018d;
+                var dx = vector.x * d;
+                var dy = vector.y * d;
+                var dz = vector.z * d;
+                this.motionX += dx;
+                this.motionY += dy;
+                this.motionZ += dz;
+                if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.previousCurrentMotion.x = dx;
+                    entityPhysical.previousCurrentMotion.y = dy;
+                    entityPhysical.previousCurrentMotion.z = dz;
+                }
+            } else {
+                if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.previousCurrentMotion.x = 0;
+                    entityPhysical.previousCurrentMotion.y = 0;
+                    entityPhysical.previousCurrentMotion.z = 0;
+                }
+            }
+        else ((EntityPhysical) this).addPreviousLiquidMovement();
     }
 
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch) {

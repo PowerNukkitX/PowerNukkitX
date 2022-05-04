@@ -2787,18 +2787,14 @@ public class Level implements ChunkManager, Metadatable {
             int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
             int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
 
-            var allEntities = new ArrayList<Entity>();
-
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
-                    allEntities.addAll(this.getChunkEntities(x, z, false).values());
-                }
-            }
-
-            for (var each : allEntities) {
-                if ((entity == null || (each != entity && entity.canCollideWith(each)))
-                        && each.boundingBox.intersectsWith(bb)) {
-                    result.add(each);
+                    for (var each : this.getChunkEntities(x, z, false).values()) {
+                        if ((entity == null || (each != entity && entity.canCollideWith(each)))
+                                && each.boundingBox.intersectsWith(bb)) {
+                            result.add(each);
+                        }
+                    }
                 }
             }
         }
@@ -2860,6 +2856,35 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return getEntitiesFromBuffer(index, overflow);
+    }
+
+    public List<Entity> fastNearbyEntities(AxisAlignedBB bb) {
+        return this.fastNearbyEntities(bb, null);
+    }
+
+    public List<Entity> fastNearbyEntities(AxisAlignedBB bb, Entity entity) {
+        return fastNearbyEntities(bb, entity, false);
+    }
+
+    public List<Entity> fastNearbyEntities(AxisAlignedBB bb, Entity entity, boolean loadChunks) {
+        int minX = NukkitMath.floorDouble((bb.getMinX() - 2) * 0.0625);
+        int maxX = NukkitMath.ceilDouble((bb.getMaxX() + 2) * 0.0625);
+        int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) * 0.0625);
+        int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) * 0.0625);
+
+        var result = new ArrayList<Entity>();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (var ent : this.getChunkEntities(x, z, loadChunks).values()) {
+                    if (ent != entity && ent.boundingBox.intersectsWith(bb)) {
+                        result.add(ent);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     private ArrayList<Entity> addEntityToBuffer(int index, ArrayList<Entity> overflow, Entity ent) {
