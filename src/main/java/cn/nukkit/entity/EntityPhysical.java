@@ -174,7 +174,12 @@ public abstract class EntityPhysical extends EntityCreature {
         var dxNegatives = new DoubleArrayList(size);
         var dzPositives = new DoubleArrayList(size);
         var dzNegatives = new DoubleArrayList(size);
-        collidingEntities.parallelStream().forEach(each -> {
+
+        var stream = collidingEntities.stream();
+        if (size > 4) {
+            stream = stream.parallel();
+        }
+        stream.forEach(each -> {
             AxisAlignedBB targetAABB;
             if (each instanceof EntityPhysical entityPhysical) {
                 targetAABB = entityPhysical.getOffsetBoundingBox();
