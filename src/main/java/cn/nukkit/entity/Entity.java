@@ -502,6 +502,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
+    public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     public boolean onGround;
     public boolean inBlock = false;
     public boolean positionChanged;
@@ -1216,6 +1217,9 @@ public abstract class Entity extends Location implements Metadatable {
                 this.namedTag.remove("CustomNameVisible");
                 this.namedTag.remove("CustomNameAlwaysVisible");
             }
+            if (this.entityUniqueId == null) {
+                this.entityUniqueId = UUID.randomUUID();
+            }
             this.namedTag.putString("uuid", this.entityUniqueId.toString());
         }
 
@@ -1540,7 +1544,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.level.getCollisionCubes(this, this.getBoundingBox(), false).length == 0 || this.noClip) {
+        if (this.level.fastCollisionCubes(this, this.getBoundingBox(), false).size() == 0 || this.noClip) {
             return false;
         }
 
@@ -2392,7 +2396,7 @@ public abstract class Entity extends Location implements Metadatable {
 
             AxisAlignedBB axisalignedbb = this.boundingBox.clone();
 
-            AxisAlignedBB[] list = this.noClip ? AxisAlignedBB.EMPTY_ARRAY : this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+            var list = this.noClip ? AxisAlignedBB.EMPTY_LIST : this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
             for (AxisAlignedBB bb : list) {
                 dy = bb.calculateYOffset(this.boundingBox, dy);
@@ -2426,7 +2430,7 @@ public abstract class Entity extends Location implements Metadatable {
 
                 this.boundingBox.setBB(axisalignedbb);
 
-                list = this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+                list = this.level.fastCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
                 for (AxisAlignedBB bb : list) {
                     dy = bb.calculateYOffset(this.boundingBox, dy);
@@ -2557,38 +2561,47 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
 
+        boolean needsRecalcCurrent = true;
+        if (this instanceof EntityPhysical entityPhysical) {
+            needsRecalcCurrent = entityPhysical.needsRecalcMovement;
+        }
+
         Vector3 vector = new Vector3(0, 0, 0);
         boolean portal = false;
         boolean scaffolding = false;
         boolean endPortal = false;
         for (Block block : this.getCollisionBlocks()) {
             switch (block.getId()) {
-                case Block.NETHER_PORTAL:
-                    portal = true;
-                    break;
-                case BlockID.SCAFFOLDING:
-                    scaffolding = true;
-                    break;
-                case BlockID.END_PORTAL:
-                    endPortal = true;
-                    break;
+                case Block.NETHER_PORTAL -> portal = true;
+                case BlockID.SCAFFOLDING -> scaffolding = true;
+                case BlockID.END_PORTAL -> endPortal = true;
             }
 
             block.onEntityCollide(this);
             block.getLevelBlockAtLayer(1).onEntityCollide(this);
-            block.addVelocityToEntity(this, vector);
+            if (needsRecalcCurrent)
+                block.addVelocityToEntity(this, vector);
         }
 
         setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, scaffolding);
 
-        AxisAlignedBB scanBoundingBox = boundingBox.getOffsetBoundingBox(0, -0.125, 0);
-        scanBoundingBox.setMaxY(boundingBox.getMinY());
-        Block[] scaffoldingUnder = level.getCollisionBlocks(
-                scanBoundingBox,
-                true, true,
-                b -> b.getId() == BlockID.SCAFFOLDING
-        );
-        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, scaffoldingUnder.length > 0);
+        if (Math.abs(this.y % 1) > 0.125) {
+            int minX = NukkitMath.floorDouble(boundingBox.getMinX());
+            int minZ = NukkitMath.floorDouble(boundingBox.getMinZ());
+            int maxX = NukkitMath.ceilDouble(boundingBox.getMaxX());
+            int maxZ = NukkitMath.ceilDouble(boundingBox.getMaxZ());
+            int Y = (int) y;
+
+            outerScaffolding:
+            for (int i = minX; i <= maxX; i++) {
+                for (int j = minZ; j <= maxZ; j++) {
+                    if (level.getBlockIdAt(i, Y, j) == BlockID.SCAFFOLDING) {
+                        setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, true);
+                        break outerScaffolding;
+                    }
+                }
+            }
+        }
 
         if (endPortal) {
             if (!inEndPortal) {
@@ -2639,13 +2652,29 @@ public abstract class Entity extends Location implements Metadatable {
             this.inPortalTicks = 0;
         }
 
-        if (vector.lengthSquared() > 0) {
-            vector = vector.normalize();
-            double d = 0.014d;
-            this.motionX += vector.x * d;
-            this.motionY += vector.y * d;
-            this.motionZ += vector.z * d;
-        }
+        if (needsRecalcCurrent)
+            if (vector.lengthSquared() > 0) {
+                vector = vector.normalize();
+                double d = 0.018d;
+                var dx = vector.x * d;
+                var dy = vector.y * d;
+                var dz = vector.z * d;
+                this.motionX += dx;
+                this.motionY += dy;
+                this.motionZ += dz;
+                if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.previousCurrentMotion.x = dx;
+                    entityPhysical.previousCurrentMotion.y = dy;
+                    entityPhysical.previousCurrentMotion.z = dz;
+                }
+            } else {
+                if (this instanceof EntityPhysical entityPhysical) {
+                    entityPhysical.previousCurrentMotion.x = 0;
+                    entityPhysical.previousCurrentMotion.y = 0;
+                    entityPhysical.previousCurrentMotion.z = 0;
+                }
+            }
+        else ((EntityPhysical) this).addPreviousLiquidMovement();
     }
 
     public boolean setPositionAndRotation(Vector3 pos, double yaw, double pitch) {
@@ -2846,7 +2875,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public UUID getUniqueId(){
+    public UUID getUniqueId() {
         return this.entityUniqueId;
     }
 
@@ -3131,26 +3160,26 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public void addTag(String tag) {
-        this.namedTag.putList(this.namedTag.getList("Tags",StringTag.class).add(new StringTag("",tag)));
+        this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public void removeTag(String tag) {
-        ListTag<StringTag> tags = this.namedTag.getList("Tags",StringTag.class);
-        tags.remove(new StringTag("",tag));
+        ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
+        tags.remove(new StringTag("", tag));
         this.namedTag.putList(tags);
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public boolean containTag(String tag) {
-        return this.namedTag.getList("Tags",StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
+        return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public List<StringTag> getAllTags() {
-        return this.namedTag.getList("Tags",StringTag.class).getAll();
+        return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
 }

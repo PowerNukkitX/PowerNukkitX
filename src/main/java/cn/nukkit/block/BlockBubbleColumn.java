@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.item.Item;
@@ -134,6 +135,9 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
                 if (getDamage() == 1) {
                     entity.motionY = Math.max(-0.9, entity.motionY - 0.03);
                 } else {
+                    if (entity instanceof EntityPhysical entityPhysical && entity.motionY < -entityPhysical.getGravity() * 8) {
+                        entity.motionY = -entityPhysical.getGravity() * 2;
+                    }
                     entity.motionY = Math.min(1.8, entity.motionY + 0.1);
                 }
                 

@@ -82,24 +82,6 @@ class EntityFallingBlockTest {
         assertTrue(pig.isAlive());
     }
 
-    @Test
-    void anvilDamage() {
-        Entity pig = Entity.createEntity(EntityPig.NETWORK_ID, level.getChunk(0, 0), Entity.getDefaultNBT(new Vector3(0, 64, 0)));
-        assertNotNull(pig);
-        fallingBlock.highestPosition = 255;
-        fallingBlock.lastY = 255;
-        fallingBlock.blockId = BlockID.ANVIL;
-        fallingBlock.setPosition(new Vector3(0, 65, 0));
-        fallingBlock.setMotion(new Vector3(0, -1, 0));
-        doReturn(new Entity[]{pig}).when(level).getCollidingEntities(any(), same(fallingBlock));
-        doReturn(new AxisAlignedBB[]{new SimpleAxisAlignedBB(0, 63, 0, 1, 64, 1)})
-                .when(fallingBlock.getLevel())
-                .getCollisionCubes(same(fallingBlock), any(), eq(false));
-        fallingBlock.onUpdate(fallingBlock.lastUpdate + 1);
-        assertFalse(pig.isAlive());
-        verify(Server.getInstance().getPluginManager()).callEvent(any(EntityDamageByBlockEvent.class));
-    }
-
     static class TestBlock extends BlockFallable {
         private final int id;
         public TestBlock(int id, int x, int y, int z, Level level) {

@@ -1541,6 +1541,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.isCollided = this.onGround;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public AxisAlignedBB reCalcOffsetBoundingBox() {
+        float dx = this.getWidth() / 2;
+        float dz = this.getWidth() / 2;
+        return this.offsetBoundingBox.setBounds(
+                this.x - dx, this.y, this.z - dz,
+                this.x + dx, this.y + this.getHeight(), this.z + dz
+        );
+    }
+
     @Override
     protected void checkBlockCollision() {
         boolean portal = false;
