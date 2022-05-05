@@ -248,6 +248,11 @@ public abstract class EntityPhysical extends EntityCreature {
         super.resetFallDistance();
     }
 
+    @Override
+    public float getGravity() {
+        return super.getGravity();
+    }
+
     public int getFallingTick() {
         return this.fallingTick;
     }
