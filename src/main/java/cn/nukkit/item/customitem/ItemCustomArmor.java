@@ -10,7 +10,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,28 +58,28 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
                             .putBoolean("dispensable", true)
-                            .putString("slot", "slot.armor.head"));
+                            .putInt("slot", 2));
         } else if (this.isChestplate()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("wearable_slot", "slot.armor.chest");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
                             .putBoolean("dispensable", true)
-                            .putString("slot", "slot.armor.chest"));
+                            .putInt("slot", 3));
         } else if (this.isLeggings()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("wearable_slot", "slot.armor.legs");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
                             .putBoolean("dispensable", true)
-                            .putString("slot", "slot.armor.legs"));
+                            .putInt("slot", 4));
         } else if (this.isBoots()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("wearable_slot", "slot.armor.feet");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
                             .putBoolean("dispensable", true)
-                            .putString("slot", "slot.armor.feet"));
+                            .putInt("slot", 5));
         }
 
         return data;
