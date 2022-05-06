@@ -50,35 +50,33 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
                 .putCompound("minecraft:armor", new CompoundTag()
                         .putInt("protection", this.getArmorPoints()))
                 .putCompound("minecraft:durability", new CompoundTag()
-                        .putInt("max_durability", this.getMaxDurability()));
+                        .putInt("max_durability", this.getMaxDurability()))
+                .getCompound("item_properties")
+                .putInt("enchantable_value", this.getEnchantableValue());
 
         if (this.isHelmet()) {
             data.getCompound("components").getCompound("item_properties")
-                    .putString("wearable_slot", "slot.armor.head");
+                    .putString("enchantable_slot", "armor_head");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putBoolean("dispensable", true)
                             .putInt("slot", 2));
         } else if (this.isChestplate()) {
             data.getCompound("components").getCompound("item_properties")
-                    .putString("wearable_slot", "slot.armor.chest");
+                    .putString("enchantable_slot", "armor_torso");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putBoolean("dispensable", true)
                             .putInt("slot", 3));
         } else if (this.isLeggings()) {
             data.getCompound("components").getCompound("item_properties")
-                    .putString("wearable_slot", "slot.armor.legs");
+                    .putString("enchantable_slot", "armor_legs");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putBoolean("dispensable", true)
                             .putInt("slot", 4));
         } else if (this.isBoots()) {
             data.getCompound("components").getCompound("item_properties")
-                    .putString("wearable_slot", "slot.armor.feet");
+                    .putString("enchantable_slot", "armor_feet");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putBoolean("dispensable", true)
                             .putInt("slot", 5));
         }
 
