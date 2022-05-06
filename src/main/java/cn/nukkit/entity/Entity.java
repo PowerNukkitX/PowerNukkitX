@@ -3,10 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
@@ -2267,6 +2264,21 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfWater() {
         return hasWaterAt(this.getEyeHeight());
+    }
+    @PowerNukkitXOnly
+    public boolean isUnderBlock(){
+        int x = this.getFloorX();
+        int y = this.getFloorY();
+        int z = this.getFloorZ();
+        if (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD){
+            for (int i = y+1; i <= 384; i++){
+                if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
+            }
+        }else {
+            for (int i = y; i <= 256; i += 1)
+                if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
+        }
+        return false;
     }
 
     @PowerNukkitOnly
