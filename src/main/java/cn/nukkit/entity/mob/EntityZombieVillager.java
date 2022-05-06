@@ -2,6 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.level.format.FullChunk;
@@ -53,5 +54,17 @@ public class EntityZombieVillager extends EntityMob implements EntitySmite {
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
+    }
+    @PowerNukkitXOnly
+    @Override
+    public boolean onUpdate(int currentTick){
+        if (this.getLevel().getTime()>0&&this.getLevel().getTime()<=12000){
+            if (!this.isInsideOfWater()){
+                if (!isUnderBlock())
+                    if (!this.isOnFire())
+                        this.setOnFire(1);
+            }
+        }
+        return super.onUpdate(currentTick);
     }
 }
