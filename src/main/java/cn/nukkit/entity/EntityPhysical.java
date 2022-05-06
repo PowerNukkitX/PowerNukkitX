@@ -17,7 +17,7 @@ import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class EntityPhysical extends EntityCreature {
+public abstract class EntityPhysical extends EntityCreature implements EntityAsyncPrepare {
     /**
      * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
      */
@@ -31,6 +31,8 @@ public abstract class EntityPhysical extends EntityCreature {
      */
     protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
+    private boolean needsCollisionDamage = false;
+
     protected boolean needsRecalcMovement = true;
     protected final Vector3 previousCollideMotion = new Vector3();
     protected final Vector3 previousCurrentMotion = new Vector3();
@@ -40,13 +42,9 @@ public abstract class EntityPhysical extends EntityCreature {
     }
 
     @Override
-    public boolean onUpdate(int currentTick) {
+    public void asyncPrepare(int currentTick) {
         // 计算是否需要重新计算高开销实体运动
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0;
-        // 记录最大高度，用于计算坠落伤害
-        if (!this.onGround && this.y > highestPosition) {
-            this.highestPosition = this.y;
-        }
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         // 处理运动
@@ -57,6 +55,18 @@ public abstract class EntityPhysical extends EntityCreature {
         addTmpMoveMotionXZ(previousCollideMotion);
         handleFrictionMovement();
         handleFloatingMovement();
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        // 记录最大高度，用于计算坠落伤害
+        if (!this.onGround && this.y > highestPosition) {
+            this.highestPosition = this.y;
+        }
+        // 添加挤压伤害
+        if (needsCollisionDamage) {
+            this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
+        }
         return super.onUpdate(currentTick);
     }
 
@@ -231,7 +241,7 @@ public abstract class EntityPhysical extends EntityCreature {
     protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
         if (currentTick % 10 == 0) {
             if (collidingEntities.stream().filter(Entity::canCollide).count() > 24) {
-                this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
+                this.needsCollisionDamage = true;
             }
         }
         return true;

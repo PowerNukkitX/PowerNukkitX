@@ -11,6 +11,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -995,6 +996,20 @@ public class Level implements ChunkManager, Metadatable {
         this.timings.entityTick.startTiming();
 
         if (!this.updateEntities.isEmpty()) {
+            var start = System.currentTimeMillis();
+            CompletableFuture.anyOf(CompletableFuture.runAsync(() -> updateEntities.keySet()
+                            .longParallelStream().mapToObj(id -> {
+                                var entity = this.updateEntities.get(id);
+                                if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                                    return entityAsyncPrepare;
+                                } else {
+                                    return null;
+                                }
+                            }).forEach(entityAsyncPrepare -> {
+                                if (entityAsyncPrepare != null)
+                                    entityAsyncPrepare.asyncPrepare(currentTick);
+                            }), Server.getInstance().computeThreadPool));
+            System.out.println(System.currentTimeMillis() - start);
             for (long id : new ArrayList<>(this.updateEntities.keySet())) {
                 Entity entity = this.updateEntities.get(id);
                 if (entity == null) {
