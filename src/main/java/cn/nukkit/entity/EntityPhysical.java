@@ -5,12 +5,15 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockLava;
 import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+
+import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -49,7 +52,7 @@ public abstract class EntityPhysical extends EntityCreature {
         // 处理运动
         handleGravity();
         if (needsRecalcMovement) {
-            handleCollideMovement();
+            handleCollideMovement(currentTick);
         }
         addTmpMoveMotionXZ(previousCollideMotion);
         handleFrictionMovement();
@@ -169,7 +172,7 @@ public abstract class EntityPhysical extends EntityCreature {
         }
     }
 
-    protected void handleCollideMovement() {
+    protected void handleCollideMovement(int currentTick) {
         var selfAABB = getOffsetBoundingBox().getOffsetBoundingBox(this.motionX, this.motionY, this.motionZ);
         var collidingEntities = this.level.fastCollidingEntities(selfAABB, this);
         var size = collidingEntities.size();
@@ -177,6 +180,10 @@ public abstract class EntityPhysical extends EntityCreature {
             this.previousCollideMotion.setX(0);
             this.previousCollideMotion.setZ(0);
             return;
+        } else {
+            if (!onCollide(currentTick, collidingEntities)) {
+                return;
+            }
         }
         var dxPositives = new DoubleArrayList(size);
         var dxNegatives = new DoubleArrayList(size);
@@ -215,6 +222,19 @@ public abstract class EntityPhysical extends EntityCreature {
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
         this.previousCollideMotion.setX(-(resultX / len * getMovementSpeed() * 0.32));
         this.previousCollideMotion.setZ(-(resultZ / len * getMovementSpeed() * 0.32));
+    }
+
+    /**
+     * @param collidingEntities 碰撞的实体
+     * @return false以拦截实体碰撞运动计算
+     */
+    protected boolean onCollide(int currentTick, List<Entity> collidingEntities) {
+        if (currentTick % 10 == 0) {
+            if (collidingEntities.stream().filter(Entity::canCollide).count() > 24) {
+                this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
+            }
+        }
+        return true;
     }
 
     protected final float getLiquidMovementSpeed(BlockLiquid liquid) {
