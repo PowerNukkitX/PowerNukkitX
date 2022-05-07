@@ -123,7 +123,7 @@
             <!-- 不要换成NKX的依赖，这个版本具有特定接口 -->
             <groupId>org.powernukkit.bedrock.network</groupId>
             <artifactId>raknet</artifactId>
-            <version>1.6.25-PN.2</version>
+            <version>1.6.28-PN.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
