@@ -103,6 +103,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             } else {
                 this.motionY -= this.getGravity();
             }
+        } else {
+            this.checkGroundState(0, 0, 0, 0, 0, 0);
         }
     }
 

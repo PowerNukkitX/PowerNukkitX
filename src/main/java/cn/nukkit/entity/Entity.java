@@ -2496,12 +2496,9 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
+    //@PowerNukkitDifference(since = "1.4.0.0-PN", info = "Will do nothing if the entity is on ground and all args are 0")
+    @PowerNukkitDifference(since = "1.6.0.0-PNX", info = "Here is a stupid exception above")
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
-        if (onGround && movX == 0 && movY == 0 && movZ == 0 && dx == 0 && dy == 0 && dz == 0) {
-            return;
-        }
-
         if (this.noClip) {
             this.isCollidedVertically = false;
             this.isCollidedHorizontally = false;
