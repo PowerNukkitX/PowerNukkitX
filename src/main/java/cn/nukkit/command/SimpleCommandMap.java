@@ -31,6 +31,7 @@ public class SimpleCommandMap implements CommandMap {
 
     private void setDefaultCommands() {
         this.register("nukkit",new ExecuteCommand("execute"));
+        this.register("nukkit",new ReplaceItemCommand("replaceitem"));
         this.register("nukkit",new SummonCommand("summon"));
         this.register("nukkit",new DamageCommand("damage"));
         this.register("nukkit",new ClearSpawnPointCommand("clearspawnpoint"));
