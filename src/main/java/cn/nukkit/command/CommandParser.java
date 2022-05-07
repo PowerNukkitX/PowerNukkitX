@@ -144,7 +144,7 @@ public class CommandParser {
                         }
                     }
                 } else {
-                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item")) {
+                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
                         pattern.append(STRING_PATTERN);
                     } else {
                         pattern.append("(");
