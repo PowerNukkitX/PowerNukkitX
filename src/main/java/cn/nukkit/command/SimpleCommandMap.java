@@ -230,6 +230,7 @@ public class SimpleCommandMap implements CommandMap {
         StringBuilder sb = new StringBuilder(cmdLine);
         ArrayList<String> args = new ArrayList<>();
         boolean notQuoted = true;
+        int curlyBraceCount = 0;
         int start = 0;
 
         for (int i = 0; i < sb.length(); i++) {
@@ -237,17 +238,27 @@ public class SimpleCommandMap implements CommandMap {
                 sb.deleteCharAt(i);
                 continue;
             }
-
-            if (sb.charAt(i) == ' ' && notQuoted) {
-                String arg = sb.substring(start, i);
-                if (!arg.isEmpty()) {
-                    args.add(arg);
+            if (sb.charAt(i) == '{'){
+                curlyBraceCount++;
+            }else if (sb.charAt(i) == '}'){
+                curlyBraceCount--;
+                if (curlyBraceCount == 0) {
+                    args.add(sb.substring(start, i));
+                    start = i + 1;
                 }
-                start = i + 1;
-            } else if (sb.charAt(i) == '"') {
-                sb.deleteCharAt(i);
-                --i;
-                notQuoted = !notQuoted;
+            }
+            if (curlyBraceCount == 0) {
+                if (sb.charAt(i) == ' ' && notQuoted) {
+                    String arg = sb.substring(start, i);
+                    if (!arg.isEmpty()) {
+                        args.add(arg);
+                    }
+                    start = i + 1;
+                } else if (sb.charAt(i) == '"') {
+                    sb.deleteCharAt(i);
+                    --i;
+                    notQuoted = !notQuoted;
+                }
             }
         }
 
