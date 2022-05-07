@@ -52,7 +52,7 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
                 .putCompound("minecraft:durability", new CompoundTag()
                         .putInt("max_durability", this.getMaxDurability()))
                 .getCompound("item_properties")
-                .putInt("enchantable_value", this.getEnchantableValue());
+                        .putInt("enchantable_value", this.getEnchantableValue());
 
         if (this.isHelmet()) {
             data.getCompound("components").getCompound("item_properties")
