@@ -2270,14 +2270,8 @@ public abstract class Entity extends Location implements Metadatable {
         int x = this.getFloorX();
         int y = this.getFloorY();
         int z = this.getFloorZ();
-        if (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD){
-            for (int i = y+1; i <= 384; i++){
+            for (int i = y+1; i <= this.getLevel().getMaxHeight(); i++)
                 if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
-            }
-        }else {
-            for (int i = y; i <= 256; i += 1)
-                if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
-        }
         return false;
     }
 
