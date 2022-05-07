@@ -73,7 +73,6 @@ import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
