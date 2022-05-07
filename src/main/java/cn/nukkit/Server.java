@@ -101,6 +101,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -156,6 +158,8 @@ public class Server {
 
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
+
+    public final Executor computeThreadPool;
 
     private SimpleCommandMap commandMap;
 
@@ -322,6 +326,7 @@ public class Server {
         
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
+        this.computeThreadPool = Executors.newWorkStealingPool();
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -366,6 +371,8 @@ public class Server {
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
+
+        this.computeThreadPool = Executors.newWorkStealingPool();
 
         this.playerDataSerializer = new DefaultPlayerDataSerializer(this);
 
@@ -1339,6 +1346,9 @@ public class Server {
                 level.doTick(currentTick);
                 int tickMs = (int) (System.currentTimeMillis() - levelTime);
                 level.tickRateTime = tickMs;
+                if ((currentTick & 511) == 0) { // % 511
+                    level.tickRateOptDelay = level.recalcTickOptDelay();
+                }
 
                 if (this.autoTickRate) {
                     if (tickMs < 50 && level.getTickRate() > this.baseTickRate) {
