@@ -16,6 +16,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.particle.*;
 import cn.nukkit.math.Vector3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -30,8 +31,11 @@ public class ParticleCommand extends VanillaCommand {
         super(name, "commands.particle.description");
         this.setPermission("nukkit.command.particle");
         this.commandParameters.clear();
-        List<String> particles = Arrays.stream(ParticleEffect.values()).map(ParticleEffect::getIdentifier).toList();
-        particles.addAll(Arrays.stream(ParticleEffect.values()).map(p -> p.getIdentifier().substring(10)).toList());
+        ArrayList<String> particles = new ArrayList<>();
+        for (ParticleEffect particle : ParticleEffect.values()) {
+            particles.add(particle.getIdentifier());
+            particles.add(particle.getIdentifier().substring(10));
+        }
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newEnum("effect", new CommandEnum("particle",particles.toArray(new String[0]))),
                 CommandParameter.newType("position", CommandParamType.POSITION),
