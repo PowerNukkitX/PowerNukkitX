@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.FunctionCommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.function.Function;
@@ -32,7 +33,7 @@ public class FunctionCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.function.functionNameNotFound", args[0]));
             return false;
         }
-        function.dispatch(sender);
+        function.dispatch(new FunctionCommandSender(sender));
         sender.sendMessage(new TranslationContainer("commands.function.success",String.valueOf(function.getCommands().size())));
         return true;
     }

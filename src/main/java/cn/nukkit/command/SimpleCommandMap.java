@@ -236,13 +236,13 @@ public class SimpleCommandMap implements CommandMap {
         int start = 0;
 
         for (int i = 0; i < sb.length(); i++) {
-            if (sb.charAt(i) == '\\') {
-                sb.deleteCharAt(i);
-                continue;
-            }
-            if (sb.charAt(i) == '{'){
+//            if (sb.charAt(i) == '\\') {
+//                sb.deleteCharAt(i);
+//                continue;
+//            }
+            if ((sb.charAt(i) == '{' && curlyBraceCount >= 1) || (sb.charAt(i) == '{' && sb.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
                 curlyBraceCount++;
-            }else if (sb.charAt(i) == '}'){
+            }else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
                 curlyBraceCount--;
                 if (curlyBraceCount == 0) {
                     args.add(sb.substring(start, i));

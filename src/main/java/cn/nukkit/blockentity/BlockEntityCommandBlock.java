@@ -279,13 +279,15 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
             return false;
         }
-        if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
-            if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
-                Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
-                if (next instanceof BlockCommandBlockChain nextChainBlock) {
-                    nextChainBlock.getBlockEntity().trigger(++chain);
+        if (this.getBlock() instanceof Faceable) {
+            if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
+                if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
+                    Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                    if (next instanceof BlockCommandBlockChain nextChainBlock) {
+                        nextChainBlock.getBlockEntity().trigger(++chain);
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         if (this.getLastExecution() != this.getServer().getTick()) {
@@ -328,9 +330,11 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                     }
                 }
 
-                Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
-                if (block instanceof BlockCommandBlockChain chainBlock) {
-                    chainBlock.getBlockEntity().trigger(++chain);
+                if (this.getBlock() instanceof Faceable) {
+                    Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                    if (block instanceof BlockCommandBlockChain chainBlock) {
+                        chainBlock.getBlockEntity().trigger(++chain);
+                    }
                 }
             }
 
