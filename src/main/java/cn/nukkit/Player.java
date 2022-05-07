@@ -73,7 +73,6 @@ import cn.nukkit.scheduler.TaskHandler;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -118,7 +117,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Log4j2
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, ScoreboardSendable {
+public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
@@ -6526,7 +6525,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    @Override
     public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
@@ -6545,7 +6543,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    @Override
     public void clearScoreboardSlot(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
