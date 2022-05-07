@@ -385,23 +385,26 @@ public class ReplaceItemCommand extends VanillaCommand {
                 case "block", "block-oldItemHandling": {
                     parser.parseString();
                     Block block = parser.parsePosition().getLevelBlock();
-                    BlockEntityContainer container = null;
-                    if (block instanceof BlockEntityHolder<?> holder) {
-                        if (!(holder.getOrCreateBlockEntity() instanceof BlockEntityContainer ct)) {
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.noContainer", block.asBlockVector3().toString()));
-                            return false;
-                        }else{
-                            container = ct;
+                    InventoryHolder holder = null;
+                    boolean isHolder = false;
+                    if (block instanceof BlockEntityHolder<?> h) {
+                        if (h.getBlockEntity() instanceof InventoryHolder ct) {
+                            holder = ct;
+                            isHolder = true;
                         }
+                    }
+                    if (!isHolder) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.noContainer", block.asBlockVector3().toString()));
+                        return false;
                     }
                     parser.parseString();
                     int slotId = parser.parseInt();
-                    if (slotId < 0 || slotId >= container.getSize()) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", "slot.container", "0", String.valueOf(container.getSize() - 1)));
+                    if (slotId < 0 || slotId >= holder.getInventory().getSize()) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", "slot.container", "0", String.valueOf(holder.getInventory().getSize() - 1)));
                         return false;
                     }
                     String oldItemHandling = form.equals("block") ? "destroy" : parser.parseString();
-                    Item old = container.getItem(slotId);
+                    Item old = holder.getInventory().getItem(slotId);
                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", "slot.container", String.valueOf(slotId)));
                         return false;
@@ -417,8 +420,12 @@ public class ReplaceItemCommand extends VanillaCommand {
                     if (parser.hasNext()) {
                         item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(parser.parseString()));
                     }
-                    container.setItem(slotId, item);
-                    sender.sendMessage(new TranslationContainer("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
+                    if(holder.getInventory().setItem(slotId, item)) {
+                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
+                    }else{
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
+                        return false;
+                    }
                 }
                     break;
             }
