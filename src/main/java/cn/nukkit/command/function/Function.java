@@ -19,6 +19,7 @@ public class Function {
         this.fullPath = fullPath;
         try {
             commands = Files.readAllLines(fullPath);
+            commands = commands.stream().map(s -> s.split("#")[0]).toList();
         } catch (IOException e) {
             e.printStackTrace();
         }
