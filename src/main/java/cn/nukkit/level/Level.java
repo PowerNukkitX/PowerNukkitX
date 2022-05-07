@@ -11,6 +11,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityAsyncPrepare;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -490,7 +491,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public int recalcTickOptDelay() {
-        if (tickRateTime > 50) {
+        if (tickRateTime > 40) {
             return Math.min(tickRateOptDelay << 1, 8);
         } else if (tickRateOptDelay == 1) {
             return 1;
@@ -995,6 +996,18 @@ public class Level implements ChunkManager, Metadatable {
         this.timings.entityTick.startTiming();
 
         if (!this.updateEntities.isEmpty()) {
+            CompletableFuture.runAsync(() -> updateEntities.keySet()
+                    .longParallelStream().mapToObj(id -> {
+                        var entity = this.updateEntities.get(id);
+                        if (entity instanceof EntityAsyncPrepare entityAsyncPrepare) {
+                            return entityAsyncPrepare;
+                        } else {
+                            return null;
+                        }
+                    }).forEach(entityAsyncPrepare -> {
+                        if (entityAsyncPrepare != null)
+                            entityAsyncPrepare.asyncPrepare(currentTick);
+                    }), Server.getInstance().computeThreadPool).join();
             for (long id : new ArrayList<>(this.updateEntities.keySet())) {
                 Entity entity = this.updateEntities.get(id);
                 if (entity == null) {
@@ -2394,7 +2407,7 @@ public class Level implements ChunkManager, Metadatable {
                 BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(),
                         fastBreak);
 
-                if (player.isSurvival() && !target.isBreakable(item) ) {
+                if (player.isSurvival() && !target.isBreakable(item)) {
                     ev.setCancelled();
                 } else if (!player.isOp() && isInSpawnRadius(target)) {
                     ev.setCancelled();

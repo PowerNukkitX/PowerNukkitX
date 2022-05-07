@@ -32,13 +32,13 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     private final Map<DamageModifier, Float> originals;
 
     private SideEffect[] sideEffects = SideEffect.EMPTY_ARRAY;
-    
+
     private static Map<DamageModifier, Float> createDamageModifierMap(float baseDamage) {
         Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
         modifiers.put(DamageModifier.BASE, baseDamage);
         return modifiers;
     }
-    
+
     public EntityDamageEvent(Entity entity, DamageCause cause, float damage) {
         this(entity, cause, createDamageModifierMap(damage));
     }
@@ -109,11 +109,11 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
         return damage;
     }
-    
+
     public int getAttackCooldown() {
         return this.attackCooldown;
     }
-    
+
     public void setAttackCooldown(int attackCooldown) {
         this.attackCooldown = attackCooldown;
     }
@@ -129,7 +129,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         return Arrays.stream(sideEffectsArray)
                 .map(SideEffect::cloneSideEffect)
                 .toArray(SideEffect[]::new)
-        ;
+                ;
     }
 
     @PowerNukkitOnly
@@ -165,18 +165,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     }
 
     public boolean canBeReducedByArmor() {
-        switch (this.cause) {
-            case FIRE_TICK:
-            case SUFFOCATION:
-            case DROWNING:
-            case HUNGER:
-            case FALL:
-            case VOID:
-            case MAGIC:
-            case SUICIDE:
-                return false;
-        }
-        return true;
+        return switch (this.cause) {
+            case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE -> false;
+            default -> true;
+        };
     }
 
     public enum DamageModifier {
@@ -321,12 +313,17 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         @PowerNukkitOnly
         @Since("1.5.2.0-PN")
         FREEZING,
-
         /**
          * Damage caused by no reason (eg: /damage command with cause NONE)
          */
         @PowerNukkitXOnly
         @Since("1.6.0.0-PNX")
-        NONE
+        NONE,
+        /**
+         * Damage caused by a lot of (>24) entities colliding together
+         */
+        @PowerNukkitXOnly
+        @Since("1.6.0.0-PNX")
+        COLLIDE
     }
 }
