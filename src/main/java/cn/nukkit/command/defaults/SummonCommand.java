@@ -10,7 +10,6 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;

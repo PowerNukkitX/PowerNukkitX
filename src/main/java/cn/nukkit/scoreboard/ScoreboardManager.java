@@ -7,7 +7,6 @@ import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.interfaces.AbstractScoreboardManager;
-import cn.nukkit.scoreboard.interfaces.ScoreboardSendable;
 import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
 import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
@@ -90,9 +89,9 @@ public class ScoreboardManager extends AbstractScoreboardManager {
         });
     }
 
-    private void sendDisplayTo(DisplaySlot slot, ScoreboardSendable sendable) {
+    private void sendDisplayTo(DisplaySlot slot, Player player) {
         if (display.get(slot) != null)
-            sendable.sendScoreboard(this.scoreboards.get(this.display.get(slot)), slot);
+            player.sendScoreboard(this.scoreboards.get(this.display.get(slot)), slot);
     }
 
     private void sendAllDisplayToAll() {
@@ -101,9 +100,9 @@ public class ScoreboardManager extends AbstractScoreboardManager {
         });
     }
 
-    private void sendAllDisplayTo(ScoreboardSendable sendable) {
+    private void sendAllDisplayTo(Player player) {
         for (DisplaySlot slot : DisplaySlot.values()) {
-            sendDisplayTo(slot, sendable);
+            sendDisplayTo(slot, player);
         }
     }
 

@@ -118,7 +118,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Log4j2
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, ScoreboardSendable {
+public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
