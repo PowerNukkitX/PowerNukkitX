@@ -1,6 +1,7 @@
 package cn.nukkit.entity.control;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -38,8 +39,12 @@ public class WalkMoveNearControl implements Control<Vector3> {
             var k = speed / xzLength * 0.33;
             var dx = vector.x * k;
             var dz = vector.z * k;
-            if (collidesBlocks(dx, 0, dz) && !collidesBlocks(dx, entity.getJumpingHeight(), dz)) {
-                entity.jump();
+            if (collidesBlocks(dx, 0, dz)) {
+                if (entity.isFloating() && !collidesBlocks(dx, entity.getHeight(), dz)) {
+                    entity.shore();
+                } else if (!collidesBlocks(dx, entity.getJumpingHeight(), dz)) {
+                    entity.jump();
+                }
             }
             state = ControlState.WORKING;
             return new Vector3(dx, 0, dz);

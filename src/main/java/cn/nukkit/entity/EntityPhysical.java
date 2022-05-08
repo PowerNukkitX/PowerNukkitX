@@ -32,6 +32,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     private boolean needsCollisionDamage = false;
+    public boolean isFloating = false;
 
     protected boolean needsRecalcMovement = true;
     protected final Vector3 previousCollideMotion = new Vector3();
@@ -177,6 +178,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
                 this.motionY += this.getGravity() * 0.3;
             }
             this.motionY += this.getGravity() * 0.075;
+            this.isFloating = true;
+        } else {
+            this.isFloating = false;
         }
     }
 
@@ -283,5 +287,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     public int getFallingTick() {
         return this.fallingTick;
+    }
+
+    public boolean isFloating() {
+        return isFloating;
+    }
+
+    public void setFloating(boolean floating) {
+        isFloating = floating;
     }
 }

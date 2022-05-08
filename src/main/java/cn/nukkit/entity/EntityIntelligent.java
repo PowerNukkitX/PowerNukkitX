@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
+import cn.nukkit.entity.control.ShoreControl;
 import cn.nukkit.entity.control.WalkMoveNearControl;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -12,11 +13,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public abstract class EntityIntelligent extends EntityPhysical {
 
     public boolean isJumping = false;
+    public boolean isShoring = false;
     public Vector3 movingNearDestination = null;
 
     public Vector3 previousMoveNearMotion = Vector3.ZERO;
 
     protected Control<?> jumpControl = null;
+    protected Control<?> shoreControl = null;
     protected Control<? extends Vector3> moveNearControl = null;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
@@ -27,6 +30,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
         super(chunk, nbt);
         if (init) {
             this.jumpControl = new JumpControl(this);
+            this.shoreControl = new ShoreControl(this);
             this.moveNearControl = new WalkMoveNearControl(this);
         }
     }
@@ -38,6 +42,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
         if (moveNearControl != null) previousMoveNearMotion = moveNearControl.control(currentTick, needsRecalcMovement);
         addTmpMoveMotionXZ(previousMoveNearMotion);
         if (jumpControl != null) jumpControl.control(currentTick, needsRecalcMovement);
+        if (shoreControl != null) shoreControl.control(currentTick, needsRecalcMovement);
     }
 
     /**
@@ -50,6 +55,18 @@ public abstract class EntityIntelligent extends EntityPhysical {
             return false;
         }
         isJumping = true;
+        return true;
+    }
+
+    /**
+     * 让实体跳上岸，不会添加水平移动
+     * @return 此处是否能从水中尝试跳上岸
+     */
+    public boolean shore() {
+        if (!this.isFloating() || isShoring) {
+            return false;
+        }
+        isShoring = true;
         return true;
     }
 
