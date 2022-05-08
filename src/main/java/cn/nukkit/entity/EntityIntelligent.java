@@ -1,20 +1,31 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.entity.control.Control;
+import cn.nukkit.entity.control.JumpControl;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public abstract class EntityIntelligent extends EntityPhysical {
 
-    protected boolean isJumping = false;
+    public boolean isJumping = false;
+
+    protected Control jumpControl = null;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, true);
+    }
+
+    public EntityIntelligent(FullChunk chunk, CompoundTag nbt, boolean init) {
         super(chunk, nbt);
+        if (init) {
+            this.jumpControl = new JumpControl(this);
+        }
     }
 
     @Override
     public void asyncPrepare(int currentTick) {
         // 处理运动
-        handleJumping();
+        if(jumpControl != null) jumpControl.control(currentTick);
         super.asyncPrepare(currentTick);
     }
 
@@ -35,10 +46,4 @@ public abstract class EntityIntelligent extends EntityPhysical {
         return 1.25f;
     }
 
-    protected void handleJumping() {
-        if (isJumping) {
-            this.motionY += getJumpingHeight() * 0.35;
-            this.isJumping = false;
-        }
-    }
 }

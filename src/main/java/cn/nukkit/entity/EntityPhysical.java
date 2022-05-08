@@ -97,14 +97,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     }
 
     protected void handleGravity() {
+        this.checkGroundState(0, 0, 0, 0, 0, 0);
         if (!this.onGround) {
             if (this.hasWaterAt(getFootHeight())) {
                 resetFallDistance();
             } else {
                 this.motionY -= this.getGravity();
             }
-        } else {
-            this.checkGroundState(0, 0, 0, 0, 0, 0);
         }
     }
 
