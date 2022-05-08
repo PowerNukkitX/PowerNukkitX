@@ -2,8 +2,9 @@ package cn.nukkit.entity.control;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.math.Vector3;
 
-public class WalkMoveNearControl implements Control {
+public class WalkMoveNearControl implements Control<Vector3> {
     private final EntityIntelligent entity;
 
     public WalkMoveNearControl(EntityIntelligent entity) {
@@ -11,25 +12,29 @@ public class WalkMoveNearControl implements Control {
     }
 
     @Override
-    public void control(int currentTick) {
+    public Vector3 control(int currentTick) {
         var vector = entity.movingNearDestination;
         if (vector != null) {
-            vector = vector.clone().setComponents(vector.x - entity.x - entity.motionX,
-                    vector.y - entity.y - entity.motionY, vector.z - entity.z - entity.motionZ);
-            var xzLength = Math.sqrt(vector.x * vector.x + vector.z * vector.z);
-            if (xzLength < entity.getMovementSpeed()) {
-                entity.movingNearDestination = null;
-                return;
+            var speed = entity.getMovementSpeed();
+            if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4356) {
+                return Vector3.ZERO;
             }
-            var k = entity.getMovementSpeed() / xzLength * 0.33;
+            vector = vector.clone().setComponents(vector.x - entity.x,
+                    vector.y - entity.y, vector.z - entity.z);
+            var xzLength = Math.sqrt(vector.x * vector.x + vector.z * vector.z);
+            if (xzLength < speed) {
+                entity.movingNearDestination = null;
+                return Vector3.ZERO;
+            }
+            var k = speed / xzLength * 0.33;
             var dx = vector.x * k;
             var dz = vector.z * k;
-            entity.motionX += dx;
-            entity.motionZ += dz;
             if (collidesBlocks(dx, 0, dz) && !collidesBlocks(dx, entity.getJumpingHeight(), dz)) {
                 entity.jump();
             }
+            return new Vector3(dx, 0, dz);
         }
+        return Vector3.ZERO;
     }
 
     private boolean collidesBlocks(double dx, double dy, double dz) {

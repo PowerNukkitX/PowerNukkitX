@@ -2,7 +2,7 @@ package cn.nukkit.entity.control;
 
 import cn.nukkit.entity.EntityIntelligent;
 
-public class JumpControl implements Control {
+public class JumpControl implements Control<Void> {
     private final EntityIntelligent entity;
 
     public JumpControl(EntityIntelligent entity) {
@@ -10,10 +10,11 @@ public class JumpControl implements Control {
     }
 
     @Override
-    public void control(int currentTick) {
+    public Void control(int currentTick) {
         if (entity.isJumping) {
             entity.motionY += entity.getJumpingHeight() * 0.43;
             entity.isJumping = false;
         }
+        return null;
     }
 }

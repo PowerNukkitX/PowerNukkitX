@@ -1,20 +1,23 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
 import cn.nukkit.entity.control.WalkMoveNearControl;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 public abstract class EntityIntelligent extends EntityPhysical {
 
     public boolean isJumping = false;
-    public boolean doingJumping = false;
     public Vector3 movingNearDestination = null;
 
-    protected Control jumpControl = null;
-    protected Control moveNearControl = null;
+    protected Vector3 previousMoveNearMotion = Vector3.ZERO;
+
+    protected Control<?> jumpControl = null;
+    protected Control<? extends Vector3> moveNearControl = null;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, true);
@@ -32,10 +35,10 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public void asyncPrepare(int currentTick) {
         // 处理运动
         super.asyncPrepare(currentTick);
-        if (doingJumping && this.isOnGround()) {
-            doingJumping = false;
+        if (needsRecalcMovement && moveNearControl != null) {
+            previousMoveNearMotion = moveNearControl.control(currentTick);
         }
-        if (moveNearControl != null) moveNearControl.control(currentTick);
+        addTmpMoveMotionXZ(previousMoveNearMotion);
         if (jumpControl != null) jumpControl.control(currentTick);
     }
 
@@ -45,11 +48,10 @@ public abstract class EntityIntelligent extends EntityPhysical {
      * @return 是否成功开始跳跃，如果实体在空中或因其他原因无法开始跳跃则返回false
      */
     public boolean jump() {
-        if (!this.isOnGround() || isJumping || doingJumping) {
+        if (!this.isOnGround() || isJumping) {
             return false;
         }
         isJumping = true;
-        doingJumping = true;
         return true;
     }
 
@@ -64,7 +66,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
      * @return 该目标点是否能够到达
      */
     public boolean moveNear(Vector3 destination) {
-        if (level.getCollisionBlocks(this.offsetBoundingBox, true, false, block -> !block.isSolid()).length == 0) {
+        if (level.getCollisionBlocks(new SimpleAxisAlignedBB(destination.x - getWidth() * 0.5, destination.y, destination.z - getWidth() * 0.5,
+                        destination.x + getWidth() * 0.5, destination.y + getHeight(), destination.z + getWidth() * 0.5),
+                true, false, Block::isSolid).length == 0) {
             movingNearDestination = destination;
             return true;
         }

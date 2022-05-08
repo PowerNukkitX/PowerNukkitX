@@ -17,6 +17,8 @@ public class Vector3 implements Cloneable {
     public double y;
     public double z;
 
+    public static final Vector3 ZERO = new Vector3(0, 0, 0);
+
     public Vector3() {
         this(0, 0, 0);
     }
