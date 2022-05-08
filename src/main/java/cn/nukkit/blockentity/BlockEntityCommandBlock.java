@@ -279,14 +279,18 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
             return false;
         }
-        if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
-            if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
-                Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
-                if (next instanceof BlockCommandBlockChain nextChainBlock) {
-                    nextChainBlock.getBlockEntity().trigger(++chain);
+        try {
+            if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
+                if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
+                    Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
+                    if (next instanceof BlockCommandBlockChain nextChainBlock) {
+                        nextChainBlock.getBlockEntity().trigger(++chain);
+                    }
+                    return true;
                 }
-                return true;
             }
+        }catch(Exception e){
+            e.printStackTrace();
         }
         if (this.getLastExecution() != this.getServer().getTick()) {
             this.setConditionMet();
