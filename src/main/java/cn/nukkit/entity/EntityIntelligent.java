@@ -14,7 +14,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public boolean isJumping = false;
     public Vector3 movingNearDestination = null;
 
-    protected Vector3 previousMoveNearMotion = Vector3.ZERO;
+    public Vector3 previousMoveNearMotion = Vector3.ZERO;
 
     protected Control<?> jumpControl = null;
     protected Control<? extends Vector3> moveNearControl = null;
@@ -35,11 +35,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public void asyncPrepare(int currentTick) {
         // 处理运动
         super.asyncPrepare(currentTick);
-        if (needsRecalcMovement && moveNearControl != null) {
-            previousMoveNearMotion = moveNearControl.control(currentTick);
-        }
+        if (moveNearControl != null) previousMoveNearMotion = moveNearControl.control(currentTick, needsRecalcMovement);
         addTmpMoveMotionXZ(previousMoveNearMotion);
-        if (jumpControl != null) jumpControl.control(currentTick);
+        if (jumpControl != null) jumpControl.control(currentTick, needsRecalcMovement);
     }
 
     /**
