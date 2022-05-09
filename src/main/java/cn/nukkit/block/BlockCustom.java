@@ -35,15 +35,15 @@ public abstract class BlockCustom extends Block {
     public BlockPropertyData getBlockPropertyData() {
         CompoundTag componentsNBT = new CompoundTag()
                 .putCompound("minecraft:block_light_absorption", new CompoundTag()
-                        .putInt("value", this.getLightFilter())
-                        .putCompound("minecraft:block_light_emission", new CompoundTag()
-                                .putFloat("emission", this.getLightLevel())
-                                .putCompound("minecraft:friction", new CompoundTag()
-                                        .putFloat("value", (float) this.getResistance())
-                                        .putCompound("minecraft:rotation", new CompoundTag()
-                                                .putFloat("x", 0)
-                                                .putFloat("y", 0)
-                                                .putFloat("z", 0)))));
+                        .putInt("value", this.getLightFilter()))
+                .putCompound("minecraft:block_light_emission", new CompoundTag()
+                        .putFloat("emission", this.getLightLevel()))
+                .putCompound("minecraft:friction", new CompoundTag()
+                        .putFloat("value", (float) this.getResistance()))
+                .putCompound("minecraft:rotation", new CompoundTag()
+                        .putFloat("x", 0)
+                        .putFloat("y", 0)
+                        .putFloat("z", 0));
         if (this.getGeometry().isPresent()) {
             componentsNBT.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry().get()));

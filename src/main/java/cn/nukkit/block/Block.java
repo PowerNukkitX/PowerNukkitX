@@ -900,7 +900,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
-        if (id > MAX_BLOCK_ID) {
+        if (id >= MAX_BLOCK_ID) {
             return customBlock.get(id).clone();
         }
 
@@ -1151,8 +1151,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             BlockCustom block = blockClass.getDeclaredConstructor().newInstance();
             blockPropertyData.add(block.getBlockPropertyData());
             customBlock.put(block.getId(), block);
-            int runtimeId = BlockStateRegistry.registerCustomBlockState(block.getId(), block.getNamespace());
-            RuntimeItems.getRuntimeMapping().registerCustomBlock(block, runtimeId);
+            BlockStateRegistry.registerCustomBlockState(block.getId(), block.getNamespace());
+            RuntimeItems.getRuntimeMapping().registerCustomBlock(block, block.getId());
             Item.addCreativeItem(block.toItem());
         }
     }

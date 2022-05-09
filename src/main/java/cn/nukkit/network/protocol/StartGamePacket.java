@@ -59,10 +59,15 @@ public class StartGamePacket extends DataPacket {
     public int platformBroadcastIntent = GAME_PUBLISH_SETTING_PUBLIC;
     public boolean commandsEnabled;
     public boolean isTexturePacksRequired = false;
+    public final List<ResourcePackStackPacket.ExperimentData> experiments = new ArrayList<>();
+
+    public boolean experimentsPreviouslyToggled = true;
+
     public GameRules gameRules;
     public boolean bonusChest = false;
     public boolean hasStartWithMapEnabled = false;
-    @Since("1.3.0.0-PN") public boolean trustingPlayers;
+    @Since("1.3.0.0-PN")
+    public boolean trustingPlayers;
     public int permissionLevel = 1;
     public int serverChunkTickRange = 4;
     public boolean hasLockedBehaviorPack = false;

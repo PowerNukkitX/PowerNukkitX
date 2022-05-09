@@ -2362,13 +2362,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.rainLevel = 0;
         startGamePacket.lightningLevel = 0;
         startGamePacket.commandsEnabled = this.isEnableClientCommand();
+        startGamePacket.experiments.addAll(List.of(new ResourcePackStackPacket.ExperimentData("data_driven_items", true)));
         startGamePacket.gameRules = getLevel().getGameRules();
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
+        System.out.println(Block.getBlockPropertyDataList().get(0).toString());
         //startGamePacket.isInventoryServerAuthoritative = true;
-
         this.dataPacketImmediately(startGamePacket);
 
         this.dataPacket(new ItemComponentPacket());

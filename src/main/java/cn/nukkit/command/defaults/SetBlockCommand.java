@@ -2,21 +2,18 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
-
-import java.util.Arrays;
 
 @PowerNukkitOnly
 public class SetBlockCommand extends VanillaCommand {
@@ -78,7 +75,7 @@ public class SetBlockCommand extends VanillaCommand {
             block = Block.get(blockId, data);
         } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
             try {
-                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : "minecraft:" + args[3]).getBlockId();
+                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : args[3].contains(":") ? args[3] : "minecraft:" + args[3]).getBlockId();
                 block = Block.get(blockId, data);
             } catch (NullPointerException|IndexOutOfBoundsException ignored2) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", args[3]));

@@ -166,7 +166,7 @@ public class RuntimeItemMapping {
     public synchronized void registerCustomBlock(BlockCustom blockCustom, int runtimeId) {
         RuntimeItems.Entry entry = new RuntimeItems.Entry(
                 blockCustom.getNamespace(),
-                runtimeId,
+                255 - runtimeId,
                 null,
                 null,
                 false,
@@ -175,8 +175,8 @@ public class RuntimeItemMapping {
         this.customItemEntries.put(blockCustom.getNamespace(), entry);
         this.entries.add(entry);
         this.namespacedIdItem.put(blockCustom.getNamespace().toLowerCase(Locale.ENGLISH), blockCustom::toItem);
-        this.namespaceNetworkMap.put(blockCustom.getNamespace(), OptionalInt.of(runtimeId));
-        this.networkNamespaceMap.put(runtimeId, blockCustom.getNamespace());
+        this.namespaceNetworkMap.put(blockCustom.getNamespace(), OptionalInt.of(255 - runtimeId));
+        this.networkNamespaceMap.put(255 - runtimeId, blockCustom.getNamespace());
         this.generatePalette();
     }
 

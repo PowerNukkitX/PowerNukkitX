@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.HumanStringComparator;
+import cn.nukkit.utils.MinecraftNamespaceComparator;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -294,6 +295,9 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
+        if (state.getBlockId() >= Block.MAX_BLOCK_ID) {
+            return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
+        }
         return getRegistration(convertToNewState(state)).runtimeId;
     }
 
@@ -441,7 +445,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public synchronized static int registerCustomBlockState(int blockId, String namespace) {
+    public synchronized static void registerCustomBlockState(int blockId, String namespace) {
         registerPersistenceName(blockId, namespace);
         if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
         int runtimeId = runtimeIdRegistration.size();
@@ -452,9 +456,8 @@ public class BlockStateRegistry {
                 .putInt("runtimeId", runtimeId)
                 .putCompound("states", new CompoundTag("states"));
         Registration blockReg = new Registration(null, runtimeId, nbt);
-        runtimeIdRegistration.putIfAbsent(runtimeId, blockReg);
         stateIdRegistration.putIfAbsent(namespace, blockReg);
-        return runtimeId;
+        runtimeIdRegistration.putIfAbsent(runtimeId, blockReg);
     }
 
     private void registerStateId(CompoundTag block, int runtimeId) {
@@ -592,6 +595,10 @@ public class BlockStateRegistry {
     @Since("1.4.0.0-PN")
     public BlockState getFallbackBlockState() {
         return updateBlockRegistration.state;
+    }
+
+    private Comparator<String> getBlockIdComparator() {
+        return Collections.reverseOrder(MinecraftNamespaceComparator::compare);
     }
 
     @AllArgsConstructor
