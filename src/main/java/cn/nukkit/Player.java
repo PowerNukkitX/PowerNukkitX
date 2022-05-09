@@ -2366,6 +2366,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
+        startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
         //startGamePacket.isInventoryServerAuthoritative = true;
 
         this.dataPacketImmediately(startGamePacket);

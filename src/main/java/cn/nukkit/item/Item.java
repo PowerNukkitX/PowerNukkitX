@@ -697,7 +697,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
             Class c = null;
-            if (id < 0) {
+            if (id <= 255 - Block.MAX_BLOCK_ID) {
+                return Block.get(255 - id).toItem();
+            } else if (id < 0) {
                 int blockId = 255 - id;
                 c = Block.list[blockId];
             } else {
@@ -706,7 +708,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             Item item;
 
             if (id < 256) {
-                int blockId = id < 0? 255 - id : id;
+                int blockId = id < 0 ? 255 - id : id;
                 if (meta == 0) {
                     item = new ItemBlock(Block.get(blockId), 0, count);
                 } else if (meta == -1) {

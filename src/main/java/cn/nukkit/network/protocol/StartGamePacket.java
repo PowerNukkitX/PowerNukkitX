@@ -1,10 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 15-10-13
@@ -78,10 +82,13 @@ public class StartGamePacket extends DataPacket {
     public String premiumWorldTemplateId = "";
     public boolean isTrial = false;
     public boolean isMovementServerAuthoritative;
-    @Since("1.3.0.0-PN") public boolean isInventoryServerAuthoritative;
+    @Since("1.3.0.0-PN")
+    public boolean isInventoryServerAuthoritative;
     public long currentTick;
 
     public int enchantmentSeed;
+
+    public final List<BlockPropertyData> blockProperties = new ArrayList<>();
 
     public String multiplayerCorrelationId = "";
 
