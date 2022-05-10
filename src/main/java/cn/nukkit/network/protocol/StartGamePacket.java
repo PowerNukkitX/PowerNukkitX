@@ -4,9 +4,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
+import cn.nukkit.nbt.NBTIO;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,7 +168,19 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // isServerAuthoritativeBlockBreaking
         this.putLLong(this.currentTick);
         this.putVarInt(this.enchantmentSeed);
-        this.putUnsignedVarInt(0); // Custom blocks
+
+        // Custom blocks
+        //TODO 这里应该包含所有的方块，不仅限于自定义方块
+        this.putUnsignedVarInt(this.blockProperties.size());
+        try {
+            for (BlockPropertyData blockPropertyData : this.blockProperties) {
+                this.putString(blockPropertyData.namespace());
+                this.put(NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true));
+            }
+        } catch (IOException e) {
+            log.error("Error while encoding NBT data of BlockPropertyData", e);
+        }
+
         this.put(RuntimeItems.getRuntimeMapping().getItemDataPalette());
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);
