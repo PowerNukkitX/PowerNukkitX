@@ -1,17 +1,24 @@
 package cn.nukkit.entity.path;
 
-public final class Node {
+import org.jetbrains.annotations.NotNull;
+
+public final class Node implements Comparable<Node> {
     public final int x; // x的值
     public final int y; // y的值
     public final int z; // z的值
     public final EnumNodeOffset offset;
+    public final Node destination;
+    /**
+     * g值是此点到起点消耗的代价
+     */
     public long g; // 到起点的代价
     public Node parent; // 父亲
 
-    public Node(double x, double y, double z) {
+    public Node(double x, double y, double z, Node destination) {
         this.x = (int) x;
         this.y = (int) y;
         this.z = (int) z;
+        this.destination = destination;
         var offsetBin = 0b000;
         if (this.x != x) offsetBin |= 0b001;
         if (this.y != y) offsetBin |= 0b010;
@@ -19,11 +26,12 @@ public final class Node {
         this.offset = EnumNodeOffset.fromBinary(offsetBin);
     }
 
-    public Node(int x, int y, int z, EnumNodeOffset offset) {
+    public Node(int x, int y, int z, EnumNodeOffset offset, Node destination) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.offset = offset;
+        this.destination = destination;
     }
 
     /**
@@ -85,13 +93,46 @@ public final class Node {
         this.parent = parent;
     }
 
+    /**
+     * @return 双倍的X偏移量（偏移即返回1，否则0）
+     */
     public int doubleXOffset() {
-        return (offset.ordinal() ^ 0b001) == 0 ? 1 : 0;
+        return offset.ordinal() & 0b001;
     }
 
-    public long doubleManhattanDistance(Node other) {
-        var result = Math.abs(other.x - this.x) + Math.abs(other.y - this.y) + Math.abs(other.z - this.z);
-        return result;
+    /**
+     * @return 双倍的Y偏移量（偏移即返回1，否则0）
+     */
+    public int doubleYOffset() {
+        return (offset.ordinal() & 0b010) >>> 1;
+    }
+
+    /**
+     * @return 双倍的Z偏移量（偏移即返回1，否则0）
+     */
+    public int doubleZOffset() {
+        return (offset.ordinal() & 0b100) >>> 2;
+    }
+
+    /**
+     * 估测到另一个点的“优化曼哈顿距离”，返回实际距离*10（1位定点数）
+     *
+     * @param target 另一个点
+     * @return 优化曼哈顿距离
+     */
+    public long estimateDistance(Node target) {
+        var dx = Math.abs(((target.x << 1) + target.doubleXOffset()) - ((this.x << 1) + this.doubleXOffset()));
+        var dz = Math.abs(((target.z << 1) + target.doubleZOffset()) - ((this.z << 1) + this.doubleZOffset()));
+        return Math.max(dx, dz) * 7L + Math.min(dx, dz) * 5L + ((((long) target.y << 1) + target.doubleYOffset()) - (((long) this.y << 1) + this.doubleYOffset())) * 5L;
+    }
+
+    /**
+     * 估算到终点的代价
+     *
+     * @return 代价
+     */
+    public long estimateH() {
+        return estimateDistance(this.destination);
     }
 
     @Override
@@ -108,5 +149,10 @@ public final class Node {
                 ", offset=" + offset +
                 ", g=" + g +
                 "} parent -> " + parent;
+    }
+
+    @Override
+    public int compareTo(@NotNull Node o) {
+        return Long.compare(this.g + estimateH(), o.g + estimateH());
     }
 }
