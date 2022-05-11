@@ -1,8 +1,9 @@
 package cn.nukkit.entity.path;
 
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
-public final class Node implements Comparable<Node> {
+public final class Node implements Comparable<Node>, Cloneable {
     public final int x; // x的值
     public final int y; // y的值
     public final int z; // z的值
@@ -115,7 +116,7 @@ public final class Node implements Comparable<Node> {
     }
 
     /**
-     * 估测到另一个点的“优化曼哈顿距离”，返回实际距离*10（1位定点数）
+     * 估测到另一个点的“优化曼哈顿距离”，返回实际估计距离*10（1位定点数）
      *
      * @param target 另一个点
      * @return 优化曼哈顿距离
@@ -133,6 +134,47 @@ public final class Node implements Comparable<Node> {
      */
     public long estimateH() {
         return estimateDistance(this.destination);
+    }
+
+    /**
+     * 复制此点并偏移传入参数的二分之一（为了0.5没有小数）。
+     * 请注意，此操作不会更改G值！
+     *
+     * @param doubleDx 双倍x向移动距离
+     * @param doubleDy 双倍y向移动距离
+     * @param doubleDz 双倍z向移动距离
+     * @return 复制后移动的点
+     */
+    public Node copyAndOffsetHalf(int doubleDx, int doubleDy, int doubleDz) {
+        var resultX = this.x;
+        var resultY = this.y;
+        var resultZ = this.z;
+        var resultOffsetBin = 0b000;
+        doubleDx += doubleXOffset();
+        doubleDy += doubleYOffset();
+        doubleDz += doubleZOffset();
+        if (doubleDx != 0) {
+            if ((doubleDx & 1) == 1) { //奇数
+                resultOffsetBin |= 0b001;
+            }
+            resultX += doubleDx >> 1;
+        }
+        if (doubleDy != 0) {
+            if ((doubleDy & 1) == 1) {
+                resultOffsetBin |= 0b010;
+            }
+            resultY += doubleDy >> 1;
+        }
+        if (doubleDz != 0) {
+            if ((doubleDz & 1) == 1) {
+                resultOffsetBin |= 0b100;
+            }
+            resultZ += doubleDz >> 1;
+        }
+        var copy = new Node(resultX, resultY, resultZ, EnumNodeOffset.fromBinary(resultOffsetBin), this.destination);
+        copy.setParent(this.parent);
+        copy.setG(this.g);
+        return copy;
     }
 
     @Override
@@ -154,5 +196,12 @@ public final class Node implements Comparable<Node> {
     @Override
     public int compareTo(@NotNull Node o) {
         return Long.compare(this.g + estimateH(), o.g + estimateH());
+    }
+
+    @SneakyThrows
+    @NotNull
+    @Override
+    protected Node clone() {
+        return (Node) super.clone();
     }
 }
