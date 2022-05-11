@@ -1,59 +1,24 @@
 package cn.nukkit.entity.path;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-public final class SortedNodeStore {
-    private final SortedSet<Node> sortedNodes = new TreeSet<>();
-    private final Long2ObjectOpenHashMap<Node> nodes = new Long2ObjectOpenHashMap<>();
-
-    public void add(@NotNull Node node) {
-        sortedNodes.add(node);
-        nodes.put(node.nodeHashCode(), node);
-    }
-
-    public boolean has(long nodeHashCode) {
-        return nodes.containsKey(nodeHashCode);
-    }
+public interface SortedNodeStore extends NodeStore {
+    @Nullable
+    Node peekMinCost();
 
     @Nullable
-    public Node remove(long nodeHashCode) {
-        var tmp = nodes.get(nodeHashCode);
-        if (tmp == null) return null;
-        sortedNodes.remove(tmp);
-        return tmp;
-    }
+    Node popMinCost();
 
     @Nullable
-    public Node peekMinCost() {
-        return sortedNodes.first();
-    }
+    Node peekMaxCost();
 
     @Nullable
-    public Node popMinCost() {
-        var tmp = sortedNodes.first();
-        sortedNodes.remove(tmp);
-        return tmp;
+    Node popMaxCost();
+
+    default void resortNode(@NotNull Node node) {
+        resortNode(node.nodeHashCode());
     }
 
-    @Nullable
-    public Node peekMaxCost() {
-        return sortedNodes.last();
-    }
-
-    @Nullable
-    public Node popMaxCost() {
-        var tmp = sortedNodes.last();
-        sortedNodes.remove(tmp);
-        return tmp;
-    }
-
-    public void clear() {
-        nodes.clear();
-        sortedNodes.clear();
-    }
+    void resortNode(long nodeHashCode);
 }

@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class RandomNodeStore {
+public final class RandomNodeStoreImpl implements NodeStore {
     private final Long2ObjectOpenHashMap<Node> nodes = new Long2ObjectOpenHashMap<>();
 
     public void add(@NotNull Node node) {
@@ -22,5 +22,9 @@ public final class RandomNodeStore {
 
     public void clear() {
         nodes.clear();
+    }
+
+    public int size() {
+        return nodes.size();
     }
 }
