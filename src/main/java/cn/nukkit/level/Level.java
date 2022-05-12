@@ -2,10 +2,7 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
@@ -1593,6 +1590,66 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return collides.toArray(Block.EMPTY_ARRAY);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public List<Block> fastCollisionBlocks(AxisAlignedBB bb) {
+        return fastCollisionBlocks(bb, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public List<Block> fastCollisionBlocks(AxisAlignedBB bb, boolean targetFirst) {
+        return fastCollisionBlocks(bb, targetFirst, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public List<Block> fastCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
+        return fastCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> block.getId() != 0);
+    }
+
+    /**
+     * 此方法返回值不保证精确
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public List<Block> fastCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
+        int minX = NukkitMath.floorDouble(bb.getMinX());
+        int minY = NukkitMath.floorDouble(bb.getMinY());
+        int minZ = NukkitMath.floorDouble(bb.getMinZ());
+        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
+        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
+        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+
+        List<Block> collides = new ArrayList<>();
+
+        if (targetFirst) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            return List.of(block);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            collides.add(block);
+                        }
+                    }
+                }
+            }
+        }
+
+        return collides;
     }
 
     public boolean isFullBlock(Vector3 pos) {

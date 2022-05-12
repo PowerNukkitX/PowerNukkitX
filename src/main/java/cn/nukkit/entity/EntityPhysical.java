@@ -264,7 +264,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         final double dx = this.getWidth() * 0.5;
         final double dz = this.getHeight() * 0.5;
         this.offsetBoundingBox.setMinX(this.x - dx);
-        this.offsetBoundingBox.setMaxX(this.x + dz);
+        this.offsetBoundingBox.setMaxX(this.x + dx);
         this.offsetBoundingBox.setMinY(this.y);
         this.offsetBoundingBox.setMaxY(this.y + this.getHeight());
         this.offsetBoundingBox.setMinZ(this.z - dz);

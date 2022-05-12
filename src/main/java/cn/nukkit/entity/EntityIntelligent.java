@@ -1,16 +1,29 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
 import cn.nukkit.entity.control.ShoreControl;
 import cn.nukkit.entity.control.WalkMoveNearControl;
+import cn.nukkit.entity.path.Node;
+import cn.nukkit.entity.path.PathThinker;
+import cn.nukkit.entity.path.SearchShape;
+import cn.nukkit.entity.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class EntityIntelligent extends EntityPhysical {
+public abstract class EntityIntelligent extends EntityPhysical implements PathThinker {
+
+    /**
+     * 这个AABB是用来快速计算在某个不定点的碰撞箱的
+     */
+    protected final AxisAlignedBB fixedSizeBB = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 
     public boolean isJumping = false;
     public boolean isShoring = false;
@@ -32,6 +45,16 @@ public abstract class EntityIntelligent extends EntityPhysical {
             this.jumpControl = new JumpControl(this);
             this.shoreControl = new ShoreControl(this);
             this.moveNearControl = new WalkMoveNearControl(this);
+        }
+        {
+            final double dx = this.getWidth() * 0.5;
+            final double dz = this.getHeight() * 0.5;
+            this.fixedSizeBB.setMinX(-dx);
+            this.fixedSizeBB.setMaxX(dx);
+            this.fixedSizeBB.setMinY(0);
+            this.fixedSizeBB.setMaxY(this.getHeight());
+            this.fixedSizeBB.setMinZ(-dz);
+            this.fixedSizeBB.setMaxZ(dz);
         }
     }
 
@@ -60,6 +83,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     /**
      * 让实体跳上岸，不会添加水平移动
+     *
      * @return 此处是否能从水中尝试跳上岸
      */
     public boolean shore() {
@@ -90,4 +114,58 @@ public abstract class EntityIntelligent extends EntityPhysical {
         return false;
     }
 
+    /**
+     * 计算两点间移动的代价，通常水平移动1格为10，0.5格为5，斜向移动一格为14。
+     * 两个点不保证相邻，有可能会发生坠落，攀爬，跳跃导致不相邻。
+     * 如果两个点之间是直接不可达的，应返回{@link Long#MAX_VALUE} (9223372036854775807L)。
+     *
+     * TODO: 2022/5/12 这是个简陋的实现，仍需更多判断逻辑以完善
+     * @param from 起点
+     * @param to   终点
+     * @return 代价
+     */
+    @Override
+    public long calcCost(@NotNull Node from, @NotNull Node to) {
+        var cost = from.estimateDistance(to);
+        if (cost >= 10 || !canPassThrough0((from.realX() + to.realX()) * 0.5, (from.realY() + to.realY()) * 0.5, (from.realZ() + to.realZ()) * 0.5)) {
+            return Long.MAX_VALUE;
+        }
+        return cost;
+    }
+
+    /**
+     * 计算这个位置是否能经过，需要考虑的点包括但不限于此处是否有方块阻挡，脚下是否是空气能站立，梯子/藤蔓是否能攀爬等。
+     *
+     * @param node 要计算可通过性的点
+     * @return 是否可通过
+     */
+    @Override
+    public boolean canPassThrough(@NotNull Node node) {
+        return canPassThrough0(node.realX(), node.realY(), node.realZ());
+    }
+
+    private boolean canPassThrough0(double x, double y, double z) {
+        var tmpBB = fixedSizeBB.getOffsetBoundingBox(x, y, z);
+        if (this.level.fastCollisionBlocks(tmpBB, true, false,
+                block -> block.isSolid(BlockFace.UP) || !isSafeBlock(block)).size() > 0) {
+            return false;
+        }
+        return this.level.fastCollisionBlocks(tmpBB.getOffsetBoundingBox(0, -0.5, 0), true, false,
+                block -> block.isSolid(BlockFace.UP) || isSafeBlock(block)).size() > 0;
+    }
+
+    protected boolean isSafeBlock(@NotNull Block block) {
+        final var bid = block.getId();
+        return bid != BlockID.FLOWING_LAVA && bid != BlockID.STILL_LAVA && bid != BlockID.MAGMA && bid != BlockID.FIRE;
+    }
+
+    /**
+     * @return 搜索形状
+     * @see SearchShape
+     */
+    @NotNull
+    @Override
+    public SearchShape getSearchShape() {
+        return new CommonWalkerSearchShape();
+    }
 }

@@ -74,6 +74,18 @@ public final class Node implements Comparable<Node>, Cloneable {
         return z;
     }
 
+    public double realX() {
+        return x + doubleXOffset() * 0.5;
+    }
+
+    public double realY() {
+        return y + doubleYOffset() * 0.5;
+    }
+
+    public double realZ() {
+        return z + doubleZOffset() * 0.5;
+    }
+
     public EnumNodeOffset getOffset() {
         return offset;
     }
