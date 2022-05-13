@@ -13,6 +13,7 @@ import cn.nukkit.event.block.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -46,7 +47,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected long lastExecution;
     protected boolean trackOutput;
     protected String lastOutput;
-    protected ListTag<StringTag> lastOutputParams; //TODO
+    protected ListTag<StringTag> lastOutputParams;
     protected int lastOutputCommandMode;
     protected boolean lastOutputCondionalMode;
     protected boolean lastOutputRedstoneMode;
@@ -591,6 +592,14 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void sendMessage(TextContainer message) {
         this.sendMessage(this.getServer().getLanguage().translate(message));
+        this.lastOutput = message.getText();
+        if (message instanceof TranslationContainer translationContainer){
+            ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+            for (String param : translationContainer.getParameters()){
+                newParams.add(new StringTag("",param));
+            }
+            this.lastOutputParams = newParams;
+        }
     }
 
     @Override
