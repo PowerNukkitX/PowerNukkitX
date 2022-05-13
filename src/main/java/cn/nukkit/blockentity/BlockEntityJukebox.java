@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRecord;
@@ -112,6 +113,13 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.recordItem = NBTIO.getItemHelper(this.namedTag.getCompound("RecordItem"));
     }
 
     @Override

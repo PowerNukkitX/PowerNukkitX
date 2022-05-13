@@ -1,10 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
@@ -211,6 +208,15 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putInt("y", (int) this.getY());
         this.namedTag.putInt("z", (int) this.getZ());
         this.namedTag.putBoolean("isMovable", this.movable);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void loadNBT() {
+        this.x = this.namedTag.getInt("x");
+        this.y = this.namedTag.getInt("y");
+        this.z = this.namedTag.getInt("z");
+        this.movable = this.namedTag.getBoolean("isMovable");
     }
 
     public CompoundTag getCleanedNBT() {

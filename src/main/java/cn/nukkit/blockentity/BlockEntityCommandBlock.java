@@ -194,6 +194,27 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         this.namedTag.putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick);
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.powered = this.namedTag.getBoolean(TAG_POWERED);
+        this.conditionalMode = this.namedTag.getBoolean(TAG_CONDITIONAL_MODE);
+        this.auto = this.namedTag.getBoolean(TAG_AUTO);
+        this.command = this.namedTag.getString(TAG_COMMAND);
+        this.lastExecution = this.namedTag.getLong(TAG_LAST_EXECUTION);
+        this.trackOutput = this.namedTag.getBoolean(TAG_TRACK_OUTPUT);
+        this.lastOutput = this.namedTag.getString(TAG_LAST_OUTPUT);
+        this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
+        this.lastOutputCommandMode = this.namedTag.getInt(TAG_LP_COMMAND_MODE);
+        this.lastOutputCondionalMode = this.namedTag.getBoolean(TAG_LP_CONDIONAL_MODE);
+        this.lastOutputRedstoneMode = this.namedTag.getBoolean(TAG_LP_REDSTONE_MODE);
+        this.successCount = this.namedTag.getInt(TAG_SUCCESS_COUNT);
+        this.conditionMet = this.namedTag.getBoolean(TAG_CONDITION_MET);
+        this.tickDelay = this.namedTag.getInt(TAG_TICK_DELAY);
+        this.executingOnFirstTick = this.namedTag.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
+    }
+
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag nbt = getDefaultCompound(this, BlockEntity.COMMAND_BLOCK)
