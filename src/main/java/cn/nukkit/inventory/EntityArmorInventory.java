@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -81,26 +82,30 @@ public class EntityArmorInventory extends BaseInventory {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setHelmet(Item item) {
-        this.setItem(SLOT_CHEST, item);
+    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    public boolean setHelmet(Item item) {
+        return this.setItem(SLOT_CHEST, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setChestplate(Item item) {
-        this.setItem(SLOT_CHEST, item);
+    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    public boolean setChestplate(Item item) {
+        return this.setItem(SLOT_CHEST, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setLeggings(Item item) {
-        this.setItem(SLOT_LEGS, item);
+    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    public boolean setLeggings(Item item) {
+        return this.setItem(SLOT_LEGS, item);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setBoots(Item item) {
-        this.setItem(SLOT_FEET, item);
+    @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
+    public boolean setBoots(Item item) {
+        return  this.setItem(SLOT_FEET, item);
     }
 
     @Override

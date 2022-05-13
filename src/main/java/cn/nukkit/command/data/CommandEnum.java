@@ -1,5 +1,6 @@
 package cn.nukkit.command.data;
 
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.ImmutableList;
 
@@ -43,6 +44,7 @@ public class CommandEnum {
 
     private String name;
     private List<String> values;
+    private boolean limited = true;
 
     @Since("1.4.0.0-PN")
     public CommandEnum(String name, String... values) {
@@ -50,8 +52,15 @@ public class CommandEnum {
     }
 
     public CommandEnum(String name, List<String> values) {
+        this(name, values, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public CommandEnum(String name, List<String> values, boolean limited) {
         this.name = name;
         this.values = values;
+        this.limited = limited;
     }
 
     public String getName() {
@@ -60,6 +69,10 @@ public class CommandEnum {
 
     public List<String> getValues() {
         return values;
+    }
+
+    public boolean isLimited() {
+        return limited;
     }
 
     @Override

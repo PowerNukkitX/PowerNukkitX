@@ -225,7 +225,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getBlock().getId();
+        int blockId = this.getLevelBlock().getId();
         return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
     }
 
@@ -279,9 +279,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
             return false;
         }
-        if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
+        if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
             if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
-                Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
                 if (next instanceof BlockCommandBlockChain nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
                 }
@@ -306,7 +306,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                             cmd = cmd.substring(1);
                         }
 
-                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getBlock(), cmd);
+                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getLevelBlock(), cmd);
                         Server.getInstance().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {
                             return false;
@@ -328,7 +328,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                     }
                 }
 
-                Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                Block block = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
                 if (block instanceof BlockCommandBlockChain chainBlock) {
                     chainBlock.getBlockEntity().trigger(++chain);
                 }
@@ -348,7 +348,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public int getMode() {
-        Block block = this.getBlock();
+        Block block = this.getLevelBlock();
         if (block.getId() == BlockID.REPEATING_COMMAND_BLOCK) {
             return MODE_REPEATING;
         } else if (block.getId() == BlockID.CHAIN_COMMAND_BLOCK) {
@@ -401,7 +401,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public boolean setConditionMet() {
         Block block;
-        if (this.isConditional() && (block = this.getBlock()) instanceof BlockCommandBlock) {
+        if (this.isConditional() && (block = this.getLevelBlock()) instanceof BlockCommandBlock) {
             Block next = block.getSide(((Faceable) block).getBlockFace().getOpposite());
             if (next instanceof BlockCommandBlock) {
                 BlockEntityCommandBlock commandBlock = ((BlockCommandBlock) next).getBlockEntity();

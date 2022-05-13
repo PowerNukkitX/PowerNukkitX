@@ -117,8 +117,7 @@ public class SetBlockCommand extends VanillaCommand {
         }
 
         Item item = block.toItem();
-        block.position(position);
-        level.setBlock(position, block, true, true);
+        level.setBlock(position, block);
         if (args.length > 4) {
             level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
         }

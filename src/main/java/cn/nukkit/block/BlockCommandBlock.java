@@ -105,7 +105,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
             this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
         }
         this.getLevel().setBlock(block, this, true);
-        this.createBlockEntity(item);
+        this.createBlockEntity(null);
         return true;
     }
 
@@ -117,7 +117,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public boolean onActivate(Item item, Player player) {
         if (player != null) {
-            BlockEntityCommandBlock tile = this.getBlockEntity();
+            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity(null);
             tile.spawnTo(player);
             player.addWindow(tile.getInventory());
         }
@@ -127,7 +127,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            BlockEntityCommandBlock tile = this.getBlockEntity();
+            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity(null);
             if (this.isGettingPower()) {
                 if (!tile.isPowered()) {
                     tile.setPowered();
@@ -147,15 +147,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
 
     @Override
     public int getComparatorInputOverride() {
-        return Math.min(this.getBlockEntity().getSuccessCount(), 0xf);
-    }
-
-    public BlockEntityCommandBlock getBlockEntity() {
-        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
-        if (blockEntity instanceof BlockEntityCommandBlock) {
-            return (BlockEntityCommandBlock) blockEntity;
-        }
-        return this.createBlockEntity(null);
+        return Math.min(this.getOrCreateBlockEntity(null).getSuccessCount(), 0xf);
     }
 
     @Since("1.4.0.0-PN")
@@ -174,26 +166,6 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         return BlockEntity.COMMAND_BLOCK;
     }
 
-    protected BlockEntityCommandBlock createBlockEntity(Item item) {
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMMAND_BLOCK);
-        if (item != null) {
-            if (item.hasCustomName()) {
-                nbt.putString("CustomName", item.getCustomName());
-            }
-            if (item.hasCustomBlockData()) {
-                Map<String, Tag> customData = item.getCustomBlockData().getTags();
-                for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                    nbt.put(tag.getKey(), tag.getValue());
-                }
-            }
-        }
-        return new BlockEntityCommandBlock(this.getChunk(), this.createCompoundTag(nbt));
-    }
-
-    protected CompoundTag createCompoundTag(CompoundTag nbt) {
-        return nbt;
-    }
-
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     @Override
@@ -202,8 +174,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         BlockEntity source = this.level.getBlockEntity(this);
         if (source != null) {
             BlockEntityCommandBlock cb = (BlockEntityCommandBlock) source;
-            clone.getOrCreateBlockEntity();
-            BlockEntityCommandBlock cloneEntity = (BlockEntityCommandBlock) clone.getBlockEntity();
+            BlockEntityCommandBlock cloneEntity = (BlockEntityCommandBlock) clone.getOrCreateBlockEntity(null);
             cloneEntity.setConditional(cb.isConditional());
             cloneEntity.setAuto(cb.isAuto());
             cloneEntity.setCommand(cb.getCommand());

@@ -79,9 +79,10 @@ public class CommandParser {
         }
         String argString = argStringBuilder.toString();
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
-        if (cache.containsKey(argString.toString())) {//get from cache to improve performance
-            this.parsedArgs = cache.get(argString.toString()).parsedArgs;
-            this.matchedCommandForm = cache.get(argString.toString()).matchedCommandForm;
+        CommandParser tmp_parsedArgs = cache.get(argString);//get from cache to improve performance
+        if (tmp_parsedArgs != null) {
+            this.parsedArgs = tmp_parsedArgs.parsedArgs;
+            this.matchedCommandForm = tmp_parsedArgs.matchedCommandForm;
             return this.matchedCommandForm;
         }
         Map<String, String> commandPatterns = new HashMap<>();
@@ -144,7 +145,7 @@ public class CommandParser {
                         }
                     }
                 } else {
-                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item")) {
+                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
                         pattern.append(STRING_PATTERN);
                     } else {
                         pattern.append("(");
@@ -478,9 +479,9 @@ public class CommandParser {
                 };
             }
             return switch (type) {
-                case X -> baseVector3.setX(Double.parseDouble(arg));
-                case Y -> baseVector3.setY(Double.parseDouble(arg));
-                case Z -> baseVector3.setZ(Double.parseDouble(arg));
+                case X -> baseVector3.clone().setX(Double.parseDouble(arg));
+                case Y -> baseVector3.clone().setY(Double.parseDouble(arg));
+                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));//return a new vector
             };
         } catch (Exception e) {
             throw new CommandSyntaxException();
