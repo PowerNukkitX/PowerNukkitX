@@ -2,6 +2,7 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 
@@ -129,6 +130,12 @@ public class CommandParameter {
     @Since("1.4.0.0-PN")
     public static CommandParameter newEnum(String name, boolean optional, String type) {
         return newEnum(name, optional, new CommandEnum(type, new ArrayList<>()));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static CommandParameter newEnum(String name, boolean optional, String type,boolean limited) {
+        return newEnum(name, optional, new CommandEnum(type, new ArrayList<>(),limited));
     }
 
     @Since("1.4.0.0-PN")
