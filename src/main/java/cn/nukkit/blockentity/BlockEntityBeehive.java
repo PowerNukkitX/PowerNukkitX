@@ -76,6 +76,32 @@ public class BlockEntityBeehive extends BlockEntity {
             occupantsTag.add(occupant.saveNBT());
         }
         this.namedTag.putList(occupantsTag);
+
+        // Backward compatibility
+        if (this.namedTag.contains("HoneyLevel")) {
+            int faceHorizontalIndex = 0;
+            Block block = getBlock();
+            if (block instanceof BlockBeehive) {
+                faceHorizontalIndex = block.getDamage() & 0b11;
+                int honeyLevel = this.namedTag.getByte("HoneyLevel");
+                BlockBeehive beehive = (BlockBeehive) block;
+                beehive.setBlockFace(BlockFace.fromHorizontalIndex(faceHorizontalIndex));
+                beehive.setHoneyLevel(honeyLevel);
+                beehive.getLevel().setBlock(beehive, beehive, true, true);
+            }
+            this.namedTag.remove("HoneyLevel");
+        }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        ListTag<CompoundTag> occupantsTag = namedTag.getList("Occupants", CompoundTag.class);
+        for (int i = 0; i < occupantsTag.size(); i++) {
+            this.occupants.add(new Occupant(occupantsTag.get(i)));
+        }
+
     }
 
     @PowerNukkitOnly

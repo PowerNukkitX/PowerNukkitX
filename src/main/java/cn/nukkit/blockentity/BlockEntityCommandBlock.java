@@ -13,6 +13,7 @@ import cn.nukkit.event.block.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -46,7 +47,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected long lastExecution;
     protected boolean trackOutput;
     protected String lastOutput;
-    protected ListTag<StringTag> lastOutputParams; //TODO
+    protected ListTag<StringTag> lastOutputParams;
     protected int lastOutputCommandMode;
     protected boolean lastOutputCondionalMode;
     protected boolean lastOutputRedstoneMode;
@@ -191,6 +192,27 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         this.namedTag.putInt(TAG_VERSION, CURRENT_VERSION);
         this.namedTag.putInt(TAG_TICK_DELAY, this.tickDelay);
         this.namedTag.putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick);
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.powered = this.namedTag.getBoolean(TAG_POWERED);
+        this.conditionalMode = this.namedTag.getBoolean(TAG_CONDITIONAL_MODE);
+        this.auto = this.namedTag.getBoolean(TAG_AUTO);
+        this.command = this.namedTag.getString(TAG_COMMAND);
+        this.lastExecution = this.namedTag.getLong(TAG_LAST_EXECUTION);
+        this.trackOutput = this.namedTag.getBoolean(TAG_TRACK_OUTPUT);
+        this.lastOutput = this.namedTag.getString(TAG_LAST_OUTPUT);
+        this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
+        this.lastOutputCommandMode = this.namedTag.getInt(TAG_LP_COMMAND_MODE);
+        this.lastOutputCondionalMode = this.namedTag.getBoolean(TAG_LP_CONDIONAL_MODE);
+        this.lastOutputRedstoneMode = this.namedTag.getBoolean(TAG_LP_REDSTONE_MODE);
+        this.successCount = this.namedTag.getInt(TAG_SUCCESS_COUNT);
+        this.conditionMet = this.namedTag.getBoolean(TAG_CONDITION_MET);
+        this.tickDelay = this.namedTag.getInt(TAG_TICK_DELAY);
+        this.executingOnFirstTick = this.namedTag.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
     }
 
     @Override
@@ -591,6 +613,14 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void sendMessage(TextContainer message) {
         this.sendMessage(this.getServer().getLanguage().translate(message));
+        this.lastOutput = message.getText();
+        if (message instanceof TranslationContainer translationContainer){
+            ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+            for (String param : translationContainer.getParameters()){
+                newParams.add(new StringTag("",param));
+            }
+            this.lastOutputParams = newParams;
+        }
     }
 
     @Override

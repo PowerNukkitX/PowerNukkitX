@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -59,9 +60,21 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
+        }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
+        for (CompoundTag compound : list.getAll()) {
+            Item item = NBTIO.getItemHelper(compound);
+            this.inventory.setItem(compound.getByte("Slot"), item);
         }
     }
 

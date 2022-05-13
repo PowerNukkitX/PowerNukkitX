@@ -110,6 +110,14 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .remove("Creator");
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.mouthMoving = namedTag.getBoolean("MouthMoving");
+        this.mouthTickCount = namedTag.getInt("MouthTickCount");
+    }
+
     @Override
     public boolean isBlockEntityValid() {
         return getBlock().getId() == Block.SKULL_BLOCK;

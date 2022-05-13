@@ -125,6 +125,15 @@ public abstract class BlockEntityEjectable  extends BlockEntitySpawnable impleme
         super.saveNBT();
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        for (int i = 0; i < this.getSize(); i++) {
+            this.inventory.setItem(i, this.getItem(i));
+        }
+    }
+
     @Override
     public String getName() {
         return this.hasName() ? this.namedTag.getString("CustomName") : getBlockEntityName();

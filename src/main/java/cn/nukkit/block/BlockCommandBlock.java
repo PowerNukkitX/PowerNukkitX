@@ -104,9 +104,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
         } else {
             this.setPropertyValue(FACING_DIRECTION, BlockFace.DOWN);
         }
-        this.getLevel().setBlock(block, this, true);
-        this.createBlockEntity(null);
-        return true;
+        return BlockEntityHolder.setBlockAndCreateEntity(this, true, true) != null;
     }
 
     @Override
@@ -164,36 +162,5 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public String getBlockEntityType() {
         return BlockEntity.COMMAND_BLOCK;
-    }
-
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    @Override
-    public Block cloneTo(Position pos) {
-        BlockCommandBlock clone = (BlockCommandBlock) super.cloneTo(pos);
-        BlockEntity source = this.level.getBlockEntity(this);
-        if (source != null) {
-            BlockEntityCommandBlock cb = (BlockEntityCommandBlock) source;
-            BlockEntityCommandBlock cloneEntity = (BlockEntityCommandBlock) clone.getOrCreateBlockEntity(null);
-            cloneEntity.setConditional(cb.isConditional());
-            cloneEntity.setAuto(cb.isAuto());
-            cloneEntity.setCommand(cb.getCommand());
-            cloneEntity.setLastExecution(cb.getLastExecution());
-            cloneEntity.setTrackOutput(cb.isTrackOutput());
-            cloneEntity.setLastOutput(cb.getLastOutput());
-            cloneEntity.setLastOutputParams(cb.getLastOutputParams());
-            cloneEntity.setLastOutputCommandMode(cb.getLastOutputCommandMode());
-            cloneEntity.setLastOutputCondionalMode(cb.isLastOutputCondionalMode());
-            cloneEntity.setLastOutputRedstoneMode(cb.isLastOutputRedstoneMode());
-            cloneEntity.setSuccessCount(cb.getSuccessCount());
-            cloneEntity.setConditional(cb.isConditional());
-            cloneEntity.setTickDelay(cb.getTickDelay());
-            cloneEntity.setExecutingOnFirstTick(cb.isExecutingOnFirstTick());
-
-            if (cloneEntity.getMode() == MODE_REPEATING) {
-                cloneEntity.scheduleUpdate();
-            }
-        }
-        return clone;
     }
 }

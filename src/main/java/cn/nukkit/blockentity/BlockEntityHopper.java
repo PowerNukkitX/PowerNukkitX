@@ -156,12 +156,23 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
         }
 
         this.namedTag.putInt("TransferCooldown", this.transferCooldown);
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.transferCooldown = this.namedTag.getInt("TransferCooldown");
+        for (int i = 0; i < this.getSize(); i++) {
+            this.inventory.setItem(i, this.getItem(i));
+        }
     }
 
     @Override
