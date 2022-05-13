@@ -118,8 +118,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      * 计算两点间移动的代价，通常水平移动1格为10，0.5格为5，斜向移动一格为14。
      * 两个点不保证相邻，有可能会发生坠落，攀爬，跳跃导致不相邻。
      * 如果两个点之间是直接不可达的，应返回{@link Long#MAX_VALUE} (9223372036854775807L)。
-     *
+     * <p>
      * TODO: 2022/5/12 这是个简陋的实现，仍需更多判断逻辑以完善
+     * TODO: 2022/5/13 尚未完美实现跳跃和坠落
+     *
      * @param from 起点
      * @param to   终点
      * @return 代价

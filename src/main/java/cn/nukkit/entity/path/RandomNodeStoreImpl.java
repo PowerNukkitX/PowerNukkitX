@@ -16,6 +16,12 @@ public final class RandomNodeStoreImpl implements NodeStore {
     }
 
     @Nullable
+    @Override
+    public Node get(long nodeHashCode) {
+        return nodes.get(nodeHashCode);
+    }
+
+    @Nullable
     public Node remove(long nodeHashCode) {
         return nodes.remove(nodeHashCode);
     }

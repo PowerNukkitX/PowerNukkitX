@@ -3,6 +3,8 @@ package cn.nukkit.entity.path;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+
 public final class Node implements Comparable<Node>, Cloneable {
     public final int x; // x的值
     public final int y; // y的值
@@ -84,6 +86,18 @@ public final class Node implements Comparable<Node>, Cloneable {
 
     public double realZ() {
         return z + doubleZOffset() * 0.5;
+    }
+
+    public int doubleRealX() {
+        return (x << 1) + doubleXOffset();
+    }
+
+    public int doubleRealY() {
+        return (y << 1) + doubleYOffset();
+    }
+
+    public int doubleRealZ() {
+        return (z << 1) + doubleZOffset();
     }
 
     public EnumNodeOffset getOffset() {
@@ -208,6 +222,14 @@ public final class Node implements Comparable<Node>, Cloneable {
     @Override
     public int compareTo(@NotNull Node o) {
         return Long.compare(this.g + estimateH(), o.g + estimateH());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Node node) {
+            return compareTo(node) == 0;
+        }
+        return false;
     }
 
     @SneakyThrows

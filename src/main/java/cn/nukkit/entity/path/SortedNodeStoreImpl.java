@@ -21,6 +21,12 @@ public final class SortedNodeStoreImpl implements SortedNodeStore {
     }
 
     @Nullable
+    @Override
+    public Node get(long nodeHashCode) {
+        return nodes.get(nodeHashCode);
+    }
+
+    @Nullable
     public Node remove(long nodeHashCode) {
         var tmp = nodes.get(nodeHashCode);
         if (tmp == null) return null;

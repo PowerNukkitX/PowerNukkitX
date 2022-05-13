@@ -8,8 +8,19 @@ public interface NodeStore {
 
     boolean has(long nodeHashCode);
 
+    default boolean has(@NotNull Node node) {
+        return has(node.nodeHashCode());
+    }
+
+    @Nullable
+    Node get(long nodeHashCode);
+
     @Nullable
     Node remove(long nodeHashCode);
+
+    default Node remove(Node node) {
+        return remove(node.nodeHashCode());
+    }
 
     int size();
 
