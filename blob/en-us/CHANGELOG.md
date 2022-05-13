@@ -23,6 +23,7 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#161] Implemented and built in vanilla commands and command block within PowerNukkitX.
 - [#177] Added Terra generator inside PowerNukkitX ([FAQ](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)).
 - [#236] Initial implementation and completion of JavaScript plugin support in PowerNukkitX [(click here for development documentation)](https://doc.powernukkitx.cn/en-us/plugin-dev/js/%E6%A6%82%E8%BF%B0_en-us.html).
+- [#288] Implement the /summon command. ` (Tips: will conflict with MobPlugin's /summon command)`
 
 ### Changed
 
@@ -30,6 +31,7 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#78] Add newly added items to the creation item bar.
 - [#132] Change whitelist to allowlist.
 - [#243] Implemented to be compatible with 1.18.30 (protocol version 503).
+- [#275] Implement basic entity motion handling.
 
 ### Fixes
 
@@ -56,10 +58,14 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#188] Fix incorrect drop damage calculation.
 - [#202] Fix EntityArmorChangeEvene not triggering properly.
 - [#251] Fix an issue where plowing does not change back to dirt when a square is placed on a plowed field.
+- [#265] Fix an exploit where Hellgate cannot teleport.
+- [#273] Fix an exploit where synthesizing an empty barrel or empty barrel has a probability of turning into the wrong barrel with ID 0 when storing lava.
+- [#283] Fix an exploit where logs decompose all to oak boards.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
 - [#255] Preliminary re-login attack issue.
+- [#292] Updated [Bedrock-Network](https://github.com/PowerNukkit/Bedrock-Network) dependency to 1.6.28, fixes CVE-2020-7238.
 
 ### Documentation
 - [#235] Added all missing `@PowerNukkitXOnly` annotations
@@ -1118,6 +1124,12 @@ Need to switch languages?
 [#243]: https://github.com/PowerNukkitX/PowerNukkitX/pull/243
 [#251]: https://github.com/PowerNukkitX/PowerNukkitX/pull/251
 [#255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/255
+[#265]: https://github.com/PowerNukkitX/PowerNukkitX/pull/265
+[#273]: https://github.com/PowerNukkitX/PowerNukkitX/pull/273
+[#275]: https://github.com/PowerNukkitX/PowerNukkitX/pull/275
+[#283]: https://github.com/PowerNukkitX/PowerNukkitX/pull/283
+[#288]: https://github.com/PowerNukkitX/PowerNukkitX/pull/288
+[#292]: https://github.com/PowerNukkitX/PowerNukkitX/pull/292
 
 <!--PowerNukkitX Version history-->
 

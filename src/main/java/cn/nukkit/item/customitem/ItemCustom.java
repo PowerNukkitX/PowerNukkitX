@@ -58,6 +58,10 @@ public abstract class ItemCustom extends StringItem {
         return 4;
     }
 
+    public int getEnchantableValue() {
+        return 10;
+    }
+
     public CompoundTag getComponentsData() {
         CompoundTag data = new CompoundTag();
         data.putCompound("components", new CompoundTag()

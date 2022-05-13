@@ -75,19 +75,31 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
                         new CompoundTag().putInt("max_durability", this.getMaxDurability())
                 )
                 .getCompound("item_properties")
-                .putInt("damage", this.getAttackDamage());
+                .putInt("damage", this.getAttackDamage())
+                .putInt("enchantable_value", this.getEnchantableValue());
 
         if(this.isPickaxe()) {
+            data.getCompound("components").getCompound("item_properties")
+                    .putString("enchantable_slot", "pickaxe");
             data.getCompound("components")
                     .putCompound("minecraft:digger", getPickaxeDiggerNBT(this.getTier()));
         }else if(this.isAxe()) {
+            data.getCompound("components").getCompound("item_properties")
+                    .putString("enchantable_slot", "axe");
             data.getCompound("components")
                     .putCompound("minecraft:digger", getAxeDiggerNBT(this.getTier()));
-        }else if(this.isShovel()) {
+        }else if (this.isShovel()) {
+            data.getCompound("components").getCompound("item_properties")
+                    .putString("enchantable_slot", "shovel");
             data.getCompound("components")
                     .putCompound("minecraft:digger", getShovelDiggerNBT(this.getTier()));
+        } else if (this.isHoe()) {
+            data.getCompound("components").getCompound("item_properties")
+                    .putString("enchantable_slot", "hoe");
+        } else if (this.isSword()) {
+            data.getCompound("components").getCompound("item_properties")
+                    .putString("enchantable_slot", "sword");
         }
-
         return data;
     }
 

@@ -16,10 +16,17 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class JSIInitiator {
     private static final Value NULL = Value.asValue(null);
 
-    public static final Timer jsTimer = new Timer();
+    public static Timer jsTimer = new Timer();
     public static final Long2ObjectMap<JSTimerTask> jsTimeTaskMap = new Long2ObjectOpenHashMap<>();
     public static final Map<Context, LongList> contextTimerIdMap = new ConcurrentHashMap<>();
     private static final AtomicLong globalTimerId = new AtomicLong();
+
+    public static void reset() {
+        jsTimer = new Timer();
+        jsTimeTaskMap.clear();
+        contextTimerIdMap.clear();
+        globalTimerId.set(0);
+    }
 
     public static void init(Context context) {
         initTimer(context);

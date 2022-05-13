@@ -22,7 +22,7 @@
 - [#161] 在PowerNukkitX内实现并内置了香草命令和命令方块。
 - [#177] 在PowerNukkitX内添加Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 - [#236] 在PowerNukkitX中初步实现并完成了JavaScript插件支持[（点此查看开发文档）](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)。
-
+- [#288] 实现/summon命令。`（Tips：会和MobPlugin的/summon命令产生冲突）`
 
 ### 修改记录
 
@@ -30,6 +30,7 @@
 - [#78] 将新增加的物品添加创造物品栏中。
 - [#132] 将whitelist更改为allowlist。
 - [#243] 实现兼容1.18.30 (协议版本503)。
+- [#275] 实现基本的实体运动处理。
 
 ### BUG修复
 
@@ -56,11 +57,15 @@
 - [#188] 修复错误的掉落伤害计算。
 - [#202] 修复EntityArmorChangeEvene无法正常触发。
 - [#251] 修复耕地上放置方块，耕地无法变回泥土的问题。
+- [#265] 修复地狱门无法传送的漏洞。
+- [#273] 修复合成空桶或空桶在存放岩浆时有概率会变成ID为0的错误桶的漏洞。
+- [#283] 修复原木分解均为橡木板的漏洞。
 
 ### 安全漏洞修复
 
 - [#16] 将Log4J更新至2.17.1，修复CVE-2021-44832。
 - [#255] 初步重登录攻击问题。
+- [#292] 将[Bedrock-Network](https://github.com/PowerNukkit/Bedrock-Network)依赖更新至1.6.28，修复CVE-2020-7238。
 
 ### 文档内容
 
@@ -1121,6 +1126,12 @@ Need to switch languages?
 [#243]: https://github.com/PowerNukkitX/PowerNukkitX/pull/243
 [#251]: https://github.com/PowerNukkitX/PowerNukkitX/pull/251
 [#255]: https://github.com/PowerNukkitX/PowerNukkitX/pull/255
+[#265]: https://github.com/PowerNukkitX/PowerNukkitX/pull/265
+[#273]: https://github.com/PowerNukkitX/PowerNukkitX/pull/273
+[#275]: https://github.com/PowerNukkitX/PowerNukkitX/pull/275
+[#283]: https://github.com/PowerNukkitX/PowerNukkitX/pull/283
+[#288]: https://github.com/PowerNukkitX/PowerNukkitX/pull/288
+[#292]: https://github.com/PowerNukkitX/PowerNukkitX/pull/292
 
 <!--PowerNukkitX Version history-->
 

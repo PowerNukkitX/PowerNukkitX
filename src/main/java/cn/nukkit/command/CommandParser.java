@@ -493,7 +493,7 @@ public class CommandParser {
             return switch (type) {
                 case X -> baseVector3.clone().setX(Double.parseDouble(arg));
                 case Y -> baseVector3.clone().setY(Double.parseDouble(arg));
-                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));
+                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));//return a new vector
             };
         } catch (Exception e) {
             throw new CommandSyntaxException();
