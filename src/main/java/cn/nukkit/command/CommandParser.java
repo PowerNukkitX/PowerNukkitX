@@ -6,13 +6,13 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
-import cn.nukkit.utils.TextFormat;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -31,7 +31,11 @@ public class CommandParser {
     private static final String COORDINATE_PATTERN = "([~^]-?\\d+(?:\\.\\d+)?|-?\\d+(?:\\.\\d+)?|[~^])";//coordinate part value
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
-    private static Map<String, CommandParser> cache = new WeakHashMap<>();//using cache to improve performance
+    //using cache to improve performance
+    private static Cache<String,CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
+    private static Cache<String,PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
+
+    private record PatternCache(Pattern pattern,int length){}
 
     private final Command command;
     private final CommandSender sender;
@@ -79,110 +83,118 @@ public class CommandParser {
         }
         String argString = argStringBuilder.toString();
         if (matchedCommandForm != null) return matchedCommandForm;//already got its form
-        CommandParser tmp_parsedArgs = cache.get(argString);//get from cache to improve performance
+        CommandParser tmp_parsedArgs = result_cache.getIfPresent(argString);//get from cache to improve performance
         if (tmp_parsedArgs != null) {
             this.parsedArgs = tmp_parsedArgs.parsedArgs;
             this.matchedCommandForm = tmp_parsedArgs.matchedCommandForm;
             return this.matchedCommandForm;
         }
-        Map<String, String> commandPatterns = new HashMap<>();
+        Map<String, Pattern> commandPatterns = new HashMap<>();
         Map<String, Integer> commandArgLength = new HashMap<>();//non-optional args' length
         for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
-            StringBuilder pattern = new StringBuilder();
-            pattern.append("^");
-            int length = 0;//non-optional args' length
-            for (CommandParameter parameter : entry.getValue()) {
-                pattern.append("(?:");
-                if (parameter.enumData == null) {
-                    switch (parameter.type) {
-                        case INT -> {
-                            pattern.append(INT_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case WILDCARD_INT -> {
-                            pattern.append(WILDCARD_INT_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case FLOAT, VALUE -> {
-                            pattern.append(FLOAT_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case POSITION -> {
-                            for (int i = 0; i < 3; i++) {
-                                pattern.append(COORDINATE_PATTERN);
-                                if (i != 2) {
-                                    pattern.append("\\s*");
-                                } else {
-                                    pattern.append("\\s+");
+            PatternCache pcache = pattern_cache.getIfPresent(command.getName() + "_" + entry.getKey());
+            if (pcache != null) {
+                commandPatterns.put(entry.getKey(), pcache.pattern);
+                commandArgLength.put(entry.getKey(), pcache.length);
+            }else {
+                StringBuilder pattern = new StringBuilder();
+                pattern.append("^");
+                int length = 0;//non-optional args' length
+                for (CommandParameter parameter : entry.getValue()) {
+                    pattern.append("(?:");
+                    if (parameter.enumData == null) {
+                        switch (parameter.type) {
+                            case INT -> {
+                                pattern.append(INT_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case WILDCARD_INT -> {
+                                pattern.append(WILDCARD_INT_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case FLOAT, VALUE -> {
+                                pattern.append(FLOAT_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case POSITION -> {
+                                for (int i = 0; i < 3; i++) {
+                                    pattern.append(COORDINATE_PATTERN);
+                                    if (i != 2) {
+                                        pattern.append("\\s*");
+                                    } else {
+                                        pattern.append("\\s+");
+                                    }
                                 }
                             }
-                        }
-                        case BLOCK_POSITION -> {
-                            for (int i = 0; i < 3; i++) {
-                                pattern.append(BLOCK_COORDINATE_PATTERN);
-                                if (i != 2) {
-                                    pattern.append("\\s*");
-                                } else {
-                                    pattern.append("\\s+");
+                            case BLOCK_POSITION -> {
+                                for (int i = 0; i < 3; i++) {
+                                    pattern.append(BLOCK_COORDINATE_PATTERN);
+                                    if (i != 2) {
+                                        pattern.append("\\s*");
+                                    } else {
+                                        pattern.append("\\s+");
+                                    }
                                 }
                             }
+                            case TARGET -> {
+                                pattern.append(TARGET_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case WILDCARD_TARGET -> {
+                                pattern.append(WILDCARD_TARGET_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case STRING, FILE_PATH, OPERATOR -> {
+                                pattern.append(STRING_PATTERN);
+                                pattern.append("\\s+");
+                            }
+                            case MESSAGE, TEXT, COMMAND, RAWTEXT, JSON -> {
+                                pattern.append(MULTIPLE_STRING_PATTERN);
+                                pattern.append("\\s+");
+                            }
                         }
-                        case TARGET -> {
-                            pattern.append(TARGET_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case WILDCARD_TARGET -> {
-                            pattern.append(WILDCARD_TARGET_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case STRING, FILE_PATH, OPERATOR -> {
+                    } else {
+                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
                             pattern.append(STRING_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                        case MESSAGE, TEXT, COMMAND, RAWTEXT, JSON  -> {
-                            pattern.append(MULTIPLE_STRING_PATTERN);
-                            pattern.append("\\s+");
-                        }
-                    }
-                } else {
-                    if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
-                        pattern.append(STRING_PATTERN);
-                    } else {
-                        pattern.append("(");
-                        for (String str : parameter.enumData.getValues()) {
-                            for (char c : str.toCharArray()) {
-                                if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '[' || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
-                                    pattern.append("\\");
+                        } else {
+                            pattern.append("(");
+                            for (String str : parameter.enumData.getValues()) {
+                                for (char c : str.toCharArray()) {
+                                    if (c == '$' || c == '(' || c == ')' || c == '*' || c == '+' || c == '.' || c == '[' || c == '?' || c == '\\' || c == '^' || c == '{' || c == '|') {
+                                        pattern.append("\\");
+                                    }
+                                    pattern.append(c);
                                 }
-                                pattern.append(c);
+                                pattern.append("|");
                             }
-                            pattern.append("|");
+                            pattern.deleteCharAt(pattern.length() - 1);
+                            pattern.append(")");
                         }
-                        pattern.deleteCharAt(pattern.length() - 1);
-                        pattern.append(")");
+                        pattern.append("\\s+");
                     }
-                    pattern.append("\\s+");
-                }
-                pattern.append(")");
-                if (!parameter.optional) {
-                    if (parameter.type == CommandParamType.POSITION || parameter.type == CommandParamType.BLOCK_POSITION) {
-                        length += 3;
+                    pattern.append(")");
+                    if (!parameter.optional) {
+                        if (parameter.type == CommandParamType.POSITION || parameter.type == CommandParamType.BLOCK_POSITION) {
+                            length += 3;
+                        } else {
+                            length++;
+                        }
                     } else {
-                        length++;
+                        pattern.append("?");
                     }
-                }else{
-                    pattern.append("?");
                 }
-            }
 
-            pattern.append("$");
-            commandPatterns.put(entry.getKey(), pattern.toString());
-            commandArgLength.put(entry.getKey(), length);
+                pattern.append("$");
+                Pattern compiled = Pattern.compile(pattern.toString());
+                commandPatterns.put(entry.getKey(),compiled);
+                commandArgLength.put(entry.getKey(), length);
+
+                pattern_cache.put(command.getName() + "_" + entry.getKey(),new PatternCache(compiled, length));//cache the compiled pattern
+            }
         }
 
-        for (Map.Entry<String, String> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])) {
-            Pattern pattern = Pattern.compile(entry.getValue());
-            Matcher matcher = pattern.matcher(argString.toString());
+        for (Map.Entry<String, Pattern> entry : commandPatterns.entrySet().toArray(new Map.Entry[0])) {
+            Matcher matcher = entry.getValue().matcher(argString);
             if (!matcher.find()) {
                 commandPatterns.remove(entry.getKey());
             }
@@ -197,7 +209,7 @@ public class CommandParser {
         } else if (commandPatterns.size() > 1) {
             String maxLengthForm = commandPatterns.keySet().iterator().next();
             int maxLength = commandArgLength.get(maxLengthForm);
-            for (Map.Entry<String, String> entry : commandPatterns.entrySet()) {
+            for (Map.Entry<String, Pattern> entry : commandPatterns.entrySet()) {
                 if (commandArgLength.get(entry.getKey()) > maxLength) {
                     maxLength = commandArgLength.get(entry.getKey());
                     maxLengthForm = entry.getKey();
@@ -212,7 +224,7 @@ public class CommandParser {
             return null;
         }
 
-        Matcher matcher = Pattern.compile(commandPatterns.get(result)).matcher(argString.toString());
+        Matcher matcher = commandPatterns.get(result).matcher(argString.toString());
         matcher.find();
         String[] pArg = new String[matcher.groupCount()];
         for (int i = 1; i <= matcher.groupCount(); i++) {
@@ -233,7 +245,7 @@ public class CommandParser {
 
         matchedCommandForm = result;
 
-        cache.put(argString.toString(), this);
+        result_cache.put(argString.toString(), this);
         return result;
     }
 
@@ -481,7 +493,7 @@ public class CommandParser {
             return switch (type) {
                 case X -> baseVector3.clone().setX(Double.parseDouble(arg));
                 case Y -> baseVector3.clone().setY(Double.parseDouble(arg));
-                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));//return a new vector
+                case Z -> baseVector3.clone().setZ(Double.parseDouble(arg));
             };
         } catch (Exception e) {
             throw new CommandSyntaxException();
@@ -491,6 +503,4 @@ public class CommandParser {
     enum CoordinateType {
         X, Y, Z
     }
-
-
 }
