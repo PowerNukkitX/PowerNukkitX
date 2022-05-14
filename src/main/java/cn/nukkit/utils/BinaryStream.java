@@ -7,7 +7,10 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.item.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDurable;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
@@ -450,7 +453,7 @@ public class BinaryStream {
 
             if (compoundTag != null && compoundTag.getAllTags().size() > 0) {
                 if (compoundTag.contains("Damage")) {
-                    if (id > 255) {
+                    if (stringId != null || (id != null && id > 255)) {
                         damage = compoundTag.getInt("Damage");
                     }
                     compoundTag.remove("Damage");
@@ -483,9 +486,9 @@ public class BinaryStream {
         }
 
         Item item = null;
-        if(id != null) {
+        if (id != null) {
             item = readUnknownItem(Item.get(id, damage, count, nbt));
-        }else if(stringId != null) {
+        } else if (stringId != null) {
             final Item tmp = Item.fromString(stringId);
             tmp.setDamage(damage);
             tmp.setCount(count);
