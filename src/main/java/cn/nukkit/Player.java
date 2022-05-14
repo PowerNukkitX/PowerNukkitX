@@ -1065,32 +1065,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
-            ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-
-            int i = 0;
-            for (String id : Item.getCustomItems().keySet()) {
-                try {
-                    Item item = Item.fromString(id);
-                    if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = itemCustom.getComponentsData();
-                        data.putShort("minecraft:identifier", i);
-
-                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
-
-                        i++;
-                    }
-                }catch (Exception e) {
-                    log.error("ItemComponentPacket encoding error", e);
-                }
-            }
-
-            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
-
-            this.dataPacket(itemComponentPacket);
-        }
-
         if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
             Server.getInstance().getScoreboardManager().onPlayerJoin(this);
         }
@@ -2371,7 +2345,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.dataPacketImmediately(startGamePacket);
 
-        this.dataPacket(new ItemComponentPacket());
+        ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
+        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
+
+            Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
+
+            int i = 0;
+            for (String id : Item.getCustomItems().keySet()) {
+                try {
+                    Item item = Item.fromString(id);
+                    if (item instanceof ItemCustom itemCustom) {
+                        CompoundTag data = itemCustom.getComponentsData();
+                        data.putShort("minecraft:identifier", i);
+
+                        entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
+
+                        i++;
+                    }
+                }catch (Exception e) {
+                    log.error("ItemComponentPacket encoding error", e);
+                }
+            }
+
+            itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
+        }
+        this.dataPacket(itemComponentPacket);
 
         this.dataPacket(new BiomeDefinitionListPacket());
         this.dataPacket(new AvailableEntityIdentifiersPacket());
@@ -5007,7 +5005,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.health = 0;
             this.extinguish();
             this.scheduleUpdate();
-
             if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 for (Item item : ev.getDrops()) {
                     if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE) && item.applyEnchantments()) {
@@ -5016,19 +5013,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    new HashMap<>(this.inventory.slots).forEach((slot,item) -> {
+                    new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
                         if(!item.keepOnDeath()){
                             this.inventory.clear(slot);
                         }
                     });
                 }
                 if (this.offhandInventory != null) {
-                    new HashMap<>(this.offhandInventory.slots).forEach((slot,item) -> {
-                        if(!item.keepOnDeath()){
+                    new HashMap<>(this.offhandInventory.slots).forEach((slot, item) -> {
+                        if (!item.keepOnDeath()) {
                             this.offhandInventory.clear(slot);
                         }
                     });
                 }
+            } else if (this.inventory != null) {
+                this.inventory.slots.forEach((slot, item) -> {
+                    if (item.getNamedTag().isEmpty()) {
+                        item.setCompoundTag(new byte[]{});
+                    }
+                });
             }
 
             if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
