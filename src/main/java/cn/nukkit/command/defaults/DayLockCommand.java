@@ -6,7 +6,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 public class DayLockCommand extends VanillaCommand {

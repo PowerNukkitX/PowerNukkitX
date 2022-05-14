@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.utils.RawText;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
@@ -4487,6 +4488,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendMessage(message.getText());
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void sendRawTextMessage(RawText text){
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_OBJECT;
+        pk.message = text.toRawText();
+        this.dataPacket(pk);
+    }
+
     public void sendTranslation(String message) {
         this.sendTranslation(message, EmptyArrays.EMPTY_STRINGS);
     }
@@ -4561,6 +4571,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setRawTextSubTitle(RawText text){
+        SetTitlePacket pk = new SetTitlePacket();
+        pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
+        pk.text = text.toRawText();
+        this.dataPacket(pk);
+    }
+
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ANIMATION_TIMES;
@@ -4576,6 +4595,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.text = text;
         packet.type = SetTitlePacket.TYPE_TITLE;
         this.dataPacket(packet);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setRawTextTitle(RawText text){
+        SetTitlePacket pk = new SetTitlePacket();
+        pk.type = SetTitlePacket.TYPE_TITLE_JSON;
+        pk.text = text.toRawText();
+        this.dataPacket(pk);
     }
 
     public void sendTitle(String title) {
@@ -4603,6 +4631,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTION_BAR;
         pk.text = title;
+        pk.fadeInTime = fadein;
+        pk.stayTime = duration;
+        pk.fadeOutTime = fadeout;
+        this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setRawTextActionBar(RawText text){
+        this.setRawTextActionBar(text, 1, 0, 1);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout){
+        SetTitlePacket pk = new SetTitlePacket();
+        pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
+        pk.text = text.toRawText();
         pk.fadeInTime = fadein;
         pk.stayTime = duration;
         pk.fadeOutTime = fadeout;

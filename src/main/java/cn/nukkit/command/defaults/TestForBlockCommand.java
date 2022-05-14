@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -11,7 +10,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
