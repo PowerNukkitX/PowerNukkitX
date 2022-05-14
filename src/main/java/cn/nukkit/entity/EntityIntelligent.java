@@ -158,7 +158,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     @Override
     public long calcCost(@NotNull Node from, @NotNull Node to) {
         var cost = from.estimateDistance(to);
-        if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, (from.realY() + to.realY()) * 0.5, (from.realZ() + to.realZ()) * 0.5)) {
+        if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, to.realY(), (from.realZ() + to.realZ()) * 0.5)) {
             return Long.MAX_VALUE;
         }
         return cost;

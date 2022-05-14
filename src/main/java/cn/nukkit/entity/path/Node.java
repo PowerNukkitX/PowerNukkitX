@@ -153,7 +153,7 @@ public final class Node implements Comparable<Node>, Cloneable {
     public long estimateDistance(Node target) {
         var dx = Math.abs(((target.x << 1) + target.doubleXOffset()) - ((this.x << 1) + this.doubleXOffset()));
         var dz = Math.abs(((target.z << 1) + target.doubleZOffset()) - ((this.z << 1) + this.doubleZOffset()));
-        return Math.max(dx, dz) * 7L + Math.min(dx, dz) * 5L + ((((long) target.y << 1) + target.doubleYOffset()) - (((long) this.y << 1) + this.doubleYOffset())) * 5L;
+        return Math.max(dx, dz) * 5L + Math.min(dx, dz) * 7L + ((((long) target.y << 1) + target.doubleYOffset()) - (((long) this.y << 1) + this.doubleYOffset())) * 5L;
     }
 
     /**
