@@ -210,6 +210,9 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putBoolean("isMovable", this.movable);
     }
 
+    /*
+     * load data from namedtag (used after you editd it's namedtag)
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void loadNBT() {
