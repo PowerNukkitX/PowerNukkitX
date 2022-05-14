@@ -89,7 +89,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                         Block block = blocks[i];
                         Block destinationBlock = destinationBlocks[i];
 
-                        if (block.equals(destinationBlock)) {
+                        if (block.equalsBlock(destinationBlock)) {
                             ++count;
                         } else {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));
@@ -103,7 +103,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                         Block block = blocks[i];
                         Block destinationBlock = destinationBlocks[i];
 
-                        if (block.equals(destinationBlock)) {
+                        if (block.equalsBlock(destinationBlock)) {
                             ++count;
                         } else if (block.getId() != Block.AIR) {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));

@@ -2483,9 +2483,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return pos.getLevelBlock();
     }
 
-    @PowerNukkitDifference(info = "Only override in PNX", since = "1.6.0.0-PNX")
-    @Override
-    public boolean equals(Object obj) {
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean equalsBlock(Object obj) {
         if(obj instanceof Block otherBlock) {
             if (!(this instanceof BlockEntityHolder<?>) && !(otherBlock instanceof BlockEntityHolder<?>)) {
                 return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage();
