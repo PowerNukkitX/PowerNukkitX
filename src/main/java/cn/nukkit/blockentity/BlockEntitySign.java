@@ -73,7 +73,20 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     @Override
     public void saveNBT() {
         super.saveNBT();
+        this.namedTag.putString("Text", String.join("\n", text));
         this.namedTag.remove("Creator");
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        String[] lines = new String[4];
+        Arrays.fill(lines, "");
+        String[] splitLines = this.namedTag.getString("Text").split("\n", 4);
+        System.arraycopy(splitLines, 0, lines, 0, splitLines.length);
+        sanitizeText(lines);
+        this.setText(lines);
     }
 
     @Override

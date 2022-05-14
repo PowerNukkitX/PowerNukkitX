@@ -2464,7 +2464,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public Block cloneTo(Position pos){
+    public void cloneTo(Position pos){
         if (this instanceof BlockEntityHolder<?> holder){
             if (holder.getBlockEntity() != null){
                 CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
@@ -2472,7 +2472,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 tag.putInt("y", pos.getFloorY());
                 tag.putInt("z", pos.getFloorZ());
                 if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())){
-                    BlockEntity.createBlockEntity(holder.getBlockEntity().getName(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
+                    BlockEntity.createBlockEntity(holder.getBlockEntityType(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
                 }else{
                     pos.getLevelBlockEntity().namedTag = tag;
                     pos.getLevelBlockEntity().loadNBT();
@@ -2480,7 +2480,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             }
         }
         pos.level.setBlock(pos,this.layer,this.clone());
-        return pos.getLevelBlock();
     }
 
     @PowerNukkitXOnly
