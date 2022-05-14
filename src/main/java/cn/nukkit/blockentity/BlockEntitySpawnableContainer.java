@@ -71,10 +71,10 @@ public abstract class BlockEntitySpawnableContainer extends BlockEntitySpawnable
     @Override
     public void loadNBT() {
         super.loadNBT();
+        this.inventory.clearAll();
         ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
-            this.inventory.clearAll();
             this.inventory.setItem(compound.getByte("Slot"), item);
         }
     }
