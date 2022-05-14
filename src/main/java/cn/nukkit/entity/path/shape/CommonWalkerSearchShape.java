@@ -15,9 +15,10 @@ public class CommonWalkerSearchShape implements SearchShape {
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
                 for (int k = -2; k <= 2; k++) {
-                    if (i != 0 && j != 0 && k != 0) {
-                        list.add(new OffsetNodeMaker(i, j, k));
+                    if (i == 0 && j == 0 && k == 0) {
+                        continue;
                     }
+                    list.add(new OffsetNodeMaker(i, j, k));
                 }
             }
         }

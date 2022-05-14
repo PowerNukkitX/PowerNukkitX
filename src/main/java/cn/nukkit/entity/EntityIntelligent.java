@@ -6,11 +6,14 @@ import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
 import cn.nukkit.entity.control.ShoreControl;
 import cn.nukkit.entity.control.WalkMoveNearControl;
+import cn.nukkit.entity.path.AStarPathFinder;
 import cn.nukkit.entity.path.Node;
 import cn.nukkit.entity.path.PathThinker;
 import cn.nukkit.entity.path.SearchShape;
 import cn.nukkit.entity.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.CriticalParticle;
+import cn.nukkit.level.particle.HappyVillagerParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -115,6 +118,32 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     }
 
     /**
+     * 尝试寻路到目标位置
+     *
+     * @return 是否能寻路到目标位置
+     */
+    public boolean tryPath(Vector3 pathDestination, boolean displayParticle) {
+        pathDestination = pathDestination.clone();
+        var pathFinder = new AStarPathFinder();
+        var destinationNode = new Node(pathDestination.x, pathDestination.y, pathDestination.z, null);
+        destinationNode.setParent(destinationNode);
+        var startNode = new Node(this.x, this.y, this.z, destinationNode);
+        pathFinder.setPathThinker(this);
+        pathFinder.setDestination(destinationNode);
+        pathFinder.setStart(startNode);
+        pathFinder.prepareSearch();
+        var result = pathFinder.search();
+        if (result && displayParticle) {
+            var current = destinationNode;
+            while (current != null) {
+                level.addParticle(new HappyVillagerParticle(current.toRealVector()));
+                current = current.getParent();
+            }
+        }
+        return result;
+    }
+
+    /**
      * 计算两点间移动的代价，通常水平移动1格为10，0.5格为5，斜向移动一格为14。
      * 两个点不保证相邻，有可能会发生坠落，攀爬，跳跃导致不相邻。
      * 如果两个点之间是直接不可达的，应返回{@link Long#MAX_VALUE} (9223372036854775807L)。
@@ -129,7 +158,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     @Override
     public long calcCost(@NotNull Node from, @NotNull Node to) {
         var cost = from.estimateDistance(to);
-        if (cost >= 10 || !canPassThrough0((from.realX() + to.realX()) * 0.5, (from.realY() + to.realY()) * 0.5, (from.realZ() + to.realZ()) * 0.5)) {
+        if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, (from.realY() + to.realY()) * 0.5, (from.realZ() + to.realZ()) * 0.5)) {
             return Long.MAX_VALUE;
         }
         return cost;
@@ -148,12 +177,14 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
 
     private boolean canPassThrough0(double x, double y, double z) {
         var tmpBB = fixedSizeBB.getOffsetBoundingBox(x, y, z);
-        if (this.level.fastCollisionBlocks(tmpBB, true, false,
-                block -> block.isSolid(BlockFace.UP) || !isSafeBlock(block)).size() > 0) {
+        var a = this.level.fastCollisionBlocks(tmpBB, false, false,
+                block -> block.isSolid() || !isSafeBlock(block));
+        if (a.size() > 0) {
             return false;
         }
-        return this.level.fastCollisionBlocks(tmpBB.getOffsetBoundingBox(0, -0.5, 0), true, false,
-                block -> block.isSolid(BlockFace.UP) || isSafeBlock(block)).size() > 0;
+        a = this.level.fastCollisionBlocks(tmpBB.getOffsetBoundingBox(0, -0.5, 0), false, false,
+                block -> block.isSolid() && isSafeBlock(block));
+        return a.size() > 0;
     }
 
     protected boolean isSafeBlock(@NotNull Block block) {

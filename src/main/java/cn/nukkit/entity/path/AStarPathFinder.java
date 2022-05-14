@@ -1,5 +1,10 @@
 package cn.nukkit.entity.path;
 
+import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.level.particle.FlameParticle;
+import cn.nukkit.level.particle.HappyVillagerParticle;
+import cn.nukkit.level.particle.RedstoneParticle;
+
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进
  */
@@ -41,10 +46,11 @@ public class AStarPathFinder {
             } else {
                 var minCostNode = openNodes.popMinCost();
                 if (minCostNode == null) {
-                    return destination.parent != null;
+                    return destination.getParent() != null;
                 }
                 if (minCostNode.equals(destination)) {
-                    destination.setParent(minCostNode);
+                    destination.setParent(minCostNode.getParent());
+                    destination.setG(minCostNode.getG());
                     return true;
                 }
                 searchShape.setCenterNode(minCostNode);
@@ -61,14 +67,19 @@ public class AStarPathFinder {
                         closeNodes.add(each);
                         continue;
                     }
-                    var newG = minCostNode.g + cost;
-                    var oldNode = openNodes.get(each.nodeHashCode());
-                    if (oldNode != null && oldNode.g > newG) {
-                        oldNode.g = newG;
-                        oldNode.parent = minCostNode;
+                    var newG = minCostNode.getG() + cost;
+                    var oldNode = openNodes.remove(each.nodeHashCode());
+                    if (oldNode != null) {
+                        if (oldNode.getG() > newG) {
+                            each.setG(newG);
+                            each.setParent(minCostNode);
+                            openNodes.add(oldNode);
+                        } else {
+                            openNodes.add(oldNode);
+                        }
                     } else {
-                        each.g = newG;
-                        each.parent = minCostNode;
+                        each.setG(newG);
+                        each.setParent(minCostNode);
                         openNodes.add(each);
                     }
                 }
@@ -79,16 +90,8 @@ public class AStarPathFinder {
     }
 
     public void reset() {
-        if (closeNodes != null) {
-            closeNodes.clear();
-        } else {
-            closeNodes = new RandomNodeStoreImpl();
-        }
-        if (openNodes != null) {
-            openNodes.clear();
-        } else {
-            openNodes = new SortedNodeStoreImpl();
-        }
+        closeNodes = new RandomNodeStoreImpl();
+        openNodes = new SortedNodeStoreImpl();
     }
 
     public NodeStore getCloseNodes() {

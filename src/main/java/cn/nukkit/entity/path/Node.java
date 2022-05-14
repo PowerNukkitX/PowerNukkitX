@@ -1,9 +1,8 @@
 package cn.nukkit.entity.path;
 
+import cn.nukkit.math.Vector3;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
 
 public final class Node implements Comparable<Node>, Cloneable {
     public final int x; // x的值
@@ -14,8 +13,8 @@ public final class Node implements Comparable<Node>, Cloneable {
     /**
      * g值是此点到起点消耗的代价
      */
-    public long g; // 到起点的代价
-    public Node parent; // 父亲
+    private long g; // 到起点的代价
+    private Node parent; // 父亲
 
     public Node(double x, double y, double z, Node destination) {
         this.x = (int) x;
@@ -86,6 +85,10 @@ public final class Node implements Comparable<Node>, Cloneable {
 
     public double realZ() {
         return z + doubleZOffset() * 0.5;
+    }
+
+    public Vector3 toRealVector() {
+        return new Vector3(realX(), realY(), realZ());
     }
 
     public int doubleRealX() {
@@ -204,11 +207,6 @@ public final class Node implements Comparable<Node>, Cloneable {
     }
 
     @Override
-    public int hashCode() {
-        return Long.hashCode(nodeHashCode());
-    }
-
-    @Override
     public String toString() {
         return "Node{" +
                 "x=" + x +
@@ -221,13 +219,18 @@ public final class Node implements Comparable<Node>, Cloneable {
 
     @Override
     public int compareTo(@NotNull Node o) {
-        return Long.compare(this.g + estimateH(), o.g + estimateH());
+        var a = this.g + estimateH();
+        var b = o.g + o.estimateH();
+        if (a == b) {
+            return Integer.compare(this.hashCode(), o.hashCode());
+        }
+        return Long.compare(a, b);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Node node) {
-            return compareTo(node) == 0;
+            return node.x == this.x && node.y == this.y && node.z == this.z && node.offset == this.offset;
         }
         return false;
     }
