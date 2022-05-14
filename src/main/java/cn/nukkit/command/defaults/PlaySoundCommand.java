@@ -9,7 +9,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.PlaySoundPacket;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Lists;

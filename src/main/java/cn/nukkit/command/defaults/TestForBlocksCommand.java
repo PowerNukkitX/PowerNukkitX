@@ -10,12 +10,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
