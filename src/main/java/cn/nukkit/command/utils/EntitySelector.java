@@ -604,7 +604,11 @@ public final class EntitySelector {
 
     private static int getInt(String value, int defaultValue) {
         try {
-            return Integer.parseInt(value);
+            if (value.startsWith("~")){
+                return defaultValue + Integer.parseInt(value.substring(1));
+            }else {
+                return Integer.parseInt(value);
+            }
         } catch (NumberFormatException e) {
             return defaultValue;
         }
