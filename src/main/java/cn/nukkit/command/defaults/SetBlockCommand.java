@@ -116,11 +116,8 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        Item item = block.toItem();
+
         level.setBlock(position, block);
-        if (args.length > 4) {
-            level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
-        }
         sender.sendMessage(new TranslationContainer("commands.setblock.success"));
         return true;
     }
