@@ -75,7 +75,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         BlockEntity entity = getTile(x, y, z);
         if (entity != null) {
             try {
-                if (!entity.closed && entity.isBlockEntityValid()) {
+                if (entity.closed || entity.isBlockEntityValid()) {
                     return;
                 }
             } catch (Exception e) {
@@ -93,6 +93,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
                     log.warn("Block entity validation failed", e);
                 }
             }
+            entity.close();
             removeBlockEntity(entity);
         }
     }
