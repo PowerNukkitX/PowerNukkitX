@@ -4959,7 +4959,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.health = 0;
             this.extinguish();
             this.scheduleUpdate();
-
             if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                 for (Item item : ev.getDrops()) {
                     if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE) && item.applyEnchantments()) {
@@ -4968,19 +4967,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
 
                 if (this.inventory != null) {
-                    new HashMap<>(this.inventory.slots).forEach((slot,item) -> {
+                    new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
                         if(!item.keepOnDeath()){
                             this.inventory.clear(slot);
                         }
                     });
                 }
                 if (this.offhandInventory != null) {
-                    new HashMap<>(this.offhandInventory.slots).forEach((slot,item) -> {
-                        if(!item.keepOnDeath()){
+                    new HashMap<>(this.offhandInventory.slots).forEach((slot, item) -> {
+                        if (!item.keepOnDeath()) {
                             this.offhandInventory.clear(slot);
                         }
                     });
                 }
+            } else if (this.inventory != null) {
+                this.inventory.slots.forEach((slot, item) -> {
+                    if (item.getNamedTag().isEmpty()) {
+                        item.setCompoundTag(new byte[]{});
+                    }
+                });
             }
 
             if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
