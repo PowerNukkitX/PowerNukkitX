@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
@@ -21,6 +22,10 @@ public class SetTitlePacket extends DataPacket {
     public static final int TYPE_SUBTITLE = 3;
     public static final int TYPE_ACTION_BAR = 4;
     public static final int TYPE_ANIMATION_TIMES = 5;
+
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_TITLE_JSON = 6;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_SUBTITLE_JSON = 7;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final int TYPE_ACTIONBAR_JSON = 8;
 
     public int type;
     public String text = "";

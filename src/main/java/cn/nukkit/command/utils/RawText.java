@@ -24,8 +24,6 @@ public class RawText {
     private static final Gson gson = new Gson();
     @SerializedName("rawtext")
     private List<Component> components = new ArrayList<>();
-    private transient boolean needTranslate = false;
-    private transient List<String> params = null;
 
     private RawText(){}
 
@@ -48,16 +46,6 @@ public class RawText {
                 Component newComponent = preParseSelector(component,sender);
                 if(newComponent != null)
                     cps.set(cps.indexOf(component),newComponent);
-            }
-            if (component.getType() == Component.ComponentType.TRANSLATE) {
-                text.needTranslate = true;
-            }
-            if (component.getType() == Component.ComponentType.TRANSLATE_WITH) {
-                if (component.getComponent_text() == null) {
-                    text.params = component.component_translate_with;
-                }else {
-                    text.params.addAll(component.component_translate_with);
-                }
             }
             if (component.getType() == Component.ComponentType.RAWTEXT) {
                 preParse(sender,text,component.component_rawtext);
