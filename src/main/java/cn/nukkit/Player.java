@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.utils.RawText;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
@@ -4487,6 +4488,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         this.sendMessage(message.getText());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void sendRawTextMessage(RawText text){
+        TextPacket pk = new TextPacket();
+        pk.type = TextPacket.TYPE_OBJECT;
+        pk.isLocalized = text.isNeedTranslate();
+        if(text.getParams() != null) {
+            pk.parameters = text.getParams();
+        }
+        pk.message = text.toRawText();
+        this.dataPacket(pk);
     }
 
     public void sendTranslation(String message) {
