@@ -5026,12 +5026,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     });
                 }
-            } else if (this.inventory != null) {
-                this.inventory.slots.forEach((slot, item) -> {
-                    if (item.getNamedTag().isEmpty()) {
-                        item.setCompoundTag(new byte[]{});
-                    }
-                });
             }
 
             if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
