@@ -3804,6 +3804,7 @@ public class Level implements ChunkManager, Metadatable {
         this.generateChunk(x, z);
     }
 
+    @PowerNukkitDifference(info = "add blockEntity.isBlockEntityValid() testing",since = "1.6.0.0-PNX")
     public void doChunkGarbageCollection() {
         this.timings.doChunkGC.startTiming();
         // remove all invaild block entities.
@@ -3812,7 +3813,7 @@ public class Level implements ChunkManager, Metadatable {
             while (iter.hasNext()) {
                 BlockEntity blockEntity = iter.next();
                 if (blockEntity != null) {
-                    if (!blockEntity.isValid()) {
+                    if (!blockEntity.isValid() || !blockEntity.isBlockEntityValid()) {
                         iter.remove();
                         blockEntity.close();
                     }
