@@ -119,7 +119,9 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
+            BlockEntityCommandBlock tile = this.getBlockEntity();
+            if (tile == null)
+                return super.onUpdate(type);
             if (this.isGettingPower()) {
                 if (!tile.isPowered()) {
                     tile.setPowered();
