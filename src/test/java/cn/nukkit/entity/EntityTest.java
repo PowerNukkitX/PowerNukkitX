@@ -22,13 +22,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityBlaze;
-import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.entity.passive.EntityChicken;
 import cn.nukkit.entity.passive.EntityPig;
-import cn.nukkit.entity.passive.EntityVillager;
-import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -80,7 +77,7 @@ class EntityTest {
     @Test
     void flameAttack() {
         entity = createEntity(EntityPig.NETWORK_ID);
-        Entity attacker = createEntity(EntityWolf.NETWORK_ID);
+        Entity attacker = createEntity(EntityZombiePigman.NETWORK_ID);
         Map<EntityDamageEvent.DamageModifier, Float> modifiers = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
         modifiers.put(EntityDamageEvent.DamageModifier.BASE, 10_000f);
         Enchantment enchantment = Enchantment.getEnchantment(Enchantment.ID_FIRE_ASPECT).setLevel(2);
@@ -130,7 +127,7 @@ class EntityTest {
 
     @Test
     void setPositionAndRotation() {
-        entity = createEntity(EntityWolf.NETWORK_ID);
+        entity = createEntity(EntityBlaze.NETWORK_ID);
         entity.setPositionAndRotation(new Vector3(1, 2, 3), 4, 5, 6);
         assertEquals(1, entity.x);
         assertEquals(2, entity.y);
@@ -142,7 +139,7 @@ class EntityTest {
 
     @Test
     void fallSlowFalling() {
-        entity = createEntity(EntityVillager.NETWORK_ID);
+        entity = createEntity(EntityZombie.NETWORK_ID);
         level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.STONE));
         entity.setPosition(new Vector3(1, 3, 3));
         entity.addEffect(Effect.getEffect(Effect.SLOW_FALLING));
@@ -179,9 +176,6 @@ class EntityTest {
             return;
         }
         entity = createEntity(id);
-        if (entity == null) {
-            return;
-        }
         assertNotNull(entity, ()-> "Entity " + Entity.getSaveId(id));
         assertNotNull(entity.getOriginalName(), "Static Name");
         String staticName = entity.getOriginalName();

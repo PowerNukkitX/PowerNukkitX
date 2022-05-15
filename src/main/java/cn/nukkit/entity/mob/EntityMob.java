@@ -1,18 +1,22 @@
 package cn.nukkit.entity.mob;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import lombok.Getter;
 
+import java.util.Collection;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityMob extends EntityPhysical {
+public abstract class EntityMob extends EntityPhysical implements InventoryHolder {
 
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
@@ -49,6 +53,22 @@ public abstract class EntityMob extends EntityPhysical {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
         }
+    }
+
+    public void spawnToAll() {
+        if (this.chunk != null && !this.closed) {
+            Collection<Player> chunkPlayers = this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values();
+            for (Player chunkPlayer : chunkPlayers) {
+                this.spawnTo(chunkPlayer);
+            }
+        }
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        super.spawnTo(player);
+        this.equipmentInventory.sendContents(player);
+        this.armorInventory.sendContents(player);
     }
 
     @Override
