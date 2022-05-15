@@ -13,6 +13,7 @@ import cn.nukkit.entity.ai.path.Node;
 import cn.nukkit.entity.ai.path.PathThinker;
 import cn.nukkit.entity.ai.path.SearchShape;
 import cn.nukkit.entity.ai.path.shape.CommonWalkerSearchShape;
+import cn.nukkit.entity.ai.sensor.Sensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.HappyVillagerParticle;
 import cn.nukkit.level.particle.RedstoneParticle;
@@ -21,9 +22,14 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class EntityIntelligent extends EntityPhysical implements PathThinker {
-
     /**
      * 这个AABB是用来快速计算在某个不定点的碰撞箱的
      */
@@ -38,6 +44,12 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     protected Control<?> jumpControl = null;
     protected Control<?> shoreControl = null;
     protected Control<? extends Vector3> moveNearControl = null;
+
+    protected Set<Sensor> sensors = new HashSet<>();
+    /**
+     * memory是一个实体的记忆，用来存储sensors、goals和controls的数据，这些数据不会被持久化
+     */
+    protected Map<Class<? extends Sensor>, Object> memory = new HashMap<>();
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, true);
@@ -64,6 +76,12 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
 
     @Override
     public void asyncPrepare(int currentTick) {
+        // 传感器收集数据
+        for (var sensor : sensors) {
+            if (sensor.shouldSense(currentTick, this)) {
+                sensor.sense(currentTick, this);
+            }
+        }
         // 处理运动
         super.asyncPrepare(currentTick);
         if (moveNearControl != null) previousMoveNearMotion = moveNearControl.control(currentTick, needsRecalcMovement);
@@ -227,5 +245,28 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     @Override
     public SearchShape getSearchShape() {
         return new CommonWalkerSearchShape();
+    }
+
+    @NotNull
+    public Map<Class<? extends Sensor>, ?> getMemoryMap() {
+        return memory;
+    }
+
+    @Nullable
+    public <T> T getMemory(@NotNull Class<? extends Sensor> sensorClass, @NotNull Class<T> valueClass) {
+        var value = memory.get(sensorClass);
+        if (valueClass.isInstance(value)) {
+            return valueClass.cast(value);
+        }
+        return null;
+    }
+
+    public void addMemory(@NotNull Class<? extends Sensor> sensorClass, Object value) {
+        memory.put(sensorClass, value);
+    }
+
+    @NotNull
+    public Set<Sensor> getSensors() {
+        return sensors;
     }
 }

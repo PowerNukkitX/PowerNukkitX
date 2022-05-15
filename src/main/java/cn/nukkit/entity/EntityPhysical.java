@@ -296,4 +296,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     public void setFloating(boolean floating) {
         isFloating = floating;
     }
+
+    public boolean ifNeedsRecalcMovement() {
+        return needsRecalcMovement;
+    }
 }
