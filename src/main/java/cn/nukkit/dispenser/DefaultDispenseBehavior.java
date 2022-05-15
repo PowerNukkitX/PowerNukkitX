@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
@@ -54,38 +55,38 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
 
 
         Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 1, dropPos.getY() - 1, dropPos.getZ() - 1, dropPos.getX() + 1.5, dropPos.getY() + 1.5, dropPos.getZ() + 1.5);
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 1, dropPos.getY() - 1, dropPos.getZ() - 1, dropPos.getX() + 1, dropPos.getY() + 1, dropPos.getZ() + 1);
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityMob mob) {
                 EntityArmorInventory armorInventory = mob.getArmorInventory();
-                if (clone.isHelmet() && armorInventory.getHelmet() == null) {
+                if (clone.isHelmet() && armorInventory.getHelmet() == BaseInventory.AIR_ITEM) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate() == null) {
+                } else if (clone.isChestplate() && armorInventory.getChestplate() == BaseInventory.AIR_ITEM) {
                     armorInventory.setChestplate(clone);
                     return null;
-                } else if (clone.isLeggings() && armorInventory.getLeggings() == null) {
+                } else if (clone.isLeggings() && armorInventory.getLeggings() == BaseInventory.AIR_ITEM) {
                     armorInventory.setLeggings(clone);
                     return null;
-                } else if (clone.isBoots() && armorInventory.getBoots() == null) {
+                } else if (clone.isBoots() && armorInventory.getBoots() == BaseInventory.AIR_ITEM) {
                     armorInventory.setBoots(clone);
                     return null;
-                } else if (mob.getEquipmentInventory().getItemInHand() != null) {
+                } else if (mob.getEquipmentInventory().getItemInHand() == BaseInventory.AIR_ITEM) {
                     mob.getEquipmentInventory().setItemInHand(clone, true);
                     return null;
                 }
             } else if (e instanceof Player p) {
                 PlayerInventory armorInventory = p.getInventory();
-                if (clone.isHelmet() && armorInventory.getHelmet() == null) {
+                if (clone.isHelmet() && armorInventory.getHelmet() == BaseInventory.AIR_ITEM) {
                     armorInventory.setHelmet(clone);
                     return null;
-                } else if (clone.isChestplate() && armorInventory.getChestplate() == null) {
+                } else if (clone.isChestplate() && armorInventory.getChestplate() == BaseInventory.AIR_ITEM) {
                     armorInventory.setChestplate(clone);
                     return null;
-                } else if (clone.isLeggings() && armorInventory.getLeggings() == null) {
+                } else if (clone.isLeggings() && armorInventory.getLeggings() == BaseInventory.AIR_ITEM) {
                     armorInventory.setLeggings(clone);
                     return null;
-                } else if (clone.isBoots() && armorInventory.getBoots() == null) {
+                } else if (clone.isBoots() && armorInventory.getBoots() == BaseInventory.AIR_ITEM) {
                     armorInventory.setBoots(clone);
                     return null;
                 }
