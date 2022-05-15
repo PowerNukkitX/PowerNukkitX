@@ -3,7 +3,6 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;

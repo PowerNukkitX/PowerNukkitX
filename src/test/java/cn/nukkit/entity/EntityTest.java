@@ -22,6 +22,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityBlaze;
+import cn.nukkit.entity.mob.EntityIronGolem;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.entity.passive.EntityChicken;
@@ -77,7 +78,7 @@ class EntityTest {
     @Test
     void flameAttack() {
         entity = createEntity(EntityPig.NETWORK_ID);
-        Entity attacker = createEntity(EntityZombiePigman.NETWORK_ID);
+        Entity attacker = createEntity(EntityIronGolem.NETWORK_ID);
         Map<EntityDamageEvent.DamageModifier, Float> modifiers = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
         modifiers.put(EntityDamageEvent.DamageModifier.BASE, 10_000f);
         Enchantment enchantment = Enchantment.getEnchantment(Enchantment.ID_FIRE_ASPECT).setLevel(2);
