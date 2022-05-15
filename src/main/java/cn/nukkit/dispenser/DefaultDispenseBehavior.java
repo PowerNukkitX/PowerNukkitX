@@ -52,8 +52,9 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         Item clone = item.clone();
         clone.count = 1;
 
-        Vector3 dropPos = dispensePos.add(motion);
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 1, dropPos.getY() + 1, dropPos.getZ() + 1);
+
+        Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 1, dropPos.getY() - 1, dropPos.getZ() - 1, dropPos.getX() + 1.5, dropPos.getY() + 1.5, dropPos.getZ() + 1.5);
         for (Entity e : block.level.getNearbyEntities(bb)) {
             if (e instanceof EntityMob mob) {
                 EntityArmorInventory armorInventory = mob.getArmorInventory();
