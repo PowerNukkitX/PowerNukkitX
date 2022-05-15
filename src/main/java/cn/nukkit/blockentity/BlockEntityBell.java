@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -51,10 +52,19 @@ public class BlockEntityBell extends BlockEntitySpawnable {
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         namedTag.putBoolean("Ringing", ringing);
         namedTag.putInt("Direction", direction);
         namedTag.putInt("Ticks", ticks);
-        super.saveNBT();
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        ringing = namedTag.getBoolean("Ringing");
+        direction = namedTag.getInt("Direction");
+        ticks = namedTag.getInt("Ticks");
     }
 
     @Override

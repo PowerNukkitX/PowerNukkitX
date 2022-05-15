@@ -4,14 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
+import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author xtypr
@@ -32,7 +30,7 @@ public class TellCommand extends VanillaCommand {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return true;
+            return false;
         }
 
         if (args.length < 2) {

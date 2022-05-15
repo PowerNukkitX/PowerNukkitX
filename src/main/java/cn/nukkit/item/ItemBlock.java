@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
@@ -77,4 +78,15 @@ public class ItemBlock extends Item {
     public boolean isLavaResistant() {
         return block.isLavaResistant();
     }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public String getNamespaceId() {
+        if (this.id != Item.AIR)
+            return super.getNamespaceId();
+        else
+            return "minecraft:air";
+    }
+
+
 }

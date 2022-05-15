@@ -1,7 +1,8 @@
-package cn.nukkit.command;
+package cn.nukkit.command.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
@@ -14,6 +15,8 @@ import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
 import lombok.Getter;
 
@@ -33,7 +36,6 @@ public final class EntitySelector {
     }
 
     private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[(.*)])?$");
-//    private static final Splitter ARGUMENT_SEPARATOR = Splitter.on(',').omitEmptyStrings();
     private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
 
     private static final Set<String> ARGS = Sets.newHashSet();
@@ -62,6 +64,9 @@ public final class EntitySelector {
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
+    private static Cache<String,Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
+    //todo: using google's cache utils
+
     private static String registerArgument(String arg) {
         ARGS.add(arg);
         return arg;
@@ -71,11 +76,14 @@ public final class EntitySelector {
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
 
         if (matcher.matches()) {
-            Map<String, List<String>> args = null;
-            try {
-                args = getArgumentMap(matcher.group(2));
-            } catch (SelectorSyntaxException e) {
-                e.printStackTrace();
+            Map<String, List<String>> args = args_cache.getIfPresent(token);
+            if (args == null) {
+                try {
+                    args = getArgumentMap(matcher.group(2));
+                    args_cache.put(token, args);
+                } catch (SelectorSyntaxException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (isEntityTypeValid(args)) {
@@ -596,7 +604,11 @@ public final class EntitySelector {
 
     private static int getInt(String value, int defaultValue) {
         try {
-            return Integer.parseInt(value);
+            if (value.startsWith("~")){
+                return defaultValue + Integer.parseInt(value.substring(1));
+            }else {
+                return Integer.parseInt(value);
+            }
         } catch (NumberFormatException e) {
             return defaultValue;
         }

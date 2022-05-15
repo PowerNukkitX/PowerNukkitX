@@ -1,26 +1,16 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.particle.*;
-import cn.nukkit.math.Vector3;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author xtypr
@@ -37,7 +27,7 @@ public class ParticleCommand extends VanillaCommand {
             particles.add(particle.getIdentifier().substring(10));
         }
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("effect", new CommandEnum("particle",particles.toArray(new String[0]))),
+                CommandParameter.newEnum("effect", new CommandEnum("particle",particles,false)),
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newType("count", true, CommandParamType.INT)
         });

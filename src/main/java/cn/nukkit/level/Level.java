@@ -3657,7 +3657,7 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        Server.getInstance().getLogger().warning("cannot find a safe spawn around position" + spawn.toString() + "!");
+        Server.getInstance().getLogger().warning("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
         return Position.fromObject(spawn, this);
     }
 

@@ -45,7 +45,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     @Since("1.5.0.0-PN")
     public static final BlockProperties PROPERTIES = CommonBlockProperties.FACING_DIRECTION_BLOCK_PROPERTIES;
 
-    private static Map<Position,Position> lockedBlocks = new HashMap<>();
+    private static Set<Position> lockedBlocks = new HashSet<>();
 
     private static Map<Position,Set<Position>> pistonUpdateListeners = new HashMap<>();
 
@@ -69,7 +69,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     }
 
     public static boolean isBlockLocked(Position pos){
-        return lockedBlocks.values().contains(pos);
+        return lockedBlocks.contains(pos);
     }
 
     public boolean sticky;
@@ -167,7 +167,6 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     public boolean onBreak(Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
         updatePistonsListenTo(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()));
-        lockedBlocks.remove(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()));
 
         Block block = this.getSide(getBlockFace());
 
@@ -195,7 +194,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 return 0;
             }
 
-            if (lockedBlocks.values().contains(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()))) {
+            if (lockedBlocks.contains(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()))) {
                 return 0;
             }
 
@@ -399,7 +398,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                 block.getY() >= block.level.getMinHeight() && (face != BlockFace.DOWN || block.getY() != block.level.getMinHeight()) &&
                         block.getY() <= block.level.getMaxHeight() - 1 && (face != BlockFace.UP || block.getY() != block.level.getMaxHeight() - 1)
         ) {
-            if (lockedBlocks.values().contains(new Position(block.getX(), block.getY(), block.getZ(), block.level))) {
+            if (lockedBlocks.contains(new Position(block.getX(), block.getY(), block.getZ(), block.level))) {
                 return false;
             }
 
@@ -523,7 +522,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
                     this.blockedPos = blockedPos;
                     return false;
                 }
-                if(lockedBlocks.values().contains(blockedPos)) {
+                if(lockedBlocks.contains(blockedPos)) {
                     this.blockedByPistonHeadOrLockedBlock = true;
                     this.blockedPos = blockedPos;
                     return false;
@@ -546,12 +545,11 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             this.toMove.forEach(block -> {
                 Block blockForward = block.getSide(this.moveDirection);
                 Position pos = new Position(blockForward.getX(), blockForward.getY(), blockForward.getZ(), blockForward.level);
-                if(!toLock.contains(pos))//todo: need to improve performance
-                    toLock.add(pos);
+                toLock.add(pos);
             });
             this.toLock.add(new Position(this.pistonPos.getX(), this.pistonPos.getY(), this.pistonPos.getZ(),this.pistonPos.level));
-            Position pistionForward = this.pistonPos.getSide(this.moveDirection);
-            this.toLock.add(new Position(pistionForward.getX(), pistionForward.getY(), pistionForward.getZ(),pistionForward.level));
+            Position pistonForward = this.pistonPos.getSide(this.moveDirection);
+            this.toLock.add(new Position(pistonForward.getX(), pistonForward.getY(), pistonForward.getZ(),pistonForward.level));
         }
 
         private boolean addBlockLine(Block origin, Block from, boolean mainBlockLine) {
@@ -694,14 +692,16 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         @Since("1.6.0.0-PNX")
         public void lockBlocks(){
             for (Position pos : toLock){
-                lockedBlocks.put(pistonPos,pos);
+                lockedBlocks.add(pos);
             }
         }
 
         @PowerNukkitOnly
         @Since("1.6.0.0-PNX")
         public void unlockBlocks() {
-            lockedBlocks.remove(pistonPos);
+            for (Position pos : toLock) {
+                lockedBlocks.remove(pos);
+            }
         }
     }
 

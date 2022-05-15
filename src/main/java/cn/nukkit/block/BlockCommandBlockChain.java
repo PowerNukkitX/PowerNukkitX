@@ -22,10 +22,4 @@ public class BlockCommandBlockChain extends BlockCommandBlock {
     public String getName() {
         return "Chain Command Block";
     }
-
-    @Override
-    protected CompoundTag createCompoundTag(CompoundTag nbt) {
-        nbt.putBoolean(BlockEntityCommandBlock.TAG_AUTO, true);
-        return nbt;
-    }
 }

@@ -14,6 +14,7 @@ import java.util.Collection;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+
 public abstract class EntityMob extends EntityPhysical implements EntityInventoryHolder {
 
     private static final String TAG_MAINHAND = "Mainhand";
@@ -93,4 +94,5 @@ public abstract class EntityMob extends EntityPhysical implements EntityInventor
     public boolean canEquipByDispenser() {
         return true;
     }
+
 }

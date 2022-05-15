@@ -162,12 +162,4 @@ public class ExecutorCommandSender implements CommandSender {
     public CommandSender getExecutor() {
         return executor;
     }
-
-    public Entity getEntity() {
-        return entity;
-    }
-
-    public Position getExecuteLocation() {
-        return executeLocation;
-    }
 }

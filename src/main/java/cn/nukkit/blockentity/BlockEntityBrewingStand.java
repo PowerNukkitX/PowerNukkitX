@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBrewingStand;
 import cn.nukkit.block.BlockID;
@@ -114,6 +115,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
         namedTag.putList(new ListTag<>("Items"));
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
@@ -122,6 +124,18 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         namedTag.putShort("CookTime", brewTime);
         namedTag.putShort("FuelAmount", this.fuelAmount);
         namedTag.putShort("FuelTotal", this.fuelTotal);
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        for (int i = 0; i < getSize(); i++) {
+            inventory.setItem(i, this.getItem(i));
+        }
+        brewTime = namedTag.getShort("CookTime");
+        fuelAmount = namedTag.getShort("FuelAmount");
+        fuelTotal = namedTag.getShort("FuelTotal");
     }
 
     @Override
