@@ -93,7 +93,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
                     log.warn("Block entity validation failed", e);
                 }
             }
-            removeBlockEntity(entity);
+            entity.close();
         }
     }
 
