@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
 import cn.nukkit.entity.control.ShoreControl;
@@ -183,7 +184,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
             return false;
         }
         a = this.level.fastCollisionBlocks(tmpBB.getOffsetBoundingBox(0, -0.5, 0), false, false,
-                block -> block.isSolid() && isSafeBlock(block));
+                block -> (block.isSolid() || block instanceof BlockWater) && isSafeBlock(block));
         return a.size() > 0;
     }
 

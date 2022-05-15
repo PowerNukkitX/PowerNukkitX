@@ -65,6 +65,9 @@ public class AStarPathFinder {
                     var cost = pathThinker.calcCost(minCostNode, each);
                     if (cost == Long.MAX_VALUE) {
                         closeNodes.add(each);
+                        if (pathThinker instanceof EntityIntelligent intelligent) {
+                            intelligent.level.addParticle(new RedstoneParticle(each.toRealVector()));
+                        }
                         continue;
                     }
                     var newG = minCostNode.getG() + cost;
