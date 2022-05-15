@@ -1,4 +1,4 @@
-package cn.nukkit.entity.path;
+package cn.nukkit.entity.ai.path;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;

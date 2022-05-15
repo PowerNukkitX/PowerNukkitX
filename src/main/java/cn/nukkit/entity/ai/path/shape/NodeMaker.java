@@ -1,6 +1,6 @@
-package cn.nukkit.entity.path.shape;
+package cn.nukkit.entity.ai.path.shape;
 
-import cn.nukkit.entity.path.Node;
+import cn.nukkit.entity.ai.path.Node;
 
 import java.util.function.Function;
 

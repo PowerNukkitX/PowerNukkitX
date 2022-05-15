@@ -1,4 +1,4 @@
-package cn.nukkit.entity.path;
+package cn.nukkit.entity.ai.path;
 
 /**
  * 每个寻路点都以其坐标地板整数值作为记录的xyz，外加此{@link EnumNodeOffset}记录相对于上述xyz的偏移量。

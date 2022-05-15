@@ -1,7 +1,7 @@
-package cn.nukkit.entity.path.shape;
+package cn.nukkit.entity.ai.path.shape;
 
-import cn.nukkit.entity.path.Node;
-import cn.nukkit.entity.path.SearchShape;
+import cn.nukkit.entity.ai.path.Node;
+import cn.nukkit.entity.ai.path.SearchShape;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

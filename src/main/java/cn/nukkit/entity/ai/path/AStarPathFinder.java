@@ -1,4 +1,4 @@
-package cn.nukkit.entity.path;
+package cn.nukkit.entity.ai.path;
 
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进

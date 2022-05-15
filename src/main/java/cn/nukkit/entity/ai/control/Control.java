@@ -1,4 +1,4 @@
-package cn.nukkit.entity.control;
+package cn.nukkit.entity.ai.control;
 
 import org.jetbrains.annotations.NotNull;
 

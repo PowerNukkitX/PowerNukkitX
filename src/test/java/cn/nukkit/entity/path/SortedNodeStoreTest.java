@@ -1,5 +1,7 @@
 package cn.nukkit.entity.path;
 
+import cn.nukkit.entity.ai.path.Node;
+import cn.nukkit.entity.ai.path.SortedNodeStoreImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

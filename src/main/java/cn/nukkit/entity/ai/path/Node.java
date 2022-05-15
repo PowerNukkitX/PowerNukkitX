@@ -1,4 +1,4 @@
-package cn.nukkit.entity.path;
+package cn.nukkit.entity.ai.path;
 
 import cn.nukkit.math.Vector3;
 import lombok.SneakyThrows;

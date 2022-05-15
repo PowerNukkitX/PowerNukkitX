@@ -1,7 +1,6 @@
-package cn.nukkit.entity.control;
+package cn.nukkit.entity.ai.control;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;

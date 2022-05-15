@@ -1,4 +1,4 @@
-package cn.nukkit.entity.path;
+package cn.nukkit.entity.ai.path;
 
 import cn.nukkit.utils.SortedList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
