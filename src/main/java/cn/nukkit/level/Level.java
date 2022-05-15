@@ -3626,10 +3626,12 @@ public class Level implements ChunkManager, Metadatable {
         if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
+        int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
+        int minY = isOverWorld() ? -64 : 0;
 
         if (allowWaterUnder) {
             for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-                for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
+                for (int y = maxY; y > minY; y--) {
                     Position pos = Position.fromObject(spawn, this);
                     pos.setY(y);
                     Position newSpawn;
@@ -3646,7 +3648,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
+            for (int y = maxY; y > minY; y--) {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
@@ -3657,7 +3659,7 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        Server.getInstance().getLogger().warning("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
+        log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
         return Position.fromObject(spawn, this);
     }
 
