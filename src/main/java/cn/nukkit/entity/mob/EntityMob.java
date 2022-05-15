@@ -2,10 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityPhysical;
-import cn.nukkit.inventory.EntityArmorInventory;
-import cn.nukkit.inventory.EntityEquipmentInventory;
-import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,7 +14,8 @@ import java.util.Collection;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityMob extends EntityPhysical implements InventoryHolder {
+
+public abstract class EntityMob extends EntityPhysical implements EntityInventoryHolder {
 
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
@@ -91,4 +89,10 @@ public abstract class EntityMob extends EntityPhysical implements InventoryHolde
     public Inventory getInventory() {
         return this.armorInventory;
     }
+
+    @Override
+    public boolean canEquipByDispenser() {
+        return true;
+    }
+
 }

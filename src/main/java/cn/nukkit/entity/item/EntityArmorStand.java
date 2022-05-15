@@ -12,10 +12,7 @@ import cn.nukkit.entity.EntityNameable;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.BaseInventory;
-import cn.nukkit.inventory.EntityArmorInventory;
-import cn.nukkit.inventory.EntityEquipmentInventory;
-import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
@@ -34,7 +31,7 @@ import java.util.Collection;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class EntityArmorStand extends Entity implements InventoryHolder, EntityInteractable, EntityNameable {
+public class EntityArmorStand extends Entity implements EntityInventoryHolder, EntityInteractable, EntityNameable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -476,6 +473,11 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
         return hasUpdate;
     }
 
+    @Override
+    public EntityArmorInventory getArmorInventory() {
+        return this.armorInventory;
+    }
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public EntityEquipmentInventory getEquipmentInventory() {
@@ -544,6 +546,11 @@ public class EntityArmorStand extends Entity implements InventoryHolder, EntityI
 
     @Override
     public boolean canDoInteraction() {
+        return true;
+    }
+
+    @Override
+    public boolean canEquipByDispenser() {
         return true;
     }
 }
