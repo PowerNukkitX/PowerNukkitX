@@ -4,10 +4,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockWater;
+import cn.nukkit.entity.ai.action.Action;
 import cn.nukkit.entity.ai.control.Control;
 import cn.nukkit.entity.ai.control.JumpControl;
 import cn.nukkit.entity.ai.control.ShoreControl;
 import cn.nukkit.entity.ai.control.WalkMoveNearControl;
+import cn.nukkit.entity.ai.goal.Goal;
+import cn.nukkit.entity.ai.goal.GoalState;
 import cn.nukkit.entity.ai.path.AStarPathFinder;
 import cn.nukkit.entity.ai.path.Node;
 import cn.nukkit.entity.ai.path.PathThinker;
@@ -21,13 +24,11 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.SortedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class EntityIntelligent extends EntityPhysical implements PathThinker {
     /**
@@ -50,6 +51,9 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      * memory是一个实体的记忆，用来存储sensors、goals和controls的数据，这些数据不会被持久化
      */
     protected Map<Class<? extends Sensor>, Object> memory = new HashMap<>();
+    protected SortedList<Goal> stoppedGoals = new SortedList<>(Goal::compareTo);
+    protected SortedList<Goal> runningGoals = new SortedList<>(Goal::compareTo);
+    protected List<Action> syncActions = new LinkedList<>();
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, true);
@@ -82,12 +86,42 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
                 sensor.sense(currentTick, this);
             }
         }
+        // 处理AI目标
+        for (var iterator = stoppedGoals.iterator(); iterator.hasNext(); ) {
+            var goal = iterator.next();
+            if (goal.shouldStart(currentTick, this)) {
+                goal.start(currentTick, this);
+                runningGoals.add(goal);
+                iterator.remove();
+            }
+        }
+        for (var iterator = runningGoals.iterator(); iterator.hasNext(); ) {
+            var goal = iterator.next();
+            if (goal.shouldContinue(currentTick, this)) {
+                goal.execute(currentTick, this);
+            }
+            if (goal.shouldStop(currentTick, this)) {
+                goal.stop(currentTick, this);
+                stoppedGoals.add(goal);
+                iterator.remove();
+            }
+        }
         // 处理运动
         super.asyncPrepare(currentTick);
         if (moveNearControl != null) previousMoveNearMotion = moveNearControl.control(currentTick, needsRecalcMovement);
         addTmpMoveMotionXZ(previousMoveNearMotion);
         if (jumpControl != null) jumpControl.control(currentTick, needsRecalcMovement);
         if (shoreControl != null) shoreControl.control(currentTick, needsRecalcMovement);
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        var result = super.onUpdate(currentTick);
+        // 处理同步操作
+        for (var action : syncActions) {
+            action.run(currentTick, this);
+        }
+        return result;
     }
 
     /**
@@ -268,5 +302,30 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     @NotNull
     public Set<Sensor> getSensors() {
         return sensors;
+    }
+
+    public void addGoal(Goal goal) {
+        if (goal.getState() == GoalState.WORKING) {
+            runningGoals.add(goal);
+        } else {
+            stoppedGoals.add(goal);
+        }
+    }
+
+    public boolean removeGoal(Goal goal) {
+        if (goal.getState() == GoalState.WORKING) {
+            return runningGoals.remove(goal);
+        } else {
+            return stoppedGoals.remove(goal);
+        }
+    }
+
+    /**
+     * 提交一个在最近一次tick中同步执行的操作
+     *
+     * @param action 实体操作
+     */
+    public void submitSyncAction(@NotNull Action action) {
+        syncActions.add(action);
     }
 }
