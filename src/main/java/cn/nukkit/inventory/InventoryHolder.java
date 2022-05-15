@@ -7,7 +7,4 @@ public interface InventoryHolder {
 
     Inventory getInventory();
 
-    public default boolean canEquipByDispenser() {
-        return false;
-    }
 }
