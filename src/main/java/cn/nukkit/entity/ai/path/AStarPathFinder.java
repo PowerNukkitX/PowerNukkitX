@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.path;
 
+import cn.nukkit.math.NukkitMath;
+
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进
  */
@@ -14,6 +16,7 @@ public class AStarPathFinder {
     public PathThinker pathThinker;
 
     private SearchShape searchShape;
+    private long allowedOffsetSquared = 0;
 
     /**
      * 递归搜索深度限制
@@ -43,10 +46,19 @@ public class AStarPathFinder {
                 if (minCostNode == null) {
                     return destination.getParent() != null;
                 }
-                if (minCostNode.equals(destination)) {
+                if (allowedOffsetSquared == 0 && minCostNode.equals(destination)) {
                     destination.setParent(minCostNode.getParent());
                     destination.setG(minCostNode.getG());
                     return true;
+                } else {
+                    var dx = destination.doubleRealX() - minCostNode.doubleRealX();
+                    var dy = destination.doubleRealY() - minCostNode.doubleRealY();
+                    var dz = destination.doubleRealZ() - minCostNode.doubleRealZ();
+                    if ((long) dx * dx + (long) dy * dy + (long) dz * dz < allowedOffsetSquared) {
+                        destination.setParent(minCostNode.getParent());
+                        destination.setG(minCostNode.getG());
+                        return true;
+                    }
                 }
                 searchShape.setCenterNode(minCostNode);
                 for (var each : searchShape) {
@@ -134,5 +146,17 @@ public class AStarPathFinder {
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public void allowDestinationOffset(int doubleOffset) {
+        this.allowedOffsetSquared = (long) doubleOffset * doubleOffset;
+    }
+
+    public void allowDestinationOffset(float offset) {
+        allowDestinationOffset(NukkitMath.floorFloat(offset * 2));
+    }
+
+    public long getAllowedOffsetSquared() {
+        return allowedOffsetSquared;
     }
 }
