@@ -1,10 +1,18 @@
 package cn.nukkit.dispenser;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.mob.EntityMob;
+import cn.nukkit.inventory.BaseInventory;
+import cn.nukkit.inventory.EntityArmorInventory;
+import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 
 import java.util.Random;
@@ -45,6 +53,45 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         Item clone = item.clone();
         clone.count = 1;
 
+
+        Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 0.5, dropPos.getY() + 1, dropPos.getZ() + 0.5);
+        for (Entity e : block.level.getNearbyEntities(bb)) {
+            if (e instanceof EntityMob mob) {
+                EntityArmorInventory armorInventory = mob.getArmorInventory();
+                if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
+                    armorInventory.setHelmet(clone);
+                    return null;
+                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                    armorInventory.setChestplate(clone);
+                    return null;
+                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {
+                    armorInventory.setLeggings(clone);
+                    return null;
+                } else if (clone.isBoots() && armorInventory.getBoots().getId() == Item.AIR) {
+                    armorInventory.setBoots(clone);
+                    return null;
+                } else if (mob.getEquipmentInventory().getItemInHand().getId() == Item.AIR) {
+                    mob.getEquipmentInventory().setItemInHand(clone, true);
+                    return null;
+                }
+            } else if (e instanceof Player p) {
+                PlayerInventory armorInventory = p.getInventory();
+                if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
+                    armorInventory.setHelmet(clone);
+                    return null;
+                } else if (clone.isChestplate() && armorInventory.getChestplate().getId() == Item.AIR) {
+                    armorInventory.setChestplate(clone);
+                    return null;
+                } else if (clone.isLeggings() && armorInventory.getLeggings().getId() == Item.AIR) {
+                    armorInventory.setLeggings(clone);
+                    return null;
+                } else if (clone.isBoots() && armorInventory.getBoots().getId() == Item.AIR) {
+                    armorInventory.setBoots(clone);
+                    return null;
+                }
+            }
+        }
         block.level.dropItem(dispensePos, clone, motion);
         return null;
     }

@@ -22,6 +22,8 @@ import java.util.*;
  */
 public abstract class BaseInventory implements Inventory {
 
+    public final static Item AIR_ITEM = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+
     protected final InventoryType type;
 
     protected int maxStackSize = Inventory.MAX_STACK;
@@ -102,7 +104,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : new ItemBlock(Block.get(BlockID.AIR), null, 0);
+        return this.slots.containsKey(index) ? this.slots.get(index).clone() : AIR_ITEM;
     }
 
     @Override
