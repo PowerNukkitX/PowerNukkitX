@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -84,5 +85,10 @@ public abstract class EntityMob extends EntityPhysical implements InventoryHolde
             }
             this.namedTag.putList(armorTag);
         }
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return this.armorInventory;
     }
 }
