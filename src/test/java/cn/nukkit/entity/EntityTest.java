@@ -179,6 +179,9 @@ class EntityTest {
             return;
         }
         entity = createEntity(id);
+        if (entity == null) {
+            return;
+        }
         assertNotNull(entity, ()-> "Entity " + Entity.getSaveId(id));
         assertNotNull(entity.getOriginalName(), "Static Name");
         String staticName = entity.getOriginalName();
