@@ -16,6 +16,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -41,14 +42,25 @@ public class RawText {
                 Component newComponent = preParseScore(component,sender);
                 if(newComponent != null)
                     cps.set(cps.indexOf(component),newComponent);
+                else
+                    cps.remove(component);
             }
             if (component.getType() == Component.ComponentType.SELECTOR) {
                 Component newComponent = preParseSelector(component,sender);
                 if(newComponent != null)
                     cps.set(cps.indexOf(component),newComponent);
+                else
+                    cps.remove(component);
             }
             if (component.getType() == Component.ComponentType.RAWTEXT) {
                 preParse(sender,text,component.component_rawtext);
+            }
+            if (component.getType() == Component.ComponentType.TRANSLATE_WITH) {
+                if (component.component_translate_with instanceof Map<?,?>) {
+                    Component cp = gson.fromJson(gson.toJson(component.component_translate_with),Component.class);
+                    preParse(sender,text,cp.component_rawtext);
+                    component.component_translate_with = cp;
+                }
             }
         }
     }
@@ -92,6 +104,8 @@ public class RawText {
         }catch (Exception e){
             return null;
         }
+        if (entities.isEmpty())
+            return null;
         String entities_str = entities.stream().map(Entity::getName).collect(Collectors.joining(", "));
         Component newComponent = new Component();
         newComponent.setComponent_text(entities_str);
@@ -116,7 +130,7 @@ public class RawText {
         private String component_translate;
 
         @SerializedName("with")
-        private List<String> component_translate_with;
+        private Object component_translate_with;
 
         @SerializedName("score")
         private ScoreComponent component_score;

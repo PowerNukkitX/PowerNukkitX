@@ -32,6 +32,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -655,7 +656,21 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public void onBreak() {
-        super.onBreak();
+        for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+            player.removeWindow(this.getInventory());
+        }
         listenMap.remove(this);
+        super.onBreak();
+    }
+
+    @Override
+    public void close() {
+        if (!closed) {
+            listenMap.remove(this);
+            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+                player.removeWindow(this.getInventory());
+            }
+            super.close();
+        }
     }
 }

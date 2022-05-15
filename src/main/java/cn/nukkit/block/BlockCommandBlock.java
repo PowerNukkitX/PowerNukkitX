@@ -11,16 +11,10 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
-import static cn.nukkit.blockentity.ICommandBlock.MODE_REPEATING;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 //special thanks to wode
@@ -115,7 +109,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public boolean onActivate(Item item, Player player) {
         if (player != null) {
-            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity(null);
+            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity();
             tile.spawnTo(player);
             player.addWindow(tile.getInventory());
         }
@@ -125,7 +119,9 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            BlockEntityCommandBlock tile = this.getOrCreateBlockEntity(null);
+            BlockEntityCommandBlock tile = this.getBlockEntity();
+            if (tile == null)
+                return super.onUpdate(type);
             if (this.isGettingPower()) {
                 if (!tile.isPowered()) {
                     tile.setPowered();
@@ -145,7 +141,7 @@ public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, Bloc
 
     @Override
     public int getComparatorInputOverride() {
-        return Math.min(this.getOrCreateBlockEntity(null).getSuccessCount(), 0xf);
+        return Math.min(this.getOrCreateBlockEntity().getSuccessCount(), 0xf);
     }
 
     @Since("1.4.0.0-PN")
