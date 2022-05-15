@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.control.Control;
 import cn.nukkit.entity.control.JumpControl;
@@ -158,9 +159,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      */
     @Override
     public long calcCost(@NotNull Node from, @NotNull Node to) {
-        var cost = from.estimateDistance(to);
+        var dx = from.doubleRealX() - to.doubleRealX();
+        var dy = from.doubleRealY() - to.doubleRealY();
+        var dz = from.doubleRealZ() - to.doubleRealZ();
+        // TODO: 2022/5/15 这个计算方式开销太大了，应该优化
+        // 但是由于高端CPU有硬件平方根和SIMD，很可能sqrt计算速度会很快，优化的时候要千万注意别负优化，一定要测试
+        var cost = (int) Math.sqrt(dx * dx + dy * dy + dz * dz) * 5;
         if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, to.realY(), (from.realZ() + to.realZ()) * 0.5)) {
             return Long.MAX_VALUE;
+        }
+        if (level.getBlock(to.toRealVector().add(0, -0.5, 0)) instanceof BlockWater) {
+            cost += cost > 9 ? 8 : 4; // 水上走的代价更大，加入惩罚机制，让实体倾向于更多走岸上。
         }
         return cost;
     }
@@ -178,14 +187,21 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
 
     private boolean canPassThrough0(double x, double y, double z) {
         var tmpBB = fixedSizeBB.getOffsetBoundingBox(x, y, z);
-        var a = this.level.fastCollisionBlocks(tmpBB, false, false,
-                block -> block.isSolid() || !isSafeBlock(block));
-        if (a.size() > 0) {
+        if (this.level.fastCollisionBlocks(tmpBB, true, false,
+                block -> block.isSolid() || !isSafeBlock(block)).size() > 0) {
             return false;
         }
-        a = this.level.fastCollisionBlocks(tmpBB.getOffsetBoundingBox(0, -0.5, 0), false, false,
-                block -> (block.isSolid() || block instanceof BlockWater) && isSafeBlock(block));
-        return a.size() > 0;
+        var offsetTmpBB = tmpBB.getOffsetBoundingBox(0, -0.5, 0);
+        return this.level.fastCollisionBlocks(offsetTmpBB, true, true,
+                block -> {
+                    if (!isSafeBlock(block)) return false;
+                    if (block.isSolid()) {
+                        return block.collidesWithBB(offsetTmpBB);
+                    } else if (block instanceof BlockLiquid) {
+                        return tmpBB.getMinY() % 1 <= block.getMaxY();
+                    }
+                    return false;
+                }).size() > 0;
     }
 
     protected boolean isSafeBlock(@NotNull Block block) {

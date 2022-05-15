@@ -1,15 +1,10 @@
 package cn.nukkit.entity.path;
 
-import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.level.particle.FlameParticle;
-import cn.nukkit.level.particle.HappyVillagerParticle;
-import cn.nukkit.level.particle.RedstoneParticle;
-
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进
  */
 public class AStarPathFinder {
-    public static final int DEFAULT_MAX_RECURSION = 200;
+    public static final int DEFAULT_MAX_RECURSION = 512;
 
     protected NodeStore closeNodes;
     protected SortedNodeStore openNodes;
@@ -64,10 +59,6 @@ public class AStarPathFinder {
                     }
                     var cost = pathThinker.calcCost(minCostNode, each);
                     if (cost == Long.MAX_VALUE) {
-                        closeNodes.add(each);
-                        if (pathThinker instanceof EntityIntelligent intelligent) {
-                            intelligent.level.addParticle(new RedstoneParticle(each.toRealVector()));
-                        }
                         continue;
                     }
                     var newG = minCostNode.getG() + cost;

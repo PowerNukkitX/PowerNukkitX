@@ -214,7 +214,7 @@ public final class Node implements Comparable<Node>, Cloneable {
                 ", z=" + z +
                 ", offset=" + offset +
                 ", g=" + g +
-                "} parent -> " + parent;
+                "} parent -> " + (parent == null ? "null" : parent);
     }
 
     @Override
