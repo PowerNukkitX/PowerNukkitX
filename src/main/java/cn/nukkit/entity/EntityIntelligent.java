@@ -16,6 +16,7 @@ import cn.nukkit.entity.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.CriticalParticle;
 import cn.nukkit.level.particle.HappyVillagerParticle;
+import cn.nukkit.level.particle.RedstoneParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -165,7 +166,11 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         // TODO: 2022/5/15 这个计算方式开销太大了，应该优化
         // 但是由于高端CPU有硬件平方根和SIMD，很可能sqrt计算速度会很快，优化的时候要千万注意别负优化，一定要测试
         var cost = (int) Math.sqrt(dx * dx + dy * dy + dz * dz) * 5;
-        if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, to.realY(), (from.realZ() + to.realZ()) * 0.5)) {
+        if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, to.realY(), (from.realZ() + to.realZ()) * 0.5, true)) {
+            if (dy == 0 && (Math.abs(dx) > 1 || Math.abs(dz) > 1)) {
+                System.out.println("Far point failed.");
+                level.addParticle(new RedstoneParticle(to.toRealVector()));
+            }
             return Long.MAX_VALUE;
         }
         if (level.getBlock(to.toRealVector().add(0, -0.5, 0)) instanceof BlockWater) {
@@ -182,17 +187,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      */
     @Override
     public boolean canPassThrough(@NotNull Node node) {
-        return canPassThrough0(node.realX(), node.realY(), node.realZ());
+        return canPassThrough0(node.realX(), node.realY(), node.realZ(), false);
     }
 
-    private boolean canPassThrough0(double x, double y, double z) {
+    private boolean canPassThrough0(double x, double y, double z, boolean canJump) {
         var tmpBB = fixedSizeBB.getOffsetBoundingBox(x, y, z);
         if (this.level.fastCollisionBlocks(tmpBB, true, false,
                 block -> block.isSolid() || !isSafeBlock(block)).size() > 0) {
             return false;
         }
         var offsetTmpBB = tmpBB.getOffsetBoundingBox(0, -0.5, 0);
-        return this.level.fastCollisionBlocks(offsetTmpBB, true, true,
+        var result = this.level.fastCollisionBlocks(offsetTmpBB, true, true,
                 block -> {
                     if (!isSafeBlock(block)) return false;
                     if (block.isSolid()) {
@@ -202,8 +207,15 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
                     }
                     return false;
                 }).size() > 0;
+        if (canJump && !result) {
+            var jumpTmpBB = tmpBB.getOffsetBoundingBox(0, this.getJumpingHeight(), 0);
+            return this.level.fastCollisionBlocks(jumpTmpBB, true, false,
+                    block -> block.isSolid() || !isSafeBlock(block)).size() == 0;
+        }
+        return result;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected boolean isSafeBlock(@NotNull Block block) {
         final var bid = block.getId();
         return bid != BlockID.FLOWING_LAVA && bid != BlockID.STILL_LAVA && bid != BlockID.MAGMA && bid != BlockID.FIRE;
