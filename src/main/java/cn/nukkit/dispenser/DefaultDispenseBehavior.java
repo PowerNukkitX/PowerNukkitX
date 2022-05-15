@@ -8,7 +8,6 @@ import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
@@ -60,26 +59,34 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
                 EntityArmorInventory armorInventory = mob.getArmorInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet() == null) {
                     armorInventory.setHelmet(clone);
+                    return null;
                 } else if (clone.isChestplate() && armorInventory.getChestplate() == null) {
                     armorInventory.setChestplate(clone);
+                    return null;
                 } else if (clone.isLeggings() && armorInventory.getLeggings() == null) {
                     armorInventory.setLeggings(clone);
+                    return null;
                 } else if (clone.isBoots() && armorInventory.getBoots() == null) {
                     armorInventory.setBoots(clone);
-                } else {
+                    return null;
+                } else if (mob.getEquipmentInventory().getItemInHand() != null) {
                     mob.getEquipmentInventory().setItemInHand(clone, true);
+                    return null;
                 }
-                return null;
             } else if (e instanceof Player p) {
                 PlayerInventory armorInventory = p.getInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet() == null) {
                     armorInventory.setHelmet(clone);
+                    return null;
                 } else if (clone.isChestplate() && armorInventory.getChestplate() == null) {
                     armorInventory.setChestplate(clone);
+                    return null;
                 } else if (clone.isLeggings() && armorInventory.getLeggings() == null) {
                     armorInventory.setLeggings(clone);
+                    return null;
                 } else if (clone.isBoots() && armorInventory.getBoots() == null) {
                     armorInventory.setBoots(clone);
+                    return null;
                 }
                 break;
             }
