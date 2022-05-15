@@ -27,6 +27,7 @@ import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.entity.passive.EntityChicken;
 import cn.nukkit.entity.passive.EntityPig;
+import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -78,7 +79,7 @@ class EntityTest {
     @Test
     void flameAttack() {
         entity = createEntity(EntityPig.NETWORK_ID);
-        Entity attacker = createEntity(EntityIronGolem.NETWORK_ID);
+        Entity attacker = createEntity(EntityWolf.NETWORK_ID);
         Map<EntityDamageEvent.DamageModifier, Float> modifiers = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
         modifiers.put(EntityDamageEvent.DamageModifier.BASE, 10_000f);
         Enchantment enchantment = Enchantment.getEnchantment(Enchantment.ID_FIRE_ASPECT).setLevel(2);
