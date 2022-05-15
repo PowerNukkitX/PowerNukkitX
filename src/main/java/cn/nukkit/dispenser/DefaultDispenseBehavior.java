@@ -58,7 +58,7 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         Vector3 dropPos = dispensePos.add(face.getXOffset(), face.getYOffset(), face.getZOffset());
         AxisAlignedBB bb = new SimpleAxisAlignedBB(dropPos.getX() - 0.5, dropPos.getY() - 1, dropPos.getZ() - 0.5, dropPos.getX() + 0.5, dropPos.getY() + 1, dropPos.getZ() + 0.5);
         for (Entity e : block.level.getNearbyEntities(bb)) {
-            if (e instanceof EntityInventoryHolder inventoryHolder) {
+            if (e instanceof EntityInventoryHolder inventoryHolder && inventoryHolder.canEquipByDispenser()) {
                 EntityArmorInventory armorInventory = inventoryHolder.getArmorInventory();
                 if (clone.isHelmet() && armorInventory.getHelmet().getId() == Item.AIR) {
                     armorInventory.setHelmet(clone);
