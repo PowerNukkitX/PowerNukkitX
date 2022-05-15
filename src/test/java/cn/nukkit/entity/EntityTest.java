@@ -27,6 +27,7 @@ import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.entity.passive.EntityChicken;
 import cn.nukkit.entity.passive.EntityPig;
+import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -129,7 +130,7 @@ class EntityTest {
 
     @Test
     void setPositionAndRotation() {
-        entity = createEntity(EntityBlaze.NETWORK_ID);
+        entity = createEntity(EntityWolf.NETWORK_ID);
         entity.setPositionAndRotation(new Vector3(1, 2, 3), 4, 5, 6);
         assertEquals(1, entity.x);
         assertEquals(2, entity.y);
@@ -141,7 +142,7 @@ class EntityTest {
 
     @Test
     void fallSlowFalling() {
-        entity = createEntity(EntityZombie.NETWORK_ID);
+        entity = createEntity(EntityVillager.NETWORK_ID);
         level.setBlockStateAt(1, 2, 3, BlockState.of(BlockID.STONE));
         entity.setPosition(new Vector3(1, 3, 3));
         entity.addEffect(Effect.getEffect(Effect.SLOW_FALLING));
