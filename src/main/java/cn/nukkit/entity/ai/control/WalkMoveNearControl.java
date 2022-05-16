@@ -1,6 +1,7 @@
 package cn.nukkit.entity.ai.control;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public class WalkMoveNearControl implements Control<Vector3> {
         var vector = entity.movingNearDestination;
         if (vector != null) {
             var speed = entity.getMovementSpeed();
-            if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4356) {
+            if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return Vector3.ZERO;
             }
             vector = vector.clone().setComponents(vector.x - entity.x,
@@ -45,6 +46,9 @@ public class WalkMoveNearControl implements Control<Vector3> {
                     entity.jump();
                 }
             }
+            if (!entity.isJumping && willFallAt(dx * 4 + entity.motionX, -entity.getJumpingHeight(), dz * 4 + entity.motionZ)) {
+                entity.jump();
+            }
             state = ControlState.WORKING;
             return new Vector3(dx, 0, dz);
         } else {
@@ -62,5 +66,10 @@ public class WalkMoveNearControl implements Control<Vector3> {
     private boolean collidesBlocks(double dx, double dy, double dz) {
         return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
                 false, Block::isSolid).length > 0;
+    }
+
+    private boolean willFallAt(double dx, double dy, double dz) {
+        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
+                false, block -> block.isSolid() || block instanceof BlockWater).length == 0;
     }
 }
