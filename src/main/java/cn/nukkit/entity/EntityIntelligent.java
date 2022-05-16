@@ -215,14 +215,13 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         // 但是由于高端CPU有硬件平方根和SIMD，很可能sqrt计算速度会很快，优化的时候要千万注意别负优化，一定要测试
         var cost = (int) Math.sqrt(dx * dx + dy * dy + dz * dz) * 5;
         if (cost >= 10 && !canPassThrough0((from.realX() + to.realX()) * 0.5, to.realY(), (from.realZ() + to.realZ()) * 0.5, true)) {
-            if (dy == 0 && (Math.abs(dx) > 1 || Math.abs(dz) > 1)) {
-                System.out.println("Far point failed.");
-                level.addParticle(new RedstoneParticle(to.toRealVector()));
-            }
             return Long.MAX_VALUE;
         }
-        if (level.getBlock(to.toRealVector().add(0, -0.5, 0)) instanceof BlockWater) {
-            cost += cost > 9 ? 8 : 4; // 水上走的代价更大，加入惩罚机制，让实体倾向于更多走岸上。
+        var tmpVec = to.toRealVector();
+        if (level.getBlock(tmpVec.add(0, -0.5, 0)) instanceof BlockWater || level.getBlock(tmpVec) instanceof BlockWater) {
+            // 水上走的代价更大，加入惩罚机制，让实体倾向于更多走岸上。
+            // 子非鱼，安知游泳之苦？
+            cost <<= 1; // *=2
         }
         return cost;
     }
