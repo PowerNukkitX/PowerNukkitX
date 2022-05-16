@@ -1,11 +1,9 @@
 package cn.nukkit.entity.ai.path;
 
-import cn.nukkit.math.NukkitMath;
-
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进
  */
-public class AStarPathFinder {
+public class AStarPathFinder implements PathFinderDynamic {
     public static final int DEFAULT_MAX_RECURSION = 512;
 
     protected NodeStore closeNodes;
@@ -150,10 +148,6 @@ public class AStarPathFinder {
 
     public void allowDestinationOffset(int doubleOffset) {
         this.allowedOffsetSquared = (long) doubleOffset * doubleOffset;
-    }
-
-    public void allowDestinationOffset(float offset) {
-        allowDestinationOffset(NukkitMath.floorFloat(offset * 2));
     }
 
     public long getAllowedOffsetSquared() {

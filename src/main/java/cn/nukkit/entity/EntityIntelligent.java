@@ -11,10 +11,7 @@ import cn.nukkit.entity.ai.control.ShoreControl;
 import cn.nukkit.entity.ai.control.WalkMoveNearControl;
 import cn.nukkit.entity.ai.goal.Goal;
 import cn.nukkit.entity.ai.goal.GoalState;
-import cn.nukkit.entity.ai.path.AStarPathFinder;
-import cn.nukkit.entity.ai.path.Node;
-import cn.nukkit.entity.ai.path.PathThinker;
-import cn.nukkit.entity.ai.path.SearchShape;
+import cn.nukkit.entity.ai.path.*;
 import cn.nukkit.entity.ai.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.entity.ai.sensor.Sensor;
 import cn.nukkit.level.format.FullChunk;
@@ -42,6 +39,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
 
     public Vector3 previousMoveNearMotion = Vector3.ZERO;
 
+    protected PathFinder pathFinder = null;
     protected Control<?> jumpControl = null;
     protected Control<?> shoreControl = null;
     protected Control<? extends Vector3> moveNearControl = null;
@@ -331,5 +329,13 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      */
     public void submitSyncAction(@NotNull Action action) {
         syncActions.add(action);
+    }
+
+    public PathFinder getPathFinder() {
+        return pathFinder;
+    }
+
+    public void setPathFinder(PathFinder pathFinder) {
+        this.pathFinder = pathFinder;
     }
 }
