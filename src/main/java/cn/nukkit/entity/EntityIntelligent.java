@@ -299,6 +299,10 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         memory.put(sensorClass, value);
     }
 
+    public void forgetMemory(@NotNull Class<? extends Sensor> sensorClass) {
+        memory.remove(sensorClass);
+    }
+
     @NotNull
     public Set<Sensor> getSensors() {
         return sensors;

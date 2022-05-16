@@ -2957,6 +2957,39 @@ public class Level implements ChunkManager, Metadatable {
         return result;
     }
 
+    public List<Entity> fastNearbyEntities(Vector3 center, double radius) {
+        return fastNearbyEntities(center, null, radius, false);
+    }
+
+    public List<Entity> fastNearbyEntities(Vector3 center, double radius, boolean loadChunks) {
+        return fastNearbyEntities(center, null, radius, loadChunks);
+    }
+
+    public List<Entity> fastNearbyEntities(Vector3 center, Entity entity, double radius) {
+        return fastNearbyEntities(center, entity, radius, false);
+    }
+
+    public List<Entity> fastNearbyEntities(Vector3 center, Entity entity, double radius, boolean loadChunks) {
+        int minX = NukkitMath.floorDouble((center.x - radius - 2) * 0.0625);
+        int maxX = NukkitMath.ceilDouble((center.x + radius + 2) * 0.0625);
+        int minZ = NukkitMath.floorDouble((center.z - radius - 2) * 0.0625);
+        int maxZ = NukkitMath.ceilDouble((center.z + radius + 2) * 0.0625);
+
+        var result = new ArrayList<Entity>();
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (var ent : this.getChunkEntities(x, z, loadChunks).values()) {
+                    if (ent != entity) {
+                        result.add(ent);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     private ArrayList<Entity> addEntityToBuffer(int index, ArrayList<Entity> overflow, Entity ent) {
         if (index < ENTITY_BUFFER.length) {
             ENTITY_BUFFER[index] = ent;
