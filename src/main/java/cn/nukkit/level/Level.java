@@ -3629,33 +3629,15 @@ public class Level implements ChunkManager, Metadatable {
         int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
         int minY = isOverWorld() ? -64 : 0;
 
-        if (allowWaterUnder) {
-            for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-                for (int y = maxY; y > minY; y--) {
-                    Position pos = Position.fromObject(spawn, this);
-                    pos.setY(y);
-                    Position newSpawn;
-                    if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), true))
-                        return newSpawn;
-                }
-            }
-        }
-
         for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
             for (int y = maxY; y > minY; y--) {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset))) return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
             }
         }
 
