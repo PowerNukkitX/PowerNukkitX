@@ -15,4 +15,8 @@ public interface PathFinder {
     void setDestination(Node destination);
 
     Node getDestination();
+
+    void setPathThinker(PathThinker pathThinker);
+
+    PathThinker getPathThinker();
 }

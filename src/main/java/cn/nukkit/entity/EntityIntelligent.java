@@ -9,6 +9,7 @@ import cn.nukkit.entity.ai.control.Control;
 import cn.nukkit.entity.ai.control.JumpControl;
 import cn.nukkit.entity.ai.control.ShoreControl;
 import cn.nukkit.entity.ai.control.WalkMoveNearControl;
+import cn.nukkit.entity.ai.goal.FollowPathGoal;
 import cn.nukkit.entity.ai.goal.Goal;
 import cn.nukkit.entity.ai.goal.GoalState;
 import cn.nukkit.entity.ai.path.*;
@@ -16,7 +17,6 @@ import cn.nukkit.entity.ai.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.entity.ai.sensor.Sensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.HappyVillagerParticle;
-import cn.nukkit.level.particle.RedstoneParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -63,6 +63,8 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
             this.jumpControl = new JumpControl(this);
             this.shoreControl = new ShoreControl(this);
             this.moveNearControl = new WalkMoveNearControl(this);
+            // TODO: 2022/5/17 仅供测试
+            addGoal(new FollowPathGoal());
         }
         {
             final double dx = this.getWidth() * 0.5;
@@ -175,10 +177,11 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      */
     public boolean tryPath(Vector3 pathDestination, boolean displayParticle) {
         pathDestination = pathDestination.clone();
-        var pathFinder = new AStarPathFinder();
+        pathFinder = new AStarPathFinder();
         var destinationNode = new Node(pathDestination.x, pathDestination.y, pathDestination.z, null);
         destinationNode.setParent(destinationNode);
         var startNode = new Node(this.x, this.y, this.z, destinationNode);
+        startNode.setRoot(true);
         pathFinder.setPathThinker(this);
         pathFinder.setDestination(destinationNode);
         pathFinder.setStart(startNode);
@@ -191,6 +194,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
                 current = current.getParent();
             }
         }
+        movingNearDestination = null;
         return result;
     }
 

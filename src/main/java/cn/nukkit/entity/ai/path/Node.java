@@ -15,6 +15,7 @@ public final class Node implements Comparable<Node>, Cloneable {
      */
     private long g; // 到起点的代价
     private Node parent; // 父亲
+    private boolean isRoot = false;
 
     public Node(double x, double y, double z, Node destination) {
         this.x = (int) x;
@@ -120,6 +121,9 @@ public final class Node implements Comparable<Node>, Cloneable {
     }
 
     public void setParent(Node parent) {
+        if (isRoot) {
+            return;
+        }
         this.parent = parent;
     }
 
@@ -240,5 +244,13 @@ public final class Node implements Comparable<Node>, Cloneable {
     @Override
     protected Node clone() {
         return (Node) super.clone();
+    }
+
+    public boolean isRoot() {
+        return isRoot;
+    }
+
+    public void setRoot(boolean root) {
+        isRoot = root;
     }
 }

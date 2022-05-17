@@ -33,6 +33,14 @@ public class AStarPathFinder implements PathFinderDynamic {
     }
 
     public boolean search() {
+        var result = search0();
+        if (!result) {
+            destination.setParent(null);
+        }
+        return result;
+    }
+
+    protected boolean search0() {
         if (destination == null || start == null || pathThinker == null) {
             return false;
         }
