@@ -14,6 +14,7 @@ public class FollowPathGoal extends AbstractGoal {
     protected Deque<Node> nodeStack = new LinkedList<>();
     @Nullable
     protected PathFinder currentPathFinder = null;
+    protected int lastUpdateNodeTick = -1;
 
     @Override
     public boolean shouldStart(int currentTick, EntityIntelligent entity) {
@@ -41,13 +42,19 @@ public class FollowPathGoal extends AbstractGoal {
         return !nodeStack.isEmpty() && super.shouldContinue(currentTick, entity);
     }
 
+    protected int getFailToMoveTick() {
+        return 60;
+    }
+
     @Override
     public void execute(int currentTick, EntityIntelligent entity) {
         if (entity.getPathFinder() != currentPathFinder) {
+            nodeStack.clear();
             start(currentTick, entity);
         }
         if (entity.movingNearDestination == null) {
             var tmp = nodeStack.pop();
+            lastUpdateNodeTick = currentTick;
             if (tmp != null)
                 entity.movingNearDestination = tmp.toRealVector();
         }
@@ -55,7 +62,7 @@ public class FollowPathGoal extends AbstractGoal {
 
     @Override
     public boolean shouldStop(int currentTick, EntityIntelligent entity) {
-        return nodeStack.isEmpty() || entity.getPathFinder() == null;
+        return nodeStack.isEmpty() || entity.getPathFinder() == null || currentTick - lastUpdateNodeTick > getFailToMoveTick();
     }
 
     @Override

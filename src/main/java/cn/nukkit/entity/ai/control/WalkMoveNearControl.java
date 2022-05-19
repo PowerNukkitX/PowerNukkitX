@@ -46,7 +46,7 @@ public class WalkMoveNearControl implements Control<Vector3> {
                     entity.jump();
                 }
             }
-            if (!entity.isJumping && willFallAt(dx * 4 + entity.motionX, -entity.getJumpingHeight(), dz * 4 + entity.motionZ)) {
+            if (!entity.isJumping && willFallAt(dx + entity.motionX, -entity.getJumpingHeight(), dz + entity.motionZ)) {
                 entity.jump();
             }
             state = ControlState.WORKING;
@@ -69,7 +69,7 @@ public class WalkMoveNearControl implements Control<Vector3> {
     }
 
     private boolean willFallAt(double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
+        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz).grow(-0.1, 0, -0.1), true,
                 false, block -> block.isSolid() || block instanceof BlockWater).length == 0;
     }
 }

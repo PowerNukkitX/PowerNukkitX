@@ -68,7 +68,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         }
         {
             final double dx = this.getWidth() * 0.5;
-            final double dz = this.getHeight() * 0.5;
+            final double dz = this.getWidth() * 0.5;
             this.fixedSizeBB.setMinX(-dx);
             this.fixedSizeBB.setMaxX(dx);
             this.fixedSizeBB.setMinY(0);
@@ -247,7 +247,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
                 block -> block.isSolid() || !isSafeBlock(block)).size() > 0) {
             return false;
         }
-        var offsetTmpBB = tmpBB.getOffsetBoundingBox(0, -0.5, 0);
+        var offsetTmpBB = tmpBB.getOffsetBoundingBox(0, -0.5, 0).grow(-0.1, 0, -0.1);
         var result = this.level.fastCollisionBlocks(offsetTmpBB, true, true,
                 block -> {
                     if (!isSafeBlock(block)) return false;
