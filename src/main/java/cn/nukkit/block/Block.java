@@ -12,6 +12,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -1156,8 +1157,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         BlockStateRegistry.registerCustomBlockState(blocks);
         //物品失效 创造栏失效
         //个人认为可能需要注册自定义物品，使用itemblock无效
-        //RuntimeItems.getRuntimeMapping().registerCustomBlock(block, block.getId());
-        //blocks.forEach((block)-> Item.addCreativeItem(block.toItem()));
+        RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
+        blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
     }
 
     @PowerNukkitXOnly

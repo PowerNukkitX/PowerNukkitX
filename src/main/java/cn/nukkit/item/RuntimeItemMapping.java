@@ -4,6 +4,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockCustom;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
@@ -26,7 +27,7 @@ import static com.google.common.base.Verify.verify;
 /**
  * Responsible for mapping item full ids, item network ids and item namespaced ids between each other.
  * <ul>
- * <li>A <b>full id</b> is a combination of <b>item id</b> and <b>item damage</b>. 
+ * <li>A <b>full id</b> is a combination of <b>item id</b> and <b>item damage</b>.
  * The way they are combined may change in future, so you should not combine them by yourself and neither store them
  * permanently. It's mainly used to preserve backward compatibility with plugins that don't support <em>namespaced ids</em>.
  * <li>A <b>network id</b> is an id that is used to communicated with the client, it may change between executions of the
@@ -160,24 +161,30 @@ public class RuntimeItemMapping {
         this.generatePalette();
     }
 
-    /*@PowerNukkitXOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void registerCustomBlock(BlockCustom blockCustom, int runtimeId) {
-        RuntimeItems.Entry entry = new RuntimeItems.Entry(
-                blockCustom.getNamespace(),
-                255 - runtimeId,
-                null,
-                null,
-                false,
-                true
-        );
-        this.customItemEntries.put(blockCustom.getNamespace(), entry);
-        this.entries.add(entry);
-        this.namespacedIdItem.put(blockCustom.getNamespace().toLowerCase(Locale.ENGLISH), blockCustom::toItem);
-        this.namespaceNetworkMap.put(blockCustom.getNamespace(), OptionalInt.of(255 - runtimeId));
-        this.networkNamespaceMap.put(255 - runtimeId, blockCustom.getNamespace());
+    public synchronized void registerCustomBlock(List<BlockCustom> blocks) {
+        for (var block : blocks) {
+            int id = 255 - block.getId();
+            RuntimeItems.Entry entry = new RuntimeItems.Entry(
+                    block.getNamespace(),
+                    id,
+                    null,
+                    null,
+                    false,
+                    true
+            );
+            //this.customItemEntries.put(blockCustom.getNamespace(), entry);
+            this.entries.add(entry);
+            this.namespacedIdItem.put(block.getNamespace().toLowerCase(Locale.ENGLISH), block::toItem);
+            this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
+            this.networkNamespaceMap.put(id, block.getNamespace());
+            int fullId = RuntimeItems.getFullId(id, 0);
+            legacyNetworkMap.put(fullId, id << 1);
+            networkLegacyMap.put(id, fullId);
+        }
         this.generatePalette();
-    }*/
+    }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
