@@ -4,7 +4,6 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockCustom;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
@@ -161,7 +160,7 @@ public class RuntimeItemMapping {
         this.generatePalette();
     }
 
-    @PowerNukkitXOnly
+    /*@PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public synchronized void registerCustomBlock(BlockCustom blockCustom, int runtimeId) {
         RuntimeItems.Entry entry = new RuntimeItems.Entry(
@@ -178,7 +177,7 @@ public class RuntimeItemMapping {
         this.namespaceNetworkMap.put(blockCustom.getNamespace(), OptionalInt.of(255 - runtimeId));
         this.networkNamespaceMap.put(255 - runtimeId, blockCustom.getNamespace());
         this.generatePalette();
-    }
+    }*/
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")

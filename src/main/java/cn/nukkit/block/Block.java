@@ -12,7 +12,6 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -1146,15 +1145,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull Class<? extends BlockCustom> blockClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!customBlock.containsKey(blockClass)) {
-            BlockCustom block = blockClass.getDeclaredConstructor().newInstance();
+    public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<BlockCustom> blocks = new ArrayList<>();
+        for (var clazz : blockClass) {
+            BlockCustom block = clazz.getDeclaredConstructor().newInstance();
             blockPropertyData.add(block.getBlockPropertyData());
             customBlock.put(block.getId(), block);
-            BlockStateRegistry.registerCustomBlockState(block.getId(), block.getNamespace());
-            RuntimeItems.getRuntimeMapping().registerCustomBlock(block, block.getId());
-            Item.addCreativeItem(block.toItem());
+            blocks.add(block);
         }
+        BlockStateRegistry.registerCustomBlockState(blocks);
+        //物品失效 创造栏失效
+        //个人认为可能需要注册自定义物品，使用itemblock无效
+        //RuntimeItems.getRuntimeMapping().registerCustomBlock(block, block.getId());
+        //blocks.forEach((block)-> Item.addCreativeItem(block.toItem()));
     }
 
     @PowerNukkitXOnly

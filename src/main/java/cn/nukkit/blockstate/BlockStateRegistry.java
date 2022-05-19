@@ -5,6 +5,7 @@ import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCustom;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -49,7 +50,7 @@ public class BlockStateRegistry {
     private final ExecutorService asyncStateRemover = Executors.newSingleThreadExecutor();
     private final Pattern BLOCK_ID_NAME_PATTERN = Pattern.compile("^blockid:(\\d+)$");
 
-    private final Registration updateBlockRegistration;
+    private Registration updateBlockRegistration;
 
     private final Map<BlockState, Registration> blockStateRegistration = new ConcurrentHashMap<>();
     private final Map<String, Registration> stateIdRegistration = new ConcurrentHashMap<>();
@@ -58,7 +59,7 @@ public class BlockStateRegistry {
     private final Int2ObjectMap<String> blockIdToPersistenceName = new Int2ObjectOpenHashMap<>();
     private final Map<String, Integer> persistenceNameToBlockId = new LinkedHashMap<>();
 
-    private final byte[] blockPaletteBytes;
+    private byte[] blockPaletteBytes;
 
     private final List<String> knownStateIds;
 
@@ -445,19 +446,80 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public synchronized static void registerCustomBlockState(int blockId, String namespace) {
-        registerPersistenceName(blockId, namespace);
-        if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
-        int runtimeId = runtimeIdRegistration.size();
-        CompoundTag nbt = new CompoundTag()
-                .putInt("blockId", blockId)
-                .putString("name", namespace)
-                .putInt("version", updateBlockRegistration.originalBlock.getInt("version"))
-                .putInt("runtimeId", runtimeId)
-                .putCompound("states", new CompoundTag("states"));
-        Registration blockReg = new Registration(null, runtimeId, nbt);
-        stateIdRegistration.putIfAbsent(namespace, blockReg);
-        runtimeIdRegistration.putIfAbsent(runtimeId, blockReg);
+    public synchronized static void registerCustomBlockState(List<BlockCustom> blockCustoms) {
+        blockStateRegistration.clear();
+        stateIdRegistration.clear();
+        runtimeIdRegistration.clear();
+        SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(getBlockIdComparator());
+
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("canonical_block_states.nbt")) {
+            if (stream == null) {
+                throw new AssertionError("Unable to locate block state nbt");
+            }
+            try (BufferedInputStream bis = new BufferedInputStream(stream)) {
+                while (bis.available() > 0) {
+                    CompoundTag tag = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+                    var name = tag.getString("name");
+                    tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1));
+                    if (!namespace2Nbt.containsKey(name)) {
+                        namespace2Nbt.put(name, new ArrayList<>());
+                    }
+                    namespace2Nbt.get(name).add(tag);
+                }
+            }
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+
+        for (var blockCustom : blockCustoms) {
+            var namespace = blockCustom.getNamespace();
+            //Block.customBlock.putIfAbsent(blockId, blockCustom);
+            registerPersistenceName(blockCustom.getId(), namespace);
+            if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
+            CompoundTag nbt = new CompoundTag()
+                    .putInt("blockId", blockCustom.getId())
+                    .putString("name", namespace)
+                    .putInt("version", namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version"))
+                    .putCompound("states", new CompoundTag("states"));
+            var nbtList = new ArrayList<CompoundTag>();
+            nbtList.add(nbt);
+            namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+        }
+        List<CompoundTag> tags = new ArrayList<>();
+        Set<String> warned = new HashSet<>();
+        Integer infoUpdateRuntimeId = null;
+        int runtimeId = 0;
+        for (var namespace : namespace2Nbt.keySet()) {
+            for (var nbt : namespace2Nbt.get(namespace)) {
+                nbt.putInt("runtimeId", runtimeId);
+                tags.add(nbt);
+                int block = nbt.getInt("blockId");
+                String name = nbt.getString("name").toLowerCase();
+                if (name.equals("minecraft:unknown")) {
+                    infoUpdateRuntimeId = runtimeId;
+                }
+                if (isNameOwnerOfId(name, block)) {
+                    registerStateId(nbt, runtimeId);
+                } else if (block == -1) {
+                    if (warned.add(name)) {
+                        log.warn("Unknown block id for the block named {}", name);
+                    }
+                    registerStateId(nbt, runtimeId);
+                }
+                ++runtimeId;
+            }
+        }
+        if (infoUpdateRuntimeId == null) {
+            throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");
+        }
+
+        updateBlockRegistration = findRegistrationByRuntimeId(infoUpdateRuntimeId);
+
+        try {
+            blockPaletteBytes = NBTIO.write(tags, ByteOrder.LITTLE_ENDIAN, true);
+        } catch (IOException e) {
+            throw new ExceptionInInitializerError(e);
+        }
     }
 
     private void registerStateId(CompoundTag block, int runtimeId) {
@@ -598,7 +660,7 @@ public class BlockStateRegistry {
     }
 
     private Comparator<String> getBlockIdComparator() {
-        return Collections.reverseOrder(MinecraftNamespaceComparator::compare);
+        return MinecraftNamespaceComparator::compareFNV;
     }
 
     @AllArgsConstructor
