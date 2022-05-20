@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
-    private static final String TARGET_PATTERN = "(\"@[aeprs](?:\\[.*])?\"|@[aeprs](?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]+\"|[A-Za-z][A-Za-z0-9]+)";
+    private static final String TARGET_PATTERN = "(\"@[aeprs](?:\\[.*])?\"|@[aeprs](?:\\[[^ ]*])?|\"[A-Za-z][A-Za-z0-9\\s]*\"|[A-Za-z][A-Za-z0-9]*)";
     private static final String WILDCARD_TARGET_PATTERN = "(\\S+)";
     private static final String MULTIPLE_STRING_PATTERN = "(.+)";
     private static final String INT_PATTERN = "(~-?\\d+|-?\\d+|~)";//only int
@@ -381,7 +381,8 @@ public class CommandParser {
             if (EntitySelector.hasArguments(arg)) {
                 return EntitySelector.matchEntities(this.sender, arg);
             } else {
-                return Collections.singletonList(Server.getInstance().getPlayer(arg));
+                Player player = Server.getInstance().getPlayer(arg);
+                return player == null? Collections.emptyList() : Collections.singletonList(player);
             }
         } catch (Exception e) {
             throw new CommandSyntaxException();
