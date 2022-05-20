@@ -76,6 +76,14 @@ public interface Goal extends Comparable<Goal> {
      */
     int getOrder();
 
+    default String getId() {
+        return this.getClass().getSimpleName();
+    }
+
+    default boolean isRunning() {
+        return getState() == GoalState.WORKING;
+    }
+
     @Override
     default int compareTo(@NotNull Goal o) {
         if (o.getOrder() == this.getOrder()) {

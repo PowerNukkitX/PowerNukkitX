@@ -5,10 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.ai.action.Action;
-import cn.nukkit.entity.ai.control.Control;
-import cn.nukkit.entity.ai.control.JumpControl;
-import cn.nukkit.entity.ai.control.ShoreControl;
-import cn.nukkit.entity.ai.control.WalkMoveNearControl;
+import cn.nukkit.entity.ai.control.*;
 import cn.nukkit.entity.ai.goal.FollowPathGoal;
 import cn.nukkit.entity.ai.goal.Goal;
 import cn.nukkit.entity.ai.goal.GoalState;
@@ -38,17 +35,20 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     public Vector3 movingNearDestination = null;
 
     public Vector3 previousMoveNearMotion = Vector3.ZERO;
+    public Vector3 lookAtTarget = null;
 
     protected PathFinder pathFinder = null;
     protected Control<?> jumpControl = null;
     protected Control<?> shoreControl = null;
     protected Control<? extends Vector3> moveNearControl = null;
+    protected Control<?> lookControl = null;
 
     protected Set<Sensor> sensors = new HashSet<>();
     /**
      * memory是一个实体的记忆，用来存储sensors、goals和controls的数据，这些数据不会被持久化
      */
     protected Map<Class<? extends Sensor>, Object> memory = new HashMap<>();
+    protected Map<String, Goal> allGoalsMap = new HashMap<>();
     protected SortedList<Goal> stoppedGoals = new SortedList<>(Goal::compareTo);
     protected SortedList<Goal> runningGoals = new SortedList<>(Goal::compareTo);
     protected List<Action> syncActions = new LinkedList<>();
@@ -63,6 +63,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
             this.jumpControl = new JumpControl(this);
             this.shoreControl = new ShoreControl(this);
             this.moveNearControl = new WalkMoveNearControl(this);
+            this.lookControl = new LookControl(this);
             // TODO: 2022/5/17 仅供测试
             addGoal(new FollowPathGoal());
         }
@@ -112,6 +113,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         addTmpMoveMotionXZ(previousMoveNearMotion);
         if (jumpControl != null) jumpControl.control(currentTick, needsRecalcMovement);
         if (shoreControl != null) shoreControl.control(currentTick, needsRecalcMovement);
+        if (lookControl != null) lookControl.control(currentTick, needsRecalcMovement);
     }
 
     @Override
@@ -310,6 +312,7 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     }
 
     public void addGoal(Goal goal) {
+        allGoalsMap.put(goal.getId(), goal);
         if (goal.getState() == GoalState.WORKING) {
             runningGoals.add(goal);
         } else {
@@ -318,11 +321,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
     }
 
     public boolean removeGoal(Goal goal) {
+        allGoalsMap.remove(goal.getId());
         if (goal.getState() == GoalState.WORKING) {
             return runningGoals.remove(goal);
         } else {
             return stoppedGoals.remove(goal);
         }
+    }
+
+    @Nullable
+    public Goal getGoal(String id) {
+        return allGoalsMap.get(id);
     }
 
     /**

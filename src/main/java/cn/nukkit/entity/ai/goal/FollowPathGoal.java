@@ -10,6 +10,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 public class FollowPathGoal extends AbstractGoal {
+    public static final String ID = "minecraft:follow_path";
+
     @NotNull
     protected Deque<Node> nodeStack = new LinkedList<>();
     @Nullable
@@ -76,5 +78,10 @@ public class FollowPathGoal extends AbstractGoal {
     @Override
     public int getOrder() {
         return ORDER_FOLLOW_PATH;
+    }
+
+    @Override
+    public String getId() {
+        return ID;
     }
 }

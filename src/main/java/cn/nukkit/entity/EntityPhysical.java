@@ -82,7 +82,28 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (!this.onGround && this.y < this.highestPosition) {
             this.fallingTick++;
         }
-        super.updateMovement();
+        // 计算相对运动
+        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double diffRotation = (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
+        if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+            this.lastX = this.x;
+            this.lastY = this.y;
+            this.lastZ = this.z;
+            this.lastPitch = this.pitch;
+            this.lastYaw = this.yaw;
+            this.lastHeadYaw = this.headYaw;
+            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
+            this.positionChanged = true;
+        } else {
+            this.positionChanged = false;
+        }
+        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { //0.05 ** 2
+            this.lastMotionX = this.motionX;
+            this.lastMotionY = this.motionY;
+            this.lastMotionZ = this.motionZ;
+            this.addMotion(this.motionX, this.motionY, this.motionZ);
+        }
         this.move(this.motionX, this.motionY, this.motionZ);
     }
 
