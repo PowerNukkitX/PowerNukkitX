@@ -67,7 +67,7 @@ public class NPCDialoguePacket extends DataPacket {
     @Override
     public void encode() {
         reset();
-        putUnsignedVarLong(runtimeEntityId);
+        putLong(runtimeEntityId);
         putVarInt(action.ordinal());
         putString(dialogue);
         putString(sceneName);
