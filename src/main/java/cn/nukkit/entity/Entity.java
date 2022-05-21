@@ -141,8 +141,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_SCALE = dynamic(38); //float
     @Since("1.2.0.0-PN")
     public static final int DATA_HAS_NPC_COMPONENT = dynamic(39); //byte
-    public static final int DATA_NPC_DATA = dynamic(40); //string
-    public static final int DATA_URL_TAG = dynamic(41); //string
+    public static final int DATA_NPC_SKIN_DATA = dynamic(40); //string
+    public static final int DATA_NPC_ACTIONS = dynamic(41); //string
     public static final int DATA_MAX_AIR = dynamic(42); //short
     public static final int DATA_MARK_VARIANT = dynamic(43); //int
     public static final int DATA_CONTAINER_TYPE = dynamic(44); //byte
