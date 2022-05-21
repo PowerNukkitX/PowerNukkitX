@@ -64,8 +64,6 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
             this.shoreControl = new ShoreControl(this);
             this.moveNearControl = new WalkMoveNearControl(this);
             this.lookControl = new LookControl(this);
-            // TODO: 2022/5/17 仅供测试
-            addGoal(new FollowPathGoal());
         }
         {
             final double dx = this.getWidth() * 0.5;

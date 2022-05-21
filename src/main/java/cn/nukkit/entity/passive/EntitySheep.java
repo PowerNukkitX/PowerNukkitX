@@ -3,10 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.goal.BegGoal;
+import cn.nukkit.entity.ai.sensor.common.BegInterestSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.ItemWheat;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -26,6 +29,8 @@ public class EntitySheep extends EntityAnimal {
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.sensors.add(new BegInterestSensor(8, new ItemWheat()));
+        this.addGoal(new BegGoal());
     }
 
     @Override
@@ -42,6 +47,11 @@ public class EntitySheep extends EntityAnimal {
             return 0.65f;
         }
         return 1.3f;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return getHeight() - 0.18f;
     }
 
     @PowerNukkitOnly

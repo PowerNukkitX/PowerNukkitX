@@ -2976,11 +2976,12 @@ public class Level implements ChunkManager, Metadatable {
         int maxZ = NukkitMath.ceilDouble((center.z + radius + 2) * 0.0625);
 
         var result = new ArrayList<Entity>();
+        var radiusSquared = radius * radius;
 
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (var ent : this.getChunkEntities(x, z, loadChunks).values()) {
-                    if (ent != entity) {
+                    if (ent != entity && (entity == null || ent.distanceSquared(entity) <= radiusSquared)) {
                         result.add(ent);
                     }
                 }

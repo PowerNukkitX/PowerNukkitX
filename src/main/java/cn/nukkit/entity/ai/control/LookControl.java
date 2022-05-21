@@ -18,11 +18,19 @@ public class LookControl implements Control<Void> {
     public Void control(int currentTick, boolean needsRecalcMovement) {
         if (needsRecalcMovement) {
             var followPathGoal = entity.getGoal(FollowPathGoal.ID);
-            if (entity.lookAtTarget != null) {
-                headLookAt(entity.lookAtTarget);
-            }
             if (followPathGoal != null && followPathGoal.isRunning() && entity.movingNearDestination != null) {
                 bodyLookAt(entity.movingNearDestination);
+                if (entity.lookAtTarget != null) {
+                    headLookAt(entity.lookAtTarget);
+                    entity.lookAtTarget = null;
+                }
+                return withState(ControlState.JUST_DONE);
+            } else if (entity.lookAtTarget != null) {
+                headLookAt(entity.lookAtTarget);
+                entity.lookAtTarget = null;
+                return withState(ControlState.JUST_DONE);
+            } else {
+                lookStraight();
                 return withState(ControlState.JUST_DONE);
             }
         }
@@ -48,13 +56,20 @@ public class LookControl implements Control<Void> {
         double zDiff = target.z - entity.z;
         double angle = Math.atan2(zDiff, xDiff);
         double yaw = ((angle * 180) / Math.PI) - 90;
-        double yDiff = target.y - entity.y;
+        double yDiff = target.y - entity.y - entity.getEyeHeight();
         var v = new Vector2(entity.x, entity.z);
         double dist = v.distance(target.x, target.z);
         angle = Math.atan2(dist, yDiff);
         double pitch = ((angle * 180) / Math.PI) - 90;
+        // 头的枢轴是横着的
+        entity.yaw = yaw;
         entity.headYaw = yaw;
         entity.pitch = pitch;
+    }
+
+    private void lookStraight() {
+        entity.pitch = 0;
+        entity.headYaw = entity.yaw;
     }
 
     @NotNull

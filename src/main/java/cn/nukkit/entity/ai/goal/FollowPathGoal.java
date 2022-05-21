@@ -51,8 +51,33 @@ public class FollowPathGoal extends AbstractGoal {
     @Override
     public void execute(int currentTick, EntityIntelligent entity) {
         if (entity.getPathFinder() != currentPathFinder) {
-            nodeStack.clear();
-            start(currentTick, entity);
+            var pathFinder = entity.getPathFinder();
+            if (pathFinder == null) {
+                goalState = GoalState.NOT_WORKING;
+                return;
+            }
+            var current = pathFinder.getDestination();
+            var tmpNodeStack = new LinkedList<Node>();
+            while (current != null) {
+                tmpNodeStack.addFirst(current);
+                current = current.getParent();
+            }
+            var itOld = nodeStack.iterator();
+            var itNew = tmpNodeStack.iterator();
+            while (itNew.hasNext() && itOld.hasNext()){
+                var newNext = itNew.next();
+                if(!newNext.equals(itOld.next())){
+                    itOld.remove();
+                    while (itOld.hasNext()) {
+                        itOld.next();
+                        itOld.remove();
+                    }
+                    nodeStack.addLast(newNext);
+                    while (itNew.hasNext()) {
+                        nodeStack.addLast(itNew.next());
+                    }
+                }
+            }
         }
         if (entity.movingNearDestination == null) {
             var tmp = nodeStack.pop();
