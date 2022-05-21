@@ -56,7 +56,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @Override
     public void decode() {
-        runtimeEntityId = getUnsignedVarLong();
+        runtimeEntityId = getLong();
         action = ACTIONS[getVarInt()];
         dialogue = getString();
         sceneName = getString();
