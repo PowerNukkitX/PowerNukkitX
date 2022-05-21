@@ -169,14 +169,14 @@ public class RuntimeItemMapping {
             RuntimeItems.Entry entry = new RuntimeItems.Entry(
                     block.getNamespace(),
                     id,
+                    id,
                     null,
                     null,
-                    false,
-                    true
+                    false
             );
             //this.customItemEntries.put(blockCustom.getNamespace(), entry);
             this.entries.add(entry);
-            this.namespacedIdItem.put(block.getNamespace().toLowerCase(Locale.ENGLISH), block::toItem);
+            this.namespacedIdItem.put(block.getNamespace(), block::toItem);
             this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
             this.networkNamespaceMap.put(id, block.getNamespace());
             int fullId = RuntimeItems.getFullId(id, 0);

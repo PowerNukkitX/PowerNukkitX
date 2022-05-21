@@ -473,8 +473,8 @@ public class BlockStateRegistry {
 
         for (var blockCustom : blockCustoms) {
             var namespace = blockCustom.getNamespace();
-            //Block.customBlock.putIfAbsent(blockId, blockCustom);
-            registerPersistenceName(blockCustom.getId(), namespace);
+            blockIdToPersistenceName.put(blockCustom.getId(), namespace);
+            persistenceNameToBlockId.put(namespace, blockCustom.getId());
             if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())

@@ -2362,7 +2362,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.rainLevel = 0;
         startGamePacket.lightningLevel = 0;
         startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.experiments.addAll(List.of(new ResourcePackStackPacket.ExperimentData("data_driven_items", true)));
         startGamePacket.gameRules = getLevel().getGameRules();
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
@@ -2621,6 +2620,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );
                             }
 

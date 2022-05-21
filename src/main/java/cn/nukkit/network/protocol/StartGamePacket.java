@@ -62,7 +62,6 @@ public class StartGamePacket extends DataPacket {
     public int platformBroadcastIntent = GAME_PUBLISH_SETTING_PUBLIC;
     public boolean commandsEnabled;
     public boolean isTexturePacksRequired = false;
-    public final List<ResourcePackStackPacket.ExperimentData> experiments = new ArrayList<>();
 
     public boolean experimentsPreviouslyToggled = true;
 

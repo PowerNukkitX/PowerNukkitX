@@ -27,6 +27,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.InvalidBlockDamageException;
+import cn.nukkit.utils.MinecraftNamespaceComparator;
 import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.log4j.Log4j2;
@@ -39,6 +40,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -141,7 +143,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static final List<BlockPropertyData> blockPropertyData = new ArrayList<>();
 
     @PowerNukkitXOnly
-    private static HashMap<Integer, Block> customBlock = new HashMap<>();
+    private static final HashMap<Integer, Block> customBlock = new HashMap<>();
+
+    @PowerNukkitXOnly
+    public static final ConcurrentHashMap<String, Integer> CUSTOM_BLOCK_ID_MAP = new ConcurrentHashMap<>();
+
     /**
      * if a block has can have variants
      */
@@ -1147,18 +1153,23 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitXOnly
     public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        List<BlockCustom> blocks = new ArrayList<>();
+        SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         for (var clazz : blockClass) {
             BlockCustom block = clazz.getDeclaredConstructor().newInstance();
-            blockPropertyData.add(block.getBlockPropertyData());
-            customBlock.put(block.getId(), block);
-            blocks.add(block);
+            sortedCustomBlocks.put(block.getNamespace(), block);
         }
+        int nextBlockId = 1000;
+        for (var block : sortedCustomBlocks.values()) {
+            blockPropertyData.add(block.getBlockPropertyData());
+            customBlock.put(nextBlockId, block);
+            CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);
+            ++nextBlockId;
+        }
+        var blocks = sortedCustomBlocks.values().stream().toList();
         BlockStateRegistry.registerCustomBlockState(blocks);
-        //物品失效 创造栏失效
-        //个人认为可能需要注册自定义物品，使用itemblock无效
         RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
-        blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+        //创造栏失效
+        //blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
     }
 
     @PowerNukkitXOnly
@@ -1258,10 +1269,20 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    /**
+     * 控制方块硬度
+     *
+     * @return 方块的硬度
+     */
     public double getHardness() {
         return 10;
     }
 
+    /**
+     * 控制方块爆炸抗性
+     *
+     * @return 方块的爆炸抗性
+     */
     public double getResistance() {
         return 1;
     }
@@ -1274,10 +1295,20 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    /**
+     * 控制挖掘方块的工具类型
+     *
+     * @return 挖掘方块的工具类型
+     */
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
 
+    /**
+     * 控制方块的摩擦因素
+     *
+     * @return 方块的摩擦因素
+     */
     public double getFrictionFactor() {
         return 0.6;
     }
@@ -1376,9 +1407,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, getId()) && item.getTier() >= getToolTier();
     }
 
+
+    /**
+     * 控制挖掘方块的最低工具级别(木质、石质...)
+     *
+     * @return 挖掘方块的最低工具级别
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public int getToolTier() { return 0; }
+    public int getToolTier() {
+        return 0;
+    }
 
     public boolean canBeClimbed() {
         return false;

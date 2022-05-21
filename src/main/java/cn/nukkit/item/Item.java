@@ -797,7 +797,22 @@ public class Item implements Cloneable, BlockID, ItemID {
                     }
                 }
                 return itemCustom;
+            } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
+                ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                if (customItemBlock == null) {
+                    return get(AIR);
+                }
+                if (meta.isPresent()) {
+                    int damage = meta.getAsInt();
+                    if (damage < 0) {
+                        customItemBlock = (ItemBlock) customItemBlock.createFuzzyCraftingRecipe();
+                    } else {
+                        customItemBlock.setDamage(damage);
+                    }
+                }
+                return customItemBlock;
             }
+
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {
                 Item item = minecraftItemId.get(1);
