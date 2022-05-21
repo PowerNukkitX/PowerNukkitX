@@ -448,6 +448,13 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    //spawned by server
+    //player's UUID is sent by client,so this value cannot be used in Player
+    protected UUID entityUniqueId;
+
+    //runtime id (changed after you restart the server)
     protected long id;
 
     protected final EntityMetadata dataProperties = new EntityMetadata()
@@ -557,11 +564,6 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.4.0.0-PN")
     public boolean noClip = false;
 
-    @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
-    //spawned by server
-    //player's UUID is sent by client,so this value cannot be used in Player
-    protected UUID entityUniqueId;
 
     public float getHeight() {
         return 0;
@@ -2875,6 +2877,7 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
+    //return runtime id (changed after restart the server)
     public long getId() {
         return this.id;
     }

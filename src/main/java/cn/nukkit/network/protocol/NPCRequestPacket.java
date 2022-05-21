@@ -11,16 +11,16 @@ public class NPCRequestPacket extends DataPacket {
     public long entityRuntimeId;
 
     @Since("1.4.0.0-PN")
-    public RequestType requestType;
+    public RequestType requestType = RequestType.SET_SKIN;
 
     @Since("1.4.0.0-PN")
-    public String commandString;
+    public String commandString = "";
 
     @Since("1.4.0.0-PN")
-    public int actionType;
+    public int actionType = 0;
 
     @Since("FUTURE")
-    public String sceneName;
+    public String sceneName = "";
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
