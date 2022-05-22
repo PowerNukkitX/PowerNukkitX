@@ -170,6 +170,8 @@ public class FormWindowDialogue {
             this.entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
             this.entityNPCEntity.getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, this.content);
             this.entityId = entityNPCEntity.getId();
+            this.entityNPCEntity.despawnFrom(player);
+            this.entityNPCEntity.spawnTo(player);
         }
         System.out.println(actionJson); // TODO: remove
         NPCDialoguePacket packet = new NPCDialoguePacket();

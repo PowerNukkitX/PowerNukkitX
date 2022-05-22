@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -14,7 +13,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.NPCDialoguePacket;
 
 /**
  * @author good777LUCKY
@@ -84,29 +82,12 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     //todo: remove this DEBUG
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-//        if (this.dialogue == null) {
-//            this.dialogue = new FormWindowDialogue("TestTitle", "TestContent");
-//            this.dialogue.addButton("TestButton");
-//            this.dialogue.setEntityNPCEntity(this);
-//        }
-//        this.dialogue.sendToPlayer(player);
-        String actionJson = "[{\"button_name\":\"TestButton\",\"text\":\"Test123\",\"data\":[{\"cmd_line\":\"Test123\",\"cmd_ver\":17}],\"mode\":0,\"type\":1}]";
-//        EntityNPCEntity entityNPCEntity = this;
-        EntityNPCEntity entityNPCEntity = new EntityNPCEntity(player.getChunk(), EntityNPCEntity.getDefaultNBT(player));
-        entityNPCEntity.getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
-        entityNPCEntity.getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, "Content");
-        entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
-        entityNPCEntity.spawnTo(player);
-
-        NPCDialoguePacket npcDialoguePacket = new NPCDialoguePacket();
-        npcDialoguePacket.setRuntimeEntityId(entityNPCEntity.getId());
-        npcDialoguePacket.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
-        npcDialoguePacket.setDialogue("Content");
-        npcDialoguePacket.setSceneName("Scene");
-        npcDialoguePacket.setNpcName("Title");
-        npcDialoguePacket.setActionJson(actionJson);
-        player.dataPacket(npcDialoguePacket);
-        player.sendMessage("Open...");
+        if (this.dialogue == null) {
+            this.dialogue = new FormWindowDialogue("TestTitle", "TestContent");
+            this.dialogue.addButton("TestButton");
+            this.dialogue.setEntityNPCEntity(this);
+        }
+        this.dialogue.sendToPlayer(player);
         return true;
     }
 
