@@ -50,7 +50,7 @@ public class BegGoal extends AbstractGoal {
                 startNode.setRoot(true);
                 pathFinder.setPathThinker(entity);
                 pathFinder.setDestination(destinationNode);
-                pathFinder.allowDestinationOffset(2);
+                pathFinder.allowDestinationOffset(6);
                 pathFinder.setStart(startNode);
                 pathFinder.prepareSearch();
                 var result = pathFinder.search();

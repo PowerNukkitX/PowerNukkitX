@@ -61,8 +61,7 @@ public class AStarPathFinder implements PathFinderDynamic {
                     var dy = destination.doubleRealY() - minCostNode.doubleRealY();
                     var dz = destination.doubleRealZ() - minCostNode.doubleRealZ();
                     if ((long) dx * dx + (long) dy * dy + (long) dz * dz < allowedOffsetSquared) {
-                        destination.setParent(minCostNode.getParent());
-                        destination.setG(minCostNode.getG());
+                        setDestination(minCostNode);
                         return true;
                     }
                 }
