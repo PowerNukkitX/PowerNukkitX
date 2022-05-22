@@ -8,12 +8,12 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.utils.RawText;
+import cn.nukkit.dialog.handler.FormDialogHandler;
+import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
-import cn.nukkit.entity.data.IntPositionEntityData;
-import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.data.StringEntityData;
+import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.passive.EntityNPCEntity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -286,6 +286,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    //         RuntimeEntityId    Window
+    protected Map<Long, FormWindowDialog> dialogWindows = new Long2ObjectOpenHashMap();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
 
@@ -3109,7 +3114,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     break;
+                case ProtocolInfo.NPC_REQUEST_PACKET://todo: complete it
+                    NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
 
+                    if (dialogWindows.containsKey(npcRequestPacket.getRequestedEntityRuntimeId())) {
+                        FormWindowDialog dialog = dialogWindows.remove(npcRequestPacket.getRequestedEntityRuntimeId());
+                        dialog.setResponse(npcRequestPacket);
+
+                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                            handler.handle(this, dialog.getResponse());
+                        }
+
+                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog);
+                        getServer().getPluginManager().callEvent(event);
+                    }
+                    break;
                 case ProtocolInfo.INTERACT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -5648,6 +5667,52 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.dataPacket(packet);
         return id;
+    }
+
+    public void showDialogWindow(FormWindowDialog dialog){
+        if(this.dialogWindows.size() > 10){
+            this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
+            return;
+        }
+        String actionJson = dialog.getJSONData();
+        if (dialog.getBindEntity() == null) {//fake entity
+            AddEntityPacket addEntityPacket = new AddEntityPacket();
+            addEntityPacket.entityRuntimeId = Entity.entityCount++;
+            addEntityPacket.entityUniqueId = addEntityPacket.entityRuntimeId;
+            addEntityPacket.type = EntityNPCEntity.NETWORK_ID;
+            addEntityPacket.id = AddEntityPacket.LEGACY_IDS.get(EntityNPCEntity.NETWORK_ID);
+            addEntityPacket.x = (float) this.getX();
+            addEntityPacket.y = (float) this.getY();
+            addEntityPacket.z = (float) this.getZ();
+            addEntityPacket.yaw = (float) this.getYaw();
+            addEntityPacket.pitch = (float) this.getPitch();
+            addEntityPacket.headYaw = (float) this.getHeadYaw();
+            addEntityPacket.metadata = new EntityMetadata()
+                    .putString(Entity.DATA_NAMETAG, dialog.getTitle())
+                    .putByte(Entity.DATA_HAS_NPC_COMPONENT, 1)
+                    .putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData())
+                    .putString(Entity.DATA_INTERACTIVE_TAG, actionJson)
+                    .putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
+            this.dataPacket(addEntityPacket);
+            dialog.setEntityId(addEntityPacket.entityRuntimeId);
+        } else {
+            dialog.getBindEntity().setNameTag(dialog.getTitle());
+            dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
+            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
+            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
+            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getSkinData());
+            dialog.setEntityId(dialog.getBindEntity().getId());
+            dialog.getBindEntity().sendData(this);
+        }
+        NPCDialoguePacket packet = new NPCDialoguePacket();
+        packet.setRuntimeEntityId(dialog.getEntityId());
+        packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
+        packet.setDialogue(dialog.getContent());
+        packet.setSceneName(dialog.getTitle());
+        packet.setNpcName(dialog.getTitle());
+        packet.setActionJson(actionJson);
+        this.dialogWindows.put(packet.getRuntimeEntityId(),dialog);
+        this.dataPacket(packet);
     }
 
     /**

@@ -7,7 +7,7 @@ import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.dialog.window.FormWindowDialogue;
+import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -24,7 +24,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     @PowerNukkitOnly
     public static final int NETWORK_ID = 51;
 
-    private FormWindowDialogue dialogue;
+    private FormWindowDialog dialog;
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -75,12 +75,13 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     //todo: remove this DEBUG
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (this.dialogue == null) {
-            this.dialogue = new FormWindowDialogue("TestTitle", "TestContent");
-            this.dialogue.addButton("TestButton");
-            this.dialogue.setBindEntity(this);
+        if (this.dialog == null) {
+            this.dialog = new FormWindowDialog("TestTitle", "TestContent");
+            this.dialog.addButton("TestButton");
+            this.dialog.setBindEntity(this);
+            this.dialog.addHandler((p,r) -> p.sendMessage("responsed"));
         }
-        this.dialogue.sendToPlayer(player);
+        player.showDialogWindow(this.dialog);
         return true;
     }
 
