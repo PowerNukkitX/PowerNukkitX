@@ -10,41 +10,40 @@ public class ElementDialogButton {
 
     private String text;
 
-    private Object data;
+    private List<CmdLine> data;
+
+    public static class CmdLine{
+        public CmdLine(String cmd_line, int cmd_ver){
+            this.cmd_line = cmd_line;
+            this.cmd_ver = cmd_ver;
+        }
+        public String cmd_line;
+        public int cmd_ver;
+        public static transient final int CMD_VER = 19;
+    }
 
     private int mode;
 
     private int type;
 
     public ElementDialogButton(String name, String text) {
-        this(name, text, null);
+        this(name, text, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text, Object data) {
-        this(name, text, data, 0);
+    public ElementDialogButton(String name, String text, Mode mode) {
+        this(name, text, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text, Object data, int mode) {
-        this(name, text, data, mode, 1);
-    }
-
-    public ElementDialogButton(String name, String text, Object data, int mode, int type) {
+    public ElementDialogButton(String name, String text, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
-        if (data == null) {
-            List<HashMap<String, Object>> list = new ArrayList<>();
-            String[] split = text.split("\n");
-            for (String str : split) {
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("cmd_line", str);
-                hashMap.put("cmd_ver", 17);
-                list.add(hashMap);
-            }
-            this.data = list;
-        } else {
-            this.data = data;
+        List<CmdLine> list = new ArrayList<>();
+        String[] split = text.split("\n");
+        for (String str : split) {
+            list.add(new CmdLine(str,CmdLine.CMD_VER));
         }
-        this.mode = mode;
+        this.data = list;
+        this.mode = mode.ordinal();
         this.type = type;
     }
 
@@ -64,20 +63,21 @@ public class ElementDialogButton {
         this.text = text;
     }
 
-    public Object getData() {
+    public List<CmdLine> getData() {
         return data;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    public Mode getMode() {
+        return switch (mode) {
+            case 0 -> Mode.BUTTON_MODE;
+            case 1 -> Mode.ON_EXIT;
+            case 2 -> Mode.ON_ENTER;
+            default -> throw new IllegalStateException("Unexpected value: " + mode);
+        };
     }
 
-    public int getMode() {
-        return mode;
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
+    public void setMode(Mode mode) {
+        this.mode = mode.ordinal();
     }
 
     public int getType() {
@@ -86,5 +86,11 @@ public class ElementDialogButton {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public enum Mode {
+        BUTTON_MODE,
+        ON_EXIT,
+        ON_ENTER
     }
 }

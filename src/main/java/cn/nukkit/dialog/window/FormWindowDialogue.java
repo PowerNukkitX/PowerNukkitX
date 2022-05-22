@@ -33,7 +33,7 @@ public class FormWindowDialogue {
 
     private long entityId;
 
-    private EntityNPCEntity entityNPCEntity;
+    private Entity bindEntity;
 
     protected final transient List<FormDialogueHandler> handlers = new ObjectArrayList<>();
 
@@ -45,11 +45,11 @@ public class FormWindowDialogue {
         this(title, content, buttons, null);
     }
 
-    public FormWindowDialogue(String title, String content, List<ElementDialogButton> buttons, EntityNPCEntity entityNPCEntity) {
+    public FormWindowDialogue(String title, String content, List<ElementDialogButton> buttons, EntityNPCEntity bindEntity) {
         this.title = title;
         this.content = content;
         this.buttons = buttons;
-        this.entityNPCEntity = entityNPCEntity;
+        this.bindEntity = bindEntity;
     }
 
     public boolean isClosed() {
@@ -100,12 +100,12 @@ public class FormWindowDialogue {
         this.entityId = entityId;
     }
 
-    public EntityNPCEntity getEntityNPCEntity() {
-        return entityNPCEntity;
+    public Entity getBindEntity() {
+        return bindEntity;
     }
 
-    public void setEntityNPCEntity(EntityNPCEntity entityNPCEntity) {
-        this.entityNPCEntity = entityNPCEntity;
+    public void setBindEntity(EntityNPCEntity bindEntity) {
+        this.bindEntity = bindEntity;
     }
 
     public String getSkinData(){
@@ -152,7 +152,7 @@ public class FormWindowDialogue {
 
     public void sendToPlayer(Player player) {
         String actionJson = getJSONData();
-        if (this.entityNPCEntity == null) {
+        if (this.bindEntity == null) {
             AddEntityPacket addEntityPacket = new AddEntityPacket();
             addEntityPacket.entityUniqueId = Entity.entityCount++;
             addEntityPacket.entityRuntimeId = addEntityPacket.entityUniqueId;
@@ -173,13 +173,13 @@ public class FormWindowDialogue {
             player.dataPacket(addEntityPacket);
             this.entityId = addEntityPacket.entityUniqueId;
         } else {
-            this.entityNPCEntity.setNameTag(this.title);
-            this.entityNPCEntity.getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
-            entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, this.skinData); // TODO: NPC Skin
-            this.entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
-            this.entityNPCEntity.getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, this.content);
-            this.entityId = entityNPCEntity.getId();
-            this.entityNPCEntity.sendData(player);
+            this.bindEntity.setNameTag(this.title);
+            this.bindEntity.getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
+            bindEntity.getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, this.skinData); // TODO: NPC Skin
+            this.bindEntity.getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
+            this.bindEntity.getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, this.content);
+            this.entityId = bindEntity.getId();
+            this.bindEntity.sendData(player);
         }
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(this.entityId);

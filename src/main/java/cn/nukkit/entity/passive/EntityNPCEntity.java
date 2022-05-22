@@ -78,7 +78,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         if (this.dialogue == null) {
             this.dialogue = new FormWindowDialogue("TestTitle", "TestContent");
             this.dialogue.addButton("TestButton");
-            this.dialogue.setEntityNPCEntity(this);
+            this.dialogue.setBindEntity(this);
         }
         this.dialogue.sendToPlayer(player);
         return true;
