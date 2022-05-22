@@ -11,7 +11,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.EntitySelector;
+import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
@@ -65,12 +65,21 @@ public class GiveCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
-        
-        if (item.getDamage() < 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return true;
+
+//        if (item.getName().equals("Air")){
+//            Command.broadcastCommandMessage(sender, new TranslationContainer(
+//                    "%commands.give.success",
+//                    item.getName() + " (minecraft:air)",
+//                    String.valueOf(item.getCount()),
+//                    players.stream().map(p -> p.getName()).collect(Collectors.joining(" "))));
+//            return true;
+//        }
+
+        if (item.isNull() && item.getId() != 0) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
+            return false;
         }
-        
+
         if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
             sender.sendMessage(new TranslationContainer("commands.give.block.notFound", args[1]));
             return true;
@@ -96,6 +105,11 @@ public class GiveCommand extends VanillaCommand {
             item.setDamage(Integer.parseInt(args[3]));
         }
 
+        if (item.getDamage() < 0) {
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return true;
+        }
+
         if (args.length >= 5) {
             Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(Arrays.stream(Arrays.copyOfRange(args, 4, args.length)).collect(Collectors.joining("")));
             item.readItemJsonComponents(components);
@@ -103,11 +117,6 @@ public class GiveCommand extends VanillaCommand {
 
         if (players.size() == 0) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return false;
-        }
-        
-        if (item.isNull()) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
             return false;
         }
 

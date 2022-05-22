@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.*;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -23,6 +24,7 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
@@ -2641,16 +2643,37 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public Block cloneTo(Position pos){
-        pos.level.setBlock(pos,this.layer,this.clone());
-        return pos.getLevelBlock();
+    public void cloneTo(Position pos){
+        pos.level.setBlock(pos,this.layer,this.clone(),true,true);
+        if (this instanceof BlockEntityHolder<?> holder){
+            if (holder.getBlockEntity() != null){
+                CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
+                tag.putInt("x", pos.getFloorX());
+                tag.putInt("y", pos.getFloorY());
+                tag.putInt("z", pos.getFloorZ());
+                if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())){
+                    BlockEntity.createBlockEntity(holder.getBlockEntityType(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
+                }else{
+                    pos.getLevelBlockEntity().namedTag = tag;
+                    pos.getLevelBlockEntity().loadNBT();
+                }
+            }
+        }
     }
 
-    @PowerNukkitDifference(info = "Only override in PNX", since = "1.6.0.0-PNX")
-    @Override
-    public boolean equals(Object obj) {
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean equalsBlock(Object obj) {
         if(obj instanceof Block otherBlock) {
-            return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage();
+            if (!(this instanceof BlockEntityHolder<?>) && !(otherBlock instanceof BlockEntityHolder<?>)) {
+                return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage();
+            }
+            if (this instanceof BlockEntityHolder<?> holder1 && otherBlock instanceof BlockEntityHolder<?> holder2){
+                BlockEntity be1 = holder1.getOrCreateBlockEntity();
+                BlockEntity be2 = holder2.getOrCreateBlockEntity();
+                if ((be1 == null) != (be2 == null)) return false;
+                return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage() && be1.getCleanedNBT().equals(be2.getCleanedNBT());
+            }
         }
         return false;
     }

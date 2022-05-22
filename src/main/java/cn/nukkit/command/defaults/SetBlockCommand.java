@@ -5,7 +5,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
@@ -113,12 +112,8 @@ public class SetBlockCommand extends VanillaCommand {
             }
         }
 
-        Item item = block.toItem();
-        block.position(position);
-        level.setBlock(position, block, true, true);
-        if (args.length > 4) {
-            level.setBlockDataAt((int)position.x, (int)position.y, (int)position.z, data);
-        }
+
+        level.setBlock(position, block);
         sender.sendMessage(new TranslationContainer("commands.setblock.success"));
         return true;
     }

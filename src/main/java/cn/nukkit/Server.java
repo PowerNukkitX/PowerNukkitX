@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
+import cn.nukkit.command.function.FunctionManager;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
@@ -173,6 +174,8 @@ public class Server {
 
     private ScoreboardManager scoreboardManager;
 
+    private FunctionManager functionManager;
+
     private int maxPlayers;
 
     private boolean autoSave = true;
@@ -336,6 +339,7 @@ public class Server {
         whitelist = new Config();
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+        functionManager = new FunctionManager(this.commandDataPath + "/functions");
 
         setMaxPlayers(10);
 
@@ -700,6 +704,8 @@ public class Server {
 
         this.commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
+
+        functionManager = new FunctionManager(this.commandDataPath + "/functions");
 
         // Convert legacy data before plugins get the chance to mess with it.
         try {
@@ -1068,6 +1074,7 @@ public class Server {
         JSIInitiator.reset();
         this.pluginManager.registerInterface(JSPluginLoader.class);
         this.pluginManager.loadPlugins(this.pluginPath);
+        this.functionManager.reload();
         this.enablePlugins(PluginLoadOrder.STARTUP);
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         Timings.reset();
@@ -1796,6 +1803,10 @@ public class Server {
 
     public ScoreboardManager getScoreboardManager() {
         return scoreboardManager;
+    }
+
+    public FunctionManager getFunctionManager() {
+        return functionManager;
     }
 
     public ServerScheduler getScheduler() {

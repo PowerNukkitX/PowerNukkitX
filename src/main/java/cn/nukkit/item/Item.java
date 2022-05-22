@@ -783,6 +783,9 @@ public class Item implements Cloneable, BlockID, ItemID {
             } else {
                 namespacedId = "minecraft:" + name;
             }
+            if (namespacedId.equals("minecraft:air")) {
+                return get(AIR);
+            }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
                if (itemCustom == null) {
@@ -1330,11 +1333,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     public CompoundTag getOrCreateNamedTag() {
         if (!hasCompoundTag()) {
-            CompoundTag tag = new CompoundTag();
-            tag.setName(null);
-
-            this.cachedNBT = tag;
-            this.tags = writeCompoundTag(tag);
+            return new CompoundTag();
         }
         return getNamedTag();
     }

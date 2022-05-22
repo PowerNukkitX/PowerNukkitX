@@ -77,6 +77,15 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         super.initBlockEntity();
     }
 
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        namedTag.putShort("PotionId", getPotionId());
+        int potionId = namedTag.getShort("PotionId");
+        int potionType = (potionId & 0xFFFF) == 0xFFFF? POTION_TYPE_EMPTY : POTION_TYPE_NORMAL;
+        namedTag.putShort("PotionType", potionType);
+    }
+
     public int getPotionId() {
         return namedTag.getShort("PotionId");
     }

@@ -9,7 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 
 import java.util.List;
 
