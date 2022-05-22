@@ -142,7 +142,6 @@ public class FormWindowDialogue {
 
     public void sendToPlayer(Player player) {
         String actionJson = getJSONData();
-//        String actionJson = "[{\"button_name\":\"TestButton\",\"text\":\"Test123\",\"data\":[{\"cmd_line\":\"Test123\",\"cmd_ver\":17}],\"mode\":0,\"type\":1}]";
         if (this.entityNPCEntity == null) {
             AddEntityPacket addEntityPacket = new AddEntityPacket();
             addEntityPacket.entityUniqueId = Entity.entityCount++;
@@ -158,7 +157,7 @@ public class FormWindowDialogue {
             addEntityPacket.metadata = new EntityMetadata()
                     .putString(Entity.DATA_NAMETAG, this.title)
                     .putByte(Entity.DATA_HAS_NPC_COMPONENT, 1)
-//                    .putString(Entity.DATA_NPC_SKIN_DATA, "")
+//                    .putString(Entity.DATA_NPC_SKIN_DATA, "") // TODO: NPC Skin
                     .putString(Entity.DATA_INTERACTIVE_TAG, actionJson)
                     .putString(Entity.DATA_INTERACTIVE_TAG, this.content);
             player.dataPacket(addEntityPacket);
@@ -166,14 +165,12 @@ public class FormWindowDialogue {
         } else {
             this.entityNPCEntity.setNameTag(this.title);
             this.entityNPCEntity.getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
-//            entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, "");
+//            entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, ""); // TODO: NPC Skin
             this.entityNPCEntity.getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
             this.entityNPCEntity.getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, this.content);
             this.entityId = entityNPCEntity.getId();
-            this.entityNPCEntity.despawnFrom(player);
-            this.entityNPCEntity.spawnTo(player);
+            this.entityNPCEntity.sendData(player);
         }
-        System.out.println(actionJson); // TODO: remove
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(this.entityId);
         packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
@@ -181,7 +178,6 @@ public class FormWindowDialogue {
         packet.setSceneName(this.title);
         packet.setNpcName(this.title);
         packet.setActionJson(actionJson);
-        System.out.println(GSON.toJson(packet)); // TODO: removestop
         player.dataPacket(packet);
     }
 }
