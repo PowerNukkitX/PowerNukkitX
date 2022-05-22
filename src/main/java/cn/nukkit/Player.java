@@ -3114,11 +3114,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     break;
-                case ProtocolInfo.NPC_REQUEST_PACKET://todo: complete it
+                case ProtocolInfo.NPC_REQUEST_PACKET:
                     NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
 
                     if (dialogWindows.containsKey(npcRequestPacket.getRequestedEntityRuntimeId())) {
                         FormWindowDialog dialog = dialogWindows.remove(npcRequestPacket.getRequestedEntityRuntimeId());
+                        if(dialog.getBindEntity() == null){//remove fake entity
+                            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
+                            removeEntityPacket.eid = npcRequestPacket.getRequestedEntityRuntimeId();
+                            this.dataPacket(removeEntityPacket);
+                        }
                         dialog.setResponse(npcRequestPacket);
 
                         for(FormDialogHandler handler : dialog.getHandlers()) {
