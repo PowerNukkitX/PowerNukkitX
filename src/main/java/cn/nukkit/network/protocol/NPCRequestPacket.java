@@ -1,11 +1,16 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
 @ToString
 public class NPCRequestPacket extends DataPacket {
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final byte NETWORK_ID = ProtocolInfo.NPC_REQUEST_PACKET;
 
     @Since("1.4.0.0-PN")
     public long entityRuntimeId;
