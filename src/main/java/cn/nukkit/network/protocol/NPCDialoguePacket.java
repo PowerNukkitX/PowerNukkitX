@@ -56,7 +56,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @Override
     public void decode() {
-        runtimeEntityId = getLong();
+        runtimeEntityId = getLLong();
         action = ACTIONS[getVarInt()];
         dialogue = getString();
         sceneName = getString();
@@ -67,7 +67,7 @@ public class NPCDialoguePacket extends DataPacket {
     @Override
     public void encode() {
         reset();
-        putLong(runtimeEntityId);
+        putLLong(runtimeEntityId);
         putVarInt(action.ordinal());
         putString(dialogue);
         putString(sceneName);
