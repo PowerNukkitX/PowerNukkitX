@@ -2367,7 +2367,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
-        System.out.println(Block.getBlockPropertyDataList().get(0).toString());
+        //System.out.println(Block.getBlockPropertyDataList().get(0).toString());
         //startGamePacket.isInventoryServerAuthoritative = true;
         this.dataPacketImmediately(startGamePacket);
 
@@ -2896,7 +2896,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                 //improved this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
                                 //Done by lmlstarqaq
-                                double breakTime = Math.ceil(target.calculateBreakTime(this.inventory.getItemInHand(), this) * 20);
+                                double breakTime;
+                                if (target instanceof BlockCustom blockCustom) {
+                                    breakTime = Math.ceil(blockCustom.getBreakTime() * 30);
+                                } else
+                                    breakTime = Math.ceil(target.calculateBreakTime(this.inventory.getItemInHand(), this) * 20);
                                 if (breakTime > 0) {
                                     LevelEventPacket pk = new LevelEventPacket();
                                     pk.evid = LevelEventPacket.EVENT_BLOCK_START_BREAK;

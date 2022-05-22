@@ -48,7 +48,7 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
 
     @Override
     public double getHardness() {
-        return 3;
+        return 3;//TODO 2022/5/22 bds1.18.31 信标挖掘时间被固定4.5s 90tick,不确定是否为原版bug,可以特判解决
     }
 
     @Override

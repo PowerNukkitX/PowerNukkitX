@@ -1169,7 +1169,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         BlockStateRegistry.registerCustomBlockState(blocks);
         RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
         //创造栏失效
-        //blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+        blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
     }
 
     @PowerNukkitXOnly
@@ -1271,7 +1271,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块硬度
-     *
      * @return 方块的硬度
      */
     public double getHardness() {
@@ -1280,7 +1279,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块爆炸抗性
-     *
      * @return 方块的爆炸抗性
      */
     public double getResistance() {
@@ -1297,7 +1295,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制挖掘方块的工具类型
-     *
      * @return 挖掘方块的工具类型
      */
     public int getToolType() {
@@ -1306,7 +1303,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块的摩擦因素
-     *
      * @return 方块的摩擦因素
      */
     public double getFrictionFactor() {
@@ -1410,7 +1406,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制挖掘方块的最低工具级别(木质、石质...)
-     *
      * @return 挖掘方块的最低工具级别
      */
     @PowerNukkitOnly
@@ -1511,10 +1506,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.level = v.level;
     }
 
+    /**
+     * 控制方块被破坏时掉落的物品
+     * 常在{@link cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)}方法被调用
+     *
+     * @return 掉落的物品数组
+     */
     public Item[] getDrops(Item item) {
         if (this.getId() < 0 || this.getId() > list.length) { //Unknown blocks
             return Item.EMPTY_ARRAY;
-        } else if(canHarvestWithHand() || canHarvest(item)) {
+        } else if (canHarvestWithHand() || canHarvest(item)) {
             return new Item[]{
                     this.toItem()
             };
@@ -1690,6 +1691,82 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
 
         return seconds;
+    }
+
+    /**
+     * 计算方块挖掘需要多少tick (计算算法来自https://minecraft.fandom.com/wiki/Breaking)
+     *
+     * @param item   挖掘工具
+     * @param player 挖掘方块的玩家
+     * @return 挖掘耗费的tick
+     */
+    @PowerNukkitXOnly
+    public double calculateBreakTick(@Nonnull Item item, @Nullable Player player) {
+        double blockHardness = getHardness();
+        boolean canHarvest = canHarvest(item);
+        double speedMultiplier = 1;
+        boolean hasConduitPower = false;
+        boolean hasAquaAffinity = false;
+        int hasteEffectLevel = 0;
+        int miningFatigueLevel = 0;
+
+        if (player != null) {
+            hasConduitPower = player.hasEffect(Effect.CONDUIT_POWER);
+            hasAquaAffinity = Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_WATER_WORKER))
+                    .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
+            hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
+                    .map(Effect::getAmplifier).orElse(0);
+            miningFatigueLevel = Optional.ofNullable(player.getEffect(Effect.MINING_FATIGUE))
+                    .map(Effect::getAmplifier).orElse(0);
+        }
+
+        if (correctTool0(getToolType(), item, getId())) {
+            speedMultiplier = toolBreakTimeBonus0(item);
+
+            int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
+                    .map(Enchantment::getLevel).orElse(0);
+
+            if (canHarvest && efficiencyLevel > 0) {
+                speedMultiplier += efficiencyLevel ^ 2 + 1;
+            }
+
+            if (hasConduitPower) hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
+
+            if (hasteEffectLevel > 0) {
+                speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
+            }
+
+        }
+
+        if (miningFatigueLevel > 0) {
+            speedMultiplier /= 3 ^ miningFatigueLevel;
+        }
+
+        if (player != null) {
+            if (player.isInsideOfWater() && !hasAquaAffinity) {
+                speedMultiplier /= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
+            }
+
+            if (!player.isOnGround()) {
+                speedMultiplier /= 5;
+            }
+        }
+
+        double damage = 0;
+
+        damage = speedMultiplier / blockHardness;
+
+        if (canHarvest) {
+            damage /= 30;
+        } else {
+            damage /= 100;
+        }
+
+        if (damage > 1) {
+            return 0;
+        }
+
+        return Math.ceil(1 / damage);
     }
 
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not completely accurate", replaceWith = "calculateBreakeTime()")
