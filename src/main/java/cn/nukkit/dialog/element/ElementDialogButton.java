@@ -1,4 +1,4 @@
-package cn.nukkit.form.dialog.element;
+package cn.nukkit.dialog.element;
 
 import java.util.ArrayList;
 import java.util.HashMap;

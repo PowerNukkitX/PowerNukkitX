@@ -1,6 +1,6 @@
-package cn.nukkit.form.dialog.response;
+package cn.nukkit.dialog.response;
 
-import cn.nukkit.form.dialog.element.ElementDialogButton;
+import cn.nukkit.dialog.element.ElementDialogButton;
 
 public class FormResponseDialogue {
 

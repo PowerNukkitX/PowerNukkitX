@@ -1,7 +1,7 @@
-package cn.nukkit.form.dialog.handler;
+package cn.nukkit.dialog.handler;
 
 import cn.nukkit.Player;
-import cn.nukkit.form.dialog.response.FormResponseDialogue;
+import cn.nukkit.dialog.response.FormResponseDialogue;
 
 import java.util.function.Consumer;
 
