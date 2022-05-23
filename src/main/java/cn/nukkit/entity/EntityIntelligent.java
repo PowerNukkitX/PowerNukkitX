@@ -241,6 +241,17 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         return canPassThrough0(node.realX(), node.realY(), node.realZ(), false);
     }
 
+    /**
+     * @param x x
+     * @param y y
+     * @param z z
+     * @return 是否可通过
+     * @see EntityIntelligent#canPassThrough(Node)
+     */
+    public boolean canDirectlyPassThrough(double x, double y, double z) {
+        return canPassThrough0(x, y, z, true);
+    }
+
     private boolean canPassThrough0(double x, double y, double z, boolean canJump) {
         var tmpBB = fixedSizeBB.getOffsetBoundingBox(x, y, z);
         if (this.level.fastCollisionBlocks(tmpBB, true, false,

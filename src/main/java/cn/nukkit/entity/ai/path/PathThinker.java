@@ -1,5 +1,6 @@
 package cn.nukkit.entity.ai.path;
 
+import cn.nukkit.entity.EntityIntelligent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,6 +25,15 @@ public interface PathThinker {
      * @return 是否可通过
      */
     boolean canPassThrough(@NotNull Node node);
+
+    /**
+     * @param x x
+     * @param y y
+     * @param z z
+     * @return 是否可通过
+     * @see EntityIntelligent#canPassThrough(Node)
+     */
+    boolean canDirectlyPassThrough(double x, double y, double z);
 
     /**
      * @return 搜索形状

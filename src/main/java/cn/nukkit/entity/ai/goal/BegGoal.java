@@ -25,7 +25,7 @@ public class BegGoal extends AbstractGoal {
     @Override
     public void execute(int currentTick, EntityIntelligent entity) {
         var interestTarget = entity.getMemory(BegInterestSensor.class, List.class);
-        if (interestTarget != null) {
+        if (interestTarget != null && !interestTarget.isEmpty()) {
             Entity nearest = null;
             double lenSquared = Double.MAX_VALUE;
             for (var each : interestTarget) {
@@ -58,6 +58,9 @@ public class BegGoal extends AbstractGoal {
                     entity.setPathFinder(pathFinder);
                 }
             }
+        } else { // 没有感兴趣的食物就取消
+            entity.setPathFinder(null);
+            entity.movingNearDestination = null;
         }
     }
 
