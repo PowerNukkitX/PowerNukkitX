@@ -11,6 +11,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +49,23 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
 
     @Override
     public double getHardness() {
-        return 3;//TODO 2022/5/22 bds1.18.31 信标挖掘时间被固定4.5s 90tick,不确定是否为原版bug,可以特判解决
+        return 3;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public double calculateBreakTime(@NotNull Item item) {
+        return calculateBreakTime(item, null);
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public double calculateBreakTime(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
+        return 4.5;
     }
 
     @Override

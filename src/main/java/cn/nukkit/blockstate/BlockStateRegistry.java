@@ -296,7 +296,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
-        if (state.getBlockId() >= Block.MAX_BLOCK_ID) {
+        if (state.getBlockId() > Block.MAX_BLOCK_ID) {
             return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
         }
         return getRegistration(convertToNewState(state)).runtimeId;

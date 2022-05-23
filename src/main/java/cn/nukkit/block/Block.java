@@ -385,7 +385,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[PURPUR_BLOCK] = BlockPurpur.class; //201
 
             list[PURPUR_STAIRS] = BlockStairsPurpur.class; //203
-            
+
             list[UNDYED_SHULKER_BOX] = BlockUndyedShulkerBox.class; //205
             list[END_BRICKS] = BlockBricksEndStone.class; //206
             list[ICE_FROSTED] = BlockIceFrosted.class; //207
@@ -475,11 +475,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[TURTLE_EGG] = BlockTurtleEgg.class; //414
             list[BUBBLE_COLUMN] = BlockBubbleColumn.class; //415
             list[BARRIER] = BlockBarrier.class; //416
-            list[STONE_SLAB3] = BlockSlabStone3.class ; //417
+            list[STONE_SLAB3] = BlockSlabStone3.class; //417
             list[BAMBOO] = BlockBamboo.class; //418
             list[BAMBOO_SAPLING] = BlockBambooSapling.class; //419
             list[SCAFFOLDING] = BlockScaffolding.class; //420
-            list[STONE_SLAB4] = BlockSlabStone4.class ; //421
+            list[STONE_SLAB4] = BlockSlabStone4.class; //421
             list[DOUBLE_STONE_SLAB3] = BlockDoubleSlabStone3.class; //422
             list[DOUBLE_STONE_SLAB4] = BlockDoubleSlabStone4.class; //422
 
@@ -832,7 +832,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(int id) {
         if (id < 0) {
             id = 255 - id;
-        } else if (id >= MAX_BLOCK_ID) {
+        } else if (id > MAX_BLOCK_ID) {
             return customBlock.get(id).clone();
         }
         return fullList[id << DATA_BITS].clone();
@@ -841,7 +841,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, Integer meta) {
-        if (id >= MAX_BLOCK_ID) {
+        if (id > MAX_BLOCK_ID) {
             return customBlock.get(id).clone();
         }
         if (id < 0) {
@@ -874,7 +874,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(int id, Integer meta, Position pos, int layer) {
         Block block;
 
-        if (id >= MAX_BLOCK_ID) {
+        if (id > MAX_BLOCK_ID) {
             block = customBlock.get(id).clone();
             block.x = pos.x;
             block.y = pos.y;
@@ -908,7 +908,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
-        if (id >= MAX_BLOCK_ID) {
+        if (id > MAX_BLOCK_ID) {
             return customBlock.get(id).clone();
         }
 
@@ -958,7 +958,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(int id, int meta, Level level, int x, int y, int z, int layer) {
         Block block;
 
-        if (id >= MAX_BLOCK_ID) {
+        if (id > MAX_BLOCK_ID) {
             block = customBlock.get(id).clone();
             block.x = x;
             block.y = y;
@@ -1065,7 +1065,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             mainBlock.clone(); // Make sure clone works
             properties = mainBlock.getProperties();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not create the main block of "+blockClass, e);
+            throw new IllegalArgumentException("Could not create the main block of " + blockClass, e);
         }
 
         list[blockId] = blockClass;
@@ -1153,6 +1153,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
 
+    /**
+     * 注册自定义方块
+     *
+     * @param blockClass 传入自定义方块class List
+     */
     @PowerNukkitXOnly
     public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
@@ -1160,6 +1165,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             BlockCustom block = clazz.getDeclaredConstructor().newInstance();
             sortedCustomBlocks.put(block.getNamespace(), block);
         }
+        //自定义方块id从1000开始,按照FNV1 64bit计算hash值排序 hash值大的在前面
         int nextBlockId = 1000;
         for (var block : sortedCustomBlocks.values()) {
             blockPropertyData.add(block.getBlockPropertyData());
@@ -1190,7 +1196,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     public int layer;
 
-    protected Block() {}
+    protected Block() {
+    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1205,13 +1212,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * Place and initialize a this block correctly in the world.
      * <p>The current instance must have level, x, y, z, and layer properties already set before calling this method.</p>
-     * @param item The item being used to place the block. Should be used as an optional reference, may mismatch the block that is being placed depending on plugin implementations.
-     * @param block The current block that is in the world and is getting replaced by this instance. It has the same x, y, z, layer, and level as this block.
+     *
+     * @param item   The item being used to place the block. Should be used as an optional reference, may mismatch the block that is being placed depending on plugin implementations.
+     * @param block  The current block that is in the world and is getting replaced by this instance. It has the same x, y, z, layer, and level as this block.
      * @param target The block that was clicked to create the place action in this block position.
-     * @param face The face that was clicked in the target block
-     * @param fx The detailed X coordinate of the clicked target block face
-     * @param fy The detailed Y coordinate of the clicked target block face
-     * @param fz The detailed Z coordinate of the clicked target block face
+     * @param face   The face that was clicked in the target block
+     * @param fx     The detailed X coordinate of the clicked target block face
+     * @param fy     The detailed Y coordinate of the clicked target block face
+     * @param fz     The detailed Z coordinate of the clicked target block face
      * @param player The player that is placing the block. May be null.
      * @return {@code true} if the block was properly place. The implementation is responsible for reverting any partial change.
      */
@@ -1273,6 +1281,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块硬度
+     *
      * @return 方块的硬度
      */
     public double getHardness() {
@@ -1281,6 +1290,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块爆炸抗性
+     *
      * @return 方块的爆炸抗性
      */
     public double getResistance() {
@@ -1297,6 +1307,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制挖掘方块的工具类型
+     *
      * @return 挖掘方块的工具类型
      */
     public int getToolType() {
@@ -1305,6 +1316,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制方块的摩擦因素
+     *
      * @return 方块的摩擦因素
      */
     public double getFrictionFactor() {
@@ -1408,6 +1420,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 控制挖掘方块的最低工具级别(木质、石质...)
+     *
      * @return 挖掘方块的最低工具级别
      */
     @PowerNukkitOnly
@@ -1440,6 +1453,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * The full id is a combination of the id and data.
+     *
      * @return full id
      * @deprecated PowerNukkit: The meta is limited to 32 bits
      */
@@ -1447,7 +1461,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public int getFullId() {
-        return mutableState == null? 0 : mutableState.getFullId();
+        return mutableState == null ? 0 : mutableState.getFullId();
     }
 
     /**
@@ -1466,7 +1480,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Since("1.4.0.0-PN")
     @Nonnull
     public final BlockState getCurrentState() {
-        return mutableState == null? BlockState.of(getId()) : mutableState.getCurrentState();
+        return mutableState == null ? BlockState.of(getId()) : mutableState.getCurrentState();
     }
 
     @Override
@@ -1483,7 +1497,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "Limited to 32 bits", since = "1.4.0.0-PN")
     public int getDamage() {
-        return mutableState == null? 0 : mutableState.getBigDamage();
+        return mutableState == null ? 0 : mutableState.getBigDamage();
     }
 
     @Deprecated
@@ -1530,7 +1544,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     private static double toolBreakTimeBonus0(int toolType, int toolTier, int blockId) {
-        if (toolType == ItemTool.TYPE_SWORD){
+        if (toolType == ItemTool.TYPE_SWORD) {
             if (blockId == BlockID.COBWEB) {
                 return 15.0;
             }
@@ -1580,7 +1594,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitDifference(info = "Special condition for the leaves", since = "1.4.0.0-PN")
     private static int toolType0(Item item, int blockId) {
-        if((blockId == LEAVES && item.isHoe()) || (blockId == LEAVES2 && item.isHoe())) return ItemTool.TYPE_SHEARS;
+        if ((blockId == LEAVES && item.isHoe()) || (blockId == LEAVES2 && item.isHoe())) return ItemTool.TYPE_SHEARS;
         if (item.isSword()) return ItemTool.TYPE_SWORD;
         if (item.isShovel()) return ItemTool.TYPE_SHOVEL;
         if (item.isPickaxe()) return ItemTool.TYPE_PICKAXE;
@@ -1592,10 +1606,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitDifference(info = "Special condition for the leaves and cobweb", since = "1.4.0.0-PN")
     private static boolean correctTool0(int blockToolType, Item item, int blockId) {
-        if((blockId == LEAVES && item.isHoe()) ||
-           (blockId == LEAVES2 && item.isHoe())){
+        if ((blockId == LEAVES && item.isHoe()) ||
+                (blockId == LEAVES2 && item.isHoe())) {
             return (blockToolType == ItemTool.TYPE_SHEARS && item.isHoe());
-        } else if (blockId == BAMBOO  && item.isSword()) {
+        } else if (blockId == BAMBOO && item.isSword()) {
             return (blockToolType == ItemTool.TYPE_AXE && item.isSword());
         } else return (blockToolType == ItemTool.TYPE_SWORD && item.isSword()) ||
                 (blockToolType == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
@@ -1621,6 +1635,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 / speed;
     }
 
+    /**
+     * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
+     */
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1628,6 +1645,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return calculateBreakTime(item, null);
     }
 
+    /**
+     * 计算方块挖掘时间
+     *
+     * @param item   挖掘该方块的物品
+     * @param player 挖掘该方块的玩家
+     * @return 方块的挖掘时间
+     */
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1683,7 +1707,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         seconds /= speedMultiplier;
 
         if (player != null) {
-            if (player.isInsideOfWater() && !hasAquaAffinity ) {
+            if (player.isInsideOfWater() && !hasAquaAffinity) {
                 seconds *= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
             }
 
@@ -1806,9 +1830,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
-     * @deprecated This function is lack of Player class and is not accurate enough, use {@link #getBreakTime(Item, Player)}
      * @param item item used
      * @return break time
+     * @deprecated This function is lack of Player class and is not accurate enough, use {@link #getBreakTime(Item, Player)}
      */
     @PowerNukkitDifference(info = "Special condition for the hoe and netherie support", since = "1.4.0.0-PN")
     @Deprecated
@@ -1990,7 +2014,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Override
     public String toString() {
         return "Block[" + this.getName() + "] (" + this.getId() + ":" + (mutableState != null ? mutableState.getDataStorage() : "0") + ")" +
-                (isValid()? " at "+super.toString() : "");
+                (isValid() ? " at " + super.toString() : "");
     }
 
     public boolean collidesWithBB(AxisAlignedBB bb) {
@@ -2014,7 +2038,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public boolean useDefaultFallDamage(){
+    public boolean useDefaultFallDamage() {
         return true;
     }
 
@@ -2183,7 +2207,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Override
     public Block clone() {
         Block clone = (Block) super.clone();
-        clone.mutableState = mutableState != null? mutableState.copy() : null;
+        clone.mutableState = mutableState != null ? mutableState.copy() : null;
         return clone;
     }
 
@@ -2225,6 +2249,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * Check if the given face is fully occupied by the block bounding box.
+     *
      * @param face The face to be checked
      * @return If and only if the bounding box completely cover the face
      */
@@ -2318,6 +2343,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * If the block, when in item form, is resistant to lava and fire and can float on lava like if it was on water.
+     *
      * @since 1.4.0.0-PN
      */
     @PowerNukkitOnly
@@ -2471,7 +2497,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Nonnull
     @Override
     public final Number getDataStorage() {
-        return mutableState == null? 0 : mutableState.getDataStorage();
+        return mutableState == null ? 0 : mutableState.getDataStorage();
     }
 
     @Nonnegative
@@ -2481,7 +2507,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
     public int getLegacyDamage() {
-        return mutableState == null? 0 : mutableState.getLegacyDamage();
+        return mutableState == null ? 0 : mutableState.getLegacyDamage();
     }
 
     @Unsigned
@@ -2491,7 +2517,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
     public int getBigDamage() {
-        return mutableState == null? 0 : mutableState.getBigDamage();
+        return mutableState == null ? 0 : mutableState.getBigDamage();
     }
 
     @Nonnegative
@@ -2501,7 +2527,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "Can't store all data, exists for backward compatibility reasons", since = "1.4.0.0-PN", replaceWith = "getDataStorage()")
     @Override
     public int getSignedBigDamage() {
-        return mutableState == null? 0 : mutableState.getSignedBigDamage();
+        return mutableState == null ? 0 : mutableState.getSignedBigDamage();
     }
 
     @Nonnegative
@@ -2510,7 +2536,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Nonnull
     @Override
     public BigInteger getHugeDamage() {
-        return mutableState == null? BigInteger.ZERO : mutableState.getHugeDamage();
+        return mutableState == null ? BigInteger.ZERO : mutableState.getHugeDamage();
     }
 
     @PowerNukkitOnly
@@ -2559,7 +2585,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Override
     public final int getExactIntStorage() {
-        return mutableState == null? 0 : mutableState.getExactIntStorage();
+        return mutableState == null ? 0 : mutableState.getExactIntStorage();
     }
 
     @PowerNukkitOnly
@@ -2586,7 +2612,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getLightFilter() {
-        return isSolid() && !isTransparent()? 15 : 1;
+        return isSolid() && !isTransparent() ? 15 : 1;
     }
 
     @PowerNukkitOnly
@@ -2623,6 +2649,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * Check if a block is getting powered threw a block or directly.
+     *
      * @return if the gets powered.
      */
     @PowerNukkitOnly

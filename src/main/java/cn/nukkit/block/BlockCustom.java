@@ -1,17 +1,17 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -24,6 +24,7 @@ public abstract class BlockCustom extends Block {
 
     /**
      * 自定义方块需要传入方块的标识符
+     *
      * @param namespace 方块的标识符,形如 test:test_block
      */
     public BlockCustom(String namespace) {
@@ -33,14 +34,6 @@ public abstract class BlockCustom extends Block {
     public String getNamespace() {
         return this.namespace;
     }
-
-    /**
-     * 控制自定义方块挖掘时间
-     * 目前无法控制不同工具不同的挖掘时间
-     *
-     * @return 自定义方块的挖掘时间，越大挖掘需要的时间越久(这个值设置8就等同于原版黑曜石的挖掘时间)
-     */
-    public abstract double getBreakTime();
 
     /**
      * 控制自定义方块的形状
@@ -63,7 +56,7 @@ public abstract class BlockCustom extends Block {
                         .putFloat("y", 0)
                         .putFloat("z", 0))
                 .putCompound("minecraft:destroy_time", new CompoundTag()
-                        .putFloat("value", (float) getBreakTime()))
+                        .putFloat("value", (float) (calculateBreakTime(Item.get(AIR)) * 2 / 3)))
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
                         .putInt("value", (int) this.getResistance()))
                 .putCompound("minecraft:block_light_absorption", new CompoundTag()
@@ -80,7 +73,7 @@ public abstract class BlockCustom extends Block {
                 .putCompound("description", new CompoundTag()
                         .putString("identifier", this.getNamespace())
                         .putBoolean("is_experimental", false)
-                        .putBoolean("register_to_creative_menu",true))
+                        .putBoolean("register_to_creative_menu", true))
                 .putCompound("components", componentsNBT));
     }
 
@@ -96,34 +89,30 @@ public abstract class BlockCustom extends Block {
 
     @Override
     public Item[] getDrops(Item item) {
-        return new Item[]{new ItemBlock(Block.get(getId()))};
+        if (canHarvest(item)) {
+            return new Item[]{new ItemBlock(Block.get(getId()))};
+        } else return Item.EMPTY_ARRAY;
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
     @Override
-    public double calculateBreakTime(@Nonnull Item item) {
+    public double calculateBreakTime(@NotNull Item item) {
         return calculateBreakTime(item, null);
     }
 
-    @Override
-    public double calculateBreakTime(@Nonnull Item item, @Nullable Player player) {
-        return getBreakTime();
-    }
-
     /**
-     * 控制自定义方块是否可以被该物品挖掘
+     * 控制自定义方块的挖掘时间需要重写该方法
      *
-     * @param item 破坏该方块的物品
-     * @return 是否可以被该物品挖掘, 返回false挖掘事件被取消
+     * @return 自定义方块的挖掘时间
      */
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
     @Override
-    public boolean isBreakable(Item item) {
-        if (item.getTier() < getToolTier()) return false;
-        if (getToolType() == ItemTool.TYPE_NONE) return true;
-        else if (item.isShovel() && getToolType() == ItemTool.TYPE_SHOVEL) return true;
-        else if (item.isPickaxe() && getToolType() == ItemTool.TYPE_PICKAXE) return true;
-        else if (item.isAxe() && getToolType() == ItemTool.TYPE_AXE) return true;
-        else if (item.isShears() && getToolType() == ItemTool.TYPE_SHEARS) return true;
-        else return item.isHoe() && getToolType() == ItemTool.TYPE_HOE;
+    public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
+        return 1;
     }
 
     @NotNull

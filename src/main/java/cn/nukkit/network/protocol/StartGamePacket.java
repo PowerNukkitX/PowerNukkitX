@@ -63,8 +63,6 @@ public class StartGamePacket extends DataPacket {
     public boolean commandsEnabled;
     public boolean isTexturePacksRequired = false;
 
-    public boolean experimentsPreviouslyToggled = true;
-
     public GameRules gameRules;
     public boolean bonusChest = false;
     public boolean hasStartWithMapEnabled = false;
@@ -169,7 +167,6 @@ public class StartGamePacket extends DataPacket {
         this.putVarInt(this.enchantmentSeed);
 
         // Custom blocks
-        //TODO 这里应该包含所有的方块，不仅限于自定义方块
         this.putUnsignedVarInt(this.blockProperties.size());
         try {
             for (BlockPropertyData blockPropertyData : this.blockProperties) {
