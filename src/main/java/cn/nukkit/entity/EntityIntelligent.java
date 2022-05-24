@@ -12,6 +12,7 @@ import cn.nukkit.entity.ai.goal.GoalState;
 import cn.nukkit.entity.ai.path.*;
 import cn.nukkit.entity.ai.path.shape.CommonWalkerSearchShape;
 import cn.nukkit.entity.ai.sensor.Sensor;
+import cn.nukkit.event.entity.EntityJumpEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.HappyVillagerParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -131,6 +132,11 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
      */
     public boolean jump() {
         if (!this.isOnGround() || isJumping) {
+            return false;
+        }
+        var ev = new EntityJumpEvent(this);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
             return false;
         }
         isJumping = true;
