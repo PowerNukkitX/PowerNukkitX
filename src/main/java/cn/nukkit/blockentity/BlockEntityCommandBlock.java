@@ -13,6 +13,7 @@ import cn.nukkit.event.block.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -31,6 +32,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +48,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     protected long lastExecution;
     protected boolean trackOutput;
     protected String lastOutput;
-    protected ListTag<StringTag> lastOutputParams; //TODO
+    protected ListTag<StringTag> lastOutputParams;
     protected int lastOutputCommandMode;
     protected boolean lastOutputCondionalMode;
     protected boolean lastOutputRedstoneMode;
@@ -193,6 +195,27 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         this.namedTag.putBoolean(TAG_EXECUTE_ON_FIRST_TICK, this.executingOnFirstTick);
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.powered = this.namedTag.getBoolean(TAG_POWERED);
+        this.conditionalMode = this.namedTag.getBoolean(TAG_CONDITIONAL_MODE);
+        this.auto = this.namedTag.getBoolean(TAG_AUTO);
+        this.command = this.namedTag.getString(TAG_COMMAND);
+        this.lastExecution = this.namedTag.getLong(TAG_LAST_EXECUTION);
+        this.trackOutput = this.namedTag.getBoolean(TAG_TRACK_OUTPUT);
+        this.lastOutput = this.namedTag.getString(TAG_LAST_OUTPUT);
+        this.lastOutputParams = (ListTag<StringTag>) this.namedTag.getList(TAG_LAST_OUTPUT_PARAMS);
+        this.lastOutputCommandMode = this.namedTag.getInt(TAG_LP_COMMAND_MODE);
+        this.lastOutputCondionalMode = this.namedTag.getBoolean(TAG_LP_CONDIONAL_MODE);
+        this.lastOutputRedstoneMode = this.namedTag.getBoolean(TAG_LP_REDSTONE_MODE);
+        this.successCount = this.namedTag.getInt(TAG_SUCCESS_COUNT);
+        this.conditionMet = this.namedTag.getBoolean(TAG_CONDITION_MET);
+        this.tickDelay = this.namedTag.getInt(TAG_TICK_DELAY);
+        this.executingOnFirstTick = this.namedTag.getBoolean(TAG_EXECUTE_ON_FIRST_TICK);
+    }
+
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag nbt = getDefaultCompound(this, BlockEntity.COMMAND_BLOCK)
@@ -225,7 +248,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public boolean isBlockEntityValid() {
-        int blockId = this.getBlock().getId();
+        int blockId = this.getLevelBlock().getId();
         return blockId == BlockID.COMMAND_BLOCK || blockId == BlockID.CHAIN_COMMAND_BLOCK || blockId == BlockID.REPEATING_COMMAND_BLOCK;
     }
 
@@ -279,9 +302,9 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if(!this.level.gameRules.getBoolean(GameRule.COMMAND_BLOCKS_ENABLED)){
             return false;
         }
-        if (this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
+        if (this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace().getOpposite()) instanceof BlockCommandBlock lastCB) {
             if (this.isConditional() && lastCB.getBlockEntity().getSuccessCount() == 0) {//jump over because this CB is conditional and the last CB didn't succeed
-                Block next = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                Block next = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
                 if (next instanceof BlockCommandBlockChain nextChainBlock) {
                     nextChainBlock.getBlockEntity().trigger(++chain);
                 }
@@ -306,7 +329,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                             cmd = cmd.substring(1);
                         }
 
-                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getBlock(), cmd);
+                        CommandBlockExecuteEvent event = new CommandBlockExecuteEvent(this.getLevelBlock(), cmd);
                         Server.getInstance().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {
                             return false;
@@ -328,7 +351,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                     }
                 }
 
-                Block block = this.getBlock().getSide(((Faceable) this.getBlock()).getBlockFace());
+                Block block = this.getLevelBlock().getSide(((Faceable) this.getLevelBlock()).getBlockFace());
                 if (block instanceof BlockCommandBlockChain chainBlock) {
                     chainBlock.getBlockEntity().trigger(++chain);
                 }
@@ -348,7 +371,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public int getMode() {
-        Block block = this.getBlock();
+        Block block = this.getLevelBlock();
         if (block.getId() == BlockID.REPEATING_COMMAND_BLOCK) {
             return MODE_REPEATING;
         } else if (block.getId() == BlockID.CHAIN_COMMAND_BLOCK) {
@@ -401,7 +424,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public boolean setConditionMet() {
         Block block;
-        if (this.isConditional() && (block = this.getBlock()) instanceof BlockCommandBlock) {
+        if (this.isConditional() && (block = this.getLevelBlock()) instanceof BlockCommandBlock) {
             Block next = block.getSide(((Faceable) block).getBlockFace().getOpposite());
             if (next instanceof BlockCommandBlock) {
                 BlockEntityCommandBlock commandBlock = ((BlockCommandBlock) next).getBlockEntity();
@@ -591,6 +614,14 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void sendMessage(TextContainer message) {
         this.sendMessage(this.getServer().getLanguage().translate(message));
+        this.lastOutput = message.getText();
+        if (message instanceof TranslationContainer translationContainer){
+            ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+            for (String param : translationContainer.getParameters()){
+                newParams.add(new StringTag("",param));
+            }
+            this.lastOutputParams = newParams;
+        }
     }
 
     @Override
@@ -625,7 +656,21 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public void onBreak() {
-        super.onBreak();
+        for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+            player.removeWindow(this.getInventory());
+        }
         listenMap.remove(this);
+        super.onBreak();
+    }
+
+    @Override
+    public void close() {
+        if (!closed) {
+            listenMap.remove(this);
+            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+                player.removeWindow(this.getInventory());
+            }
+            super.close();
+        }
     }
 }

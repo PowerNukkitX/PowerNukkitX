@@ -2,13 +2,14 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.PlaySoundPacket;
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.collect.Lists;
@@ -24,7 +25,7 @@ public class PlaySoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("sound",false, Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()).toArray(new String[0])),
+                CommandParameter.newEnum("sound",false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()),false)),
                 CommandParameter.newType("player",true, CommandParamType.TARGET),
                 CommandParameter.newType("position",true, CommandParamType.POSITION),
                 CommandParameter.newType("volume",true, CommandParamType.FLOAT),

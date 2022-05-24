@@ -22,10 +22,4 @@ public class BlockCommandBlockRepeating extends BlockCommandBlock {
     public String getName() {
         return "Repeating Command Block";
     }
-
-    @Override
-    protected CompoundTag createCompoundTag(CompoundTag nbt) {
-        nbt.putBoolean(BlockEntityCommandBlock.TAG_EXECUTE_ON_FIRST_TICK, true);
-        return nbt;
-    }
 }

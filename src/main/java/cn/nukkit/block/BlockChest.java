@@ -244,17 +244,4 @@ public class BlockChest extends BlockTransparentMeta implements Faceable, BlockE
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
     }
-
-    @Override
-    public Block cloneTo(Position pos){
-        BlockChest clone = (BlockChest) super.cloneTo(pos);
-        BlockEntity source = this.getBlockEntity();
-        if (source != null) {
-            BlockEntityChest chest = (BlockEntityChest)source;
-            if (!chest.isPaired() ||chest.holdingDoubleInventory()) {
-                clone.getOrCreateBlockEntity().getInventory().setContents(chest.getInventory().getContents());
-            }
-        }
-        return clone;
-    }
 }

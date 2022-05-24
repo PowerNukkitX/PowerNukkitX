@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
@@ -66,6 +67,14 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
         namedTag.putLong("Target", targetEntity != null? targetEntity.getId() : -1);
         namedTag.putBoolean("Active", active);
         super.saveNBT();
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        target = namedTag.getLong("Target");
+        active = namedTag.getBoolean("Active");
     }
 
     @Override

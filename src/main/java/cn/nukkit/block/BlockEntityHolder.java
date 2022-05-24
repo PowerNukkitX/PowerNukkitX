@@ -96,6 +96,19 @@ public interface BlockEntityHolder<E extends BlockEntity> {
         }
         return createBlockEntity();
     }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    @Nonnull
+    default E getOrCreateBlockEntity(@Nullable CompoundTag initialData,Object... args) {
+        E blockEntity = getBlockEntity();
+        if (blockEntity != null) {
+            return blockEntity;
+        }
+        return createBlockEntity(null,args);
+    }
+
+
     
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
