@@ -36,6 +36,12 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     @Override
+    public void loadNBT() {
+        super.loadNBT();
+        updateTotalPages();
+    }
+
+    @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
                 .putString("id", BlockEntity.LECTERN)

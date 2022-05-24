@@ -3717,38 +3717,22 @@ public class Level implements ChunkManager, Metadatable {
         if (standable(spawn, true))
             return Position.fromObject(spawn, this);
 
-
-        if (allowWaterUnder) {
-            for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-                for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
-                    Position pos = Position.fromObject(spawn, this);
-                    pos.setY(y);
-                    Position newSpawn;
-                    if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), true))
-                        return newSpawn;
-                    if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), true))
-                        return newSpawn;
-                }
-            }
-        }
+        int maxY = isNether() ? 127 : (isOverWorld() ? 319 : 255);
+        int minY = isOverWorld() ? -64 : 0;
 
         for (int horizontalOffset = 0; horizontalOffset <= horizontalMaxOffset; horizontalOffset++) {
-            for (int y = isOverWorld() ? 319 : 255; isOverWorld() ? y > -64 : y > 0; y--) {
+            for (int y = maxY; y > minY; y--) {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset))) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset))) return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
             }
         }
 
-        Server.getInstance().getLogger().warning("cannot find a safe spawn around position" + spawn.toString() + "!");
+        log.warn("cannot find a safe spawn around " + spawn.asBlockVector3() + "!");
         return Position.fromObject(spawn, this);
     }
 

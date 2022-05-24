@@ -6,23 +6,20 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.command.utils.EntitySelector;
+import cn.nukkit.command.utils.RawText;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @author Tee7even
- */
-public class TitleCommand extends VanillaCommand {
-    public TitleCommand(String name) {
-        super(name, "commands.title.description");
-        this.setPermission("nukkit.command.title");
+public class TitlerawCommand extends VanillaCommand {
 
-        this.commandParameters.clear();
-        this.commandParameters.put("clear", new CommandParameter[]{
+    public TitlerawCommand(String name){
+        super(name, "commands.titleraw.description");
+        this.setPermission("nukkit.command.titleraw");
+        this.commandParameters.clear();this.commandParameters.put("clear", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("clear", new CommandEnum("TitleClear", "clear"))
         });
@@ -33,7 +30,7 @@ public class TitleCommand extends VanillaCommand {
         this.commandParameters.put("set", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("titleLocation", new CommandEnum("TitleSet", "title", "subtitle", "actionbar")),
-                CommandParameter.newType("titleText", CommandParamType.MESSAGE)
+                CommandParameter.newType("titleJson", CommandParamType.RAWTEXT)
         });
         this.commandParameters.put("times", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
@@ -76,19 +73,20 @@ public class TitleCommand extends VanillaCommand {
                         return false;
                 }
             } else if (args.length == 3) {
+                RawText text = RawText.fromRawText(args[2]);
+                text.preParse(sender);
                 switch (args[1].toLowerCase()) {
                     case "title":
-                        player.sendTitle(args[2]);
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.title",
-                                TextFormat.clean(args[2]), player.getName()));
+                        player.setRawTextTitle(text);
+                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
                         break;
                     case "subtitle":
-                        player.setSubtitle(args[2]);
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.subtitle", TextFormat.clean(args[2]), player.getName()));
+                        player.setRawTextSubTitle(text);
+                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
                         break;
                     case "actionbar":
-                        player.sendActionBar(args[2]);
-                        sender.sendMessage(new TranslationContainer("nukkit.command.title.actionbar", new String[]{TextFormat.clean(args[2]), player.getName()}));
+                        player.setRawTextActionBar(text);
+                        sender.sendMessage(new TranslationContainer("commands.titleraw.success"));
                         break;
                     default:
                         sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));

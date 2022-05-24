@@ -83,6 +83,20 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
         namedTag.putBoolean("IsInitialized", reactorState == NetherReactorState.INITIALIZED);
     }
 
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        progress = namedTag.getShort("Progress");
+        if (namedTag.containsByte("HasFinished") && namedTag.getBoolean("HasFinished")) {
+            reactorState = NetherReactorState.FINISHED;
+        } else if (namedTag.containsByte("IsInitialized") && namedTag.getBoolean("IsInitialized")) {
+            reactorState = NetherReactorState.INITIALIZED;
+        } else {
+            reactorState = NetherReactorState.READY;
+        }
+    }
+
     @Override
     public CompoundTag getSpawnCompound() {
         NetherReactorState reactorState = getReactorState();

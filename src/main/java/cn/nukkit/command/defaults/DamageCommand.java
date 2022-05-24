@@ -1,6 +1,6 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.command.CommandParser;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;

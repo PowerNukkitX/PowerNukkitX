@@ -31,6 +31,9 @@ public class SimpleCommandMap implements CommandMap {
 
     private void setDefaultCommands() {
         this.register("nukkit",new ExecuteCommand("execute"));
+        this.register("nukkit",new TellrawCommand("tellraw"));
+        this.register("nukkit",new TitlerawCommand("titleraw"));
+        this.register("nukkit",new FunctionCommand("function"));
         this.register("nukkit",new ReplaceItemCommand("replaceitem"));
         this.register("nukkit",new SummonCommand("summon"));
         this.register("nukkit",new DamageCommand("damage"));
@@ -235,16 +238,16 @@ public class SimpleCommandMap implements CommandMap {
         int start = 0;
 
         for (int i = 0; i < sb.length(); i++) {
-            if (sb.charAt(i) == '\\') {
-                sb.deleteCharAt(i);
-                continue;
-            }
-            if (sb.charAt(i) == '{'){
+//            if (sb.charAt(i) == '\\') {
+//                sb.deleteCharAt(i);
+//                continue;
+//            }
+            if ((sb.charAt(i) == '{' && curlyBraceCount >= 1) || (sb.charAt(i) == '{' && sb.charAt(i - 1) == ' ' && curlyBraceCount == 0)) {
                 curlyBraceCount++;
-            }else if (sb.charAt(i) == '}'){
+            }else if (sb.charAt(i) == '}' && curlyBraceCount > 0) {
                 curlyBraceCount--;
                 if (curlyBraceCount == 0) {
-                    args.add(sb.substring(start, i));
+                    args.add(sb.substring(start, i + 1));
                     start = i + 1;
                 }
             }

@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
@@ -75,7 +76,16 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
             .add(new IntTag("2", this.exitPortal.z))
         );
     }
-    
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public void loadNBT() {
+        super.loadNBT();
+        this.age = this.namedTag.getInt("Age");
+        ListTag<IntTag> exitPortalList = this.namedTag.getList("ExitPortal", IntTag.class);
+        this.exitPortal = new BlockVector3(exitPortalList.get(0).data, exitPortalList.get(1).data, exitPortalList.get(2).data);
+    }
+
     @Override
     public boolean onUpdate() {
         if (this.closed) {

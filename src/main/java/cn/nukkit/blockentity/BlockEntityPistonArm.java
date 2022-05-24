@@ -8,6 +8,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -20,8 +21,11 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
@@ -223,7 +227,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
 
             if (!extending) {
-                if (this.level.getBlock(getSide(facing)).getId() == (sticky ? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_ARM_COLLISION)) {
+                if (this.level.getBlock(getSide(facing)).getId() == (sticky? BlockID.PISTON_HEAD_STICKY : BlockID.PISTON_ARM_COLLISION)) {
                     this.level.setBlock(getSide(facing), new BlockAir());
                 }
                 this.movable = true;

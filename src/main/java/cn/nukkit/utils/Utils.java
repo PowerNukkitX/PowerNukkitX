@@ -449,6 +449,7 @@ public class Utils {
     }
 
     //used for commands /fill , /clone and so on
+    //todo: using other methods instead of this one
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
