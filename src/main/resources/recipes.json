@@ -13899,6 +13899,294 @@
       "uuid": "85939755-ba10-4d9d-a4cc-efb7a8e943c4"
     },
     {
+      "id": "copperhorn_recipeId0",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn"
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn"
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId1",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 1
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 1
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 2
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 2
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId3",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 3
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 3
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId4",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 4
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 4
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId5",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 5
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 5
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId6",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 6
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 6
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId7",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 7
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 7
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId8",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 8
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 8
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "copperhorn_recipeId9",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 504,
+          "id": "minecraft:copper_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 624,
+          "id": "minecraft:goat_horn",
+          "damage": 9
+        }
+      },
+      "output": [
+        {
+          "legacyId": 625,
+          "id": "minecraft:copper_horn",
+          "damage": 9
+        }
+      ],
+      "shape": [
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
       "id": "dark_oak_stairs_dark_oak_recipeId",
       "type": 1,
       "input": {
@@ -14077,6 +14365,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:acacia_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 379,
+          "id": "minecraft:acacia_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 639,
+          "id": "minecraft:acacia_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:acacia_door",
       "type": 1,
       "input": {
@@ -14169,10 +14480,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 4,
           "count": 4,
-          "damage": 4
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14193,10 +14504,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 4,
           "count": 4,
-          "damage": 4
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14217,9 +14528,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14240,9 +14552,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14335,9 +14648,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -14386,7 +14700,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 624,
+          "legacyId": 626,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         }
@@ -15025,6 +15339,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:birch_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 376,
+          "id": "minecraft:birch_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 636,
+          "id": "minecraft:birch_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:birch_door",
       "type": 1,
       "input": {
@@ -15118,10 +15455,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 2,
           "count": 4,
-          "damage": 2
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15142,10 +15479,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 2,
           "count": 4,
-          "damage": 2
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15166,9 +15503,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15189,9 +15527,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15285,9 +15624,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -18186,6 +18526,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 375,
+          "id": "minecraft:oak_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 635,
+          "id": "minecraft:oak_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:chest_from_crimson_planks",
       "type": 1,
       "input": {
@@ -20161,6 +20524,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:dark_oak_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 380,
+          "id": "minecraft:dark_oak_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 640,
+          "id": "minecraft:dark_oak_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:dark_oak_door",
       "type": 1,
       "input": {
@@ -20254,10 +20640,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 5,
           "count": 4,
-          "damage": 5
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20278,10 +20664,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 5,
           "count": 4,
-          "damage": 5
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20302,9 +20688,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20325,9 +20712,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20421,9 +20809,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -21503,7 +21892,7 @@
       },
       "output": [
         {
-          "legacyId": 644,
+          "legacyId": 646,
           "id": "minecraft:end_crystal"
         }
       ],
@@ -24227,6 +24616,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:jungle_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 377,
+          "id": "minecraft:jungle_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 637,
+          "id": "minecraft:jungle_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:jungle_door",
       "type": 1,
       "input": {
@@ -24320,10 +24732,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 3,
           "count": 4,
-          "damage": 3
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24344,10 +24756,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 3,
           "count": 4,
-          "damage": 3
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24368,9 +24780,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24391,9 +24804,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24487,9 +24901,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -32635,6 +33050,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:spruce_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 378,
+          "id": "minecraft:spruce_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 638,
+          "id": "minecraft:spruce_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:spruce_door",
       "type": 1,
       "input": {
@@ -32728,10 +33166,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 1,
           "count": 4,
-          "damage": 1
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32752,10 +33190,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 1,
           "count": 4,
-          "damage": 1
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32776,9 +33214,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32799,9 +33238,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32895,9 +33335,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -32911,7 +33352,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 624,
+          "legacyId": 626,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         },
@@ -32923,7 +33364,7 @@
       },
       "output": [
         {
-          "legacyId": 625,
+          "legacyId": 627,
           "id": "minecraft:spyglass"
         }
       ],
@@ -34190,7 +34631,7 @@
       "type": 1,
       "input": {
         "A": {
-          "legacyId": 624,
+          "legacyId": 626,
           "id": "minecraft:amethyst_shard",
           "damage": 32767
         },
