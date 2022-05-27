@@ -2057,7 +2057,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (canInteract(this, interactDistance)) {
             if (getEntityPlayerLookingAt(interactDistance) != null) {
                 EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
-                setButtonText(onInteract.getInteractButtonText());
+                setButtonText(onInteract.getInteractButtonText(this));
             } else {
                 setButtonText("");
             }
