@@ -34,17 +34,20 @@ import java.util.Map;
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
 public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityInteractable {
+    //todo: Implement automatic steering of NPC entities
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public static final int NETWORK_ID = 51;
 
-    private static final String KEY_DIALOG_TITLE = "DialogTitle";
-    private static final String KEY_DIALOG_CONTENT = "DialogContent";
-    private static final String KEY_DIALOG_SKINDATA = "DialogSkinData";
-    private static final String KEY_DIALOG_BUTTONS = "DialogButtons";
+    public static final String KEY_DIALOG_TITLE = "DialogTitle";
+    public static final String KEY_DIALOG_CONTENT = "DialogContent";
+    public static final String KEY_DIALOG_SKINDATA = "DialogSkinData";
+    public static final String KEY_DIALOG_BUTTONS = "DialogButtons";
 
-    private FormWindowDialog dialog;
+    protected FormWindowDialog dialog;
+
+    protected int variant = 0;
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -90,6 +93,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value
         this.setHealth(20);
         this.setNameTagVisible(true);
+        this.setVariant(this.namedTag.getInt("Variant"));
         this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT));
         this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
@@ -108,7 +112,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
                 this.dialog.setTitle(response.getData());
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_SKIN) {
-                //todo: set skin data
+                this.setVariant(response.getSkinType());
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                 ElementDialogButton clickedButton = response.getClickedButton();
@@ -145,6 +149,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.namedTag.putString(KEY_DIALOG_CONTENT, this.dialog.getContent());
         this.namedTag.putString(KEY_DIALOG_SKINDATA, this.dialog.getSkinData());
         this.namedTag.putString(KEY_DIALOG_BUTTONS, this.dialog.getButtonJSONData());
+        this.namedTag.putInt("Variant", this.variant);
     }
 
     @Override
@@ -159,5 +164,14 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
             this.kill();
         }
         return false;
+    }
+
+    public void setVariant(int variant){
+        this.variant = variant;
+        this.getDataProperties().putInt(DATA_VARIANT, variant);
+    }
+
+    public int getVariant(){
+        return this.variant;
     }
 }
