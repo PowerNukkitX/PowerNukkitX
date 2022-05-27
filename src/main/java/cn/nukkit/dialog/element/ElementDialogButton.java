@@ -36,12 +36,12 @@ public class ElementDialogButton {
     public ElementDialogButton(String name, String text, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
-        this.data = parseButtonData();
+        this.data = updateButtonData();
         this.mode = mode.ordinal();
         this.type = type;
     }
 
-    public List<CmdLine> parseButtonData(){
+    public List<CmdLine> updateButtonData(){
         List<CmdLine> list = new ArrayList<>();
         String[] split = text.split("\n");
         for (String str : split) {
@@ -67,8 +67,9 @@ public class ElementDialogButton {
     }
 
     public List<CmdLine> getData() {
-        if (data == null)//gson won't do that
-            data = parseButtonData();
+        //data will not be updated by the client
+        //so we should update data with text content whenever we need it
+        data = updateButtonData();
         return data;
     }
 
