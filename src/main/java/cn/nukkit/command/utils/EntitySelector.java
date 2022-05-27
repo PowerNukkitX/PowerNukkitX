@@ -3,6 +3,7 @@ package cn.nukkit.command.utils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
@@ -18,7 +19,6 @@ import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
-import lombok.Getter;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -35,7 +35,7 @@ public final class EntitySelector {
         ENTITY_NAME2ID = builder.build();
     }
 
-    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[(.*)])?$");
+    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs]|initiator)(?:\\[(.*)])?$");
     private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
 
     private static final Set<String> ARGS = Sets.newHashSet();
@@ -65,7 +65,6 @@ public final class EntitySelector {
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
     private static Cache<String,Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
-    //todo: using google's cache utils
 
     private static String registerArgument(String arg) {
         ARGS.add(arg);
@@ -107,11 +106,18 @@ public final class EntitySelector {
                         predicates.addAll(getTagsPredicates(args));
                         predicates.addAll(getScoresPredicate(args));
 
-                        if ("s".equalsIgnoreCase(selectorType)) {
+                        if ("s".equalsIgnoreCase(selectorType) || "initiator".equalsIgnoreCase(selectorType)) {
                             Entity entity = null;
-                            if (sender.isEntity()){
-                                entity = sender.asEntity();
+                            if ("s".equalsIgnoreCase(selectorType)){
+                                if (sender.isEntity()){
+                                    entity = sender.asEntity();
+                                }
+                            }else if (sender instanceof NPCCommandSender npcCommandSender){
+                                entity = npcCommandSender.getInitiator();
+                            }else{
+                                return Collections.emptyList();
                             }
+
                             if (entity != null) {
                                 if (args.containsKey(ARG_DX) || args.containsKey(ARG_DY) || args.containsKey(ARG_DZ)) {
                                     int dx = getInt(args, ARG_DX, 0);

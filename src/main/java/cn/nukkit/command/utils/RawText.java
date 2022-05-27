@@ -11,9 +11,11 @@ import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,42 +25,47 @@ import java.util.stream.Collectors;
 public class RawText {
 
     private static final Gson gson = new Gson();
-    @SerializedName("rawtext")
-    private List<Component> components = new ArrayList<>();
+    private Component base = null;
 
-    private RawText(){}
+    private RawText(Component base){
+        this.base = base;
+    }
 
     public static RawText fromRawText(String rawText){
-        return gson.fromJson(rawText, RawText.class);
+        Component base = gson.fromJson(rawText,Component.class);
+        return new RawText(base);
     }
 
     public void preParse(CommandSender sender){
-        preParse(sender,this,components);
+        preParse(sender, base);
     }
 
-    private static void preParse(CommandSender sender,RawText text,List<Component> cps){
-        for(Component component : cps.toArray(new Component[0])){
+    private static void preParse(CommandSender sender, Component cps){
+        if (cps.getType() != Component.ComponentType.RAWTEXT)
+            return;
+        List<Component> components = cps.component_rawtext;
+        for(Component component : components.toArray(new Component[0])){
             if(component.getType() == Component.ComponentType.SCORE){
                 Component newComponent = preParseScore(component,sender);
                 if(newComponent != null)
-                    cps.set(cps.indexOf(component),newComponent);
+                    components.set(components.indexOf(component),newComponent);
                 else
-                    cps.remove(component);
+                    components.remove(component);
             }
             if (component.getType() == Component.ComponentType.SELECTOR) {
                 Component newComponent = preParseSelector(component,sender);
                 if(newComponent != null)
-                    cps.set(cps.indexOf(component),newComponent);
+                    components.set(components.indexOf(component),newComponent);
                 else
-                    cps.remove(component);
+                    components.remove(component);
             }
             if (component.getType() == Component.ComponentType.RAWTEXT) {
-                preParse(sender,text,component.component_rawtext);
+                preParse(sender, component);
             }
             if (component.getType() == Component.ComponentType.TRANSLATE_WITH) {
                 if (component.component_translate_with instanceof Map<?,?>) {
                     Component cp = gson.fromJson(gson.toJson(component.component_translate_with),Component.class);
-                    preParse(sender,text,cp.component_rawtext);
+                    preParse(sender, cp);
                     component.component_translate_with = cp;
                 }
             }
@@ -113,7 +120,7 @@ public class RawText {
     }
 
     public String toRawText(){
-        return gson.toJson(this);
+        return gson.toJson(base);
     }
 
     @Getter
@@ -179,5 +186,10 @@ public class RawText {
             }
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return gson.toJson(this.base);
     }
 }
