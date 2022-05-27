@@ -4,29 +4,18 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.item.Item;
-import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.NPCRequestPacket;
-import cn.nukkit.permission.PermissibleBase;
-import cn.nukkit.permission.Permission;
-import cn.nukkit.permission.PermissionAttachment;
-import cn.nukkit.permission.PermissionAttachmentInfo;
-import cn.nukkit.plugin.Plugin;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 /**
  * @author good777LUCKY
@@ -76,8 +65,8 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     }
 
     @Override
-    public String getInteractButtonText() {
-        return "action.interact.edit";
+    public String getInteractButtonText(Player player) {
+        return player.isCreative() ? "action.interact.edit" : "action.interact.talk";
     }
 
     @PowerNukkitOnly

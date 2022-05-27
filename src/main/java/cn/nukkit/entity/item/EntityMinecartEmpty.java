@@ -42,7 +42,7 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return "action.interact.ride.minecart";
     }
 
