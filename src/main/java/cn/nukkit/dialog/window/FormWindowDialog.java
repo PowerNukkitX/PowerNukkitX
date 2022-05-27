@@ -6,6 +6,7 @@ import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityNPCEntity;
 import cn.nukkit.network.protocol.NPCRequestPacket;
+import com.dfsek.terra.lib.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -121,8 +122,12 @@ public class FormWindowDialog {
         return this.response;
     }
 
-    public String getJSONData() {
+    public String getButtonJSONData() {
         return GSON.toJson(this.buttons);
+    }
+
+    public void setButtonJSONData(String json){
+        this.setButtons(GSON.fromJson(json, new TypeToken<List<ElementDialogButton>>(){}.getType()));
     }
 
     public void setCloseWhenClicked(boolean closeWhenClicked){

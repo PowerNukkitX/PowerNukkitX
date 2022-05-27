@@ -1,7 +1,6 @@
 package cn.nukkit.dialog.element;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ElementDialogButton {
@@ -37,14 +36,18 @@ public class ElementDialogButton {
     public ElementDialogButton(String name, String text, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
+        this.data = parseButtonData();
+        this.mode = mode.ordinal();
+        this.type = type;
+    }
+
+    public List<CmdLine> parseButtonData(){
         List<CmdLine> list = new ArrayList<>();
         String[] split = text.split("\n");
         for (String str : split) {
             list.add(new CmdLine(str,CmdLine.CMD_VER));
         }
-        this.data = list;
-        this.mode = mode.ordinal();
-        this.type = type;
+        return list;
     }
 
     public String getName() {
@@ -64,6 +67,8 @@ public class ElementDialogButton {
     }
 
     public List<CmdLine> getData() {
+        if (data == null)//gson won't do that
+            data = parseButtonData();
         return data;
     }
 

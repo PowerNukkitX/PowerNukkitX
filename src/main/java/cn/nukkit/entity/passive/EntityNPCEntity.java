@@ -1,28 +1,49 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.dialog.element.ElementDialogButton;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.item.Item;
+import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.NPCRequestPacket;
+import cn.nukkit.permission.PermissibleBase;
+import cn.nukkit.permission.Permission;
+import cn.nukkit.permission.PermissionAttachment;
+import cn.nukkit.permission.PermissionAttachmentInfo;
+import cn.nukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 /**
  * @author good777LUCKY
  */
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
-public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityInteractable {
+public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityInteractable, CommandSender {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public static final int NETWORK_ID = 51;
+
+    private static final String KEY_DIALOG_TITLE = "DialogTitle";
+    private static final String KEY_DIALOG_CONTENT = "DialogContent";
+    private static final String KEY_DIALOG_SKINDATA = "DialogSkinData";
+    private static final String KEY_DIALOG_BUTTONS = "DialogButtons";
+
+    protected PermissibleBase perm = new PermissibleBase(this);;
 
     private FormWindowDialog dialog;
 
@@ -70,22 +91,65 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value
         this.setHealth(20);
         this.setNameTagVisible(true);
+        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT));
+        this.setNameTag(this.dialog.getTitle());
+        if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
+            this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));
+        if (!this.namedTag.getString(KEY_DIALOG_BUTTONS).isEmpty())
+            this.dialog.setButtonJSONData(this.namedTag.getString(KEY_DIALOG_BUTTONS));
+        this.dialog.addHandler((player,response) -> {
+            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_ACTIONS) {
+                if (!response.getData().isEmpty())
+                    this.dialog.setButtonJSONData(response.getData());
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_INTERACTION_TEXT) {
+                this.dialog.setContent(response.getData());
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME){
+                this.dialog.setTitle(response.getData());
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_SKIN) {
+                //todo: set skin data
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
+                ElementDialogButton clickedButton = response.getClickedButton();
+                for(ElementDialogButton.CmdLine line : clickedButton.getData()){
+                    Server.getInstance().dispatchCommand(this,line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                }
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
+                for(ElementDialogButton button : this.dialog.getButtons()){
+                    if (button.getMode() == ElementDialogButton.Mode.ON_ENTER) {
+                        for(ElementDialogButton.CmdLine line : button.getData()) {
+                            Server.getInstance().dispatchCommand(this,line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                        }
+                    }
+                }
+            }
+            if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
+                for(ElementDialogButton button : this.dialog.getButtons()){
+                    if (button.getMode() == ElementDialogButton.Mode.ON_EXIT) {
+                        for(ElementDialogButton.CmdLine line : button.getData()) {
+                            Server.getInstance().dispatchCommand(this,line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                        }
+                    }
+                }
+            }
+        });
+        this.dialog.setBindEntity(this);
     }
 
-    //todo: remove this DEBUG
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.namedTag.putString(KEY_DIALOG_TITLE, this.dialog.getTitle());
+        this.namedTag.putString(KEY_DIALOG_CONTENT, this.dialog.getContent());
+        this.namedTag.putString(KEY_DIALOG_SKINDATA, this.dialog.getSkinData());
+        this.namedTag.putString(KEY_DIALOG_BUTTONS, this.dialog.getButtonJSONData());
+    }
+
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (this.dialog == null) {
-            this.dialog = new FormWindowDialog("TestTitle", "TestContent");
-            this.dialog.addButton("TestButton1");
-            this.dialog.addButton("TestButton2");
-            this.dialog.addButton("TestButton3");
-            this.dialog.addButton("TestButton4");
-            this.dialog.addButton("TestButton5");
-            this.dialog.addButton("TestButton6");
-            this.dialog.setBindEntity(this);
-            this.dialog.addHandler((p,r) -> p.sendMessage("button: " + r.getClickedButton()));
-        }
         player.showDialogWindow(this.dialog);
         return true;
     }
@@ -97,4 +161,96 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         }
         return false;
     }
+
+    @Override
+    public void sendMessage(String message) {}
+
+    @Override
+    public void sendMessage(TextContainer message) {}
+
+    @Override
+    public boolean isPlayer() {
+        return false;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Override
+    public boolean isEntity() {
+        return true;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Nullable
+    @Override
+    public Entity asEntity() {
+        return this;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    @Nullable
+    @Override
+    public Player asPlayer() {
+        return null;
+    }
+
+    @Override
+    public boolean isPermissionSet(String name) {
+        return this.perm.isPermissionSet(name);
+    }
+
+    @Override
+    public boolean isPermissionSet(Permission permission) {
+        return this.perm.isPermissionSet(permission);
+    }
+
+    @Override
+    public boolean hasPermission(String name) {
+        return this.perm.hasPermission(name);
+    }
+
+    @Override
+    public boolean hasPermission(Permission permission) {
+        return this.perm.hasPermission(permission);
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin) {
+        return this.perm.addAttachment(plugin);
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String name) {
+        return this.perm.addAttachment(plugin, name);
+    }
+
+    @Override
+    public PermissionAttachment addAttachment(Plugin plugin, String name, Boolean value) {
+        return this.perm.addAttachment(plugin, name, value);
+    }
+
+    @Override
+    public void removeAttachment(PermissionAttachment attachment) {
+        this.perm.removeAttachment(attachment);
+    }
+
+    @Override
+    public void recalculatePermissions() {
+        this.perm.recalculatePermissions();
+    }
+
+    @Override
+    public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
+        return this.perm.getEffectivePermissions();
+    }
+
+    @Override
+    public boolean isOp() {
+        return true;
+    }
+
+    @Override
+    public void setOp(boolean value) {}
 }

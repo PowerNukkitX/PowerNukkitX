@@ -5691,7 +5691,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
             return;
         }
-        String actionJson = dialog.getJSONData();
+        String actionJson = dialog.getButtonJSONData();
         if (dialog.getBindEntity() == null) {//fake entity
             AddEntityPacket addEntityPacket = new AddEntityPacket();
             addEntityPacket.entityRuntimeId = Entity.entityCount++;
@@ -5724,10 +5724,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());
         packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
-//        packet.setDialogue(dialog.getContent());
-//        packet.setSceneName(dialog.getTitle());
-//        packet.setNpcName(dialog.getTitle());
-//        packet.setActionJson(actionJson);
         this.dialogWindows.put(packet.getRuntimeEntityId(),dialog);
         this.dataPacket(packet);
     }

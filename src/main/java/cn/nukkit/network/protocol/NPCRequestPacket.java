@@ -19,10 +19,10 @@ public class NPCRequestPacket extends DataPacket {
     public RequestType requestType = RequestType.SET_SKIN;
 
     @Since("1.4.0.0-PN")
-    public String commandString = "";
+    public String data = "";
 
     @Since("1.4.0.0-PN")
-    public int actionType = 0;
+    public int skinType = 0;
 
     @Since("FUTURE")
     public String sceneName = "";
@@ -53,26 +53,26 @@ public class NPCRequestPacket extends DataPacket {
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public String getCommandString() {
-        return commandString;
+    public String getData() {
+        return data;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setCommandString(String commandString) {
-        this.commandString = commandString;
+    public void setData(String data) {
+        this.data = data;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public int getActionType() {
-        return actionType;
+    public int getSkinType() {
+        return skinType;
     }
 
     @PowerNukkitOnly
     @Since("1.5.2.0-PN")
-    public void setActionType(int actionType) {
-        this.actionType = actionType;
+    public void setSkinType(int skinType) {
+        this.skinType = skinType;
     }
 
     @PowerNukkitOnly
@@ -108,8 +108,8 @@ public class NPCRequestPacket extends DataPacket {
     public void decode() {
         this.entityRuntimeId = super.getEntityRuntimeId();
         this.requestType = RequestType.values()[this.getByte()];
-        this.commandString = this.getString();
-        this.actionType = this.getByte();
+        this.data = this.getString();
+        this.skinType = this.getByte();
         this.sceneName = this.getString();
     }
 
@@ -118,8 +118,8 @@ public class NPCRequestPacket extends DataPacket {
         this.reset();
         this.putEntityRuntimeId(this.entityRuntimeId);
         this.putByte((byte) requestType.ordinal());
-        this.putString(this.commandString);
-        this.putByte((byte) this.actionType);
+        this.putString(this.data);
+        this.putByte((byte) this.skinType);
         this.putString(this.sceneName);
     }
 }
