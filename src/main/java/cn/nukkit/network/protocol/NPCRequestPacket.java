@@ -95,8 +95,8 @@ public class NPCRequestPacket extends DataPacket {
         @Since("1.4.0.0-PN") EXECUTE_CLOSING_COMMANDS,
         @Since("1.4.0.0-PN") SET_NAME,
         @Since("1.4.0.0-PN") SET_SKIN,
-        @Since("1.4.0.0-PN") SET_INTERACTION_TEXT
-
+        @Since("1.4.0.0-PN") SET_INTERACTION_TEXT,
+        @Since("1.6.0.0-PNX") EXECUTE_OPENING_COMMANDS
     }
 
     @Override

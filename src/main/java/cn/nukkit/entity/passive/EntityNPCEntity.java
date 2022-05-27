@@ -77,9 +77,14 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (this.dialog == null) {
             this.dialog = new FormWindowDialog("TestTitle", "TestContent");
-            this.dialog.addButton("TestButton");
+            this.dialog.addButton("TestButton1");
+            this.dialog.addButton("TestButton2");
+            this.dialog.addButton("TestButton3");
+            this.dialog.addButton("TestButton4");
+            this.dialog.addButton("TestButton5");
+            this.dialog.addButton("TestButton6");
             this.dialog.setBindEntity(this);
-            this.dialog.addHandler((p,r) -> p.sendMessage("responsed"));
+            this.dialog.addHandler((p,r) -> p.sendMessage("button: " + r.getClickedButton()));
         }
         player.showDialogWindow(this.dialog);
         return true;

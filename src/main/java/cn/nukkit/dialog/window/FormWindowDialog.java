@@ -32,6 +32,8 @@ public class FormWindowDialog {
 
     protected final transient List<FormDialogHandler> handlers = new ObjectArrayList<>();
 
+    protected transient boolean closeWhenClicked = true;
+
     public FormWindowDialog(String title, String content) {
         this(title, content, new ArrayList<>());
     }
@@ -112,7 +114,7 @@ public class FormWindowDialog {
     }
 
     public void setResponse(NPCRequestPacket packet) {
-        this.response = new FormResponseDialog(packet);
+        this.response = new FormResponseDialog(packet,this);
     }
 
     public FormResponseDialog getResponse() {
@@ -121,5 +123,13 @@ public class FormWindowDialog {
 
     public String getJSONData() {
         return GSON.toJson(this.buttons);
+    }
+
+    public void setCloseWhenClicked(boolean closeWhenClicked){
+        this.closeWhenClicked = closeWhenClicked;
+    }
+
+    public boolean closeWhenClicked(){
+        return this.closeWhenClicked;
     }
 }

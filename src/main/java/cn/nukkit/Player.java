@@ -3116,13 +3116,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.NPC_REQUEST_PACKET:
                     NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
-
                     if (dialogWindows.containsKey(npcRequestPacket.getRequestedEntityRuntimeId())) {
-                        FormWindowDialog dialog = dialogWindows.remove(npcRequestPacket.getRequestedEntityRuntimeId());
+                        //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
+                        /**
+                         * notice that creative players will send SET_ACTIONS back when they cancel the dialog
+                         * so we have no way to know if the player cancelled the dialog or not
+                         * todo: solve this problem
+                         **/
+                        FormWindowDialog dialog = npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS ? dialogWindows.remove(npcRequestPacket.getRequestedEntityRuntimeId()) : dialogWindows.get(npcRequestPacket.getRequestedEntityRuntimeId());
                         if(dialog.getBindEntity() == null){//remove fake entity
                             RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
                             removeEntityPacket.eid = npcRequestPacket.getRequestedEntityRuntimeId();
                             this.dataPacket(removeEntityPacket);
+                        }
+                        //close dialog after clicked button (otherwise the client will not be able to close the window)
+                        if(dialog.closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
+                            NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+                            closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
+                            closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
+                            this.dataPacket(closeWindowPacket);
                         }
                         dialog.setResponse(npcRequestPacket);
 
@@ -5696,7 +5708,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     .putString(Entity.DATA_NAMETAG, dialog.getTitle())
                     .putByte(Entity.DATA_HAS_NPC_COMPONENT, 1)
                     .putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData())
-                    .putString(Entity.DATA_INTERACTIVE_TAG, actionJson)
+                    .putString(Entity.DATA_NPC_ACTIONS, actionJson)
                     .putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
             this.dataPacket(addEntityPacket);
             dialog.setEntityId(addEntityPacket.entityRuntimeId);
@@ -5705,17 +5717,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
             dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
             dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
-            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getSkinData());
+            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
             dialog.setEntityId(dialog.getBindEntity().getId());
             dialog.getBindEntity().sendData(this);
         }
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());
         packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
-        packet.setDialogue(dialog.getContent());
-        packet.setSceneName(dialog.getTitle());
-        packet.setNpcName(dialog.getTitle());
-        packet.setActionJson(actionJson);
+//        packet.setDialogue(dialog.getContent());
+//        packet.setSceneName(dialog.getTitle());
+//        packet.setNpcName(dialog.getTitle());
+//        packet.setActionJson(actionJson);
         this.dialogWindows.put(packet.getRuntimeEntityId(),dialog);
         this.dataPacket(packet);
     }
