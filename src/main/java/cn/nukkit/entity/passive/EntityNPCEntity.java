@@ -83,7 +83,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setHealth(20);
         this.setNameTagVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
-        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT));
+        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT),this);
         this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
             this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));

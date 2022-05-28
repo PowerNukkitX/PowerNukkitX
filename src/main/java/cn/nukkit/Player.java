@@ -3124,11 +3124,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                          * todo: solve this problem
                          **/
                         FormWindowDialog dialog = npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS ? dialogWindows.remove(npcRequestPacket.getRequestedEntityRuntimeId()) : dialogWindows.get(npcRequestPacket.getRequestedEntityRuntimeId());
-                        if(dialog.getBindEntity() == null){//remove fake entity
-                            RemoveEntityPacket removeEntityPacket = new RemoveEntityPacket();
-                            removeEntityPacket.eid = npcRequestPacket.getRequestedEntityRuntimeId();
-                            this.dataPacket(removeEntityPacket);
-                        }
                         //close dialog after clicked button (otherwise the client will not be able to close the window)
                         if(dialog.closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
@@ -5692,35 +5687,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         String actionJson = dialog.getButtonJSONData();
-        if (dialog.getBindEntity() == null) {//fake entity
-            AddEntityPacket addEntityPacket = new AddEntityPacket();
-            addEntityPacket.entityRuntimeId = Entity.entityCount++;
-            addEntityPacket.entityUniqueId = addEntityPacket.entityRuntimeId;
-            addEntityPacket.type = EntityNPCEntity.NETWORK_ID;
-            addEntityPacket.id = AddEntityPacket.LEGACY_IDS.get(EntityNPCEntity.NETWORK_ID);
-            addEntityPacket.x = (float) this.getX();
-            addEntityPacket.y = (float) this.getY();
-            addEntityPacket.z = (float) this.getZ();
-            addEntityPacket.yaw = (float) this.getYaw();
-            addEntityPacket.pitch = (float) this.getPitch();
-            addEntityPacket.headYaw = (float) this.getHeadYaw();
-            addEntityPacket.metadata = new EntityMetadata()
-                    .putString(Entity.DATA_NAMETAG, dialog.getTitle())
-                    .putByte(Entity.DATA_HAS_NPC_COMPONENT, 1)
-                    .putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData())
-                    .putString(Entity.DATA_NPC_ACTIONS, actionJson)
-                    .putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
-            this.dataPacket(addEntityPacket);
-            dialog.setEntityId(addEntityPacket.entityRuntimeId);
-        } else {
-            dialog.getBindEntity().setNameTag(dialog.getTitle());
-            dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
-            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
-            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
-            dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
-            dialog.setEntityId(dialog.getBindEntity().getId());
-            dialog.getBindEntity().sendData(this);
-        }
+
+        dialog.getBindEntity().setNameTag(dialog.getTitle());
+        dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
+        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
+        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
+        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
+        dialog.setEntityId(dialog.getBindEntity().getId());
+        dialog.getBindEntity().sendData(this);
+
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());
         packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
