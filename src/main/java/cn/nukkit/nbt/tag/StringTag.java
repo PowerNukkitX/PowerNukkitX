@@ -48,6 +48,11 @@ public class StringTag extends Tag {
     }
 
     @Override
+    public String toSnbt() {
+        return "\"" + this.getName() + "\":\"" + data + "\"";
+    }
+
+    @Override
     public Tag copy() {
         return new StringTag(getName(), data);
     }
