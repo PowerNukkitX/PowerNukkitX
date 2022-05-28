@@ -96,19 +96,18 @@
 
     <repositories>
         <repository>
-            <id>powernukkitx-terra-binary-maven</id>
-            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>
-            <layout>default</layout>
+            <id>opencollab-repo-snapshot</id>
+            <url>https://repo.opencollab.dev/maven-snapshots/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
-            <id>opencollab-repo-snapshot</id>
-            <url>https://repo.opencollab.dev/maven-snapshots/</url>
+            <id>maven-powernukkitx-cn</id>
+            <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -367,11 +366,6 @@
             <version>12.0</version>
         </dependency>
         <dependency>
-            <groupId>com.dfsek.terra</groupId>
-            <artifactId>Terra</artifactId>
-            <version>6.0.2-bukkit</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j18-impl</artifactId>
             <version>2.17.1</version>
@@ -403,6 +397,13 @@
             <artifactId>chromeinspector</artifactId>
             <version>${graalvm.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!--    Terra  -->
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra</artifactId>
+            <version>6.0.0-BETA</version>
         </dependency>
     </dependencies>
 
