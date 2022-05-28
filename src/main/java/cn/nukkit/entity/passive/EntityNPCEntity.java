@@ -8,6 +8,7 @@ import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.dialog.window.FormWindowDialog;
@@ -83,9 +84,8 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setHealth(20);
         this.setNameTagVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
-        if(!this.hasCustomName()) this.setNameTag("NPC");
         this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT),this);
-
+        this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
             this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));
         if (!this.namedTag.getString(KEY_DIALOG_BUTTONS).isEmpty())
@@ -158,7 +158,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
 
     public void setVariant(int variant){
         this.variant = variant;
-        this.getDataProperties().putInt(DATA_VARIANT, variant);
+        this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
     }
 
     public int getVariant(){

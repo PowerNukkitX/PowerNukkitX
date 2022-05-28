@@ -5688,12 +5688,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         String actionJson = dialog.getButtonJSONData();
 
-        dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
-        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
-        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
-        dialog.getBindEntity().getDataProperties().putString(Entity.DATA_INTERACTIVE_TAG, dialog.getContent());
+        dialog.getBindEntity().setNameTag(dialog.getTitle());//must do this or the client won't see the title
+        dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData()));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, actionJson));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
         dialog.setEntityId(dialog.getBindEntity().getId());
-        dialog.getBindEntity().sendData(this);
 
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());
