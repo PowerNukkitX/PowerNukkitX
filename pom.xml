@@ -95,17 +95,17 @@
     </distributionManagement>
 
     <repositories>
-        <repository>
-            <id>powernukkitx-terra-binary-maven</id>
-            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+<!--        <repository>-->
+<!--            <id>powernukkitx-terra-binary-maven</id>-->
+<!--            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>-->
+<!--            <layout>default</layout>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
         <repository>
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
@@ -377,11 +377,6 @@
             <version>12.0</version>
         </dependency>
         <dependency>
-            <groupId>com.dfsek.terra</groupId>
-            <artifactId>Terra</artifactId>
-            <version>cli-6.0.0-BETA</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j18-impl</artifactId>
             <version>2.17.1</version>
@@ -413,6 +408,18 @@
             <artifactId>chromeinspector</artifactId>
             <version>${graalvm.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!--    Terra  -->
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra-base</artifactId>
+            <version>6.0.0-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dfsek.terra</groupId>
+            <artifactId>Terra-api</artifactId>
+            <version>6.0.0-BETA</version>
         </dependency>
     </dependencies>
 
