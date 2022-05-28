@@ -53,6 +53,11 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
+    public String toSnbt() {
+        return "\"" + this.getName() + "\":" + data + "d";
+    }
+
+    @Override
     public Tag copy() {
         return new DoubleTag(getName(), data);
     }
