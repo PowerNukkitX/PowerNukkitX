@@ -5688,7 +5688,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         String actionJson = dialog.getButtonJSONData();
 
-        dialog.getBindEntity().setNameTag(dialog.getTitle());
         dialog.getBindEntity().getDataProperties().putByte(Entity.DATA_HAS_NPC_COMPONENT, 1);
         dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData());
         dialog.getBindEntity().getDataProperties().putString(Entity.DATA_NPC_ACTIONS, actionJson);
