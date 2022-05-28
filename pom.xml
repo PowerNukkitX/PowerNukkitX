@@ -95,30 +95,6 @@
     </distributionManagement>
 
     <repositories>
-        <!--        unused          -->
-<!--        <repository>-->
-<!--            <id>powernukkitx-terra-binary-maven</id>-->
-<!--            <url>https://powernukkitx-maven.pkg.coding.net/repository/terra-binary/maven/</url>-->
-<!--            <layout>default</layout>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        <repository>-->
-<!--            <id>codemc</id>-->
-<!--            <url>https://repo.codemc.org/repository/maven-public</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-        <!--        unused          -->
-
         <repository>
             <id>opencollab-repo-snapshot</id>
             <url>https://repo.opencollab.dev/maven-snapshots/</url>
