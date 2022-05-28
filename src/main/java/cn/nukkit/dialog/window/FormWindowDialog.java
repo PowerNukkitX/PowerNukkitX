@@ -4,7 +4,6 @@ import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityNPCEntity;
 import cn.nukkit.network.protocol.NPCRequestPacket;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -35,19 +34,17 @@ public class FormWindowDialog {
 
     protected transient boolean closeWhenClicked = true;
 
-    public FormWindowDialog(String title, String content) {
-        this(title, content, new ArrayList<>());
+    public FormWindowDialog(String title, String content, Entity bindEntity) {
+        this(title, content,bindEntity, new ArrayList<>());
     }
 
-    public FormWindowDialog(String title, String content, List<ElementDialogButton> buttons) {
-        this(title, content, buttons, null);
-    }
-
-    public FormWindowDialog(String title, String content, List<ElementDialogButton> buttons, EntityNPCEntity bindEntity) {
+    public FormWindowDialog(String title, String content, Entity bindEntity, List<ElementDialogButton> buttons) {
         this.title = title;
         this.content = content;
         this.buttons = buttons;
         this.bindEntity = bindEntity;
+        if (this.bindEntity == null)
+            throw new IllegalArgumentException("bindEntity cannot be null!");
     }
 
     public String getTitle() {
@@ -94,7 +91,7 @@ public class FormWindowDialog {
         return bindEntity;
     }
 
-    public void setBindEntity(EntityNPCEntity bindEntity) {
+    public void setBindEntity(Entity bindEntity) {
         this.bindEntity = bindEntity;
     }
 
