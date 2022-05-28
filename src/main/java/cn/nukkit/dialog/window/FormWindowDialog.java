@@ -94,7 +94,7 @@ public class FormWindowDialog {
         return bindEntity;
     }
 
-    public void setBindEntity(EntityNPCEntity bindEntity) {
+    public void setBindEntity(Entity bindEntity) {
         this.bindEntity = bindEntity;
     }
 
