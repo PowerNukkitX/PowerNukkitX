@@ -1,5 +1,7 @@
 package cn.nukkit.dialog.element;
 
+import cn.nukkit.dialog.window.FormWindowDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,10 @@ public class ElementDialogButton {
     private String text;
 
     private List<CmdLine> data;
+
+    protected transient boolean closeWhenClicked = true;
+
+    protected transient FormWindowDialog nextDialog = null;
 
     public static class CmdLine{
         public CmdLine(String cmd_line, int cmd_ver){
@@ -26,16 +32,21 @@ public class ElementDialogButton {
     private int type;
 
     public ElementDialogButton(String name, String text) {
-        this(name, text, Mode.BUTTON_MODE);
+        this(name, text, null);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode) {
-        this(name, text, mode, 1);
+    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog){
+        this(name, text, nextDialog, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode, int type) {
+    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog, Mode mode) {
+        this(name, text, nextDialog, mode, 1);
+    }
+
+    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
+        this.nextDialog = nextDialog;
         this.data = updateButtonData();
         this.mode = mode.ordinal();
         this.type = type;
@@ -92,6 +103,27 @@ public class ElementDialogButton {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public void setCloseWhenClicked(boolean closeWhenClicked){
+        this.closeWhenClicked = closeWhenClicked;
+    }
+
+    /**
+     * will always return false if nextDialog != null
+     */
+    public boolean closeWhenClicked(){
+        if (nextDialog != null)
+            return false;
+        return this.closeWhenClicked;
+    }
+
+    public FormWindowDialog getNextDialog() {
+        return nextDialog;
+    }
+
+    public void setNextDialog(FormWindowDialog nextDialog) {
+        this.nextDialog = nextDialog;
     }
 
     public enum Mode {
