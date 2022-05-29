@@ -83,6 +83,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setMaxHealth(Integer.MAX_VALUE); // Should be Float max value
         this.setHealth(20);
         this.setNameTagVisible(true);
+        this.setNameTagAlwaysVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
         this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT),this);
         this.setNameTag(this.dialog.getTitle());
@@ -100,6 +101,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME){
                 this.dialog.setTitle(response.getData());
+                this.setNameTag(response.getData());
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_SKIN) {
                 this.setVariant(response.getSkinType());

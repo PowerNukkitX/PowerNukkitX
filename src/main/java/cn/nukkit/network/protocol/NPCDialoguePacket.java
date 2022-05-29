@@ -38,7 +38,7 @@ public class NPCDialoguePacket extends DataPacket {
     
     private long runtimeEntityId;
     private NPCDialogAction action = NPCDialogAction.OPEN;
-    private String dialogue = "";
+    private String dialogue = "";//content
     private String sceneName = "";
     private String npcName = "";
     private String actionJson = "";
