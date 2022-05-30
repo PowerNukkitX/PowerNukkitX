@@ -1,11 +1,16 @@
 package cn.nukkit.plugin.js;
 
+import cn.nukkit.plugin.CommonJSPlugin;
+import cn.nukkit.plugin.js.external.ExternalArray;
+import cn.nukkit.plugin.js.external.ExternalFunction;
+import cn.nukkit.plugin.js.external.ExternalObject;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyArray;
 import org.graalvm.polyglot.proxy.ProxyExecutable;
 
 import java.util.Map;
@@ -110,6 +115,46 @@ public final class JSIInitiator {
                 }
             }
             return NULL;
+        });
+        global.putMember("exposeFunction", (ProxyExecutable) arguments -> {
+            if (arguments.length > 1) {
+                var key = arguments[0];
+                var value = arguments[1];
+                if (key.isString() && value.canExecute()) {
+                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalFunction(context, value));
+                }
+            }
+            return NULL;
+        });
+        global.putMember("exposeObject", (ProxyExecutable) arguments -> {
+            if (arguments.length > 1) {
+                var key = arguments[0];
+                var value = arguments[1];
+                if (key.isString()) {
+                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalObject(context, value));
+                }
+            }
+            return NULL;
+        });
+        global.putMember("exposeArray", (ProxyExecutable) arguments -> {
+            if (arguments.length > 1) {
+                var key = arguments[0];
+                var value = arguments[1];
+                if (key.isString() && value.hasArrayElements()) {
+                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalArray(context, value));
+                }
+            }
+            return NULL;
+        });
+        global.putMember("contain", (ProxyExecutable) arguments -> {
+            var externals = new JSExternal[arguments.length];
+            for (int i = 0; i < arguments.length; i++) {
+                var tmp = arguments[i];
+                if (tmp.isString()) {
+                    externals[i] = CommonJSPlugin.jsExternalMap.get(tmp.asString());
+                }
+            }
+            return ProxyArray.fromArray((Object[]) externals);
         });
     }
 

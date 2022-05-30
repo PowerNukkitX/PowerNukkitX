@@ -6,6 +6,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.js.ESMFileSystem;
+import cn.nukkit.plugin.js.JSExternal;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.js.JSProxyLogger;
 import cn.nukkit.utils.Config;
@@ -18,10 +19,12 @@ import org.graalvm.polyglot.Value;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonJSPlugin implements Plugin, Listener {
 
     public static final Int2ObjectOpenHashMap<CommonJSPlugin> jsPluginIdMap = new Int2ObjectOpenHashMap<>();
+    public static final ConcurrentHashMap<String, JSExternal> jsExternalMap = new ConcurrentHashMap<>();
     public static int globalMaxId = 0;
 
     protected String pluginName;
