@@ -72,10 +72,10 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true");
-        if (Nukkit.CHROME_DEBUG_PORT != -1) {
+        if (Nukkit.CHROME_DEBUG_PORT != -1 && Nukkit.JS_DEBUG_LIST.contains(description.getName())) {
             cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
                     .option("inspect.Path", description.getName())
-                    .option("inspect.Suspend", "false")
+                    .option("inspect.Suspend", "true")
                     .option("inspect.Internal", "true")
                     .option("inspect.SourcePath", pluginDir.getAbsolutePath());
         }

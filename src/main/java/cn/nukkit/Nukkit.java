@@ -24,11 +24,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -74,6 +71,7 @@ public class Nukkit {
     public static boolean shortTitle = requiresShortTitle();
     public static int DEBUG = 1;
     public static int CHROME_DEBUG_PORT = -1;
+    public static List<String> JS_DEBUG_LIST = new LinkedList<>();
 
     public static void main(String[] args) {
         AtomicBoolean disableSentry = new AtomicBoolean(false);
@@ -165,6 +163,7 @@ public class Nukkit {
         OptionSpec<String> verbositySpec = parser.accepts("verbosity", "Set verbosity of logging").withRequiredArg().ofType(String.class);
         OptionSpec<String> languageSpec = parser.accepts("language", "Set a predefined language").withOptionalArg().ofType(String.class);
         OptionSpec<Integer> chromeDebugPortSpec = parser.accepts("chrome-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(Integer.class);
+        OptionSpec<String> jsDebugPortSpec = parser.accepts("js-debug", "Debug javascript using chrome dev tool with specific port.").withRequiredArg().ofType(String.class);
 
         // Parse arguments
         OptionSet options = parser.parse(args);
@@ -200,6 +199,10 @@ public class Nukkit {
 
         if (options.has(chromeDebugPortSpec)) {
             CHROME_DEBUG_PORT = options.valueOf(chromeDebugPortSpec);
+        }
+
+        if (options.has(jsDebugPortSpec)) {
+            JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
         }
 
         try {
