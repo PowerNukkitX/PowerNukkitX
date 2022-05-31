@@ -13,6 +13,7 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     @Override
     public Object get(long index) {
         synchronized (sourceContext) {
+            checkAlive();
             return value.getArrayElement(index);
         }
     }
@@ -20,6 +21,7 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     @Override
     public void set(long index, Value value) {
         synchronized (sourceContext) {
+            checkAlive();
             value.setArrayElement(index, value);
         }
     }
@@ -27,6 +29,7 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     @Override
     public boolean remove(long index) {
         synchronized (sourceContext) {
+            checkAlive();
             return value.removeArrayElement(index);
         }
     }
@@ -34,6 +37,7 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     @Override
     public long getSize() {
         synchronized (sourceContext) {
+            checkAlive();
             return value.getArraySize();
         }
     }
@@ -41,6 +45,7 @@ public final class ExternalArray extends JSExternal implements ProxyArray {
     @Override
     public Object getIterator() {
         synchronized (sourceContext) {
+            checkAlive();
             return value.getIterator();
         }
     }

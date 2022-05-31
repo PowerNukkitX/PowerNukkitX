@@ -13,6 +13,7 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     @Override
     public Object getMember(String key) {
         synchronized (sourceContext) {
+            checkAlive();
             return value.getMember(key);
         }
     }
@@ -20,6 +21,7 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     @Override
     public Object getMemberKeys() {
         synchronized (sourceContext) {
+            checkAlive();
             return value.getMemberKeys();
         }
 
@@ -28,6 +30,7 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     @Override
     public boolean hasMember(String key) {
         synchronized (sourceContext) {
+            checkAlive();
             return value.hasMember(key);
         }
 
@@ -36,6 +39,7 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     @Override
     public void putMember(String key, Value value) {
         synchronized (sourceContext) {
+            checkAlive();
             value.putMember(key, value);
         }
     }
@@ -43,6 +47,7 @@ public final class ExternalObject extends JSExternal implements ProxyObject {
     @Override
     public boolean removeMember(String key) {
         synchronized (sourceContext) {
+            checkAlive();
             return value.removeMember(key);
         }
     }

@@ -4,6 +4,8 @@ import cn.nukkit.plugin.CommonJSPlugin;
 import cn.nukkit.plugin.js.external.ExternalArray;
 import cn.nukkit.plugin.js.external.ExternalFunction;
 import cn.nukkit.plugin.js.external.ExternalObject;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -24,6 +26,7 @@ public final class JSIInitiator {
     public static Timer jsTimer = new Timer();
     public static final Long2ObjectMap<JSTimerTask> jsTimeTaskMap = new Long2ObjectOpenHashMap<>();
     public static final Map<Context, LongList> contextTimerIdMap = new ConcurrentHashMap<>();
+    public static final Multimap<Context, String> externalMap = HashMultimap.create(4, 4);
     private static final AtomicLong globalTimerId = new AtomicLong();
 
     public static void reset() {
@@ -41,6 +44,14 @@ public final class JSIInitiator {
         if (contextTimerIdMap.containsKey(context)) {
             for (long i : contextTimerIdMap.get(context)) {
                 jsTimeTaskMap.remove(i).cancel();
+            }
+        }
+        if (externalMap.containsKey(context)) {
+            for (var each : externalMap.get(context)) {
+                var ret = CommonJSPlugin.jsExternalMap.remove(each);
+                if (ret != null) {
+                    ret.setAlive(false);
+                }
             }
         }
     }
@@ -121,7 +132,9 @@ public final class JSIInitiator {
                 var key = arguments[0];
                 var value = arguments[1];
                 if (key.isString() && value.canExecute()) {
-                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalFunction(context, value));
+                    var k = key.asString();
+                    CommonJSPlugin.jsExternalMap.put(k, new ExternalFunction(context, value));
+                    externalMap.put(context, k);
                 }
             }
             return NULL;
@@ -131,7 +144,9 @@ public final class JSIInitiator {
                 var key = arguments[0];
                 var value = arguments[1];
                 if (key.isString()) {
-                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalObject(context, value));
+                    var k = key.asString();
+                    CommonJSPlugin.jsExternalMap.put(k, new ExternalObject(context, value));
+                    externalMap.put(context, k);
                 }
             }
             return NULL;
@@ -141,7 +156,9 @@ public final class JSIInitiator {
                 var key = arguments[0];
                 var value = arguments[1];
                 if (key.isString() && value.hasArrayElements()) {
-                    CommonJSPlugin.jsExternalMap.put(key.asString(), new ExternalArray(context, value));
+                    var k = key.asString();
+                    CommonJSPlugin.jsExternalMap.put(k, new ExternalArray(context, value));
+                    externalMap.put(context, k);
                 }
             }
             return NULL;
