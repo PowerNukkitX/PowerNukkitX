@@ -47,7 +47,7 @@ public final class JSIInitiator {
             }
         }
         if (externalMap.containsKey(context)) {
-            for (var each : externalMap.get(context)) {
+            for (var each : externalMap.removeAll(context)) {
                 var ret = CommonJSPlugin.jsExternalMap.remove(each);
                 if (ret != null) {
                     ret.setAlive(false);
