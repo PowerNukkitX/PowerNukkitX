@@ -540,7 +540,7 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return "action.interact.armorstand.equip";
     }
 

@@ -25,6 +25,7 @@ import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.entity.mob.EntityZombiePigman;
 import cn.nukkit.entity.passive.EntityChicken;
+import cn.nukkit.entity.passive.EntityNPCEntity;
 import cn.nukkit.entity.passive.EntityPig;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -180,7 +181,7 @@ class EntityTest {
         assertNotNull(entity.getOriginalName(), "Static Name");
         String staticName = entity.getOriginalName();
         assertEquals(staticName, entity.getName());
-        assertFalse(entity.hasCustomName(), "Should not have custom");
+        assertTrue(!entity.hasCustomName() || entity instanceof EntityNPCEntity, "Should not have custom");
         assertEquals(entity.getName(), entity.getVisibleName());
         
         if (entity instanceof EntityNameable) {

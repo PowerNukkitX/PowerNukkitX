@@ -5,11 +5,7 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class ListTag<T extends Tag> extends Tag {
 
@@ -60,6 +56,13 @@ public class ListTag<T extends Tag> extends Tag {
         StringJoiner joiner = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
         return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner.toString() + "\n}";
+    }
+
+    @Override
+    public String toSnbt() {
+        StringJoiner joiner = new StringJoiner(",");
+        list.forEach(tag -> joiner.add(tag.toSnbt().split(":")[1]));
+        return "\"" + this.getName() + "\":[" + joiner + "]";
     }
 
     @Override

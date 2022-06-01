@@ -1753,13 +1753,13 @@ public class Server {
     }
 
     public String getMotd() {
-        return this.getPropertyString("motd", "PowerNukkit Server");
+        return this.getPropertyString("motd", "PowerNukkitX Server");
     }
 
     public String getSubMotd() {
-        String subMotd = this.getPropertyString("sub-motd", "https://powernukkit.org");
+        String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
         if (subMotd.isEmpty()) {
-            subMotd = "https://powernukkit.org"; // The client doesn't allow empty sub-motd in 1.16.210
+            subMotd = "https://powernukkitx.cn"; // The client doesn't allow empty sub-motd in 1.16.210
         }
         return subMotd;
     }

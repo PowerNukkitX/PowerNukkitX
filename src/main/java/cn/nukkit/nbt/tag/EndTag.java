@@ -30,6 +30,11 @@ public class EndTag extends Tag {
     }
 
     @Override
+    public String toSnbt() {
+        return "";
+    }
+
+    @Override
     public Tag copy() {
         return new EndTag();
     }
