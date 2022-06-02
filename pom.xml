@@ -403,7 +403,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.0.0-BETA2</version>
+            <version>6.0.0</version>
         </dependency>
     </dependencies>
 
