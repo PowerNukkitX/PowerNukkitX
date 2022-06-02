@@ -141,8 +141,13 @@ public class ScoreboardCommand extends VanillaCommand {
                     CommandParser p = new CommandParser(parser);
                     p.parseString();p.parseString();
                     String objectiveName = p.parseString();
-                    manager.removeScoreboard(objectiveName);
-                    sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.remove.success", objectiveName));
+                    if (!manager.hasScoreboard(objectiveName)){
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", objectiveName));
+                        return false;
+                    }
+                    if(manager.removeScoreboard(objectiveName)) {
+                        sender.sendMessage(new TranslationContainer("commands.scoreboard.objectives.remove.success", objectiveName));
+                    }
                     return true;
                 }
                 case "objectives-setdisplay-list-sidebar" -> {

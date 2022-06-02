@@ -30,9 +30,9 @@ public abstract class AbstractScoreboardManager {
         return storage;
     }
 
-    public abstract void addScoreboard(Scoreboard scoreboard);
+    public abstract boolean addScoreboard(Scoreboard scoreboard);
 
-    public abstract void removeScoreboard(String name);
+    public abstract boolean removeScoreboard(String name);
 
     public Map<String, Scoreboard> getScoreboards() {
         return new HashMap<>(scoreboards);
