@@ -28,6 +28,7 @@
 - [#352] 实现NPC-API和实现NPC功能。
 - [#363] 实现NPC SKIN切换。
 - [#365] 添加toSnbt。
+- [#370] 添加JS跨插件互操作。
 
 ### 修改记录
 
@@ -44,6 +45,7 @@
 - [#366] 更新terra版本。
 - [#367] 完善NPC接口。
 - [#368] 完善NPC提示框。
+- [#373] 将terra版本更新至6.0.0-Release。
 
 ### BUG修复
 
@@ -1174,6 +1176,8 @@ Need to switch languages?
 [#366]: https://github.com/PowerNukkitX/PowerNukkitX/pull/366
 [#367]: https://github.com/PowerNukkitX/PowerNukkitX/pull/367
 [#368]: https://github.com/PowerNukkitX/PowerNukkitX/pull/368
+[#370]: https://github.com/PowerNukkitX/PowerNukkitX/pull/370
+[#373]: https://github.com/PowerNukkitX/PowerNukkitX/pull/373
 
 <!--PowerNukkitX Version history-->
 

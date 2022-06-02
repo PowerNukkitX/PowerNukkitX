@@ -29,6 +29,7 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#352] Implementation of NPC-API and implementation of NPC functions.
 - [#363] Implemented NPC SKIN switch.
 - [#365] Add toSnbt.
+- [#370] Add JS cross-plugin interoperability.
 
 ### Changed
 
@@ -45,6 +46,7 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#366] Update terra version.
 - [#367] Improve NPC interface.
 - [#368] Improve NPC hint box.
+- [#373] Update terra version to 6.0.0-Release.
 
 ### Fixes
 
@@ -1172,6 +1174,8 @@ Need to switch languages?
 [#366]: https://github.com/PowerNukkitX/PowerNukkitX/pull/366
 [#367]: https://github.com/PowerNukkitX/PowerNukkitX/pull/367
 [#368]: https://github.com/PowerNukkitX/PowerNukkitX/pull/368
+[#370]: https://github.com/PowerNukkitX/PowerNukkitX/pull/370
+[#373]: https://github.com/PowerNukkitX/PowerNukkitX/pull/373
 
 <!--PowerNukkitX Version history-->
 
