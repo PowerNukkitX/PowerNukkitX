@@ -703,6 +703,7 @@ public class Server {
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         this.commandMap = new SimpleCommandMap(this);
+
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
