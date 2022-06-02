@@ -6,6 +6,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;
 import cn.nukkit.plugin.js.ESMFileSystem;
+import cn.nukkit.plugin.js.JSExternal;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.js.JSProxyLogger;
 import cn.nukkit.utils.Config;
@@ -18,10 +19,12 @@ import org.graalvm.polyglot.Value;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonJSPlugin implements Plugin, Listener {
 
     public static final Int2ObjectOpenHashMap<CommonJSPlugin> jsPluginIdMap = new Int2ObjectOpenHashMap<>();
+    public static final ConcurrentHashMap<String, JSExternal> jsExternalMap = new ConcurrentHashMap<>();
     public static int globalMaxId = 0;
 
     protected String pluginName;
@@ -69,10 +72,10 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true");
-        if (Nukkit.CHROME_DEBUG_PORT != -1) {
+        if (Nukkit.CHROME_DEBUG_PORT != -1 && Nukkit.JS_DEBUG_LIST.contains(description.getName())) {
             cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
                     .option("inspect.Path", description.getName())
-                    .option("inspect.Suspend", "false")
+                    .option("inspect.Suspend", "true")
                     .option("inspect.Internal", "true")
                     .option("inspect.SourcePath", pluginDir.getAbsolutePath());
         }
