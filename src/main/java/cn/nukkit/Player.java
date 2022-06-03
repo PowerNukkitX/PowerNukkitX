@@ -87,7 +87,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.SneakyThrows;
@@ -3140,11 +3139,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if(response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
                             closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
+                            closeWindowPacket.setSceneName(response.getSceneName());
                             closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
                             this.dataPacket(closeWindowPacket);
                         }
                         if(response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null){
-                            this.showDialogWindow(response.getClickedButton().getNextDialog());
+                            response.getClickedButton().getNextDialog().send(this);
                         }
                     }
                     break;
@@ -5675,7 +5675,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindows.size() > 10){
+        if(this.formWindows.size() > 100){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
@@ -5689,7 +5689,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void showDialogWindow(FormWindowDialog dialog){
-        if(this.dialogWindows.size() > 10){
+        if(this.dialogWindows.size() > 100){
             this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
             return;
         }

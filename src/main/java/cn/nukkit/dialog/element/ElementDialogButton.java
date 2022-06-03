@@ -1,5 +1,6 @@
 package cn.nukkit.dialog.element;
 
+import cn.nukkit.dialog.window.Dialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class ElementDialogButton {
 
     protected transient boolean closeWhenClicked = true;
 
-    protected transient FormWindowDialog nextDialog = null;
+    protected transient Dialog nextDialog = null;
 
     public static class CmdLine{
         public CmdLine(String cmd_line, int cmd_ver){
@@ -35,15 +36,15 @@ public class ElementDialogButton {
         this(name, text, null);
     }
 
-    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog){
+    public ElementDialogButton(String name, String text,Dialog nextDialog){
         this(name, text, nextDialog, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog, Mode mode) {
+    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode) {
         this(name, text, nextDialog, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text,FormWindowDialog nextDialog, Mode mode, int type) {
+    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
         this.nextDialog = nextDialog;
@@ -118,11 +119,11 @@ public class ElementDialogButton {
         return this.closeWhenClicked;
     }
 
-    public FormWindowDialog getNextDialog() {
+    public Dialog getNextDialog() {
         return nextDialog;
     }
 
-    public void setNextDialog(FormWindowDialog nextDialog) {
+    public void setNextDialog(Dialog nextDialog) {
         this.nextDialog = nextDialog;
     }
 
