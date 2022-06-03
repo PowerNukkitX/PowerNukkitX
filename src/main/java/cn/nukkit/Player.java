@@ -78,6 +78,10 @@ import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.netty.util.internal.EmptyArrays;
@@ -279,7 +283,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int lastChorusFruitTeleport = 20;
 
     private LoginChainData loginChainData;
-
     public Block breakingBlock = null;
 
     public int pickedXPOrb = 0;
@@ -288,10 +291,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
 
+    /**
+     * 我们使用google的cache来存储NPC对话框发送信息
+     * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
+     * 5分钟后未响应的对话框会被清除
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    //         DialogUUID    Window
-    protected Map<String, FormWindowDialog> dialogWindows = new Object2ObjectLinkedOpenHashMap<>();
+    protected Cache<String, FormWindowDialog> dialogWindows = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
 
@@ -3117,14 +3124,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.NPC_REQUEST_PACKET:
                     NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
-                    if (dialogWindows.containsKey(npcRequestPacket.getSceneName())) {
+                    if (dialogWindows.getIfPresent(npcRequestPacket.getSceneName()) != null) {
                         //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
                         /**
                          * notice that creative players will send SET_ACTIONS back when they cancel the dialog
                          * so we have no way to know if the player cancelled the dialog or not
                          * todo: solve this problem
                          **/
-                        FormWindowDialog dialog = npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS ? dialogWindows.remove(npcRequestPacket.getSceneName()) : dialogWindows.get(npcRequestPacket.getSceneName());
+                        FormWindowDialog dialog = null;
+                        if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS){
+                            dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                            dialogWindows.invalidate(npcRequestPacket.getSceneName());
+                        }else {
+                           dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                        }
 
                         FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
                         for(FormDialogHandler handler : dialog.getHandlers()) {
@@ -5688,11 +5701,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void showDialogWindow(FormWindowDialog dialog){
-        dialog.updateSceneName();//debug
-        if(this.dialogWindows.size() > 100){
-            this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
-            return;
-        }
+        if(dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
         String actionJson = dialog.getButtonJSONData();
 
         dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));

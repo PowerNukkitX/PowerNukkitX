@@ -11,7 +11,7 @@ public class ScrollingTextDialog implements Dialog{
     private int scrollingSpeed;//unit: gt
     private boolean scrolling = false;
     private int cursor = 0;
-    private Task scrollingTask = new ScrollingRunner();
+    private Task scrollingTask;
 
     public ScrollingTextDialog(Player player, FormWindowDialog dialog) {
         this(player, dialog,2);
@@ -20,6 +20,7 @@ public class ScrollingTextDialog implements Dialog{
     public ScrollingTextDialog(Player player, FormWindowDialog dialog, int scrollingSpeed) {
         this.player = player;
         this.dialog = dialog;
+        scrollingTask = new ScrollingRunner();
         this.scrollingSpeed = scrollingSpeed;
     }
 
@@ -81,6 +82,11 @@ public class ScrollingTextDialog implements Dialog{
 
     private class ScrollingRunner extends Task {
 
+        private FormWindowDialog clone = new FormWindowDialog(dialog.getTitle(), dialog.getContent(), dialog.getBindEntity());
+        {
+            clone.setSkinData(dialog.getSkinData());
+        }
+
         @Override
         public void onRun(int currentTick) {
             if (!scrolling || cursor >= dialog.getContent().length()) {
@@ -90,8 +96,7 @@ public class ScrollingTextDialog implements Dialog{
                 this.cancel();
                 return;
             }
-            FormWindowDialog clone = new FormWindowDialog(dialog.getTitle(), dialog.getContent().substring(0,cursor), dialog.getBindEntity());
-            clone.setSkinData(dialog.getSkinData());
+            clone.setContent(dialog.getContent().substring(0,cursor));
             player.showDialogWindow(clone);
             if (dialog.getContent().length() - (cursor+1) >= 2 && dialog.getContent().charAt(cursor) == '§')
                 cursor+=2;

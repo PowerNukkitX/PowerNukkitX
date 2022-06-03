@@ -18,6 +18,8 @@ public class FormWindowDialog implements Dialog{
 
     protected static final Gson GSON = new Gson();
 
+    private static long dialogId = 0;
+
     private String title = "";
 
     private String content = "";
@@ -26,7 +28,7 @@ public class FormWindowDialog implements Dialog{
 
     //usually you shouldn't edit this
     //in pnx this value is used to be an identifier
-    private String sceneName = UUID.randomUUID().toString();
+    private String sceneName = String.valueOf(dialogId++);
 
     private List<ElementDialogButton> buttons;
 
@@ -126,7 +128,7 @@ public class FormWindowDialog implements Dialog{
     }
 
     public void updateSceneName() {
-        this.sceneName = UUID.randomUUID().toString();
+        this.sceneName = String.valueOf(dialogId++);
     }
     @Override
     public void send(Player player){
