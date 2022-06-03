@@ -3126,10 +3126,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                          **/
                         FormWindowDialog dialog = npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS ? dialogWindows.remove(npcRequestPacket.getSceneName()) : dialogWindows.get(npcRequestPacket.getSceneName());
 
-                        dialog.setResponse(npcRequestPacket);
-                        FormResponseDialog response = dialog.getResponse();
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
                         for(FormDialogHandler handler : dialog.getHandlers()) {
-                            handler.handle(this, dialog.getResponse());
+                            handler.handle(this, response);
                         }
 
                         PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog);
@@ -5689,6 +5688,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void showDialogWindow(FormWindowDialog dialog){
+        dialog.updateSceneName();//debug
         if(this.dialogWindows.size() > 100){
             this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
             return;

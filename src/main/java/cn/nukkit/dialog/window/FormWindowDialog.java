@@ -30,8 +30,6 @@ public class FormWindowDialog implements Dialog{
 
     private List<ElementDialogButton> buttons;
 
-    private FormResponseDialog response = null;
-
     private long entityId;
 
     private Entity bindEntity;
@@ -113,14 +111,6 @@ public class FormWindowDialog implements Dialog{
 
     public List<FormDialogHandler> getHandlers() {
         return handlers;
-    }
-
-    public void setResponse(NPCRequestPacket packet) {
-        this.response = new FormResponseDialog(packet,this);
-    }
-
-    public FormResponseDialog getResponse() {
-        return this.response;
     }
 
     public String getButtonJSONData() {
