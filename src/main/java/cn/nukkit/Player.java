@@ -3144,7 +3144,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             handler.handle(this, response);
                         }
 
-                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog);
+                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog, response);
                         getServer().getPluginManager().callEvent(event);
 
                         //close dialog after clicked button (otherwise the client will not be able to close the window)
