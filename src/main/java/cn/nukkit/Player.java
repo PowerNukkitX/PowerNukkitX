@@ -78,6 +78,10 @@ import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.netty.util.internal.EmptyArrays;
@@ -87,7 +91,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.SneakyThrows;
@@ -280,7 +283,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int lastChorusFruitTeleport = 20;
 
     private LoginChainData loginChainData;
-
     public Block breakingBlock = null;
 
     public int pickedXPOrb = 0;
@@ -289,10 +291,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
 
+    /**
+     * 我们使用google的cache来存储NPC对话框发送信息
+     * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
+     * 5分钟后未响应的对话框会被清除
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    //         DialogUUID    Window
-    protected Map<String, FormWindowDialog> dialogWindows = new Object2ObjectLinkedOpenHashMap<>();
+    protected Cache<String, FormWindowDialog> dialogWindows = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
 
@@ -3118,33 +3124,39 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.NPC_REQUEST_PACKET:
                     NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
-                    if (dialogWindows.containsKey(npcRequestPacket.getSceneName())) {
+                    if (dialogWindows.getIfPresent(npcRequestPacket.getSceneName()) != null) {
                         //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
                         /**
                          * notice that creative players will send SET_ACTIONS back when they cancel the dialog
                          * so we have no way to know if the player cancelled the dialog or not
                          * todo: solve this problem
                          **/
-                        FormWindowDialog dialog = npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS ? dialogWindows.remove(npcRequestPacket.getSceneName()) : dialogWindows.get(npcRequestPacket.getSceneName());
-
-                        dialog.setResponse(npcRequestPacket);
-                        FormResponseDialog response = dialog.getResponse();
-                        for(FormDialogHandler handler : dialog.getHandlers()) {
-                            handler.handle(this, dialog.getResponse());
+                        FormWindowDialog dialog = null;
+                        if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS){
+                            dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                            dialogWindows.invalidate(npcRequestPacket.getSceneName());
+                        }else {
+                           dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
                         }
 
-                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog);
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
+                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                            handler.handle(this, response);
+                        }
+
+                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog, response);
                         getServer().getPluginManager().callEvent(event);
 
                         //close dialog after clicked button (otherwise the client will not be able to close the window)
                         if(response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
                             closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
+                            closeWindowPacket.setSceneName(response.getSceneName());
                             closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
                             this.dataPacket(closeWindowPacket);
                         }
                         if(response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null){
-                            this.showDialogWindow(response.getClickedButton().getNextDialog());
+                            response.getClickedButton().getNextDialog().send(this);
                         }
                     }
                     break;
@@ -5675,7 +5687,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindows.size() > 10){
+        if(this.formWindows.size() > 100){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
@@ -5689,10 +5701,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void showDialogWindow(FormWindowDialog dialog){
-        if(this.dialogWindows.size() > 10){
-            this.kick("Possible DoS vulnerability: More Than 10 DialogWindow sent to client already.");
-            return;
-        }
+        if(dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
         String actionJson = dialog.getButtonJSONData();
 
         dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
