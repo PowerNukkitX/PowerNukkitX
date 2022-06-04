@@ -6669,7 +6669,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void shakeCamera(float intensity, int duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
+    public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
         CameraShakePacket packet = new CameraShakePacket();
         packet.intensity = intensity;
         packet.duration = duration;

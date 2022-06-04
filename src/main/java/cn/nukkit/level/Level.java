@@ -3659,11 +3659,11 @@ public class Level implements ChunkManager, Metadatable {
         Block block = pos.getLevelBlock();
         Block blockUpper = pos.add(0, 1, 0).getLevelBlock();
         if (!allowWaterUnder)
-            return blockUnder.isSolid()
+            return !blockUnder.canPassThrough()
                     && block.getId() == BlockID.AIR
                     && blockUpper.getId() == BlockID.AIR;
         else
-            return (blockUnder.isSolid() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
+            return (!blockUnder.canPassThrough() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
                     && block.getId() == BlockID.AIR
                     && blockUpper.getId() == BlockID.AIR;
     }
