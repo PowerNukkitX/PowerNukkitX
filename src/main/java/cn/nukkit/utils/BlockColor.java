@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
@@ -109,6 +110,8 @@ public class BlockColor  {
     @Since("FUTURE")
     public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
 
+    @PowerNukkitXOnly
+    public static final BlockColor BROWNISH_RED = new BlockColor(0x8E, 0x2F, 0x2F);
     private int red;
     private int green;
     private int blue;

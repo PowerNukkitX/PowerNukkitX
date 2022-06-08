@@ -827,11 +827,30 @@ public interface BlockID {
     @PowerNukkitOnly
     int INFESTED_DEEPSLATE = 709;
 
-
     @Since("FUTURE")
     @PowerNukkitOnly
     int SCULK = 713;
+
     @Since("FUTURE")
     @PowerNukkitOnly
     int MUD = 728;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MUDDY_MANGROVE_ROOTS = 738;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_LOG = 739;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_PLANKS = 741;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_SLAB = 744;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int DOUBLE_MANGROVE_SLAB = 754;
 }

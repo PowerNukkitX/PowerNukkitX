@@ -1,5 +1,30 @@
 [
   {
+    "name": "minecraft:mangrove_double_slab",
+    "id": -499,
+    "oldId": -499
+  },
+  {
+    "name": "minecraft:mangrove_slab",
+    "id": -489,
+    "oldId": -489
+  },
+  {
+    "name": "minecraft:mangrove_planks",
+    "id": -486,
+    "oldId": -486
+  },
+  {
+    "name": "minecraft:mangrove_log",
+    "id": -484,
+    "oldId": -484
+  },
+  {
+    "name": "minecraft:muddy_mangrove_roots",
+    "id": -483,
+    "oldId": -483
+  },
+  {
     "name": "minecraft:mud_brick_wall",
     "id": -481
   },
