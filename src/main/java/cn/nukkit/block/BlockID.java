@@ -786,16 +786,36 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MAGENTA_CANDLE_CAKE = 687;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int LIGHT_BLUE_CANDLE_CAKE = 688;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int YELLOW_CANDLE_CAKE = 689;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int LIME_CANDLE_CAKE = 690;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int PINK_CANDLE_CAKE = 691;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GRAY_CANDLE_CAKE = 692;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int LIGHT_GRAY_CANDLE_CAKE = 693;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int CYAN_CANDLE_CAKE = 694;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int PURPLE_CANDLE_CAKE = 695;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int BLUE_CANDLE_CAKE = 696;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int BROWN_CANDLE_CAKE = 697;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GREEN_CANDLE_CAKE = 698;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int RED_CANDLE_CAKE = 699;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int LIME_CANDLE_CAKE = 690;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int PINK_CANDLE_CAKE = 691;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int GRAY_CANDLE_CAKE = 692;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int LIGHT_GRAY_CANDLE_CAKE = 693;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int CYAN_CANDLE_CAKE = 694;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int PURPLE_CANDLE_CAKE = 695;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int BLUE_CANDLE_CAKE = 696;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int BROWN_CANDLE_CAKE = 697;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int GREEN_CANDLE_CAKE = 698;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int RED_CANDLE_CAKE = 699;
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int BLACK_CANDLE_CAKE = 700;
@@ -826,30 +846,42 @@ public interface BlockID {
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int INFESTED_DEEPSLATE = 709;
-
     @Since("FUTURE")
     @PowerNukkitOnly
     int SCULK = 713;
-
     @Since("FUTURE")
     @PowerNukkitOnly
     int MUD = 728;
-
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int MUDDY_MANGROVE_ROOTS = 738;
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int MANGROVE_LOG = 739;
-
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int MANGROVE_PLANKS = 741;
-
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int MANGROVE_SLAB = 744;
-
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_PRESSURE_PLATE = 745;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_STANDING_SIGN = 749;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_WALL_SIGN = 750;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_TRAPDOOR = 751;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_WOOD = 752;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int STRIPPED_MANGROVE_WOOD = 753;
     @Since("1.6.0.0-PNX")
     @PowerNukkitOnly
     int DOUBLE_MANGROVE_SLAB = 754;

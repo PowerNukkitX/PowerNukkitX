@@ -265,9 +265,16 @@ public interface ItemID {
     @PowerNukkitOnly
     int GLOW_ITEM_FRAME = 623;
 
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int MANGROVE_SIGN = 634;
 
-    @PowerNukkitOnly int CAMPFIRE = 720;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitOnly
+    int GLOW_BERRIES = 638;
+
+    @PowerNukkitOnly
+    int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
 

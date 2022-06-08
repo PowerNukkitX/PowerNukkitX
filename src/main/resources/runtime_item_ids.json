@@ -5544,87 +5544,214 @@
   },
   {
     "name": "minecraft:frog_spawn_egg",
-    "id": 627
-  },
-  {
-    "name": "minecraft:tadpole_spawn_egg",
     "id": 628
   },
   {
-    "name": "minecraft:tadpole_bucket",
+    "name": "minecraft:tadpole_spawn_egg",
     "id": 629
   },
   {
-    "name": "minecraft:allay_spawn_egg",
+    "name": "minecraft:tadpole_bucket",
     "id": 630
   },
   {
-    "name": "minecraft:warden_spawn_egg",
+    "name": "minecraft:allay_spawn_egg",
     "id": 631
+  },
+  {
+    "name": "minecraft:warden_spawn_egg",
+    "id": 632
   },
   {
     "name": "minecraft:firefly_spawn_egg",
     "id": 632
   },
   {
-    "name": "minecraft:oak_chest_boat",
-    "id": 633
-  },
-  {
-    "name": "minecraft:birch_chest_boat",
-    "id": 634
-  },
-  {
-    "name": "minecraft:jungle_chest_boat",
-    "id": 635
-  },
-  {
-    "name": "minecraft:spruce_chest_boat",
-    "id": 636
-  },
-  {
-    "name": "minecraft:acacia_chest_boat",
+    "name": "minecraft:disc_fragment_5",
     "id": 637
   },
   {
-    "name": "minecraft:dark_oak_chest_boat",
+    "name": "minecraft:oak_chest_boat",
     "id": 638
   },
   {
-    "name": "minecraft:chest_boat",
+    "name": "minecraft:birch_chest_boat",
     "id": 639
   },
   {
+    "name": "minecraft:jungle_chest_boat",
+    "id": 640
+  },
+  {
+    "name": "minecraft:spruce_chest_boat",
+    "id": 641
+  },
+  {
+    "name": "minecraft:acacia_chest_boat",
+    "id": 642
+  },
+  {
+    "name": "minecraft:dark_oak_chest_boat",
+    "id": 643
+  },
+  {
+    "name": "minecraft:chest_boat",
+    "id": 645
+  },
+  {
     "name": "minecraft:boat",
-    "id": 640,
+    "id": 648,
     "oldId": 333,
     "deprecated": true
   },
   {
     "name": "minecraft:dye",
-    "id": 641,
+    "id": 649,
     "oldId": 351,
     "deprecated": true
   },
   {
     "name": "minecraft:banner_pattern",
-    "id": 642,
+    "id": 650,
     "oldId": 434,
     "deprecated": true
   },
   {
     "name": "minecraft:spawn_egg",
-    "id": 643,
+    "id": 651,
     "oldId": 383
   },
   {
     "name": "minecraft:end_crystal",
-    "id": 644,
+    "id": 652,
     "oldId": 426
   },
   {
     "name": "minecraft:glow_berries",
-    "id": 645,
+    "id": 653,
     "oldId": 638
+  },
+  {
+    "name": "minecraft:double_stone_block_slab",
+    "id": 43
+  },
+  {
+    "name": "minecraft:double_stone_block_slab2",
+    "id": 181
+  },
+  {
+    "name": "minecraft:double_stone_block_slab3",
+    "id": -167
+  },
+  {
+    "name": "minecraft:double_stone_block_slab4",
+    "id": -168
+  },
+  {
+    "name": "minecraft:echo_shard",
+    "id": 647
+  },
+  {
+    "name": "minecraft:goat_horn",
+    "id": 627
+  },
+  {
+    "name": "minecraft:item.mangrove_door",
+    "id": -493
+  },
+  {
+    "name": "minecraft:mangrove_boat",
+    "id": 635
+  },
+  {
+    "name": "minecraft:mangrove_button",
+    "id": -487
+  },
+  {
+    "name": "minecraft:mangrove_chest_boat",
+    "id": 644
+  },
+  {
+    "name": "minecraft:mangrove_door",
+    "id": 633
+  },
+  {
+    "name": "minecraft:mangrove_fence",
+    "id": -491
+  },
+  {
+    "name": "minecraft:mangrove_fence_gate",
+    "id": -492
+  },
+  {
+    "name": "minecraft:mangrove_pressure_plate",
+    "id": -490,
+    "oldId": -490
+  },
+  {
+    "name": "minecraft:mangrove_roots",
+    "id": -482,
+    "oldId": -482
+  },
+  {
+    "name": "minecraft:mangrove_sign",
+    "id": 634,
+    "oldId": 634
+  },
+  {
+    "name": "minecraft:mangrove_stairs",
+    "id": -488
+  },
+  {
+    "name": "minecraft:mangrove_standing_sign",
+    "id": -494
+  },
+  {
+    "name": "minecraft:mangrove_trapdoor",
+    "id": -496,
+    "oldId": -496
+  },
+  {
+    "name": "minecraft:mangrove_wall_sign",
+    "id": -495
+  },
+  {
+    "name": "minecraft:mangrove_wood",
+    "id": -497,
+    "oldId": -497
+  },
+  {
+    "name": "minecraft:music_disc_5",
+    "id": 636
+  },
+  {
+    "name": "minecraft:recovery_compass",
+    "id": 646
+  },
+  {
+    "name": "minecraft:stone_block_slab",
+    "id": 44
+  },
+  {
+    "name": "minecraft:stone_block_slab2",
+    "id": 182
+  },
+  {
+    "name": "minecraft:stone_block_slab3",
+    "id": -162
+  },
+  {
+    "name": "minecraft:stone_block_slab4",
+    "id": -166
+  },
+  {
+    "name": "minecraft:stripped_mangrove_log",
+    "id": -485,
+    "oldId": -485
+  },
+  {
+    "name": "minecraft:stripped_mangrove_wood",
+    "id": -498,
+    "oldId": -498
   }
 ]
