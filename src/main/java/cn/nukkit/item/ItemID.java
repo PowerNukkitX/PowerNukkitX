@@ -261,23 +261,15 @@ public interface ItemID {
 
     int SHIELD = 513;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    int GLOW_ITEM_FRAME = 623;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_ITEM_FRAME = 623;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    int MANGROVE_SIGN = 634;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_SIGN = 634;
 
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
-    int GLOW_BERRIES = 638;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;
 
-    @PowerNukkitOnly
-    int CAMPFIRE = 720;
+    @PowerNukkitOnly int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
-
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 
@@ -307,8 +299,6 @@ public interface ItemID {
     @Since("FUTURE") int SPYGLASS = 772;
 
     @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
-
-
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
 
 }

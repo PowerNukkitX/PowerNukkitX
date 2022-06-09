@@ -58,6 +58,6 @@ public class BlockMangroveLog extends BlockLog {
 
     @Override
     protected BlockState getStrippedState() {
-        return null;
+        return getCurrentState().withBlockId(STRIPPED_MANGROVE_LOG);
     }
 }

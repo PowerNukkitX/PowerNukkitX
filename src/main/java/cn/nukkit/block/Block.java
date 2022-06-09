@@ -755,15 +755,20 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[MUD] = BlockMud.class; //728
 
-
+            list[MANGROVE_ROOTS] = BlockMangroveRoots.class;//737
             list[MUDDY_MANGROVE_ROOTS] = BlockMuddyMangroveRoots.class;//738
             list[MANGROVE_LOG] = BlockMangroveLog.class;//739
 
+            list[STRIPPED_MANGROVE_LOG] = BlockLogStrippedMangrove.class;//740
             list[MANGROVE_PLANKS] = BlockPlanksMangrove.class;//741
-
+            list[MANGROVE_BUTTON] = BlockButtonMangrove.class;//742
+            list[MANGROVE_STAIRS] = BlockStairMangrove.class;//743
             list[MANGROVE_SLAB] = BlockSlabMangrove.class;//744
             list[MANGROVE_PRESSURE_PLATE] = BlockPressurePlateMangrove.class;//745
 
+            list[MANGROVE_FENCE] = BlockFenceMangrove.class;//746
+            list[MANGROVE_FENCE_GATE] = BlockFenceGateMangrove.class;//747
+            list[MANGROVE_DOOR] = BlockDoorMangrove.class;//748
             list[MANGROVE_STANDING_SIGN] = BlockMangroveSignPost.class;//749
             list[MANGROVE_WALL_SIGN] = BlockMangroveWallSign.class;//750
             list[MANGROVE_TRAPDOOR] = BlockTrapdoorMangrove.class;//751
