@@ -125,15 +125,18 @@
   },
   {
     "name": "minecraft:ochre_froglight",
-    "id": -471
+    "id": -471,
+    "oldId": -471
   },
   {
     "name": "minecraft:verdant_froglight",
-    "id": -470
+    "id": -470,
+    "oldId": -470
   },
   {
     "name": "minecraft:pearlescent_froglight",
-    "id": -469
+    "id": -469,
+    "oldId": -469
   },
   {
     "name": "minecraft:frog_spawn",
