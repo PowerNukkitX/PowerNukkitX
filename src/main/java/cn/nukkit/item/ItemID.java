@@ -263,6 +263,7 @@ public interface ItemID {
 
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_ITEM_FRAME = 623;
 
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int ITEM_MANGROVE_DOOR = 633;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_SIGN = 634;
 
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;

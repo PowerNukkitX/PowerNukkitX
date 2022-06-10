@@ -1,6 +1,9 @@
 package cn.nukkit.item;
 
-/*public class ItemDoorMangrove extends Item{
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+
+public class ItemDoorMangrove extends Item{
     public ItemDoorMangrove() {
         this(0, 1);
     }
@@ -13,4 +16,4 @@ package cn.nukkit.item;
         super(ITEM_MANGROVE_DOOR, 0, count, "Mangrove Door");
         this.block = Block.get(BlockID.MANGROVE_DOOR);
     }
-}*/
+}

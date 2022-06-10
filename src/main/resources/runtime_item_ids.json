@@ -29,7 +29,8 @@
   },
   {
     "name": "minecraft:item.mangrove_door",
-    "id": -493
+    "id": -493,
+    "oldId": -493
   },
   {
     "name": "minecraft:mangrove_fence_gate",
@@ -5630,7 +5631,8 @@
   },
   {
     "name": "minecraft:mangrove_door",
-    "id": 633
+    "id": 633,
+    "oldId": 633
   },
   {
     "name": "minecraft:mangrove_sign",
