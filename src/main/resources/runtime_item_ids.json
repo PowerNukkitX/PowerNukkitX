@@ -157,7 +157,8 @@
   },
   {
     "name": "minecraft:sculk_catalyst",
-    "id": -460
+    "id": -460,
+    "oldId": -460
   },
   {
     "name": "minecraft:sculk_vein",

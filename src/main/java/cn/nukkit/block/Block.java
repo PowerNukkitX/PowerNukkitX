@@ -753,6 +753,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[SCULK] = BlockSculk.class; //713
             list[SCULK_VEIN] = BlockSculkVein.class; //714
+            list[SCULK_CATALYST] = BlockSculkCatalyst.class; //715
 
             list[MUD] = BlockMud.class; //728
 

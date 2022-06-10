@@ -832,6 +832,7 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int INFESTED_DEEPSLATE = 709;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK = 713;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_VEIN = 714;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_CATALYST = 715;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD = 728;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_ROOTS = 737;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUDDY_MANGROVE_ROOTS = 738;
