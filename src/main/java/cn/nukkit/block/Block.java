@@ -752,6 +752,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[INFESTED_DEEPSLATE] = BlockInfestedDeepslate.class; //709
 
             list[SCULK] = BlockSculk.class; //713
+            list[SCULK_VEIN] = BlockSculkVein.class; //714
 
             list[MUD] = BlockMud.class; //728
 

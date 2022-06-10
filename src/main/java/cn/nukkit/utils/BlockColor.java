@@ -103,11 +103,11 @@ public class BlockColor  {
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public static final BlockColor DEEPSLATE_GRAY = new BlockColor(0x64, 0x64, 0x64);
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
 
     @PowerNukkitXOnly
