@@ -1,11 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 
-public class BlockSculkCatalyst extends BlockSolid{
+public class BlockSculkCatalyst extends BlockSolid {
 
     public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom",false);
     public static final BlockProperties PROPERTIES = new BlockProperties(BLOOM);
@@ -25,7 +24,6 @@ public class BlockSculkCatalyst extends BlockSolid{
         return SCULK_CATALYST;
     }
 
-    @PowerNukkitOnly
     @Override
     public boolean canBePulled() {
         return false;
@@ -44,6 +42,11 @@ public class BlockSculkCatalyst extends BlockSolid{
     @Override
     public double getResistance() {
         return 3;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3.0;
     }
 
     @Override
