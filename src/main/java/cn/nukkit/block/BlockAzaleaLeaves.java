@@ -18,13 +18,9 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockAzaleaLeaves extends BlockTransparentMeta{
+public class BlockAzaleaLeaves extends BlockLeaves{
 
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty PERSISTENT = new BooleanBlockProperty("persistent_bit", false);
-
-    @PowerNukkitOnly @Since("1.4.0.0-PN")
-    public static final BooleanBlockProperty UPDATE = new BooleanBlockProperty("update_bit", false);
+    public static final BlockProperties PROPERTIES = new BlockProperties(BlockLeaves.PERSISTENT, BlockLeaves.UPDATE);
 
     private static final BlockFace[] VISIT_ORDER = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.DOWN, BlockFace.UP
@@ -85,7 +81,7 @@ public class BlockAzaleaLeaves extends BlockTransparentMeta{
     @Nonnull
     @Override
     public BlockProperties getProperties() {
-        return new BlockProperties(BlockLeaves.PERSISTENT, BlockLeaves.UPDATE);
+        return PROPERTIES;
     }
 
 

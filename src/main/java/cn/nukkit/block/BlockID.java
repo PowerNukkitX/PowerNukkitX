@@ -837,6 +837,7 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int PEARLESCENT_FROGLIGHT = 724;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int VERDANT_FROGLIGHT = 725;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int OCHRE_FROGLIGHT = 726;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_LEAVES = 727;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD = 728;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_ROOTS = 737;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUDDY_MANGROVE_ROOTS = 738;

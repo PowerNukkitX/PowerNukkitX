@@ -121,7 +121,8 @@
   },
   {
     "name": "minecraft:mangrove_leaves",
-    "id": -472
+    "id": -472,
+    "oldId": -472
   },
   {
     "name": "minecraft:ochre_froglight",

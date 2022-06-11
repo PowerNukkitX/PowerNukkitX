@@ -759,6 +759,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[PEARLESCENT_FROGLIGHT] = BlockPearlescentFrogLight.class;//724
             list[VERDANT_FROGLIGHT] = BlockVerdantFrogLight.class;//725
             list[OCHRE_FROGLIGHT] = BlockOchreFrogLight.class;//726
+            list[MANGROVE_LEAVES] = BlockMangroveLeaves.class; // 727
 
             list[MUD] = BlockMud.class; //728
 
