@@ -1,9 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockSculkCatalyst extends BlockSolid {
 
     public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom",false);

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
@@ -11,6 +12,8 @@ import javax.annotation.Nonnull;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.PILLAR_AXIS;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockWoodMangrove extends BlockWood {
     public static final String STRIPPED_BIT = "stripped_bit";
 

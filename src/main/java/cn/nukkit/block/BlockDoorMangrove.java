@@ -1,9 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorMangrove;
 import cn.nukkit.utils.BlockColor;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockDoorMangrove extends BlockDoorWood{
     public BlockDoorMangrove() {
         this(0);

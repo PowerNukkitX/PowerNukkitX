@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
@@ -17,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockMangrovePropagule extends BlockFlowable{
 
     public static final BooleanBlockProperty HANGING = new BooleanBlockProperty("hanging",false);

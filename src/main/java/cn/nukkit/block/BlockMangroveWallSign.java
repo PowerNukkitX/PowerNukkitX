@@ -1,9 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemAcaciaSign;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockMangroveWallSign extends BlockWallSign {
     @PowerNukkitOnly
     public BlockMangroveWallSign() {

@@ -1,8 +1,12 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class ItemDoorMangrove extends Item{
     public ItemDoorMangrove() {
         this(0, 1);

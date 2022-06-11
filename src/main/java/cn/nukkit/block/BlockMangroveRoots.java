@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.item.Item;
@@ -10,6 +12,8 @@ import cn.nukkit.math.BlockFace;
 import javax.annotation.Nonnull;
 
 //todo 2022/06/09 实现未完成的功能
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockMangroveRoots extends BlockTransparentMeta{
     public BlockMangroveRoots() {
         super(0);

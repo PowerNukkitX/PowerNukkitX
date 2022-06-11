@@ -1,10 +1,14 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.utils.BlockColor;
 import org.jetbrains.annotations.NotNull;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockMangroveLog extends BlockLog {
 
     public BlockMangroveLog() {

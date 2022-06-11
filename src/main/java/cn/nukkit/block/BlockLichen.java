@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public abstract class BlockLichen extends BlockTransparent {
 
     public static final IntBlockProperty MULTI_FACE_DIRECTION_BITS = new IntBlockProperty("multi_face_direction_bits", false, 63, 0, 6);
