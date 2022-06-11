@@ -16,6 +16,10 @@ public abstract class BlockDoubleSlabBase extends BlockSolidMeta {
         super(meta);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockDoubleSlabBase(){}
+
     @Override
     public String getName() {
         return "Double "+getSlabName()+" Slab";

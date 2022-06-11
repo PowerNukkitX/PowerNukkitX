@@ -71,6 +71,10 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         super(meta);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockWallBase(){}
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull

@@ -766,6 +766,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[MANGROVE_PROPAGULE_HANGING] = BlockMangrovePropaguleHanging.class; //731
 
+            list[MUD_BRICK_SLAB] = BlockMudBrickSlab.class; //733
+            list[MUD_BRICK_DOUBLE_SLAB] = BlockDoubleMudBrickSlab.class; //734
+            list[MUD_BRICK_STAIRS] = BlockMudBrickStairs.class; //735
+            list[MUD_BRICK_WALL] = BlockMudBrickWall.class; //736
+
             list[MANGROVE_ROOTS] = BlockMangroveRoots.class;//737
             list[MUDDY_MANGROVE_ROOTS] = BlockMuddyMangroveRoots.class;//738
             list[MANGROVE_LOG] = BlockMangroveLog.class;//739

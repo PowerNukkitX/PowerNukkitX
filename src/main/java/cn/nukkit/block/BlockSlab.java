@@ -32,6 +32,12 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     }
 
     @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockSlab(int doubleSlab){
+        this.doubleSlab = doubleSlab;
+    }
+
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public abstract String getSlabName();
 
