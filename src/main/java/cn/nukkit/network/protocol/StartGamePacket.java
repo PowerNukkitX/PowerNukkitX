@@ -3,8 +3,13 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @since 15-10-13
@@ -58,7 +63,7 @@ public class StartGamePacket extends DataPacket {
     public GameRules gameRules;
     public boolean bonusChest = false;
     public boolean hasStartWithMapEnabled = false;
-    @Since("1.3.0.0-PN") public boolean trustingPlayers;
+
     public int permissionLevel = 1;
     public int serverChunkTickRange = 4;
     public boolean hasLockedBehaviorPack = false;
@@ -158,6 +163,12 @@ public class StartGamePacket extends DataPacket {
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);
         this.putString(""); // Server Engine
-        this.putLLong(0L); // BlockRegistryChecksum
+        try {
+            this.put(NBTIO.writeNetwork(new CompoundTag(""))); // playerPropertyData
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.putLLong(0); // blockRegistryChecksum
+        this.putUUID(new UUID(0, 0)); // worldTemplateId
     }
 }

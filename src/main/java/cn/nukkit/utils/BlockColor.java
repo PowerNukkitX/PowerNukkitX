@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
@@ -102,13 +103,15 @@ public class BlockColor  {
     public static final BlockColor WARPED_WART_BLOCK_COLOR = new BlockColor(0x14, 0xB4, 0x85);
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public static final BlockColor DEEPSLATE_GRAY = new BlockColor(0x64, 0x64, 0x64);
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public static final BlockColor LICHEN_GREEN = new BlockColor(0x7F, 0xA7, 0x96);
 
+    @PowerNukkitXOnly
+    public static final BlockColor BROWNISH_RED = new BlockColor(0x8E, 0x2F, 0x2F);
     private int red;
     private int green;
     private int blue;
