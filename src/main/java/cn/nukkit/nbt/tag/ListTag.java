@@ -62,7 +62,7 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     public String toSnbt() {
-        return "\"" + this.getName() + "\":[" + list.stream().map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":")).collect(Collectors.joining(", ")) + "]";
+        return "\"" + this.getName() + "\": [" + list.stream().map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":")).collect(Collectors.joining(", ")) + "]";
     }
 
     @Override
