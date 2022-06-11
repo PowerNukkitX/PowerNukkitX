@@ -117,7 +117,8 @@
   },
   {
     "name": "minecraft:mud",
-    "id": -473
+    "id": -473,
+    "oldId": -473
   },
   {
     "name": "minecraft:mangrove_leaves",
