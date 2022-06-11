@@ -150,7 +150,8 @@
   },
   {
     "name": "minecraft:frog_spawn",
-    "id": -468
+    "id": -468,
+    "oldId": -468
   },
   {
     "name": "minecraft:mysterious_frame_slot",

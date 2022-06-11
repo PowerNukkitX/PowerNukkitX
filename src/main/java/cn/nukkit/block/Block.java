@@ -758,6 +758,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
             list[REINFORCED_DEEPSLATE] = BlockReinForcedDeepSlate.class; //721
 
+            list[FROG_SPAWN] = BlockFrogSpawn.class; //723
             list[PEARLESCENT_FROGLIGHT] = BlockPearlescentFrogLight.class; //724
             list[VERDANT_FROGLIGHT] = BlockVerdantFrogLight.class; //725
             list[OCHRE_FROGLIGHT] = BlockOchreFrogLight.class; //726
