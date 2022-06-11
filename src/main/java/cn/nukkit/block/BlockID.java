@@ -682,7 +682,7 @@ public interface BlockID {
     @Since("1.4.0.0-PN") @PowerNukkitOnly int QUARTZ_BRICKS = 559;
     // 560 Special block: minecraft:unknown
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int POWDER_SNOW = 561;
-    @Since("FUTURE") @PowerNukkitOnly int SCULK_SENSOR = 562;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_SENSOR = 562;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int POINTED_DRIPSTONE = 563;
     // 564 (unused)
     // 565 (unused)
