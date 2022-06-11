@@ -85,23 +85,28 @@
   },
   {
     "name": "minecraft:mud_brick_wall",
-    "id": -481
+    "id": -481,
+    "oldId": -481
   },
   {
     "name": "minecraft:mud_brick_stairs",
-    "id": -480
+    "id": -480,
+    "oldId": -480
   },
   {
     "name": "minecraft:mud_brick_double_slab",
-    "id": -479
+    "id": -479,
+    "oldId": -479
   },
   {
     "name": "minecraft:mud_brick_slab",
-    "id": -478
+    "id": -478,
+    "oldId": -478
   },
   {
     "name": "minecraft:packed_mud",
-    "id": -477
+    "id": -477,
+    "oldId": -477
   },
   {
     "name": "minecraft:mangrove_propagule_hanging",
@@ -110,7 +115,8 @@
   },
   {
     "name": "minecraft:mud_bricks",
-    "id": -475
+    "id": -475,
+    "oldId": -475
   },
   {
     "name": "minecraft:mangrove_propagule",
