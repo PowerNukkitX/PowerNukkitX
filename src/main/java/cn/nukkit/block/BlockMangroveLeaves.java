@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMangroveLeaves extends BlockLeaves{
@@ -17,6 +18,17 @@ public class BlockMangroveLeaves extends BlockLeaves{
     @Override
     public int getId() {
         return MANGROVE_LEAVES;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(@NotNull Item item) {
+        //todo: 实现红树树叶催化
+        return true;
     }
 
     @Since("1.4.0.0-PN")
