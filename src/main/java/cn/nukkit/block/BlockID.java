@@ -834,6 +834,7 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_VEIN = 714;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_CATALYST = 715;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int SCULK_SHRIEKER = 716;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int REINFORCED_DEEPSLATE = 721;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int PEARLESCENT_FROGLIGHT = 724;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int VERDANT_FROGLIGHT = 725;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int OCHRE_FROGLIGHT = 726;

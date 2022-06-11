@@ -158,7 +158,8 @@
   },
   {
     "name": "minecraft:reinforced_deepslate",
-    "id": -466
+    "id": -466,
+    "oldId": -466
   },
   {
     "name": "minecraft:client_request_placeholder_block",

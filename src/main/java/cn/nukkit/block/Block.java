@@ -756,9 +756,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[SCULK_CATALYST] = BlockSculkCatalyst.class; //715
             list[SCULK_SHRIEKER] = BlockSculkShrieker.class; //716
 
-            list[PEARLESCENT_FROGLIGHT] = BlockPearlescentFrogLight.class;//724
-            list[VERDANT_FROGLIGHT] = BlockVerdantFrogLight.class;//725
-            list[OCHRE_FROGLIGHT] = BlockOchreFrogLight.class;//726
+            list[REINFORCED_DEEPSLATE] = BlockReinForcedDeepSlate.class; //721
+
+            list[PEARLESCENT_FROGLIGHT] = BlockPearlescentFrogLight.class; //724
+            list[VERDANT_FROGLIGHT] = BlockVerdantFrogLight.class; //725
+            list[OCHRE_FROGLIGHT] = BlockOchreFrogLight.class; //726
             list[MANGROVE_LEAVES] = BlockMangroveLeaves.class; // 727
 
             list[MUD] = BlockMud.class; //728
