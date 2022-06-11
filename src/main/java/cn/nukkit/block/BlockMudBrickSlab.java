@@ -6,8 +6,8 @@ import cn.nukkit.blockproperty.BlockProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockMudBrickSlab extends BlockSlab{
-    public BlockMudBrickSlab(int doubleSlab) {
-        super(doubleSlab);
+    public BlockMudBrickSlab() {
+        super(MUD_BRICK_DOUBLE_SLAB);
     }
 
     @Override
