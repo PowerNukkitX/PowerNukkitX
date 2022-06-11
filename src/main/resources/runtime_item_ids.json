@@ -5659,7 +5659,9 @@
   },
   {
     "name": "minecraft:mangrove_boat",
-    "id": 635
+    "id": 635,
+    "oldId": 333,
+    "oldData": 6
   },
   {
     "name": "minecraft:music_disc_5",
