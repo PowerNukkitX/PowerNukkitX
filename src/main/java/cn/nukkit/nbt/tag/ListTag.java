@@ -2,10 +2,12 @@ package cn.nukkit.nbt.tag;
 
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
+import cn.nukkit.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ListTag<T extends Tag> extends Tag {
 
@@ -55,14 +57,12 @@ public class ListTag<T extends Tag> extends Tag {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
-        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner.toString() + "\n}";
+        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
     }
 
     @Override
     public String toSnbt() {
-        StringJoiner joiner = new StringJoiner(",");
-        list.forEach(tag -> joiner.add(tag.toSnbt().split(":")[1]));
-        return "\"" + this.getName() + "\":[" + joiner + "]";
+        return "\"" + this.getName() + "\": [" + list.stream().map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":")).collect(Collectors.joining(", ")) + "]";
     }
 
     @Override
@@ -157,7 +157,7 @@ public class ListTag<T extends Tag> extends Tag {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), type, list);
