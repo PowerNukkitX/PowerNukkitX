@@ -839,6 +839,14 @@ public interface BlockID {
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int OCHRE_FROGLIGHT = 726;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_LEAVES = 727;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD = 728;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_PROPAGULE = 729;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD_BRICKS = 730;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_PROPAGULE_HANGING = 731;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int PACKED_MUD = 732;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD_BRICK_SLAB = 733;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD_BRICK_DOUBLE_SLAB = 734;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD_BRICK_STAIRS = 735;
+    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUD_BRICK_WALL = 736;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_ROOTS = 737;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MUDDY_MANGROVE_ROOTS = 738;
     @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_LOG = 739;

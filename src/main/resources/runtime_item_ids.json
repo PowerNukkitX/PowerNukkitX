@@ -105,7 +105,8 @@
   },
   {
     "name": "minecraft:mangrove_propagule_hanging",
-    "id": -476
+    "id": -476,
+    "oldId": -476
   },
   {
     "name": "minecraft:mud_bricks",
@@ -113,7 +114,8 @@
   },
   {
     "name": "minecraft:mangrove_propagule",
-    "id": -474
+    "id": -474,
+    "oldId": -474
   },
   {
     "name": "minecraft:mud",
