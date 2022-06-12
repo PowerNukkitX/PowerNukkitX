@@ -71,7 +71,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
@@ -82,19 +82,19 @@ jobs:
       - name: Get Time
         id: time
         uses: nanzm/get-time-action@v1.1
-        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
         with:
           timeZone: 8
           format: 'YYYY/MM/DD-HH:mm:ss'
       - name: Format ChangeLog
         uses: mkungla/actions-set-text-output@v1
         id: get-changelog
-        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
         with:
           text: ${{ github.event.commits[0].message }}
       - name: Update MineBBS infomation
         uses: fjogeleit/http-request-action@v1
-        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: success() && github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
         with:
           url: 'https://api.minebbs.com/api/openapi/v1/resources/3668/update'
           method: 'POST'
@@ -140,7 +140,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
-        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch'))
+        if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
         with:
           key-id: ${{ secrets.OSS_KEY_ID }}
           key-secret: ${{ secrets.OSS_KEY_SECRET }}
