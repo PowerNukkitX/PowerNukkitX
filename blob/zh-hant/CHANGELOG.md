@@ -11,7 +11,7 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [開發中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-該版本目前支援了Minecraft:BE `1.18.30 (協議版本503)`.
+該版本目前支援了Minecraft:BE `1.19.0 (協議版本512)`.
 
 ### 新增內容
 
@@ -29,6 +29,10 @@
 - [#363] 實現NPC SKIN切換。
 - [#365] 添加toSnbt。
 - [#370] 添加JS跨插件互操作。
+- [#384] 實現swift_sneak附魔效果。
+- [#385] 實現darkness藥水效果。
+- [#387] 支持新版成就界面。
+- [#389] 實現潛聲方塊實體。
 
 ### 修改記錄
 
@@ -48,6 +52,7 @@
 - [#373] 將terra版本更新至6.0.0-Release。
 - [#375] 實現滾動字幕API。
 - [#380] 實現兼容1.19.0 (協議版本512)。
+- [#390] 支持帶有_的玩家名稱解析。
 
 ### BUG修復
 
@@ -89,6 +94,8 @@
 - [#376] 初步嘗試修復出生點問題。
 - [#377] 修復相機抖動。
 - [#382] 修復ListTag#toSnbt()中的低級錯誤。
+- [#386] 修復觀察者模式碰撞問題。
+- [#388] 修復目標選擇器Type參數的問題。
 
 ### 安全漏洞修復
 
@@ -1190,6 +1197,13 @@ Need to switch languages?
 [#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
 [#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
 [#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
+[#384]: https://github.com/PowerNukkitX/PowerNukkitX/pull/384
+[#385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/385
+[#386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/386
+[#387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/387
+[#388]: https://github.com/PowerNukkitX/PowerNukkitX/pull/388
+[#389]: https://github.com/PowerNukkitX/PowerNukkitX/pull/389
+[#390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/390
 
 <!--PowerNukkitX Version history-->
 
