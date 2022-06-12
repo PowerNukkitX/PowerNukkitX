@@ -39,8 +39,8 @@ class NPCRequestPacketTest {
         val packet = new NPCRequestPacket();
         packet.setRequestedEntityRuntimeId(1L);
         packet.setRequestType(RequestType.SET_NAME);
-        packet.setActionType(2);
-        packet.setCommandString("command");
+        packet.setSkinType(2);
+        packet.setData("command");
         packet.setSceneName("scene");
         packet.encode();
 
@@ -51,8 +51,8 @@ class NPCRequestPacketTest {
 
         assertEquals(1L, packet2.getRequestedEntityRuntimeId());
         assertEquals(RequestType.SET_NAME, packet2.getRequestType());
-        assertEquals(2, packet2.getActionType());
-        assertEquals("command", packet2.getCommandString());
+        assertEquals(2, packet2.getSkinType());
+        assertEquals("command", packet2.getData());
         assertEquals("scene", packet2.getSceneName());
         assertTrue(packet2.feof());
     }

@@ -1,6 +1,8 @@
 package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
+import cn.nukkit.event.command.ScoreboardEvent;
+import cn.nukkit.event.command.ScoreboardScoreChangeEvent;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.data.SortOrder;
@@ -42,8 +44,15 @@ public class Scoreboard {
         this.sortOrder = sortOrder;
     }
 
-    public void addLine(Scorer scorer, int score) {
-        lines.put(scorer, new ScoreboardLine(scorer, score, ++scoreboardId));
+    public boolean addLine(Scorer scorer, int score) {
+        ScoreboardScoreChangeEvent event = new ScoreboardScoreChangeEvent(this,scorer,score,0, ScoreboardScoreChangeEvent.ActionType.ADD);
+        //Because ScoreboardManager is loaded before PluginManager, so we need to check if it is null
+        if (Server.getInstance().getPluginManager() != null) {
+            Server.getInstance().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return false;
+        }
+        lines.put(scorer, new ScoreboardLine(scorer, event.getNewValue(), ++scoreboardId));
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
         if (this.lines.get(scorer).toScoreInfo() != null)
@@ -52,9 +61,19 @@ public class Scoreboard {
         if (scorer instanceof PlayerScorer playerScorer && playerScorer.isOnline())
             manager.updateScoreTag(playerScorer.getPlayer());
         manager.getStorage().saveScoreboard(this);
+        return true;
     }
 
-    public void removeLine(Scorer scorer) {
+    public boolean removeLine(Scorer scorer) {
+        if (!this.lines.containsKey(scorer))
+            return false;
+        ScoreboardScoreChangeEvent event = new ScoreboardScoreChangeEvent(this,scorer,0,0, ScoreboardScoreChangeEvent.ActionType.REMOVE);
+        //Because ScoreboardManager is loaded before PluginManager, so we need to check if it is null
+        if (Server.getInstance().getPluginManager() != null) {
+            Server.getInstance().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return false;
+        }
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.REMOVE;
         if (this.lines.get(scorer).toScoreInfo() != null)
@@ -64,6 +83,7 @@ public class Scoreboard {
             manager.updateScoreTag(playerScorer.getPlayer());
         lines.remove(scorer);
         manager.getStorage().saveScoreboard(this);
+        return true;
     }
 
     public ScoreboardLine getLine(Scorer scorer) {
@@ -87,8 +107,11 @@ public class Scoreboard {
             this.scoreboardId = scoreboardId;
         }
 
-        public void setScore(int score) {
-            this.score = score;
+        public boolean setScore(int score) {
+            ScoreboardScoreChangeEvent event = callEvent(score,this.score);
+            if (event.isCancelled())
+                return false;
+            this.score = event.getNewValue();
             SetScorePacket packet = new SetScorePacket();
             packet.action = SetScorePacket.Action.SET;
             if (this.toScoreInfo() != null)
@@ -97,14 +120,15 @@ public class Scoreboard {
             if (this.scorer instanceof PlayerScorer playerScorer && playerScorer.isOnline())
                 manager.updateScoreTag(playerScorer.getPlayer());
             manager.getStorage().saveScoreboard(Scoreboard.this);
+            return true;
         }
 
-        public void addScore(int score) {
-            setScore(this.score + score);
+        public boolean addScore(int score) {
+            return setScore(this.score + score);
         }
 
-        public void removeScore(int score) {
-            setScore(this.score - score);
+        public boolean removeScore(int score) {
+            return setScore(this.score - score);
         }
 
         public SetScorePacket.ScoreInfo toScoreInfo() {
@@ -127,6 +151,14 @@ public class Scoreboard {
 
         public SetScorePacket.ScoreInfo toRemovedScoreInfo(){
             return new SetScorePacket.ScoreInfo(this.scoreboardId,Scoreboard.this.getObjectiveName(), this.score,ScorerType.INVALID,-1);
+        }
+
+        private ScoreboardScoreChangeEvent callEvent(int newValue,int oldValue){
+            ScoreboardScoreChangeEvent event = new ScoreboardScoreChangeEvent(Scoreboard.this,this.scorer,newValue,oldValue);
+            //Because ScoreboardManager is loaded before PluginManager, so we need to check if it is null
+            if (Server.getInstance().getPluginManager() != null)
+                Server.getInstance().getPluginManager().callEvent(event);
+            return event;
         }
     }
 }

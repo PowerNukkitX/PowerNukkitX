@@ -53,6 +53,11 @@ public class IntTag extends NumberTag<Integer> {
     }
 
     @Override
+    public String toSnbt() {
+        return "\"" + this.getName() + "\":" + data;
+    }
+
+    @Override
     public Tag copy() {
         return new IntTag(getName(), data);
     }

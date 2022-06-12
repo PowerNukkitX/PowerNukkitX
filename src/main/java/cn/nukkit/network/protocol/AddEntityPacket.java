@@ -20,7 +20,7 @@ public class AddEntityPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
 
     public static ImmutableMap<Integer, String> LEGACY_IDS = ImmutableMap.<Integer, String>builder()
-            .put(51, "minecraft:npc")
+            .put(EntityNPCEntity.NETWORK_ID, "minecraft:npc")
             .put(63, "minecraft:player")
             .put(EntityWitherSkeleton.NETWORK_ID, "minecraft:wither_skeleton")
             .put(EntityHusk.NETWORK_ID, "minecraft:husk")
@@ -133,6 +133,7 @@ public class AddEntityPacket extends DataPacket {
             .put(128, "minecraft:goat")
             .put(129, "minecraft:glow_squid")
             .put(130, "minecraft:axolotl")
+            .put(134, "minecraft:allay")
             .build();
 
     @Override

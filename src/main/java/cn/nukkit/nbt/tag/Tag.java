@@ -31,6 +31,8 @@ public abstract class Tag {
     @Override
     public abstract String toString();
 
+    public abstract String toSnbt();
+
     public abstract byte getId();
 
     protected Tag(String name) {

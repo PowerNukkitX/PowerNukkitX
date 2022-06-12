@@ -41,6 +41,10 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         super(meta);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockStairs(){}
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull

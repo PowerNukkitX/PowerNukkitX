@@ -1,5 +1,5 @@
 {
-  "version": 503,
+  "version": 527,
   "recipes": [
     {
       "id": "minecraft:smithingtable_diamond_axe_to_netherite_axe",
@@ -966,7 +966,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -1081,7 +1081,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -1270,7 +1270,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -1425,7 +1425,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -1464,7 +1464,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -1521,7 +1521,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 2
         }
       ],
@@ -1540,7 +1540,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -1559,7 +1559,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -1768,7 +1768,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -1825,7 +1825,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -1881,7 +1881,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 2
         }
       ],
@@ -1927,6 +1927,64 @@
       "priority": 2
     },
     {
+      "id": "minecraft:stonecutter_mud_brick_slab",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      ],
+      "output": [
+        {
+          "legacyId": -478,
+          "id": "minecraft:mud_brick_slab",
+          "count": 2
+        }
+      ],
+      "block": "stonecutter",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:stonecutter_mud_brick_stairs",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      ],
+      "output": [
+        {
+          "legacyId": -480,
+          "id": "minecraft:mud_brick_stairs"
+        }
+      ],
+      "block": "stonecutter",
+      "priority": 1
+    },
+    {
+      "id": "minecraft:stonecutter_mud_brick_wall",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      ],
+      "output": [
+        {
+          "legacyId": -481,
+          "id": "minecraft:mud_brick_wall"
+        }
+      ],
+      "block": "stonecutter",
+      "priority": 2
+    },
+    {
       "id": "minecraft:stonecutter_nether_brick_slab",
       "type": 0,
       "input": [
@@ -1938,7 +1996,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -2112,7 +2170,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2132,7 +2190,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2305,7 +2363,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2325,7 +2383,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2421,7 +2479,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2441,7 +2499,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -2557,7 +2615,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -2595,7 +2653,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -2668,7 +2726,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -2759,7 +2817,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -2796,7 +2854,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -2851,7 +2909,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -2942,7 +3000,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -3073,7 +3131,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -3093,7 +3151,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 2
         }
       ],
@@ -3132,7 +3190,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 2
         }
       ],
@@ -3171,7 +3229,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 2
         }
       ],
@@ -3282,7 +3340,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -3301,7 +3359,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 2
         }
       ],
@@ -4280,7 +4338,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -4302,7 +4360,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -4324,7 +4382,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -4545,7 +4603,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 6
         }
       ],
@@ -4568,7 +4626,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 6
         }
       ],
@@ -4590,7 +4648,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -4612,7 +4670,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -4634,7 +4692,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -5888,6 +5946,468 @@
         "B": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 9
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_0",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool"
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_1",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 1
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 1
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_10",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 10
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 10
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_11",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 11
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 11
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_12",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 12
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 12
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_13",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 13
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 13
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_14",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 14
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 14
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_15",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 15
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 15
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 2
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 2
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_3",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 3
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 3
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_4",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 4
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 4
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_5",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 5
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 5
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_6",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 6
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_7",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 7
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 7
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_8",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 8
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 418,
+          "id": "minecraft:bed",
+          "damage": 8
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "bed_color_mangrove_9",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 35,
+          "id": "minecraft:wool",
+          "damage": 9
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -13854,7 +14374,7 @@
       "input": {
         "A": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 6
         }
       },
@@ -13877,7 +14397,7 @@
       "input": {
         "A": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 5
         }
       },
@@ -13933,7 +14453,7 @@
       "input": {
         "A": {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2"
+          "id": "minecraft:stone_block_slab2"
         }
       },
       "output": [
@@ -13955,7 +14475,7 @@
       "input": {
         "A": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 1
         }
       },
@@ -14003,7 +14523,7 @@
       "input": {
         "A": {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "damage": 1
         }
       },
@@ -14072,6 +14592,29 @@
       "shape": [
         "ABA",
         "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:acacia_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 379,
+          "id": "minecraft:acacia_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 642,
+          "id": "minecraft:acacia_chest_boat"
+        }
       ],
       "block": "crafting_table",
       "priority": 0
@@ -14169,10 +14712,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 4,
           "count": 4,
-          "damage": 4
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14193,10 +14736,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 4,
           "count": 4,
-          "damage": 4
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14217,9 +14760,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14240,9 +14784,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -14335,9 +14880,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -14518,7 +15064,7 @@
         },
         "B": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab"
+          "id": "minecraft:stone_block_slab"
         }
       },
       "output": [
@@ -14773,6 +15319,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:barrel_from_mangrove_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -489,
+          "id": "minecraft:mangrove_slab",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -203,
+          "id": "minecraft:barrel"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "A A",
+        "ABA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:barrel_from_warped_slab",
       "type": 1,
       "input": {
@@ -14919,6 +15494,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:beehive_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 591,
+          "id": "minecraft:honeycomb",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -219,
+          "id": "minecraft:beehive"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:beehive_from_warped_planks",
       "type": 1,
       "input": {
@@ -15025,6 +15629,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:birch_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 376,
+          "id": "minecraft:birch_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 639,
+          "id": "minecraft:birch_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:birch_door",
       "type": 1,
       "input": {
@@ -15118,10 +15745,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 2,
           "count": 4,
-          "damage": 2
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15142,10 +15769,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 2,
           "count": 4,
-          "damage": 2
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15166,9 +15793,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15189,9 +15817,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -15285,9 +15914,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -16481,6 +17111,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:bookshelf_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 387,
+          "id": "minecraft:book",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 47,
+          "id": "minecraft:bookshelf"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:bookshelf_from_warped_planks",
       "type": 1,
       "input": {
@@ -16545,6 +17204,30 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 321,
+          "id": "minecraft:bowl",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A A",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:bowl_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -17492,6 +18175,40 @@
       "priority": 0
     },
     {
+      "id": "minecraft:campfire_from_charcoal_stripped_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 303,
+          "id": "minecraft:charcoal",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:campfire_from_charcoal_stripped_oak_log",
       "type": 1,
       "input": {
@@ -17642,6 +18359,72 @@
         "C": {
           "legacyId": 162,
           "id": "minecraft:log2",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:campfire_from_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 302,
+          "id": "minecraft:coal"
+        },
+        "C": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:campfire_from_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 302,
+          "id": "minecraft:coal"
+        },
+        "C": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
           "damage": 32767
         }
       },
@@ -17823,6 +18606,72 @@
       ],
       "block": "crafting_table",
       "priority": 2
+    },
+    {
+      "id": "minecraft:campfire_from_stripped_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 302,
+          "id": "minecraft:coal"
+        },
+        "C": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:campfire_from_stripped_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 302,
+          "id": "minecraft:coal"
+        },
+        "C": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 50
     },
     {
       "id": "minecraft:campfire_from_stripped_oak_log",
@@ -18104,6 +18953,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:cartography_table_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 386,
+          "id": "minecraft:paper",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -200,
+          "id": "minecraft:cartography_table"
+        }
+      ],
+      "shape": [
+        "AA",
+        "BB",
+        "BB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:cartography_table_from_warped_planks",
       "type": 1,
       "input": {
@@ -18186,12 +19064,59 @@
       "priority": 0
     },
     {
+      "id": "minecraft:chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 375,
+          "id": "minecraft:oak_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 638,
+          "id": "minecraft:oak_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:chest_from_crimson_planks",
       "type": 1,
       "input": {
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "A A",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:chest_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -18235,28 +19160,24 @@
     },
     {
       "id": "minecraft:chest_minecart",
-      "type": 1,
-      "input": {
-        "A": {
+      "type": 0,
+      "input": [
+        {
           "legacyId": 54,
           "id": "minecraft:chest",
           "damage": 32767
         },
-        "B": {
+        {
           "legacyId": 370,
           "id": "minecraft:minecart",
           "damage": 32767
         }
-      },
+      ],
       "output": [
         {
           "legacyId": 389,
           "id": "minecraft:chest_minecart"
         }
-      ],
-      "shape": [
-        "A",
-        "B"
       ],
       "block": "crafting_table",
       "priority": 0
@@ -18290,7 +19211,7 @@
       "input": {
         "A": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 7
         }
       },
@@ -18708,6 +19629,30 @@
       "priority": 2
     },
     {
+      "id": "minecraft:composter_from_mangrove_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -489,
+          "id": "minecraft:mangrove_slab",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -213,
+          "id": "minecraft:composter"
+        }
+      ],
+      "shape": [
+        "A A",
+        "A A",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:composter_from_warped_slab",
       "type": 1,
       "input": {
@@ -18962,6 +19907,29 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 58,
+          "id": "minecraft:crafting_table"
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:crafting_table_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -20161,6 +21129,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:dark_oak_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 380,
+          "id": "minecraft:dark_oak_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 643,
+          "id": "minecraft:dark_oak_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:dark_oak_door",
       "type": 1,
       "input": {
@@ -20254,10 +21245,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 5,
           "count": 4,
-          "damage": 5
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20278,10 +21269,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 5,
           "count": 4,
-          "damage": 5
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20302,9 +21293,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20325,9 +21317,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -20421,9 +21414,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -20505,6 +21499,40 @@
         "C": {
           "legacyId": -264,
           "id": "minecraft:crimson_slab",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 151,
+          "id": "minecraft:daylight_detector"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BBB",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:daylight_detector_from_mangrove_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 20,
+          "id": "minecraft:glass",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 524,
+          "id": "minecraft:quartz",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -489,
+          "id": "minecraft:mangrove_slab",
           "damage": 32767
         }
       },
@@ -21503,7 +22531,7 @@
       },
       "output": [
         {
-          "legacyId": 644,
+          "legacyId": 652,
           "id": "minecraft:end_crystal"
         }
       ],
@@ -21751,6 +22779,35 @@
         "B": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -201,
+          "id": "minecraft:fletching_table"
+        }
+      ],
+      "shape": [
+        "AA",
+        "BB",
+        "BB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:fletching_table_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 356,
+          "id": "minecraft:flint",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -23153,7 +24210,7 @@
         },
         "B": {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "damage": 2
         },
         "C": {
@@ -23186,7 +24243,7 @@
         },
         "B": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 32767
         },
         "C": {
@@ -23219,7 +24276,7 @@
         },
         "B": {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "damage": 32767
         },
         "C": {
@@ -23252,7 +24309,7 @@
         },
         "B": {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "damage": 32767
         },
         "C": {
@@ -23285,12 +24342,144 @@
         },
         "B": {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "damage": 32767
         },
         "C": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -195,
+          "id": "minecraft:grindstone"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "C C"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:grindstone_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 44,
+          "id": "minecraft:stone_block_slab",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -195,
+          "id": "minecraft:grindstone"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "C C"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:grindstone_from_mangrove_planks2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 182,
+          "id": "minecraft:stone_block_slab2",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -195,
+          "id": "minecraft:grindstone"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "C C"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:grindstone_from_mangrove_planks3",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -162,
+          "id": "minecraft:stone_block_slab3",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -195,
+          "id": "minecraft:grindstone"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "C C"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:grindstone_from_mangrove_planks4",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -166,
+          "id": "minecraft:stone_block_slab4",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -23318,7 +24507,7 @@
         },
         "B": {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "damage": 32767
         },
         "C": {
@@ -23351,7 +24540,7 @@
         },
         "B": {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "damage": 32767
         },
         "C": {
@@ -23384,7 +24573,7 @@
         },
         "B": {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "damage": 32767
         },
         "C": {
@@ -23417,7 +24606,7 @@
         },
         "B": {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "damage": 32767
         },
         "C": {
@@ -23634,28 +24823,24 @@
     },
     {
       "id": "minecraft:hopper_minecart",
-      "type": 1,
-      "input": {
-        "A": {
+      "type": 0,
+      "input": [
+        {
           "legacyId": 527,
           "id": "minecraft:hopper",
           "damage": 32767
         },
-        "B": {
+        {
           "legacyId": 370,
           "id": "minecraft:minecart",
           "damage": 32767
         }
-      },
+      ],
       "output": [
         {
           "legacyId": 526,
           "id": "minecraft:hopper_minecart"
         }
-      ],
-      "shape": [
-        "A",
-        "B"
       ],
       "block": "crafting_table",
       "priority": 0
@@ -24170,6 +25355,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:jukebox_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 304,
+          "id": "minecraft:diamond",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 84,
+          "id": "minecraft:jukebox"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "ABA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:jukebox_from_warped_planks",
       "type": 1,
       "input": {
@@ -24222,6 +25436,29 @@
       "shape": [
         "ABA",
         "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:jungle_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 377,
+          "id": "minecraft:jungle_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 640,
+          "id": "minecraft:jungle_chest_boat"
+        }
       ],
       "block": "crafting_table",
       "priority": 0
@@ -24320,10 +25557,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 3,
           "count": 4,
-          "damage": 3
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24344,10 +25581,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 3,
           "count": 4,
-          "damage": 3
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24368,9 +25605,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24391,9 +25629,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -24487,9 +25726,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -24805,6 +26045,35 @@
         "A": {
           "legacyId": -264,
           "id": "minecraft:crimson_slab",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 47,
+          "id": "minecraft:bookshelf",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -194,
+          "id": "minecraft:lectern"
+        }
+      ],
+      "shape": [
+        "AAA",
+        " B ",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:lectern_from_mangrove_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -489,
+          "id": "minecraft:mangrove_slab",
           "damage": 32767
         },
         "B": {
@@ -26224,6 +27493,34 @@
       "priority": 2
     },
     {
+      "id": "minecraft:loom_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 326,
+          "id": "minecraft:string",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -204,
+          "id": "minecraft:loom"
+        }
+      ],
+      "shape": [
+        "AA",
+        "BB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:loom_from_warped_planks",
       "type": 1,
       "input": {
@@ -26809,6 +28106,424 @@
       "priority": 0
     },
     {
+      "id": "minecraft:mangrove_boat",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks"
+        },
+        "B": {
+          "legacyId": 309,
+          "id": "minecraft:wooden_shovel",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 635,
+          "id": "minecraft:mangrove_boat"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_button",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -487,
+          "id": "minecraft:mangrove_button"
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 635,
+          "id": "minecraft:mangrove_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 644,
+          "id": "minecraft:mangrove_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_door",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 633,
+          "id": "minecraft:mangrove_door",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_fence",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -491,
+          "id": "minecraft:mangrove_fence",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "ABA",
+        "ABA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_fence_gate",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -492,
+          "id": "minecraft:mangrove_fence_gate"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "ABA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_planks_from_stripped_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_planks_from_stripped_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_planks_from_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_pressure_plate",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -490,
+          "id": "minecraft:mangrove_pressure_plate"
+        }
+      ],
+      "shape": [
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_sign",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 634,
+          "id": "minecraft:mangrove_sign",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA",
+        " B "
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -489,
+          "id": "minecraft:mangrove_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -488,
+          "id": "minecraft:mangrove_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_trapdoor",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -496,
+          "id": "minecraft:mangrove_trapdoor",
+          "count": 2
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mangrove_wood_stripped",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:map",
       "type": 1,
       "input": {
@@ -27117,6 +28832,126 @@
       "priority": 0
     },
     {
+      "id": "minecraft:mud_brick_slab",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -478,
+          "id": "minecraft:mud_brick_slab",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mud_brick_stairs",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -480,
+          "id": "minecraft:mud_brick_stairs",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A  ",
+        "AA ",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mud_brick_wall",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -481,
+          "id": "minecraft:mud_brick_wall",
+          "count": 6
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:mud_bricks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -477,
+          "id": "minecraft:packed_mud",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -475,
+          "id": "minecraft:mud_bricks",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:muddy_mangrove_roots",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": -482,
+          "id": "minecraft:mangrove_roots",
+          "damage": 32767
+        },
+        {
+          "legacyId": -473,
+          "id": "minecraft:mud",
+          "damage": 32767
+        }
+      ],
+      "output": [
+        {
+          "legacyId": -483,
+          "id": "minecraft:muddy_mangrove_roots"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:mushroom_stew",
       "type": 0,
       "input": [
@@ -27378,6 +29213,35 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 373,
+          "id": "minecraft:redstone",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 25,
+          "id": "minecraft:noteblock"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "ABA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:noteblock_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         },
         "B": {
@@ -27983,6 +29847,30 @@
       "priority": 0
     },
     {
+      "id": "minecraft:packed_mud",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": -473,
+          "id": "minecraft:mud",
+          "damage": 32767
+        },
+        {
+          "legacyId": 334,
+          "id": "minecraft:wheat",
+          "damage": 32767
+        }
+      ],
+      "output": [
+        {
+          "legacyId": -477,
+          "id": "minecraft:packed_mud"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:paper",
       "type": 1,
       "input": {
@@ -28390,6 +30278,45 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 4,
+          "id": "minecraft:cobblestone",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": 305,
+          "id": "minecraft:iron_ingot",
+          "damage": 32767
+        },
+        "D": {
+          "legacyId": 373,
+          "id": "minecraft:redstone",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 33,
+          "id": "minecraft:piston"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "BCB",
+        "BDB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:piston_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         },
         "B": {
@@ -29844,6 +31771,88 @@
       "priority": 0
     },
     {
+      "id": "minecraft:record_5",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 637,
+          "id": "minecraft:disc_fragment_5",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 636,
+          "id": "minecraft:music_disc_5"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "AAA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 1
+    },
+    {
+      "id": "minecraft:recovery_compass",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 647,
+          "id": "minecraft:echo_shard",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 391,
+          "id": "minecraft:compass",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 646,
+          "id": "minecraft:recovery_compass"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "ABA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 1
+    },
+    {
+      "id": "minecraft:recovery_compass_from_lodestone_compass",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 647,
+          "id": "minecraft:echo_shard",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 602,
+          "id": "minecraft:lodestone_compass",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 646,
+          "id": "minecraft:recovery_compass"
+        }
+      ],
+      "shape": [
+        "AAA",
+        "ABA",
+        "AAA"
+      ],
+      "block": "crafting_table",
+      "priority": 1
+    },
+    {
       "id": "minecraft:red_banner",
       "type": 1,
       "input": {
@@ -30711,6 +32720,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:shield_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 305,
+          "id": "minecraft:iron_ingot",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 355,
+          "id": "minecraft:shield"
+        }
+      ],
+      "shape": [
+        "ABA",
+        "AAA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:shield_from_warped_planks",
       "type": 1,
       "input": {
@@ -31053,6 +33091,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:smithing_table_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 305,
+          "id": "minecraft:iron_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -202,
+          "id": "minecraft:smithing_table"
+        }
+      ],
+      "shape": [
+        "AA",
+        "BB",
+        "BB"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:smithing_table_from_warped_planks",
       "type": 1,
       "input": {
@@ -31167,6 +33234,64 @@
       ],
       "block": "crafting_table",
       "priority": 0
+    },
+    {
+      "id": "minecraft:smoker_from_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 61,
+          "id": "minecraft:furnace",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -198,
+          "id": "minecraft:smoker"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:smoker_from_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 61,
+          "id": "minecraft:furnace",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -198,
+          "id": "minecraft:smoker"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
     },
     {
       "id": "minecraft:smoker_from_stripped_acacia",
@@ -31312,6 +33437,64 @@
       ],
       "block": "crafting_table",
       "priority": 0
+    },
+    {
+      "id": "minecraft:smoker_from_stripped_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 61,
+          "id": "minecraft:furnace",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -198,
+          "id": "minecraft:smoker"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
+      "id": "minecraft:smoker_from_stripped_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 61,
+          "id": "minecraft:furnace",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -198,
+          "id": "minecraft:smoker"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        " A "
+      ],
+      "block": "crafting_table",
+      "priority": 50
     },
     {
       "id": "minecraft:smoker_from_stripped_oak",
@@ -31663,6 +33846,142 @@
       ],
       "block": "crafting_table",
       "priority": 2
+    },
+    {
+      "id": "minecraft:soul_campfire_from_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -236,
+          "id": "minecraft:soul_soil",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:soul_campfire_from_mangrove_log2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 88,
+          "id": "minecraft:soul_sand",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:soul_campfire_from_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -236,
+          "id": "minecraft:soul_soil",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "minecraft:soul_campfire_from_mangrove_wood2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 88,
+          "id": "minecraft:soul_sand",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 50
     },
     {
       "id": "minecraft:soul_campfire_from_soul_sand",
@@ -32345,6 +34664,142 @@
       "priority": 2
     },
     {
+      "id": "minecraft:soul_campfire_from_stripped_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -236,
+          "id": "minecraft:soul_soil",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:soul_campfire_from_stripped_mangrove_log2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 88,
+          "id": "minecraft:soul_sand",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:soul_campfire_from_stripped_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": -236,
+          "id": "minecraft:soul_soil",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
+      "id": "minecraft:soul_campfire_from_stripped_mangrove_wood2",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 88,
+          "id": "minecraft:soul_sand",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 622,
+          "id": "minecraft:soul_campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 50
+    },
+    {
       "id": "minecraft:soul_campfire_from_stripped_warped_stem",
       "type": 1,
       "input": {
@@ -32635,6 +35090,29 @@
       "priority": 0
     },
     {
+      "id": "minecraft:spruce_chest_boat",
+      "type": 0,
+      "input": [
+        {
+          "legacyId": 54,
+          "id": "minecraft:chest",
+          "damage": 32767
+        },
+        {
+          "legacyId": 378,
+          "id": "minecraft:spruce_boat"
+        }
+      ],
+      "output": [
+        {
+          "legacyId": 641,
+          "id": "minecraft:spruce_chest_boat"
+        }
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:spruce_door",
       "type": 1,
       "input": {
@@ -32728,10 +35206,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 1,
           "count": 4,
-          "damage": 1
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32752,10 +35230,10 @@
       },
       "output": [
         {
-          "legacyId": 5,
-          "id": "minecraft:planks",
+          "damage": 1,
           "count": 4,
-          "damage": 1
+          "legacyId": 5,
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32776,9 +35254,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32799,9 +35278,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 4,
           "legacyId": 5,
-          "id": "minecraft:planks",
-          "count": 4
+          "id": "minecraft:planks"
         }
       ],
       "shape": [
@@ -32895,9 +35375,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 158,
-          "id": "minecraft:wooden_slab",
-          "count": 6
+          "id": "minecraft:wooden_slab"
         }
       ],
       "shape": [
@@ -32942,6 +35423,30 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "count": 4
+        }
+      ],
+      "shape": [
+        "A",
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:stick_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -33658,6 +36163,30 @@
       "priority": 0
     },
     {
+      "id": "minecraft:stripped_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -485,
+          "id": "minecraft:stripped_mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "count": 3
+        }
+      ],
+      "shape": [
+        "AA",
+        "AA"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "minecraft:stripped_warped_hyphae",
       "type": 1,
       "input": {
@@ -34246,27 +36775,23 @@
     },
     {
       "id": "minecraft:tnt_minecart",
-      "type": 1,
-      "input": {
-        "A": {
+      "type": 0,
+      "input": [
+        {
           "legacyId": 46,
           "id": "minecraft:tnt"
         },
-        "B": {
+        {
           "legacyId": 370,
           "id": "minecraft:minecart",
           "damage": 32767
         }
-      },
+      ],
       "output": [
         {
           "legacyId": 525,
           "id": "minecraft:tnt_minecart"
         }
-      ],
-      "shape": [
-        "A",
-        "B"
       ],
       "block": "crafting_table",
       "priority": 0
@@ -34312,6 +36837,40 @@
         "C": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 131,
+          "id": "minecraft:tripwire_hook"
+        }
+      ],
+      "shape": [
+        "A",
+        "B",
+        "C"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:tripwire_hook_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 305,
+          "id": "minecraft:iron_ingot",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         }
       },
@@ -35607,6 +38166,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:wooden_axe_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 311,
+          "id": "minecraft:wooden_axe"
+        }
+      ],
+      "shape": [
+        "AA",
+        "AB",
+        " B"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:wooden_axe_from_warped_planks",
       "type": 1,
       "input": {
@@ -35689,6 +38277,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:wooden_hoe_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 329,
+          "id": "minecraft:wooden_hoe"
+        }
+      ],
+      "shape": [
+        "AA ",
+        " B ",
+        " B "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:wooden_hoe_from_warped_planks",
       "type": 1,
       "input": {
@@ -35724,6 +38341,35 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 310,
+          "id": "minecraft:wooden_pickaxe"
+        }
+      ],
+      "shape": [
+        "AAA",
+        " B ",
+        " B "
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:wooden_pickaxe_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         },
         "B": {
@@ -35805,6 +38451,35 @@
       "priority": 2
     },
     {
+      "id": "minecraft:wooden_shovel_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 309,
+          "id": "minecraft:wooden_shovel"
+        }
+      ],
+      "shape": [
+        "A",
+        "B",
+        "B"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:wooden_shovel_from_warped_planks",
       "type": 1,
       "input": {
@@ -35840,6 +38515,35 @@
         "A": {
           "legacyId": -242,
           "id": "minecraft:crimson_planks",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 308,
+          "id": "minecraft:wooden_sword"
+        }
+      ],
+      "shape": [
+        "A",
+        "A",
+        "B"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:wooden_sword_from_mangrove_planks",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": -486,
+          "id": "minecraft:mangrove_planks",
           "damage": 32767
         },
         "B": {
@@ -45070,7 +47774,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45141,7 +47845,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45164,7 +47868,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45187,7 +47891,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45209,7 +47913,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45231,7 +47935,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45253,7 +47957,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45276,7 +47980,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45299,7 +48003,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45322,7 +48026,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45345,7 +48049,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45368,7 +48072,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45391,7 +48095,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45414,7 +48118,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45437,7 +48141,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45460,7 +48164,7 @@
       "output": [
         {
           "legacyId": -162,
-          "id": "minecraft:double_stone_slab3",
+          "id": "minecraft:stone_block_slab3",
           "count": 6
         }
       ],
@@ -45483,7 +48187,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 6
         }
       ],
@@ -45506,7 +48210,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 6
         }
       ],
@@ -45529,7 +48233,7 @@
       "output": [
         {
           "legacyId": -166,
-          "id": "minecraft:double_stone_slab4",
+          "id": "minecraft:stone_block_slab4",
           "count": 6
         }
       ],
@@ -45551,7 +48255,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -45573,7 +48277,7 @@
       "output": [
         {
           "legacyId": 182,
-          "id": "minecraft:double_stone_slab2",
+          "id": "minecraft:stone_block_slab2",
           "count": 6
         }
       ],
@@ -45596,7 +48300,7 @@
       "output": [
         {
           "legacyId": 44,
-          "id": "minecraft:double_stone_slab",
+          "id": "minecraft:stone_block_slab",
           "count": 6
         }
       ],
@@ -54076,6 +56780,58 @@
       ],
       "block": "crafting_table",
       "priority": 50
+    },
+    {
+      "type": 3,
+      "input": {
+        "legacyId": -498,
+        "id": "minecraft:stripped_mangrove_wood",
+        "damage": -1
+      },
+      "output": {
+        "legacyId": 303,
+        "id": "minecraft:charcoal"
+      },
+      "block": "furnace"
+    },
+    {
+      "type": 3,
+      "input": {
+        "legacyId": -497,
+        "id": "minecraft:mangrove_wood",
+        "damage": -1
+      },
+      "output": {
+        "legacyId": 303,
+        "id": "minecraft:charcoal"
+      },
+      "block": "furnace"
+    },
+    {
+      "type": 3,
+      "input": {
+        "legacyId": -485,
+        "id": "minecraft:stripped_mangrove_log",
+        "damage": -1
+      },
+      "output": {
+        "legacyId": 303,
+        "id": "minecraft:charcoal"
+      },
+      "block": "furnace"
+    },
+    {
+      "type": 3,
+      "input": {
+        "legacyId": -484,
+        "id": "minecraft:mangrove_log",
+        "damage": -1
+      },
+      "output": {
+        "legacyId": 303,
+        "id": "minecraft:charcoal"
+      },
+      "block": "furnace"
     },
     {
       "type": 3,

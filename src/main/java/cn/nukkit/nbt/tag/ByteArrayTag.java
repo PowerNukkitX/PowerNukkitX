@@ -51,6 +51,11 @@ public class ByteArrayTag extends Tag {
     }
 
     @Override
+    public String toSnbt() {
+        return "\"" + this.getName() + "\":" + Arrays.toString(data).replace("[", "[B;");
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
             ByteArrayTag byteArrayTag = (ByteArrayTag) obj;

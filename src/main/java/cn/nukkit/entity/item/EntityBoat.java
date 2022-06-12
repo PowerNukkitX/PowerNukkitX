@@ -135,7 +135,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return "action.interact.ride.boat";
     }
 

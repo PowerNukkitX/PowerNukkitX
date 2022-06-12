@@ -17,12 +17,13 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(503);
+    int CURRENT_PROTOCOL = dynamic(527);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION = dynamic("v1.18.30");
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.18.30");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.0");
+
+    String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 
     byte LOGIN_PACKET = 0x01;
     byte PLAY_STATUS_PACKET = 0x02;
@@ -199,6 +200,7 @@ public interface ProtocolInfo {
     byte FILTER_TEXT_PACKET = (byte) 0xa3;
     @Since("1.4.0.0-PN")
     byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
+    byte TOAST_REQUEST_PACKET = (byte) 0xba;
     @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;

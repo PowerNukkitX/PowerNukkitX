@@ -19,6 +19,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
 
@@ -26,7 +27,6 @@ import javax.annotation.Nullable;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1078,6 +1078,8 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
     @PowerNukkitOnly @Since("FUTURE") SPYGLASS,
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
+
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_BOAT,
     ;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id-> 

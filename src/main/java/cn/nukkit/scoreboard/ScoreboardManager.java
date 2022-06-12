@@ -2,6 +2,7 @@ package cn.nukkit.scoreboard;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.event.command.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.network.protocol.RemoveObjectivePacket;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
@@ -11,7 +12,6 @@ import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
 import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ScoreboardManager extends AbstractScoreboardManager {
@@ -21,14 +21,31 @@ public class ScoreboardManager extends AbstractScoreboardManager {
     }
 
     @Override
-    public void addScoreboard(Scoreboard scoreboard) {
+    public boolean addScoreboard(Scoreboard scoreboard) {
+        //Because ScoreboardManager is loaded before PluginManager, so we need to check if it is null
+        if (Server.getInstance().getPluginManager() != null) {
+            ScoreboardObjectiveChangeEvent event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
+            Server.getInstance().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return false;
+        }
         scoreboards.put(scoreboard.getObjectiveName(), scoreboard);
         storage.saveScoreboard(scoreboard);
+        return true;
     }
 
     @Override
-    public void removeScoreboard(String name) {
+    public boolean removeScoreboard(String name) {
         Scoreboard scoreboard = getScoreboard(name);
+        if (scoreboard == null)
+            return false;
+        //Because ScoreboardManager is loaded before PluginManager, so we need to check if it is null
+        if (Server.getInstance().getPluginManager() != null) {
+            ScoreboardObjectiveChangeEvent event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
+            Server.getInstance().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return false;
+        }
         for (Scorer scorer : scoreboard.getLines().keySet()) {
             if (scorer instanceof PlayerScorer playerScorer && playerScorer.getPlayer() != null) {
                 SetScorePacket setScorePacket = new SetScorePacket();
@@ -47,6 +64,7 @@ public class ScoreboardManager extends AbstractScoreboardManager {
             removeDisplay(getDisplaySlot(name));
         }
         storage.removeScoreboard(name);
+        return true;
     }
 
     @Override

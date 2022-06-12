@@ -38,7 +38,7 @@ public class NPCDialoguePacket extends DataPacket {
     
     private long runtimeEntityId;
     private NPCDialogAction action = NPCDialogAction.OPEN;
-    private String dialogue = "";
+    private String dialogue = "";//content
     private String sceneName = "";
     private String npcName = "";
     private String actionJson = "";
@@ -56,7 +56,7 @@ public class NPCDialoguePacket extends DataPacket {
 
     @Override
     public void decode() {
-        runtimeEntityId = getUnsignedVarLong();
+        runtimeEntityId = getLLong();
         action = ACTIONS[getVarInt()];
         dialogue = getString();
         sceneName = getString();
@@ -67,7 +67,7 @@ public class NPCDialoguePacket extends DataPacket {
     @Override
     public void encode() {
         reset();
-        putUnsignedVarLong(runtimeEntityId);
+        putLLong(runtimeEntityId);
         putVarInt(action.ordinal());
         putString(dialogue);
         putString(sceneName);

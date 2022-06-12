@@ -1,5 +1,191 @@
 [
   {
+    "name": "minecraft:mangrove_double_slab",
+    "id": -499,
+    "oldId": -499
+  },
+  {
+    "name": "minecraft:stripped_mangrove_wood",
+    "id": -498,
+    "oldId": -498
+  },
+  {
+    "name": "minecraft:mangrove_wood",
+    "id": -497,
+    "oldId": -497
+  },
+  {
+    "name": "minecraft:mangrove_trapdoor",
+    "id": -496,
+    "oldId": -496
+  },
+  {
+    "name": "minecraft:mangrove_wall_sign",
+    "id": -495
+  },
+  {
+    "name": "minecraft:mangrove_standing_sign",
+    "id": -494
+  },
+  {
+    "name": "minecraft:item.mangrove_door",
+    "id": -493,
+    "oldId": -493
+  },
+  {
+    "name": "minecraft:mangrove_fence_gate",
+    "id": -492
+  },
+  {
+    "name": "minecraft:mangrove_fence",
+    "id": -491
+  },
+  {
+    "name": "minecraft:mangrove_pressure_plate",
+    "id": -490,
+    "oldId": -490
+  },
+  {
+    "name": "minecraft:mangrove_slab",
+    "id": -489,
+    "oldId": -489
+  },
+  {
+    "name": "minecraft:mangrove_stairs",
+    "id": -488
+  },
+  {
+    "name": "minecraft:mangrove_button",
+    "id": -487
+  },
+  {
+    "name": "minecraft:mangrove_planks",
+    "id": -486,
+    "oldId": -486
+  },
+  {
+    "name": "minecraft:stripped_mangrove_log",
+    "id": -485,
+    "oldId": -485
+  },
+  {
+    "name": "minecraft:mangrove_log",
+    "id": -484,
+    "oldId": -484
+  },
+  {
+    "name": "minecraft:muddy_mangrove_roots",
+    "id": -483,
+    "oldId": -483
+  },
+  {
+    "name": "minecraft:mangrove_roots",
+    "id": -482,
+    "oldId": -482
+  },
+  {
+    "name": "minecraft:mud_brick_wall",
+    "id": -481,
+    "oldId": -481
+  },
+  {
+    "name": "minecraft:mud_brick_stairs",
+    "id": -480,
+    "oldId": -480
+  },
+  {
+    "name": "minecraft:mud_brick_double_slab",
+    "id": -479,
+    "oldId": -479
+  },
+  {
+    "name": "minecraft:mud_brick_slab",
+    "id": -478,
+    "oldId": -478
+  },
+  {
+    "name": "minecraft:packed_mud",
+    "id": -477,
+    "oldId": -477
+  },
+  {
+    "name": "minecraft:mangrove_propagule_hanging",
+    "id": -476,
+    "oldId": -476
+  },
+  {
+    "name": "minecraft:mud_bricks",
+    "id": -475,
+    "oldId": -475
+  },
+  {
+    "name": "minecraft:mangrove_propagule",
+    "id": -474,
+    "oldId": -474
+  },
+  {
+    "name": "minecraft:mud",
+    "id": -473,
+    "oldId": -473
+  },
+  {
+    "name": "minecraft:mangrove_leaves",
+    "id": -472,
+    "oldId": -472
+  },
+  {
+    "name": "minecraft:ochre_froglight",
+    "id": -471,
+    "oldId": -471
+  },
+  {
+    "name": "minecraft:verdant_froglight",
+    "id": -470,
+    "oldId": -470
+  },
+  {
+    "name": "minecraft:pearlescent_froglight",
+    "id": -469,
+    "oldId": -469
+  },
+  {
+    "name": "minecraft:frog_spawn",
+    "id": -468,
+    "oldId": -468
+  },
+  {
+    "name": "minecraft:mysterious_frame_slot",
+    "id": -467
+  },
+  {
+    "name": "minecraft:reinforced_deepslate",
+    "id": -466,
+    "oldId": -466
+  },
+  {
+    "name": "minecraft:client_request_placeholder_block",
+    "id": -465
+  },
+  {
+    "name": "minecraft:sculk_shrieker",
+    "id": -461,
+    "oldId": -461
+  },
+  {
+    "name": "minecraft:sculk_catalyst",
+    "id": -460,
+    "oldId": -460
+  },
+  {
+    "name": "minecraft:sculk_vein",
+    "id": -459,
+    "oldId": -459
+  },
+  {
+    "name": "minecraft:sculk",
+    "id": -458
+  },
+  {
     "name": "minecraft:infested_deepslate",
     "id": -454,
     "oldId": -454
@@ -43,6 +229,176 @@
     "name": "minecraft:waxed_oxidized_copper",
     "id": -446,
     "oldId": -446
+  },
+  {
+    "name": "minecraft:black_candle_cake",
+    "id": -445,
+    "oldId": -445
+  },
+  {
+    "name": "minecraft:red_candle_cake",
+    "id": -444,
+    "oldId": -444
+  },
+  {
+    "name": "minecraft:green_candle_cake",
+    "id": -443,
+    "oldId": -443
+  },
+  {
+    "name": "minecraft:brown_candle_cake",
+    "id": -442,
+    "oldId": -442
+  },
+  {
+    "name": "minecraft:blue_candle_cake",
+    "id": -441,
+    "oldId": -441
+  },
+  {
+    "name": "minecraft:purple_candle_cake",
+    "id": -440,
+    "oldId": -440
+  },
+  {
+    "name": "minecraft:cyan_candle_cake",
+    "id": -439,
+    "oldId": -439
+  },
+  {
+    "name": "minecraft:light_gray_candle_cake",
+    "id": -438,
+    "oldId": -438
+  },
+  {
+    "name": "minecraft:gray_candle_cake",
+    "id": -437,
+    "oldId": -437
+  },
+  {
+    "name": "minecraft:pink_candle_cake",
+    "id": -436,
+    "oldId": -436
+  },
+  {
+    "name": "minecraft:lime_candle_cake",
+    "id": -435,
+    "oldId": -435
+  },
+  {
+    "name": "minecraft:yellow_candle_cake",
+    "id": -434,
+    "oldId": -434
+  },
+  {
+    "name": "minecraft:light_blue_candle_cake",
+    "id": -433,
+    "oldId": -433
+  },
+  {
+    "name": "minecraft:magenta_candle_cake",
+    "id": -432,
+    "oldId": -432
+  },
+  {
+    "name": "minecraft:orange_candle_cake",
+    "id": -431,
+    "oldId": -431
+  },
+  {
+    "name": "minecraft:white_candle_cake",
+    "id": -430,
+    "oldId": -430
+  },
+  {
+    "name": "minecraft:candle_cake",
+    "id": -429,
+    "oldId": -429
+  },
+  {
+    "name": "minecraft:black_candle",
+    "id": -428,
+    "oldId": -428
+  },
+  {
+    "name": "minecraft:red_candle",
+    "id": -427,
+    "oldId": -427
+  },
+  {
+    "name": "minecraft:green_candle",
+    "id": -426,
+    "oldId": -426
+  },
+  {
+    "name": "minecraft:brown_candle",
+    "id": -425,
+    "oldId": -425
+  },
+  {
+    "name": "minecraft:blue_candle",
+    "id": -424,
+    "oldId": -424
+  },
+  {
+    "name": "minecraft:purple_candle",
+    "id": -423,
+    "oldId": -423
+  },
+  {
+    "name": "minecraft:cyan_candle",
+    "id": -422,
+    "oldId": -422
+  },
+  {
+    "name": "minecraft:light_gray_candle",
+    "id": -421,
+    "oldId": -421
+  },
+  {
+    "name": "minecraft:gray_candle",
+    "id": -420,
+    "oldId": -420
+  },
+  {
+    "name": "minecraft:pink_candle",
+    "id": -419,
+    "oldId": -419
+  },
+  {
+    "name": "minecraft:lime_candle",
+    "id": -418,
+    "oldId": -418
+  },
+  {
+    "name": "minecraft:yellow_candle",
+    "id": -417,
+    "oldId": -417
+  },
+  {
+    "name": "minecraft:light_blue_candle",
+    "id": -416,
+    "oldId": -416
+  },
+  {
+    "name": "minecraft:magenta_candle",
+    "id": -415,
+    "oldId": -415
+  },
+  {
+    "name": "minecraft:orange_candle",
+    "id": -414,
+    "oldId": -414
+  },
+  {
+    "name": "minecraft:white_candle",
+    "id": -413,
+    "oldId": -413
+  },
+  {
+    "name": "minecraft:candle",
+    "id": -412,
+    "oldId": -412
   },
   {
     "name": "minecraft:glow_lichen",
@@ -975,9 +1331,8 @@
     "oldId": -218
   },
   {
-    "name": "minecraft:stickypistonarmcollision",
-    "id": -217,
-    "oldId": -217
+    "name": "minecraft:sticky_piston_arm_collision",
+    "id": -217
   },
   {
     "name": "minecraft:wither_rose",
@@ -1215,17 +1570,17 @@
     "oldId": -169
   },
   {
-    "name": "minecraft:real_double_stone_slab4",
+    "name": "minecraft:double_stone_block_slab4",
     "id": -168,
     "oldId": -168
   },
   {
-    "name": "minecraft:real_double_stone_slab3",
+    "name": "minecraft:double_stone_block_slab3",
     "id": -167,
     "oldId": -167
   },
   {
-    "name": "minecraft:double_stone_slab4",
+    "name": "minecraft:stone_block_slab4",
     "id": -166,
     "oldId": -166
   },
@@ -1245,7 +1600,7 @@
     "oldId": -163
   },
   {
-    "name": "minecraft:double_stone_slab3",
+    "name": "minecraft:stone_block_slab3",
     "id": -162,
     "oldId": -162
   },
@@ -2215,9 +2570,8 @@
     "oldId": 33
   },
   {
-    "name": "minecraft:pistonarmcollision",
-    "id": 34,
-    "oldId": 34
+    "name": "minecraft:piston_arm_collision",
+    "id": 34
   },
   {
     "name": "minecraft:wool",
@@ -2260,12 +2614,12 @@
     "oldId": 42
   },
   {
-    "name": "minecraft:real_double_stone_slab",
+    "name": "minecraft:double_stone_block_slab",
     "id": 43,
     "oldId": 43
   },
   {
-    "name": "minecraft:double_stone_slab",
+    "name": "minecraft:stone_block_slab",
     "id": 44,
     "oldId": 44
   },
@@ -2520,9 +2874,8 @@
     "oldId": 94
   },
   {
-    "name": "minecraft:invisiblebedrock",
-    "id": 95,
-    "oldId": 95
+    "name": "minecraft:invisible_bedrock",
+    "id": 95
   },
   {
     "name": "minecraft:trapdoor",
@@ -2630,9 +2983,8 @@
     "oldId": 116
   },
   {
-    "name": "minecraft:brewingstandblock",
-    "id": 117,
-    "oldId": 117
+    "name": "minecraft:item.brewing_stand",
+    "id": 117
   },
   {
     "name": "minecraft:item.cauldron",
@@ -2705,9 +3057,8 @@
     "oldId": 131
   },
   {
-    "name": "minecraft:tripwire",
-    "id": 132,
-    "oldId": 132
+    "name": "minecraft:trip_wire",
+    "id": 132
   },
   {
     "name": "minecraft:emerald_block",
@@ -2875,11 +3226,6 @@
     "oldId": 165
   },
   {
-    "name": "minecraft:glow_stick",
-    "id": 601,
-    "oldId": 166
-  },
-  {
     "name": "minecraft:iron_trapdoor",
     "id": 167,
     "oldId": 167
@@ -2890,9 +3236,8 @@
     "oldId": 168
   },
   {
-    "name": "minecraft:sealantern",
-    "id": 169,
-    "oldId": 169
+    "name": "minecraft:sea_lantern",
+    "id": 169
   },
   {
     "name": "minecraft:hay_block",
@@ -2950,12 +3295,12 @@
     "oldId": 180
   },
   {
-    "name": "minecraft:real_double_stone_slab2",
+    "name": "minecraft:double_stone_block_slab2",
     "id": 181,
     "oldId": 181
   },
   {
-    "name": "minecraft:double_stone_slab2",
+    "name": "minecraft:stone_block_slab2",
     "id": 182,
     "oldId": 182
   },
@@ -3290,9 +3635,8 @@
     "oldId": 249
   },
   {
-    "name": "minecraft:movingblock",
-    "id": 250,
-    "oldId": 250
+    "name": "minecraft:moving_block",
+    "id": 250
   },
   {
     "name": "minecraft:observer",
@@ -4248,11 +4592,6 @@
     "oldId": 382
   },
   {
-    "name": "minecraft:spawn_egg",
-    "id": 643,
-    "oldId": 383
-  },
-  {
     "name": "minecraft:chicken_spawn_egg",
     "id": 435,
     "oldId": 383,
@@ -5088,6 +5427,10 @@
     "oldData": 6
   },
   {
+    "name": "minecraft:globe_banner_pattern",
+    "id": 588
+  },
+  {
     "name": "minecraft:campfire",
     "id": 589,
     "oldId": 720
@@ -5146,6 +5489,11 @@
     "name": "minecraft:sparkler",
     "id": 600,
     "oldId": 442
+  },
+  {
+    "name": "minecraft:glow_stick",
+    "id": 601,
+    "oldId": 166
   },
   {
     "name": "minecraft:lodestone_compass",
@@ -5268,377 +5616,132 @@
     "oldId": 772
   },
   {
-    "name": "minecraft:boat",
-    "id": 640,
-    "oldId": 333,
-    "deprecated": true
+    "name": "minecraft:music_disc_otherside",
+    "id": 626
   },
   {
-    "name": "minecraft:dye",
-    "id": 641,
-    "oldId": 351,
-    "deprecated": true
+    "name": "minecraft:goat_horn",
+    "id": 627
   },
   {
-    "name": "minecraft:banner_pattern",
-    "id": 642,
-    "oldId": 434,
-    "deprecated": true
+    "name": "minecraft:frog_spawn_egg",
+    "id": 628
   },
   {
-    "name": "minecraft:end_crystal",
-    "id": 644,
-    "oldId": 426
+    "name": "minecraft:tadpole_spawn_egg",
+    "id": 629
   },
   {
-    "name": "minecraft:glow_berries",
-    "id": 645,
-    "oldId": 638
-  },
-  {
-    "name": "minecraft:allay_spawn_egg",
+    "name": "minecraft:tadpole_bucket",
     "id": 630
   },
   {
-    "name": "minecraft:black_candle",
-    "id": -428,
-    "oldId": -428
+    "name": "minecraft:allay_spawn_egg",
+    "id": 631
   },
   {
-    "name": "minecraft:black_candle_cake",
-    "id": -445,
-    "oldId": -445
-  },
-  {
-    "name": "minecraft:blue_candle",
-    "id": -424,
-    "oldId": -424
-  },
-  {
-    "name": "minecraft:blue_candle_cake",
-    "id": -441,
-    "oldId": -441
-  },
-  {
-    "name": "minecraft:brown_candle",
-    "id": -425,
-    "oldId": -425
-  },
-  {
-    "name": "minecraft:brown_candle_cake",
-    "id": -442,
-    "oldId": -442
-  },
-  {
-    "name": "minecraft:candle",
-    "id": -412,
-    "oldId": -412
-  },
-  {
-    "name": "minecraft:candle_cake",
-    "id": -429,
-    "oldId": -429
-  },
-  {
-    "name": "minecraft:client_request_placeholder_block",
-    "id": -465
-  },
-  {
-    "name": "minecraft:cyan_candle",
-    "id": -422,
-    "oldId": -422
-  },
-  {
-    "name": "minecraft:cyan_candle_cake",
-    "id": -439,
-    "oldId": -439
+    "name": "minecraft:warden_spawn_egg",
+    "id": 632
   },
   {
     "name": "minecraft:firefly_spawn_egg",
     "id": 632
   },
   {
-    "name": "minecraft:frog_spawn_egg",
-    "id": 627
+    "name": "minecraft:mangrove_door",
+    "id": 633,
+    "oldId": 633
   },
   {
-    "name": "minecraft:globe_banner_pattern",
-    "id": 588
+    "name": "minecraft:mangrove_sign",
+    "id": 634,
+    "oldId": 634
   },
   {
-    "name": "minecraft:gray_candle",
-    "id": -420,
-    "oldId": -420
+    "name": "minecraft:mangrove_boat",
+    "id": 635,
+    "oldId": 333,
+    "oldData": 6
   },
   {
-    "name": "minecraft:gray_candle_cake",
-    "id": -437,
-    "oldId": -437
-  },
-  {
-    "name": "minecraft:green_candle",
-    "id": -426,
-    "oldId": -426
-  },
-  {
-    "name": "minecraft:green_candle_cake",
-    "id": -443,
-    "oldId": -443
-  },
-  {
-    "name": "minecraft:light_blue_candle",
-    "id": -416,
-    "oldId": -416
-  },
-  {
-    "name": "minecraft:light_blue_candle_cake",
-    "id": -433,
-    "oldId": -433
-  },
-  {
-    "name": "minecraft:light_gray_candle",
-    "id": -421,
-    "oldId": -421
-  },
-  {
-    "name": "minecraft:light_gray_candle_cake",
-    "id": -438,
-    "oldId": -438
-  },
-  {
-    "name": "minecraft:lime_candle",
-    "id": -418,
-    "oldId": -418
-  },
-  {
-    "name": "minecraft:lime_candle_cake",
-    "id": -435,
-    "oldId": -435
-  },
-  {
-    "name": "minecraft:magenta_candle",
-    "id": -415,
-    "oldId": -415
-  },
-  {
-    "name": "minecraft:magenta_candle_cake",
-    "id": -432,
-    "oldId": -432
-  },
-  {
-    "name": "minecraft:music_disc_otherside",
-    "id": 626
-  },
-  {
-    "name": "minecraft:mysterious_frame",
-    "id": -466
-  },
-  {
-    "name": "minecraft:mysterious_frame_slot",
-    "id": -467
-  },
-  {
-    "name": "minecraft:ochre_froglight",
-    "id": -471
-  },
-  {
-    "name": "minecraft:orange_candle",
-    "id": -414,
-    "oldId": -414
-  },
-  {
-    "name": "minecraft:orange_candle_cake",
-    "id": -431,
-    "oldId": -431
-  },
-  {
-    "name": "minecraft:pearlescent_froglight",
-    "id": -469
-  },
-  {
-    "name": "minecraft:pink_candle",
-    "id": -419,
-    "oldId": -419
-  },
-  {
-    "name": "minecraft:pink_candle_cake",
-    "id": -436,
-    "oldId": -436
-  },
-  {
-    "name": "minecraft:purple_candle",
-    "id": -423,
-    "oldId": -423
-  },
-  {
-    "name": "minecraft:purple_candle_cake",
-    "id": -440,
-    "oldId": -440
-  },
-  {
-    "name": "minecraft:red_candle",
-    "id": -427,
-    "oldId": -427
-  },
-  {
-    "name": "minecraft:red_candle_cake",
-    "id": -444,
-    "oldId": -444
-  },
-  {
-    "name": "minecraft:sculk",
-    "id": -458
-  },
-  {
-    "name": "minecraft:sculk_catalyst",
-    "id": -460
-  },
-  {
-    "name": "minecraft:sculk_shrieker",
-    "id": -461
-  },
-  {
-    "name": "minecraft:sculk_vein",
-    "id": -459
-  },
-  {
-    "name": "minecraft:tadpole_bucket",
-    "id": 629
-  },
-  {
-    "name": "minecraft:tadpole_spawn_egg",
-    "id": 628
-  },
-  {
-    "name": "minecraft:verdant_froglight",
-    "id": -470
-  },
-  {
-    "name": "minecraft:white_candle",
-    "id": -413,
-    "oldId": -413
-  },
-  {
-    "name": "minecraft:white_candle_cake",
-    "id": -430,
-    "oldId": -430
-  },
-  {
-    "name": "minecraft:yellow_candle",
-    "id": -417,
-    "oldId": -417
-  },
-  {
-    "name": "minecraft:yellow_candle_cake",
-    "id": -434,
-    "oldId": -434
-  },
-  {
-    "name": "minecraft:acacia_chest_boat",
-    "id": 637
-  },
-  {
-    "name": "minecraft:birch_chest_boat",
-    "id": 634
-  },
-  {
-    "name": "minecraft:chest_boat",
-    "id": 639
-  },
-  {
-    "name": "minecraft:dark_oak_chest_boat",
-    "id": 638
-  },
-  {
-    "name": "minecraft:frog_spawn",
-    "id": -468
-  },
-  {
-    "name": "minecraft:invisible_bedrock",
-    "id": 95
-  },
-  {
-    "name": "minecraft:item.brewing_stand",
-    "id": 117
-  },
-  {
-    "name": "minecraft:jungle_chest_boat",
-    "id": 635
-  },
-  {
-    "name": "minecraft:mangrove_leaves",
-    "id": -472
-  },
-  {
-    "name": "minecraft:mangrove_propagule",
-    "id": -474
-  },
-  {
-    "name": "minecraft:mangrove_propagule_hanging",
-    "id": -476
-  },
-  {
-    "name": "minecraft:moving_block",
-    "id": 250
-  },
-  {
-    "name": "minecraft:mud",
-    "id": -473
-  },
-  {
-    "name": "minecraft:mud_brick_double_slab",
-    "id": -479
-  },
-  {
-    "name": "minecraft:mud_brick_slab",
-    "id": -478
-  },
-  {
-    "name": "minecraft:mud_brick_stairs",
-    "id": -480
-  },
-  {
-    "name": "minecraft:mud_brick_wall",
-    "id": -481
-  },
-  {
-    "name": "minecraft:mud_bricks",
-    "id": -475
-  },
-  {
-    "name": "minecraft:oak_chest_boat",
-    "id": 633
-  },
-  {
-    "name": "minecraft:packed_mud",
-    "id": -477
-  },
-  {
-    "name": "minecraft:piston_arm_collision",
-    "id": 34
-  },
-  {
-    "name": "minecraft:reinforced_deepslate",
-    "id": -466
-  },
-  {
-    "name": "minecraft:sea_lantern",
-    "id": 169
-  },
-  {
-    "name": "minecraft:spruce_chest_boat",
+    "name": "minecraft:music_disc_5",
     "id": 636
   },
   {
-    "name": "minecraft:sticky_piston_arm_collision",
-    "id": -217
+    "name": "minecraft:disc_fragment_5",
+    "id": 637
   },
   {
-    "name": "minecraft:trip_wire",
-    "id": 132
+    "name": "minecraft:oak_chest_boat",
+    "id": 638
   },
   {
-    "name": "minecraft:warden_spawn_egg",
-    "id": 631
+    "name": "minecraft:birch_chest_boat",
+    "id": 639
+  },
+  {
+    "name": "minecraft:jungle_chest_boat",
+    "id": 640
+  },
+  {
+    "name": "minecraft:spruce_chest_boat",
+    "id": 641
+  },
+  {
+    "name": "minecraft:acacia_chest_boat",
+    "id": 642
+  },
+  {
+    "name": "minecraft:dark_oak_chest_boat",
+    "id": 643
+  },
+  {
+    "name": "minecraft:mangrove_chest_boat",
+    "id": 644
+  },
+  {
+    "name": "minecraft:chest_boat",
+    "id": 645
+  },
+  {
+    "name": "minecraft:recovery_compass",
+    "id": 646
+  },
+  {
+    "name": "minecraft:echo_shard",
+    "id": 647
+  },
+  {
+    "name": "minecraft:boat",
+    "id": 648,
+    "oldId": 333,
+    "deprecated": true
+  },
+  {
+    "name": "minecraft:dye",
+    "id": 649,
+    "oldId": 351,
+    "deprecated": true
+  },
+  {
+    "name": "minecraft:banner_pattern",
+    "id": 650,
+    "oldId": 434,
+    "deprecated": true
+  },
+  {
+    "name": "minecraft:spawn_egg",
+    "id": 651,
+    "oldId": 383
+  },
+  {
+    "name": "minecraft:end_crystal",
+    "id": 652,
+    "oldId": 426
+  },
+  {
+    "name": "minecraft:glow_berries",
+    "id": 653,
+    "oldId": 638
   }
 ]

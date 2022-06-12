@@ -2691,10 +2691,12 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
-        if (target.canBeReplaced()) {
-            block = target;
-            hand.position(block);
-        }
+//        cause bug (eg: frog_spawn) (and I don't know what this is for)
+//        2022/6/11 @daoge_cmd
+//        if (target.canBeReplaced()) {
+//            block = target;
+//            hand.position(block);
+//        }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
@@ -3750,11 +3752,11 @@ public class Level implements ChunkManager, Metadatable {
         Block block = pos.getLevelBlock();
         Block blockUpper = pos.add(0, 1, 0).getLevelBlock();
         if (!allowWaterUnder)
-            return blockUnder.isSolid()
+            return !blockUnder.canPassThrough()
                     && block.getId() == BlockID.AIR
                     && blockUpper.getId() == BlockID.AIR;
         else
-            return (blockUnder.isSolid() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
+            return (!blockUnder.canPassThrough() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
                     && block.getId() == BlockID.AIR
                     && blockUpper.getId() == BlockID.AIR;
     }

@@ -127,7 +127,7 @@ public class AllResourceUpdater {
     private void updateCreativeItems() {
         Config config = new Config(Config.JSON);
         try(InputStream recipesStream = getClass().getClassLoader()
-                .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/creativeitems.json")
+                .getResourceAsStream("org/powernukkit/updater/dumps/proxypass/creative_items.json")
         ) {
             if (recipesStream == null) {
                 throw new AssertionError("Unable to findcreativeitems.json");
@@ -141,7 +141,7 @@ public class AllResourceUpdater {
         newItems = updateItemEntryList(newItems);
         config.set("items", newItems);
 
-        config.saveAsJson(new File("src/main/resources/creativeitems.json"), false, GSON);
+        config.saveAsJson(new File("src/main/resources/creative_items.json"), false, GSON);
     }
 
     private List<Map<String, Object>> updateItemEntryList(List<Map<String, Object>> inputs) {

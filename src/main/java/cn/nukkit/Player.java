@@ -8,11 +8,11 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.utils.RawText;
+import cn.nukkit.dialog.handler.FormDialogHandler;
+import cn.nukkit.dialog.response.FormResponseDialog;
+import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
-import cn.nukkit.entity.data.IntPositionEntityData;
-import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.data.StringEntityData;
+import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -78,6 +78,10 @@ import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.netty.util.internal.EmptyArrays;
@@ -87,6 +91,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -278,7 +283,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int lastChorusFruitTeleport = 20;
 
     private LoginChainData loginChainData;
-
     public Block breakingBlock = null;
 
     public int pickedXPOrb = 0;
@@ -286,6 +290,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
+
+    /**
+     * 我们使用google的cache来存储NPC对话框发送信息
+     * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
+     * 5分钟后未响应的对话框会被清除
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    protected Cache<String, FormWindowDialog> dialogWindows = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
 
@@ -1387,8 +1400,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             newSettings.set(Type.BUILD_AND_MINE, (gamemode & 0x02) <= 0);
             newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
             newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
-            newSettings.set(Type.NO_CLIP, gamemode == 0x03);
-            newSettings.set(Type.FLYING, gamemode == 0x03);
+            newSettings.set(Type.NO_CLIP, gamemode == SPECTATOR);
+            if (gamemode == SPECTATOR) {
+                newSettings.set(Type.FLYING, true);
+            } else if ((gamemode & 0x1) == 0) {
+                newSettings.set(Type.FLYING, false);
+            }
         }
 
         PlayerGameModeChangeEvent ev;
@@ -1402,6 +1419,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.isSpectator()) {
             this.keepMovement = true;
+            this.onGround = false;
             this.despawnFromAll();
         } else {
             this.keepMovement = false;
@@ -1419,16 +1437,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
         if (this.isSpectator()) {
-            this.getAdventureSettings().set(Type.FLYING, true);
-            this.teleport(this.temporalVector.setComponents(this.x, this.y + 0.1, this.z));
+            this.teleport(this, null);
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
 
             /*InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
             inventoryContentPacket.inventoryId = InventoryContentPacket.SPECIAL_CREATIVE;
             this.dataPacket(inventoryContentPacket);*/
         } else {
-            if (this.isSurvival()) {
-                this.getAdventureSettings().set(Type.FLYING, false);
-            }
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, false);
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
             /*InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
             inventoryContentPacket.inventoryId = InventoryContentPacket.SPECIAL_CREATIVE;
             inventoryContentPacket.slots = Item.getCreativeItems().toArray(new Item[0]);
@@ -1474,6 +1492,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         return Item.EMPTY_ARRAY;
+    }
+
+    @Override
+    public boolean fastMove(double dx, double dy, double dz) {
+        if (dx == 0 && dy == 0 && dz == 0) {
+            return true;
+        }
+
+        Timings.entityMoveTimer.startTiming();
+
+        AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
+
+        if (this.isSpectator() || server.getAllowFlight() || !this.level.hasCollision(this, newBB, false)) {
+            this.boundingBox = newBB;
+        }
+
+        this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
+        this.y = this.boundingBox.getMinY() - this.ySize;
+        this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
+
+        this.checkChunks();
+
+        if (!this.isSpectator()) {
+            if (!this.onGround || dy != 0) {
+                AxisAlignedBB bb = this.boundingBox.clone();
+                bb.setMinY(bb.getMinY() - 0.75);
+
+                this.onGround = this.level.getCollisionBlocks(bb).length > 0;
+            }
+            this.isCollided = this.onGround;
+            this.updateFallState(this.onGround);
+        }
+
+        Timings.entityMoveTimer.stopTiming();
+        return true;
     }
 
     @Override
@@ -1532,6 +1585,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         boolean scaffolding = false;
         boolean endPortal = false;
         for (Block block : this.getCollisionBlocks()) {
+            if (this.isSpectator()) {
+                continue;
+            }
+
             switch (block.getId()) {
                 case BlockID.NETHER_PORTAL -> portal = true;
                 case BlockID.SCAFFOLDING -> scaffolding = true;
@@ -1592,7 +1649,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (portal) {
-            if (this.isCreative() && this.inPortalTicks < 80) {
+            if ((this.isCreative() || this.isSpectator()) && this.inPortalTicks < 80) {
                 this.inPortalTicks = 80;
             } else {
                 this.inPortalTicks++;
@@ -2052,7 +2109,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (canInteract(this, interactDistance)) {
             if (getEntityPlayerLookingAt(interactDistance) != null) {
                 EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
-                setButtonText(onInteract.getInteractButtonText());
+                setButtonText(onInteract.getInteractButtonText(this));
             } else {
                 setButtonText("");
             }
@@ -2216,8 +2273,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 .set(Type.WORLD_IMMUTABLE, isAdventure() || isSpectator())
                 .set(Type.WORLD_BUILDER, !isAdventure() && !isSpectator())
                 .set(Type.AUTO_JUMP, true)
-                .set(Type.ALLOW_FLIGHT, isCreative())
-                .set(Type.NO_CLIP, isSpectator());
+                .set(Type.ALLOW_FLIGHT, isCreative() || isSpectator())
+                .set(Type.NO_CLIP, isSpectator())
+                .set(Type.FLYING, isSpectator());
 
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
@@ -2269,7 +2327,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         float foodSaturationLevel = this.namedTag.getFloat("foodSaturationLevel");
         this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
 
-        if (this.isSpectator()) this.keepMovement = true;
+        if (this.isSpectator()) {
+            this.keepMovement = true;
+            this.onGround = false;
+        }
 
         this.forceMovement = this.teleportPosition = this.getPosition();
 
@@ -2379,6 +2440,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendAttributes();
 
         this.sendPotionEffects(this);
+
+        if (this.isSpectator()) {
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
+        }
+
         this.sendData(this);
 
         this.loggedIn = true;
@@ -3109,7 +3176,44 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     break;
+                case ProtocolInfo.NPC_REQUEST_PACKET:
+                    NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
+                    if (dialogWindows.getIfPresent(npcRequestPacket.getSceneName()) != null) {
+                        //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
+                        /**
+                         * notice that creative players will send SET_ACTIONS back when they cancel the dialog
+                         * so we have no way to know if the player cancelled the dialog or not
+                         * todo: solve this problem
+                         **/
+                        FormWindowDialog dialog = null;
+                        if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS){
+                            dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                            dialogWindows.invalidate(npcRequestPacket.getSceneName());
+                        }else {
+                           dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                        }
 
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
+                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                            handler.handle(this, response);
+                        }
+
+                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog, response);
+                        getServer().getPluginManager().callEvent(event);
+
+                        //close dialog after clicked button (otherwise the client will not be able to close the window)
+                        if(response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
+                            NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+                            closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
+                            closeWindowPacket.setSceneName(response.getSceneName());
+                            closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
+                            this.dataPacket(closeWindowPacket);
+                        }
+                        if(response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null){
+                            response.getClickedButton().getNextDialog().send(this);
+                        }
+                    }
+                    break;
                 case ProtocolInfo.INTERACT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -3596,7 +3700,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V1:
                 case ProtocolInfo.LEVEL_SOUND_EVENT_PACKET_V2:
                 case ProtocolInfo.LEVEL_SOUND_EVENT_PACKET:
-                    if (!this.isSpectator() || (((LevelSoundEventPacket) packet).sound != LevelSoundEventPacket.SOUND_HIT && ((LevelSoundEventPacket) packet).sound != LevelSoundEventPacket.SOUND_ATTACK_NODAMAGE)) {
+                    if (!this.isSpectator()) {
                         this.level.addChunkPacket(this.getChunkX(), this.getChunkZ(), packet);
                     }
                     break;
@@ -5637,7 +5741,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindows.size() > 10){
+        if(this.formWindows.size() > 100){
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
@@ -5648,6 +5752,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.dataPacket(packet);
         return id;
+    }
+
+    public void showDialogWindow(FormWindowDialog dialog){
+        if(dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
+        String actionJson = dialog.getButtonJSONData();
+
+        dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData()));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, actionJson));
+        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
+        dialog.setEntityId(dialog.getBindEntity().getId());
+
+        NPCDialoguePacket packet = new NPCDialoguePacket();
+        packet.setRuntimeEntityId(dialog.getEntityId());
+        packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
+        packet.setDialogue(dialog.getContent());
+        packet.setNpcName(dialog.getTitle());
+        packet.setSceneName(dialog.getSceneName());
+        packet.setActionJson(dialog.getButtonJSONData());
+        this.dialogWindows.put(dialog.getSceneName(),dialog);
+        this.dataPacket(packet);
     }
 
     /**
@@ -6598,12 +6723,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void shakeCamera(float intensity, int duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
+    public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
         CameraShakePacket packet = new CameraShakePacket();
         packet.intensity = intensity;
         packet.duration = duration;
         packet.shakeType = shakeType;
         packet.shakeAction = shakeAction;
         this.dataPacket(packet);
+    }
+
+    public void sendToast(String title, String content) {
+        ToastRequestPacket pk = new ToastRequestPacket();
+        pk.title = title;
+        pk.content = content;
+        this.dataPacket(pk);
     }
 }

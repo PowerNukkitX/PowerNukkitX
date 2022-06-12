@@ -24,6 +24,12 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#177] Added Terra generator inside PowerNukkitX ([FAQ](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)).
 - [#236] Initial implementation and completion of JavaScript plugin support in PowerNukkitX [(click here for development documentation)](https://doc.powernukkitx.cn/en-us/plugin-dev/js/%E6%A6%82%E8%BF%B0_en-us.html).
 - [#288] Implement the /summon command. ` (Tips: will conflict with MobPlugin's /summon command)`
+- [#307] Implement the /function command.
+- [#326] Implement RAWTEXT (/tellraw /titleraw).
+- [#352] Implementation of NPC-API and implementation of NPC functions.
+- [#363] Implemented NPC SKIN switch.
+- [#365] Add toSnbt.
+- [#370] Add JS cross-plugin interoperability.
 
 ### Changed
 
@@ -32,6 +38,17 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#132] Change whitelist to allowlist.
 - [#243] Implemented to be compatible with 1.18.30 (protocol version 503).
 - [#275] Implement basic entity motion handling.
+- [#330] Refine the target selector.
+- [#333] Preliminary Implementation of Equipment for Mob.
+- [#337] Improve BioInventory.
+- [#346] Update hunger value calculation.
+- [#359] Modify recipes.
+- [#366] Update terra version.
+- [#367] Improve NPC interface.
+- [#368] Improve NPC hint box.
+- [#373] Update terra version to 6.0.0-Release.
+- [#375] Implement the Scrolling Subtitles API.
+- [#380] Implemented to be compatible with 1.19.0 (protocol version 512).
 
 ### Fixes
 
@@ -61,6 +78,18 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#265] Fix an exploit where Hellgate cannot teleport.
 - [#273] Fix an exploit where synthesizing an empty barrel or empty barrel has a probability of turning into the wrong barrel with ID 0 when storing lava.
 - [#283] Fix an exploit where logs decompose all to oak boards.
+- [#318] Fix an exploit that prevents the item bar from being moved/dropped/used after death.
+- [#323] Fix the bug that giant mushrooms don't drop after destruction.
+- [#325] Fix id null pointer bug.
+- [#327] Fix the clone issue of some cubes.
+- [#336] Fix auto-cube entity clear leak issue.
+- [#338] Fix hell birth point acquisition issue.
+- [#347] Fix language files.
+- [#364] Fix NPC exploit.
+- [#375] Fix NPC-API exploits and memory leaks.
+- [#376] Preliminary attempt to fix birth point issue.
+- [#377] Fix camera shake.
+- [#382] Fix low-level bug in ListTag#toSnbt().
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -866,11 +895,13 @@ Fixes several anvil issues.
 ## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我们
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
+* [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 ## <a id="CataLogs-Version-history"></a>🔖 Version history / 历史版本
 
-1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Ver 486)
-2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Ver 503)
+1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Version 486)
+2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Version 503)
+3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 512)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1130,6 +1161,35 @@ Need to switch languages?
 [#283]: https://github.com/PowerNukkitX/PowerNukkitX/pull/283
 [#288]: https://github.com/PowerNukkitX/PowerNukkitX/pull/288
 [#292]: https://github.com/PowerNukkitX/PowerNukkitX/pull/292
+[#307]: https://github.com/PowerNukkitX/PowerNukkitX/pull/307
+[#318]: https://github.com/PowerNukkitX/PowerNukkitX/issues/318
+[#323]: https://github.com/PowerNukkitX/PowerNukkitX/issues/323
+[#325]: https://github.com/PowerNukkitX/PowerNukkitX/pull/325
+[#326]: https://github.com/PowerNukkitX/PowerNukkitX/pull/326
+[#327]: https://github.com/PowerNukkitX/PowerNukkitX/pull/327
+[#330]: https://github.com/PowerNukkitX/PowerNukkitX/pull/330
+[#333]: https://github.com/PowerNukkitX/PowerNukkitX/pull/333
+[#336]: https://github.com/PowerNukkitX/PowerNukkitX/pull/336
+[#337]: https://github.com/PowerNukkitX/PowerNukkitX/pull/337
+[#338]: https://github.com/PowerNukkitX/PowerNukkitX/pull/338
+[#346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/346
+[#347]: https://github.com/PowerNukkitX/PowerNukkitX/pull/347
+[#352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/352
+[#359]: https://github.com/PowerNukkitX/PowerNukkitX/pull/359
+[#363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/363
+[#364]: https://github.com/PowerNukkitX/PowerNukkitX/pull/364
+[#365]: https://github.com/PowerNukkitX/PowerNukkitX/pull/365
+[#366]: https://github.com/PowerNukkitX/PowerNukkitX/pull/366
+[#367]: https://github.com/PowerNukkitX/PowerNukkitX/pull/367
+[#368]: https://github.com/PowerNukkitX/PowerNukkitX/pull/368
+[#370]: https://github.com/PowerNukkitX/PowerNukkitX/pull/370
+[#373]: https://github.com/PowerNukkitX/PowerNukkitX/pull/373
+[#374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/374
+[#375]: https://github.com/PowerNukkitX/PowerNukkitX/pull/375
+[#376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/376
+[#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
+[#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
+[#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
 
 <!--PowerNukkitX Version history-->
 
@@ -1137,4 +1197,7 @@ Need to switch languages?
 [#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
 
 <!--Protocol Version 503-->
-[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
+
+<!--Protocol Version 512-->
+[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions

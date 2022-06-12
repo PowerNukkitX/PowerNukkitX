@@ -318,6 +318,13 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     @Override
+    public String toSnbt() {
+        StringJoiner joiner = new StringJoiner(",");
+        tags.forEach((key, tag) -> joiner.add(tag.toSnbt()));
+        return "\"" + this.getName() + "\":" + "{" + joiner + "}";
+    }
+
+    @Override
     public void print(String prefix, PrintStream out) {
         super.print(prefix, out);
         out.println(prefix + "{");
