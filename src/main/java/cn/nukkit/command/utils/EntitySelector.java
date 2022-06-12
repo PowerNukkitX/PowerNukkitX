@@ -216,7 +216,7 @@ public final class EntitySelector {
                 }
             }
         }
-        return List.of(e -> predicates.stream().anyMatch(predicate -> predicate.apply(e)));
+        return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
     }
 
     private static List<Predicate<Entity>> getXpLevelPredicates(Map<String, List<String>> params) {
