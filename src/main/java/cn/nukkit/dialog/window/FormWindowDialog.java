@@ -1,5 +1,6 @@
 package cn.nukkit.dialog.window;
 
+import cn.nukkit.Player;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
@@ -13,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FormWindowDialog {
+public class FormWindowDialog implements Dialog{
 
     protected static final Gson GSON = new Gson();
+
+    private static long dialogId = 0;
 
     private String title = "";
 
@@ -23,11 +26,11 @@ public class FormWindowDialog {
 
     private String skinData = "{\"picker_offsets\":{\"scale\":[1.70,1.70,1.70],\"translate\":[0,20,0]},\"portrait_offsets\":{\"scale\":[1.750,1.750,1.750],\"translate\":[-7,50,0]},\"skin_list\":[{\"variant\":0},{\"variant\":1},{\"variant\":2},{\"variant\":3},{\"variant\":4},{\"variant\":5},{\"variant\":6},{\"variant\":7},{\"variant\":8},{\"variant\":9},{\"variant\":10},{\"variant\":11},{\"variant\":12},{\"variant\":13},{\"variant\":14},{\"variant\":15},{\"variant\":16},{\"variant\":17},{\"variant\":18},{\"variant\":19},{\"variant\":20},{\"variant\":21},{\"variant\":22},{\"variant\":23},{\"variant\":24},{\"variant\":25},{\"variant\":26},{\"variant\":27},{\"variant\":28},{\"variant\":29},{\"variant\":30},{\"variant\":31},{\"variant\":32},{\"variant\":33},{\"variant\":34}]}";
 
-    private String sceneName = UUID.randomUUID().toString();//usually you shouldn't edit this
+    //usually you shouldn't edit this
+    //in pnx this value is used to be an identifier
+    private String sceneName = String.valueOf(dialogId++);
 
     private List<ElementDialogButton> buttons;
-
-    private FormResponseDialog response = null;
 
     private long entityId;
 
@@ -112,14 +115,6 @@ public class FormWindowDialog {
         return handlers;
     }
 
-    public void setResponse(NPCRequestPacket packet) {
-        this.response = new FormResponseDialog(packet,this);
-    }
-
-    public FormResponseDialog getResponse() {
-        return this.response;
-    }
-
     public String getButtonJSONData() {
         return GSON.toJson(this.buttons);
     }
@@ -130,5 +125,13 @@ public class FormWindowDialog {
 
     public String getSceneName() {
         return sceneName;
+    }
+
+    public void updateSceneName() {
+        this.sceneName = String.valueOf(dialogId++);
+    }
+    @Override
+    public void send(Player player){
+        player.showDialogWindow(this);
     }
 }

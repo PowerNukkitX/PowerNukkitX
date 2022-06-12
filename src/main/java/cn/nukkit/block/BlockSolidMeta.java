@@ -10,6 +10,10 @@ public abstract class BlockSolidMeta extends BlockMeta {
         super(meta);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    public BlockSolidMeta(){}
+
     @Override
     public boolean isSolid() {
         return true;

@@ -703,6 +703,7 @@ public class Server {
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         this.commandMap = new SimpleCommandMap(this);
+
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
@@ -2716,6 +2717,9 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.END_GATEWAY, BlockEntityEndGateway.class);
         //powernukkitx only
         BlockEntity.registerBlockEntity(BlockEntity.COMMAND_BLOCK, BlockEntityCommandBlock.class);
+        BlockEntity.registerBlockEntity(BlockEntity.SCULK_SENSOR, BlockEntitySculkSensor.class);
+        BlockEntity.registerBlockEntity(BlockEntity.SCULK_CATALYST, BlockEntitySculkCatalyst.class);
+        BlockEntity.registerBlockEntity(BlockEntity.SCULK_SHRIEKER, BlockEntitySculkShrieker.class);
     }
 
     public boolean isNetherAllowed() {

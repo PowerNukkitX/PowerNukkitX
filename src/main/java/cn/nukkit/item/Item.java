@@ -397,6 +397,9 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //623
 
+            list[ITEM_MANGROVE_DOOR] = ItemDoorMangrove.class;//633
+            list[MANGROVE_SIGN] = ItemMangroveSign.class;//634
+
             list[GLOW_BERRIES] = ItemGlowBerries.class; //638
 
             list[CAMPFIRE] = ItemCampfire.class; //720
@@ -491,7 +494,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         clearCreativeItems();
 
         Config config = new Config(Config.JSON);
-        try(InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("creativeitems.json")) {
+        try (InputStream resourceAsStream = Server.class.getClassLoader().getResourceAsStream("creative_items.json")) {
             config.load(resourceAsStream);
         }
         List<Map> list = config.getMapList("items");

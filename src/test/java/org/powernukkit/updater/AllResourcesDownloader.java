@@ -43,7 +43,7 @@ public class AllResourcesDownloader {
     private void copyProxyPassResources(String pathProxyPassData) {
         copy(pathProxyPassData, "biome_definitions.dat", "src/main/resources/biome_definitions.dat");
         copy(pathProxyPassData, "entity_identifiers.dat", "src/main/resources/entity_identifiers.dat");
-        copy(pathProxyPassData, "creativeitems.json", "src/test/resources/org/powernukkit/updater/dumps/proxypass/creativeitems.json");
+        copy(pathProxyPassData, "creative_items.json", "src/test/resources/org/powernukkit/updater/dumps/proxypass/creative_items.json");
         copy(pathProxyPassData, "runtime_item_states.json", "src/test/resources/org/powernukkit/updater/dumps/proxypass/runtime_item_states.json");
         copy(pathProxyPassData, "recipes.json", "src/test/resources/org/powernukkit/updater/dumps/proxypass/recipes.json");
     }

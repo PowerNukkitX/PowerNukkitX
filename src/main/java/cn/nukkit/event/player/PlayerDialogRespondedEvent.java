@@ -14,20 +14,18 @@ public class PlayerDialogRespondedEvent extends PlayerEvent {
 
     protected FormWindowDialog dialog;
 
-    public PlayerDialogRespondedEvent(Player player, FormWindowDialog dialog) {
+    protected FormResponseDialog response;
+
+    public PlayerDialogRespondedEvent(Player player, FormWindowDialog dialog,FormResponseDialog response) {
         this.dialog = dialog;
+        this.response = response;
     }
 
     public FormWindowDialog getDialog() {
         return dialog;
     }
 
-    /**
-     * Can be null if player closed the window instead of submitting it
-     *
-     * @return response
-     */
     public FormResponseDialog getResponse() {
-        return dialog.getResponse();
+        return response;
     }
 }

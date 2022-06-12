@@ -9,7 +9,7 @@ import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.command.ListenDefiner;
-import cn.nukkit.event.block.CommandBlockExecuteEvent;
+import cn.nukkit.event.command.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.lang.TextContainer;
@@ -335,18 +335,10 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
                             return false;
                         }
 
-                        if (event.getProcessor() != null) {
-                            if (event.getProcessor().apply(cmd)) {
-                                this.successCount = 1; //TODO: >1
-                            } else {
-                                this.successCount = 0;
-                            }
+                        if (Server.getInstance().dispatchCommand(this, cmd)) {
+                            this.successCount = 1; //TODO: >1
                         } else {
-                            if (Server.getInstance().dispatchCommand(this, cmd)) {
-                                this.successCount = 1; //TODO: >1
-                            } else {
-                                this.successCount = 0;
-                            }
+                            this.successCount = 0;
                         }
                     }
                 }

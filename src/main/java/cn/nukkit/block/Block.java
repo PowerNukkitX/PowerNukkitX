@@ -65,7 +65,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It is being replaced by an other solution that don't require a fixed size")
     @PowerNukkitOnly
-    public static final int MAX_BLOCK_ID = dynamic(750);
+    public static final int MAX_BLOCK_ID = dynamic(800);
 
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "It's not a constant value, it may be changed on major updates and" +
@@ -628,7 +628,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[QUARTZ_BRICKS] = BlockBricksQuartz.class; //559
             // 560 Special block: minecraft:unknown
             list[POWDER_SNOW] = BlockPowderSnow.class; //561
-            //list[SCULK_SENSOR] = .class; //562
+            list[SCULK_SENSOR] = BlockSculkSensor.class; //562
             list[POINTED_DRIPSTONE] = BlockPointedDripstone.class; //563
             // 564 (unused)
             // 565 (unused)
@@ -762,9 +762,50 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[RAW_GOLD_BLOCK] = BlockRawGold.class; //708
             list[INFESTED_DEEPSLATE] = BlockInfestedDeepslate.class; //709
 
-            //list[SCULK] = BlockSculk.class; //713
+            list[SCULK] = BlockSculk.class; //713
+            list[SCULK_VEIN] = BlockSculkVein.class; //714
+            list[SCULK_CATALYST] = BlockSculkCatalyst.class; //715
+            list[SCULK_SHRIEKER] = BlockSculkShrieker.class; //716
 
-            //list[MUD] = BlockMud.class; //728
+            list[REINFORCED_DEEPSLATE] = BlockReinForcedDeepSlate.class; //721
+
+            list[FROG_SPAWN] = BlockFrogSpawn.class; //723
+            list[PEARLESCENT_FROGLIGHT] = BlockPearlescentFrogLight.class; //724
+            list[VERDANT_FROGLIGHT] = BlockVerdantFrogLight.class; //725
+            list[OCHRE_FROGLIGHT] = BlockOchreFrogLight.class; //726
+            list[MANGROVE_LEAVES] = BlockMangroveLeaves.class; // 727
+
+            list[MUD] = BlockMud.class; //728
+            list[MANGROVE_PROPAGULE] = BlockMangrovePropagule.class; //729
+            list[MUD_BRICKS] = BlockMudBrick.class; //730
+            list[MANGROVE_PROPAGULE_HANGING] = BlockMangrovePropaguleHanging.class; //731
+            list[PACKED_MUD] = BlockPackedMud.class; //732
+            list[MUD_BRICK_SLAB] = BlockMudBrickSlab.class; //733
+            list[MUD_BRICK_DOUBLE_SLAB] = BlockDoubleMudBrickSlab.class; //734
+            list[MUD_BRICK_STAIRS] = BlockMudBrickStairs.class; //735
+            list[MUD_BRICK_WALL] = BlockMudBrickWall.class; //736
+
+            list[MANGROVE_ROOTS] = BlockMangroveRoots.class;//737
+            list[MUDDY_MANGROVE_ROOTS] = BlockMuddyMangroveRoots.class;//738
+            list[MANGROVE_LOG] = BlockMangroveLog.class;//739
+
+            list[STRIPPED_MANGROVE_LOG] = BlockLogStrippedMangrove.class;//740
+            list[MANGROVE_PLANKS] = BlockPlanksMangrove.class;//741
+            list[MANGROVE_BUTTON] = BlockButtonMangrove.class;//742
+            list[MANGROVE_STAIRS] = BlockStairMangrove.class;//743
+            list[MANGROVE_SLAB] = BlockSlabMangrove.class;//744
+            list[MANGROVE_PRESSURE_PLATE] = BlockPressurePlateMangrove.class;//745
+
+            list[MANGROVE_FENCE] = BlockFenceMangrove.class;//746
+            list[MANGROVE_FENCE_GATE] = BlockFenceGateMangrove.class;//747
+            list[MANGROVE_DOOR] = BlockDoorMangrove.class;//748
+            list[MANGROVE_STANDING_SIGN] = BlockMangroveSignPost.class;//749
+            list[MANGROVE_WALL_SIGN] = BlockMangroveWallSign.class;//750
+            list[MANGROVE_TRAPDOOR] = BlockTrapdoorMangrove.class;//751
+
+            list[MANGROVE_WOOD] = BlockWoodMangrove.class;//752
+            list[STRIPPED_MANGROVE_WOOD] = BlockWoodStrippedMangrove.class;//753
+            list[DOUBLE_MANGROVE_SLAB] = BlockDoubleSlabMangrove.class;//754
             initializing = true;
 
             for (int id = 0; id < MAX_BLOCK_ID; id++) {
@@ -1301,6 +1342,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    /**
+     * 控制方块是否可以燃烧
+     *
+     * @return 可燃烧能力, 数值越大越容易着火, 默认为0
+     */
     public int getBurnAbility() {
         return 0;
     }
@@ -1335,6 +1381,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    /**
+     * 控制方块是否透明(默认为false)
+     *
+     * @return 方块是否透明
+     */
     public boolean isTransparent() {
         return false;
     }
@@ -2670,17 +2721,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public void cloneTo(Position pos){
-        pos.level.setBlock(pos,this.layer,this.clone(),true,true);
-        if (this instanceof BlockEntityHolder<?> holder){
-            if (holder.getBlockEntity() != null){
+    public void cloneTo(Position pos) {
+        pos.level.setBlock(pos, this.layer, this.clone(), true, true);
+        if (this instanceof BlockEntityHolder<?> holder) {
+            if (holder.getBlockEntity() != null) {
                 CompoundTag tag = holder.getBlockEntity().getCleanedNBT();
                 tag.putInt("x", pos.getFloorX());
                 tag.putInt("y", pos.getFloorY());
                 tag.putInt("z", pos.getFloorZ());
-                if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())){
+                if (pos.getLevelBlockEntity() == null || !pos.getLevelBlockEntity().getSaveId().equals(holder.getBlockEntity().getSaveId())) {
                     BlockEntity.createBlockEntity(holder.getBlockEntityType(), this.level.getChunk(pos.getChunkX(), pos.getChunkZ()), tag);
-                }else{
+                } else {
                     pos.getLevelBlockEntity().namedTag = tag;
                     pos.getLevelBlockEntity().loadNBT();
                 }
@@ -2691,11 +2742,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean equalsBlock(Object obj) {
-        if(obj instanceof Block otherBlock) {
+        if (obj instanceof Block otherBlock) {
             if (!(this instanceof BlockEntityHolder<?>) && !(otherBlock instanceof BlockEntityHolder<?>)) {
                 return this.getId() == otherBlock.getId() && this.getDamage() == otherBlock.getDamage();
             }
-            if (this instanceof BlockEntityHolder<?> holder1 && otherBlock instanceof BlockEntityHolder<?> holder2){
+            if (this instanceof BlockEntityHolder<?> holder1 && otherBlock instanceof BlockEntityHolder<?> holder2) {
                 BlockEntity be1 = holder1.getOrCreateBlockEntity();
                 BlockEntity be2 = holder2.getOrCreateBlockEntity();
                 if ((be1 == null) != (be2 == null)) return false;

@@ -23,6 +23,12 @@
 - [#177] 在PowerNukkitX内添加Terra生成器（[FAQ](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 - [#236] 在PowerNukkitX中初步实现并完成了JavaScript插件支持[（点此查看开发文档）](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)。
 - [#288] 实现/summon命令。`（Tips：会和MobPlugin的/summon命令产生冲突）`
+- [#307] 实现/function命令。
+- [#326] 实现RAWTEXT（/tellraw /titleraw）。
+- [#352] 实现NPC-API和实现NPC功能。
+- [#363] 实现NPC SKIN切换。
+- [#365] 添加toSnbt。
+- [#370] 添加JS跨插件互操作。
 
 ### 修改记录
 
@@ -31,6 +37,17 @@
 - [#132] 将whitelist更改为allowlist。
 - [#243] 实现兼容1.18.30 (协议版本503)。
 - [#275] 实现基本的实体运动处理。
+- [#330] 完善目标选择器。
+- [#333] 初步实现Mob的Equipment。
+- [#337] 改进生物Inventory。
+- [#346] 更新饥饿值计算。
+- [#359] 修改配方。
+- [#366] 更新terra版本。
+- [#367] 完善NPC接口。
+- [#368] 完善NPC提示框。
+- [#373] 将terra版本更新至6.0.0-Release。
+- [#375] 实现滚动字幕API。
+- [#380] 实现兼容1.19.0 (协议版本512)。
 
 ### BUG修复
 
@@ -60,6 +77,18 @@
 - [#265] 修复地狱门无法传送的漏洞。
 - [#273] 修复合成空桶或空桶在存放岩浆时有概率会变成ID为0的错误桶的漏洞。
 - [#283] 修复原木分解均为橡木板的漏洞。
+- [#318] 修复死亡后物品栏无法移动/丢弃/使用的漏洞。
+- [#323] 修复巨型蘑菇在破坏后不掉落的漏洞。
+- [#325] 修复id空指针错误。
+- [#327] 修复部分方块的clone问题。
+- [#336] 解决自动方块实体清零泄露问题。
+- [#338] 修复地狱出生点获取问题。
+- [#347] 修复语言文件。
+- [#364] 修复NPC漏洞。
+- [#375] 修复NPC-API漏洞和内存泄露问题。
+- [#376] 初步尝试修复出生点问题。
+- [#377] 修复相机抖动。
+- [#382] 修复ListTag#toSnbt()中的低级错误。
 
 ### 安全漏洞修复
 
@@ -874,6 +903,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (协议版本486)
 2. [#V2-dev] PNX-1.6.0.0-dev (协议版本503)
+3. [#V3-dev] PNX-1.6.0.0-dev (协议版本512)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1132,6 +1162,35 @@ Need to switch languages?
 [#283]: https://github.com/PowerNukkitX/PowerNukkitX/pull/283
 [#288]: https://github.com/PowerNukkitX/PowerNukkitX/pull/288
 [#292]: https://github.com/PowerNukkitX/PowerNukkitX/pull/292
+[#307]: https://github.com/PowerNukkitX/PowerNukkitX/pull/307
+[#318]: https://github.com/PowerNukkitX/PowerNukkitX/issues/318
+[#323]: https://github.com/PowerNukkitX/PowerNukkitX/issues/323
+[#325]: https://github.com/PowerNukkitX/PowerNukkitX/pull/325
+[#326]: https://github.com/PowerNukkitX/PowerNukkitX/pull/326
+[#327]: https://github.com/PowerNukkitX/PowerNukkitX/pull/327
+[#330]: https://github.com/PowerNukkitX/PowerNukkitX/pull/330
+[#333]: https://github.com/PowerNukkitX/PowerNukkitX/pull/333
+[#336]: https://github.com/PowerNukkitX/PowerNukkitX/pull/336
+[#337]: https://github.com/PowerNukkitX/PowerNukkitX/pull/337
+[#338]: https://github.com/PowerNukkitX/PowerNukkitX/pull/338
+[#346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/346
+[#347]: https://github.com/PowerNukkitX/PowerNukkitX/pull/347
+[#352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/352
+[#359]: https://github.com/PowerNukkitX/PowerNukkitX/pull/359
+[#363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/363
+[#364]: https://github.com/PowerNukkitX/PowerNukkitX/pull/364
+[#365]: https://github.com/PowerNukkitX/PowerNukkitX/pull/365
+[#366]: https://github.com/PowerNukkitX/PowerNukkitX/pull/366
+[#367]: https://github.com/PowerNukkitX/PowerNukkitX/pull/367
+[#368]: https://github.com/PowerNukkitX/PowerNukkitX/pull/368
+[#370]: https://github.com/PowerNukkitX/PowerNukkitX/pull/370
+[#373]: https://github.com/PowerNukkitX/PowerNukkitX/pull/373
+[#374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/374
+[#375]: https://github.com/PowerNukkitX/PowerNukkitX/pull/375
+[#376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/376
+[#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
+[#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
+[#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
 
 <!--PowerNukkitX Version history-->
 
@@ -1139,4 +1198,7 @@ Need to switch languages?
 [#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
 
 <!--Protocol Version 503-->
-[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
+
+<!--Protocol Version 512-->
+[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions

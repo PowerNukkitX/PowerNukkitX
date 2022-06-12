@@ -122,6 +122,9 @@ public abstract class Enchantment implements Cloneable {
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_CROSSBOW_QUICK_CHARGE = "quick_charge";
     @Since("1.4.0.0-PN") public static final int ID_SOUL_SPEED = 36;
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SOUL_SPEED = "soul_speed";
+    @Since("1.4.0.0-PN") public static final int ID_SWIFT_SNEAK = 37;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") public static final String NAME_SWIFT_SNEAK = "swift_sneak";
+
 
     public static void init() {
         enchantments = new Enchantment[256];
@@ -163,6 +166,7 @@ public abstract class Enchantment implements Cloneable {
         enchantments[ID_CROSSBOW_PIERCING]  = new EnchantmentCrossbowPiercing();
         enchantments[ID_CROSSBOW_QUICK_CHARGE]  = new EnchantmentCrossbowQuickCharge();
         enchantments[ID_SOUL_SPEED]  = new EnchantmentSoulSpeed();
+        enchantments[ID_SWIFT_SNEAK] = new EnchantmentSwiftSneak();
 
 
         enchantmentName2IDMap.put(NAME_PROTECTION_ALL, ID_PROTECTION_ALL);
@@ -202,6 +206,7 @@ public abstract class Enchantment implements Cloneable {
         enchantmentName2IDMap.put(NAME_CROSSBOW_PIERCING, ID_CROSSBOW_PIERCING);
         enchantmentName2IDMap.put(NAME_CROSSBOW_QUICK_CHARGE, ID_CROSSBOW_QUICK_CHARGE);
         enchantmentName2IDMap.put(NAME_SOUL_SPEED, ID_SOUL_SPEED);
+        enchantmentName2IDMap.put(NAME_SWIFT_SNEAK, ID_SWIFT_SNEAK);
     }
 
     /**
