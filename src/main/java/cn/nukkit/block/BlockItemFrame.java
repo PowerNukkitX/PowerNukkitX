@@ -68,6 +68,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements BlockEntityH
         return PROPERTIES;
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Nonnull

@@ -146,6 +146,16 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         return false;
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 0.625;
+    }
+
     @PowerNukkitOnly
     public void updatePower() {
         int i;

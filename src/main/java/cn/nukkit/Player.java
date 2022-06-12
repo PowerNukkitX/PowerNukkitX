@@ -5349,12 +5349,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
     @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
-        int levelBefore = this.expLevel;
-        this.exp = exp;
-        this.expLevel = level;
+        PlayerExperienceChangeEvent ev = new PlayerExperienceChangeEvent(this, this.exp, this.expLevel, exp, level);
+        this.server.getPluginManager().callEvent(ev);
 
-        this.sendExperienceLevel(level);
-        this.sendExperience(exp);
+        if (ev.isCancelled()) {
+            return;
+        }
+        int levelBefore = this.expLevel;
+        this.exp = ev.getNewExperience();
+        this.expLevel = ev.getNewExperienceLevel();
+        this.sendExperienceLevel(this.expLevel);
+        this.sendExperience(this.exp);
         if (playLevelUpSound && levelBefore < level && levelBefore / 5 != level / 5 && this.lastPlayerdLevelUpSoundTime < this.age - 100) {
             this.lastPlayerdLevelUpSoundTime = this.age;
             this.level.addLevelSoundEvent(

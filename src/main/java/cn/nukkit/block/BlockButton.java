@@ -40,7 +40,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public BlockButton() {
         this(0);
     }
-    
+
     @UsedByReflection
     public BlockButton(int meta) {
         super(meta);
@@ -82,7 +82,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
         if (!BlockLever.isSupportValid(target, face)) {
             return false;
         }
-        
+
         setBlockFace(face);
         this.level.setBlock(block, this, true, true);
         return true;
@@ -122,7 +122,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             BlockFace touchingFace = thisFace.getOpposite();
             Block side = this.getSide(touchingFace);
             if (!BlockLever.isSupportValid(side, thisFace)) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this,Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -147,7 +147,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     public boolean isActivated() {
         return getBooleanValue(BUTTON_PRESSED);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setActivated(boolean activated) {

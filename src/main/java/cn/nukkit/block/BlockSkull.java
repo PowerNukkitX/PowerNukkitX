@@ -17,10 +17,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
@@ -30,7 +33,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements BlockEntityHolder only in PowerNukkit")
 @PowerNukkitDifference(info = "Implements RedstoneComponent.", since = "1.4.0.0-PN")
-public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull> {
+public class BlockSkull extends BlockTransparentMeta implements RedstoneComponent, BlockEntityHolder<BlockEntitySkull>, Faceable {
     @PowerNukkitOnly
     @Deprecated
     @Since("1.6.0.0-PNX")
@@ -113,7 +116,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     @Override
     public String getName() {
         int itemMeta = 0;
-        
+
         if (this.level != null) {
             BlockEntitySkull blockEntity = getBlockEntity();
             if (blockEntity != null) {
@@ -167,7 +170,7 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
         if (ev.isCancelled()) {
             return 0;
         }
-        
+
         entity.setMouthMoving(this.isGettingPower());
         return Level.BLOCK_UPDATE_REDSTONE;
     }
@@ -214,5 +217,25 @@ public class BlockSkull extends BlockTransparentMeta implements RedstoneComponen
     @PowerNukkitOnly
     public  boolean sticksToPiston() {
         return false;
+    }
+    @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromIndex(this.getDamage() & 0x7);
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+        switch (this.getBlockFace()) {
+            case NORTH:
+                return bb.offset(0, 0.25, 0.25);
+            case SOUTH:
+                return bb.offset(0, 0.25, -0.25);
+            case WEST:
+                return bb.offset(0.25, 0.25, 0);
+            case EAST:
+                return bb.offset(-0.25, 0.25, 0);
+        }
+        return bb;
     }
 }

@@ -13,7 +13,9 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBrewingStand;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -23,7 +25,7 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockSolidMeta {
+public class BlockBrewingStand extends BlockTransparentMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty HAS_POTION_A = new BooleanBlockProperty("brewing_stand_slot_a_bit", false);
@@ -191,5 +193,16 @@ public class BlockBrewingStand extends BlockSolidMeta {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        double offset = 7/16.0;
+        return new SimpleAxisAlignedBB(x + offset, y, z + offset, x + 1 - offset, y + 1 - offset, z + 1 - offset);
     }
 }

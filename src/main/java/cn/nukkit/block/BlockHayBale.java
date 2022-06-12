@@ -123,4 +123,9 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
             entity.attack(new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.FALL, damage));
         }
     }
+
+    @Override
+    public Item toItem() {
+        return Item.get(this.getId(), 0);
+    }
 }

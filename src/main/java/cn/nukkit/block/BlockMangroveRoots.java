@@ -35,7 +35,7 @@ public class BlockMangroveRoots extends BlockTransparentMeta{
         return MANGROVE_ROOTS;
     }
 
-    @PowerNukkitOnly
+
     @Override
     public int getWaterloggingLevel() {
         return 1;

@@ -432,6 +432,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[AMETHYST_SHARD] = ItemAmethystShard.class; //771
             list[SPYGLASS] = ItemSpyglass.class; //772
+            list[RECORD_OTHERSIDE] = ItemRecordOtherside.class; //773
 
             list[SOUL_CAMPFIRE] = ItemCampfireSoul.class; //801
 
