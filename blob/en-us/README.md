@@ -25,10 +25,11 @@ Attention:
 Join US:
 
 * [Discord](https://discord.gg/j7UwsaNu4V)
+* [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.18.30 protocol (under refinement).
+1. Support for 1.19.0 protocol (under refinement).
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Native support for vanilla commands and command block, etc. (under refinement)

@@ -46,6 +46,8 @@
 - [#367] 完善NPC接口。
 - [#368] 完善NPC提示框。
 - [#373] 将terra版本更新至6.0.0-Release。
+- [#375] 实现滚动字幕API。
+- [#380] 实现兼容1.19.0 (协议版本512)。
 
 ### BUG修复
 
@@ -83,6 +85,10 @@
 - [#338] 修复地狱出生点获取问题。
 - [#347] 修复语言文件。
 - [#364] 修复NPC漏洞。
+- [#375] 修复NPC-API漏洞和内存泄露问题。
+- [#376] 初步尝试修复出生点问题。
+- [#377] 修复相机抖动。
+- [#382] 修复ListTag#toSnbt()中的低级错误。
 
 ### 安全漏洞修复
 
@@ -897,6 +903,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (协议版本486)
 2. [#V2-dev] PNX-1.6.0.0-dev (协议版本503)
+3. [#V3-dev] PNX-1.6.0.0-dev (协议版本512)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1178,6 +1185,12 @@ Need to switch languages?
 [#368]: https://github.com/PowerNukkitX/PowerNukkitX/pull/368
 [#370]: https://github.com/PowerNukkitX/PowerNukkitX/pull/370
 [#373]: https://github.com/PowerNukkitX/PowerNukkitX/pull/373
+[#374]: https://github.com/PowerNukkitX/PowerNukkitX/pull/374
+[#375]: https://github.com/PowerNukkitX/PowerNukkitX/pull/375
+[#376]: https://github.com/PowerNukkitX/PowerNukkitX/pull/376
+[#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
+[#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
+[#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
 
 <!--PowerNukkitX Version history-->
 
@@ -1185,4 +1198,7 @@ Need to switch languages?
 [#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
 
 <!--Protocol Version 503-->
-[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
+
+<!--Protocol Version 512-->
+[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
