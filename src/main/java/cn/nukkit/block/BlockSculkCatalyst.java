@@ -2,15 +2,19 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.ItemTool;
 
+import javax.annotation.Nonnull;
+
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockSculkCatalyst extends BlockSolid {
+public class BlockSculkCatalyst extends BlockSolid implements BlockEntityHolder<BlockEntitySculkCatalyst> {
 
-    public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom",false);
+    public static final BooleanBlockProperty BLOOM = new BooleanBlockProperty("bloom", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(BLOOM);
 
     @Override
@@ -57,4 +61,17 @@ public class BlockSculkCatalyst extends BlockSolid {
     public int getToolType() {
         return ItemTool.TYPE_HOE;
     }
+
+    @Nonnull
+    @Override
+    public Class<? extends BlockEntitySculkCatalyst> getBlockEntityClass() {
+        return BlockEntitySculkCatalyst.class;
+    }
+
+    @Nonnull
+    @Override
+    public String getBlockEntityType() {
+        return BlockEntity.SCULK_CATALYST;
+    }
+
 }
