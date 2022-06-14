@@ -23,14 +23,6 @@ public abstract class Generator implements BlockID {
 
     public abstract int getId();
 
-    public DimensionData getDimensionData() {
-        DimensionData dimensionData = DimensionEnum.getDataFromId(this.getDimension());
-        if (dimensionData == null) {
-            dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-        }
-        return dimensionData;
-    }
-
     @Deprecated
     public int getDimension() {
         return Level.DIMENSION_OVERWORLD;

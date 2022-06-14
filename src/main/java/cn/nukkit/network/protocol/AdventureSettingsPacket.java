@@ -16,7 +16,7 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int PERMISSION_HOST = 2;
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
-
+    //TODO: check level 3
     /**
      * This constant is used to identify flags that should be set on the second field. In a sensible world, these
      * flags would all be set on the same packet field, but as of MCPE 1.2, the new abilities flags have for some
@@ -42,7 +42,7 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int ATTACK_MOBS = 0x10 | BITFLAG_SECOND_SET;
     public static final int OPERATOR = 0x20 | BITFLAG_SECOND_SET;
     public static final int TELEPORT = 0x80 | BITFLAG_SECOND_SET;
-    public static final int BUILD = 0x100 | BITFLAG_SECOND_SET;
+    public static final int BUILD_AND_MINE = 0x100 | BITFLAG_SECOND_SET;
     public static final int DEFAULT_LEVEL_PERMISSIONS = 0x200 | BITFLAG_SECOND_SET;
 
     public long flags = 0;

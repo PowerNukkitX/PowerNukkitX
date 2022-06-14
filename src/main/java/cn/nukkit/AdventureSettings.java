@@ -16,6 +16,7 @@ public class AdventureSettings implements Cloneable {
     public static final int PERMISSION_HOST = 2;
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
+    //TODO: check level 3
 
     private Map<Type, Boolean> values = new EnumMap<>(Type.class);
 
@@ -83,7 +84,7 @@ public class AdventureSettings implements Cloneable {
         ATTACK_MOBS(AdventureSettingsPacket.ATTACK_MOBS, true),
         OPERATOR(AdventureSettingsPacket.OPERATOR, false),
         TELEPORT(AdventureSettingsPacket.TELEPORT, false),
-        BUILD(AdventureSettingsPacket.BUILD, true),
+        BUILD_AND_MINE(AdventureSettingsPacket.BUILD_AND_MINE, true),
         DEFAULT_LEVEL_PERMISSIONS(AdventureSettingsPacket.DEFAULT_LEVEL_PERMISSIONS, false);
 
         private final int id;
