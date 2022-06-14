@@ -27,11 +27,11 @@ public class ResourcePacksInfoPacket extends DataPacket {
         this.putBoolean(this.mustAccept);
         this.putBoolean(this.scripting);
         this.putBoolean(this.forceServerPacks);
-        this.encodePacks(this.behaviourPackEntries, true);
-        this.encodePacks(this.resourcePackEntries, false);
+        this.encodeBehaviourPacks(this.behaviourPackEntries);
+        this.encodeResourcePacks(this.resourcePackEntries);
     }
 
-    private void encodePacks(ResourcePack[] packs, boolean behaviour) {
+    private void encodeBehaviourPacks(ResourcePack[] packs) {
         this.putLShort(packs.length);
         for (ResourcePack entry : packs) {
             this.putString(entry.getPackId().toString());
@@ -39,11 +39,22 @@ public class ResourcePacksInfoPacket extends DataPacket {
             this.putLLong(entry.getPackSize());
             this.putString(""); // encryption key
             this.putString(""); // sub-pack name
-            this.putString(entry.getPackId().toString()); // content identity
+            this.putString(""); // content identity
             this.putBoolean(false); // scripting
-            if (!behaviour) {
-                this.putBoolean(false); // raytracing capable
-            }
+        }
+    }
+
+    private void encodeResourcePacks(ResourcePack[] packs) {
+        this.putLShort(packs.length);
+        for (ResourcePack entry : packs) {
+            this.putString(entry.getPackId().toString());
+            this.putString(entry.getPackVersion());
+            this.putLLong(entry.getPackSize());
+            this.putString(""); // encryption key
+            this.putString(""); // sub-pack name
+            this.putString(""); // content identity
+            this.putBoolean(false); // scripting
+            this.putBoolean(false); // raytracing capable
         }
     }
 

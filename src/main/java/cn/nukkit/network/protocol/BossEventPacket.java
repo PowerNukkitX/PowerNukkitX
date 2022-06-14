@@ -53,6 +53,7 @@ public class BossEventPacket extends DataPacket {
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
+            case TYPE_QUERY:
                 this.playerEid = this.getEntityUniqueId();
                 break;
             case TYPE_SHOW:
@@ -81,12 +82,13 @@ public class BossEventPacket extends DataPacket {
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
+            case TYPE_QUERY:
                 this.putEntityUniqueId(this.playerEid);
                 break;
             case TYPE_SHOW:
                 this.putString(this.title);
                 this.putLFloat(this.healthPercent);
-            case TYPE_UNKNOWN_6:
+            case TYPE_UPDATE_PROPERTIES:
                 this.putShort(this.unknown);
             case TYPE_TEXTURE:
                 this.putUnsignedVarInt(this.color);

@@ -24,8 +24,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -55,7 +55,7 @@ public class Nukkit {
     public final static String VERSION = getVersion();
     @PowerNukkitOnly
     public final static String GIT_COMMIT = getGitCommit();
-    public final static String API_VERSION = dynamic("1.0.13");
+    public final static String API_VERSION = dynamic("1.0.14");
     public final static String CODENAME = dynamic("PowerNukkitX");
     @Deprecated
     public final static String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;

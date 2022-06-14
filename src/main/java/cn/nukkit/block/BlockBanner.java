@@ -235,4 +235,9 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable, Block
 
         return DyeColor.WHITE;
     }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
 }
