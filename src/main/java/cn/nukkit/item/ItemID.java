@@ -298,8 +298,8 @@ public interface ItemID {
 
     @Since("1.6.0.0-PNX") int AMETHYST_SHARD = 771;
     @Since("FUTURE") int SPYGLASS = 772;
+    @Since("FUTURE") int RECORD_OTHERSIDE = 773;
 
     @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;
-
 }

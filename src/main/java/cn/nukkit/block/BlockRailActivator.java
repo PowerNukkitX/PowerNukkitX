@@ -204,4 +204,8 @@ public class BlockRailActivator extends BlockRail implements RedstoneComponent {
     public void setRailActive(boolean active) {
         setBooleanValue(ACTIVE, active);
     }
+    @Override
+    public double getHardness() {
+        return 0.5;
+    }
 }

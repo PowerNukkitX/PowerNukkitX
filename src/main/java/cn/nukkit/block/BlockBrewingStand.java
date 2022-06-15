@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -23,7 +22,7 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockSolidMeta {
+public class BlockBrewingStand extends BlockTransparentMeta {
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final BooleanBlockProperty HAS_POTION_A = new BooleanBlockProperty("brewing_stand_slot_a_bit", false);
@@ -123,7 +122,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
         BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
         return brewing != null;
     }
-    
+
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
         if (player != null) {
@@ -170,6 +169,36 @@ public class BlockBrewingStand extends BlockSolidMeta {
     @Override
     public BlockColor getColor() {
         return BlockColor.IRON_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + 7 / 16.0;
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + 7 / 16.0;
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x + 1 - 7 / 16.0;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 1 - 2 / 16.0;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z + 1 - 7 / 16.0;
     }
 
     @Override

@@ -1,12 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.utils.PersonaPiece;
-import cn.nukkit.utils.PersonaPieceTint;
-import cn.nukkit.utils.SerializedImage;
-import cn.nukkit.utils.SkinAnimation;
+import cn.nukkit.utils.*;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;
@@ -84,24 +80,30 @@ public class LoginPacket extends DataPacket {
         JsonObject skinToken = decodeToken(new String(this.get(this.getLInt())));
         if (skinToken.has("ClientRandomId")) this.clientId = skinToken.get("ClientRandomId").getAsLong();
         skin = new Skin();
+
         if (skinToken.has("SkinId")) {
             skin.setSkinId(skinToken.get("SkinId").getAsString());
         }
-        if (skinToken.has("PlayFabID")) {
-            skin.setPlayFabId(skinToken.get("PlayFabID").getAsString());
+
+        if (skinToken.has("PlayFabId")) {
+            skin.setPlayFabId(skinToken.get("PlayFabId").getAsString());
         }
+
         if (skinToken.has("CapeId")) {
             skin.setCapeId(skinToken.get("CapeId").getAsString());
         }
 
         skin.setSkinData(getImage(skinToken, "Skin"));
         skin.setCapeData(getImage(skinToken, "Cape"));
+
         if (skinToken.has("PremiumSkin")) {
             skin.setPremium(skinToken.get("PremiumSkin").getAsBoolean());
         }
+
         if (skinToken.has("PersonaSkin")) {
             skin.setPersona(skinToken.get("PersonaSkin").getAsBoolean());
         }
+
         if (skinToken.has("CapeOnClassicSkin")) {
             skin.setCapeOnClassic(skinToken.get("CapeOnClassicSkin").getAsBoolean());
         }
@@ -114,13 +116,12 @@ public class LoginPacket extends DataPacket {
             skin.setGeometryData(new String(Base64.getDecoder().decode(skinToken.get("SkinGeometryData").getAsString()), StandardCharsets.UTF_8));
         }
 
-        if (skinToken.has("AnimationData")) {
-            skin.setAnimationData(new String(Base64.getDecoder().decode(skinToken.get("AnimationData").getAsString()), StandardCharsets.UTF_8));
+        if (skinToken.has("SkinAnimationData")) {
+            skin.setAnimationData(new String(Base64.getDecoder().decode(skinToken.get("SkinAnimationData").getAsString()), StandardCharsets.UTF_8));
         }
 
         if (skinToken.has("AnimatedImageData")) {
-            JsonArray array = skinToken.get("AnimatedImageData").getAsJsonArray();
-            for (JsonElement element : array) {
+            for (JsonElement element : skinToken.get("AnimatedImageData").getAsJsonArray()) {
                 skin.getAnimations().add(getAnimation(element.getAsJsonObject()));
             }
         }

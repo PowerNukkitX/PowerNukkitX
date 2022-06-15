@@ -3,7 +3,7 @@ package cn.nukkit.item;
  * @author Snake1999
  * @since 2016/1/14
  */
-public class ItemSpiderEye extends Item {
+public class ItemSpiderEye extends ItemEdible {
 
     public ItemSpiderEye() {
         this(0, 1);
