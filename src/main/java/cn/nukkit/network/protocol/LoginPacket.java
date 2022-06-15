@@ -1,8 +1,15 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.utils.*;
-import com.google.gson.*;
+import cn.nukkit.utils.PersonaPiece;
+import cn.nukkit.utils.PersonaPieceTint;
+import cn.nukkit.utils.SerializedImage;
+import cn.nukkit.utils.SkinAnimation;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import lombok.ToString;
 
 import java.nio.charset.StandardCharsets;

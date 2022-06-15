@@ -36,14 +36,6 @@ public abstract class Generator implements BlockID {
         return Level.DIMENSION_OVERWORLD;
     }
 
-    public DimensionData getDimensionData() {
-        DimensionData dimensionData = DimensionEnum.getDataFromId(this.getDimension());
-        if (dimensionData == null) {
-            dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
-        }
-        return dimensionData;
-    }
-
     private static final Map<String, Class<? extends Generator>> nameList = new HashMap<>();
 
     private static final Map<Integer, Class<? extends Generator>> typeList = new HashMap<>();

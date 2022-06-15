@@ -76,12 +76,6 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_POINT_CLOUD = 2024;
     public static final int EVENT_PARTICLE_EXPLOSION = 2025;
     public static final int EVENT_PARTICLE_BLOCK_EXPLOSION = 2026;
-    public static final int EVENT_PARTICLE_TURTLE_EGG = 2034;
-    public static final int EVENT_PARTICLE_SCULK_SHRIEK = 2035;
-    public static final int EVENT_PARTICLE_SCULK_CATALYST_BLOOM = 2036;
-    public static final int EVENT_PARTICLE_SCULK_CHARGE = 2037;
-    public static final int EVENT_PARTICLE_SCULK_CHARGE_POP = 2038;
-
     @PowerNukkitOnly
     @Since("1.5.0.0-PN")
     public static final int EVENT_PARTICLE_VIBRATION_SIGNAL = 2027;
