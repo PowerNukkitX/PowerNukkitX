@@ -12,7 +12,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
 
-This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 512)`.
+This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 
 ### Added
 
@@ -52,7 +52,7 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 512)`.
 - [#368] Improve NPC hint box.
 - [#373] Update terra version to 6.0.0-Release.
 - [#375] Implement the Scrolling Subtitles API.
-- [#380] Implemented to be compatible with 1.19.0 (protocol version 512).
+- [#380] Implemented to be compatible with 1.19.0 (protocol version 527).
 - [#390] Support player name resolution with _.
 
 ### Fixes
@@ -908,7 +908,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Version 486)
 2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Version 503)
-3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 512)
+3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 527)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1213,5 +1213,5 @@ Need to switch languages?
 <!--Protocol Version 503-->
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
-<!--Protocol Version 512-->
+<!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions

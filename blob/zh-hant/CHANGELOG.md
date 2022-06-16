@@ -11,7 +11,7 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [開發中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-該版本目前支援了Minecraft:BE `1.19.0 (協議版本512)`.
+該版本目前支援了Minecraft:BE `1.19.0 (協議版本527)`.
 
 ### 新增內容
 
@@ -51,7 +51,7 @@
 - [#368] 完善NPC提示框。
 - [#373] 將terra版本更新至6.0.0-Release。
 - [#375] 實現滾動字幕API。
-- [#380] 實現兼容1.19.0 (協議版本512)。
+- [#380] 實現兼容1.19.0 (協議版本527)。
 - [#390] 支持帶有_的玩家名稱解析。
 
 ### BUG修復
@@ -909,7 +909,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (協議版本486)
 2. [#V2-dev] PNX-1.6.0.0-dev (協議版本503)
-3. [#V3-dev] PNX-1.6.0.0-dev (協議版本512)
+3. [#V3-dev] PNX-1.6.0.0-dev (協議版本527)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
@@ -1213,5 +1213,5 @@ Need to switch languages?
 <!--Protocol Version 503-->
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
-<!--Protocol Version 512-->
+<!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
