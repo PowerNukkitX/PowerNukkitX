@@ -15,6 +15,7 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Pub4Game
@@ -47,11 +48,16 @@ public class KillCommand extends VanillaCommand {
                 return true;
             }
             List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
+            entities = entities.stream().filter(entity -> {
+                if (entity instanceof Player player)
+                    return !player.isCreative();
+                else
+                    return true;
+            }).toList();
             if (entities == null || entities.isEmpty()) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
-            StringBuilder message = new StringBuilder();
             boolean successExecute = true;
             for (Entity entity : entities) {
                 if (entity.getName().equals(sender.getName())) {
@@ -65,9 +71,9 @@ public class KillCommand extends VanillaCommand {
                 } else {
                     entity.kill();
                 }
-                message.append(entity.getName()).append(", ");
             }
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message.toString()));
+            String message = entities.stream().map(entity -> entity.getName()).collect(Collectors.joining(", "));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", message));
             return true;
         }
         if (sender.isPlayer()) {

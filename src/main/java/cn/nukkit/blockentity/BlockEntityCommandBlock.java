@@ -605,20 +605,27 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
 
     @Override
     public void sendMessage(TextContainer message) {
-        this.sendMessage(this.getServer().getLanguage().translate(message));
-        this.lastOutput = message.getText();
-        if (message instanceof TranslationContainer translationContainer){
-            ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
-            for (String param : translationContainer.getParameters()){
-                newParams.add(new StringTag("",param));
+        if (this.isTrackingOutput()) {
+            this.lastOutput = message.getText();
+            if (message instanceof TranslationContainer translationContainer) {
+                ListTag<StringTag> newParams = new ListTag<>(TAG_LAST_OUTPUT_PARAMS);
+                for (String param : translationContainer.getParameters()) {
+                    newParams.add(new StringTag("", param));
+                }
+                this.lastOutputParams = newParams;
             }
-            this.lastOutputParams = newParams;
+        }
+        if (this.getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) {
+            for (Player player : this.getLevel().getPlayers().values()) {
+                if (player.isOp()) {
+                    player.sendMessage(message);
+                }
+            }
         }
     }
 
     @Override
     public void sendMessage(String message) {
-        message = this.getServer().getLanguage().translateString(message);
         if (this.isTrackingOutput()) {
             this.lastOutput = message;
         }

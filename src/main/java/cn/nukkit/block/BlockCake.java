@@ -143,7 +143,7 @@ public class BlockCake extends BlockTransparentMeta {
         if (item.getId() >= BlockID.CANDLE && item.getId() <= BlockID.BLACK_CANDLE) {
             return false;
         }
-        if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
+        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative())) {
             if (getDamage() <= 0x06) setDamage(getDamage() + 1);
             if (getDamage() >= 0x06) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
