@@ -2634,12 +2634,12 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
-//        cause bug (eg: frog_spawn) (and I don't know what this is for)
-//        2022/6/11 @daoge_cmd
-//        if (target.canBeReplaced()) {
-//            block = target;
-//            hand.position(block);
-//        }
+        //cause bug (eg: frog_spawn) (and I don't know what this is for)
+        //@todo 2022/6/11 daoge_cmd
+        if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
+            block = target;
+            hand.position(block);
+        }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
