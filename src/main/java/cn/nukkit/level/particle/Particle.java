@@ -111,6 +111,9 @@ public abstract class Particle extends Vector3 {
     @Since("1.4.0.0-PN") public static final int TYPE_SPORE_BLOSSOM_AMBIENT = dynamic(79);
     @Since("1.4.0.0-PN") public static final int TYPE_WAX = dynamic(80);
     @Since("1.4.0.0-PN") public static final int TYPE_ELECTRIC_SPARK = dynamic(81);
+    public static final int TYPE_SHRIEK = dynamic(82);
+    public static final int TYPE_SCULK_SOUL = dynamic(83);
+    public static final int TYPE_SONIC_EXPLOSION = dynamic(84);
 
     @Since("1.4.0.0-PN")
     public static Integer getParticleIdByName(String name) {
@@ -121,10 +124,10 @@ public abstract class Particle extends Vector3 {
 
             Class<?> type = field.getType();
 
-            if(type==int.class) {
+            if (type == int.class) {
                 return field.getInt(null);
             }
-        } catch(NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             // ignore
         }
         return null;

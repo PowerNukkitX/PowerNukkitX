@@ -122,7 +122,7 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
             BlockFace touchingFace = thisFace.getOpposite();
             Block side = this.getSide(touchingFace);
             if (!BlockLever.isSupportValid(side, thisFace)) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {

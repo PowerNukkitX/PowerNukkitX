@@ -418,161 +418,73 @@ public class LevelSoundEventPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("FUTURE")
     public static final int SOUND_RECORD_OTHERSIDE = 371;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_TONGUE = 372;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_CRACK_IRON_GOLEM = 373;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_REPAIR_IRON_GOLEM = 374;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_LISTENING = 375;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_HEARTBEAT = 376;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_HORN_BREAK = 377;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_SCULK_PLACE = 378;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_SCULK_SPREAD = 379;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_SCULK_CHARGE = 380;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_SCULK_SENSOR_PLACE = 381;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_SCULK_SHRIEKER_PLACE = 382;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_0 = 383;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_1 = 384;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_2 = 385;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_3 = 386;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_4 = 387;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_5 = 388;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_6 = 389;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_7 = 390;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_8 = 391;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_CALL_9 = 392;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_0 = 393;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_1 = 394;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_2 = 395;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_3 = 396;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_4 = 397;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_5 = 398;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_6 = 399;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_7 = 400;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_8 = 401;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_HARMONY_9 = 402;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_0 = 403;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_1 = 404;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_2 = 405;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_3 = 406;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_4 = 407;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_5 = 408;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_6 = 409;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_7 = 410;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_8 = 411;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_MELODY_9 = 412;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_0 = 413;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_1 = 414;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_2 = 415;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_3 = 416;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_4 = 417;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_5 = 418;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_6 = 419;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_7 = 420;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_8 = 421;
-    @PowerNukkitOnly
-    @Since("FUTURE")
     public static final int SOUND_GOAT_BASS_9 = 422;
-    @Since("1.6.0.0-PNX")
-    public static final int SOUND_UNDEFINED = 423;
+
+    public static final int SOUND_IMITATE_WARDEN = 426;
+    public static final int SOUND_LISTENING_ANGRY = 427;
+    public static final int SOUND_ITEM_GIVEN = 428;
+    public static final int SOUND_ITEM_TAKEN = 429;
+    public static final int SOUND_DISAPPEARED = 430;
+    public static final int SOUND_REAPPEARED = 431;
+    public static final int SOUND_FROGSPAWN_HATCHED = 433;
+    public static final int SOUND_LAY_SPAWN = 434;
+    public static final int SOUND_FROGSPAWN_BREAK = 435;
+    public static final int SOUND_SONIC_BOOM = 436;
+    public static final int SOUND_SONIC_CHARGE = 437;
+    public static final int SOUND_ITEM_THROWN = 438;
+    public static final int SOUND_RECORD_5 = 439;
+    public static final int SOUND_CONVERT_TO_FROG = 440;
+    public static final int SOUND_UNDEFINED = 441;
 
     public int sound;
     public float x;
