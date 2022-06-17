@@ -34,7 +34,7 @@ public class FoodChorusFruit extends FoodNormal {
 
         Level level = player.getLevel();
         if (level == null) return false;
-        if (level.getBlock(player.up()) instanceof BlockLiquid) return false;
+        if (player.isInsideOfWater()) return false;
         NukkitRandom random = new NukkitRandom();
         for (int attempts = 0; attempts < 128; attempts++) {
             int x = random.nextRange(minX, maxX);
