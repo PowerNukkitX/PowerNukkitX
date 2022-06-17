@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
@@ -94,6 +95,13 @@ public class EntityEquipmentInventory extends BaseInventory {
     @Since("1.4.0.0-PN")
     public Item getItemInOffhand() {
         return this.getItem( OFFHAND );
+    }
+
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean setItemInHand(Item item){
+        return this.setItem(MAIN_HAND,item);
     }
 
     @PowerNukkitOnly

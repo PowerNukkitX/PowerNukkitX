@@ -11,6 +11,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityArmorStand;
+import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
@@ -97,7 +98,7 @@ public class ReplaceItemCommand extends VanillaCommand {
             switch (form) {
                 case "entity", "entity-oldItemHandling": {
                     parser.parseString();
-                    List<Entity> entities = parser.parseTargets().stream().filter(e -> e instanceof InventoryHolder).toList();
+                    List<Entity> entities = parser.parseTargets().stream().toList();
                     if (entities.isEmpty()) {
                         sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                         return false;
@@ -133,13 +134,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getEquipmentInventory().getItemInHand();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getEquipmentInventory().getItemInHand();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getEquipmentInventory().setItemInHand(item, true)) {
+                                    if (entityMob.getEquipmentInventory().setItemInHand(item, true)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -147,8 +148,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.weapon.offhand" -> {
                                 if (entity instanceof Player player) {
@@ -165,13 +164,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getEquipmentInventory().getItemInOffhand();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getEquipmentInventory().getItemInOffhand();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getEquipmentInventory().setItemInOffhand(item, true)) {
+                                    if (entityMob.getEquipmentInventory().setItemInOffhand(item, true)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -179,8 +178,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.armor.head" -> {
                                 if (entity instanceof Player player) {
@@ -197,13 +194,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getInventory().getHelmet();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getHelmet();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getInventory().setHelmet(item)) {
+                                    if (entityMob.setHelmet(item)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -211,8 +208,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.armor.chest" -> {
                                 if (entity instanceof Player player) {
@@ -229,13 +224,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getInventory().getChestplate();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getChestplate();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getInventory().setChestplate(item)) {
+                                    if (entityMob.setChestplate(item)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -243,8 +238,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.armor.legs" -> {
                                 if (entity instanceof Player player) {
@@ -261,13 +254,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getInventory().getLeggings();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getLeggings();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getInventory().setLeggings(item)) {
+                                    if (entityMob.setLeggings(item)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -275,8 +268,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.armor.feet" -> {
                                 if (entity instanceof Player player) {
@@ -293,13 +284,13 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityArmorStand armorStand) {
-                                    Item old = armorStand.getInventory().getBoots();
+                                if (entity instanceof EntityInventoryHolder entityMob) {
+                                    Item old = entityMob.getBoots();
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
                                         return false;
                                     }
-                                    if (armorStand.getInventory().setBoots(item)) {
+                                    if (entityMob.setBoots(item)) {
                                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
 
                                     } else {
@@ -307,8 +298,6 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
-                                return false;
                             }
                             case "slot.enderchest" -> {
                                 if (slotId < 0 || slotId >= 27) {
@@ -375,7 +364,24 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                //todo: 实现其他实体 (等待生物AI实现)
+                                if (entity instanceof EntityInventoryHolder entityMob){
+                                    Item old = entityMob.getInventory().getItem(slotId);
+                                    if (oldItemHandling.equals("keep") && !old.isNull()) {
+                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
+                                        return false;
+                                    }
+                                    if (slotId < 0 || slotId >= entityMob.getInventory().getSize()) {
+                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.badSlotNumber", slotType, "0", String.valueOf(entityMob.getInventory().getSize())));
+                                        return false;
+                                    }
+                                    if (entityMob.getInventory().setItem(slotId, item)) {
+                                        sender.sendMessage(new TranslationContainer("commands.replaceitem.success.entity", entity.getName(), slotType, String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
+
+                                    } else {
+                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", slotType, "0", String.valueOf(item.getCount()), item.getName()));
+                                        return false;
+                                    }
+                                }
                             }
                         }
                     }
