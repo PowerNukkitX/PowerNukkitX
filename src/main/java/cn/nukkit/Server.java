@@ -580,7 +580,7 @@ public class Server {
                 put("allow-nether", true);
                 put("allow-the_end", true);
                 put("use-terra", false);
-                put("enable-custom-item", false);
+                put("enable-custom-item", true);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
