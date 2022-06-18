@@ -13,7 +13,6 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;

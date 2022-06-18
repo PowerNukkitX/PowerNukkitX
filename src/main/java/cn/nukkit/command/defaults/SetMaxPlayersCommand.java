@@ -4,8 +4,8 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.lang.TranslationContainer;
 
 public class SetMaxPlayersCommand extends VanillaCommand {

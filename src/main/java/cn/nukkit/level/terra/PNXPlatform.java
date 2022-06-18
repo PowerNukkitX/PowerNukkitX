@@ -1,7 +1,7 @@
 package cn.nukkit.level.terra;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
@@ -23,13 +23,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
 @Log4j2
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;

@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.scoreboard.data.ScorerType;
-import com.nukkitx.network.util.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;

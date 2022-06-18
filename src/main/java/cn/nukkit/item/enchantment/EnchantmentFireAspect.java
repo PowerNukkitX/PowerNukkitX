@@ -1,9 +1,9 @@
 package cn.nukkit.item.enchantment;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.item.enchantment.sideeffect.SideEffectCombust;

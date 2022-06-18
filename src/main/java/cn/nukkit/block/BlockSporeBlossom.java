@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -9,7 +9,7 @@ import cn.nukkit.math.BlockFace;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockSporeBlossom extends BlockTransparent {
     @Override

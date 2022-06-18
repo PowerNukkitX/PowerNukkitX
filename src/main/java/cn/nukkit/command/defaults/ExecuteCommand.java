@@ -5,11 +5,11 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.command.utils.CommandParser;
 
 import java.util.List;
 

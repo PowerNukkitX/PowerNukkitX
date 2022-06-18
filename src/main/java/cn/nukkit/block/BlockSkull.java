@@ -23,11 +23,11 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import cn.nukkit.utils.Faceable;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 

@@ -3,10 +3,10 @@ package cn.nukkit.metrics;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.utils.MainLogger;
-import io.netty.util.internal.EmptyArrays;
-import lombok.extern.log4j.Log4j2;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
+import io.netty.util.internal.EmptyArrays;
+import lombok.extern.log4j.Log4j2;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;

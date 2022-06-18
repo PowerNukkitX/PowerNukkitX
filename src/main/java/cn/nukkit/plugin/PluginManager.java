@@ -18,7 +18,6 @@ import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 
-import javax.script.ScriptEngine;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

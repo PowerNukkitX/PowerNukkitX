@@ -1,7 +1,6 @@
 package cn.nukkit.dialog.element;
 
 import cn.nukkit.dialog.window.Dialog;
-import cn.nukkit.dialog.window.FormWindowDialog;
 
 import java.util.ArrayList;
 import java.util.List;

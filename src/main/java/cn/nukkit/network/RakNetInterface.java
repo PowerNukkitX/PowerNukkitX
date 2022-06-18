@@ -11,13 +11,10 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Utils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
 import com.nukkitx.network.raknet.*;
 import com.nukkitx.network.util.DisconnectReason;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,10 +24,8 @@ import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.concurrent.ScheduledFuture;
 import io.netty.util.internal.PlatformDependent;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
 import org.apache.logging.log4j.message.FormattedMessage;
 
 import java.io.IOException;

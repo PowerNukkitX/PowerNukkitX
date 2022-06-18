@@ -2,13 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.IntBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
@@ -17,7 +17,7 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockCandleCake extends BlockTransparentMeta {
     @PowerNukkitOnly

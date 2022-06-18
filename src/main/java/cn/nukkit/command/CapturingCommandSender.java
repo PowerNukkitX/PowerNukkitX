@@ -3,7 +3,6 @@ package cn.nukkit.command;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.lang.TextContainer;
-import cn.nukkit.level.Position;
 import cn.nukkit.permission.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;

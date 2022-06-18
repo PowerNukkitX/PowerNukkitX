@@ -3,7 +3,6 @@ package cn.nukkit.utils;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class BVector3{

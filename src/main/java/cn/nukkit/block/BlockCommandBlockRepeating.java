@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockentity.BlockEntityCommandBlock;
-import cn.nukkit.nbt.tag.CompoundTag;
-
 public class BlockCommandBlockRepeating extends BlockCommandBlock {
 
     public BlockCommandBlockRepeating() {

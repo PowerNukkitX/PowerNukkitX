@@ -7,7 +7,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.utils.RawText;
-import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.JsonSyntaxException;

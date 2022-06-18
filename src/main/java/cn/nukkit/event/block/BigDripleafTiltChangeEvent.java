@@ -1,13 +1,13 @@
 package cn.nukkit.event.block;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBigDripleaf;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BigDripleafTiltChangeEvent extends BlockEvent implements Cancellable {
 

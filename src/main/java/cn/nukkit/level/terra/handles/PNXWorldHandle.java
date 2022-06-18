@@ -1,7 +1,7 @@
 package cn.nukkit.level.terra.handles;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
@@ -16,11 +16,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();

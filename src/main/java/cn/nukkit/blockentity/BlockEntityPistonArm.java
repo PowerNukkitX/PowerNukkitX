@@ -8,7 +8,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityMoveByPistonEvent;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -21,11 +20,8 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static cn.nukkit.level.Level.BLOCK_UPDATE_NORMAL;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**

@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;

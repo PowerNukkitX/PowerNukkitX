@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.mob.EntityMob;
-import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.PlayerInventory;

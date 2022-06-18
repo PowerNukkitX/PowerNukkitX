@@ -106,7 +106,7 @@ public class ItemBucket extends Item {
     }
 
     @PowerNukkitOnly
-    @Since("1.6.0.0-PNX")
+    components
     public boolean isPowderSnow() {
         return getTargetBlock().getId() == BlockID.POWDER_SNOW;
     }

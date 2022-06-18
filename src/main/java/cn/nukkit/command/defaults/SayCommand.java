@@ -3,9 +3,9 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.command.utils.EntitySelector;
 
 import java.util.List;
 

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 
 //special thanks to wode
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockCommandBlock  extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityCommandBlock>{
 

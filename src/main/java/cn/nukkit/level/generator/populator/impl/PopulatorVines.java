@@ -4,7 +4,6 @@ import cn.nukkit.block.BlockVine;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.generator.populator.helper.PopulatorHelpers;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;

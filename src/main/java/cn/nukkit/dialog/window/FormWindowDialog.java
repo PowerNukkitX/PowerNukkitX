@@ -3,16 +3,13 @@ package cn.nukkit.dialog.window;
 import cn.nukkit.Player;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.handler.FormDialogHandler;
-import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.network.protocol.NPCRequestPacket;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class FormWindowDialog implements Dialog{
 

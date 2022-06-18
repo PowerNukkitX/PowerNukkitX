@@ -1,7 +1,6 @@
 package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
-import cn.nukkit.event.command.ScoreboardEvent;
 import cn.nukkit.event.command.ScoreboardScoreChangeEvent;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
