@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,8 +42,8 @@ public class CommandParser {
     private static final String BLOCK_COORDINATE_PATTERN = "([~^]-?\\d+|-?\\d+|[~^])";//block coordinate part value
 
     //using cache to improve performance
-    private static Cache<String,CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
-    private static Cache<String,PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
+    private static Cache<String,CommandParser> result_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private static Cache<String,PatternCache> pattern_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     private record PatternCache(Pattern pattern,int length){}
 
