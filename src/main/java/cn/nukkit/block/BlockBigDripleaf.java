@@ -69,15 +69,15 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         },1);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperty<Tilt> TILT = new ArrayBlockProperty<>("big_dripleaf_tilt",false,new Tilt[]{Tilt.NONE, Tilt.PARTIAL_TILT, Tilt.FULL_TILT,Tilt.UNSTABLE});
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BooleanBlockProperty HEAD = new BooleanBlockProperty("big_dripleaf_head", false);
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION,TILT,HEAD);
 
@@ -259,7 +259,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean grow(Position pos,int heightIncreased){
         Block block = pos.getLevelBlock();

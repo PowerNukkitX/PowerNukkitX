@@ -1,7 +1,7 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
@@ -34,7 +34,7 @@ public class RegionLoader extends BaseRegionLoader {
     /**
      * 记录已经被更新过的旧区块，默认情况下应该保持null
      */
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private static LongSet chunkUpdated = null;
 

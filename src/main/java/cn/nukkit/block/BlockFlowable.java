@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.AxisAlignedBB;
 
@@ -9,7 +10,7 @@ import cn.nukkit.math.AxisAlignedBB;
  */
 public abstract class BlockFlowable extends BlockTransparentMeta {
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected BlockFlowable(){
         super();

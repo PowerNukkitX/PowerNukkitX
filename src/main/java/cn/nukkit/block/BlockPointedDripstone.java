@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -35,7 +36,7 @@ import static cn.nukkit.potion.Effect.getEffect;
 @PowerNukkitOnly
 @Since("FUTURE")
 public class BlockPointedDripstone extends BlockFallableMeta {
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private static final ArrayBlockProperty<String> DRIPSTONE_THICKNESS = new ArrayBlockProperty<>("dripstone_thickness", false,
             new String[]{
@@ -47,33 +48,33 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             }
     );
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private static final IntBlockProperty HANGING = new IntBlockProperty("hanging", false, 1, 0);
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(DRIPSTONE_THICKNESS, HANGING);
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int isHanging(){
         return getPropertyValue(HANGING);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setHanging(int value){
         setPropertyValue(HANGING, value);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setThickness(String value){
         setPropertyValue(DRIPSTONE_THICKNESS, value);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public String getThickness(){
         return getPropertyValue(DRIPSTONE_THICKNESS);
@@ -96,7 +97,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return "Pointed Drip Stone";
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     @Nonnull
     @Override
@@ -309,7 +310,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected void setTipBlock(int x, int y, int z, int hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, "tip");
@@ -317,7 +318,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         this.getLevel().setBlock(x, y, z, this, true, true);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected void setMergeBlock(int x, int y, int z, int hanging) {
         this.setPropertyValue(DRIPSTONE_THICKNESS, "merge");
@@ -325,7 +326,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         this.getLevel().setBlock(x, y, z, this, true, true);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected void setBlockThicknessStateAt(int x, int y, int z, int hanging, String thickness) {
         BlockState blockState;
@@ -335,7 +336,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         level.setBlockStateAt(x, y, z, blockState);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected int getPointedDripStoneLength(int x, int y, int z, int hanging) {
         if (hanging == 1) {
@@ -356,7 +357,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         return 0;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected void setAddChange(int x, int y, int z, int hanging) {
         int length = getPointedDripStoneLength(x, y, z, hanging);
@@ -376,13 +377,13 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     }
 
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void grow() {
         this.place(null, this.getSide(this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP), null, this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP, 0, 0, 0, null);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void drippingLiquid(){//features according to https://minecraft.fandom.com/zh/wiki/%E6%BB%B4%E6%B0%B4%E7%9F%B3%E9%94%A5
         if (this.getBlock(this,1) instanceof BlockLiquid || !this.getThickness().equals("tip") || this.isHanging() != 1) {

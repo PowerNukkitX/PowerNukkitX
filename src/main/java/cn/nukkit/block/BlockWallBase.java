@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockWall.WallConnectionType;
 import cn.nukkit.blockproperty.ArrayBlockProperty;
@@ -71,7 +72,7 @@ public abstract class BlockWallBase extends BlockTransparentMeta implements Bloc
         super(meta);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public BlockWallBase(){}
 

@@ -270,7 +270,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.5.0.0-PN")
     public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); //float
     @Since("1.3.0.0-PN")
     public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
     @Since("1.4.0.0-PN")
@@ -448,7 +448,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     //spawned by server
     //player's UUID is sent by client,so this value cannot be used in Player
@@ -2882,7 +2882,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.id;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public UUID getUniqueId() {
         return this.entityUniqueId;
@@ -3166,13 +3166,13 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addTag(String tag) {
         this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void removeTag(String tag) {
         ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
@@ -3180,15 +3180,17 @@ public abstract class Entity extends Location implements Metadatable {
         this.namedTag.putList(tags);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean containTag(String tag) {
         return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public List<StringTag> getAllTags() {
         return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
+
+
 }

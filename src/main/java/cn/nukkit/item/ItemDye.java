@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -45,7 +46,7 @@ public class ItemDye extends Item {
     @Deprecated
     public static final int BLACK = DyeColor.BLACK.getDyeData();
     @Deprecated
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final int BONE_MEAL = DyeColor.BONE_MEAL.getDyeData();
 

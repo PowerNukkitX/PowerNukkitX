@@ -2,10 +2,7 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
@@ -424,7 +421,7 @@ public class Level implements ChunkManager, Metadatable {
         return (((long) x & (long) 0xFFFFFFF) << 36) | (((long) y & (long) 0xFF) << 28) | ((long) z & (long) 0xFFFFFFF);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static long blockHash(int x, int y, int z, Level level) {
         if (!level.isYInRange(y)) {
@@ -448,7 +445,7 @@ public class Level implements ChunkManager, Metadatable {
         return new Vector3(x, y, z);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static int chunkBlockHash(int x, int y, int z) {
         return (x << 13) | (z << 9) | (y + 64); // 为适配384世界，y需要额外的1bit来存储
@@ -1472,7 +1469,7 @@ public class Level implements ChunkManager, Metadatable {
         this.scheduleUpdate(pos, pos, delay, 0, true);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void scheduleUpdate(Block pos, int delay, boolean checkBlockWhenUpdate) {
         this.scheduleUpdate(pos, pos, delay, 0, true, checkBlockWhenUpdate);
@@ -1490,7 +1487,7 @@ public class Level implements ChunkManager, Metadatable {
         this.scheduleUpdate(block, pos, delay, priority, checkArea, true);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void scheduleUpdate(Block block, Vector3 pos, int delay, int priority, boolean checkArea, boolean checkBlockWhenUpdate) {
         if (block.getId() == 0 || (checkArea && !this.isChunkLoaded(block.getFloorX() >> 4, block.getFloorZ() >> 4))) {
@@ -3647,13 +3644,13 @@ public class Level implements ChunkManager, Metadatable {
         return Position.fromObject(spawn, this);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec) {
         return standable(vec, false);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
         Position pos = Position.fromObject(vec, this);
@@ -4126,25 +4123,25 @@ public class Level implements ChunkManager, Metadatable {
         } else return dimensionData.getDimensionId();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public final boolean isOverWorld() {
         return getDimension() == 0;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public final boolean isNether() {
         return getDimension() == 1;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public final boolean isTheEnd() {
         return getDimension() == 2;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public final boolean isYInRange(int y) {
         return y >= getMinHeight() && y < getMaxHeight();
@@ -4154,13 +4151,13 @@ public class Level implements ChunkManager, Metadatable {
         return this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()) < pos.getY();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMinHeight() {
         return isOverWorld() ? -64 : 0;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMaxHeight() {
         return isOverWorld() ? 320 : 256;
@@ -4510,7 +4507,7 @@ public class Level implements ChunkManager, Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private int ensureY(final int y) {
         if (getDimension() == DIMENSION_OVERWORLD) {

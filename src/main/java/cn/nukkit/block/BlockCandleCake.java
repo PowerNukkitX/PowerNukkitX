@@ -24,7 +24,7 @@ public class BlockCandleCake extends BlockTransparentMeta {
     @Since("FUTURE")
     private static final IntBlockProperty LIT = new IntBlockProperty("lit", false, 1, 0, 1);
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(LIT);
 
