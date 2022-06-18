@@ -16,6 +16,7 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
+import cn.nukkit.event.player.PlayerFreezeEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -1769,7 +1770,11 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         if(this.getFreezingTicks() != 0 && this instanceof Player player){
-            player.setMovementSpeed(0.1f - 0.05f * (this.getFreezingTicks() / 140f));
+            PlayerFreezeEvent event = new PlayerFreezeEvent(player, 0.05f, 0.1f);
+            this.server.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                player.setMovementSpeed(event.getBaseSpeed() - event.getSpeedFactor() * (this.getFreezingTicks() / 140f));
+            }
         }
 
         //todo: 取代求余运算提高性能
