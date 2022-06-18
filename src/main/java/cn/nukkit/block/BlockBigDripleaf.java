@@ -32,7 +32,7 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     static{
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[0])) {
+            for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[actions.size()])) {
                     if (--entry.getValue().delay == 0) {
                         if (checkTiltAction(entry.getKey())) {
                             BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
