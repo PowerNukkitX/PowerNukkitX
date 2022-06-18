@@ -11,7 +11,7 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
 ## [开发中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-该版本目前支持了Minecraft:BE `1.18.30 (协议版本503)`.
+该版本目前支持了Minecraft:BE `1.19.0 (协议版本527)`.
 
 ### 新增内容
 
@@ -29,6 +29,10 @@
 - [#363] 实现NPC SKIN切换。
 - [#365] 添加toSnbt。
 - [#370] 添加JS跨插件互操作。
+- [#384] 实现swift_sneak附魔效果。
+- [#385] 实现darkness药水效果。
+- [#387] 支持新版成就界面。
+- [#389] 实现潜声方块实体。
 
 ### 修改记录
 
@@ -47,7 +51,8 @@
 - [#368] 完善NPC提示框。
 - [#373] 将terra版本更新至6.0.0-Release。
 - [#375] 实现滚动字幕API。
-- [#380] 实现兼容1.19.0 (协议版本512)。
+- [#380] 实现兼容1.19.0 (协议版本527)。
+- [#390] 支持带有_的玩家名称解析。
 
 ### BUG修复
 
@@ -89,6 +94,8 @@
 - [#376] 初步尝试修复出生点问题。
 - [#377] 修复相机抖动。
 - [#382] 修复ListTag#toSnbt()中的低级错误。
+- [#386] 修复观察者模式碰撞问题。
+- [#388] 修复目标选择器Type参数的问题。
 
 ### 安全漏洞修复
 
@@ -903,7 +910,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (协议版本486)
 2. [#V2-dev] PNX-1.6.0.0-dev (协议版本503)
-3. [#V3-dev] PNX-1.6.0.0-dev (协议版本512)
+3. [#V3-dev] PNX-1.6.0.0-dev (协议版本527)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1191,6 +1198,13 @@ Need to switch languages?
 [#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
 [#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
 [#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
+[#384]: https://github.com/PowerNukkitX/PowerNukkitX/pull/384
+[#385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/385
+[#386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/386
+[#387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/387
+[#388]: https://github.com/PowerNukkitX/PowerNukkitX/pull/388
+[#389]: https://github.com/PowerNukkitX/PowerNukkitX/pull/389
+[#390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/390
 
 <!--PowerNukkitX Version history-->
 
@@ -1200,5 +1214,5 @@ Need to switch languages?
 <!--Protocol Version 503-->
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
-<!--Protocol Version 512-->
+<!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions

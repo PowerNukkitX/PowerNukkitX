@@ -12,7 +12,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
 
-This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`.
+This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 
 ### Added
 
@@ -30,6 +30,10 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#363] Implemented NPC SKIN switch.
 - [#365] Add toSnbt.
 - [#370] Add JS cross-plugin interoperability.
+- [#384] Implement swift_sneak enchantment effect.
+- [#385] Implemented darkness potion effect.
+- [#387] Support new achievement interface.
+- [#389] Implement sculk block entities.
 
 ### Changed
 
@@ -48,7 +52,8 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#368] Improve NPC hint box.
 - [#373] Update terra version to 6.0.0-Release.
 - [#375] Implement the Scrolling Subtitles API.
-- [#380] Implemented to be compatible with 1.19.0 (protocol version 512).
+- [#380] Implemented to be compatible with 1.19.0 (protocol version 527).
+- [#390] Support player name resolution with _.
 
 ### Fixes
 
@@ -90,6 +95,8 @@ This work in progress version supports Minecraft:BE `1.18.30 (Protocol Ver 503)`
 - [#376] Preliminary attempt to fix birth point issue.
 - [#377] Fix camera shake.
 - [#382] Fix low-level bug in ListTag#toSnbt().
+- [#386] Fix spectator collision.
+- [#388] Fix target selector Type parameter issue.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -901,7 +908,7 @@ Fixes several anvil issues.
 
 1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Version 486)
 2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Version 503)
-3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 512)
+3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 527)
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1190,6 +1197,13 @@ Need to switch languages?
 [#377]: https://github.com/PowerNukkitX/PowerNukkitX/pull/377
 [#380]: https://github.com/PowerNukkitX/PowerNukkitX/pull/380
 [#382]: https://github.com/PowerNukkitX/PowerNukkitX/pull/382
+[#384]: https://github.com/PowerNukkitX/PowerNukkitX/pull/384
+[#385]: https://github.com/PowerNukkitX/PowerNukkitX/pull/385
+[#386]: https://github.com/PowerNukkitX/PowerNukkitX/pull/386
+[#387]: https://github.com/PowerNukkitX/PowerNukkitX/pull/387
+[#388]: https://github.com/PowerNukkitX/PowerNukkitX/pull/388
+[#389]: https://github.com/PowerNukkitX/PowerNukkitX/pull/389
+[#390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/390
 
 <!--PowerNukkitX Version history-->
 
@@ -1199,5 +1213,5 @@ Need to switch languages?
 <!--Protocol Version 503-->
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
-<!--Protocol Version 512-->
+<!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
