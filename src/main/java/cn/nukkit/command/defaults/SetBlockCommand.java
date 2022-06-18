@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -59,7 +60,7 @@ public class SetBlockCommand extends VanillaCommand {
         } catch (CommandSyntaxException ignored) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
-        } catch (IndexOutOfBoundsException ignored) {
+        } catch (IndexOutOfBoundsException | InvalidBlockStateException ignored) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", tileName));
             return false;
         }
