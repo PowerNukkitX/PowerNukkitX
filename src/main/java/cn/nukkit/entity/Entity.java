@@ -8,7 +8,10 @@ import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.mob.EntityMagmaCube;
+import cn.nukkit.entity.passive.EntityStrider;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -528,6 +531,10 @@ public abstract class Entity extends Location implements Metadatable {
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int freezingTicks = 0;//0 - 140
 
     @PowerNukkitOnly
     @Since("1.2.1.0-PN")
@@ -1754,6 +1761,23 @@ public abstract class Entity extends Location implements Metadatable {
                         }
                     }
                 }
+            }
+        }
+
+        if(this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0){
+            this.addFreezingTicks(-tickDiff);
+        }
+
+        if(this.getFreezingTicks() != 0 && this instanceof Player player){
+            player.setMovementSpeed(0.1f - 0.05f * (this.getFreezingTicks() / 140f));
+        }
+
+        //todo: 取代求余运算提高性能
+        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0){
+            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube){
+                this.attack(5);
+            }else{
+                this.attack(1);
             }
         }
 
@@ -3192,5 +3216,41 @@ public abstract class Entity extends Location implements Metadatable {
         return this.namedTag.getList("Tags", StringTag.class).getAll();
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setFreezingEffectStrength(float strength) {
+        if (strength < 0 || strength > 1)
+            throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
+        this.setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, strength));
+    }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public float getFreezingEffectStrength() {
+        return ((FloatEntityData)this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setFreezingTicks(int ticks){
+        if(ticks < 0 || ticks > 140)
+            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
+        this.freezingTicks = ticks;
+        setFreezingEffectStrength(ticks / 140f);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getFreezingTicks(){
+        return this.freezingTicks;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addFreezingTicks(int increments){
+        if(freezingTicks + increments < 0 || freezingTicks + increments > 140)
+            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
+        this.freezingTicks += increments;
+        setFreezingEffectStrength(this.freezingTicks / 140f);
+    }
 }
