@@ -145,7 +145,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static final List<BlockPropertyData> blockPropertyData = new ArrayList<>();
 
     @PowerNukkitXOnly
-    private static final HashMap<Integer, Block> customBlock = new HashMap<>();
+    private static final HashMap<Integer, BlockCustom> customBlock = new HashMap<>();
 
     @PowerNukkitXOnly
     public static final ConcurrentHashMap<String, Integer> CUSTOM_BLOCK_ID_MAP = new ConcurrentHashMap<>();
@@ -1197,12 +1197,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * 注册自定义方块
      *
-     * @param blockClass 传入自定义方块class List
+     * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
-        for (var clazz : blockClass) {
+        for (var clazz : blockClassList) {
             BlockCustom block = clazz.getDeclaredConstructor().newInstance();
             sortedCustomBlocks.put(block.getNamespace(), block);
         }
@@ -1217,8 +1217,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         var blocks = sortedCustomBlocks.values().stream().toList();
         BlockStateRegistry.registerCustomBlockState(blocks);
         RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
-        //创造栏失效
         blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void deleteCustomBlock() {
+        for(var block : customBlock.values()){
+            Item.removeCreativeItem(block.toItem());
+        }
+        RuntimeItems.getRuntimeMapping().deleteCustomBlock(customBlock.values().stream().toList());
+        BlockStateRegistry.deleteCustomBlockState();
+        customBlock.clear();
+        CUSTOM_BLOCK_ID_MAP.clear();
     }
 
     @PowerNukkitXOnly

@@ -56,6 +56,10 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     private final HashMap<String, RuntimeItems.Entry> customItemEntries = new HashMap<>();
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private final HashMap<String, RuntimeItems.Entry> customBlockEntries = new HashMap<>();
+
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Deprecated
@@ -163,6 +167,18 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
+    public synchronized void deleteCustomItem(ItemCustom itemCustom) {
+        RuntimeItems.Entry entry = this.customItemEntries.remove(itemCustom.getNamespaceId());
+        if (entry != null) {
+            this.entries.remove(entry);
+            this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
+            this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
+            this.generatePalette();
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public synchronized void registerCustomBlock(List<BlockCustom> blocks) {
         for (var block : blocks) {
             int id = 255 - block.getId();
@@ -174,7 +190,7 @@ public class RuntimeItemMapping {
                     null,
                     false
             );
-            //this.customItemEntries.put(blockCustom.getNamespace(), entry);
+            this.customBlockEntries.put(block.getNamespace(),entry);
             this.entries.add(entry);
             this.namespacedIdItem.put(block.getNamespace(), block::toItem);
             this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
@@ -188,13 +204,15 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void deleteCustomItem(ItemCustom itemCustom) {
-        RuntimeItems.Entry entry = this.customItemEntries.remove(itemCustom.getNamespaceId());
-        if (entry != null) {
-            this.entries.remove(entry);
-            this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
-            this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
-            this.generatePalette();
+    public synchronized void deleteCustomBlock(List<BlockCustom> blocks) {
+        for(var block : blocks){
+            RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespace());
+            if (entry != null) {
+                this.entries.remove(entry);
+                this.namespaceNetworkMap.remove(block.getNamespace());
+                this.networkNamespaceMap.remove(255-block.getId());
+                this.generatePalette();
+            }
         }
     }
 

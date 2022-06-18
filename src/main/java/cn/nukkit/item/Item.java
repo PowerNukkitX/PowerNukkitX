@@ -587,6 +587,11 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
+    /**
+     * 注册自定义物品
+     *
+     * @param c 传入自定义物品类的实例
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -600,6 +605,31 @@ public class Item implements Cloneable, BlockID, ItemID {
         addCreativeItem(itemCustom);
     }
 
+    /**
+     * 注册自定义方块
+     *
+     * @param itemClassList 传入自定义物品class List
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableCustomItem()) {
+            log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
+            return;
+        }
+        for (var clazz : itemClassList){
+            ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
+            CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
+            RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
+            addCreativeItem(itemCustom);
+        }
+    }
+
+    /**
+     * 卸载指定的自定义物品
+     *
+     * @param namespaceId 传入自定义物品的namespaceId
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void deleteCustomItem(String namespaceId) {
@@ -607,7 +637,20 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
             removeCreativeItem(itemCustom);
             CUSTOM_ITEMS.remove(namespaceId);
+            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
+        }
+    }
 
+    /**
+     * 卸载全部的自定义物品
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void deleteAllCustomItem() {
+        for (String name : CUSTOM_ITEMS.keySet()) {
+            ItemCustom itemCustom = (ItemCustom) fromString(name);
+            removeCreativeItem(itemCustom);
+            CUSTOM_ITEMS.remove(name);
             RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
     }

@@ -3,6 +3,7 @@ package cn.nukkit.blockstate;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCustom;
@@ -61,11 +62,15 @@ public class BlockStateRegistry {
 
     private byte[] blockPaletteBytes;
 
-    private final List<String> knownStateIds;
+    private List<String> knownStateIds;
 
     //<editor-fold desc="static initialization" defaultstate="collapsed">
     static {
+        init();
+    }
+    //</editor-fold>
 
+    private void init(){
         //<editor-fold desc="Loading block_ids.csv" defaultstate="collapsed">
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
             if (stream == null) {
@@ -157,9 +162,7 @@ public class BlockStateRegistry {
         } catch (IOException e) {
             throw new ExceptionInInitializerError(e);
         }
-
     }
-    //</editor-fold>
 
     private boolean isNameOwnerOfId(String name, int blockId) {
         return blockId != -1 && !name.equals("minecraft:wood") || blockId == BlockID.WOOD_BARK;
@@ -520,6 +523,18 @@ public class BlockStateRegistry {
         } catch (IOException e) {
             throw new ExceptionInInitializerError(e);
         }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public synchronized static void deleteCustomBlockState() {
+        blockStateRegistration.clear();
+        stateIdRegistration.clear();
+        runtimeIdRegistration.clear();
+        persistenceNameToBlockId.clear();
+        blockIdToPersistenceName.clear();
+        knownStateIds.clear();
+        init();
     }
 
     private void registerStateId(CompoundTag block, int runtimeId) {

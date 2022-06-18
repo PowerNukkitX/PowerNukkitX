@@ -59,27 +59,26 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
                     .putString("enchantable_slot", "armor_head");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putInt("slot", 2));
+                            .putString("slot", "slot.armor.head"));
         } else if (this.isChestplate()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "armor_torso");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putInt("slot", 3));
+                            .putString("slot", "slot.armor.chest"));
         } else if (this.isLeggings()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "armor_legs");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putInt("slot", 4));
+                            .putString("slot", "slot.armor.legs"));
         } else if (this.isBoots()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "armor_feet");
             data.getCompound("components")
                     .putCompound("minecraft:wearable", new CompoundTag()
-                            .putInt("slot", 5));
+                            .putString("slot", "slot.armor.feet"));
         }
-
         return data;
     }
 

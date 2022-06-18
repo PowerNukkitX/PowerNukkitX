@@ -22,17 +22,24 @@ import java.util.Optional;
 public abstract class BlockCustom extends Block {
     private final String namespace;
 
+    private final String texture;
     /**
      * 自定义方块需要传入方块的标识符
      *
      * @param namespace 方块的标识符,形如 test:test_block
+     * @param texture 方块的材质名,与材质包对应(test_block.png 对应填写 test_block)
      */
-    public BlockCustom(String namespace) {
+    public BlockCustom(String namespace,String texture) {
         this.namespace = namespace.toLowerCase(Locale.ENGLISH);
+        this.texture = texture;
     }
 
     public String getNamespace() {
-        return this.namespace;
+        return namespace;
+    }
+
+    public String getTexture() {
+        return texture;
     }
 
     /**
@@ -47,8 +54,8 @@ public abstract class BlockCustom extends Block {
     public BlockPropertyData getBlockPropertyData() {
         CompoundTag componentsNBT = new CompoundTag()
                 .putCompound("minecraft:creative_category", new CompoundTag()
-                        .putString("category", "nature")
-                        .putString("group", "itemGroup.name.ore"))
+                        .putString("category", "construction")
+                        .putString("group", ""))
                 .putCompound("minecraft:friction", new CompoundTag()
                         .putFloat("value", (float) this.getFrictionFactor()))
                 .putCompound("minecraft:rotation", new CompoundTag()
@@ -57,24 +64,27 @@ public abstract class BlockCustom extends Block {
                         .putFloat("z", 0))
                 .putCompound("minecraft:destroy_time", new CompoundTag()
                         .putFloat("value", (float) (calculateBreakTime(Item.get(AIR)) * 2 / 3)))
+                .putCompound("minecraft:material_instances", new CompoundTag()
+                        .putCompound("mappings",new CompoundTag())
+                        .putCompound("materials",new CompoundTag()
+                                .putCompound("*",new CompoundTag()
+                                        .putBoolean("ambient_occlusion",true)
+                                        .putBoolean("face_dimming",true)
+                                        .putString("render_method","opaque")
+                                        .putString("texture",getTexture())))
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
                         .putInt("value", (int) this.getResistance()))
                 .putCompound("minecraft:block_light_absorption", new CompoundTag()
                         .putInt("value", this.getLightFilter()))
                 .putCompound("minecraft:block_light_emission", new CompoundTag()
-                        .putFloat("emission", this.getLightLevel()));
+                        .putFloat("emission", this.getLightLevel())));
 
         if (this.getGeometry().isPresent()) {
             componentsNBT.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry().get()));
         }
 
-        return new BlockPropertyData(this.getNamespace(), new CompoundTag()
-                .putCompound("description", new CompoundTag()
-                        .putString("identifier", this.getNamespace())
-                        .putBoolean("is_experimental", false)
-                        .putBoolean("register_to_creative_menu", true))
-                .putCompound("components", componentsNBT));
+        return new BlockPropertyData(this.getNamespace(), new CompoundTag().putCompound("components", componentsNBT));
     }
 
     @Override
