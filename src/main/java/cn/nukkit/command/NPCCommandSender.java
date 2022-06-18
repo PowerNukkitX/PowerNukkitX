@@ -3,6 +3,7 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.passive.EntityNPCEntity;
@@ -19,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class NPCCommandSender implements CommandSender {
 
     protected PermissibleBase perm = new PermissibleBase(this);
