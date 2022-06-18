@@ -38,19 +38,17 @@ public class SetBlockCommand extends VanillaCommand {
             return false;
         }
 
-        if (args.length < 4) {
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
             return false;
         }
-
-        CommandParser parser = new CommandParser(this, sender, args);
         Position position;
         int data = 0;
         try {
             position = parser.parsePosition();
-            if (args.length > 4) {
-                data = Integer.parseInt(args[4]);
+            if (parser.hasNext()) {
+                data = parser.parseInt();
             }
         } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
@@ -58,7 +56,7 @@ public class SetBlockCommand extends VanillaCommand {
         }
 
         String oldBlockHandling = "replace";
-        if (args.length > 5) {
+        if (parser.hasNext()) {
             oldBlockHandling = args[5].toLowerCase();
             switch (oldBlockHandling) {
                 case "destroy":

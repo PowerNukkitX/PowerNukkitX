@@ -5170,6 +5170,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    @PowerNukkitDifference(info = "will force using the spawnposition if the value spawnBlock is null,to fix the bug of command /spawnpoint", since = "1.6.0.0-PNX")
     protected void respawn() {
         if (this.server.isHardcore()) {
             this.setBanned(true);
@@ -5179,28 +5180,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
 
-        Vector3 spawnBlock = getSpawnBlock();
-        if (spawnBlock == null) {
-            spawnBlock = spawnPosition;
-        }
-
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
-        Block respawnBlock;
+
+        Vector3 spawnBlock = getSpawnBlock();
+        Block respawnBlock = null;
         int respawnBlockDim = Level.DIMENSION_OVERWORLD;
-        if (spawnBlock != null) {
+        if(spawnBlock != null) {
             Position spawnBlockPos = new Position(spawnBlock.x, spawnBlock.y, spawnBlock.z, playerRespawnEvent.getRespawnPosition().getLevel());
             respawnBlockDim = spawnBlockPos.level.getDimension();
             playerRespawnEvent.setRespawnBlockPosition(spawnBlockPos);
             respawnBlock = spawnBlockPos.getLevelBlock();
-            if (isValidRespawnBlock(respawnBlock)) {
-                playerRespawnEvent.setRespawnBlockAvailable(true);
-                playerRespawnEvent.setConsumeCharge(respawnBlock.getId() == BlockID.RESPAWN_ANCHOR);
-            } else {
-                playerRespawnEvent.setRespawnBlockAvailable(false);
-                playerRespawnEvent.setConsumeCharge(false);
-                playerRespawnEvent.setOriginalRespawnPosition(playerRespawnEvent.getRespawnPosition());
-                playerRespawnEvent.setRespawnPosition(this.server.getDefaultLevel().getSafeSpawn());
-            }
+        }
+        if (respawnBlock == null || isValidRespawnBlock(respawnBlock)) {//true when there is an available respawn block or respawnBlock == null (set spawn by command /spawnpoint)
+            playerRespawnEvent.setRespawnBlockAvailable(respawnBlock != null);
+            playerRespawnEvent.setKeepRespawnPosition(respawnBlock == null);//still using the spawn position if the spawn is set by command /spawnpoint
+            playerRespawnEvent.setKeepRespawnBlockPosition(respawnBlock == null);//still using the block spawn position if the spawn is set by command /spawnpoint
+            playerRespawnEvent.setConsumeCharge(respawnBlock == null ? false : respawnBlock.getId() == BlockID.RESPAWN_ANCHOR);//charge if there is an available respawn block
+        } else {//false when there is no available respawn block
+            playerRespawnEvent.setRespawnBlockAvailable(false);
+            playerRespawnEvent.setConsumeCharge(false);
+            playerRespawnEvent.setOriginalRespawnPosition(playerRespawnEvent.getRespawnPosition());
+            playerRespawnEvent.setRespawnPosition(this.server.getDefaultLevel().getSafeSpawn());//using the default spawn position of the level
         }
 
         this.server.getPluginManager().callEvent(playerRespawnEvent);
