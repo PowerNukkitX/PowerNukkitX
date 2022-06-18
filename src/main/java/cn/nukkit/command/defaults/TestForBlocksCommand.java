@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
@@ -16,6 +18,8 @@ import cn.nukkit.utils.TextFormat;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class TestForBlocksCommand extends VanillaCommand {
 
     public TestForBlocksCommand(String name) {

@@ -1,6 +1,8 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockEntityHolder;
 import cn.nukkit.command.CommandSender;
@@ -18,6 +20,8 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class ReplaceItemCommand extends VanillaCommand {
     public ReplaceItemCommand(String name) {
         super(name, "commands.replaceitem.description");

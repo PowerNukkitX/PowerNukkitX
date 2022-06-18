@@ -1,5 +1,7 @@
 package cn.nukkit.scoreboard.scorer;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.scoreboard.data.ScorerType;
 import cn.nukkit.scoreboard.interfaces.Scorer;
@@ -7,6 +9,8 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 @Getter
 public class EntityScorer implements Scorer {
 

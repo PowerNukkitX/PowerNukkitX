@@ -1,5 +1,7 @@
 package cn.nukkit.scoreboard.storage;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
@@ -18,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 @Getter
 public class JSONScoreboardStorage implements ScoreboardStorage {
 

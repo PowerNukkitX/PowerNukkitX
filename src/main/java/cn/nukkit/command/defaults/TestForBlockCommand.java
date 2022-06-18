@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
@@ -16,6 +18,8 @@ import cn.nukkit.utils.TextFormat;
 
 import java.util.NoSuchElementException;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {

@@ -2,6 +2,8 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -14,6 +16,8 @@ import cn.nukkit.utils.TextFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class ClearSpawnPointCommand extends VanillaCommand {
 
     public ClearSpawnPointCommand(String name){

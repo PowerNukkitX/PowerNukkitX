@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class TagCommand extends VanillaCommand{
     public TagCommand(String name){
         super(name, "commands.tag.description");

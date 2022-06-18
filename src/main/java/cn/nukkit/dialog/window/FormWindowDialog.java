@@ -1,6 +1,8 @@
 package cn.nukkit.dialog.window;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.entity.Entity;
@@ -11,6 +13,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class FormWindowDialog implements Dialog{
 
     protected static final Gson GSON = new Gson();
