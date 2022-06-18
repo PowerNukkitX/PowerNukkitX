@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -110,7 +111,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable implements Re
         return 1;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static boolean isSupportValid(Block block, BlockFace blockFace) {
         return BlockLever.isSupportValid(block, blockFace) || block instanceof BlockFence;

@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
@@ -44,11 +45,11 @@ public class Anvil extends BaseLevelProvider {
     public static final int OLD_VERSION = 19133;
     @PowerNukkitDifference(info = "1.18 new chunk support version", since = "1.6.0.0-PNX")
     public static final int VERSION = 19134;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final int LOWER_PADDING_SIZE = 4;
     static private final byte[] PAD_256 = new byte[256];
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final boolean isOldAnvil;
 

@@ -2,6 +2,7 @@ package cn.nukkit.level;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
@@ -139,7 +140,7 @@ public class Position extends NamedPosition {
         return getValidLevel().getBlock(this);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public Set<Block> getLevelBlockAround() {
         return getValidLevel().getBlockAround(this);

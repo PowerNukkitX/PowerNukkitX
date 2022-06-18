@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -10,7 +11,7 @@ public abstract class BlockSolidMeta extends BlockMeta {
         super(meta);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public BlockSolidMeta(){}
 

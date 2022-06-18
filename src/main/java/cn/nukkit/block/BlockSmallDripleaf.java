@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -19,7 +20,7 @@ import javax.annotation.Nullable;
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
 public class BlockSmallDripleaf extends BlockFlowable implements Faceable {
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.DIRECTION,CommonBlockProperties.UPPER_BLOCK);
 

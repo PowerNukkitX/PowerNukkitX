@@ -6688,7 +6688,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6706,7 +6706,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk2);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void clearScoreboardSlot(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();

@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockMossCarpet extends BlockCarpet {
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 

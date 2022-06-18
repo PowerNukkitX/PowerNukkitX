@@ -1,6 +1,5 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -14,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @Since("1.6.0.0-PNX")
 public class BlockEntitySculkShrieker extends BlockEntity {
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public BlockEntitySculkShrieker(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

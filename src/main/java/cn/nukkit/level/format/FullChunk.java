@@ -2,6 +2,7 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
@@ -268,7 +269,7 @@ public interface FullChunk extends Cloneable {
     @Since("1.4.0.0-PN")
     boolean isBlockedByBorder(int x, int z);
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     default int getChunkSectionCount() {
         final LevelProvider provider = getProvider();
@@ -276,19 +277,19 @@ public interface FullChunk extends Cloneable {
         return provider.isOverWorld() ? 24 : 16;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     default boolean isOverWorld() {
         return getProvider().isOverWorld();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     default boolean isNether() {
         return getProvider().isNether();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     default boolean isTheEnd() {
         return getProvider().isTheEnd();

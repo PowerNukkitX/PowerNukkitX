@@ -1005,7 +1005,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     //Whether to apply the enchantment effect when using this item
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean applyEnchantments(){
         return true;

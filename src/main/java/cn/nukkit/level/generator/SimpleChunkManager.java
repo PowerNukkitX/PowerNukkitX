@@ -2,6 +2,7 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
@@ -160,7 +161,7 @@ public abstract class SimpleChunkManager implements ChunkManager {
         this.seed = seed;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private int ensureY(final int y, final FullChunk chunk) {
         if (chunk.isOverWorld()) {

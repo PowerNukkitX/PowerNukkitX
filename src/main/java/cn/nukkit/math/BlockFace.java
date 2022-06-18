@@ -1,6 +1,7 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.google.common.collect.Iterators;
 
@@ -150,7 +151,7 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getDUNESWIndex() {
         switch (getIndex()) {
@@ -175,7 +176,7 @@ public enum BlockFace {
      *
      * @return index
      */
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getDUSWNEIndex() {
         switch (getIndex()) {

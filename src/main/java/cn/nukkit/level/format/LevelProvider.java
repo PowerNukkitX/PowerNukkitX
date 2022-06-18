@@ -1,6 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
@@ -121,7 +122,7 @@ public interface LevelProvider {
         return 0;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default int getDimension() {
         final var level = getLevel();
@@ -146,19 +147,19 @@ public interface LevelProvider {
         }
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isOverWorld() {
         return getDimension() == 0;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isNether() {
         return getDimension() == 1;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
     default boolean isTheEnd() {
         return getDimension() == 2;
