@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -44,20 +45,33 @@ public class SetBlockCommand extends VanillaCommand {
             return false;
         }
         Position position;
-        int data = 0;
+        Block block;
+        String tileName = null;
         try {
             position = parser.parsePosition();
+            tileName = parser.parseString();
+            tileName = tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName;
+            int tileId = BlockStateRegistry.getBlockId(tileName);
+            block = Block.get(tileId);
             if (parser.hasNext()) {
-                data = parser.parseInt();
+                block.setDamage(parser.parseInt());
             }
-        } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
+        } catch (CommandSyntaxException ignored) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return true;
+            return false;
+        } catch (IndexOutOfBoundsException ignored) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", tileName));
+            return false;
         }
 
         String oldBlockHandling = "replace";
         if (parser.hasNext()) {
-            oldBlockHandling = args[5].toLowerCase();
+            try {
+                oldBlockHandling = parser.parseString();
+            } catch (CommandSyntaxException e) {
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+                return false;
+            }
             switch (oldBlockHandling) {
                 case "destroy":
                 case "keep":
@@ -66,20 +80,6 @@ public class SetBlockCommand extends VanillaCommand {
                 default:
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
-            }
-        }
-
-        Block block;
-        try {
-            int blockId = Integer.parseInt(args[3]);
-            block = Block.get(blockId, data);
-        } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
-            try {
-                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : "minecraft:" + args[3]).getBlockId();
-                block = Block.get(blockId, data);
-            } catch (NullPointerException|IndexOutOfBoundsException ignored2) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", args[3]));
-                return true;
             }
         }
 
