@@ -1,10 +1,14 @@
 package cn.nukkit.dialog.response;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.network.protocol.NPCRequestPacket;
 import lombok.Getter;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 @Getter
 public class FormResponseDialog {
 

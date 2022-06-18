@@ -3,9 +3,7 @@ package cn.nukkit.resourcepacks;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-
 import com.google.common.io.Files;
-
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;

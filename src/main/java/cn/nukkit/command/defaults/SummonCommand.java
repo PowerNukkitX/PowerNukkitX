@@ -1,12 +1,14 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
@@ -15,6 +17,8 @@ import cn.nukkit.utils.TextFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class SummonCommand extends VanillaCommand {
 
     public SummonCommand(String name){

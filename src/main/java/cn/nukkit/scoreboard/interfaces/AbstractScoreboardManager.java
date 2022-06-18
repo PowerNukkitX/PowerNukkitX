@@ -2,6 +2,8 @@ package cn.nukkit.scoreboard.interfaces;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public abstract class AbstractScoreboardManager {
 
     protected Map<String, Scoreboard> scoreboards;

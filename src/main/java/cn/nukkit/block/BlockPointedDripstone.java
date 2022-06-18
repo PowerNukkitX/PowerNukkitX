@@ -24,7 +24,6 @@ import cn.nukkit.potion.Effect;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Random;
 
 import static cn.nukkit.potion.Effect.getEffect;

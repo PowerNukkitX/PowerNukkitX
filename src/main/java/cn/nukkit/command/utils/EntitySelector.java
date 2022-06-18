@@ -2,6 +2,8 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -25,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public final class EntitySelector {
     public static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;
     public static final Map<String, Integer> ENTITY_NAME2ID;

@@ -5,13 +5,10 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
-import static cn.nukkit.block.BlockID.AIR;
-import static cn.nukkit.block.BlockID.CHORUS_FLOWER;
-import static cn.nukkit.block.BlockID.CHORUS_PLANT;
+import static cn.nukkit.block.BlockID.*;
 
 /**
  * @author GoodLucky777

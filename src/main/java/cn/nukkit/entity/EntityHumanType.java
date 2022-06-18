@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public abstract class EntityHumanType extends EntityCreature implements InventoryHolder {
 

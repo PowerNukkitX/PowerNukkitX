@@ -21,7 +21,8 @@ import cn.nukkit.utils.Faceable;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-import static cn.nukkit.blockproperty.CommonBlockProperties.*;
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
+import static cn.nukkit.blockproperty.CommonBlockProperties.OPEN;
 
 @PowerNukkitOnly
 public class BlockBarrel extends BlockSolidMeta implements Faceable, BlockEntityHolder<BlockEntityBarrel> {

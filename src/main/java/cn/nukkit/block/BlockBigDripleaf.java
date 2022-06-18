@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.entity.Entity;
@@ -25,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     public static Map<Position, TiltAction> actions = new HashMap<>();

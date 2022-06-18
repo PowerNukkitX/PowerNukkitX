@@ -1,13 +1,17 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.lang.TranslationContainer;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class SetMaxPlayersCommand extends VanillaCommand {
 
     public SetMaxPlayersCommand(String name) {

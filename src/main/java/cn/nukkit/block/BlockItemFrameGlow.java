@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemItemFrameGlow;
@@ -10,7 +11,7 @@ import cn.nukkit.item.ItemItemFrameGlow;
  * @since 13/06/2021
  */
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class BlockItemFrameGlow extends BlockItemFrame {
     @PowerNukkitOnly

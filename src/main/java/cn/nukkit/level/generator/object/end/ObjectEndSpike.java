@@ -1,20 +1,12 @@
 package cn.nukkit.level.generator.object.end;
 
 import cn.nukkit.blockstate.BlockState;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.Position;
-import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.object.BasicGenerator;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
-import static cn.nukkit.block.BlockID.BEDROCK;
-import static cn.nukkit.block.BlockID.OBSIDIAN;
-import static cn.nukkit.block.BlockID.IRON_BARS;
-import static cn.nukkit.block.BlockID.AIR;
+import static cn.nukkit.block.BlockID.*;
 import static java.lang.Math.abs;
 
 /**

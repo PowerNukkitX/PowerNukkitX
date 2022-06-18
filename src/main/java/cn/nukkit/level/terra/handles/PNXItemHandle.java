@@ -1,6 +1,6 @@
 package cn.nukkit.level.terra.handles;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXEnchantmentDelegate;
@@ -11,7 +11,7 @@ import com.dfsek.terra.api.inventory.item.Enchantment;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXItemHandle implements ItemHandle {
     @Override
