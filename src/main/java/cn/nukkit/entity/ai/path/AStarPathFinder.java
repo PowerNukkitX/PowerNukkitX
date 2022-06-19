@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.path;
 
-import cn.nukkit.math.Vector3;
-
 /**
  * A*是一种较慢但远比mc原版快的寻路算法，此实现有待改进
  */
@@ -67,7 +65,7 @@ public class AStarPathFinder implements PathFinderDynamic {
                 var len = Math.sqrt(allowedOffsetSquared * 0.25);
                 var dx = len * Math.cos(angle);
                 var dz = len * Math.sin(angle);
-                tmpDes = new Node(destination.realX() - dx, destination.realY(), destination.realZ() - dz, destination);
+                tmpDes = new Node(destination.toRealVector().add(-dx, 0, -dz), destination);
             } else {
                 destination = start;
                 return true;

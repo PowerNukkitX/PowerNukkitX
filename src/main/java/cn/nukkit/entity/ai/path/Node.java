@@ -11,6 +11,10 @@ public final class Node implements Comparable<Node>, Cloneable {
     public final EnumNodeOffset offset;
     public final Node destination;
     /**
+     * 特殊情况下它可能会非null，则此时node的坐标就是exactVector，通常用于近距离非常短程的寻路
+     */
+    public Vector3 exactVector = null;
+    /**
      * g值是此点到起点消耗的代价
      */
     private long g; // 到起点的代价
@@ -26,6 +30,19 @@ public final class Node implements Comparable<Node>, Cloneable {
         if (this.x != x) offsetBin |= 0b001;
         if (this.y != y) offsetBin |= 0b010;
         if (this.z != z) offsetBin |= 0b100;
+        this.offset = EnumNodeOffset.fromBinary(offsetBin);
+    }
+
+    public Node(Vector3 exactVector, Node destination) {
+        this.x = (int) exactVector.x;
+        this.y = (int) exactVector.y;
+        this.z = (int) exactVector.z;
+        this.destination = destination;
+        this.exactVector = exactVector;
+        var offsetBin = 0b000;
+        if (this.x != exactVector.x) offsetBin |= 0b001;
+        if (this.y != exactVector.y) offsetBin |= 0b010;
+        if (this.z != exactVector.z) offsetBin |= 0b100;
         this.offset = EnumNodeOffset.fromBinary(offsetBin);
     }
 
@@ -77,18 +94,30 @@ public final class Node implements Comparable<Node>, Cloneable {
     }
 
     public double realX() {
+        if (exactVector != null) {
+            return exactVector.x;
+        }
         return x + doubleXOffset() * 0.5;
     }
 
     public double realY() {
+        if (exactVector != null) {
+            return exactVector.y;
+        }
         return y + doubleYOffset() * 0.5;
     }
 
     public double realZ() {
+        if (exactVector != null) {
+            return exactVector.z;
+        }
         return z + doubleZOffset() * 0.5;
     }
 
     public Vector3 toRealVector() {
+        if (exactVector != null) {
+            return exactVector;
+        }
         return new Vector3(realX(), realY(), realZ());
     }
 
@@ -125,6 +154,15 @@ public final class Node implements Comparable<Node>, Cloneable {
             return;
         }
         this.parent = parent;
+    }
+
+    public Vector3 getExactVector() {
+        return exactVector;
+    }
+
+    public Node setExactVector(Vector3 exactVector) {
+        this.exactVector = exactVector;
+        return this;
     }
 
     /**

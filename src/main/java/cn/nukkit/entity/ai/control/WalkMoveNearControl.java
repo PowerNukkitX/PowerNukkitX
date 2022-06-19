@@ -46,7 +46,9 @@ public class WalkMoveNearControl implements Control<Vector3> {
                     entity.jump();
                 }
             }
-            if (!entity.isJumping && willFallAt(dx + entity.motionX, -entity.getJumpingHeight(), dz + entity.motionZ)) {
+            var wfa = willFallAt(dx, -entity.getJumpingHeight(), dz);
+            if (!entity.isJumping && wfa) {
+                System.out.println("WillFallAtNew: " + willFallAt(dx, -entity.getJumpingHeight(), dz));
                 entity.jump();
             }
             state = ControlState.WORKING;

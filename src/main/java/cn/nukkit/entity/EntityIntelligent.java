@@ -108,6 +108,8 @@ public abstract class EntityIntelligent extends EntityPhysical implements PathTh
         }
         // 处理运动
         super.asyncPrepare(currentTick);
+        // 重新计算绝对位置碰撞箱
+        this.calculateOffsetBoundingBox();
         if (moveNearControl != null) previousMoveNearMotion = moveNearControl.control(currentTick, needsRecalcMovement);
         addTmpMoveMotionXZ(previousMoveNearMotion);
         if (jumpControl != null) jumpControl.control(currentTick, needsRecalcMovement);
