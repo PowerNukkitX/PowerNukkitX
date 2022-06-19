@@ -75,7 +75,7 @@ public class PluginManager {
         }
         return false;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public void loadPowerNukkitPlugins() {
@@ -461,7 +461,7 @@ public class PluginManager {
                 }
                 plugin.getPluginLoader().enablePlugin(plugin);
             } catch (Throwable e) {
-                log.fatal("An error occurred while enabling the plugin {}, {}, {}", 
+                log.fatal("An error occurred while enabling the plugin {}, {}, {}",
                         plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getMain(), e);
                 this.disablePlugin(plugin);
             }
@@ -536,7 +536,7 @@ public class PluginManager {
         if (PowerNukkitPlugin.getInstance() == plugin) {
             throw new UnsupportedOperationException("The PowerNukkit plugin can't be disabled.");
         }
-        
+
         if (plugin.isEnabled()) {
             try {
                 plugin.getPluginLoader().disablePlugin(plugin);
@@ -632,7 +632,12 @@ public class PluginManager {
                     break;
                 }
             }
-            this.registerEvent(eventClass, listener, eh.priority(), new MethodEventExecutor(method), plugin, eh.ignoreCancelled());
+            EventExecutor eventExecutor = MethodEventExecutor.compile(plugin, listener.getClass(), method);
+            if (eventExecutor == null) {
+                eventExecutor = new MethodEventExecutor(method);
+                log.debug("Compile fast EventExecutor {} for {} failed!", eventClass.getName(), plugin.getName());
+            }
+            this.registerEvent(eventClass, listener, eh.priority(), eventExecutor, plugin, eh.ignoreCancelled());
         }
     }
 
@@ -649,7 +654,7 @@ public class PluginManager {
             Timing timing = Timings.getPluginEventTiming(event, listener, executor, plugin);
             this.getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled, timing));
         } catch (IllegalAccessException e) {
-            log.error("An error occurred while registering the event listener event:{}, listener:{} for plugin:{} version:{}", 
+            log.error("An error occurred while registering the event listener event:{}, listener:{} for plugin:{} version:{}",
                     event, listener, plugin.getDescription().getName(), plugin.getDescription().getVersion(), e);
         }
     }

@@ -1,18 +1,26 @@
 package cn.nukkit.plugin;
 
+import cn.nukkit.Server;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
 import lombok.extern.log4j.Log4j2;
+import org.objectweb.asm.*;
 
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.objectweb.asm.Opcodes.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
 public class MethodEventExecutor implements EventExecutor {
+
+    public static final AtomicInteger compileTime = new AtomicInteger(0);
 
     private final Method method;
 
@@ -43,5 +51,83 @@ public class MethodEventExecutor implements EventExecutor {
 
     public Method getMethod() {
         return method;
+    }
+
+    public static EventExecutor compile(Plugin plugin, Class<? extends Listener> listenerClass, Method method) {
+        var pluginLoader = plugin.getPluginLoader();
+        if (pluginLoader instanceof JavaPluginLoader javaPluginLoader) {
+            return compile(javaPluginLoader.classLoaders.get(plugin.getDescription().getName()), listenerClass, method);
+        }
+        return null;
+    }
+
+    public static EventExecutor compile(ClassLoader classLoader, Class<? extends Listener> listenerClass, Method method) {
+        var eventClass = method.getParameterTypes()[0];
+        var eventType = Type.getType(eventClass);
+        var listenerType = Type.getType(listenerClass);
+
+        ClassWriter classWriter = new ClassWriter(0);
+        MethodVisitor methodVisitor;
+        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet(), null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor"});
+        classWriter.visitSource("", null);
+        {
+            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+            methodVisitor.visitCode();
+            var label0 = new Label();
+            methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+            methodVisitor.visitInsn(RETURN);
+            var label1 = new Label();
+            methodVisitor.visitLabel(label1);
+            methodVisitor.visitLocalVariable("this", "L" + "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.get() + ";", null, label0, label1, 0);
+            methodVisitor.visitMaxs(1, 1);
+            methodVisitor.visitEnd();
+        }
+        {
+            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "execute", "(Lcn/nukkit/event/Listener;Lcn/nukkit/event/Event;)V", null, new String[]{"cn/nukkit/utils/EventException"});
+            methodVisitor.visitCode();
+            Label label0 = new Label();
+            methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 1);
+            methodVisitor.visitTypeInsn(CHECKCAST, listenerType.getInternalName());
+            methodVisitor.visitVarInsn(ALOAD, 2);
+            methodVisitor.visitTypeInsn(CHECKCAST, eventType.getInternalName());
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, listenerType.getInternalName(), method.getName(), "(" + eventType.getDescriptor() + ")V", false);
+            var label1 = new Label();
+            methodVisitor.visitLabel(label1);
+            methodVisitor.visitInsn(RETURN);
+            var label2 = new Label();
+            methodVisitor.visitLabel(label2);
+            methodVisitor.visitLocalVariable("this", "L" + "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.get() + ";", null, label0, label2, 0);
+            methodVisitor.visitLocalVariable("listener", "Lcn/nukkit/event/Listener;", null, label0, label2, 1);
+            methodVisitor.visitLocalVariable("event", "Lcn/nukkit/event/Event;", null, label0, label2, 2);
+            methodVisitor.visitMaxs(2, 3);
+            methodVisitor.visitEnd();
+        }
+        classWriter.visitEnd();
+
+        try {
+            var clazz = loadClass(classLoader, classWriter.toByteArray());
+            return (EventExecutor) clazz.getConstructor().newInstance();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+            return null;
+        }
+    }
+
+    private static Class<?> loadClass(ClassLoader loader, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
+        Class<?> clazz;
+        Class<?> cls = Class.forName("java.lang.ClassLoader");
+        java.lang.reflect.Method method =
+                cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+        method.setAccessible(true);
+        try {
+            Object[] args =
+                    new Object[]{"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
+            clazz = (Class<?>) method.invoke(loader, args);
+        } finally {
+            method.setAccessible(false);
+        }
+        return clazz;
     }
 }
