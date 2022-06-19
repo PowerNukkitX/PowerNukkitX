@@ -7,9 +7,11 @@ import cn.nukkit.utils.EventException;
 import lombok.extern.log4j.Log4j2;
 import org.objectweb.asm.*;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -65,11 +67,12 @@ public class MethodEventExecutor implements EventExecutor {
         var eventClass = method.getParameterTypes()[0];
         var eventType = Type.getType(eventClass);
         var listenerType = Type.getType(listenerClass);
+        var internalName = "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
 
         ClassWriter classWriter = new ClassWriter(0);
         MethodVisitor methodVisitor;
-        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet(), null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor"});
-        classWriter.visitSource("", null);
+        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor"});
+        classWriter.visitSource("EventHandler@" + method.getDeclaringClass().getName() + "#" + method.getName(), null);
         {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
             methodVisitor.visitCode();
@@ -80,7 +83,7 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitInsn(RETURN);
             var label1 = new Label();
             methodVisitor.visitLabel(label1);
-            methodVisitor.visitLocalVariable("this", "L" + "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.get() + ";", null, label0, label1, 0);
+            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label1, 0);
             methodVisitor.visitMaxs(1, 1);
             methodVisitor.visitEnd();
         }
@@ -99,7 +102,7 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitInsn(RETURN);
             var label2 = new Label();
             methodVisitor.visitLabel(label2);
-            methodVisitor.visitLocalVariable("this", "L" + "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.get() + ";", null, label0, label2, 0);
+            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label2, 0);
             methodVisitor.visitLocalVariable("listener", "Lcn/nukkit/event/Listener;", null, label0, label2, 1);
             methodVisitor.visitLocalVariable("event", "Lcn/nukkit/event/Event;", null, label0, label2, 2);
             methodVisitor.visitMaxs(2, 3);
@@ -115,14 +118,21 @@ public class MethodEventExecutor implements EventExecutor {
         }
     }
 
+    private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
+
     private static Class<?> loadClass(ClassLoader loader, byte[] b) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InaccessibleObjectException {
         Class<?> clazz;
-        Class<?> cls = Class.forName("java.lang.ClassLoader");
-        java.lang.reflect.Method method =
-                cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-        method.setAccessible(true);
+        java.lang.reflect.Method method;
+        if (defineClassMethodRef.get() == null) {
+            var cls = Class.forName("java.lang.ClassLoader");
+            method = cls.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            defineClassMethodRef = new WeakReference<>(method);
+        } else {
+            method = defineClassMethodRef.get();
+        }
+        Objects.requireNonNull(method).setAccessible(true);
         try {
-            Object[] args =
+            var args =
                     new Object[]{"cn.nukkit.plugin.PNXMethodEventExecutor$" + compileTime.get(), b, 0, b.length};
             clazz = (Class<?>) method.invoke(loader, args);
         } finally {
