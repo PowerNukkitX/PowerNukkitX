@@ -11,6 +11,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,6 +65,10 @@ public class MethodEventExecutor implements EventExecutor {
     }
 
     public static EventExecutor compile(ClassLoader classLoader, Class<? extends Listener> listenerClass, Method method) {
+        if (!Modifier.isPublic(method.getModifiers())) {
+            return null;
+        }
+
         var eventClass = method.getParameterTypes()[0];
         var eventType = Type.getType(eventClass);
         var listenerType = Type.getType(listenerClass);
