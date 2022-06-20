@@ -7,6 +7,8 @@ import cn.nukkit.utils.EventException;
 public class StaticExecutor implements EventExecutor {
     @Override
     public void execute(Listener listener, Event event) throws EventException {
-        ((EventCallTest) (listener)).handle((PlayerJoinEvent) event);
+        if (event instanceof PlayerJoinEvent) {
+            ((EventCallTest) (listener)).handle((PlayerJoinEvent) event);
+        }
     }
 }

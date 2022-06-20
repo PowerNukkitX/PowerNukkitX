@@ -90,21 +90,27 @@ public class MethodEventExecutor implements EventExecutor {
         {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "execute", "(Lcn/nukkit/event/Listener;Lcn/nukkit/event/Event;)V", null, new String[]{"cn/nukkit/utils/EventException"});
             methodVisitor.visitCode();
-            Label label0 = new Label();
+            var label0 = new Label();
             methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 2);
+            methodVisitor.visitTypeInsn(INSTANCEOF, eventType.getInternalName());
+            var label1 = new Label();
+            methodVisitor.visitJumpInsn(IFEQ, label1);
+            var label2 = new Label();
+            methodVisitor.visitLabel(label2);
             methodVisitor.visitVarInsn(ALOAD, 1);
             methodVisitor.visitTypeInsn(CHECKCAST, listenerType.getInternalName());
             methodVisitor.visitVarInsn(ALOAD, 2);
             methodVisitor.visitTypeInsn(CHECKCAST, eventType.getInternalName());
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, listenerType.getInternalName(), method.getName(), "(" + eventType.getDescriptor() + ")V", false);
-            var label1 = new Label();
             methodVisitor.visitLabel(label1);
+            methodVisitor.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             methodVisitor.visitInsn(RETURN);
-            var label2 = new Label();
-            methodVisitor.visitLabel(label2);
-            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label2, 0);
-            methodVisitor.visitLocalVariable("listener", "Lcn/nukkit/event/Listener;", null, label0, label2, 1);
-            methodVisitor.visitLocalVariable("event", "Lcn/nukkit/event/Event;", null, label0, label2, 2);
+            var label3 = new Label();
+            methodVisitor.visitLabel(label3);
+            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label3, 0);
+            methodVisitor.visitLocalVariable("listener", "Lcn/nukkit/event/Listener;", null, label0, label3, 1);
+            methodVisitor.visitLocalVariable("event", "Lcn/nukkit/event/Event;", null, label0, label3, 2);
             methodVisitor.visitMaxs(2, 3);
             methodVisitor.visitEnd();
         }
