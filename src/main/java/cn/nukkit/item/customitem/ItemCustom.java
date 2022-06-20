@@ -5,11 +5,15 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -97,7 +101,12 @@ public abstract class ItemCustom extends StringItem {
     }
 
     private static CompoundTag xyzToCompoundTag(float x, float y, float z) {
-        return new CompoundTag().putCompound("scale", new CompoundTag().putFloat("x", x).putFloat("y", y).putFloat("z", z));
+
+        ListTag<FloatTag> listTag = new ListTag<>("scale");
+        listTag.add(new FloatTag("", x));
+        listTag.add(new FloatTag("", y));
+        listTag.add(new FloatTag("", z));
+        return new CompoundTag().putList(listTag);
     }
 
     @Override
