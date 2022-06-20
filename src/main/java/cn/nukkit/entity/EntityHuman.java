@@ -118,11 +118,9 @@ public class EntityHuman extends EntityHumanType {
                 if (skinTag.contains("ModelId")) {
                     newSkin.setSkinId(skinTag.getString("ModelId"));
                 }
-
-                if (skinTag.contains("PlayFabID")) {
-                    newSkin.setPlayFabId(skinTag.getString("PlayFabID"));
+                if (skinTag.contains("PlayFabId")) {
+                    newSkin.setPlayFabId(skinTag.getString("PlayFabId"));
                 }
-
                 if (skinTag.contains("Data")) {
                     byte[] data = skinTag.getByteArray("Data");
                     if (skinTag.contains("SkinImageWidth") && skinTag.contains("SkinImageHeight")) {
@@ -155,7 +153,9 @@ public class EntityHuman extends EntityHumanType {
                 if (skinTag.contains("GeometryData")) {
                     newSkin.setGeometryData(new String(skinTag.getByteArray("GeometryData"), StandardCharsets.UTF_8));
                 }
-                if (skinTag.contains("AnimationData")) {
+                if (skinTag.contains("SkinAnimationData")) {
+                    newSkin.setAnimationData(new String(skinTag.getByteArray("SkinAnimationData"), StandardCharsets.UTF_8));
+                } else if (skinTag.contains("AnimationData")) { // backwards compatible
                     newSkin.setAnimationData(new String(skinTag.getByteArray("AnimationData"), StandardCharsets.UTF_8));
                 }
                 if (skinTag.contains("PremiumSkin")) {
@@ -248,16 +248,17 @@ public class EntityHuman extends EntityHumanType {
                     .putInt("CapeImageHeight", this.getSkin().getCapeData().height)
                     .putByteArray("SkinResourcePatch", this.getSkin().getSkinResourcePatch().getBytes(StandardCharsets.UTF_8))
                     .putByteArray("GeometryData", this.getSkin().getGeometryData().getBytes(StandardCharsets.UTF_8))
-                    .putByteArray("AnimationData", this.getSkin().getAnimationData().getBytes(StandardCharsets.UTF_8))
+                    .putByteArray("SkinAnimationData", this.getSkin().getAnimationData().getBytes(StandardCharsets.UTF_8))
                     .putBoolean("PremiumSkin", this.getSkin().isPremium())
                     .putBoolean("PersonaSkin", this.getSkin().isPersona())
                     .putBoolean("CapeOnClassicSkin", this.getSkin().isCapeOnClassic())
                     .putString("ArmSize", this.getSkin().getArmSize())
                     .putString("SkinColor", this.getSkin().getSkinColor())
                     .putBoolean("IsTrustedSkin", this.getSkin().isTrusted());
+
             List<SkinAnimation> animations = this.getSkin().getAnimations();
             if (!animations.isEmpty()) {
-                ListTag<CompoundTag> animationsTag = new ListTag<>("AnimationImageData");
+                ListTag<CompoundTag> animationsTag = new ListTag<>("AnimatedImageData");
                 for (SkinAnimation animation : animations) {
                     animationsTag.add(new CompoundTag()
                             .putFloat("Frames", animation.frames)
@@ -269,6 +270,7 @@ public class EntityHuman extends EntityHumanType {
                 }
                 skinTag.putList(animationsTag);
             }
+
             List<PersonaPiece> personaPieces = this.getSkin().getPersonaPieces();
             if (!personaPieces.isEmpty()) {
                 ListTag<CompoundTag> piecesTag = new ListTag<>("PersonaPieces");
@@ -280,6 +282,7 @@ public class EntityHuman extends EntityHumanType {
                             .putString("ProductId", piece.productId));
                 }
             }
+
             List<PersonaPieceTint> tints = this.getSkin().getTintColors();
             if (!tints.isEmpty()) {
                 ListTag<CompoundTag> tintsTag = new ListTag<>("PieceTintColors");
@@ -293,8 +296,9 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (!this.getSkin().getPlayFabId().isEmpty()) {
-                skinTag.putString("PlayFabID", this.getSkin().getPlayFabId());
+                skinTag.putString("PlayFabId", this.getSkin().getPlayFabId());
             }
+
             this.namedTag.putCompound("Skin", skinTag);
         }
     }

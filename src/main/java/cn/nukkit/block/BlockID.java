@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 @SuppressWarnings("unused")
@@ -321,7 +322,7 @@ public interface BlockID {
     @Deprecated @DeprecationDetails(by = "PowerNukkit", since = "FUTURE",
             replaceWith = "JUNGLE_STAIRS", reason = "Wrong Minecraft block name")
     int JUNGLE_WOODEN_STAIRS = JUNGLE_STAIRS;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     int COMMAND_BLOCK = 137;
     int BEACON = 138;
@@ -395,10 +396,10 @@ public interface BlockID {
     int FENCE_GATE_JUNGLE = 185;
     int FENCE_GATE_DARK_OAK = 186;
     int FENCE_GATE_ACACIA = 187;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     int REPEATING_COMMAND_BLOCK = 188;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     int CHAIN_COMMAND_BLOCK = 189;
 

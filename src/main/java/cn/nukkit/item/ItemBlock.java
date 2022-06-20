@@ -70,7 +70,7 @@ public class ItemBlock extends Item {
 
     @Override
     public Block getBlock() {
-        return this.block;
+        return this.block.clone();
     }
 
     @PowerNukkitOnly

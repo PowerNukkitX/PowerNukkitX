@@ -1,6 +1,6 @@
 package cn.nukkit.level.terra;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.biome.Biome;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public final class PNXAdapter {
     private static final Map<BlockState, PNXBlockStateDelegate> stateDelegateStore = new WeakHashMap<>(2820, 0.99f);

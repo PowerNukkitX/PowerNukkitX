@@ -1,21 +1,25 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class TestForBlocksCommand extends VanillaCommand {
 
     public TestForBlocksCommand(String name) {

@@ -1,14 +1,17 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
-import cn.nukkit.utils.*;
+import cn.nukkit.utils.Binary;
+import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.Zlib;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -31,7 +34,7 @@ public class RegionLoader extends BaseRegionLoader {
     /**
      * 记录已经被更新过的旧区块，默认情况下应该保持null
      */
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private static LongSet chunkUpdated = null;
 

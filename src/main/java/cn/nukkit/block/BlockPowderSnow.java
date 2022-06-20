@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -65,5 +66,11 @@ public class BlockPowderSnow extends BlockTransparentMeta {
     @Override
     public BlockProperties getProperties() {
         return CommonBlockProperties.EMPTY_PROPERTIES;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (entity.getFreezingTicks() < 140)
+            entity.addFreezingTicks(1);
     }
 }

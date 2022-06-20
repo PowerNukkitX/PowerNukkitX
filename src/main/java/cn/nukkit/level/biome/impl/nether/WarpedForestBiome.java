@@ -1,7 +1,7 @@
 package cn.nukkit.level.biome.impl.nether;
 
-import cn.nukkit.level.generator.populator.impl.nether.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.impl.nether.WarpedFungiTreePopulator;
+import cn.nukkit.level.generator.populator.impl.nether.WarpedGrassesPopulator;
 import cn.nukkit.level.generator.populator.impl.nether.WarpedTwistingVinesPopulator;
 
 public class WarpedForestBiome extends NetherBiome {

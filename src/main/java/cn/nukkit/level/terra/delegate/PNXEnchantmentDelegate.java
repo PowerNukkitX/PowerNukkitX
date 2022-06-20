@@ -1,11 +1,11 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import com.dfsek.terra.api.inventory.ItemStack;
 import com.dfsek.terra.api.inventory.item.Enchantment;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment innerEnchantment) implements Enchantment {
     @Override

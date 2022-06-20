@@ -1,6 +1,7 @@
 package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
@@ -234,7 +235,7 @@ public class BlockVector3 implements Cloneable {
         return y >> 4;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getChunkSectionY(boolean is384World) {
         return (y >> 4) + (is384World ? 4 : 0);

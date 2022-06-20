@@ -1,6 +1,6 @@
 package cn.nukkit.item.customitem;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.StringItem;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author lt_name
  */
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class ItemCustom extends StringItem {
 

@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
@@ -10,10 +11,10 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.nukkit.OpenSimplex2S;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
-import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.impl.PopulatorGroundFire;
 import cn.nukkit.level.generator.populator.impl.PopulatorLava;
 import cn.nukkit.level.generator.populator.impl.PopulatorOre;
+import cn.nukkit.level.generator.populator.impl.nether.PopulatorGlowStone;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;

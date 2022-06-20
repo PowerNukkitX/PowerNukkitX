@@ -2,6 +2,8 @@ package cn.nukkit.command.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.command.exceptions.SelectorSyntaxException;
@@ -21,10 +23,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public final class EntitySelector {
     public static final Map<Integer, String> ENTITY_ID2NAME = AddEntityPacket.LEGACY_IDS;
     public static final Map<String, Integer> ENTITY_NAME2ID;
@@ -64,7 +69,7 @@ public final class EntitySelector {
     private static final Set<String> LEVEL_ARGS = Sets.newHashSet(ARG_X, ARG_Y, ARG_Z, ARG_DX, ARG_DY, ARG_DZ, ARG_RM, ARG_R);
     private static final Predicate<String> VALID_ARGUMENT = arg -> arg != null && ARGS.contains(arg);
 
-    private static Cache<String,Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).build();
+    private static Cache<String,Map<String, List<String>>> args_cache = CacheBuilder.newBuilder().maximumSize(65535).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     private static String registerArgument(String arg) {
         ARGS.add(arg);

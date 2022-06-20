@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -13,7 +14,6 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Arrays;
 
 import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
@@ -21,7 +21,7 @@ import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 @Since("1.6.0.0-PNX")
 @PowerNukkitOnly
 public abstract class BlockAmethystBud extends BlockTransparentMeta implements Faceable {
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static final BlockProperties PROPERTIES = new BlockProperties(CommonBlockProperties.FACING_DIRECTION);
 
@@ -59,7 +59,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return ItemTool.TYPE_PICKAXE;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     @Override
     public int getToolTier() {
@@ -76,7 +76,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     @Nonnull
     @Override
@@ -89,7 +89,7 @@ public abstract class BlockAmethystBud extends BlockTransparentMeta implements F
         return getPropertyValue(FACING_DIRECTION);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     @Override
     public void setBlockFace(BlockFace face) {

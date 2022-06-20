@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockentity.BlockEntityCommandBlock;
-import cn.nukkit.nbt.tag.CompoundTag;
-
 public class BlockCommandBlockChain extends BlockCommandBlock {
 
     public BlockCommandBlockChain() {

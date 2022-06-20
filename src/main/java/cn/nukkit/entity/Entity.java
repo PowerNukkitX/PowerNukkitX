@@ -8,11 +8,15 @@ import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
+import cn.nukkit.entity.mob.EntityMagmaCube;
+import cn.nukkit.entity.passive.EntityStrider;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
+import cn.nukkit.event.player.PlayerFreezeEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
@@ -270,7 +274,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.5.0.0-PN")
     public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); // ???
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); //float
     @Since("1.3.0.0-PN")
     public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
     @Since("1.4.0.0-PN")
@@ -448,7 +452,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     //spawned by server
     //player's UUID is sent by client,so this value cannot be used in Player
@@ -528,6 +532,10 @@ public abstract class Entity extends Location implements Metadatable {
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int freezingTicks = 0;//0 - 140
 
     @PowerNukkitOnly
     @Since("1.2.1.0-PN")
@@ -1757,6 +1765,27 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
+        if(this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0){
+            this.addFreezingTicks(-tickDiff);
+        }
+
+        if(this.getFreezingTicks() != 0 && this instanceof Player player){
+            PlayerFreezeEvent event = new PlayerFreezeEvent(player, 0.05f, 0.1f);
+            this.server.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                player.setMovementSpeed(event.getBaseSpeed() - event.getSpeedFactor() * (this.getFreezingTicks() / 140f));
+            }
+        }
+
+        //todo: 取代求余运算提高性能
+        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0){
+            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube){
+                this.attack(5);
+            }else{
+                this.attack(1);
+            }
+        }
+
         this.age += tickDiff;
         this.ticksLived += tickDiff;
         TimingsHistory.activatedEntityTicks++;
@@ -2882,7 +2911,7 @@ public abstract class Entity extends Location implements Metadatable {
         return this.id;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public UUID getUniqueId() {
         return this.entityUniqueId;
@@ -3166,13 +3195,13 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addTag(String tag) {
         this.namedTag.putList(this.namedTag.getList("Tags", StringTag.class).add(new StringTag("", tag)));
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void removeTag(String tag) {
         ListTag<StringTag> tags = this.namedTag.getList("Tags", StringTag.class);
@@ -3180,15 +3209,53 @@ public abstract class Entity extends Location implements Metadatable {
         this.namedTag.putList(tags);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean containTag(String tag) {
         return this.namedTag.getList("Tags", StringTag.class).getAll().stream().anyMatch(t -> t.data.equals(tag));
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public List<StringTag> getAllTags() {
         return this.namedTag.getList("Tags", StringTag.class).getAll();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setFreezingEffectStrength(float strength) {
+        if (strength < 0 || strength > 1)
+            throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
+        this.setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, strength));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public float getFreezingEffectStrength() {
+        return ((FloatEntityData)this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setFreezingTicks(int ticks){
+        if(ticks < 0 || ticks > 140)
+            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
+        this.freezingTicks = ticks;
+        setFreezingEffectStrength(ticks / 140f);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getFreezingTicks(){
+        return this.freezingTicks;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void addFreezingTicks(int increments){
+        if(freezingTicks + increments < 0 || freezingTicks + increments > 140)
+            throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
+        this.freezingTicks += increments;
+        setFreezingEffectStrength(this.freezingTicks / 140f);
     }
 }

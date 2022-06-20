@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPrimedTNT;
@@ -138,7 +138,7 @@ public class BlockLava extends BlockLiquid {
      * @param spreadTarget 目标火焰点燃方块
      * @return 是否可以被点燃
      */
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private boolean isNetherSpreadNotAllowed(Block spreadTarget) {
         if(this.getLevel().isNether()) {

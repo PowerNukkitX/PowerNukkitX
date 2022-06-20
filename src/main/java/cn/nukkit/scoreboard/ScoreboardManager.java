@@ -2,6 +2,8 @@ package cn.nukkit.scoreboard;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.command.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.network.protocol.RemoveObjectivePacket;
 import cn.nukkit.network.protocol.SetScorePacket;
@@ -14,6 +16,8 @@ import cn.nukkit.scoreboard.scorer.PlayerScorer;
 
 import java.util.stream.Collectors;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class ScoreboardManager extends AbstractScoreboardManager {
 
     public ScoreboardManager(ScoreboardStorage storage) {

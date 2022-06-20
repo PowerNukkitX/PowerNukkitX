@@ -1,7 +1,8 @@
 package cn.nukkit.scoreboard;
 
 import cn.nukkit.Server;
-import cn.nukkit.event.command.ScoreboardEvent;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.event.command.ScoreboardScoreChangeEvent;
 import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
@@ -18,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 @Getter
 public class Scoreboard {
 

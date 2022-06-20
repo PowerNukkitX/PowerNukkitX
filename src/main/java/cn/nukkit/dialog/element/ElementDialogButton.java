@@ -1,11 +1,14 @@
 package cn.nukkit.dialog.element;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.dialog.window.Dialog;
-import cn.nukkit.dialog.window.FormWindowDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class ElementDialogButton {
 
     private String button_name; // json 格式需要，勿改

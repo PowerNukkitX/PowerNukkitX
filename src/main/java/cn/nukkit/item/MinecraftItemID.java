@@ -1080,6 +1080,8 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
 
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_BOAT,
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_DOOR,
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN
     ;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id-> 

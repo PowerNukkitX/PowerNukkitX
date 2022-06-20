@@ -6,9 +6,9 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.data.NBTEntityData;
+import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -17,6 +17,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -25,6 +26,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author CreeperFace
@@ -43,8 +45,8 @@ public class EntityFirework extends Entity {
         super(chunk, nbt);
 
         this.fireworkAge = 0;
-        Random rand = new Random();
-        this.lifetime = 30 + rand.nextInt(6) + rand.nextInt(7);
+        Random rand = ThreadLocalRandom.current();
+        this.lifetime = 30 + rand.nextInt(12);
 
         this.motionX = rand.nextGaussian() * 0.001D;
         this.motionZ = rand.nextGaussian() * 0.001D;
@@ -78,8 +80,8 @@ public class EntityFirework extends Entity {
         }
 
         this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, firework.getNamedTag()));
-        this.setDataProperty(new IntEntityData(Entity.DATA_DISPLAY_OFFSET, 1));
-        this.setDataProperty(new ByteEntityData(Entity.DATA_HAS_DISPLAY, 1));
+        this.setDataProperty(new Vector3fEntityData(Entity.DATA_DISPLAY_OFFSET, new Vector3f(0, 1, 0)));
+        this.setDataProperty(new LongEntityData(Entity.DATA_HAS_DISPLAY, -1));
     }
 
     @Override
@@ -121,7 +123,7 @@ public class EntityFirework extends Entity {
                 for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(0.1, 0.1, 0.1))) {
                     collisionBlock.onProjectileHit(this, position, motion);
                 }
-                
+
             } else if (!this.isCollided && this.hadCollision) {
                 this.hadCollision = false;
             }

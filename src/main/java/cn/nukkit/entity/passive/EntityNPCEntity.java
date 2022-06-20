@@ -3,15 +3,16 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
+import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -77,6 +78,8 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         return "NPC";
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     @Override
     public void initEntity() {
         super.initEntity();
@@ -134,6 +137,8 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.dialog.setBindEntity(this);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     @Override
     public void saveNBT() {
         super.saveNBT();
@@ -144,12 +149,16 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.namedTag.putInt("Variant", this.variant);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         player.showDialogWindow(this.dialog);
         return true;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     @Override
     public boolean attack(EntityDamageEvent source) {
         if (source instanceof EntityDamageByEntityEvent event && event.getDamager() instanceof Player damager && damager.isCreative()) {
@@ -158,11 +167,15 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         return false;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public void setVariant(int variant){
         this.variant = variant;
         this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public int getVariant(){
         return this.variant;
     }

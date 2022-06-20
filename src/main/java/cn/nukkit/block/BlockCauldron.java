@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
@@ -123,13 +124,13 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
     }
 
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public CauldronLiquid getCauldronLiquid() {
         return this.getPropertyValue(LIQUID);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setCauldronLiquid(CauldronLiquid liquid) {
         this.setPropertyValue(LIQUID, liquid);

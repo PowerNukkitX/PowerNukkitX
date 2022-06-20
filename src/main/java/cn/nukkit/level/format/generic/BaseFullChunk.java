@@ -3,6 +3,7 @@ package cn.nukkit.level.format.generic;
 import cn.nukkit.Player;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
@@ -732,7 +733,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return results.stream();
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private int ensureY(final int y) {
         if (isOverWorld()) {

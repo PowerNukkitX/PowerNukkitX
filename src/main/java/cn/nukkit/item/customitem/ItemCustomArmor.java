@@ -1,7 +1,7 @@
 package cn.nukkit.item.customitem;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * @author lt_name
  */
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable {
 

@@ -2,8 +2,6 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockWood;
-import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.NukkitRandom;

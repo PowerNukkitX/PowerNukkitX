@@ -3,6 +3,7 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.entity.Entity;
@@ -19,7 +20,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 //used for executing commands in place of an entity
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class ExecutorCommandSender implements CommandSender {
 

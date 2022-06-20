@@ -1,23 +1,27 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.utils.TextFormat;
 
 import static cn.nukkit.utils.Utils.getLevelBlocks;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class FillCommand extends VanillaCommand {
 
     public FillCommand(String name) {
@@ -59,17 +63,17 @@ public class FillCommand extends VanillaCommand {
             FillMode oldBlockHandling = FillMode.REPLACE;
             String replaceTileName = null;
             int replaceTileId = -1;
-            int replaceDataValue = -1;
+            int replaceDataValue = 0;
 
-            if (args.length > 7) {
+            if (parser.hasNext()) {
                 tileData = parser.parseInt();
-                if (args.length > 8) {
+                if (parser.hasNext()) {
                     oldBlockHandling = parser.parseEnum(FillMode.class);
-                    if (args.length > 9) {
+                    if (parser.hasNext()) {
                         replaceTileName = parser.parseString();
                         replaceTileName = replaceTileName.startsWith("minecraft:") ? replaceTileName : "minecraft:" + replaceTileName;
                         replaceTileId = BlockStateRegistry.getBlockId(replaceTileName);
-                        if (args.length > 10) {
+                        if (parser.hasNext()) {
                             replaceDataValue = parser.parseInt();
                         }
                     }
@@ -145,7 +149,7 @@ public class FillCommand extends VanillaCommand {
                     blocks = getLevelBlocks(level, aabb);
 
                     for (Block block : blocks) {
-                        if (replaceTileId != -1 && replaceDataValue != -1) {
+                        if (replaceTileId != -1) {
                             if (block.getId() == replaceTileId && block.getDamage() == replaceDataValue) {
                                 level.setBlock(block, Block.get(tileId, tileData));
                                 ++count;

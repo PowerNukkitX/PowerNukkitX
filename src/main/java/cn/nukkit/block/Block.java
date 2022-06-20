@@ -2092,13 +2092,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void onEntityFallOn(Entity entity, float fallDistance) {
 
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean useDefaultFallDamage() {
         return true;
@@ -2730,7 +2730,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.level.isBlockPowered(this.getLocation());
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void cloneTo(Position pos) {
         pos.level.setBlock(pos, this.layer, this.clone(), true, true);

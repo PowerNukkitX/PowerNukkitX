@@ -19,7 +19,6 @@ import cn.nukkit.utils.Faceable;
 import cn.nukkit.utils.RedstoneComponent;
 
 import javax.annotation.Nonnull;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -80,8 +80,6 @@ import co.aikar.timings.Timings;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.netty.util.internal.EmptyArrays;
@@ -91,7 +89,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -479,7 +476,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
-        this.getAdventureSettings().set(Type.BUILD_AND_MINE, value);
+        this.getAdventureSettings().set(Type.BUILD, value);
         this.getAdventureSettings().set(Type.WORLD_BUILDER, value);
         this.getAdventureSettings().update();
     }
@@ -1410,7 +1407,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (newSettings == null) {
             newSettings = this.getAdventureSettings().clone(this);
             newSettings.set(Type.WORLD_IMMUTABLE, (gamemode & 0x02) > 0);
-            newSettings.set(Type.BUILD_AND_MINE, (gamemode & 0x02) <= 0);
+            newSettings.set(Type.BUILD, (gamemode & 0x02) <= 0);
             newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
             newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
             newSettings.set(Type.NO_CLIP, gamemode == SPECTATOR);
@@ -2923,7 +2920,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.PLAYER_ACTION_PACKET:
                     PlayerActionPacket playerActionPacket = (PlayerActionPacket) packet;
-                    if (!this.spawned || (!this.isAlive() && playerActionPacket.action != PlayerActionPacket.ACTION_RESPAWN && playerActionPacket.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_REQUEST)) {
+                    if (!this.spawned || (!this.isAlive() && playerActionPacket.action != PlayerActionPacket.ACTION_RESPAWN && playerActionPacket.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK)) {
                         break;
                     }
 
@@ -5191,6 +5188,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    @PowerNukkitDifference(info = "will force using the spawnposition if the value spawnBlock is null,to fix the bug of command /spawnpoint", since = "1.6.0.0-PNX")
     protected void respawn() {
         if (this.server.isHardcore()) {
             this.setBanned(true);
@@ -5200,28 +5198,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
 
-        Vector3 spawnBlock = getSpawnBlock();
-        if (spawnBlock == null) {
-            spawnBlock = spawnPosition;
-        }
-
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
-        Block respawnBlock;
+
+        Vector3 spawnBlock = getSpawnBlock();
+        Block respawnBlock = null;
         int respawnBlockDim = Level.DIMENSION_OVERWORLD;
-        if (spawnBlock != null) {
+        if(spawnBlock != null) {
             Position spawnBlockPos = new Position(spawnBlock.x, spawnBlock.y, spawnBlock.z, playerRespawnEvent.getRespawnPosition().getLevel());
             respawnBlockDim = spawnBlockPos.level.getDimension();
             playerRespawnEvent.setRespawnBlockPosition(spawnBlockPos);
             respawnBlock = spawnBlockPos.getLevelBlock();
-            if (isValidRespawnBlock(respawnBlock)) {
-                playerRespawnEvent.setRespawnBlockAvailable(true);
-                playerRespawnEvent.setConsumeCharge(respawnBlock.getId() == BlockID.RESPAWN_ANCHOR);
-            } else {
-                playerRespawnEvent.setRespawnBlockAvailable(false);
-                playerRespawnEvent.setConsumeCharge(false);
-                playerRespawnEvent.setOriginalRespawnPosition(playerRespawnEvent.getRespawnPosition());
-                playerRespawnEvent.setRespawnPosition(this.server.getDefaultLevel().getSafeSpawn());
-            }
+        }
+        if (respawnBlock == null || isValidRespawnBlock(respawnBlock)) {//true when there is an available respawn block or respawnBlock == null (set spawn by command /spawnpoint)
+            playerRespawnEvent.setRespawnBlockAvailable(respawnBlock != null);
+            playerRespawnEvent.setKeepRespawnPosition(respawnBlock == null);//still using the spawn position if the spawn is set by command /spawnpoint
+            playerRespawnEvent.setKeepRespawnBlockPosition(respawnBlock == null);//still using the block spawn position if the spawn is set by command /spawnpoint
+            playerRespawnEvent.setConsumeCharge(respawnBlock == null ? false : respawnBlock.getId() == BlockID.RESPAWN_ANCHOR);//charge if there is an available respawn block
+        } else {//false when there is no available respawn block
+            playerRespawnEvent.setRespawnBlockAvailable(false);
+            playerRespawnEvent.setConsumeCharge(false);
+            playerRespawnEvent.setOriginalRespawnPosition(playerRespawnEvent.getRespawnPosition());
+            playerRespawnEvent.setRespawnPosition(this.server.getDefaultLevel().getSafeSpawn());//using the default spawn position of the level
         }
 
         this.server.getPluginManager().callEvent(playerRespawnEvent);
@@ -6713,7 +6710,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6731,7 +6728,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk2);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void clearScoreboardSlot(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();

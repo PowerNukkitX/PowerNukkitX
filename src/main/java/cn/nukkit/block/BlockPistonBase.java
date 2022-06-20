@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
@@ -504,8 +505,8 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return true;
         }
 
-        @PowerNukkitOnly
-        @Since("1.6.0.0-PNX")
+        @PowerNukkitXOnly
+       @Since("1.6.0.0-PNX")
         public boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
             boolean canPush = BlockPistonBase.canPush(block, face, destroyBlocks, extending);
             if (!canPush) {
@@ -531,14 +532,14 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return canPush;
         }
 
-        @PowerNukkitOnly
-        @Since("1.6.0.0-PNX")
+        @PowerNukkitXOnly
+       @Since("1.6.0.0-PNX")
         public Set<Position> getLockedBlocks(){
             return this.toLock;
         }
 
-        @PowerNukkitOnly
-        @Since("1.6.0.0-PNX")
+        @PowerNukkitXOnly
+       @Since("1.6.0.0-PNX")
         public void recordLockedBlocks(){
             this.toLock.clear();
             this.toMove.forEach(block -> toLock.add(new Position(block.getX(), block.getY(), block.getZ(), block.level)));
@@ -688,16 +689,16 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
             return this.toDestroy.stream().map(Block::clone).collect(Collectors.toList());
         }
 
-        @PowerNukkitOnly
-        @Since("1.6.0.0-PNX")
+        @PowerNukkitXOnly
+       @Since("1.6.0.0-PNX")
         public void lockBlocks(){
             for (Position pos : toLock){
                 lockedBlocks.add(pos);
             }
         }
 
-        @PowerNukkitOnly
-        @Since("1.6.0.0-PNX")
+        @PowerNukkitXOnly
+       @Since("1.6.0.0-PNX")
         public void unlockBlocks() {
             for (Position pos : toLock) {
                 lockedBlocks.remove(pos);

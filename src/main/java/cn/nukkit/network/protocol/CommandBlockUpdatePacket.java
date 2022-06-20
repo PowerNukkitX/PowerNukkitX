@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockVector3;
 import lombok.ToString;
@@ -21,10 +21,10 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public String lastOutput;
     public String name;
     public boolean shouldTrackOutput;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int tickDelay;
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean executingOnFirstTick;
 

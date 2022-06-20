@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static cn.nukkit.blockstate.Loggers.logIBlockState;

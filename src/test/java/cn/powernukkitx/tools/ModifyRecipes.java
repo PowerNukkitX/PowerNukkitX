@@ -62,6 +62,7 @@ public class ModifyRecipes {
             }).toList();
             config.set("recipes", newRecipes);
             config.saveAsJson(new File("src/main/resources/recipes.json"), false, GSON);
+            System.out.println("OK!");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

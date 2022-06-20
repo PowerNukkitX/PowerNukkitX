@@ -1,8 +1,11 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
+import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -15,9 +18,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.TextFormat;
 
-@PowerNukkitOnly
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class SetBlockCommand extends VanillaCommand {
-    @PowerNukkitOnly
+
     public SetBlockCommand(String name) {
         super(name, "commands.setblock.description");
         this.setPermission("nukkit.command.setblock");
@@ -36,28 +40,39 @@ public class SetBlockCommand extends VanillaCommand {
             return false;
         }
 
-        if (args.length < 4) {
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
+            return false;
+        }
+        Position position;
+        Block block;
+        String tileName = null;
+        try {
+            position = parser.parsePosition();
+            tileName = parser.parseString();
+            tileName = tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName;
+            int tileId = BlockStateRegistry.getBlockId(tileName);
+            block = Block.get(tileId);
+            if (parser.hasNext()) {
+                block.setDamage(parser.parseInt());
+            }
+        } catch (CommandSyntaxException ignored) {
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return false;
+        } catch (IndexOutOfBoundsException | InvalidBlockStateException ignored) {
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", tileName));
             return false;
         }
 
-        CommandParser parser = new CommandParser(this, sender, args);
-        Position position;
-        int data = 0;
-        try {
-            position = parser.parsePosition();
-            if (args.length > 4) {
-                data = Integer.parseInt(args[4]);
-            }
-        } catch (IndexOutOfBoundsException | CommandSyntaxException ignored) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return true;
-        }
-
         String oldBlockHandling = "replace";
-        if (args.length > 5) {
-            oldBlockHandling = args[5].toLowerCase();
+        if (parser.hasNext()) {
+            try {
+                oldBlockHandling = parser.parseString();
+            } catch (CommandSyntaxException e) {
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+                return false;
+            }
             switch (oldBlockHandling) {
                 case "destroy":
                 case "keep":

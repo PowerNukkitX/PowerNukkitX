@@ -5,8 +5,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.level.generator.object.end.ObjectEndGateway;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
 /**

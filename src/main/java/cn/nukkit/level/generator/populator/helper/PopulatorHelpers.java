@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.populator.helper;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.FullChunk;
-
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 

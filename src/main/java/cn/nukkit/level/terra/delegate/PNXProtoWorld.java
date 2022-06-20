@@ -2,7 +2,6 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;

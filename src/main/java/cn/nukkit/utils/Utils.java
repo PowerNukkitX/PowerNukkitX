@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
@@ -450,7 +451,7 @@ public class Utils {
 
     //used for commands /fill , /clone and so on
     //todo: using other methods instead of this one
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static Block[] getLevelBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(Math.min(bb.getMinX(), bb.getMaxX()));

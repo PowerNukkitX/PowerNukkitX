@@ -1,9 +1,6 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
@@ -48,7 +45,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         ChunkUpdater.backwardCompatibilityUpdate(level, this);
     }
 
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public final int toSectionY(int blockPosY) {
         if (sectionLength == 24) {
