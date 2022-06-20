@@ -3237,7 +3237,8 @@
   },
   {
     "name": "minecraft:sea_lantern",
-    "id": 169
+    "id": 169,
+    "oldId": 169
   },
   {
     "name": "minecraft:hay_block",
