@@ -1,5 +1,7 @@
 package cn.nukkit.plugin;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.PluginException;
 import org.yaml.snakeyaml.DumperOptions;
@@ -19,7 +21,7 @@ import java.util.*;
 /**
  * 描述一个Nukkit插件的类。<br>
  * Describes a Nukkit plugin.
- *
+ * <p>
  * 在jar格式的插件中，插件的描述内容可以在plugin.yml中定义。比如这个：<br>
  * The description of a jar-packed plugin can be defined in the 'plugin.yml' file. For example:
  * <blockquote><pre>
@@ -98,11 +100,15 @@ import java.util.*;
  * <li><i>permissions</i><br>
  * 序列，表示这个插件的权限组列表。<br>
  * List, the list of permission groups defined.</li>
+ * <li><i>permissions</i><br>
+ * 序列，表示这个插件的所使用的特征列表。<br>
+ * List, the list of features used.</li>
  * </ul>
  *
  * @author MagicDroidX(code) @ Nukkit Project
  * @author iNevet(code and javadoc) @ Nukkit Project
  * @author 粉鞋大妈(javadoc) @ Nukkit Project
+ * @author superice666(code) @ PowerNukkitX Project
  * @see Plugin
  * @see PluginLoadOrder
  * @since Nukkit 1.0 | Nukkit API 1.0.0
@@ -124,6 +130,10 @@ public class PluginDescription {
     private PluginLoadOrder order = PluginLoadOrder.POSTWORLD;
 
     private List<Permission> permissions = new ArrayList<>();
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private List<String> features = new ArrayList<>();
 
     public PluginDescription(Map<String, Object> yamlMap) {
         this.loadMap(yamlMap);
@@ -204,6 +214,10 @@ public class PluginDescription {
         if (plugin.containsKey("permissions")) {
             this.permissions = Permission.loadPermissions((Map<String, Object>) plugin.get("permissions"));
         }
+
+        if (plugin.containsKey("features")) {
+            this.features = (List<String>) plugin.get("features");
+        }
     }
 
     /**
@@ -279,7 +293,7 @@ public class PluginDescription {
     /**
      * 返回这个插件所依赖的插件名字。<br>
      * The names of the plugins what is depended by this plugin.
-     *
+     * <p>
      * Nukkit插件的依赖有这些注意事项：<br>Here are some note for Nukkit plugin depending:
      * <ul>
      * <li>一个插件不能依赖自己（否则会报错）。<br>A plugin can not depend on itself (or there will be an exception).</li>
@@ -407,5 +421,19 @@ public class PluginDescription {
      */
     public String getWebsite() {
         return website;
+    }
+
+    /**
+     * 返回这个插件的所使用的特征。<br>
+     * Returns the author of this plugin.
+     *
+     * @return 这个插件所使用的特征。<br>The features of this plugin.
+     * @see PluginDescription
+     * @since PowerNukkitX 1.6.0.0-PNX | Nukkit API 1.0.14
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public List<String> getFeatures() {
+        return features;
     }
 }

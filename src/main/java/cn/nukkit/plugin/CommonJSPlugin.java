@@ -62,7 +62,7 @@ public class CommonJSPlugin implements Plugin, Listener {
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
         var cbd = Context.newBuilder("js")
-                .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this.id))
+                .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this))
                 .allowAllAccess(true)
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLoading(true)
