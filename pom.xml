@@ -2,28 +2,29 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>PowerNukkitX</name>
+    <name>powernukkitx</name>
     <description>A fork of PowerNukkit</description>
+    <url>https://github.com/PowerNukkitX/PowerNukkitX</url>
 
     <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
-    <version>1.6.0.0-PNX-SNAPSHOT</version>
+    <version>1.6.0.0-PNX</version>
 
     <inceptionYear>2022</inceptionYear>
     <organization>
-        <name>BlocklyNukkit</name>
-        <url>https://github.com/BlocklyNukkit</url>
+        <name>PowerNukkitX</name>
+        <url>https://github.com/PowerNukkitX</url>
     </organization>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/BlocklyNukkit/PowerNukkitX/issues</url>
+        <url>https://github.com/PowerNukkitX/PowerNukkitX/issues</url>
     </issueManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/BlocklyNukkit/PowerNukkitX.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:BlocklyNukkit/PowerNukkitX.git</developerConnection>
-        <url>https://github.com/BlocklyNukkit/PowerNukkitX</url>
+        <connection>scm:git:https://github.com/PowerNukkitX/PowerNukkitX.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:PowerNukkitX/PowerNukkitX.git</developerConnection>
+        <url>https://github.com/PowerNukkitX/PowerNukkitX</url>
     </scm>
 
     <licenses>
@@ -36,10 +37,10 @@
 
     <developers>
         <developer>
-            <id>BlocklyNukkit</id>
-            <url>https://github.com/BlocklyNukkit</url>
-            <organization>BlocklyNukkit</organization>
-            <organizationUrl>https://github.com/BlocklyNukkit</organizationUrl>
+            <id>PowerNukkitX</id>
+            <url>https://github.com/PowerNukkitX</url>
+            <organization>PowerNukkitX</organization>
+            <organizationUrl>https://github.com/PowerNukkitX</organizationUrl>
         </developer>
         <developer>
             <id>PowerNukkit</id>
@@ -57,6 +58,12 @@
             <id>Nukkit</id>
             <organization>Nukkit</organization>
             <organizationUrl>https://github.com/Nukkit</organizationUrl>
+        </developer>
+        <developer>
+            <name>superice666</name>
+            <email>2801621420@qq.com</email>
+            <organization>Sonatype</organization>
+            <organizationUrl>https://www.sonatype.com</organizationUrl>
         </developer>
     </developers>
 
@@ -78,20 +85,46 @@
         <jline.version>3.9.0</jline.version>
         <skipTests>true</skipTests>
         <skipGpg>true</skipGpg>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
         <graalvm.version>22.0.0.2</graalvm.version>
+        <skipDelombok>true</skipDelombok>
+        <skipNexus>true</skipNexus>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <profiles.active>release</profiles.active>
+                <skipGpg>false</skipGpg>
+                <maven.javadoc.skip>false</maven.javadoc.skip>
+                <skipDelombok>false</skipDelombok>
+                <skipNexus>false</skipNexus>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+
     <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>Releases</name>
-            <url>http://124.221.146.224:8081/repository/maven-releases/</url>
-        </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshot</name>
-            <url>http://124.221.146.224:8081/repository/maven-snapshots/</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <repositories>
@@ -108,6 +141,17 @@
         <repository>
             <id>maven-powernukkitx-cn</id>
             <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo1.maven.org/maven2/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -285,7 +329,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -398,20 +442,16 @@
             <version>${graalvm.version}</version>
             <scope>runtime</scope>
         </dependency>
-
-        <!--    Terra  -->
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
             <version>6.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>9.3</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -459,6 +499,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+                    <compileSourceRoots>src/main/java</compileSourceRoots>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <!-- The semantics of this option are reversed, see MCOMPILER-209. -->
@@ -530,6 +571,50 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.18.20.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                        <version>1.18.24</version>
+                        <scope>compile</scope>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <sourceDirectory>src/main/java</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/delombok</outputDirectory>
+                    <skip>${skipDelombok}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <sourcepath>${project.build.directory}/delombok</sourcepath>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -689,6 +774,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.12</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoDropAfterRelease>true</autoDropAfterRelease>
+                </configuration>
             </plugin>
         </plugins>
     </build>
