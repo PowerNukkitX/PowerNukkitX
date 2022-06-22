@@ -12,4 +12,12 @@ public interface JSFeature {
     Collection<String> availableModuleNames();
 
     Map<String, Proxy> generateModule(String moduleName, Context context);
+
+    default boolean needsInject() {
+        return false;
+    }
+
+    default void injectIntoContext(Context context) {
+
+    }
 }

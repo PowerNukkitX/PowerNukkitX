@@ -5,11 +5,9 @@ import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;
-import cn.nukkit.plugin.js.ESMFileSystem;
-import cn.nukkit.plugin.js.JSExternal;
-import cn.nukkit.plugin.js.JSIInitiator;
-import cn.nukkit.plugin.js.JSProxyLogger;
+import cn.nukkit.plugin.js.*;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.PluginException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
@@ -19,6 +17,7 @@ import org.graalvm.polyglot.Value;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CommonJSPlugin implements Plugin, Listener {
@@ -42,6 +41,7 @@ public class CommonJSPlugin implements Plugin, Listener {
     protected ESMFileSystem fileSystem;
     protected Context jsContext = null;
     protected Value jsExports = null;
+    public final LinkedHashMap<String, JSFeature> usedFeatures = new LinkedHashMap<>(0);
 
     public final int id = globalMaxId++;
 
@@ -61,6 +61,13 @@ public class CommonJSPlugin implements Plugin, Listener {
         this.pluginName = pluginDescription.getName();
         this.description = pluginDescription;
         this.logger = new PluginLogger(this);
+        for (var each : description.getFeatures()) {
+            var feature = JSFeatures.getFeature(each);
+            if (feature == null) {
+                throw new PluginException("Feature " + each + " requested by " + pluginName + " not found!");
+            }
+            usedFeatures.put(each, feature);
+        }
         var cbd = Context.newBuilder("js")
                 .fileSystem(fileSystem = new ESMFileSystem(pluginDir, this))
                 .allowAllAccess(true)
@@ -83,6 +90,11 @@ public class CommonJSPlugin implements Plugin, Listener {
         JSIInitiator.init(jsContext);
         jsContext.getBindings("js").putMember("console", new JSProxyLogger(logger));
         jsPluginIdMap.put(id, this);
+        for (var each : usedFeatures.values()) {
+            if (each.needsInject()) {
+                each.injectIntoContext(jsContext);
+            }
+        }
         this.initialized = true;
     }
 

@@ -100,7 +100,7 @@ import java.util.*;
  * <li><i>permissions</i><br>
  * 序列，表示这个插件的权限组列表。<br>
  * List, the list of permission groups defined.</li>
- * <li><i>permissions</i><br>
+ * <li><i>features</i><br>
  * 序列，表示这个插件的所使用的特征列表。<br>
  * List, the list of features used.</li>
  * </ul>
