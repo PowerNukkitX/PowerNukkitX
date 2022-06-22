@@ -4,7 +4,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockCustom;
+import cn.nukkit.block.customblock.BlockCustom;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;

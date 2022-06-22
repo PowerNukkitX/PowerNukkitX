@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
+import static cn.nukkit.blockproperty.CommonBlockProperties.FACING_DIRECTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BlockPropertyTest {
-    BlockProperty<BlockFace> direction = CommonBlockProperties.FACING_DIRECTION;
+    BlockProperty<BlockFace> direction = FACING_DIRECTION;
 
     @Test
     void isDefaultPersistentValue() {

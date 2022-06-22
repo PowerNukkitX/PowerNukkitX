@@ -3,7 +3,6 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;
@@ -33,7 +32,7 @@ public class SetBlockCommand extends VanillaCommand {
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
     }
-    
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
@@ -51,7 +50,7 @@ public class SetBlockCommand extends VanillaCommand {
         try {
             position = parser.parsePosition();
             tileName = parser.parseString();
-            tileName = tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName;
+            tileName = tileName.startsWith("minecraft:") ? tileName : tileName.contains(":") ? tileName : "minecraft:" + tileName;
             int tileId = BlockStateRegistry.getBlockId(tileName);
             block = Block.get(tileId);
             if (parser.hasNext()) {
@@ -81,20 +80,6 @@ public class SetBlockCommand extends VanillaCommand {
                 default:
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
-            }
-        }
-
-        Block block;
-        try {
-            int blockId = Integer.parseInt(args[3]);
-            block = Block.get(blockId, data);
-        } catch (NullPointerException|NumberFormatException|IndexOutOfBoundsException ignored) {
-            try {
-                int blockId = BlockState.of(args[3].startsWith("minecraft:") ? args[3] : args[3].contains(":") ? args[3] : "minecraft:" + args[3]).getBlockId();
-                block = Block.get(blockId, data);
-            } catch (NullPointerException|IndexOutOfBoundsException ignored2) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.setblock.notFound", args[3]));
-                return true;
             }
         }
 

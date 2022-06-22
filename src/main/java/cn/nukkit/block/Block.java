@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.*;
+import cn.nukkit.block.customblock.BlockCustom;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BlockPropertyData;

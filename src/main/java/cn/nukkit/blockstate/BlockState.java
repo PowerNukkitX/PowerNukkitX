@@ -68,9 +68,6 @@ public final class BlockState implements Serializable, IBlockState {
     }
     
     private static BlockState of0xF(@Nonnegative int blockId, @Nonnegative byte blockData) {
-        if (blockId >= Block.MAX_BLOCK_ID) {
-            return new BlockState(blockId, 0);
-        }
         BlockState[] blockIds = STATES_COMMON[blockData];
         if (blockIds.length <= blockId) {
             return growCommonPool(blockId, blockData);

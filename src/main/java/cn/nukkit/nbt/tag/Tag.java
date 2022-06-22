@@ -22,6 +22,7 @@ public abstract class Tag {
     public static final byte TAG_Compound = 10;
     public static final byte TAG_Int_Array = 11;
 
+    public static final byte TAG_String_Array = 12;
     private String name;
 
     abstract void write(NBTOutputStream dos) throws IOException;
