@@ -26,7 +26,7 @@ public class JavaPluginLoader implements PluginLoader {
     private final Server server;
 
     private final Map<String, Class> classes = new HashMap<>();
-    private final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
+    protected final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
 
     public JavaPluginLoader(Server server) {
         this.server = server;

@@ -230,7 +230,7 @@ public class Utils {
         long result = (int) r & 0xff;
         result |= ((int) g & 0xff) << 8;
         result |= ((int) b & 0xff) << 16;
-        result |= ((int) a & 0xff) << 24;
+        result |= (long) ((int) a & 0xff) << 24;
         return result & 0xFFFFFFFFL;
     }
 
@@ -383,7 +383,6 @@ public class Utils {
      * A way to tell the java compiler to do not replace the users of a {@code public static final int} constant
      * with the value defined in it, forcing the JVM to get the value directly from the class, preventing
      * binary incompatible changes.
-     * @see <a href="https://stackoverflow.com/a/12065326/804976>https://stackoverflow.com/a/12065326/804976</a>
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
@@ -397,7 +396,6 @@ public class Utils {
      * A way to tell the java compiler to do not replace the users of a {@code public static final} constant
      * with the value defined in it, forcing the JVM to get the value directly from the class, preventing
      * binary incompatible changes.
-     * @see <a href="https://stackoverflow.com/a/12065326/804976>https://stackoverflow.com/a/12065326/804976</a>
      * @param value The value to be assigned to the field.
      * @return The same value that was passed as parameter
      */
@@ -472,6 +470,6 @@ public class Utils {
             }
         }
 
-        return blocks.toArray(new Block[0]);
+        return blocks.toArray(Block.EMPTY_ARRAY);
     }
 }
