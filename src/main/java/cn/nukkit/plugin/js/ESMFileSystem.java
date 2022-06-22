@@ -158,7 +158,7 @@ public final class ESMFileSystem implements FileSystem {
             for (var each : module.entrySet()) {
                 var id = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
                 JSFeatures.FEATURE_GENERATED_TMP_MAP.put(id, each.getValue());
-                codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.get(").append(id).append(");\n");
+                codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.remove(").append(id).append(");\n");
             }
             return new SeekableInMemoryByteChannel(codeBuilder.toString().getBytes(StandardCharsets.UTF_8));
         }
@@ -196,7 +196,7 @@ public final class ESMFileSystem implements FileSystem {
             for (var each : module.entrySet()) {
                 var id = JSFeatures.FEATURE_GENERATED_TMP_ID.getAndIncrement();
                 JSFeatures.FEATURE_GENERATED_TMP_MAP.put(id, each.getValue());
-                codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.get(").append(id).append(");\n");
+                codeBuilder.append("export const ").append(each.getKey()).append(" = ").append("JSFeaturesClass.FEATURE_GENERATED_TMP_MAP.remove(").append(id).append(");\n");
             }
             return new StringReader(codeBuilder.toString());
         }
