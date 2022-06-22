@@ -46,8 +46,11 @@ jobs:
         run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
       - name: Rename artifacts
         run: |
-          mv target/powernukkitx-*-SNAPSHOT.jar target/powernukkitx.jar
-          mv target/powernukkitx-*-SNAPSHOT-shaded.jar target/powernukkitx-full.jar
+          cd target
+          ls
+          cd ../
+          mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
+          mv target/powernukkitx-*-PNX-shaded.jar target/powernukkitx-full.jar
       - name: Archive PNX Core
         uses: actions/upload-artifact@v3
         if: success()
