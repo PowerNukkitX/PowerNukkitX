@@ -158,6 +158,7 @@ public class WsClientBuilder implements ProxyObject {
                             }
                         }
                     }));
+            default -> null;
         };
     }
 
