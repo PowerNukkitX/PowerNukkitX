@@ -48,6 +48,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
 
     private static Set<Position> lockedBlocks = new HashSet<>();
 
+    private static Map<Position,Position> lockedBy = new HashMap<>();
     private static Map<Position,Set<Position>> pistonUpdateListeners = new HashMap<>();
 
     public static void updatePistonsListenTo(Position pos){
@@ -168,6 +169,13 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
     public boolean onBreak(Item item) {
         this.level.setBlock(this, new BlockAir(), true, true);
         updatePistonsListenTo(new Position(this.getX(), this.getY(), this.getZ(), this.getLevel()));
+        //        locked-block locked-by
+        for(Map.Entry<Position,Position> entry : lockedBy.entrySet().toArray(new Map.Entry[0])){
+            if (entry.getValue().equals(this)){
+                lockedBlocks.remove(entry.getKey());
+                lockedBy.remove(entry.getKey());
+            }
+        }
 
         Block block = this.getSide(getBlockFace());
 
@@ -694,6 +702,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         public void lockBlocks(){
             for (Position pos : toLock){
                 lockedBlocks.add(pos);
+                lockedBy.put(pos,this.pistonPos);
             }
         }
 
@@ -702,6 +711,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Redstone
         public void unlockBlocks() {
             for (Position pos : toLock) {
                 lockedBlocks.remove(pos);
+                lockedBy.remove(pos);
             }
         }
     }

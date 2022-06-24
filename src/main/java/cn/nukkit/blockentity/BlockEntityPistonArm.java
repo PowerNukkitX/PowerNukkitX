@@ -70,7 +70,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         }
 
         if (namedTag.contains("LastProgress")) {
-            this.lastProgress = (float) namedTag.getInt("LastProgress");
+            this.lastProgress = namedTag.getFloat("LastProgress");
         }
 
         this.sticky = namedTag.getBoolean("Sticky");
