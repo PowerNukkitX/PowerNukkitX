@@ -8,15 +8,19 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.NPCCommandSender;
 import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.window.FormWindowDialog;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.NPCDialoguePacket;
 import cn.nukkit.network.protocol.NPCRequestPacket;
 
 /**
@@ -96,11 +100,14 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
             this.dialog.setButtonJSONData(this.namedTag.getString(KEY_DIALOG_BUTTONS));
         this.dialog.addHandler((player,response) -> {
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_ACTIONS) {
-                if (!response.getData().isEmpty())
+                if (!response.getData().isEmpty()) {
                     this.dialog.setButtonJSONData(response.getData());
+                    this.setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, response.getData()));
+                }
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_INTERACTION_TEXT) {
                 this.dialog.setContent(response.getData());
+                this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, response.getData()));
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME){
                 this.dialog.setTitle(response.getData());
@@ -153,7 +160,9 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     @Since("1.6.0.0-PNX")
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        player.showDialogWindow(this.dialog);
+        //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
+        //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
+        player.showDialogWindow(this.dialog,!player.isCreative());
         return true;
     }
 
@@ -178,5 +187,11 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     @Since("1.6.0.0-PNX")
     public int getVariant(){
         return this.variant;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public FormWindowDialog getDialog() {
+        return dialog;
     }
 }

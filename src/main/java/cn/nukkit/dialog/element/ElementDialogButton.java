@@ -17,8 +17,6 @@ public class ElementDialogButton {
 
     private List<CmdLine> data;
 
-    protected transient boolean closeWhenClicked = true;
-
     protected transient Dialog nextDialog = null;
 
     public static class CmdLine{
@@ -107,19 +105,6 @@ public class ElementDialogButton {
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    public void setCloseWhenClicked(boolean closeWhenClicked){
-        this.closeWhenClicked = closeWhenClicked;
-    }
-
-    /**
-     * will always return false if nextDialog != null
-     */
-    public boolean closeWhenClicked(){
-        if (nextDialog != null)
-            return false;
-        return this.closeWhenClicked;
     }
 
     public Dialog getNextDialog() {

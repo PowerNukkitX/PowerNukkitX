@@ -33,8 +33,6 @@ public class FormWindowDialog implements Dialog{
 
     private List<ElementDialogButton> buttons;
 
-    private long entityId;
-
     private Entity bindEntity;
 
     protected final transient List<FormDialogHandler> handlers = new ObjectArrayList<>();
@@ -85,11 +83,7 @@ public class FormWindowDialog implements Dialog{
     }
 
     public long getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(long entityId) {
-        this.entityId = entityId;
+        return bindEntity.getId();
     }
 
     public Entity getBindEntity() {
@@ -128,9 +122,15 @@ public class FormWindowDialog implements Dialog{
         return sceneName;
     }
 
+    //请不要随意调用此方法，否则可能会导致潜在的bug
+    protected void setSceneName(String sceneName) {
+        this.sceneName = sceneName;
+    }
+
     public void updateSceneName() {
         this.sceneName = String.valueOf(dialogId++);
     }
+
     @Override
     public void send(Player player){
         player.showDialogWindow(this);
