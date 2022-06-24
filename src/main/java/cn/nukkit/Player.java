@@ -14,6 +14,7 @@ import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.passive.EntityNPCEntity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -3175,18 +3176,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.NPC_REQUEST_PACKET:
                     NPCRequestPacket npcRequestPacket = (NPCRequestPacket) packet;
+                    //若sceneName字段为空，则为玩家在编辑NPC，我们并不需要记录对话框，直接通过entityRuntimeId获取实体即可
+                    if (npcRequestPacket.getSceneName().isEmpty() && this.level.getEntity(npcRequestPacket.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
+                        FormWindowDialog dialog = npcEntity.getDialog();
+
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
+                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                            handler.handle(this, response);
+                        }
+
+                        PlayerDialogRespondedEvent event = new PlayerDialogRespondedEvent(this, dialog, response);
+                        getServer().getPluginManager().callEvent(event);
+                        break;
+                    }
                     if (dialogWindows.getIfPresent(npcRequestPacket.getSceneName()) != null) {
                         //remove the window from the map only if the requestType is EXECUTE_CLOSING_COMMANDS
-                        /**
-                         * notice that creative players will send SET_ACTIONS back when they cancel the dialog
-                         * so we have no way to know if the player cancelled the dialog or not
-                         * todo: solve this problem
-                         **/
                         FormWindowDialog dialog = null;
-                        if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS){
+                        if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
                             dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
                             dialogWindows.invalidate(npcRequestPacket.getSceneName());
-                        }else {
+                        }else{
                            dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
                         }
 
@@ -3199,7 +3208,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         getServer().getPluginManager().callEvent(event);
 
                         //close dialog after clicked button (otherwise the client will not be able to close the window)
-                        if(response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
+                        if(response.getClickedButton() != null && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
                             closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
                             closeWindowPacket.setSceneName(response.getSceneName());
@@ -5752,23 +5761,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void showDialogWindow(FormWindowDialog dialog){
-        if(dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
+        showDialogWindow(dialog,true);
+    }
+
+    public void showDialogWindow(FormWindowDialog dialog,boolean book){
         String actionJson = dialog.getButtonJSONData();
 
+        if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();
         dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
         dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_SKIN_DATA, dialog.getSkinData()));
         dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_NPC_ACTIONS, actionJson));
         dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
-        dialog.setEntityId(dialog.getBindEntity().getId());
 
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());
         packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
         packet.setDialogue(dialog.getContent());
         packet.setNpcName(dialog.getTitle());
-        packet.setSceneName(dialog.getSceneName());
+        if (book) packet.setSceneName(dialog.getSceneName());
         packet.setActionJson(dialog.getButtonJSONData());
-        this.dialogWindows.put(dialog.getSceneName(),dialog);
+        if (book) this.dialogWindows.put(dialog.getSceneName(), dialog);
         this.dataPacket(packet);
     }
 
