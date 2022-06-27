@@ -95,7 +95,10 @@ public class WsClientBuilder implements ProxyObject {
                         @Override
                         public void onOpen(WebSocket webSocket) {
                             if (onOpenHandler.canExecute()) {
-                                onOpenHandler.executeVoid(webSocket);
+                                var res = onOpenHandler.execute(webSocket);
+                                if (res.isBoolean() && res.asBoolean()) {
+                                    webSocket.request(1);
+                                }
                             }
                         }
 
@@ -103,7 +106,10 @@ public class WsClientBuilder implements ProxyObject {
                         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                             if (onTextHandler.canExecute()) {
                                 synchronized (sourceContext) {
-                                    onTextHandler.execute(webSocket, data, last);
+                                    var res = onTextHandler.execute(webSocket, data, last);
+                                    if (res.isBoolean() && res.asBoolean()) {
+                                        webSocket.request(1);
+                                    }
                                 }
                             }
                             return null;
@@ -113,7 +119,10 @@ public class WsClientBuilder implements ProxyObject {
                         public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
                             if (onBinaryHandler.canExecute()) {
                                 synchronized (sourceContext) {
-                                    onBinaryHandler.execute(webSocket, Value.asValue(data), last);
+                                    var res = onBinaryHandler.execute(webSocket, Value.asValue(data), last);
+                                    if (res.isBoolean() && res.asBoolean()) {
+                                        webSocket.request(1);
+                                    }
                                 }
                             }
                             return null;
@@ -123,7 +132,10 @@ public class WsClientBuilder implements ProxyObject {
                         public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
                             if (onPingHandler.canExecute()) {
                                 synchronized (sourceContext) {
-                                    onPingHandler.execute(webSocket, Value.asValue(message));
+                                    var res = onPingHandler.execute(webSocket, Value.asValue(message));
+                                    if (res.isBoolean() && res.asBoolean()) {
+                                        webSocket.request(1);
+                                    }
                                 }
                             }
                             return null;
@@ -133,7 +145,10 @@ public class WsClientBuilder implements ProxyObject {
                         public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
                             if (onPongHandler.canExecute()) {
                                 synchronized (sourceContext) {
-                                    onPongHandler.execute(webSocket, Value.asValue(message));
+                                    var res = onPongHandler.execute(webSocket, Value.asValue(message));
+                                    if (res.isBoolean() && res.asBoolean()) {
+                                        webSocket.request(1);
+                                    }
                                 }
                             }
                             return null;
