@@ -97,11 +97,21 @@ public final class JSConcurrentManager {
         }
 
         public Object waitAndGet() throws ExecutionException, InterruptedException {
-            return javaFuture.get();
+            synchronized (context) {
+                return javaFuture.get();
+            }
         }
 
         public Object waitAndGet(long timeOut) throws ExecutionException, InterruptedException, TimeoutException {
-            return javaFuture.get(timeOut, TimeUnit.MILLISECONDS);
+            synchronized (context) {
+                return javaFuture.get(timeOut, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        public Object join() {
+            synchronized (context) {
+                return javaFuture.join();
+            }
         }
     }
 }
