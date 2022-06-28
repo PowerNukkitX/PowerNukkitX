@@ -3,7 +3,6 @@ package cn.nukkit.plugin.js;
 import cn.nukkit.plugin.js.feature.TestFeature;
 import cn.nukkit.plugin.js.feature.WsClientFeature;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.graalvm.polyglot.proxy.Proxy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class JSFeatures {
     public static final Map<String, JSFeature> JS_FEATURE_MAP = new HashMap<>();
     public static final Map<String, JSFeature> FEATURE_MODULE_MAP = new HashMap<>();
-    public static final Int2ObjectOpenHashMap<Proxy> FEATURE_GENERATED_TMP_MAP = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectOpenHashMap<Object> FEATURE_GENERATED_TMP_MAP = new Int2ObjectOpenHashMap<>();
     public static final AtomicInteger FEATURE_GENERATED_TMP_ID = new AtomicInteger(0);
 
     private JSFeatures() {
