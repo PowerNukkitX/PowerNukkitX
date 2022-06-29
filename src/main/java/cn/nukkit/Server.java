@@ -69,6 +69,7 @@ import cn.nukkit.permission.BanList;
 import cn.nukkit.permission.DefaultPermissions;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.plugin.*;
+import cn.nukkit.plugin.js.JSFeatures;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.plugin.service.NKServiceManager;
 import cn.nukkit.plugin.service.ServiceManager;
@@ -1071,6 +1072,8 @@ public class Server {
 
         this.pluginManager.registerInterface(JavaPluginLoader.class);
         JSIInitiator.reset();
+        JSFeatures.clearFeatures();
+        JSFeatures.initInternalFeatures();
         this.pluginManager.registerInterface(JSPluginLoader.class);
         this.pluginManager.loadPlugins(this.pluginPath);
         this.functionManager.reload();

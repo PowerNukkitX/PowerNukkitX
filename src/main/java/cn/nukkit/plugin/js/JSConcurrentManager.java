@@ -5,6 +5,9 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public final class JSConcurrentManager {
     public static final Object PROMISE_FAILED = new Object();
@@ -71,6 +74,16 @@ public final class JSConcurrentManager {
             });
         }
 
+        public void then(Value onResolve) {
+            javaFuture.whenComplete((result, ex) -> {
+                synchronized (context) {
+                    if (result != PROMISE_FAILED) {
+                        onResolve.execute(result);
+                    }
+                }
+            });
+        }
+
         public void onPromiseCreation(Value onResolve, Value onReject) {
             javaFuture.whenComplete((result, ex) -> {
                 synchronized (context) {
@@ -81,6 +94,24 @@ public final class JSConcurrentManager {
                     }
                 }
             });
+        }
+
+        public Object waitAndGet() throws ExecutionException, InterruptedException {
+            synchronized (context) {
+                return javaFuture.get();
+            }
+        }
+
+        public Object waitAndGet(long timeOut) throws ExecutionException, InterruptedException, TimeoutException {
+            synchronized (context) {
+                return javaFuture.get(timeOut, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        public Object join() {
+            synchronized (context) {
+                return javaFuture.join();
+            }
         }
     }
 }
