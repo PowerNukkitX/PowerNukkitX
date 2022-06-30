@@ -10,6 +10,7 @@
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
+[![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
 
 
 🤔What is PowerNukkitX ?
@@ -51,7 +52,7 @@ What's new in PowerNukkitX? Let's See：
 ---
 <!-- Just Do it :-D -->
 <!--使用DeepL暴力翻译-->
-**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit) (TODO), [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin compatibility, etc.
+**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin compatibility, etc.
 
 * Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to read the rules in the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
 
@@ -64,8 +65,7 @@ What's new in PowerNukkitX? Let's See：
 
 🛠 Creating Plugins
 ---
-* Add PowerNukkit to your dependencies (it is hosted by Maven Central and jcenter, so you don't need to specify a custom repository).
-* Tips: If you need to import PowerNukkitX into your dependencies, you currently need to specify the repository manually.
+* Add PowerNukkit to your dependencies (it is hosted by Maven Central, so you don't need to specify a custom repository).
 
 [Click here to see full Gradle Example](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
 ```groovy
@@ -74,30 +74,17 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX-SNAPSHOT'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX'
 }
 ```
 
 [Click here to see full Maven Example](https://github.com/PowerNukkitX/ExamplePlugin-Maven)
 ```xml
-<repositories>
-    <repository>
-        <id>maven-powernukkitx-cn</id>
-        <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
-        <releases>
-            <enabled>false</enabled>
-        </releases>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.6.0.0-PNX-SNAPSHOT</version>
+        <version>1.6.0.0-PNX</version>
     </dependency>
 </dependencies>
 ```
@@ -151,4 +138,4 @@ Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob
 [![Pull-pr](https://img.shields.io/github/issues-pr/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls)
 [![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
 
-2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkit X](https://www.powernukkitx.com)
+2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkitX](https://www.powernukkitx.com)
