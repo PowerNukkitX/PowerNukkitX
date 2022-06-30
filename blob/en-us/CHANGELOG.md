@@ -34,6 +34,9 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#385] Implemented darkness potion effect.
 - [#387] Support new achievement interface.
 - [#389] Implement sculk block entities.
+- [#414] Implement fine snow squares.
+- [#416] Add `PlayerFreezeEvent` event.
+- [#425] Preliminary completion of `JS Feature` architecture.
 
 ### Changed
 
@@ -54,6 +57,10 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#375] Implement the Scrolling Subtitles API.
 - [#380] Implemented to be compatible with 1.19.0 (protocol version 527).
 - [#390] Support player name resolution with _.
+- [#402] Merge NukkitX modifications.
+- [#411] Optimize /version command.
+- [#418] Optimize event call performance.
+- [#428] NPC Dialog protocol logic synchronization 1.19.0.
 
 ### Fixes
 
@@ -97,6 +104,12 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#382] Fix low-level bug in ListTag#toSnbt().
 - [#386] Fix spectator collision.
 - [#388] Fix target selector Type parameter issue.
+- [#394] Fix update block error caused by BlockEntityCauldron.
+- [#401] Fix exploit where eating purple ode fruit underwater teleports (fixed in [#406]).
+- [#402] Merge NukkitX changes.
+- [#415] Fix some minor bugs in /setblock /fill /spawnpoint.
+- [#422] Fix exploit where some items were missing from the create item bar.
+- [#425] Fix an activation issue with pistons.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -105,6 +118,9 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 
 ### Documentation
 - [#235] Added all missing `@PowerNukkitXOnly` annotations
+- [#412] Added and fixed missing `@PowerNukkitXOnly`
+- [#417] Fix documentation for `PlayerFreezeEvent` event
+- [#424] Publish PowerNukkitX to [Maven Central] and add [Javadoc]
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -1204,6 +1220,23 @@ Need to switch languages?
 [#388]: https://github.com/PowerNukkitX/PowerNukkitX/pull/388
 [#389]: https://github.com/PowerNukkitX/PowerNukkitX/pull/389
 [#390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/390
+[#394]: https://github.com/PowerNukkitX/PowerNukkitX/pull/394
+[#401]: https://github.com/PowerNukkitX/PowerNukkitX/issues/401
+[#402]: https://github.com/PowerNukkitX/PowerNukkitX/pull/402
+[#405]: https://github.com/PowerNukkitX/PowerNukkitX/pull/405
+[#406]: https://github.com/PowerNukkitX/PowerNukkitX/pull/406
+[#411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/411
+[#412]: https://github.com/PowerNukkitX/PowerNukkitX/pull/412
+[#414]: https://github.com/PowerNukkitX/PowerNukkitX/pull/414
+[#415]: https://github.com/PowerNukkitX/PowerNukkitX/pull/415
+[#416]: https://github.com/PowerNukkitX/PowerNukkitX/pull/416
+[#417]: https://github.com/PowerNukkitX/PowerNukkitX/pull/417
+[#418]: https://github.com/PowerNukkitX/PowerNukkitX/pull/418
+[#422]: https://github.com/PowerNukkitX/PowerNukkitX/pull/422
+[#424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/424
+[#425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/425
+[#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
+[#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
 
 <!--PowerNukkitX Version history-->
 
@@ -1215,3 +1248,14 @@ Need to switch languages?
 
 <!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+
+<!--PowerNukkitX Urls-->
+
+<!--Website Links-->
+[PowerNukkitX]: https://www.powernukkitx.cn
+[Maven Central]: https://search.maven.org/search?q=g:cn.powernukkitx
+[Javadoc]: https://javadoc.io/doc/cn.powernukkitx/powernukkitx
+
+<!--Social Links-->
+[QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
+[Discord]:https://discord.gg/j7UwsaNu4V
