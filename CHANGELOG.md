@@ -1258,4 +1258,4 @@ Need to switch languages?
 
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
-[Discord]:https://discord.gg/j7UwsaNu4V
+[Discord]:https://discord.gg/BcPhZCVJHJ

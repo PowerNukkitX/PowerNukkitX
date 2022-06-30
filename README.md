@@ -2,7 +2,7 @@
 
 <h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
-[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
+[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
@@ -24,7 +24,7 @@
 
 加入我们:
 
-* [Discord](https://discord.gg/j7UwsaNu4V)
+* [Discord](https://discord.gg/BcPhZCVJHJ)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 PowerNukkitX的优势：
@@ -122,7 +122,7 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 
 - __[🌐 PowerNukkitX官网](https://powernukkitx.cn/)__
 - __[👩🏽‍💻 PowerNukkitX文档库](https://doc.powernukkitx.cn/)__
-- __[💬 PowerNukkitX Discord](https://discord.gg/j7UwsaNu4V)__
+- __[💬 PowerNukkitX Discord](https://discord.gg/BcPhZCVJHJ)__
 - __[💾 下载测试版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__

@@ -917,8 +917,8 @@ Fixes several anvil issues.
 
 ## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我们
 
-* [Discord](https://discord.gg/j7UwsaNu4V)
-* [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
+* [Discord]
+* [QQ]
 
 ## <a id="CataLogs-Version-history"></a>🔖 Version history / 历史版本
 
@@ -1258,4 +1258,4 @@ Need to switch languages?
 
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
-[Discord]:https://discord.gg/j7UwsaNu4V
+[Discord]:https://discord.gg/BcPhZCVJHJ

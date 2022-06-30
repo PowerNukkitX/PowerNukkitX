@@ -2,7 +2,7 @@
 
 <h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
-[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
+[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
@@ -25,7 +25,7 @@ Attention:
 
 Join US:
 
-* [Discord](https://discord.gg/j7UwsaNu4V)
+* [Discord](https://discord.gg/BcPhZCVJHJ)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 What's new in PowerNukkitX? Let's See：
@@ -125,7 +125,7 @@ Please read the [CONTRIBUTING](https://github.com/PowerNukkitX/PowerNukkitX/blob
 
 - __[🌐 PowerNukkitX Website](https://powernukkitx.cn/)__
 - __[👩🏽‍💻 PowernNukkitX Document library](https://doc.powernukkitx.cn/)__
-- __[💬 PowerNukkitX Discord](https://discord.gg/j7UwsaNu4V)__
+- __[💬 PowerNukkitX Discord](https://discord.gg/BcPhZCVJHJ)__
 - __[💾 Download PowerNukkitX Snapshot Build](https://github.com/PowerNukkitX/PowerNukkitX/actions)__
 - __[🔌 Cloudburst Nukkit Plugins](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit Plugins](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
