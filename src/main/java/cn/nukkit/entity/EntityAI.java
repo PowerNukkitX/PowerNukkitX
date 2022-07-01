@@ -7,11 +7,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public abstract class EntityAI extends EntityPhysical{
 
+    private final BehaviorGroup behaviorGroup = new BehaviorGroup();
+
     public EntityAI(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public abstract BehaviorGroup getBehaviorGroup();
+    public BehaviorGroup getBehaviorGroup(){
+        return behaviorGroup;
+    }
 
     @Override
     public boolean onUpdate(int currentTick) {
