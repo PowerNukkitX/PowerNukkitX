@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityAI;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
@@ -18,7 +19,7 @@ import java.util.Collection;
  * @author MagicDroidX (Nukkit Project)
  */
 
-public abstract class EntityMob extends EntityPhysical implements EntityInventoryHolder {
+public abstract class EntityMob extends EntityAI implements EntityInventoryHolder {
 
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
