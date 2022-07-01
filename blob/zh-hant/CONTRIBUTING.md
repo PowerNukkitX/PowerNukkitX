@@ -104,7 +104,7 @@
 
 * **我們隨時歡迎您聯繫我們或尋求幫助。**
 
-  如果你對代碼庫的某些部分或遊戲和框架的某些內部運作不確定，請通過在相關問題或PR中留言，或在[Discord](https://discord.gg/j7UwsaNu4V)&[QQ群](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)發文來聯繫我們。我們會盡可能地幫助你。
+  如果你對代碼庫的某些部分或遊戲和框架的某些內部運作不確定，請通過在相關問題或PR中留言，或在[Discord](https://discord.gg/BcPhZCVJHJ)&[QQ群](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)發文來聯繫我們。我們會盡可能地幫助你。
 
   說到哪種溝通方式最好，GitHub通常更適合長篇大論，而Discord和QQ群則更適合快速的呼喚和回應。在決定的時候，請盡力斟酌，並儘量將一個討論放在一個地方，而不是來回移動。
 ## <a id="Catalogs-Swlang"></a>🌐 多語言文檔

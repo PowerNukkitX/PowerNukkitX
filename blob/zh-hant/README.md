@@ -2,7 +2,7 @@
 
 <h2>多語言文檔&ensp;/&ensp;Need to switch languages?</h2>
 
-[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/j7UwsaNu4V)
+[![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
@@ -10,6 +10,7 @@
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC文檔庫-blue?style=flat-square)](https://doc.powernukkitx.cn)
+[![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
 
 🤔什麼是PowerNukkitX ？
 ---
@@ -21,7 +22,7 @@
 
 加入我們:
 
-* [Discord](https://discord.gg/j7UwsaNu4V)
+* [Discord](https://discord.gg/BcPhZCVJHJ)
 * [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
 
 PowerNukkitX的優勢：
@@ -48,7 +49,7 @@ PowerNukkitX的優勢：
 📌 聲明
 ---
 
-**PowerNukkitX**是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[BlocklyNukkit](https://github.com/BlocklyNukkit/BlocklyNukkit)（TODO），[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)（完善中）插件兼容等。
+**PowerNukkitX**是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)（完善中）插件兼容等。
 
 * 請注意**PowerNukkitX**非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)（同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
 
@@ -60,8 +61,7 @@ PowerNukkitX的優勢：
 
 🛠 創建插件
 ---
-* 添加PowerNukkit至您的依賴項中（它由Maven Central 和 jcenter 託管，因此您無需指定自定義存儲庫）。
-* Tips：若您需要導入PowerNukkitX至您的依賴項中，那您目前需要手動指定存儲庫。
+* 添加PowerNukkit至您的依賴項中（它由Maven Central託管，因此您無需指定自定義存儲庫）。
 
 [點此查看完整的Gradle示例](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
 ```groovy
@@ -70,31 +70,18 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX-SNAPSHOT'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.6.0.0-PNX'
 }
 ```
 
 
 [點此查看完整的Maven示例](https://github.com/PowerNukkitX/ExamplePlugin-Maven)
 ```xml
-<repositories>
-    <repository>
-        <id>maven-powernukkitx-cn</id>
-        <url>https://maven.powernukkitx.cn/repository/maven-public/</url>
-        <releases>
-            <enabled>false</enabled>
-        </releases>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.6.0.0-PNX-SNAPSHOT</version>
+        <version>1.6.0.0-PNX</version>
     </dependency>
 </dependencies>
 ```
@@ -135,7 +122,7 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 
 - __[🌐 PowerNukkitX官網](https://powernukkitx.cn/)__
 - __[👩🏽‍💻 PowerNukkitX文檔庫](https://doc.powernukkitx.cn/)__
-- __[💬 PowerNukkitX Discord](https://discord.gg/j7UwsaNu4V)__
+- __[💬 PowerNukkitX Discord](https://discord.gg/BcPhZCVJHJ)__
 - __[💾 下載測試版PowerNukkitX](https://ci.lt-name.com/job/PowerNukkitX/)__
 - __[🔌 Cloudburst Nukkit 插件中心](https://cloudburstmc.org/resources/categories/nukkit-plugins.1/)__
 - __[🔌 PowerNukkit 插件中心](https://discuss.powernukkit.org/c/plugins/powernukkit-plugins/14/)__
@@ -148,4 +135,4 @@ java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMill
 [![Pull-pr](https://img.shields.io/github/issues-pr/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls)
 [![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
 
-2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkit X](https://www.powernukkitx.com)
+2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkitX](https://www.powernukkitx.com)

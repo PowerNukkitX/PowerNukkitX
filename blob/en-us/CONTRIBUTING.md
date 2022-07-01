@@ -107,7 +107,7 @@ Here are some key things to note before jumping in:
 
 * **Feel free to reach out for help.**<!--完成-->
 
-  If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [Discord server](https://discord.gg/j7UwsaNu4V). We will try to help you as much as we can.
+  If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out either by leaving a comment in the relevant issue or PR thread, or by posting a message in the [Discord server](https://discord.gg/BcPhZCVJHJ). We will try to help you as much as we can.
 
   When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a single discussion in one place instead of moving back and forth.
 
