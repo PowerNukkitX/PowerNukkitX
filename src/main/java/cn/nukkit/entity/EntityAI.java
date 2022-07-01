@@ -14,7 +14,7 @@ public abstract class EntityAI extends EntityPhysical{
     public abstract BehaviorGroup getBehaviorGroup();
 
     @Override
-    public boolean entityBaseTick() {
+    public boolean onUpdate(int currentTick) {
         super.entityBaseTick();
         BehaviorGroup behaviorGroup = getBehaviorGroup();
         behaviorGroup.tickRunningBehaviors(this);
