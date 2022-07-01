@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 import lombok.Getter;
 
@@ -32,7 +33,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param message
      * 向行为组发送消息，行为组将会评估所有行为
      */
-    public void message(EntityAI entity,Message message){
+    public void message(EntityAI entity, Message message){
         Map<IBehavior,Position> result = evaluateBehaviors(entity, message);
         if (result.isEmpty()) return;
         //当前运行的行为的优先级（优先级必定都是一样的，所以说不需要比较得出）

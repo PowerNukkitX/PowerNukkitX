@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.ai.message.Message;
 
 /**
  * 行为组接口
@@ -18,5 +19,5 @@ public interface IBehaviorGroup {
      * @param message
      * 向行为组发送消息，行为组将会评估所有行为
      */
-    void message(EntityAI entity,Message message);
+    void message(EntityAI entity, Message message);
 }

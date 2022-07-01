@@ -1,9 +1,9 @@
-package cn.nukkit.entity.ai;
+package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityAI;
-import cn.nukkit.entity.ai.Message;
+import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 
 /**

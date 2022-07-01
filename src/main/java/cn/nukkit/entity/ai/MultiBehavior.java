@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 import lombok.Getter;
 import lombok.Setter;

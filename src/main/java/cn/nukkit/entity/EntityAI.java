@@ -1,6 +1,6 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.entity.ai.BaseTickingMessage;
+import cn.nukkit.entity.ai.message.BaseTickingMessage;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;

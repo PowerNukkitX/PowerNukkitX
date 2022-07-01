@@ -2,7 +2,8 @@ package cn.nukkit.entity.ai;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
+import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

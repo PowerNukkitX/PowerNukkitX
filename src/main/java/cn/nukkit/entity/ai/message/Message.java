@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai;
+package cn.nukkit.entity.ai.message;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
