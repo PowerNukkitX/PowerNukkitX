@@ -1,9 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityAgeable;
-import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -11,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityAnimal extends EntityAI implements EntityAgeable {
+public abstract class EntityAnimal extends EntityIntelligent implements EntityAgeable {
     public EntityAnimal(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

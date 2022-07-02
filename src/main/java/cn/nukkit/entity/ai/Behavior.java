@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.message.Message;
@@ -29,27 +29,27 @@ public class Behavior implements IBehavior{
     }
 
     @Override
-    public Position evaluate(EntityAI entity, Message message) {
+    public Position evaluate(EntityIntelligent entity, Message message) {
         return evaluator.evaluate(entity, message);
     }
 
     @Override
-    public boolean execute(EntityAI entity) {
+    public boolean execute(EntityIntelligent entity) {
         return executor.execute(entity);
     }
 
     @Override
-    public void onStart(EntityAI entity,Position target) {
+    public void onStart(EntityIntelligent entity, Position target) {
         executor.onStart(entity,target);
     }
 
     @Override
-    public void onInterrupt(EntityAI entity) {
+    public void onInterrupt(EntityIntelligent entity) {
         executor.onInterrupt(entity);
     }
 
     @Override
-    public void onStop(EntityAI entity) {
+    public void onStop(EntityIntelligent entity) {
         executor.onStop(entity);
     }
 }

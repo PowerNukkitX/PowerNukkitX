@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param message
      * 向行为组发送消息，行为组将会评估所有行为
      */
-    public void message(EntityAI entity, Message message){
+    public void message(EntityIntelligent entity, Message message){
         Map<IBehavior,Position> result = evaluateBehaviors(entity, message);
         if (result.isEmpty()) return;
         //当前运行的行为的优先级（优先级必定都是一样的，所以说不需要比较得出）
@@ -57,7 +57,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * IBehavior -> 要添加的行为
      * Position -> 评估器的返回值，将会传递给行为的执行器的onStart()方法
      */
-    protected void addToRunningBehaviors(EntityAI entity,Map<IBehavior,Position> behaviors){
+    protected void addToRunningBehaviors(EntityIntelligent entity, Map<IBehavior,Position> behaviors){
         behaviors.forEach((behavior,position)->{
             behavior.onStart(entity,position);
             runningBehaviors.add(behavior);
@@ -67,7 +67,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 运行并刷新正在运行的行为
      */
-    public void tickRunningBehaviors(EntityAI entity){
+    public void tickRunningBehaviors(EntityIntelligent entity){
         Set<IBehavior> removed = new HashSet<>();
         for (IBehavior behavior : runningBehaviors){
             if (!behavior.execute(entity)){
@@ -81,7 +81,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 中断所有正在运行的行为
      */
-    protected void interruptAllRunningBehaviors(EntityAI entity){
+    protected void interruptAllRunningBehaviors(EntityIntelligent entity){
         for (IBehavior behavior : runningBehaviors){
             behavior.onInterrupt(entity);
         }
@@ -93,7 +93,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param message
      * @return 最高优先级且评估成功的一组行为（包含评估结果）
      */
-    protected Map<IBehavior,Position> evaluateBehaviors(EntityAI entity, Message message){
+    protected Map<IBehavior,Position> evaluateBehaviors(EntityIntelligent entity, Message message){
         //存储评估成功的行为（未过滤优先级）
         Map<IBehavior,Position> evalSucceed = new HashMap<>();
         int heightestPriority = Integer.MIN_VALUE;

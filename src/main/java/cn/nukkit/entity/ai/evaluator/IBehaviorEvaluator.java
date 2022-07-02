@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.evaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 
@@ -30,5 +30,5 @@ public interface IBehaviorEvaluator {
      * 例如可以返回一个实体，一个方块等，他们都属于Position类型
      *
      */
-    Position evaluate(EntityAI entity, Message message);
+    Position evaluate(EntityIntelligent entity, Message message);
 }

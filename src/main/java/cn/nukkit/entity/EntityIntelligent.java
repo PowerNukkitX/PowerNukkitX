@@ -5,11 +5,11 @@ import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public abstract class EntityAI extends EntityPhysical{
+public abstract class EntityIntelligent extends EntityPhysical{
 
     private final BehaviorGroup behaviorGroup = new BehaviorGroup();
 
-    public EntityAI(FullChunk chunk, CompoundTag nbt) {
+    public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

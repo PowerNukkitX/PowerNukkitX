@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.message.Message;
 import cn.nukkit.level.Position;
 import lombok.Getter;
@@ -48,7 +48,7 @@ public class MultiBehavior implements IBehavior {
         return priority;
     }
     @Override
-    public Position evaluate(EntityAI entity, Message message) {
+    public Position evaluate(EntityIntelligent entity, Message message) {
         Map<IBehavior,Position> result = evaluateBehaviors(entity, message);
         if (result.isEmpty()){
             return null;
@@ -67,7 +67,7 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public boolean execute(EntityAI entity) {
+    public boolean execute(EntityIntelligent entity) {
         if (currentBehavior == null){
             return false;
         }
@@ -75,7 +75,7 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public void onInterrupt(EntityAI entity) {
+    public void onInterrupt(EntityIntelligent entity) {
         if (currentBehavior == null){
             return;
         }
@@ -83,7 +83,7 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public void onStart(EntityAI entity, Position target) {
+    public void onStart(EntityIntelligent entity, Position target) {
         if (currentBehavior == null){
             return;
         }
@@ -91,7 +91,7 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public void onStop(EntityAI entity) {
+    public void onStop(EntityIntelligent entity) {
         if (currentBehavior == null){
             return;
         }
@@ -104,7 +104,7 @@ public class MultiBehavior implements IBehavior {
      * @param message
      * @return 最高优先级且评估成功的一组行为（包含评估结果）
      */
-    protected Map<IBehavior,Position> evaluateBehaviors(EntityAI entity, Message message){
+    protected Map<IBehavior,Position> evaluateBehaviors(EntityIntelligent entity, Message message){
         //存储评估成功的行为（未过滤优先级）
         Map<IBehavior,Position> evalSucceed = new HashMap<>();
         int heightestPriority = Integer.MIN_VALUE;

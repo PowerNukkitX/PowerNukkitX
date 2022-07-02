@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityAI;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.level.Position;
 
 /**
@@ -23,13 +23,13 @@ public interface IBehaviorExecutor {
      *
      * 此方法每gt都会调用
      */
-    boolean execute(EntityAI entity);
+    boolean execute(EntityIntelligent entity);
 
     /**
      * @param entity
      * 行为中断时(例如被更高级行为覆盖)调用
      */
-    default void onInterrupt(EntityAI entity){};
+    default void onInterrupt(EntityIntelligent entity){};
 
     /**
      *
@@ -40,11 +40,11 @@ public interface IBehaviorExecutor {
      *
      * 行为评估成功后调用
      */
-    default void onStart(EntityAI entity,Position target){};
+    default void onStart(EntityIntelligent entity, Position target){};
 
     /**
      * @param entity
      * 行为结束时(execute()方法返回false)调用
      */
-    default void onStop(EntityAI entity){};
+    default void onStop(EntityIntelligent entity){};
 }
