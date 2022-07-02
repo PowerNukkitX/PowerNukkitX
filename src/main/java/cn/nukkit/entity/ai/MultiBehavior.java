@@ -3,13 +3,10 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.message.Message;
-import cn.nukkit.level.Position;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -48,22 +45,19 @@ public class MultiBehavior implements IBehavior {
         return priority;
     }
     @Override
-    public Position evaluate(EntityIntelligent entity, Message message) {
-        Map<IBehavior,Position> result = evaluateBehaviors(entity, message);
+    public boolean evaluate(EntityIntelligent entity) {
+        Set<IBehavior> result = evaluateBehaviors(entity);
         if (result.isEmpty()){
-            return null;
+            return false;
         }
         if (result.size() == 1){
-            setCurrentBehavior(result.keySet().iterator().next());
-            return result.values().iterator().next();
+            setCurrentBehavior(result.iterator().next());
+            return true;
         }
         //随机选取一个
-        //todo: 也许我们可以加入权重系统？
-        Set<Map.Entry<IBehavior, Position>> entries = result.entrySet();
-        int index = (int) (Math.random() * entries.size());
-        Map.Entry<IBehavior, Position> entry = entries.stream().skip(index).findFirst().get();
-        setCurrentBehavior(entry.getKey());
-        return entry.getValue();
+        int index = (int) (Math.random() * result.size());
+        setCurrentBehavior(result.toArray(new IBehavior[0])[index]);
+        return true;
     }
 
     @Override
@@ -83,11 +77,11 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public void onStart(EntityIntelligent entity, Position target) {
+    public void onStart(EntityIntelligent entity) {
         if (currentBehavior == null){
             return;
         }
-        currentBehavior.onStart(entity,target);
+        currentBehavior.onStart(entity);
     }
 
     @Override
@@ -101,17 +95,15 @@ public class MultiBehavior implements IBehavior {
     /**
      *
      * @param entity
-     * @param message
      * @return 最高优先级且评估成功的一组行为（包含评估结果）
      */
-    protected Map<IBehavior,Position> evaluateBehaviors(EntityIntelligent entity, Message message){
+    protected Set<IBehavior> evaluateBehaviors(EntityIntelligent entity){
         //存储评估成功的行为（未过滤优先级）
-        Map<IBehavior,Position> evalSucceed = new HashMap<>();
+        Set<IBehavior> evalSucceed = new HashSet<>();
         int heightestPriority = Integer.MIN_VALUE;
         for (IBehavior behavior : behaviors) {
-            Position position = behavior.evaluate(entity, message);
-            if(position != null){
-                evalSucceed.put(behavior,position);
+            if(behavior.evaluate(entity)){
+                evalSucceed.add(behavior);
                 if(behavior.getPriority() > heightestPriority){
                     heightestPriority = behavior.getPriority();
                 }
@@ -121,11 +113,11 @@ public class MultiBehavior implements IBehavior {
         if(evalSucceed.isEmpty()){
             return evalSucceed;
         }
-        Map<IBehavior,Position> result = new HashMap<>();
         //过滤掉低优先级的行为
-        for (Map.Entry<IBehavior,Position> entry : evalSucceed.entrySet()) {
-            if(entry.getKey().getPriority() == heightestPriority){
-                result.put(entry.getKey(),entry.getValue());
+        Set<IBehavior> result = new HashSet<>();
+        for (IBehavior entry : evalSucceed) {
+            if(entry.getPriority() == heightestPriority){
+                result.add(entry);
             }
         }
         return result;

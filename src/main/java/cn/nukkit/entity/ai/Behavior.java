@@ -5,8 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.ai.message.Message;
-import cn.nukkit.level.Position;
 import lombok.Getter;
 
 /**
@@ -29,8 +27,8 @@ public class Behavior implements IBehavior{
     }
 
     @Override
-    public Position evaluate(EntityIntelligent entity, Message message) {
-        return evaluator.evaluate(entity, message);
+    public boolean evaluate(EntityIntelligent entity) {
+        return evaluator.evaluate(entity);
     }
 
     @Override
@@ -39,8 +37,8 @@ public class Behavior implements IBehavior{
     }
 
     @Override
-    public void onStart(EntityIntelligent entity, Position target) {
-        executor.onStart(entity,target);
+    public void onStart(EntityIntelligent entity) {
+        executor.onStart(entity);
     }
 
     @Override

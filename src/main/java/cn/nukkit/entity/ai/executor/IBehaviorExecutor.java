@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.level.Position;
 
 /**
  * 行为执行器
@@ -35,12 +34,9 @@ public interface IBehaviorExecutor {
      *
      * @param entity
      *
-     * @param target
-     * 由评估器返回的值，可以是Player,Entity,Block等类型，执行器可以加以利用
-     *
      * 行为评估成功后调用
      */
-    default void onStart(EntityIntelligent entity, Position target){};
+    default void onStart(EntityIntelligent entity){};
 
     /**
      * @param entity
