@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.sensor.ISensor;
 

@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai;
+package cn.nukkit.entity.ai.behavior;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -14,5 +14,4 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      * 返回此行为的优先级，高优先级的行为会覆盖低优先级的行为
      */
     int getPriority();
-
 }
