@@ -39,6 +39,7 @@ import cn.nukkit.level.generator.task.LightPopulationTask;
 import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
+import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -3548,7 +3549,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public synchronized boolean unloadChunk(int x, int z, boolean safe, boolean trySave) {
-        if (safe && this.isChunkInUse(x, z)) {
+        if (safe && (this.isChunkInUse(x, z) || getServer().getTickingAreaManager().getTickingAreaByChunk(this.getName(),new TickingArea.ChunkPos(x,z)) != null)) {
             return false;
         }
 

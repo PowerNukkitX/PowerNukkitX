@@ -234,7 +234,7 @@ public class CommandParser {
             return null;
         }
 
-        Matcher matcher = commandPatterns.get(result).matcher(argString.toString());
+        Matcher matcher = commandPatterns.get(result).matcher(argString);
         matcher.find();
         String[] pArg = new String[matcher.groupCount()];
         for (int i = 1; i <= matcher.groupCount(); i++) {

@@ -44,6 +44,9 @@ import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.terra.PNXPlatform;
+import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
+import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
+import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -174,6 +177,8 @@ public class Server {
     private ScoreboardManager scoreboardManager;
 
     private FunctionManager functionManager;
+
+    private TickingAreaManager tickingAreaManager;
 
     private int maxPlayers;
 
@@ -339,6 +344,7 @@ public class Server {
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.commandDataPath + "/tickingarea.json"));
 
         setMaxPlayers(10);
 
@@ -707,6 +713,8 @@ public class Server {
 
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
 
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.commandDataPath + "/tickingarea.json"));
+
         // Convert legacy data before plugins get the chance to mess with it.
         try {
             nameLookup = Iq80DBFactory.factory.open(new File(dataPath, "players"), new Options()
@@ -810,6 +818,8 @@ public class Server {
 
             this.setDefaultLevel(this.getLevelByName(defaultName));
         }
+
+        this.getTickingAreaManager().loadAllTickingArea();
 
         this.properties.save(true);
 
@@ -1809,6 +1819,10 @@ public class Server {
 
     public FunctionManager getFunctionManager() {
         return functionManager;
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
     }
 
     public ServerScheduler getScheduler() {
