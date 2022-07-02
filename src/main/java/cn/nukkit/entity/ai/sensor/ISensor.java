@@ -13,4 +13,13 @@ import cn.nukkit.entity.ai.memory.IMemory;
 @Since("1.6.0.0-PNX")
 public interface ISensor {
     IMemory<?> sense(EntityIntelligent entity);
+
+    /**
+     * @return String
+     * 返回此传感器的名称,默认返回类名称
+     */
+    default String getName() { return this.getClass().getSimpleName(); };
+
+    default boolean equals(ISensor sensor) { return getName().equals(sensor.getName()); };
+
 }

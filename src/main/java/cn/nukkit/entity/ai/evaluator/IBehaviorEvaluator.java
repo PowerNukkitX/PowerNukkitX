@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 
 /**
  * 行为评估器
- * 决定是否执行与其绑定的行为执行器
+ * 决定是否执行与其绑定的执行器
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -22,4 +22,12 @@ public interface IBehaviorEvaluator {
      *
      */
     boolean evaluate(EntityIntelligent entity);
+
+    /**
+     * @return String
+     * 返回此评估器的名称,默认返回类名称
+     */
+    default String getName() { return this.getClass().getSimpleName(); };
+
+    default boolean equals(IBehaviorEvaluator evaluator) { return getName().equals(evaluator.getName()); };
 }

@@ -43,4 +43,14 @@ public interface IBehaviorExecutor {
      * 行为结束时(execute()方法返回false)调用
      */
     default void onStop(EntityIntelligent entity){};
+
+
+
+    /**
+     * @return String
+     * 返回此执行器的名称,默认返回类名称
+     */
+    default String getName() { return this.getClass().getSimpleName(); };
+
+    default boolean equals(IBehaviorExecutor executor) { return getName().equals(executor.getName()); };
 }

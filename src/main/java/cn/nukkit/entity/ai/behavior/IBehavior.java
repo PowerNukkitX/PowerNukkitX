@@ -14,4 +14,12 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      * 返回此行为的优先级，高优先级的行为会覆盖低优先级的行为
      */
     int getPriority();
+
+    /**
+     * @return String
+     * 返回此行为的名称,默认返回类名称
+     */
+    default String getName() { return this.getClass().getSimpleName(); };
+
+    default boolean equals(IBehavior behavior) { return getName().equals(behavior.getName()); };
 }

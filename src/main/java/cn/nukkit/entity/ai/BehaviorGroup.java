@@ -9,7 +9,8 @@ import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
