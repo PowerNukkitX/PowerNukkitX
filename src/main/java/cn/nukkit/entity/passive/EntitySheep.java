@@ -3,6 +3,12 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.BehaviorGroup;
+import cn.nukkit.entity.ai.IBehaviorGroup;
+import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
+import cn.nukkit.entity.ai.executor.CryExecutor;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
@@ -12,6 +18,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -24,8 +33,18 @@ public class EntitySheep extends EntityAnimal {
     public boolean sheared = false;
     public int color = 0;
 
+    protected IBehaviorGroup behaviorGroup = new BehaviorGroup(
+            Set.of(new Behavior(new CryExecutor(),new PlayerEvaluator(),1)),
+            Set.of(new NearestPlayerSensor(5))
+    );
+
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public IBehaviorGroup getBehaviorGroup() {
+        return behaviorGroup;
     }
 
     @Override

@@ -12,6 +12,12 @@ import cn.nukkit.entity.ai.memory.IMemory;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public interface ISensor {
+
+    /**
+     * @param entity
+     * @return IMemory
+     * 要求传感器返回一个数据(Memory),不能为NULL
+     */
     IMemory<?> sense(EntityIntelligent entity);
 
     /**

@@ -11,6 +11,6 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public interface IMemoryStorage {
     void put(IMemory<?> memory);
-    IMemory<?> get(String memoryName);
-    void remove(String memoryName);
+    IMemory<?> get(Class<?> memoryClazz);
+    void remove(Class<?> memoryClazz);
 }

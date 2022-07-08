@@ -1,5 +1,6 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.level.format.FullChunk;
@@ -15,14 +16,14 @@ public abstract class EntityIntelligent extends EntityPhysical{
         super(chunk, nbt);
     }
 
-    public BehaviorGroup getBehaviorGroup(){
+    public IBehaviorGroup getBehaviorGroup(){
         return behaviorGroup;
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
-        BehaviorGroup behaviorGroup = getBehaviorGroup();
+        IBehaviorGroup behaviorGroup = getBehaviorGroup();
         behaviorGroup.tick(this);
         return true;
     }
