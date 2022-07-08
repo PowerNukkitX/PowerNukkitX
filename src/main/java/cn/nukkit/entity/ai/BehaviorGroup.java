@@ -34,10 +34,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void tick(EntityIntelligent entity){
         //搜集信息并写入记忆
         collectSensorData(entity);
-        //刷新正在运行的行为
-        tickRunningBehaviors(entity);
         //评估所有行为
         evaluateBehaviors(entity);
+        //刷新正在运行的行为
+        tickRunningBehaviors(entity);
     }
 
     public void addBehavior(IBehavior behavior){
