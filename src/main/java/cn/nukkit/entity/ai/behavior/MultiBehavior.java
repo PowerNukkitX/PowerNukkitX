@@ -41,10 +41,6 @@ public class MultiBehavior implements IBehavior {
     }
 
     @Override
-    public int getPriority() {
-        return priority;
-    }
-    @Override
     public boolean evaluate(EntityIntelligent entity) {
         Set<IBehavior> result = evaluateBehaviors(entity);
         if (result.isEmpty()){
@@ -54,10 +50,20 @@ public class MultiBehavior implements IBehavior {
             setCurrentBehavior(result.iterator().next());
             return true;
         }
-        //随机选取一个
-        int index = (int) (Math.random() * result.size());
-        setCurrentBehavior(result.toArray(new IBehavior[0])[index]);
-        return true;
+        //根据Weight选取一个行为
+        int totalWeight = 0;
+        for (IBehavior behavior : result){
+            totalWeight += behavior.getWeight();
+        }
+        int random = (int) (Math.random() * totalWeight);
+        for (IBehavior behavior : result){
+            random -= behavior.getWeight();
+            if (random <= 0){
+                setCurrentBehavior(behavior);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

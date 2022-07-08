@@ -13,7 +13,13 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
      * @return int
      * 返回此行为的优先级，高优先级的行为会覆盖低优先级的行为
      */
-    int getPriority();
+    default int getPriority() {return 1;}
+
+    /**
+     * @return int
+     * 返回此行为的权重值，高权重的行为有更大几率被选中
+     */
+    default int getWeight() {return 1;}
 
     /**
      * @return String
