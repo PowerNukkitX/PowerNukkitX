@@ -1,5 +1,8 @@
 package cn.nukkit.entity.ai.route;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -7,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author zzz1999 daoge_cmd @ MobPlugin
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class RouteFinderThreadPool {
 
     public static ThreadPoolExecutor executor =

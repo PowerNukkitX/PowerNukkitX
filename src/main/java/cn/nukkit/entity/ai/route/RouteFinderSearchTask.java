@@ -1,8 +1,13 @@
 package cn.nukkit.entity.ai.route;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 /**
  * @author zzz1999 daoge_cmd @ MobPlugin
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class RouteFinderSearchTask implements Runnable {
 
     private final RouteFinder route;

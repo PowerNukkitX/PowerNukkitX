@@ -472,4 +472,54 @@ public class Utils {
 
         return blocks.toArray(Block.EMPTY_ARRAY);
     }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final int ACCORDING_X_OBTAIN_Y = 0;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final int ACCORDING_Y_OBTAIN_X = 1;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static double calLinearFunction(Vector3 pos1, Vector3 pos2, double element, int type) {
+        if (pos1.getFloorY() != pos2.getFloorY()) return Double.MAX_VALUE;
+        if (pos1.getX() == pos2.getX()) {
+            if (type == ACCORDING_Y_OBTAIN_X) return pos1.getX();
+            else return Double.MAX_VALUE;
+        } else if (pos1.getZ() == pos2.getZ()) {
+            if (type == ACCORDING_X_OBTAIN_Y) return pos1.getZ();
+            else return Double.MAX_VALUE;
+        } else {
+            if (type == ACCORDING_X_OBTAIN_Y) {
+                return (element-pos1.getX()) * (pos1.getZ()-pos2.getZ()) / (pos1.getX()-pos2.getX()) + pos1.getZ();
+            } else {
+                return (element-pos1.getZ()) * (pos1.getX()-pos2.getX()) / (pos1.getZ()-pos2.getZ()) + pos1.getX();
+            }
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
+        int minX = NukkitMath.floorDouble(bb.getMinX());
+        int minY = NukkitMath.floorDouble(bb.getMinY());
+        int minZ = NukkitMath.floorDouble(bb.getMinZ());
+        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
+        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
+        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Block block = level.getBlock(x, y, z, false);
+                    if (block != null && block.getId() != 0 && block.collidesWithBB(bb)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
