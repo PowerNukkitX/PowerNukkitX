@@ -9,18 +9,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SimpleTickingAreaManager extends TickingAreaManager{
+public class SimpleTickingAreaManager extends TickingAreaManager {
 
-    protected Map<String,TickingArea> areaMap;
+    protected Map<String, TickingArea> areaMap;
 
-    public SimpleTickingAreaManager(TickingAreaStorage storage){
+    public SimpleTickingAreaManager(TickingAreaStorage storage) {
         super(storage);
         areaMap = storage.readTickingArea();
     }
 
     @Override
     public void addTickingArea(TickingArea area) {
-        areaMap.put(area.getName(),area);
+        areaMap.put(area.getName(), area);
         storage.addTickingArea(area);
     }
 
@@ -56,9 +56,9 @@ public class SimpleTickingAreaManager extends TickingAreaManager{
     @Nullable
     public TickingArea getTickingAreaByChunk(String levelName, TickingArea.ChunkPos chunkPos) {
         TickingArea matchedArea = null;
-        for (TickingArea area : areaMap.values()) {
+        for (var area : areaMap.values()) {
             boolean matched = area.getLevelName().equals(levelName) && area.getChunks().stream().anyMatch(pos -> pos.equals(chunkPos));
-            if(matched){
+            if (matched) {
                 matchedArea = area;
                 break;
             }
@@ -68,11 +68,11 @@ public class SimpleTickingAreaManager extends TickingAreaManager{
 
     @Override
     public TickingArea getTickingAreaByPos(Position pos) {
-        return getTickingAreaByChunk(pos.getLevelName(),new TickingArea.ChunkPos(pos.getChunkX(),pos.getChunkZ()));
+        return getTickingAreaByChunk(pos.getLevelName(), new TickingArea.ChunkPos(pos.getChunkX(), pos.getChunkZ()));
     }
 
     @Override
-    public void loadAllTickingArea(){
+    public void loadAllTickingArea() {
         for (TickingArea area : areaMap.values())
             if (!area.loadAllChunk()) removeTickingArea(area.getName());
     }

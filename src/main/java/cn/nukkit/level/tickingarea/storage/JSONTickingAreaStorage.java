@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static Type type = new TypeToken<HashSet<TickingArea>>() {
+    private static final Type type = new TypeToken<HashSet<TickingArea>>() {
     }.getType();
 
     protected static Gson gson = new Gson();
@@ -39,13 +39,6 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     public void addTickingArea(TickingArea area) {
         areaMap.put(area.getName(), area);
         save();
-    }
-
-    @Override
-    public void addTickingArea(TickingArea[] areas) {
-        for (TickingArea area : areas) {
-            addTickingArea(area);
-        }
     }
 
     @Override

@@ -21,39 +21,39 @@ import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class TickingAreaCommand extends VanillaCommand{
+public class TickingAreaCommand extends VanillaCommand {
 
     public TickingAreaCommand(String name) {
         super(name, "commands.tickingarea.description");
         this.setPermission("nukkit.command.tickingarea");
         this.commandParameters.clear();
         this.commandParameters.put("add-pos", new CommandParameter[]{
-                CommandParameter.newEnum("add",new String[]{"add"}),
+                CommandParameter.newEnum("add", new String[]{"add"}),
                 CommandParameter.newType("from", CommandParamType.POSITION),
                 CommandParameter.newType("to", CommandParamType.POSITION),
-                CommandParameter.newType("name",true, CommandParamType.STRING)
+                CommandParameter.newType("name", true, CommandParamType.STRING)
         });
-        this.commandParameters.put("add-circle",new CommandParameter[]{
-                CommandParameter.newEnum("add",new String[]{"add"}),
-                CommandParameter.newEnum("circle",new String[]{"circle"}),
+        this.commandParameters.put("add-circle", new CommandParameter[]{
+                CommandParameter.newEnum("add", new String[]{"add"}),
+                CommandParameter.newEnum("circle", new String[]{"circle"}),
                 CommandParameter.newType("center", CommandParamType.POSITION),
                 CommandParameter.newType("radius", CommandParamType.INT),
-                CommandParameter.newType("name",true, CommandParamType.STRING)
+                CommandParameter.newType("name", true, CommandParamType.STRING)
         });
-        this.commandParameters.put("remove-pos",new CommandParameter[]{
-                CommandParameter.newEnum("remove",new String[]{"remove"}),
+        this.commandParameters.put("remove-pos", new CommandParameter[]{
+                CommandParameter.newEnum("remove", new String[]{"remove"}),
                 CommandParameter.newType("position", CommandParamType.POSITION)
         });
-        this.commandParameters.put("remove-name",new CommandParameter[]{
-                CommandParameter.newEnum("remove",new String[]{"remove"}),
+        this.commandParameters.put("remove-name", new CommandParameter[]{
+                CommandParameter.newEnum("remove", new String[]{"remove"}),
                 CommandParameter.newType("name", CommandParamType.STRING)
         });
-        this.commandParameters.put("remove-all",new CommandParameter[]{
-                CommandParameter.newEnum("remove-all",new String[]{"remove-all"})
+        this.commandParameters.put("remove-all", new CommandParameter[]{
+                CommandParameter.newEnum("remove-all", new String[]{"remove-all"})
         });
-        this.commandParameters.put("list",new CommandParameter[]{
-                CommandParameter.newEnum("list",new String[]{"list"}),
-                CommandParameter.newEnum("all-dimensions",true,new String[]{"all-dimensions"})
+        this.commandParameters.put("list", new CommandParameter[]{
+                CommandParameter.newEnum("list", new String[]{"list"}),
+                CommandParameter.newEnum("all-dimensions", true, new String[]{"all-dimensions"})
         });
     }
 
@@ -63,9 +63,9 @@ public class TickingAreaCommand extends VanillaCommand{
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
+        CommandParser parser = new CommandParser(this, sender, args);
         String form;
-        if((form = parser.matchCommandForm()) == null){
+        if ((form = parser.matchCommandForm()) == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
@@ -75,28 +75,28 @@ public class TickingAreaCommand extends VanillaCommand{
 
         try {
             switch (form) {
-                case "add-pos": {
+                case "add-pos" -> {
                     parser.parseString();//skip "add"
                     Position from = parser.parsePosition();
                     Position to = parser.parsePosition();
                     String name = "";//will auto generate name if not set, like "Area0"
                     if (parser.hasNext())
                         name = parser.parseString();
-                    if (manager.containTickingArea(name)){
+                    if (manager.containTickingArea(name)) {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tickingarea-add.conflictingname", name));
                         return false;
                     }
-                    TickingArea area = new TickingArea(name,level.getName());
-                    for (int chunkX = Math.min(from.getChunkX(),to.getChunkX()) ; chunkX <= Math.max(from.getChunkX(),to.getChunkX()) ; chunkX++){
-                        for (int chunkZ = Math.min(from.getChunkZ(),to.getChunkZ()) ; chunkZ <= Math.max(from.getChunkZ(),to.getChunkZ()) ; chunkZ++){
-                            area.addChunk(new TickingArea.ChunkPos(chunkX,chunkZ));
+                    TickingArea area = new TickingArea(name, level.getName());
+                    for (int chunkX = Math.min(from.getChunkX(), to.getChunkX()); chunkX <= Math.max(from.getChunkX(), to.getChunkX()); chunkX++) {
+                        for (int chunkZ = Math.min(from.getChunkZ(), to.getChunkZ()); chunkZ <= Math.max(from.getChunkZ(), to.getChunkZ()); chunkZ++) {
+                            area.addChunk(new TickingArea.ChunkPos(chunkX, chunkZ));
                         }
                     }
                     manager.addTickingArea(area);
-                    sender.sendMessage(new TranslationContainer("commands.tickingarea-add-bounds.success",(int)from.x + "," + (int)from.y + "," + (int)from.z,(int)to.x + "," + (int)to.y + "," + (int)to.z));
+                    sender.sendMessage(new TranslationContainer("commands.tickingarea-add-bounds.success", (int) from.x + "," + (int) from.y + "," + (int) from.z, (int) to.x + "," + (int) to.y + "," + (int) to.z));
                     return true;
                 }
-                case "add-circle": {
+                case "add-circle" -> {
                     parser.parseString();//skip "add"
                     parser.parseString();//skip "circle"
                     Position center = parser.parsePosition();
@@ -104,27 +104,27 @@ public class TickingAreaCommand extends VanillaCommand{
                     String name = "";//will auto generate name if not set, like "Area0"
                     if (parser.hasNext())
                         name = parser.parseString();
-                    if (manager.containTickingArea(name)){
+                    if (manager.containTickingArea(name)) {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tickingarea-add.conflictingname", name));
                         return false;
                     }
                     //计算出哪些区块和圆重合
-                    TickingArea area = new TickingArea(name,level.getName());
-                    Vector2 centerVec2 = new Vector2(center.getChunkX(),center.getChunkZ());
+                    TickingArea area = new TickingArea(name, level.getName());
+                    Vector2 centerVec2 = new Vector2(center.getChunkX(), center.getChunkZ());
                     int radiusSquared = radius * radius;
-                    for (int chunkX = center.getChunkX() - radius ; chunkX <= center.getChunkX() + radius ; chunkX++){
-                        for (int chunkZ = center.getChunkZ() - radius ; chunkZ <= center.getChunkZ() + radius ; chunkZ++){
-                            double distanceSquared = new Vector2(chunkX,chunkZ).distanceSquared(centerVec2);
-                            if (distanceSquared <= radiusSquared){
-                                area.addChunk(new TickingArea.ChunkPos(chunkX,chunkZ));
+                    for (int chunkX = center.getChunkX() - radius; chunkX <= center.getChunkX() + radius; chunkX++) {
+                        for (int chunkZ = center.getChunkZ() - radius; chunkZ <= center.getChunkZ() + radius; chunkZ++) {
+                            double distanceSquared = new Vector2(chunkX, chunkZ).distanceSquared(centerVec2);
+                            if (distanceSquared <= radiusSquared) {
+                                area.addChunk(new TickingArea.ChunkPos(chunkX, chunkZ));
                             }
                         }
                     }
                     manager.addTickingArea(area);
-                    sender.sendMessage(new TranslationContainer("commands.tickingarea-add-circle.success",(int)center.x + "," + (int)center.y + "," + (int)center.z,String.valueOf(radius)));
+                    sender.sendMessage(new TranslationContainer("commands.tickingarea-add-circle.success", (int) center.x + "," + (int) center.y + "," + (int) center.z, String.valueOf(radius)));
                     return true;
                 }
-                case "remove-pos": {
+                case "remove-pos" -> {
                     parser.parseString();//skip "remove"
                     Position pos = parser.parsePosition();
                     if (manager.getTickingAreaByPos(pos) == null) {
@@ -135,7 +135,7 @@ public class TickingAreaCommand extends VanillaCommand{
                     sender.sendMessage(new TranslationContainer("commands.tickingarea-remove.success"));
                     return true;
                 }
-                case "remove-name": {
+                case "remove-name" -> {
                     parser.parseString();//skip "remove"
                     String name = parser.parseString();
                     if (!manager.containTickingArea(name)) {
@@ -146,8 +146,8 @@ public class TickingAreaCommand extends VanillaCommand{
                     sender.sendMessage(new TranslationContainer("commands.tickingarea-remove.success"));
                     return true;
                 }
-                case "remove-all": {
-                    if (manager.getAllTickingArea().isEmpty()){
+                case "remove-all" -> {
+                    if (manager.getAllTickingArea().isEmpty()) {
                         sender.sendMessage(new TranslationContainer("commands.tickingarea-list.failure.allDimensions"));
                         return false;
                     }
@@ -155,37 +155,37 @@ public class TickingAreaCommand extends VanillaCommand{
                     sender.sendMessage(new TranslationContainer("commands.tickingarea-remove_all.success"));
                     return true;
                 }
-                case "list": {
+                case "list" -> {
                     var areas = manager.getAllTickingArea();
                     parser.parseString();
                     boolean showAll = parser.hasNext();
-                    if (!showAll){
+                    if (!showAll) {
                         areas = areas.stream().filter(area -> area.getLevelName().equals(level.getName())).collect(Collectors.toSet());
-                        if (areas.isEmpty()){
+                        if (areas.isEmpty()) {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tickingarea-remove_all.failure"));
                             return false;
                         }
                         sender.sendMessage(new TranslationContainer(TextFormat.GREEN + "%commands.tickingarea-list.success.currentDimension"));
-                        for (TickingArea area : areas){
+                        for (TickingArea area : areas) {
                             List<TickingArea.ChunkPos> minAndMax = area.minAndMaxChunkPos();
                             TickingArea.ChunkPos min = minAndMax.get(0);
                             TickingArea.ChunkPos max = minAndMax.get(1);
                             sender.sendMessage(new TranslationContainer(" - " + area.getName() + ": " + min.x + " " + min.z + " %commands.tickingarea-list.to " + max.x + " " + max.z));
                         }
-                        sender.sendMessage(new TranslationContainer("commands.tickingarea.inuse",String.valueOf(areas.size()),"∞"));
-                    }else{
-                        if (areas.isEmpty()){
+                        sender.sendMessage(new TranslationContainer("commands.tickingarea.inuse", String.valueOf(areas.size()), "∞"));
+                    } else {
+                        if (areas.isEmpty()) {
                             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tickingarea-list.failure.allDimensions"));
                             return false;
                         }
                         sender.sendMessage(new TranslationContainer(TextFormat.GREEN + "%commands.tickingarea-list.success.allDimensions"));
-                        for (TickingArea area : areas){
+                        for (TickingArea area : areas) {
                             var minAndMax = area.minAndMaxChunkPos();
                             TickingArea.ChunkPos min = minAndMax.get(0);
                             TickingArea.ChunkPos max = minAndMax.get(1);
                             sender.sendMessage(new TranslationContainer(" - " + area.getName() + ": " + min.x + " " + min.z + " %commands.tickingarea-list.to " + max.x + " " + max.z));
                         }
-                        sender.sendMessage(new TranslationContainer("commands.tickingarea.inuse",String.valueOf(areas.size()),"∞"));
+                        sender.sendMessage(new TranslationContainer("commands.tickingarea.inuse", String.valueOf(areas.size()), "∞"));
                     }
                     return true;
                 }

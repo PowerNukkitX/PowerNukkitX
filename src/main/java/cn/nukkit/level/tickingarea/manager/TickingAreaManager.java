@@ -5,18 +5,16 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.tickingarea.storage.TickingAreaStorage;
-import lombok.Getter;
 
 import java.util.Set;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
 public abstract class TickingAreaManager {
 
     protected TickingAreaStorage storage;
 
-    public TickingAreaManager(TickingAreaStorage storage){
+    public TickingAreaManager(TickingAreaStorage storage) {
         this.storage = storage;
     }
 
@@ -37,4 +35,8 @@ public abstract class TickingAreaManager {
     public abstract TickingArea getTickingAreaByPos(Position pos);
 
     public abstract void loadAllTickingArea();
+
+    public TickingAreaStorage getStorage() {
+        return storage;
+    }
 }
