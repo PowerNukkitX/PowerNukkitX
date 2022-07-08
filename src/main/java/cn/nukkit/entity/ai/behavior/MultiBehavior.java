@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -29,6 +30,8 @@ public class MultiBehavior implements IBehavior {
      * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
      */
     protected final int priority;
+
+    private static final Random rand = new Random();
 
     public MultiBehavior(int priority,IBehavior ...behaviors){
         this.priority = priority;
@@ -55,7 +58,7 @@ public class MultiBehavior implements IBehavior {
         for (IBehavior behavior : result){
             totalWeight += behavior.getWeight();
         }
-        int random = (int) (Math.random() * totalWeight);
+        int random = rand.nextInt(totalWeight + 1);
         for (IBehavior behavior : result){
             random -= behavior.getWeight();
             if (random <= 0){
