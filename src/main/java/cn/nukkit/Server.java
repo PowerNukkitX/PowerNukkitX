@@ -344,7 +344,7 @@ public class Server {
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
-        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.commandDataPath + "/tickingarea.json"));
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
 
         setMaxPlayers(10);
 
@@ -713,7 +713,7 @@ public class Server {
 
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
 
-        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.commandDataPath + "/tickingarea.json"));
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
 
         // Convert legacy data before plugins get the chance to mess with it.
         try {

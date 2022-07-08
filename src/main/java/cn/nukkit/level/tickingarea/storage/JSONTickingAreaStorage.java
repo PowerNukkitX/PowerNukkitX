@@ -1,18 +1,17 @@
 package cn.nukkit.level.tickingarea.storage;
 
 import cn.nukkit.level.tickingarea.TickingArea;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
@@ -21,14 +20,17 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
 
     protected static Gson gson = new Gson();
 
+    /**
+     * 存储常加载区域的根目录
+     */
     protected Path filePath;
-    protected Map<String, TickingArea> areaMap = new HashMap<>();
+    protected Table<String, String, TickingArea> areaMap = HashBasedTable.create();
 
     public JSONTickingAreaStorage(String path) {
         this.filePath = Paths.get(path);
         try {
             if (!Files.exists(this.filePath)) {
-                Files.createFile(this.filePath);
+                Files.createDirectories(this.filePath);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,30 +39,34 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
 
     @Override
     public void addTickingArea(TickingArea area) {
-        areaMap.put(area.getName(), area);
+        areaMap.put(area.getLevelName(), area.getName(), area);
         save();
     }
 
     @Override
     public Map<String, TickingArea> readTickingArea() {
-        try {
-            if (Files.readString(filePath).isEmpty()) {
-                save();
-                return new HashMap<>();
-            } else {
-                Set<TickingArea> areas = gson.fromJson(Files.readString(filePath), type);
-                Map<String, TickingArea> aMap = new HashMap<>();
-                for (TickingArea area : areas) aMap.put(area.getName(), area);
-                return aMap;
+        var rootDir = new File(filePath.toString());
+        var aMap = new HashMap<String, TickingArea>();
+        for (var each : Objects.requireNonNull(rootDir.listFiles())) {
+            var jsonFile = new File(each, "tickingarea.json");
+            if (jsonFile.exists()) {
+                try (var fr = new FileReader(jsonFile)) {
+                    Set<TickingArea> areas = gson.fromJson(fr, type);
+                    for (var area : areas) {
+                        areaMap.put(area.getLevelName(), area.getName(), area);
+                        aMap.put(area.getName(), area);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return aMap;
     }
 
     @Override
     public void removeTickingArea(String name) {
-        areaMap.remove(name);
+        areaMap.columnMap().remove(name);
         save();
     }
 
@@ -72,15 +78,16 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
 
     @Override
     public boolean containTickingArea(String name) {
-        return areaMap.containsKey(name);
+        return areaMap.containsColumn(name);
     }
 
     private void save() {
-        String json = gson.toJson(areaMap.values());
-        try {
-            Files.writeString(filePath, json);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        for (var each : areaMap.rowMap().entrySet()) {
+            try {
+                Files.writeString(Path.of(filePath.toString(), each.getKey(), "tickingarea.json"), gson.toJson(each.getValue().values()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
