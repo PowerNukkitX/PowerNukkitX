@@ -33,6 +33,10 @@ public class BVector3{
         return new BVector3(pos);
     }
 
+    public static BVector3 fromPos(double x,double y,double z){
+        return fromPos(new Vector3(x,y,z));
+    }
+
     private BVector3(double xzAxisAngle, double yAxisAngle, double length){
         convertAngle(xzAxisAngle,yAxisAngle);
         this.length = length;

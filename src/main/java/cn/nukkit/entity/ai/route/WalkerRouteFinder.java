@@ -27,6 +27,8 @@ public class WalkerRouteFinder extends SimpleRouteFinder {
     private final PriorityQueue<Node> openList = new PriorityQueue<>();
     private final ArrayList<Node> closeList = new ArrayList<>();
 
+    private Class<?> targetMemoryClazz = null;
+
     private int searchLimit = 100;
 
     public WalkerRouteFinder(EntityIntelligent entity) {
@@ -47,6 +49,13 @@ public class WalkerRouteFinder extends SimpleRouteFinder {
         this.destination = destination;
     }
 
+    public WalkerRouteFinder(EntityIntelligent entity, Vector3 start, Class<?> targetMemoryClazz) {
+        super(entity);
+        this.level = entity.getLevel();
+        this.start = start;
+        this.targetMemoryClazz = targetMemoryClazz;
+    }
+
     private int calHeuristic(Vector3 pos1, Vector3 pos2) {
         return 10 * (Math.abs(pos1.getFloorX() - pos2.getFloorX()) + Math.abs(pos1.getFloorZ() - pos2.getFloorZ())) +
                 11 * Math.abs(pos1.getFloorY() - pos2.getFloorY());
@@ -63,14 +72,16 @@ public class WalkerRouteFinder extends SimpleRouteFinder {
         }
 
         if (this.destination == null) {
-//            Vector3 vec = entity.getTargetVector();
-//            if (vec != null) {
-//                this.destination = vec;
-//            } else {
-            this.searching = false;
-            this.finished = true;
-            return false;
-//            }
+            Vector3 vec = null;
+            if (targetMemoryClazz != null)
+                vec = (Vector3) entity.getBehaviorGroup().getMemory().get(targetMemoryClazz).getData();
+            if (vec != null) {
+                this.destination = vec;
+            } else {
+                this.searching = false;
+                this.finished = true;
+                return false;
+            }
         }
 
         this.resetTemporary();
@@ -161,6 +172,14 @@ public class WalkerRouteFinder extends SimpleRouteFinder {
 
     public void setSearchLimit(int limit) {
         this.searchLimit = limit;
+    }
+
+    public void setTargetMemoryClazz(Class<?> clazz) {
+        this.targetMemoryClazz = clazz;
+    }
+
+    public Class<?> getTargetMemoryClazz() {
+        return this.targetMemoryClazz;
     }
 
     private void putNeighborNodeIntoOpen(Node node) {

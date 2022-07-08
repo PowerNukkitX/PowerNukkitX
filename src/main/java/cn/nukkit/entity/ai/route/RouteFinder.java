@@ -68,6 +68,10 @@ public abstract class RouteFinder {
         }
     }
 
+    public void setDestinationDirectly(Vector3 destination) {
+        this.destination = destination;
+    }
+
     public boolean isFinished() {
         return finished;
     }

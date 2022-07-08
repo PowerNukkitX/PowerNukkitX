@@ -10,6 +10,8 @@ import cn.nukkit.entity.ai.behavior.MultiBehavior;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.CryExecutor;
 import cn.nukkit.entity.ai.executor.TestBaseMoveExecutor;
+import cn.nukkit.entity.ai.executor.WalkToTargetExecutor;
+import cn.nukkit.entity.ai.memory.PlayerMemory;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -36,8 +38,11 @@ public class EntitySheep extends EntityAnimal {
     public int color = 0;
 
     protected IBehaviorGroup behaviorGroup = new BehaviorGroup(
-            Set.of(new Behavior(new TestBaseMoveExecutor(),new PlayerEvaluator(),1,1)),
-            Set.of(new NearestPlayerSensor(5))
+            Set.of(
+                    new Behavior(new WalkToTargetExecutor(PlayerMemory.class,50),new PlayerEvaluator(),1,1),
+                    new Behavior(new TestBaseMoveExecutor(),new PlayerEvaluator(),1,1)
+            ),
+            Set.of(new NearestPlayerSensor(50))
     );
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
