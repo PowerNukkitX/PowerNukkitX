@@ -25,6 +25,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         this.maxDistance = maxDistance;
     }
 
+    //todo
     @Override
     public boolean execute(EntityIntelligent entity) {
         if (route == null)
@@ -39,12 +40,11 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         if (!this.route.isSearching()) {
             RouteFinderThreadPool.executeRouteFinderThread(new RouteFinderSearchTask(this.route));
         }
-        if (this.route.hasNext()) {
+        if (route.hasArrivedNode(entity) && this.route.hasNext()) {
             next = this.route.next();
         }
         if (next != null){
-            double diff = Math.abs(next.x - entity.x) + Math.abs(next.z - entity.z);
-            move(entity, new Vector3((next.x - entity.x)/diff*0.1,(next.y - entity.y)/diff*0.1,(next.z - entity.z)/diff*0.1));
+            move(entity, new Vector3(next.x - entity.x,next.y - entity.y,next.z - entity.z));
         }
         return true;
     }
