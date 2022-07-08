@@ -112,10 +112,11 @@ public class TickingAreaCommand extends VanillaCommand{
                     //计算出哪些区块和圆重合
                     TickingArea area = new TickingArea(name,level.getName());
                     Vector2 centerVec2 = new Vector2(center.getChunkX(),center.getChunkZ());
+                    int radiusSquared = radius * radius;
                     for (int chunkX = center.getChunkX() - radius ; chunkX <= center.getChunkX() + radius ; chunkX++){
                         for (int chunkZ = center.getChunkZ() - radius ; chunkZ <= center.getChunkZ() + radius ; chunkZ++){
-                            double distance = new Vector2(chunkX,chunkZ).distance(centerVec2);
-                            if (distance <= radius){
+                            double distanceSquared = new Vector2(chunkX,chunkZ).distanceSquared(centerVec2);
+                            if (distanceSquared <= radiusSquared){
                                 area.addChunk(new TickingArea.ChunkPos(chunkX,chunkZ));
                             }
                         }
@@ -156,7 +157,7 @@ public class TickingAreaCommand extends VanillaCommand{
                     return true;
                 }
                 case "list": {
-                    Set<TickingArea> areas = manager.getAllTickingArea();
+                    var areas = manager.getAllTickingArea();
                     parser.parseString();
                     boolean showAll = parser.hasNext();
                     if (!showAll){
@@ -180,7 +181,7 @@ public class TickingAreaCommand extends VanillaCommand{
                         }
                         sender.sendMessage(new TranslationContainer(TextFormat.GREEN + "%commands.tickingarea-list.success.allDimensions"));
                         for (TickingArea area : areas){
-                            List<TickingArea.ChunkPos> minAndMax = area.minAndMaxChunkPos();
+                            var minAndMax = area.minAndMaxChunkPos();
                             TickingArea.ChunkPos min = minAndMax.get(0);
                             TickingArea.ChunkPos max = minAndMax.get(1);
                             sender.sendMessage(new TranslationContainer(" - " + area.getName() + ": " + min.x + " " + min.z + " %commands.tickingarea-list.to " + max.x + " " + max.z));

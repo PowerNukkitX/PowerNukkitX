@@ -14,16 +14,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class JSONTickingAreaStorage implements TickingAreaStorage{
+public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static Type type = new TypeToken<HashSet<TickingArea>>(){}.getType();
+    private static Type type = new TypeToken<HashSet<TickingArea>>() {
+    }.getType();
 
     protected static Gson gson = new Gson();
 
     protected Path filePath;
-    protected Map<String,TickingArea> areaMap = new HashMap<>();
+    protected Map<String, TickingArea> areaMap = new HashMap<>();
 
-    public JSONTickingAreaStorage(String path){
+    public JSONTickingAreaStorage(String path) {
         this.filePath = Paths.get(path);
         try {
             if (!Files.exists(this.filePath)) {
@@ -36,13 +37,13 @@ public class JSONTickingAreaStorage implements TickingAreaStorage{
 
     @Override
     public void addTickingArea(TickingArea area) {
-        areaMap.put(area.getName(),area);
+        areaMap.put(area.getName(), area);
         save();
     }
 
     @Override
     public void addTickingArea(TickingArea[] areas) {
-        for (TickingArea area : areas){
+        for (TickingArea area : areas) {
             addTickingArea(area);
         }
     }
@@ -50,11 +51,11 @@ public class JSONTickingAreaStorage implements TickingAreaStorage{
     @Override
     public Map<String, TickingArea> readTickingArea() {
         try {
-            if (Files.readString(filePath).isEmpty()){
+            if (Files.readString(filePath).isEmpty()) {
                 save();
                 return new HashMap<>();
-            }else {
-                Set<TickingArea> areas = gson.fromJson(Files.readString(filePath),type);
+            } else {
+                Set<TickingArea> areas = gson.fromJson(Files.readString(filePath), type);
                 Map<String, TickingArea> aMap = new HashMap<>();
                 for (TickingArea area : areas) aMap.put(area.getName(), area);
                 return aMap;
@@ -81,10 +82,10 @@ public class JSONTickingAreaStorage implements TickingAreaStorage{
         return areaMap.containsKey(name);
     }
 
-    private void save(){
+    private void save() {
         String json = gson.toJson(areaMap.values());
         try {
-            Files.writeString(filePath,json);
+            Files.writeString(filePath, json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

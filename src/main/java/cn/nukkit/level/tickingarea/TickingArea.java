@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.Chunk;
 import lombok.Getter;
 
 import java.util.HashSet;
@@ -24,7 +23,8 @@ public class TickingArea {
         if (!name.isEmpty()) this.name = name;
         else {
             String randomName = randomName();
-            while(Server.getInstance().getTickingAreaManager().containTickingArea(randomName))
+            var manager = Server.getInstance().getTickingAreaManager();
+            while(manager.containTickingArea(randomName))
                 randomName = randomName();
             this.name = randomName;
         }
