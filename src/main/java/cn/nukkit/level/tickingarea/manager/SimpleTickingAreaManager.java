@@ -74,6 +74,6 @@ public class SimpleTickingAreaManager extends TickingAreaManager{
     @Override
     public void loadAllTickingArea(){
         for (TickingArea area : areaMap.values())
-            area.loadAllChunk();
+            if (!area.loadAllChunk()) removeTickingArea(area.getName());
     }
 }

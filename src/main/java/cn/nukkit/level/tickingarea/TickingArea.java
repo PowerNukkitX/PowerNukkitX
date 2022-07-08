@@ -38,12 +38,14 @@ public class TickingArea {
         this.chunks.add(chunk);
     }
 
-    public void loadAllChunk(){
-        Server.getInstance().loadLevel(levelName);
+    public boolean loadAllChunk(){
+        if (!Server.getInstance().loadLevel(levelName))
+            return false;
         Level level = Server.getInstance().getLevelByName(levelName);
         for (ChunkPos pos : chunks){
             level.loadChunk(pos.x,pos.z);
         }
+        return true;
     }
 
     //two entry [0] => min, [1] => max
