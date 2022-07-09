@@ -2412,13 +2412,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
+        //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
-        //System.out.println(Block.getBlockPropertyDataList().get(0).toString());
-        //startGamePacket.isInventoryServerAuthoritative = true;
         this.dataPacketImmediately(startGamePacket);
 
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
-        if (this.getServer().isEnableCustomItem() && !Item.getCustomItems().isEmpty()) {
+        if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
 
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
 
@@ -2690,9 +2689,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
-                            if (this.getServer().isEnableCustomItem()) {
+                            if (this.getServer().isEnableExperimentMode()) {
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("wild_update", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("vanilla_experiments", true)
+                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
+                                );
+                                stackPacket.experiments.add(
+                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
                                 );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)

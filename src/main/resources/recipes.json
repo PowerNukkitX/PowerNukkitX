@@ -14448,6 +14448,27 @@
       "uuid": "d392b075-4ba1-40ae-8789-af868d56f6ce"
     },
     {
+      "id": "glass_pane:white",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 160,
+          "id": "minecraft:stained_glass_pane"
+        }
+      },
+      "output": [
+        {
+          "legacyId": -745,
+          "id": "glass_pane:white"
+        }
+      ],
+      "shape": [
+        "A"
+      ],
+      "block": "crafting_table",
+      "priority": 0
+    },
+    {
       "id": "heiroglyphs_redsandstone_recipeId",
       "type": 1,
       "input": {

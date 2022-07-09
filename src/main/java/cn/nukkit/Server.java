@@ -292,7 +292,7 @@ public class Server {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private boolean enableCustomItem;
+    private boolean enableExperimentMode;
 
     /**
      * Minimal initializer for testing
@@ -578,7 +578,7 @@ public class Server {
                 put("allow-nether", true);
                 put("allow-the_end", true);
                 put("use-terra", false);
-                put("enable-custom-item", true);
+                put("enable-experiment-mode", true);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -597,7 +597,7 @@ public class Server {
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
-        this.enableCustomItem = this.properties.getBoolean("enable-custom-item", false);
+        this.enableExperimentMode = this.properties.getBoolean("enable-experiment-mode", true);
 
         this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
         
@@ -2780,8 +2780,8 @@ public class Server {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public boolean isEnableCustomItem() {
-        return this.enableCustomItem;
+    public boolean isEnableExperimentMode() {
+        return this.enableExperimentMode;
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {

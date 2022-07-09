@@ -328,7 +328,7 @@ public interface BlockID {
     int BEACON = 138;
     int COBBLE_WALL = 139;
     int STONE_WALL = 139;
-    int COBBLESTONE_WALL = 139;
+    int COBBLESTONE_WALL = COBBLE_WALL;
     int FLOWER_POT_BLOCK = 140;
     int CARROT_BLOCK = 141;
     int POTATO_BLOCK = 142;

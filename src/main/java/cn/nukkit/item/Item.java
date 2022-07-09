@@ -595,8 +595,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableCustomItem()) {
-            log.warn("The server does not have the custom item feature enabled. " + c.getName() + "Unable to register!");
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled. " + c.getName() + "Unable to register!");
             return;
         }
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
@@ -613,7 +613,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableCustomItem()) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
             return;
         }

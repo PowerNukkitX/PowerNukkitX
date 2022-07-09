@@ -22,7 +22,8 @@ public abstract class BlockCustom extends Block {
 
     protected CompoundTag compoundTag;
 
-    public BlockCustom() {}
+    public BlockCustom() {
+    }
 
     /**
      * 控制自定义方块的命名空间<br>(例如 wiki:test_block)
@@ -34,27 +35,34 @@ public abstract class BlockCustom extends Block {
      */
     public abstract String getTexture();
 
-
+    /**
+     * 控制自定义方块在创造栏中的分类
+     *
+     * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
+     */
     public String getCreativeCategory() {
         return "construction";
     }
 
     /**
      * 控制自定义方块在创造栏中的组
+     *
+     * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
      */
     public String getCreativeCategoryGroup() {
         return "";
     }
 
     /**
-     * 控制自定义方块的渲染方法
+     * 控制自定义方块的渲染方法<br>可选值:<br>opaque<br>alpha_test<br>blend<br>double_sided
      */
     public String getRenderMethod() {
         return "opaque";
     }
 
     /**
-     * 控制自定义方块的形状
+     * 控制自定义方块的形状<br>
+     * Geometry identifier from geo file in 'RP/models/entity' folder
      */
     public Optional<String> getGeometry() {
         return Optional.empty();
@@ -100,9 +108,9 @@ public abstract class BlockCustom extends Block {
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
                         .putInt("value", (int) this.getResistance()))
                 .putCompound("minecraft:block_light_absorption", new CompoundTag()
-                        .putInt("value", this.getLightFilter()))
+                        .putFloat("value", (float) this.getLightFilter() / 15))
                 .putCompound("minecraft:block_light_emission", new CompoundTag()
-                        .putFloat("emission", this.getLightLevel()))
+                        .putFloat("emission", (float) this.getLightLevel() / 15))
                 .putCompound("minecraft:rotation", new CompoundTag()
                         .putFloat("x", 0)
                         .putFloat("y", 0)
@@ -124,7 +132,7 @@ public abstract class BlockCustom extends Block {
     }
 
     public BlockPropertyData getBlockPropertyData() {
-        if(initialized.compareAndSet(false, true)){
+        if (initialized.compareAndSet(false, true)) {
             initBlockPropertyData();
         }
         return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), new CompoundTag().putCompound("components", compoundTag));

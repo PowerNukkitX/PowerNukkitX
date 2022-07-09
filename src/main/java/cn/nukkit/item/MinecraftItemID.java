@@ -1074,17 +1074,17 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") RAW_GOLD,
     @PowerNukkitOnly @Since("FUTURE") RAW_COPPER,
     @PowerNukkitOnly @Since("FUTURE") GLOW_FRAME(false),
-    @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
+    //todo 20220709 完成山羊角
+    // @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
     @PowerNukkitOnly @Since("FUTURE") SPYGLASS,
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
 
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_DOOR,
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN
-    ;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
-            .flatMap(id-> 
+            .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))
                             .map(ns-> new AbstractMap.SimpleEntry<>(ns, id)))
             .collect(Collectors.toMap(entry-> entry.getKey().toLowerCase(), AbstractMap.SimpleEntry::getValue));

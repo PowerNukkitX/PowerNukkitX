@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.block.customblock.BlockCustom;
 import cn.nukkit.blockentity.BlockEntity;
@@ -428,7 +429,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[STONECUTTER] = BlockStonecutter.class; //245
             list[GLOWING_OBSIDIAN] = BlockObsidianGlowing.class; //246
             list[NETHER_REACTOR] = BlockNetherReactor.class; //247 Should not be removed
-
+            list[INFO_UPDATE] = BlockInfoUpdate.class;//248 Don't use this Block.
             list[MOVING_BLOCK] = BlockMoving.class; //250
             list[OBSERVER] = BlockObserver.class; //251
             list[STRUCTURE_BLOCK] = BlockStructure.class; //252
@@ -1202,6 +1203,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitXOnly
     public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
+            return;
+        }
         SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         for (var clazz : blockClassList) {
             BlockCustom block = clazz.getDeclaredConstructor().newInstance();
@@ -1224,7 +1229,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void deleteCustomBlock() {
-        for(var block : customBlock.values()){
+        for (var block : customBlock.values()) {
             Item.removeCreativeItem(block.toItem());
         }
         RuntimeItems.getRuntimeMapping().deleteCustomBlock(customBlock.values().stream().toList());
@@ -1354,11 +1359,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-    /**
-     * 控制方块是否可以燃烧
-     *
-     * @return 可燃烧能力, 数值越大越容易着火, 默认为0
-     */
     public int getBurnAbility() {
         return 0;
     }
@@ -1903,15 +1903,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         double base = this.getHardness() * 1.5;
         if (this.canBeBrokenWith(item)) {
             if (
-            (this.getToolType() == ItemTool.TYPE_SHEARS && item.isShears()) ||
-            (this.getToolType() == ItemTool.TYPE_SHEARS && item.isHoe())) {
+                    (this.getToolType() == ItemTool.TYPE_SHEARS && item.isShears()) ||
+                            (this.getToolType() == ItemTool.TYPE_SHEARS && item.isHoe())) {
                 base /= 15;
             } else if (
                     (this.getToolType() == ItemTool.TYPE_PICKAXE && item.isPickaxe()) ||
                             (this.getToolType() == ItemTool.TYPE_AXE && item.isAxe()) ||
                             (this.getToolType() == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
                             (this.getToolType() == ItemTool.TYPE_HOE && item.isHoe())
-                    ) {
+            ) {
                 int tier = item.getTier();
                 switch (tier) {
                     case ItemTool.TIER_WOODEN:
@@ -2672,6 +2672,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return player != null && player.isCreative() && player.isOp();
     }
 
+    /**
+     * 控制方块吸收的光亮
+     *
+     * @return 方块吸收的光亮
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getLightFilter() {

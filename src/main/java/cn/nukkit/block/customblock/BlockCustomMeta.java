@@ -1,4 +1,5 @@
-package cn.nukkit.block.customblock;
+//todo 20220709 实现原版多状态方块
+/*package cn.nukkit.block.customblock;
 
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.InvalidBlockPropertyMetaException;
@@ -23,9 +24,9 @@ public abstract class BlockCustomMeta extends BlockCustom {
             getMutableState().setDataStorageFromInt(meta, true);
         }
     }
-    /**
-     * 添加方块的属性到{@link BlockCustomMeta#propertyList}
-     */
+    *//**
+ * 添加方块的属性到{@link BlockCustomMeta#propertyList}
+ *//*
     protected abstract void properties();
 
     @Override
@@ -63,4 +64,4 @@ public abstract class BlockCustomMeta extends BlockCustom {
         if(propertyList.isEmpty()) return CommonBlockProperties.EMPTY_PROPERTIES;
         return new BlockProperties(propertyList.toArray(new BlockProperty<?>[]{}));
     }
-}
+}*/
