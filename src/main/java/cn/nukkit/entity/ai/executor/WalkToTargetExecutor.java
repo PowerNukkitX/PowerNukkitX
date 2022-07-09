@@ -10,9 +10,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -42,15 +40,14 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         }
         if (!routeFinder.isSearching()){
             var nodes = routeFinder.getRoute();
-            for (Node node : nodes) {
-                sendParticle("minecraft:eyeofender_death_explode_particle",Position.fromObject(node.getVector3(),entity.level), Server.getInstance().getOnlinePlayers().values().toArray(new Player[0]));
-            }
+
             routeFinder.asyncSearch();
         }
         //等待直到路径计算完成
         return true;
     }
 
+    //todo: remove debug
     private static void sendParticle(String identifier, Position pos,Player[] showPlayers) {
         Arrays.stream(showPlayers).forEach(player -> {
             if (!player.isOnline())
