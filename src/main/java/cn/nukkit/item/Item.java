@@ -744,7 +744,11 @@ public class Item implements Cloneable, BlockID, ItemID {
         try {
             Class c = null;
             if (id <= 255 - Block.MAX_BLOCK_ID) {
-                return Block.get(255 - id).toItem();
+                var customBlockItem = Block.get(255 - id).toItem();
+                customBlockItem.setCount(count);
+                customBlockItem.setDamage(meta);
+                customBlockItem.setCompoundTag(tags);
+                return customBlockItem;
             } else if (id < 0) {
                 int blockId = 255 - id;
                 c = Block.list[blockId];

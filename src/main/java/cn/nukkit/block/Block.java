@@ -1375,7 +1375,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * 控制方块的摩擦因素
      *
-     * @return 方块的摩擦因素
+     * @return 方块的摩擦因素 (0-1)
      */
     public double getFrictionFactor() {
         return 0.6;
