@@ -48,7 +48,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     protected boolean reachable = true;
 
-    protected boolean floydSmooth = true;
+    protected boolean enableFloydSmooth = true;
 
     //寻路最大深度
     protected int currentSearchDepth = 100;
@@ -112,7 +112,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         //如果无法到达，则取最接近终点的一个Node作为尾节点
         ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(getNearestNodeFromCloseList(target));
         //使用floyd平滑路径
-        if (floydSmooth)
+        if (enableFloydSmooth)
             findingPath = FloydSmooth(findingPath);
 
         //清空上次的寻路结果

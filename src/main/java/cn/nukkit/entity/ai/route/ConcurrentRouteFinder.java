@@ -5,10 +5,11 @@ import cn.nukkit.api.Since;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 提供路径结果并发存储和读取的抽象类
+ * 异步路径查找抽象类
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -56,7 +57,7 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
     }
 
     /**
-     * 线程安全地获取路径信息（cloned）
+     * 线程安全地获取查找到的路径信息（cloned）
      */
     @Override
     public ArrayList<Node> getRoute() {
@@ -70,5 +71,9 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
             this.lock.writeLock().unlock();
         }
         return clone;
+    }
+
+    public CompletableFuture<Void> asyncSearch() {
+        return CompletableFuture.runAsync(this::search);
     }
 }

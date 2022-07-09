@@ -10,7 +10,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -19,6 +21,8 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
 
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<?> memoryClazz;
+
+    protected AStarRouteFinder routeFinder;
 
     public WalkToTargetExecutor(Class<?> memoryClazz){
         this.memoryClazz = memoryClazz;
@@ -31,17 +35,20 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         if (target == null) {
             return false;
         }
-        AStarRouteFinder routeFinder = new AStarRouteFinder(entity,entity,target,target.level);
-        routeFinder.setFloydSmooth(false);
-        routeFinder.setMaxSearchDepth(500);
-        routeFinder.search();
-        if (routeFinder.isFinished()){
+        if (routeFinder == null) {
+            routeFinder = new AStarRouteFinder(entity, entity, target, target.level);
+            routeFinder.setEnableFloydSmooth(false);
+            routeFinder.setMaxSearchDepth(500);
+        }
+        if (!routeFinder.isSearching()){
             var nodes = routeFinder.getRoute();
             for (Node node : nodes) {
                 sendParticle("minecraft:eyeofender_death_explode_particle",Position.fromObject(node.getVector3(),entity.level), Server.getInstance().getOnlinePlayers().values().toArray(new Player[0]));
             }
+            routeFinder.asyncSearch();
         }
-        return false;
+        //等待直到路径计算完成
+        return true;
     }
 
     private static void sendParticle(String identifier, Position pos,Player[] showPlayers) {
