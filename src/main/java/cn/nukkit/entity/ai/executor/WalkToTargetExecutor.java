@@ -32,7 +32,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
     protected int tick = 0;
 
     //多久更新一次路径
-    protected static final int TICK_RATE = 10;
+    protected static final int TICK_RATE = 20;
 
     public WalkToTargetExecutor(Class<?> memoryClazz){
         this.memoryClazz = memoryClazz;
@@ -56,7 +56,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         }
         if (routeFinder == null) {
             routeFinder = new AStarRouteFinder(entity, entity, target, target.level);
-            routeFinder.setMaxSearchDepth(500);
+            routeFinder.setMaxSearchDepth(100);
         }
         if (movingNearDestination == null || (routeUpdated && routeFinder.isFinished())){
             routeUpdated = false;
