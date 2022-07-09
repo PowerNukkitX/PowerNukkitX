@@ -44,6 +44,10 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         //获取目标位置
         Position target = (Position) entity.getBehaviorGroup().getMemory().get(memoryClazz).getData();
         if (target == null) {
+            routeFinder = null;
+            movingNearDestination = null;
+            routeUpdated = false;
+            tick = 0;
             return false;
         }
         //已到达
@@ -62,7 +66,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             }
         }
         //构建指向玩家的向量
-        BVector3 bv2player = BVector3.fromPos(target.x - entity.x,target.y - entity.y + 1,target.z - entity.z);
+        BVector3 bv2player = BVector3.fromPos(target.x - entity.x,target.y - entity.y + 0.5,target.z - entity.z);
         entity.setPitch(bv2player.getPitch());
         entity.setHeadYaw(bv2player.getHeadYaw());
         if (movingNearDestination != null){
@@ -73,7 +77,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             Vector3 motion = calMotion(entity);
             entity.addTmpMoveMotion(motion);
         }
-        if (tick >= 20 || routeFinder.getNodes().isEmpty()){
+        if (tick >= 10 || routeFinder.getNodes().isEmpty()){
             routeFinder.asyncSearch();
             routeUpdated = true;
             tick = 0;
