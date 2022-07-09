@@ -31,6 +31,9 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
 
     protected int tick = 0;
 
+    //多久更新一次路径
+    protected static final int TICK_RATE = 10;
+
     public WalkToTargetExecutor(Class<?> memoryClazz){
         this.memoryClazz = memoryClazz;
     }
@@ -38,9 +41,6 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
     @Override
     public boolean execute(EntityIntelligent entity) {
         tick++;
-        //knockback
-        if (entity.getAttackTime() > 0)
-            return true;
         //获取目标位置
         Position target = (Position) entity.getBehaviorGroup().getMemory().get(memoryClazz).getData();
         if (target == null) {
@@ -77,7 +77,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             Vector3 motion = calMotion(entity);
             entity.addTmpMoveMotion(motion);
         }
-        if (tick >= 10 || routeFinder.getNodes().isEmpty()){
+        if (tick >= TICK_RATE || routeFinder.getNodes().isEmpty()){
             routeFinder.asyncSearch();
             routeUpdated = true;
             tick = 0;
@@ -117,25 +117,5 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
     protected boolean collidesBlocks(EntityIntelligent entity,double dx, double dy, double dz) {
         return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
                 false, Block::isSolid).length > 0;
-    }
-
-    protected boolean willFallAt(EntityIntelligent entity,double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz).grow(-0.1, 0, -0.1), true,
-                false, block -> block.isSolid() || block instanceof BlockWater).length == 0;
-    }
-
-    //todo: remove debug
-    protected static void sendParticle(String identifier, Position pos,Player[] showPlayers) {
-        Arrays.stream(showPlayers).forEach(player -> {
-            if (!player.isOnline())
-                return;
-            SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
-            packet.identifier = identifier;
-            packet.dimensionId = pos.getLevel().getDimension();
-            packet.position = pos.asVector3f();
-            try {
-                player.dataPacket(packet);
-            }catch (Throwable t){}
-        });
     }
 }
