@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 提供node的并发存储的抽象类
+ * 提供路径结果并发存储和读取的抽象类
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -19,7 +19,10 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
 
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public void addNode(Node node) {
+    /**
+     * 添加寻路结果节点
+     */
+    protected void addNode(Node node) {
         try {
             lock.writeLock().lock();
             nodes.add(node);
@@ -28,7 +31,10 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
         }
     }
 
-    public void addNode(ArrayList<Node> node) {
+    /**
+     * 批量添加寻路结果节点
+     */
+    protected void addNode(ArrayList<Node> node) {
         try {
             lock.writeLock().lock();
             nodes.addAll(node);
@@ -37,12 +43,32 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
         }
     }
 
-    public void resetNodes() {
+    /**
+     * 重置结果
+     */
+    protected void resetNodes() {
         try {
             this.lock.writeLock().lock();
             this.nodes.clear();
         } finally {
             this.lock.writeLock().unlock();
         }
+    }
+
+    /**
+     * 线程安全地获取路径信息（cloned）
+     */
+    @Override
+    public ArrayList<Node> getRoute() {
+        ArrayList<Node> clone = new ArrayList<>();
+        try {
+            this.lock.writeLock().lock();
+            for (Node node : this.nodes) {
+                clone.add(node);
+            }
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+        return clone;
     }
 }

@@ -4,6 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
+import java.util.ArrayList;
+
 /**
  * 寻路器接口
  */
@@ -50,4 +52,9 @@ public interface IRouteFinder {
      * 获取终点
      */
     Vector3 getTarget();
+
+    /**
+     * 获取寻路结果
+     */
+    ArrayList<Node> getRoute();
 }

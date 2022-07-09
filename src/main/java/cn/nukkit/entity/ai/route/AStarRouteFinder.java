@@ -10,6 +10,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.PriorityQueue;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
+@Setter
 public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     //这些常量是为了避免开方运算而设置的
@@ -45,8 +47,12 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     protected boolean reachable = true;
 
+    protected boolean floydSmooth = true;
+
     //寻路最大深度
-    protected int searchLimit = 100;
+    protected int currentSearchDepth = 100;
+
+    protected int maxSearchDepth = 100;
 
     public AStarRouteFinder(EntityIntelligent entity,Vector3 start, Vector3 target, Level level) {
         this.entity = entity;
@@ -66,7 +72,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         openList.clear();
         closeList.clear();
         //重置寻路深度
-        searchLimit = 100;
+        currentSearchDepth = maxSearchDepth;
 
         //将起点放置到closeList中，以开始寻路
         //起点没有父节点，且我们不需要计算他的代价
@@ -77,7 +83,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         while (!isPositionOverlap(currentNode.getVector3(), target)) {
             //检查是否被中断了
             if (this.isInterrupt()) {
-                searchLimit = 0;
+                currentSearchDepth = 0;
                 this.searching = false;
                 this.finished = true;
                 return false;
@@ -85,7 +91,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             //将当前节点周围的有效节点放入openList中
             putNeighborNodeIntoOpen(currentNode);
             //若未超出寻路深度，则获取代价最小的一个node并将其设置为currentNode
-            if (openList.peek() != null && searchLimit-- > 0) {
+            if (openList.peek() != null && currentSearchDepth-- > 0) {
                 closeList.add(currentNode = openList.poll());
             } else {
                 this.searching = false;
@@ -102,7 +108,9 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         }
 
         ArrayList<Node> findingPath = getPathRoute();
-        findingPath = FloydSmooth(findingPath);
+        //使用floyd平滑路径
+        if (floydSmooth)
+            findingPath = FloydSmooth(findingPath);
 
         //清空上次的寻路结果
         this.resetNodes();
@@ -291,9 +299,9 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     protected int calH(Vector3 start, Vector3 target) {
         //使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
         //计算对角线距离
-        int obliqueCost = (int) (Math.min(target.x-start.x,target.z-start.z) * OBLIQUE_MOVE_COST);
+        int obliqueCost = (int) (Math.abs(Math.min(target.x-start.x,target.z-start.z)) * OBLIQUE_MOVE_COST);
         //计算剩余直线距离
-        int directCost = (int) ((Math.max(target.x-start.x,target.z-start.z) - Math.min(target.x-start.x,target.z-start.z)) * DIRECT_MOVE_COST);
+        int directCost = (int) ((Math.abs(Math.max(target.x-start.x,target.z-start.z)) - Math.abs(Math.min(target.x-start.x,target.z-start.z))) * DIRECT_MOVE_COST);
         return obliqueCost + directCost;
     }
 
@@ -466,7 +474,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
      * 坐标是否重叠了
      * 此方法只会比较坐标的floorX、floorY、floorZ
      */
-    private boolean isPositionOverlap(Vector3 vector2, Vector3 vector2_) {
+    protected boolean isPositionOverlap(Vector3 vector2, Vector3 vector2_) {
         return vector2.getFloorX() == vector2_.getFloorX()
                 && vector2.getFloorZ() == vector2_.getFloorZ()
                 && vector2.getFloorY() == vector2_.getFloorY();
