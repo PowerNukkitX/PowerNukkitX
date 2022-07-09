@@ -29,7 +29,7 @@ public abstract class EntityIntelligent extends EntityPhysical{
     }
 
     /**
-     * 我们将传感器数据的收集和行为评估工作并行话以提高性能
+     * 我们将传感器数据的收集和行为评估工作并行化以提高性能
      */
     @Override
     public void asyncPrepare(int currentTick) {
