@@ -57,4 +57,34 @@ public interface IRouteFinder {
      * 获取寻路结果
      */
     ArrayList<Node> getRoute();
+
+    /**
+     * 是否有下一个节点
+     */
+    boolean hasNext();
+
+    /**
+     * 下一个节点（如果有的话）
+     */
+    Node next();
+
+    /**
+     * 当前索引位置是否有节点
+     */
+    boolean hasCurrentNode();
+
+    /**
+     * 获取当前节点
+     */
+    Node getCurrentNode();
+
+    /**
+     * 获取当前节点索引
+     */
+    int getNodeIndex();
+
+    /**
+     * 设置当前索引位置
+     */
+    void setNodeIndex(int index);
 }

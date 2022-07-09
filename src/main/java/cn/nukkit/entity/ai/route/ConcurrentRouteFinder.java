@@ -18,6 +18,9 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
     //用于存储寻路结果的List
     protected ArrayList<Node> nodes = new ArrayList<>();
 
+    //Node索引
+    protected int currentIndex = 0;
+
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
@@ -71,6 +74,58 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
             this.lock.writeLock().unlock();
         }
         return clone;
+    }
+
+    @Override
+    public Node getCurrentNode() {
+        try {
+            lock.readLock().lock();
+            if (this.hasCurrentNode()) {
+                return nodes.get(currentIndex);
+            }
+            return null;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean hasNext() {
+        try {
+            if (this.currentIndex + 1 < nodes.size()) {
+                return this.nodes.get(this.currentIndex + 1) != null;
+            }
+        } catch (Exception ignore) {}
+        return false;
+    }
+
+    @Override
+    public Node next() {
+        try {
+            lock.readLock().lock();
+            if (this.hasNext()) {
+                return this.nodes.get(++currentIndex);
+            }
+            return null;
+        } finally {
+            lock.readLock().unlock();
+        }
+
+    }
+
+    @Override
+    public boolean hasCurrentNode() {
+        return currentIndex < this.nodes.size();
+    }
+
+    @Override
+    public void setNodeIndex(int index) {
+        this.currentIndex = index;
+    }
+
+    @Override
+    public int getNodeIndex() {
+        return this.currentIndex;
     }
 
     public CompletableFuture<Void> asyncSearch() {

@@ -36,7 +36,7 @@ public class EntitySheep extends EntityAnimal {
             Set.of(
                     new Behavior(new WalkToTargetExecutor(PlayerMemory.class),new PlayerEvaluator(),1,1)
             ),
-            Set.of(new NearestPlayerSensor(50,3))
+            Set.of(new NearestPlayerSensor(50,0))
     );
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {

@@ -30,7 +30,7 @@ public class BVector3{
     }
 
     public static BVector3 fromPos(Vector3 pos){
-        return new BVector3(pos);
+        return new BVector3(pos.clone());
     }
 
     public static BVector3 fromPos(double x,double y,double z){
