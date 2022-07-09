@@ -965,9 +965,10 @@
       ],
       "output": [
         {
+          "damage": 3,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -1004,6 +1005,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1080,9 +1082,10 @@
       ],
       "output": [
         {
+          "damage": 4,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -1156,6 +1159,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1269,9 +1273,10 @@
       ],
       "output": [
         {
+          "damage": 3,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -1424,9 +1429,10 @@
       ],
       "output": [
         {
+          "damage": 3,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -1463,9 +1469,10 @@
       ],
       "output": [
         {
+          "damage": 4,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -1502,6 +1509,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1520,9 +1528,10 @@
       ],
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 2
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "block": "stonecutter",
@@ -1613,6 +1622,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1631,6 +1641,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1767,9 +1778,10 @@
       ],
       "output": [
         {
+          "damage": 6,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -1806,6 +1818,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1824,9 +1837,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -1861,6 +1875,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1919,6 +1934,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -1995,9 +2011,10 @@
       ],
       "output": [
         {
+          "damage": 7,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -2032,6 +2049,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -2169,9 +2187,10 @@
       ],
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2189,9 +2208,10 @@
       ],
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2362,9 +2382,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2382,9 +2403,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2478,9 +2500,10 @@
       ],
       "output": [
         {
+          "damage": 7,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2498,9 +2521,10 @@
       ],
       "output": [
         {
+          "damage": 7,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -2614,9 +2638,10 @@
       ],
       "output": [
         {
+          "damage": 4,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -2652,9 +2677,10 @@
       ],
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -2689,6 +2715,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -2725,9 +2752,10 @@
       ],
       "output": [
         {
+          "damage": 1,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -2816,9 +2844,10 @@
       ],
       "output": [
         {
+          "damage": 6,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -2853,9 +2882,10 @@
       ],
       "output": [
         {
+          "damage": 7,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -2890,6 +2920,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -2981,6 +3012,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -2999,9 +3031,10 @@
       ],
       "output": [
         {
+          "damage": 1,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -3072,6 +3105,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -3150,9 +3184,10 @@
       ],
       "output": [
         {
+          "damage": 1,
+          "count": 2,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 2
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "block": "stonecutter",
@@ -3189,9 +3224,10 @@
       ],
       "output": [
         {
+          "damage": 1,
+          "count": 2,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 2
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "block": "stonecutter",
@@ -3228,9 +3264,10 @@
       ],
       "output": [
         {
+          "damage": 6,
+          "count": 2,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 2
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "block": "stonecutter",
@@ -3339,9 +3376,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -3358,9 +3396,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 2,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 2
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "block": "stonecutter",
@@ -3413,6 +3452,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -3431,6 +3471,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 139,
           "id": "minecraft:cobblestone_wall"
         }
@@ -4337,9 +4378,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -4359,9 +4401,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -4381,9 +4424,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -4602,9 +4646,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 6
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "shape": [
@@ -4647,9 +4692,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -4669,9 +4715,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -15033,9 +15080,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -17456,9 +17504,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -22184,9 +22233,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -22494,9 +22544,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -23576,9 +23627,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -28745,9 +28797,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -28794,9 +28847,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -29090,9 +29144,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -31044,9 +31099,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -32173,9 +32229,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -32243,9 +32300,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -32588,9 +32646,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -35659,9 +35718,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 6,
           "legacyId": 139,
-          "id": "minecraft:cobblestone_wall",
-          "count": 6
+          "id": "minecraft:cobblestone_wall"
         }
       ],
       "shape": [
@@ -47888,9 +47948,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -47911,9 +47972,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -47933,9 +47995,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -47955,9 +48018,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -47977,9 +48041,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -48023,9 +48088,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -48046,9 +48112,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48069,9 +48136,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48092,9 +48160,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48115,9 +48184,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48138,9 +48208,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48161,9 +48232,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48184,9 +48256,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": -162,
-          "id": "minecraft:stone_block_slab3",
-          "count": 6
+          "id": "minecraft:stone_block_slab3"
         }
       ],
       "shape": [
@@ -48207,9 +48280,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 6,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 6
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "shape": [
@@ -48230,9 +48304,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 6,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 6
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "shape": [
@@ -48253,9 +48328,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": -166,
-          "id": "minecraft:stone_block_slab4",
-          "count": 6
+          "id": "minecraft:stone_block_slab4"
         }
       ],
       "shape": [
@@ -48275,9 +48351,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
@@ -48297,9 +48374,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 6,
           "legacyId": 182,
-          "id": "minecraft:stone_block_slab2",
-          "count": 6
+          "id": "minecraft:stone_block_slab2"
         }
       ],
       "shape": [
@@ -48320,9 +48398,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 6,
           "legacyId": 44,
-          "id": "minecraft:stone_block_slab",
-          "count": 6
+          "id": "minecraft:stone_block_slab"
         }
       ],
       "shape": [
