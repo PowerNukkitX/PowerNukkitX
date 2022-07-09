@@ -24,8 +24,19 @@ public abstract class EntityIntelligent extends EntityPhysical{
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
         IBehaviorGroup behaviorGroup = getBehaviorGroup();
-        behaviorGroup.tick(this);
+        behaviorGroup.tickRunningBehaviors(this);
         return true;
+    }
+
+    /**
+     * 我们将传感器数据的收集和行为评估工作并行话以提高性能
+     */
+    @Override
+    public void asyncPrepare(int currentTick) {
+        super.asyncPrepare(currentTick);
+        IBehaviorGroup behaviorGroup = getBehaviorGroup();
+        behaviorGroup.collectSensorData(this);
+        behaviorGroup.evaluateBehaviors(this);
     }
 
     public IMemoryStorage getMemory(){

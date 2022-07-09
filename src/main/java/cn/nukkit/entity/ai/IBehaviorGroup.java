@@ -16,11 +16,21 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public interface IBehaviorGroup {
+
     /**
-     * 行为组处理循环
-     * 调用后，行为组将会从传感器搜集信息，调用评估器等
+     * 评估所有行为
      */
-    void tick(EntityIntelligent entity);
+    void evaluateBehaviors(EntityIntelligent entity);
+
+    /**
+     * 从传感器获取数据
+     */
+    void collectSensorData(EntityIntelligent entity);
+
+    /**
+     * 激活需要被执行的行为
+     */
+    void tickRunningBehaviors(EntityIntelligent entity);
 
     Set<IBehavior> getBehaviors();
 

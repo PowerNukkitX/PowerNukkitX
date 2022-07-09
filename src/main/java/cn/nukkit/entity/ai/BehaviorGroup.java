@@ -31,15 +31,6 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.sensors.addAll(sensors);
     }
 
-    public void tick(EntityIntelligent entity){
-        //搜集信息并写入记忆
-        collectSensorData(entity);
-        //评估所有行为
-        evaluateBehaviors(entity);
-        //刷新正在运行的行为
-        tickRunningBehaviors(entity);
-    }
-
     public void addBehavior(IBehavior behavior){
         this.behaviors.add(behavior);
     }
@@ -49,21 +40,9 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     /**
-     * @Param Map<IBehavior,Position>
-     * IBehavior -> 要添加的行为
-     * Position -> 评估器的返回值，将会传递给行为的执行器的onStart()方法
-     */
-    protected void addToRunningBehaviors(EntityIntelligent entity, Set<IBehavior> behaviors){
-        behaviors.forEach((behavior)->{
-            behavior.onStart(entity);
-            runningBehaviors.add(behavior);
-        });
-    }
-
-    /**
      * 运行并刷新正在运行的行为
      */
-    protected void tickRunningBehaviors(EntityIntelligent entity){
+    public void tickRunningBehaviors(EntityIntelligent entity){
         Set<IBehavior> removed = new HashSet<>();
         for (IBehavior behavior : runningBehaviors){
             if (!behavior.execute(entity)){
@@ -74,17 +53,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         runningBehaviors.removeAll(removed);
     }
 
-    /**
-     * 中断所有正在运行的行为
-     */
-    protected void interruptAllRunningBehaviors(EntityIntelligent entity){
-        for (IBehavior behavior : runningBehaviors){
-            behavior.onInterrupt(entity);
-        }
-        runningBehaviors.clear();
-    }
-
-    protected void collectSensorData(EntityIntelligent entity){
+    public void collectSensorData(EntityIntelligent entity){
         for (ISensor sensor : sensors){
             IMemory<?> memory = sensor.sense(entity);
             this.memory.put(memory);
@@ -95,7 +64,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity
      * @return 评估所有行为
      */
-    protected void evaluateBehaviors(EntityIntelligent entity){
+    public void evaluateBehaviors(EntityIntelligent entity){
         //存储评估成功的行为（未过滤优先级）
         Set<IBehavior> evalSucceed = new HashSet<>();
         int heightestPriority = Integer.MIN_VALUE;
@@ -133,6 +102,28 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (resultHeightestPriority == currentHeightestPriority) {
             addToRunningBehaviors(entity,result);
         }
+    }
+
+    /**
+     * @Param Map<IBehavior,Position>
+     * IBehavior -> 要添加的行为
+     * Position -> 评估器的返回值，将会传递给行为的执行器的onStart()方法
+     */
+    protected void addToRunningBehaviors(EntityIntelligent entity, Set<IBehavior> behaviors){
+        behaviors.forEach((behavior)->{
+            behavior.onStart(entity);
+            runningBehaviors.add(behavior);
+        });
+    }
+
+    /**
+     * 中断所有正在运行的行为
+     */
+    protected void interruptAllRunningBehaviors(EntityIntelligent entity){
+        for (IBehavior behavior : runningBehaviors){
+            behavior.onInterrupt(entity);
+        }
+        runningBehaviors.clear();
     }
 
     /**
