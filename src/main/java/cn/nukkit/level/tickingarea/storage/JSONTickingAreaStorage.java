@@ -5,6 +5,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -40,6 +41,14 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     @Override
     public void addTickingArea(TickingArea area) {
         areaMap.put(area.getLevelName(), area.getName(), area);
+        save();
+    }
+
+    @Override
+    public void addTickingArea(@NotNull TickingArea... areas) {
+        for (var each : areas) {
+            areaMap.put(each.getLevelName(), each.getName(), each);
+        }
         save();
     }
 
