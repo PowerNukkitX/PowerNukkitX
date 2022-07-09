@@ -12,6 +12,7 @@ import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.PriorityQueue;
@@ -97,17 +98,19 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
                 this.searching = false;
                 this.finished = true;
                 this.reachable = false;
-                return false;
+                break;
             }
         }
 
         //因为在前面是否到达终点的检查中我们只粗略检查了坐标的floor值
         //所以说这里我们还需要将其精确指向到终点
+        Node targetNode = null;
         if (!currentNode.getVector3().equals(target)) {
-            closeList.add(new Node(target, currentNode, 0, 0));
+            targetNode = new Node(target, currentNode, 0, 0);
         }
 
-        ArrayList<Node> findingPath = getPathRoute();
+        //如果无法到达，则取最接近终点的一个Node作为尾节点
+        ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(getNearestNodeFromCloseList(target));
         //使用floyd平滑路径
         if (floydSmooth)
             findingPath = FloydSmooth(findingPath);
@@ -456,18 +459,36 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     /**
      * 将Node链转换成List<Node>样式的路径信息
+     * @param end 链表尾节点
      */
-    protected ArrayList<Node> getPathRoute() {
+    protected ArrayList<Node> getPathRoute(@Nullable Node end) {
         ArrayList<Node> nodes = new ArrayList<>();
-        Node temp = closeList.get(closeList.size() - 1);
-        nodes.add(temp);
-        while (!temp.getParent().getVector3().equals(start)) {
-            nodes.add(temp = temp.getParent());
+        if (end == null)
+            end = closeList.get(closeList.size() - 1);
+        nodes.add(end);
+        while (!end.getParent().getVector3().equals(start)) {
+            nodes.add(end = end.getParent());
         }
-        nodes.add(temp.getParent());
+        nodes.add(end.getParent());
         Collections.reverse(nodes);
         return nodes;
 
+    }
+
+    /**
+     * 获取接近指定坐标的最近的Node
+     */
+    protected Node getNearestNodeFromCloseList(Vector3 vector3){
+        double min = Double.MAX_VALUE;
+        Node node = null;
+        for (Node n : closeList) {
+            double distance = n.getVector3().distance(vector3);
+            if (distance < min) {
+                min = distance;
+                node = n;
+            }
+        }
+        return node;
     }
 
     /**

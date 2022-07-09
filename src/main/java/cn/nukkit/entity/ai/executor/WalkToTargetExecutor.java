@@ -33,7 +33,7 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         }
         AStarRouteFinder routeFinder = new AStarRouteFinder(entity,entity,target,target.level);
         routeFinder.setFloydSmooth(false);
-        routeFinder.setMaxSearchDepth(1000);
+        routeFinder.setMaxSearchDepth(500);
         routeFinder.search();
         if (routeFinder.isFinished()){
             var nodes = routeFinder.getRoute();
