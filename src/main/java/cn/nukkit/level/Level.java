@@ -3977,16 +3977,43 @@ public class Level implements ChunkManager, Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
+    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
-        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-        pk.eid = entity.getId();
-        pk.x = (float) x;
-        pk.y = (float) y;
-        pk.z = (float) z;
-        pk.yaw = (float) yaw;
-        pk.headYaw = (float) headYaw;
-        pk.pitch = (float) pitch;
-        pk.onGround = entity.onGround;
+//        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
+//        pk.eid = entity.getId();
+//        pk.x = (float) x;
+//        pk.y = (float) y;
+//        pk.z = (float) z;
+//        pk.yaw = (float) yaw;
+//        pk.headYaw = (float) headYaw;
+//        pk.pitch = (float) pitch;
+//        pk.onGround = entity.onGround;
+        MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
+        pk.runtimeEntityId = entity.getId();
+        if (entity.lastX != x){
+            pk.x = (float) x;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_X;
+        }
+        if (entity.lastY != y){
+            pk.y = (float) y;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Y;
+        }
+        if (entity.lastZ != z){
+            pk.z = (float) z;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
+        }
+        if (entity.lastYaw != yaw){
+            pk.yaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
+        }
+        if (entity.lastPitch != pitch){
+            pk.pitch = (float) pitch;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
+        }
+        if (entity.lastHeadYaw != headYaw){
+            pk.headYaw = (float) headYaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
+        }
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
