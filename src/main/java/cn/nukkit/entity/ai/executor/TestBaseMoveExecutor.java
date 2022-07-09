@@ -12,8 +12,10 @@ public class TestBaseMoveExecutor extends BaseMoveExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-//        move(entity, new Vector3(0, 1, 0));
-        lookAt(entity,(Vector3) entity.getBehaviorGroup().getMemory().get(PlayerMemory.class).getData());
+        Vector3 player = (Vector3) entity.getBehaviorGroup().getMemory().get(PlayerMemory.class).getData();
+        if (player == null)
+            return false;
+        lookAt(entity,player);
         return false;
     }
 }

@@ -6,10 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
-import cn.nukkit.entity.ai.behavior.MultiBehavior;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
-import cn.nukkit.entity.ai.executor.CryExecutor;
-import cn.nukkit.entity.ai.executor.TestBaseMoveExecutor;
 import cn.nukkit.entity.ai.executor.WalkToTargetExecutor;
 import cn.nukkit.entity.ai.memory.PlayerMemory;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
@@ -22,8 +19,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,10 +34,9 @@ public class EntitySheep extends EntityAnimal {
 
     protected IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new WalkToTargetExecutor(PlayerMemory.class,50),new PlayerEvaluator(),1,1),
-                    new Behavior(new TestBaseMoveExecutor(),new PlayerEvaluator(),1,1)
+                    new Behavior(new WalkToTargetExecutor(PlayerMemory.class),new PlayerEvaluator(),1,1)
             ),
-            Set.of(new NearestPlayerSensor(50))
+            Set.of(new NearestPlayerSensor(50,3))
     );
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {

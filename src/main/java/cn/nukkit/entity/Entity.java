@@ -1488,6 +1488,12 @@ public abstract class Entity extends Location implements Metadatable {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getAge(){
+        return this.age;
+    }
+
     public void heal(EntityRegainHealthEvent source) {
         this.server.getPluginManager().callEvent(source);
         if (source.isCancelled()) {

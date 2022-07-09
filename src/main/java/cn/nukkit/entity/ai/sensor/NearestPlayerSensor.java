@@ -14,16 +14,20 @@ public class NearestPlayerSensor implements ISensor{
 
     protected double range;
 
-    public NearestPlayerSensor(double range){
+    protected double minRange;
+
+    public NearestPlayerSensor(double range,double minRange){
         this.range = range;
+        this.minRange = minRange;
     }
     @Override
     public PlayerMemory sense(EntityIntelligent entity) {
         Player player = null;
         double rangeSquared = this.range * this.range;
+        double minRangeSquared = this.minRange * this.minRange;
         //寻找范围内最近的玩家
         for(Player p : entity.getLevel().getPlayers().values()){
-            if(entity.distanceSquared(p) <= rangeSquared){
+            if(entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared){
                 if(player == null){
                     player = p;
                 }else{
