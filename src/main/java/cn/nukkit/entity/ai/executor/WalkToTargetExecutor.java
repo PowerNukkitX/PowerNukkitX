@@ -103,35 +103,29 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             var k = speed / xzLength * 0.33;
             var dx = vector.x * k;
             var dz = vector.z * k;
-//            if (collidesBlocks(entity,dx, 0, dz)) {
-//                if (entity.isFloating() && !collidesBlocks(dx, entity.getHeight(), dz)) {
-//                    entity.shore();
-//                } else if (!collidesBlocks(dx, entity.getJumpingHeight(), dz)) {
-//                    entity.jump();
-//                }
-//            }
-//            var wfa = willFallAt(dx, -entity.getJumpingHeight(), dz);
-//            if (!entity.isJumping && wfa) {
-//                System.out.println("WillFallAtNew: " + willFallAt(dx, -entity.getJumpingHeight(), dz));
-//                entity.jump();
-//            }
-            return new Vector3(dx, 0, dz);
+            var dy = 0d;
+            if (entity.y < movingNearDestination.y && collidesBlocks(entity,dx, 0, dz)){
+                if (entity.isOnGround()){
+                    dy += entity.getJumpingHeight() * 0.43;
+                }
+            }
+            return new Vector3(dx, dy, dz);
         }
         return Vector3.ZERO;
     }
 
-    private boolean collidesBlocks(EntityIntelligent entity,double dx, double dy, double dz) {
+    protected boolean collidesBlocks(EntityIntelligent entity,double dx, double dy, double dz) {
         return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
                 false, Block::isSolid).length > 0;
     }
 
-    private boolean willFallAt(EntityIntelligent entity,double dx, double dy, double dz) {
+    protected boolean willFallAt(EntityIntelligent entity,double dx, double dy, double dz) {
         return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz).grow(-0.1, 0, -0.1), true,
                 false, block -> block.isSolid() || block instanceof BlockWater).length == 0;
     }
 
     //todo: remove debug
-    private static void sendParticle(String identifier, Position pos,Player[] showPlayers) {
+    protected static void sendParticle(String identifier, Position pos,Player[] showPlayers) {
         Arrays.stream(showPlayers).forEach(player -> {
             if (!player.isOnline())
                 return;

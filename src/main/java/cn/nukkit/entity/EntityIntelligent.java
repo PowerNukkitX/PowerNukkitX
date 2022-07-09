@@ -42,4 +42,8 @@ public abstract class EntityIntelligent extends EntityPhysical{
     public IMemoryStorage getMemory(){
         return getBehaviorGroup().getMemory();
     }
+
+    public float getJumpingHeight() {
+        return 1.0f;
+    }
 }
