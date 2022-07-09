@@ -1335,6 +1335,7 @@ public class Level implements ChunkManager, Metadatable {
                                     int z = lcg >>> 16 & 0x0f;
 
                                     BlockState state = section.getBlockState(x, y, z);
+                                    if (state.getBlockId() >= Block.MAX_BLOCK_ID) continue;
                                     if (randomTickBlocks[state.getBlockId()]) {
                                         Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
                                                 << 4) + y, chunkZ * 16 + z);

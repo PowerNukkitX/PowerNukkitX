@@ -72,7 +72,7 @@ public final class BlockState implements Serializable, IBlockState {
         if (blockIds.length <= blockId) {
             return growCommonPool(blockId, blockData);
         }
-        
+
         BlockState state = blockIds[blockId];
         if (state != null) {
             return state;

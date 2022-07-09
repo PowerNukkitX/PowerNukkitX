@@ -113,6 +113,11 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public CompoundTag putStringArray(String name, String[] value) {
+        tags.put(name, new StringArrayTag(name, value));
+        return this;
+    }
+
     public CompoundTag putList(ListTag<? extends Tag> listTag) {
         tags.put(listTag.getName(), listTag);
         return this;
@@ -271,6 +276,11 @@ public class CompoundTag extends Tag implements Cloneable {
     public int[] getIntArray(String name) {
         if (!tags.containsKey(name)) return EmptyArrays.EMPTY_INTS;
         return ((IntArrayTag) tags.get(name)).data;
+    }
+
+    public String[] getStringArray(String name) {
+        if (!tags.containsKey(name)) return EmptyArrays.EMPTY_STRINGS;
+        return ((StringArrayTag) tags.get(name)).data;
     }
 
     public CompoundTag getCompound(String name) {
