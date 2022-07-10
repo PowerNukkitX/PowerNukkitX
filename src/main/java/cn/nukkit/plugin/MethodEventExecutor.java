@@ -152,7 +152,7 @@ public class MethodEventExecutor implements EventExecutor {
 
         try {
             var clazz = loadClass(classLoader, classWriter.toByteArray());
-            return (EventExecutor) clazz.getConstructor().newInstance();
+            return (EventExecutor) clazz.getConstructor(Method.class).newInstance(method);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             return null;
         }
