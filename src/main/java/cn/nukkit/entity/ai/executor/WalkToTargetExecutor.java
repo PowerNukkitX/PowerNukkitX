@@ -37,7 +37,7 @@ public class WalkToTargetExecutor implements IBehaviorExecutor{
         }
 
         //检查目标是否发生坐标变化，或者是第一次需要初始化路径
-        boolean needUpdateTarget = (oldPos == null || oldPos.x != target.x || oldPos.y != target.y || oldPos.z != target.z);
+        boolean needUpdateTarget = (oldPos == null || !oldPos.floor().equals(target.floor()));
         if(needUpdateTarget){
             //若变化，就通知需要更新路线
             setTargetAndUpdateRoute(entity,target);
