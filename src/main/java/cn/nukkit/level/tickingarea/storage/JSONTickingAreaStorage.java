@@ -93,7 +93,7 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     private void save() {
         for (var each : areaMap.rowMap().entrySet()) {
             try {
-                Files.writeString(Path.of(filePath.toString(), each.getKey(), "tickingarea.json"), gson.toJson(each.getValue().values()));
+                Files.writeString(Path.of(filePath.toString(), each.getKey(), "tickingarea.json"), gson.toJson(each.getValue().values().toArray()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
