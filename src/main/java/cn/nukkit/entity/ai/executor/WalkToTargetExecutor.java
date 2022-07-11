@@ -1,15 +1,13 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.*;
+import cn.nukkit.entity.ai.route.blockevaluator.OnGroundBlockEvaluator;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import cn.nukkit.utils.BVector3;
 import lombok.Getter;
 
@@ -55,14 +53,20 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             return false;
         }
         if (routeFinder == null) {
-            routeFinder = new AStarRouteFinder(entity, entity, target, target.level);
+            routeFinder = new AStarRouteFinder(new OnGroundBlockEvaluator(),entity, entity, target, target.level);
             routeFinder.setMaxSearchDepth(100);
+            //第一次搜索
+            routeFinder.asyncSearch();
+            routeUpdated = true;
         }
         if (movingNearDestination == null || (routeUpdated && routeFinder.isFinished())){
             routeUpdated = false;
+            routeFinder.setNodeIndex(0);
             if (routeFinder.hasNext()){
-                routeFinder.setNodeIndex(0);
                 movingNearDestination = routeFinder.next().getVector3();
+            }else{
+                //等待路径更新
+                return true;
             }
         }
         //构建指向玩家的向量
@@ -82,7 +86,6 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             routeUpdated = true;
             tick = 0;
         }
-        //等待直到路径计算完成
         return true;
     }
 
@@ -104,8 +107,9 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
             var dx = vector.x * k;
             var dz = vector.z * k;
             var dy = 0d;
-            if (entity.y < movingNearDestination.y && collidesBlocks(entity,dx, 0, dz)){
-                if (entity.isOnGround()){
+            if (entity.y < movingNearDestination.y && collidesImpassibleBlocks(entity,dx, 0, dz)){
+                int id = entity.getLevelBlock().getId();
+                if (entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)){
                     dy += entity.getJumpingHeight() * 0.43;
                 }
             }
@@ -114,8 +118,8 @@ public class WalkToTargetExecutor extends BaseMoveExecutor{
         return Vector3.ZERO;
     }
 
-    protected boolean collidesBlocks(EntityIntelligent entity,double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, Block::isSolid).length > 0;
+    protected boolean collidesImpassibleBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
+        return Arrays.stream(entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
+                false, Block::isSolid)).filter(block -> !block.canPassThrough()).toArray().length > 0;
     }
 }

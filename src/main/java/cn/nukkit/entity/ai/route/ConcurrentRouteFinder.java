@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 异步路径查找抽象类
+ * 实现了此类的寻路器应当提供完整的异步寻路支持
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -22,6 +24,13 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
     protected int currentIndex = 0;
 
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    //方块评估器
+    protected IBlockEvaluator blockEvaluator;
+
+    public ConcurrentRouteFinder(IBlockEvaluator blockEvaluator) {
+        this.blockEvaluator = blockEvaluator;
+    }
 
     /**
      * 添加寻路结果节点

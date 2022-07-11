@@ -501,7 +501,7 @@ public class Utils {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static boolean hasCollisionBlocks(Level level, AxisAlignedBB bb) {
+    public static boolean hasCollisionImpassableBlocks(Level level, AxisAlignedBB bb) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
@@ -513,7 +513,7 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    if (block != null && block.getId() != 0 && block.collidesWithBB(bb)) {
+                    if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }
                 }

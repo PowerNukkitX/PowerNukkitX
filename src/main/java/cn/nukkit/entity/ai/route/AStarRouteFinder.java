@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -55,7 +56,8 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     protected int maxSearchDepth = 100;
 
-    public AStarRouteFinder(EntityIntelligent entity,Vector3 start, Vector3 target, Level level) {
+    public AStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity, Vector3 start, Vector3 target, Level level) {
+        super(blockEvaluator);
         this.entity = entity;
         this.start = start;
         this.target = target;
@@ -138,7 +140,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
         double y;
 
-        if (E = ((y = getWalkableHorizontalOffset(vector3.add(1, 0, 0))) != -256)) {
+        if (E = ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(1, y, 0);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -154,7 +156,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (S = ((y = getWalkableHorizontalOffset(vector3.add(0, 0, 1))) != -256)) {
+        if (S = ((y = getAvailableHorizontalOffset(vector3.add(0, 0, 1))) != -384)) {
             Vector3 vec = vector3.add(0, y, 1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -170,7 +172,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (W = ((y = getWalkableHorizontalOffset(vector3.add(-1, 0, 0))) != -256)) {
+        if (W = ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(-1, y, 0);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -186,7 +188,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (N = ((y = getWalkableHorizontalOffset(vector3.add(0, 0, -1))) != -256)) {
+        if (N = ((y = getAvailableHorizontalOffset(vector3.add(0, 0, -1))) != -384)) {
             Vector3 vec = vector3.add(0, y, -1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -202,7 +204,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (N && E && ((y = getWalkableHorizontalOffset(vector3.add(1, 0, -1))) != -256)) {
+        if (N && E && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) != -384)) {
             Vector3 vec = vector3.add(1, y, -1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -218,7 +220,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (E && S && ((y = getWalkableHorizontalOffset(vector3.add(1, 0, 1))) != -256)) {
+        if (E && S && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) != -384)) {
             Vector3 vec = vector3.add(1, y, 1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -234,7 +236,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (W && S && ((y = getWalkableHorizontalOffset(vector3.add(-1, 0, 1))) != -256)) {
+        if (W && S && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) != -384)) {
             Vector3 vec = vector3.add(-1, y, 1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -250,7 +252,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
             }
         }
 
-        if (W && N && ((y = getWalkableHorizontalOffset(vector3.add(-1, 0, -1))) != -256)) {
+        if (W && N && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) != -384)) {
             Vector3 vec = vector3.add(-1, y, -1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -315,41 +317,33 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (isWalkable(block) && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR) return block;
+                if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/) return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (isWalkable(block) && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR) return block;
+            if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/) return block;
         }
         return null;
     }
 
     /**
-     * 能否安全的站立在指定坐标上
-     * 比如说你不能站在岩浆上，对吧~
+     * 指定坐标是否有效
      */
-    protected boolean canWalkOn(Block block) {
-        return !(block.getId() == Block.LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS);
-    }
-
-    /**
-     * 指定坐标是否可以站立
-     */
-    protected boolean isWalkable(Vector3 vector3) {
+    protected int evalBlock(Vector3 vector3) {
         Block block = level.getBlock(vector3, false);
-        return !block.canPassThrough() && canWalkOn(block);
+        return blockEvaluator.evalBlock(block);
     }
 
     /**
-     * 指定实体模型能否移动到指定坐标上
+     * 指定实体模型能否移动到指定坐标上而不发生碰撞
      */
     protected boolean isPassable(Vector3 vector3) {
         double radius = (this.entity.getWidth() * this.entity.getScale()) / 2;
         float height = this.entity.getHeight() * this.entity.getScale();
         AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-        return !Utils.hasCollisionBlocks(this.level, bb) && !this.level.getBlock(vector3.add(0, -1, 0), false).canPassThrough();
+        return !Utils.hasCollisionImpassableBlocks(this.level, bb)/* && !this.level.getBlock(vector3.add(0, -1, 0), false).canPassThrough()*/;
     }
 
     /**
@@ -357,12 +351,12 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
      * @param vector3
      * @return 获取指定坐标可到达的最高点 (limit=4)
      */
-    protected int getWalkableHorizontalOffset(Vector3 vector3) {
+    protected int getAvailableHorizontalOffset(Vector3 vector3) {
         Block block = getHighestUnder(vector3, 4);
         if (block != null) {
             return (block.getFloorY() - vector3.getFloorY()) + 1;
         }
-        return -256;
+        return -384;
     }
 
     protected boolean hasBarrier(Node node1, Node node2) {
@@ -406,7 +400,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         double height = this.entity.getHeight() * this.entity.getScale();
         for (Vector3 vector3 : list) {
             AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionBlocks(level, bb)) return true;
+            if (Utils.hasCollisionImpassableBlocks(level, bb)) return true;
 
             boolean xIsInt = vector3.getX() % 1 == 0;
             boolean zIsInt = vector3.getZ() % 1 == 0;
