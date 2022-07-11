@@ -1,6 +1,5 @@
 package cn.nukkit.plugin;
 
-import cn.nukkit.Server;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.Listener;
 import cn.nukkit.utils.EventException;
@@ -75,21 +74,37 @@ public class MethodEventExecutor implements EventExecutor {
         var internalName = "cn/nukkit/plugin/PNXMethodEventExecutor$" + compileTime.incrementAndGet();
 
         ClassWriter classWriter = new ClassWriter(0);
+        FieldVisitor fieldVisitor;
         MethodVisitor methodVisitor;
-        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor"});
+        classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, internalName, null, "java/lang/Object", new String[]{"cn/nukkit/plugin/EventExecutor", "cn/nukkit/plugin/CompiledExecutor"});
         classWriter.visitSource("EventHandler@" + method.getDeclaringClass().getName() + "#" + method.getName(), null);
         {
-            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+            fieldVisitor = classWriter.visitField(ACC_PRIVATE | ACC_FINAL, "originMethod", "Ljava/lang/reflect/Method;", null, null);
+            fieldVisitor.visitEnd();
+        }
+        {
+            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/reflect/Method;)V", null, null);
             methodVisitor.visitCode();
             var label0 = new Label();
             methodVisitor.visitLabel(label0);
+            methodVisitor.visitLineNumber(13, label0);
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-            methodVisitor.visitInsn(RETURN);
             var label1 = new Label();
             methodVisitor.visitLabel(label1);
-            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label1, 0);
-            methodVisitor.visitMaxs(1, 1);
+            methodVisitor.visitLineNumber(14, label1);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitVarInsn(ALOAD, 1);
+            methodVisitor.visitFieldInsn(PUTFIELD, internalName, "originMethod", "Ljava/lang/reflect/Method;");
+            var label2 = new Label();
+            methodVisitor.visitLabel(label2);
+            methodVisitor.visitLineNumber(15, label2);
+            methodVisitor.visitInsn(RETURN);
+            var label3 = new Label();
+            methodVisitor.visitLabel(label3);
+            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label3, 0);
+            methodVisitor.visitLocalVariable("originMethod", "Ljava/lang/reflect/Method;", null, label0, label3, 1);
+            methodVisitor.visitMaxs(2, 2);
             methodVisitor.visitEnd();
         }
         {
@@ -119,11 +134,25 @@ public class MethodEventExecutor implements EventExecutor {
             methodVisitor.visitMaxs(2, 3);
             methodVisitor.visitEnd();
         }
+        {
+            methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "getOriginMethod", "()Ljava/lang/reflect/Method;", null, null);
+            methodVisitor.visitCode();
+            var label0 = new Label();
+            methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitFieldInsn(GETFIELD, internalName, "originMethod", "Ljava/lang/reflect/Method;");
+            methodVisitor.visitInsn(ARETURN);
+            var label1 = new Label();
+            methodVisitor.visitLabel(label1);
+            methodVisitor.visitLocalVariable("this", "L" + internalName + ";", null, label0, label1, 0);
+            methodVisitor.visitMaxs(1, 1);
+            methodVisitor.visitEnd();
+        }
         classWriter.visitEnd();
 
         try {
             var clazz = loadClass(classLoader, classWriter.toByteArray());
-            return (EventExecutor) clazz.getConstructor().newInstance();
+            return (EventExecutor) clazz.getConstructor(Method.class).newInstance(method);
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             return null;
         }
