@@ -343,6 +343,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     /**
      * 指定坐标是否有效
      */
+    //todo: 实现方块权重
     protected int evalBlock(Vector3 vector3) {
         Block block = level.getBlock(vector3, false);
         return blockEvaluator.evalBlock(block);
@@ -488,9 +489,9 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         double min = Double.MAX_VALUE;
         Node node = null;
         for (Node n : closeList) {
-            double distance = n.getVector3().distance(vector3);
-            if (distance < min) {
-                min = distance;
+            double distanceSquared = n.getVector3().floor().distanceSquared(vector3.floor());
+            if (distanceSquared < min) {
+                min = distanceSquared;
                 node = n;
             }
         }
