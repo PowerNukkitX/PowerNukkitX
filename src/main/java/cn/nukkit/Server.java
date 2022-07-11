@@ -1617,6 +1617,9 @@ public class Server {
     }
 
     public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
         return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
