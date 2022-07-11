@@ -22,18 +22,15 @@ public class WalkToTargetExecutor implements IBehaviorExecutor{
         this.memoryClazz = memoryClazz;
     }
 
-    /**
-     * 因为生物AI是全异步的，所以说我们需要判很多的空:(
-     */
     @Override
     public boolean execute(EntityIntelligent entity) {
-        //获取目标位置
-        Vector3 target = (Vector3) entity.getBehaviorGroup().getMemory().get(memoryClazz).getData();
-        if (target == null){
-            //玩家下线
+        if (!entity.getBehaviorGroup().getMemory().contains(memoryClazz)){
+            //未找到玩家
             oldPos = null;
             return false;
         }
+        //获取目标位置（这个clone很重要）
+        Vector3 target = ((Vector3) entity.getBehaviorGroup().getMemory().get(memoryClazz).getData()).clone();
         //检查是否需要init寻路target
         if (needInitTarget(entity)){
             setTargetAndUpdateRoute(entity,target);
@@ -53,7 +50,7 @@ public class WalkToTargetExecutor implements IBehaviorExecutor{
     }
 
     protected boolean needInitTarget(EntityIntelligent entity){
-        return !entity.getMemoryStorage().contains(MoveTargetMemory.class) || entity.getMemoryStorage().get(MoveTargetMemory.class).getData() == null;
+        return !entity.getMemoryStorage().contains(MoveTargetMemory.class);
     }
 
     protected void setTargetAndUpdateRoute(EntityIntelligent entity, Vector3 vector3){

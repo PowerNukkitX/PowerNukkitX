@@ -76,7 +76,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void collectSensorData(EntityIntelligent entity){
         for (ISensor sensor : sensors){
             IMemory<?> memory = sensor.sense(entity);
-            this.memory.put(memory);
+            if (memory.getData() == null)
+                this.memory.remove(memory.getClass());
+            else
+                this.memory.put(memory);
         }
     }
 
@@ -158,7 +161,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     protected boolean needUpdateRoute(EntityIntelligent entity){
-        return entity.getMemoryStorage().contains(NeedUpdateTargetMemory.class) && (boolean)entity.getMemoryStorage().get(NeedUpdateTargetMemory.class).getData();
+        return entity.getMemoryStorage().contains(NeedUpdateTargetMemory.class);
     }
 
     @Nullable
@@ -171,7 +174,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     protected boolean needUpdateMoveDestination(EntityIntelligent entity){
-        return entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && (boolean)entity.getMemoryStorage().get(NeedUpdateMoveDestinationMemory.class).getData();
+        return entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class);
     }
 
     protected void updateMoveDestination(EntityIntelligent entity){
