@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -20,12 +21,15 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return handlers;
     }
 
+    @Nullable
     protected final Block blockTouched;
 
     protected final Vector3 touchVector;
 
+    @Nullable
     protected final BlockFace blockFace;
 
+    @Nullable
     protected final Item item;
 
     protected final Action action;
@@ -34,9 +38,9 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         this(player, item, block, face, Action.RIGHT_CLICK_BLOCK);
     }
 
-    public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face, Action action) {
-        if (block instanceof Block) {
-            this.blockTouched = (Block) block;
+    public PlayerInteractEvent(Player player, @Nullable Item item, Vector3 block, @Nullable BlockFace face, Action action) {
+        if (block instanceof Block block1) {
+            this.blockTouched = block1;
             this.touchVector = new Vector3(0, 0, 0);
         } else {
             this.touchVector = block;
@@ -53,10 +57,12 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return action;
     }
 
+    @Nullable
     public Item getItem() {
         return item;
     }
 
+    @Nullable
     public Block getBlock() {
         return blockTouched;
     }
@@ -65,6 +71,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return touchVector;
     }
 
+    @Nullable
     public BlockFace getFace() {
         return blockFace;
     }

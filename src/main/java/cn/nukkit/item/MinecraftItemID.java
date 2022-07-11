@@ -18,6 +18,7 @@
 
 package cn.nukkit.item;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -32,7 +33,7 @@ import java.util.stream.Stream;
 
 /**
  * An enum containing all valid vanilla Minecraft items.
- * 
+ *
  * @author joserobjr
  * @since 2020-12-20
  */
@@ -62,7 +63,8 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB(false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") POLISHED_BLACKSTONE_BRICK_SLAB,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BLACKSTONE_DOUBLE_SLAB(true, true),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") BLACKSTONE_SLAB,
+    @PowerNukkitOnly @Deprecated @DeprecationDetails(since = "1.6.0.0-PNX", reason = "because mojang rename BLACKSTONE_SLAB to STONE_BLOCK_SLAB") @Since("1.4.0.0-PN") BLACKSTONE_SLAB,
+    @PowerNukkitOnly @Since("1.6.0.0-PNX") STONE_BLOCK_SLAB,
     @PowerNukkitOnly @Since("1.4.0.0-PN") GILDED_BLACKSTONE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") CRACKED_POLISHED_BLACKSTONE_BRICKS,
     @PowerNukkitOnly @Since("1.4.0.0-PN") CHISELED_POLISHED_BLACKSTONE,
@@ -175,7 +177,9 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") GRANITE_STAIRS,
     @PowerNukkitOnly @Since("1.4.0.0-PN") REAL_DOUBLE_STONE_SLAB4(true, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") REAL_DOUBLE_STONE_SLAB3(true, true),
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") STONE_BLOCK_SLAB3,
     @PowerNukkitOnly @Since("1.4.0.0-PN") DOUBLE_STONE_SLAB4,
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") STONE_BLOCK_SLAB4,
     @PowerNukkitOnly @Since("1.4.0.0-PN") SCAFFOLDING,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BAMBOO_SAPLING(false, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") BAMBOO,
@@ -522,6 +526,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") RED_SANDSTONE_STAIRS,
     @PowerNukkitOnly @Since("1.4.0.0-PN") REAL_DOUBLE_STONE_SLAB2(true, true),
     @PowerNukkitOnly @Since("1.4.0.0-PN") DOUBLE_STONE_SLAB2,
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") STONE_BLOCK_SLAB2,
     @PowerNukkitOnly @Since("1.4.0.0-PN") SPRUCE_FENCE_GATE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") BIRCH_FENCE_GATE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") JUNGLE_FENCE_GATE,
@@ -1074,28 +1079,28 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") RAW_GOLD,
     @PowerNukkitOnly @Since("FUTURE") RAW_COPPER,
     @PowerNukkitOnly @Since("FUTURE") GLOW_FRAME(false),
-    @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
+    //todo 20220709 完成山羊角
+    // @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
     @PowerNukkitOnly @Since("FUTURE") SPYGLASS,
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
 
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_DOOR,
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN
-    ;
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
-            .flatMap(id-> 
+            .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))
-                            .map(ns-> new AbstractMap.SimpleEntry<>(ns, id)))
-            .collect(Collectors.toMap(entry-> entry.getKey().toLowerCase(), AbstractMap.SimpleEntry::getValue));
-    
+                            .map(ns -> new AbstractMap.SimpleEntry<>(ns, id)))
+            .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), AbstractMap.SimpleEntry::getValue));
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
     public static MinecraftItemID getByNamespaceId(String namespacedId) {
         return namespacedIdMap.get(namespacedId);
     }
-    
+
     private final String namespacedId;
     private final String itemFormNamespaceId;
     private final boolean technical;
@@ -1109,7 +1114,7 @@ public enum MinecraftItemID {
         edu = false;
         this.aliases = aliases;
     }
-    
+
     MinecraftItemID() {
         namespacedId = "minecraft:" + name().toLowerCase();
         itemFormNamespaceId = namespacedId;
@@ -1125,7 +1130,7 @@ public enum MinecraftItemID {
     MinecraftItemID(boolean blockForm, boolean technical) {
         this(blockForm, technical, false);
     }
-    
+
     MinecraftItemID(boolean blockForm, boolean technical, boolean edu) {
         this.technical = technical;
         this.edu = edu;
@@ -1146,7 +1151,7 @@ public enum MinecraftItemID {
     MinecraftItemID(String namespacedId, String itemFormNamespaceId, boolean technical) {
         this(namespacedId, itemFormNamespaceId, technical, false);
     }
-    
+
     MinecraftItemID(String namespacedId, String itemFormNamespaceId, boolean technical, boolean edu) {
         this.edu = edu;
         this.technical = technical;
@@ -1165,7 +1170,7 @@ public enum MinecraftItemID {
     @Since("1.4.0.0-PN")
     public Item get(int amount, byte[] compoundTag) {
         Item item = get(amount);
-        item.setCompoundTag(compoundTag != null? compoundTag.clone() : null);
+        item.setCompoundTag(compoundTag != null ? compoundTag.clone() : null);
         return item;
     }
 
@@ -1186,7 +1191,7 @@ public enum MinecraftItemID {
     public boolean isTechnical() {
         return technical;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isEducationEdition() {
@@ -1196,6 +1201,6 @@ public enum MinecraftItemID {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public String[] getAliases() {
-        return aliases.length == 0? aliases : aliases.clone();
+        return aliases.length == 0 ? aliases : aliases.clone();
     }
 }

@@ -4,12 +4,19 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.Cancellable;
+import cn.nukkit.event.HandlerList;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PlayerFreezeEvent extends PlayerEvent implements Cancellable {
     private float speedFactor;
     private float baseSpeed;
+
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerFreezeEvent(Player player, float speedFactor, float baseSpeed) {
         this.player = player;

@@ -3,7 +3,6 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.command.CommandSender;
@@ -33,7 +32,7 @@ public class SetBlockCommand extends VanillaCommand {
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
     }
-    
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
@@ -51,7 +50,7 @@ public class SetBlockCommand extends VanillaCommand {
         try {
             position = parser.parsePosition();
             tileName = parser.parseString();
-            tileName = tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName;
+            tileName = tileName.startsWith("minecraft:") ? tileName : tileName.contains(":") ? tileName : "minecraft:" + tileName;
             int tileId = BlockStateRegistry.getBlockId(tileName);
             block = Block.get(tileId);
             if (parser.hasNext()) {

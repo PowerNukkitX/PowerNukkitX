@@ -44,6 +44,9 @@ import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.terra.PNXPlatform;
+import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
+import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
+import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -89,6 +92,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.longs.LongLists;
 import lombok.extern.log4j.Log4j2;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
@@ -134,6 +140,8 @@ public class Server {
 
     private AtomicBoolean isRunning = new AtomicBoolean(true);
 
+    private LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
+
     private boolean hasStopped = false;
 
     private PluginManager pluginManager;
@@ -174,6 +182,8 @@ public class Server {
     private ScoreboardManager scoreboardManager;
 
     private FunctionManager functionManager;
+
+    private TickingAreaManager tickingAreaManager;
 
     private int maxPlayers;
 
@@ -293,7 +303,7 @@ public class Server {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    private boolean enableCustomItem;
+    private boolean enableExperimentMode;
 
     /**
      * Minimal initializer for testing
@@ -339,6 +349,7 @@ public class Server {
         commandMap = new SimpleCommandMap(this);
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
 
         setMaxPlayers(10);
 
@@ -579,7 +590,7 @@ public class Server {
                 put("allow-nether", true);
                 put("allow-the_end", true);
                 put("use-terra", false);
-                put("enable-custom-item", true);
+                put("enable-experiment-mode", true);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -598,7 +609,7 @@ public class Server {
 
         this.useTerra = this.properties.getBoolean("use-terra", false);
 
-        this.enableCustomItem = this.properties.getBoolean("enable-custom-item", false);
+        this.enableExperimentMode = this.properties.getBoolean("enable-experiment-mode", true);
 
         this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
         
@@ -707,6 +718,8 @@ public class Server {
 
         functionManager = new FunctionManager(this.commandDataPath + "/functions");
 
+        tickingAreaManager = new SimpleTickingAreaManager(new JSONTickingAreaStorage(this.dataPath + "worlds/"));
+
         // Convert legacy data before plugins get the chance to mess with it.
         try {
             nameLookup = Iq80DBFactory.factory.open(new File(dataPath, "players"), new Options()
@@ -810,6 +823,8 @@ public class Server {
 
             this.setDefaultLevel(this.getLevelByName(defaultName));
         }
+
+        this.getTickingAreaManager().loadAllTickingArea();
 
         this.properties.save(true);
 
@@ -1596,6 +1611,28 @@ public class Server {
         this.maxPlayers = maxPlayers;
     }
 
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        if (this.busyingTime.isEmpty()) {
+            return -1;
+        }
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
+    }
+
     public int getPort() {
         return this.getPropertyInt("server-port", 19132);
     }
@@ -1809,6 +1846,10 @@ public class Server {
 
     public FunctionManager getFunctionManager() {
         return functionManager;
+    }
+
+    public TickingAreaManager getTickingAreaManager() {
+        return tickingAreaManager;
     }
 
     public ServerScheduler getScheduler() {
@@ -2783,8 +2824,8 @@ public class Server {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public boolean isEnableCustomItem() {
-        return this.enableCustomItem;
+    public boolean isEnableExperimentMode() {
+        return this.enableExperimentMode;
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {

@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.block.customblock.BlockCustom;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.*;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -12,6 +15,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -27,6 +31,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.InvalidBlockDamageException;
+import cn.nukkit.utils.MinecraftNamespaceComparator;
 import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.log4j.Log4j2;
@@ -38,9 +43,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -138,6 +142,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static boolean[] transparent = null;
 
     private static boolean[] diffusesSkyLight = null;
+
+    @PowerNukkitXOnly
+    private static final List<BlockPropertyData> blockPropertyData = new ArrayList<>();
+
+    @PowerNukkitXOnly
+    private static final HashMap<Integer, BlockCustom> customBlock = new HashMap<>();
+
+    @PowerNukkitXOnly
+    public static final ConcurrentHashMap<String, Integer> CUSTOM_BLOCK_ID_MAP = new ConcurrentHashMap<>();
 
     /**
      * if a block has can have variants
@@ -416,7 +429,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[STONECUTTER] = BlockStonecutter.class; //245
             list[GLOWING_OBSIDIAN] = BlockObsidianGlowing.class; //246
             list[NETHER_REACTOR] = BlockNetherReactor.class; //247 Should not be removed
-
+            list[INFO_UPDATE] = BlockInfoUpdate.class;//248 Don't use this Block.
             list[MOVING_BLOCK] = BlockMoving.class; //250
             list[OBSERVER] = BlockObserver.class; //251
             list[STRUCTURE_BLOCK] = BlockStructure.class; //252
@@ -862,6 +875,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(int id) {
         if (id < 0) {
             id = 255 - id;
+        } else if (id > MAX_BLOCK_ID) {
+            return customBlock.get(id).clone();
         }
         return fullList[id << DATA_BITS].clone();
     }
@@ -869,6 +884,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, Integer meta) {
+        if (id > MAX_BLOCK_ID) {
+            return customBlock.get(id).clone();
+        }
         if (id < 0) {
             id = 255 - id;
         }
@@ -897,11 +915,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     @SuppressWarnings("unchecked")
     public static Block get(int id, Integer meta, Position pos, int layer) {
+        Block block;
+
+        if (id > MAX_BLOCK_ID) {
+            block = customBlock.get(id).clone();
+            block.x = pos.x;
+            block.y = pos.y;
+            block.z = pos.z;
+            block.level = pos.level;
+            block.layer = layer;
+            return block;
+        }
+
         if (id < 0) {
             id = 255 - id;
         }
 
-        Block block;
         if (meta != null && meta > DATA_SIZE) {
             block = fullList[id << DATA_BITS].clone();
             block.setDamage(meta);
@@ -922,6 +951,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
+        if (id > MAX_BLOCK_ID) {
+            return customBlock.get(id).clone();
+        }
+
         if (id < 0) {
             id = 255 - id;
         }
@@ -967,6 +1000,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Since("1.3.0.0-PN")
     public static Block get(int id, int meta, Level level, int x, int y, int z, int layer) {
         Block block;
+
+        if (id > MAX_BLOCK_ID) {
+            block = customBlock.get(id).clone();
+            block.x = x;
+            block.y = y;
+            block.z = z;
+            block.level = level;
+            block.layer = layer;
+            return block;
+        }
+
         if (meta <= DATA_SIZE) {
             block = fullList[id << DATA_BITS | meta].clone();
         } else {
@@ -1152,6 +1196,58 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
 
+    /**
+     * 注册自定义方块
+     *
+     * @param blockClassList 传入自定义方块class List
+     */
+    @PowerNukkitXOnly
+    public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
+            return;
+        }
+        SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
+        for (var clazz : blockClassList) {
+            BlockCustom block = clazz.getDeclaredConstructor().newInstance();
+            sortedCustomBlocks.put(block.getNamespace(), block);
+        }
+        //自定义方块id从1000开始,按照FNV1 64bit计算hash值排序 hash值大的在前面
+        int nextBlockId = 1000;
+        for (var block : sortedCustomBlocks.values()) {
+            blockPropertyData.add(block.getBlockPropertyData());
+            customBlock.put(nextBlockId, block);
+            CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);
+            ++nextBlockId;
+        }
+        var blocks = sortedCustomBlocks.values().stream().toList();
+        BlockStateRegistry.registerCustomBlockState(blocks);
+        RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
+        blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void deleteCustomBlock() {
+        for (var block : customBlock.values()) {
+            Item.removeCreativeItem(block.toItem());
+        }
+        RuntimeItems.getRuntimeMapping().deleteCustomBlock(customBlock.values().stream().toList());
+        BlockStateRegistry.deleteCustomBlockState();
+        customBlock.clear();
+        CUSTOM_BLOCK_ID_MAP.clear();
+    }
+
+    @PowerNukkitXOnly
+    public static List<BlockPropertyData> getBlockPropertyDataList() {
+        return blockPropertyData;
+    }
+
+    @PowerNukkitXOnly
+    public static HashMap<Integer, Block> getCustomBlockMap() {
+        return new HashMap<>(customBlock);
+    }
+
     @Nullable
     private MutableBlockState mutableState;
 
@@ -1241,10 +1337,20 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    /**
+     * 控制方块硬度
+     *
+     * @return 方块的硬度
+     */
     public double getHardness() {
         return 10;
     }
 
+    /**
+     * 控制方块爆炸抗性
+     *
+     * @return 方块的爆炸抗性
+     */
     public double getResistance() {
         return 1;
     }
@@ -1253,19 +1359,24 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-    /**
-     * 控制方块是否可以燃烧
-     *
-     * @return 可燃烧能力, 数值越大越容易着火, 默认为0
-     */
     public int getBurnAbility() {
         return 0;
     }
 
+    /**
+     * 控制挖掘方块的工具类型
+     *
+     * @return 挖掘方块的工具类型
+     */
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
 
+    /**
+     * 控制方块的摩擦因素
+     *
+     * @return 方块的摩擦因素 (0-1)
+     */
     public double getFrictionFactor() {
         return 0.6;
     }
@@ -1369,6 +1480,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getToolTier() == 0 || getToolType() == 0 || correctTool0(getToolType(), item, getId()) && item.getTier() >= getToolTier();
     }
 
+
+    /**
+     * 控制挖掘方块的最低工具级别(木质、石质...)
+     *
+     * @return 挖掘方块的最低工具级别
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getToolTier() {
@@ -1468,6 +1585,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.level = v.level;
     }
 
+    /**
+     * 控制方块被破坏时掉落的物品
+     * 常在{@link cn.nukkit.level.Level#useBreakOn(Vector3, int, BlockFace, Item, Player, boolean, boolean)}方法被调用
+     *
+     * @return 掉落的物品数组
+     */
     public Item[] getDrops(Item item) {
         if (this.getId() < 0 || this.getId() > list.length) { //Unknown blocks
             return Item.EMPTY_ARRAY;
@@ -1575,6 +1698,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 1.0 / speed;
     }
 
+    /**
+     * @link calculateBreakTime(@ Nonnull Item item, @ Nullable Player player)
+     */
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1582,6 +1708,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return calculateBreakTime(item, null);
     }
 
+    /**
+     * 计算方块挖掘时间
+     *
+     * @param item   挖掘该方块的物品
+     * @param player 挖掘该方块的玩家
+     * @return 方块的挖掘时间
+     */
     @Nonnull
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1647,6 +1780,82 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
 
         return seconds;
+    }
+
+    /**
+     * 计算方块挖掘需要多少tick (计算算法来自https://minecraft.fandom.com/wiki/Breaking)
+     *
+     * @param item   挖掘工具
+     * @param player 挖掘方块的玩家
+     * @return 挖掘耗费的tick
+     */
+    @PowerNukkitXOnly
+    public double calculateBreakTick(@Nonnull Item item, @Nullable Player player) {
+        double blockHardness = getHardness();
+        boolean canHarvest = canHarvest(item);
+        double speedMultiplier = 1;
+        boolean hasConduitPower = false;
+        boolean hasAquaAffinity = false;
+        int hasteEffectLevel = 0;
+        int miningFatigueLevel = 0;
+
+        if (player != null) {
+            hasConduitPower = player.hasEffect(Effect.CONDUIT_POWER);
+            hasAquaAffinity = Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_WATER_WORKER))
+                    .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
+            hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
+                    .map(Effect::getAmplifier).orElse(0);
+            miningFatigueLevel = Optional.ofNullable(player.getEffect(Effect.MINING_FATIGUE))
+                    .map(Effect::getAmplifier).orElse(0);
+        }
+
+        if (correctTool0(getToolType(), item, getId())) {
+            speedMultiplier = toolBreakTimeBonus0(item);
+
+            int efficiencyLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
+                    .map(Enchantment::getLevel).orElse(0);
+
+            if (canHarvest && efficiencyLevel > 0) {
+                speedMultiplier += efficiencyLevel ^ 2 + 1;
+            }
+
+            if (hasConduitPower) hasteEffectLevel = Integer.max(hasteEffectLevel, 2);
+
+            if (hasteEffectLevel > 0) {
+                speedMultiplier *= 1 + (0.2 * hasteEffectLevel);
+            }
+
+        }
+
+        if (miningFatigueLevel > 0) {
+            speedMultiplier /= 3 ^ miningFatigueLevel;
+        }
+
+        if (player != null) {
+            if (player.isInsideOfWater() && !hasAquaAffinity) {
+                speedMultiplier /= hasConduitPower && blockHardness >= 0.5 ? 2.5 : 5;
+            }
+
+            if (!player.isOnGround()) {
+                speedMultiplier /= 5;
+            }
+        }
+
+        double damage = 0;
+
+        damage = speedMultiplier / blockHardness;
+
+        if (canHarvest) {
+            damage /= 30;
+        } else {
+            damage /= 100;
+        }
+
+        if (damage > 1) {
+            return 0;
+        }
+
+        return Math.ceil(1 / damage);
     }
 
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Not completely accurate", replaceWith = "calculateBreakeTime()")
@@ -2463,6 +2672,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return player != null && player.isCreative() && player.isOp();
     }
 
+    /**
+     * 控制方块吸收的光亮
+     *
+     * @return 方块吸收的光亮
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getLightFilter() {

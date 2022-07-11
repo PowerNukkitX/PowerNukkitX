@@ -11,6 +11,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,6 +50,22 @@ public class BlockBeacon extends BlockTransparent implements BlockEntityHolder<B
     @Override
     public double getHardness() {
         return 3;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public double calculateBreakTime(@NotNull Item item) {
+        return calculateBreakTime(item, null);
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @NotNull
+    @Override
+    public double calculateBreakTime(@NotNull Item item, @org.jetbrains.annotations.Nullable Player player) {
+        return 4.5;
     }
 
     @Override
