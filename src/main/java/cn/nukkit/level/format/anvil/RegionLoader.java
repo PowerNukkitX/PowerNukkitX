@@ -101,6 +101,7 @@ public class RegionLoader extends BaseRegionLoader {
                     if (!chunkUpdated.contains(chunkHash)) {
                         chunkUpdated.add(chunkHash);
                         chunk.isNew384World = true; //这可以在大部分情况下避免区块重复更新，但是对多线程造成的重复更新仍然无效，所以需要一个set来检查
+                        var bid = Server.getInstance().addBusying(System.currentTimeMillis());
                         log.info(Server.getInstance().getLanguage().translateString("nukkit.anvil.converter.update-chunk", levelProvider.getLevel().getName(), chunk.getX() << 4, chunk.getZ() << 4));
                         for (int dx = 0; dx < 16; dx++) {
                             for (int dz = 0; dz < 16; dz++) {
@@ -112,6 +113,7 @@ public class RegionLoader extends BaseRegionLoader {
                                 }
                             }
                         }
+                        Server.getInstance().removeBusying(bid);
                     }
                 }
                 return chunk;

@@ -89,6 +89,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.EmptyArrays;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.longs.LongLists;
 import lombok.extern.log4j.Log4j2;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
@@ -133,6 +136,8 @@ public class Server {
     private Config whitelist;
 
     private AtomicBoolean isRunning = new AtomicBoolean(true);
+
+    private LongList busyingTime = LongLists.synchronize(new LongArrayList(0));
 
     private boolean hasStopped = false;
 
@@ -1594,6 +1599,25 @@ public class Server {
 
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+    }
+
+    /**
+     * 将服务器设置为繁忙状态，这可以阻止相关代码认为服务器处于无响应状态。
+     * 请牢记，必须在设置之后清除。
+     * @param busyTime 单位为毫秒
+     * @return id
+     */
+    public int addBusying(long busyTime) {
+        this.busyingTime.add(busyTime);
+        return this.busyingTime.size() - 1;
+    }
+
+    public void removeBusying(int index) {
+        this.busyingTime.removeLong(index);
+    }
+
+    public long getBusyingTime() {
+        return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
     public int getPort() {
