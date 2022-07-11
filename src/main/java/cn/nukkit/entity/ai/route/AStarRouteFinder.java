@@ -56,12 +56,22 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     protected int maxSearchDepth = 100;
 
-    public AStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity, Vector3 start, Vector3 target, Level level) {
+    public AStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
         this.entity = entity;
-        this.start = start;
-        this.target = target;
-        this.level = level;
+        this.level = entity.level;
+    }
+
+    @Override
+    public void setStart(Vector3 vector3){
+        this.start = vector3;
+        if (isInterrupt()) this.setInterrupt(true);
+    }
+
+    @Override
+    public void setTarget(Vector3 vector3){
+        this.target = vector3;
+        if (isInterrupt()) this.setInterrupt(true);
     }
 
     @Override
@@ -119,6 +129,8 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
         //清空上次的寻路结果
         this.resetNodes();
+        //重置Node指针
+        this.setNodeIndex(0);
 
         //写入结果
         this.addNode(findingPath);

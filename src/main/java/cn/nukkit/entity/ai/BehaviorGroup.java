@@ -1,14 +1,23 @@
 package cn.nukkit.entity.ai;
 
+import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
-import cn.nukkit.entity.ai.memory.IMemory;
-import cn.nukkit.entity.ai.memory.MemoryStorage;
+import cn.nukkit.entity.ai.controller.IController;
+import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.route.ConcurrentRouteFinder;
+import cn.nukkit.entity.ai.route.Node;
 import cn.nukkit.entity.ai.sensor.ISensor;
+import cn.nukkit.level.Position;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,17 +27,24 @@ import java.util.Set;
 public class BehaviorGroup implements IBehaviorGroup {
 
     //全部行为
-    protected Set<IBehavior> behaviors = new HashSet<>();
+    protected final Set<IBehavior> behaviors = new HashSet<>();
     //传感器
-    protected Set<ISensor> sensors = new HashSet<>();
-    //记忆存储器
-    protected MemoryStorage memory = new MemoryStorage();
+    protected final Set<ISensor> sensors = new HashSet<>();
+    //控制器
+    protected final Set<IController> controllers = new HashSet<>();
     //正在运行的行为
-    protected Set<IBehavior> runningBehaviors = new HashSet<>();
+    protected final Set<IBehavior> runningBehaviors = new HashSet<>();
+    //记忆存储器
+    protected final MemoryStorage memory = new MemoryStorage();
+    //寻路器(使用异步寻路器)
+    protected ConcurrentRouteFinder routeFinder;
+    protected boolean updatingRoute = false;
 
-    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors){
+    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers,ConcurrentRouteFinder routeFinder) {
         this.behaviors.addAll(behaviors);
         this.sensors.addAll(sensors);
+        this.controllers.addAll(controllers);
+        this.routeFinder = routeFinder;
     }
 
     public void addBehavior(IBehavior behavior){
@@ -37,6 +53,10 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void addSensor(ISensor sensor){
         this.sensors.add(sensor);
+    }
+
+    public void addController(IController controller){
+        this.controllers.add(controller);
     }
 
     /**
@@ -102,6 +122,64 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (resultHeightestPriority == currentHeightestPriority) {
             addToRunningBehaviors(entity,result);
         }
+    }
+
+    @Override
+    public void applyController(EntityIntelligent entity) {
+        for (IController controller : controllers){
+            controller.control(entity);
+        }
+    }
+
+    @Override
+    public void updateRoute(EntityIntelligent entity) {
+        if (needUpdateRoute(entity) && !updatingRoute){
+            //目的地已更新，需要更新路线但还没开始重新规划路线
+            Vector3 target = getRouteTarget(entity);
+            routeFinder.setStart(entity);
+            routeFinder.setTarget(target);
+            routeFinder.asyncSearch();
+            updatingRoute = true;
+        }else if (needUpdateRoute(entity) && updatingRoute){
+            //已经开始重新规划路线，检查是否规划完毕
+            if (routeFinder.isFinished()){
+                //规划完毕，更新Memory
+                updatingRoute = false;
+                setTargetUpdated(entity);
+            }
+        }
+        if (needUpdateMoveDestination(entity)){
+            if (routeFinder.hasNext()){
+                //若有新的MoveDestination，则更新
+                updateMoveDestination(entity);
+                setMoveDestinationUpdated(entity);
+            }
+        }
+    }
+
+    protected boolean needUpdateRoute(EntityIntelligent entity){
+        return entity.getMemoryStorage().contains(NeedUpdateTargetMemory.class) && (boolean)entity.getMemoryStorage().get(NeedUpdateTargetMemory.class).getData();
+    }
+
+    @Nullable
+    protected Vector3 getRouteTarget(EntityIntelligent entity){
+        return entity.getMemoryStorage().contains(MoveTargetMemory.class) ? (Vector3)entity.getMemoryStorage().get(MoveTargetMemory.class).getData() : null;
+    }
+
+    protected void setTargetUpdated(EntityIntelligent entity){
+        entity.getMemoryStorage().remove(NeedUpdateTargetMemory.class);
+    }
+
+    protected boolean needUpdateMoveDestination(EntityIntelligent entity){
+        return entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && (boolean)entity.getMemoryStorage().get(NeedUpdateMoveDestinationMemory.class).getData();
+    }
+
+    protected void updateMoveDestination(EntityIntelligent entity){
+        entity.getMemoryStorage().put(new MoveDestinationMemory(routeFinder.next().getVector3()));
+    }
+
+    protected void setMoveDestinationUpdated(EntityIntelligent entity){
+        entity.getMemoryStorage().remove(NeedUpdateMoveDestinationMemory.class);
     }
 
     /**

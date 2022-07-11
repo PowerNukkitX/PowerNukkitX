@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.PlayerMemory;
+import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import lombok.Getter;
 
 @PowerNukkitXOnly
@@ -21,7 +21,7 @@ public class NearestPlayerSensor implements ISensor{
         this.minRange = minRange;
     }
     @Override
-    public PlayerMemory sense(EntityIntelligent entity) {
+    public NearestPlayerMemory sense(EntityIntelligent entity) {
         Player player = null;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
@@ -37,6 +37,6 @@ public class NearestPlayerSensor implements ISensor{
                 }
             }
         }
-        return new PlayerMemory(player);
+        return new NearestPlayerMemory(player);
     }
 }

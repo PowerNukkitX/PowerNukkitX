@@ -4,7 +4,9 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
+import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.route.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 
 import java.util.Set;
@@ -32,15 +34,28 @@ public interface IBehaviorGroup {
      */
     void tickRunningBehaviors(EntityIntelligent entity);
 
-    Set<IBehavior> getBehaviors();
+    /**
+     * 应用控制器
+     */
+    void applyController(EntityIntelligent entity);
 
     void addBehavior(IBehavior behavior);
 
+    Set<IBehavior> getBehaviors();
+
     Set<IBehavior> getRunningBehaviors();
+
+    void addSensor(ISensor sensor);
 
     Set<ISensor> getSensors();
 
-    void addSensor(ISensor sensor);
+    void addController(IController controller);
+
+    Set<IController> getControllers();
+
+    IRouteFinder getRouteFinder();
+
+    void updateRoute(EntityIntelligent entity);
 
     IMemoryStorage getMemory();
 }

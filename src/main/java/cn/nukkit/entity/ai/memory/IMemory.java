@@ -11,10 +11,6 @@ import cn.nukkit.api.Since;
 public interface IMemory<T> {
     default String getName() {return this.getClass().getSimpleName();};
 
-    /**
-     *
-     * @return
-     */
     T getData();
     default boolean equals(IMemory<T> memory) {
         return getName().equals(memory.getName());

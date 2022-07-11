@@ -49,9 +49,19 @@ public interface IRouteFinder {
     Vector3 getStart();
 
     /**
+     * 设置寻路起点，将会导致寻路中断
+     */
+    void setStart(Vector3 vector3);
+
+    /**
      * 获取终点
      */
     Vector3 getTarget();
+
+    /**
+     * 设置寻路终点，将会导致寻路中断
+     */
+    void setTarget(Vector3 vector3);
 
     /**
      * 获取寻路结果
