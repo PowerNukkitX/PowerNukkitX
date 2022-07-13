@@ -148,11 +148,13 @@ public class CommandParameter {
         return new CommandParameter(name, optional, CommandParamType.RAWTEXT, data, null);
     }
 
+    //此方法使用不当会崩溃客户端，请谨慎使用！
     @Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, String postfix) {
         return newPostfix(name, false, postfix);
     }
 
+    //此方法使用不当会崩溃客户端，请谨慎使用！
     @Since("1.4.0.0-PN")
     public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
         return new CommandParameter(name, optional, CommandParamType.RAWTEXT, null, postfix);

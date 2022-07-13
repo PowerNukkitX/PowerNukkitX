@@ -27,7 +27,7 @@ public class XpCommand extends Command {
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
         this.commandParameters.put("level", new CommandParameter[]{
-                CommandParameter.newPostfix("amount", "l"),
+                CommandParameter.newType("level", CommandParamType.INT),
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
     }
