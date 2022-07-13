@@ -18,15 +18,10 @@ import java.util.Arrays;
 @Since("1.6.0.0-PNX")
 public class MoveController implements IController {
 
-
-    protected static final int JUMP_COOL_DOWN = 20;//tick
     protected double lastXZLength = Double.MAX_VALUE;
-
-    protected int currentJumpCoolDownTick = 0;
 
     @Override
     public boolean control(EntityIntelligent entity) {
-        currentJumpCoolDownTick++;
         if(entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateRouteMemory.class)) {
             Vector3 target = (Vector3) entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = (MoveDirectionMemory) entity.getMemoryStorage().get(MoveDirectionMemory.class);
@@ -53,11 +48,10 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (destination.y > entity.y && collidesImpassibleBlocks(entity,dx, 0, dz)){
+            if (destination.y > entity.y && collidesImpassibleBlocks(entity,dx, 0, dz) && entity.motionY < entity.getJumpingHeight() * 0.43){
                 int id = entity.getLevelBlock().getId();
-                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)) && currentJumpCoolDownTick >= JUMP_COOL_DOWN){
+                if (entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)){
                     dy += entity.getJumpingHeight() * 0.43;
-                    currentJumpCoolDownTick = 0;
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
