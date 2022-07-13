@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public abstract class EntityIntelligent extends EntityPhysical {
 
-    private final BehaviorGroup behaviorGroup = new BehaviorGroup(Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), null);
+    private final IBehaviorGroup behaviorGroup = new BehaviorGroup(Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), null);
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
