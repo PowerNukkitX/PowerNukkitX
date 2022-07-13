@@ -11,13 +11,13 @@ import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
 import cn.nukkit.entity.ai.memory.NeedUpdateRouteMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class MoveController implements IController {
-
 
     protected static final int JUMP_COOL_DOWN = 20;//tick
     protected double lastXZLength = Double.MAX_VALUE;
@@ -27,7 +27,7 @@ public class MoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDownTick++;
-        if(entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateRouteMemory.class)) {
+        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateRouteMemory.class)) {
             Vector3 target = (Vector3) entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = (MoveDirectionMemory) entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 destination = directionMemory.getEnd();
@@ -39,7 +39,7 @@ public class MoveController implements IController {
             var relativeVector = destination.clone().setComponents(destination.x - entity.x,
                     destination.y - entity.y, destination.z - entity.z);
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            if (xzLength > lastXZLength){
+            if (xzLength > lastXZLength) {
                 needUpdateRoute(entity);
                 lastXZLength = xzLength;
                 return false;
@@ -53,43 +53,44 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (destination.y > entity.y && collidesImpassibleBlocks(entity,dx, 0, dz)){
+            if (destination.y > entity.y && collidesImpassibleBlocks(entity, dx, 0, dz)) {
                 int id = entity.getLevelBlock().getId();
-                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)) && currentJumpCoolDownTick >= JUMP_COOL_DOWN){
+                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)) && currentJumpCoolDownTick >= JUMP_COOL_DOWN) {
                     dy += entity.getJumpingHeight() * 0.43;
                     currentJumpCoolDownTick = 0;
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             return true;
-        }else {
+        } else {
             needNewDestination(entity);
             return false;
         }
     }
 
-    protected void needUpdateRoute(EntityIntelligent entity){
+    protected void needUpdateRoute(@NotNull EntityIntelligent entity) {
         entity.getMemoryStorage().put(new NeedUpdateRouteMemory(true));
     }
 
-    protected void needNewDestination(EntityIntelligent entity) {
+    protected void needNewDestination(@NotNull EntityIntelligent entity) {
         //通知需要新的移动目标
         entity.getMemoryStorage().put(new NeedUpdateMoveDestinationMemory(true));
     }
 
-    protected boolean collidesImpassibleBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
+    @SuppressWarnings("SameParameterValue")
+    protected boolean collidesImpassibleBlocks(@NotNull EntityIntelligent entity, double dx, double dy, double dz) {
         return Arrays.stream(entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
                 false, Block::isSolid)).filter(block -> !block.canPassThrough()).toArray().length > 0;
     }
 
-    protected void setYawAndPitch(EntityIntelligent entity,Vector3 target,MoveDirectionMemory directionMemory){
+    protected void setYawAndPitch(@NotNull EntityIntelligent entity, Vector3 target, MoveDirectionMemory directionMemory) {
         //构建方向向量
         //先设置方向向量，以免出现到达目的地时生物不朝向目标的问题
         BVector3 bv2route = BVector3.fromPos(directionMemory.getEnd().x - entity.x, directionMemory.getEnd().y - entity.y, directionMemory.getEnd().z - entity.z);
         entity.setYaw(bv2route.getYaw());
 
         //构建指向玩家的向量
-        BVector3 bv2player = BVector3.fromPos(target.x - entity.x,target.y - entity.y,target.z - entity.z);
+        BVector3 bv2player = BVector3.fromPos(target.x - entity.x, target.y - entity.y, target.z - entity.z);
         entity.setPitch(bv2player.getPitch());
         entity.setHeadYaw(bv2player.getHeadYaw());
     }
