@@ -154,7 +154,7 @@ public class AddEntityPacket extends DataPacket {
     public float yaw;
     public float pitch;
     public float headYaw;
-    //todo: check what's the use of this
+    //todo: check what's the usage of this
     public float bodyYaw = -1;
     public EntityMetadata metadata = new EntityMetadata();
     public Attribute[] attributes = Attribute.EMPTY_ARRAY;
