@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 public interface IMemory<T> {
     default String getName() {return this.getClass().getSimpleName();};
 
-    @Nullable
     T getData();
 
     default boolean equals(IMemory<T> memory) {

@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
@@ -9,15 +7,11 @@ import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.*;
 import cn.nukkit.entity.ai.route.ConcurrentRouteFinder;
-import cn.nukkit.entity.ai.route.Node;
 import cn.nukkit.entity.ai.sensor.ISensor;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -136,53 +130,61 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     @Override
     public void updateRoute(EntityIntelligent entity) {
-        if (needUpdateRoute(entity) && !updatingRoute){
+        if (needUpdateRoute() && !updatingRoute){
             //目的地已更新，需要更新路线但还没开始重新规划路线
-            Vector3 target = getRouteTarget(entity);
-            routeFinder.setStart(entity);
+            Vector3 target = getRouteTarget();
+            //clone防止寻路器潜在的修改
+            routeFinder.setStart(entity.clone());
             routeFinder.setTarget(target);
             routeFinder.asyncSearch();
             updatingRoute = true;
-        }else if (needUpdateRoute(entity) && updatingRoute){
+        }else if (needUpdateRoute() && updatingRoute){
             //已经开始重新规划路线，检查是否规划完毕
             if (routeFinder.isFinished()){
                 //规划完毕，更新Memory
                 updatingRoute = false;
-                setTargetUpdated(entity);
+                setTargetUpdated();
             }
         }
-        if (needUpdateMoveDestination(entity)){
+        if (needUpdateMoveDirection()){
             if (routeFinder.hasNext()){
-                //若有新的MoveDestination，则更新
+                //若有新的移动方向，则更新
                 updateMoveDestination(entity);
-                setMoveDestinationUpdated(entity);
+                setMoveDirectionUpdated();
             }
         }
     }
 
-    protected boolean needUpdateRoute(EntityIntelligent entity){
-        return entity.getMemoryStorage().contains(NeedUpdateTargetMemory.class);
+    protected boolean needUpdateRoute(){
+        return memory.contains(NeedUpdateRouteMemory.class);
     }
 
     @Nullable
-    protected Vector3 getRouteTarget(EntityIntelligent entity){
-        return entity.getMemoryStorage().contains(MoveTargetMemory.class) ? (Vector3)entity.getMemoryStorage().get(MoveTargetMemory.class).getData() : null;
+    protected Vector3 getRouteTarget(){
+        return memory.contains(MoveTargetMemory.class) ? (Vector3)memory.get(MoveTargetMemory.class).getData() : null;
     }
 
-    protected void setTargetUpdated(EntityIntelligent entity){
-        entity.getMemoryStorage().remove(NeedUpdateTargetMemory.class);
+    protected void setTargetUpdated(){
+        memory.remove(NeedUpdateRouteMemory.class);
     }
 
-    protected boolean needUpdateMoveDestination(EntityIntelligent entity){
-        return entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class);
+    protected boolean needUpdateMoveDirection(){
+        return memory.contains(NeedUpdateMoveDestinationMemory.class);
     }
 
     protected void updateMoveDestination(EntityIntelligent entity){
-        entity.getMemoryStorage().put(new MoveDestinationMemory(routeFinder.next().getVector3()));
+        MoveDirectionMemory directionMemory = (MoveDirectionMemory)memory.get(MoveDirectionMemory.class);
+        Vector3 end = null;
+        if (directionMemory != null){
+            end = directionMemory.getEnd();
+        }else{
+            end = entity.clone();
+        }
+        memory.put(new MoveDirectionMemory(end,routeFinder.next().getVector3()));
     }
 
-    protected void setMoveDestinationUpdated(EntityIntelligent entity){
-        entity.getMemoryStorage().remove(NeedUpdateMoveDestinationMemory.class);
+    protected void setMoveDirectionUpdated(){
+        memory.remove(NeedUpdateMoveDestinationMemory.class);
     }
 
     /**

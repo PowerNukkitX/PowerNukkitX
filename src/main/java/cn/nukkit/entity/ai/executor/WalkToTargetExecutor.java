@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
-import cn.nukkit.entity.ai.memory.NeedUpdateTargetMemory;
+import cn.nukkit.entity.ai.memory.NeedUpdateRouteMemory;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 
@@ -55,6 +55,6 @@ public class WalkToTargetExecutor implements IBehaviorExecutor{
 
     protected void setTargetAndUpdateRoute(EntityIntelligent entity, Vector3 vector3){
         entity.getMemoryStorage().put(new MoveTargetMemory(vector3));
-        entity.getMemoryStorage().put(new NeedUpdateTargetMemory(true));
+        entity.getMemoryStorage().put(new NeedUpdateRouteMemory(true));
     }
 }
