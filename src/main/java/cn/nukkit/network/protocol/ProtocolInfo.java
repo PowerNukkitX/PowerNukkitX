@@ -233,28 +233,40 @@ public interface ProtocolInfo {
     @PowerNukkitOnly
     byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte UPDATE_SUB_CHUNK_BLOCKS_PACKET = (byte) 0xac;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte SCRIPT_MESSAGE_PACKET = (byte) 0xb1;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte CODE_BUILDER_SOURCE_PACKET = (byte) 0xb2;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte AGENT_ACTION_EVENT_PACKET = (byte) 0xb3;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte CHANGE_MOB_PROPERTY_PACKET = (byte) 0xb4;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte DIMENSION_DATA_PACKET = (byte) 0xb5;
     @Since("1.6.0.0-PNX")
-    @PowerNukkitOnly
+    @PowerNukkitXOnly
     byte TICKING_AREAS_LOAD_STATUS_PACKET = (byte) 0xb6;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    byte UPDATE_ABILITIES_PACKET = (byte) 0xbb;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    byte UPDATE_ADVENTURE_SETTINGS_PACKET = (byte) 0xbc;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    byte DEATH_INFO_PACKET = (byte) 0xbd;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    byte EDITOR_NETWORK_PACKET = (byte) 0xbe;
     byte BATCH_PACKET = (byte) 0xff;
 }
