@@ -8,7 +8,7 @@ import cn.nukkit.entity.ai.memory.IMemory;
 import javax.annotation.Nullable;
 
 /**
- * 传感器接口
+ * 传感器接口<br>
  * 传感器用于搜集环境信息并写入MemoryStorage
  */
 @PowerNukkitXOnly
@@ -16,9 +16,10 @@ import javax.annotation.Nullable;
 public interface ISensor {
 
     /**
+     * 要求传感器返回一个数据(Memory),若Memory的Data为Null则表示没有数据,MemoryStorage将会删除对应的键值对
+     *
      * @param entity
      * @return IMemory
-     * 要求传感器返回一个数据(Memory),若Memory的Data为Null则表示没有数据,MemoryStorage将会删除对应的键值对
      */
     @Nullable
     IMemory<?> sense(EntityIntelligent entity);

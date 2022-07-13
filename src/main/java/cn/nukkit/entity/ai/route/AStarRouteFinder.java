@@ -63,13 +63,13 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     }
 
     @Override
-    public void setStart(Vector3 vector3){
+    public void setStart(Vector3 vector3) {
         this.start = vector3;
         if (isInterrupt()) this.setInterrupt(true);
     }
 
     @Override
-    public void setTarget(Vector3 vector3){
+    public void setTarget(Vector3 vector3) {
         this.target = vector3;
         if (isInterrupt()) this.setInterrupt(true);
     }
@@ -89,8 +89,8 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
         //将起点放置到closeList中，以开始寻路
         //起点没有父节点，且我们不需要计算他的代价
-        Node currentNode = new Node(start,null,0,0);
-        closeList.add(new Node(start,null,0,0));
+        Node currentNode = new Node(start, null, 0, 0);
+        closeList.add(new Node(start, null, 0, 0));
 
         //若当前寻路点没有到达终点
         while (!isPositionOverlap(currentNode.getVector3(), target)) {
@@ -143,6 +143,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     /**
      * 将一个节点周围的有效节点放入OpenList中
+     *
      * @param node
      */
     protected void putNeighborNodeIntoOpen(Node node) {
@@ -316,9 +317,9 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     protected int calH(Vector3 start, Vector3 target) {
         //使用DIRECT_MOVE_COST和OBLIQUE_MOVE_COST计算代价
         //计算对角线距离
-        int obliqueCost = (int) (Math.abs(Math.min(target.x-start.x,target.z-start.z)) * OBLIQUE_MOVE_COST);
+        int obliqueCost = (int) (Math.abs(Math.min(target.x - start.x, target.z - start.z)) * OBLIQUE_MOVE_COST);
         //计算剩余直线距离
-        int directCost = (int) ((Math.abs(Math.max(target.x-start.x,target.z-start.z)) - Math.abs(Math.min(target.x-start.x,target.z-start.z))) * DIRECT_MOVE_COST);
+        int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z)) - Math.abs(Math.min(target.x - start.x, target.z - start.z))) * DIRECT_MOVE_COST);
         return obliqueCost + directCost;
     }
 
@@ -329,13 +330,15 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/) return block;
+                if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
+                    return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/) return block;
+            if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
+                return block;
         }
         return null;
     }
@@ -360,7 +363,6 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     }
 
     /**
-     *
      * @param vector3
      * @return 获取指定坐标可到达的最高点 (limit=4)
      */
@@ -421,15 +423,19 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
                 if (level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
                         level.getBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
                         level.getBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
-                        level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough()) return true;
+                        level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+                    return true;
             } else if (xIsInt) {
                 if (level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough()) return true;
+                        level.getBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+                    return true;
             } else if (zIsInt) {
                 if (level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough()) return true;
+                        level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+                    return true;
             } else {
-                if (level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough()) return true;
+                if (level.getBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+                    return true;
             }
         }
         return false;
@@ -466,6 +472,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     /**
      * 将Node链转换成List<Node>样式的路径信息
+     *
      * @param end 链表尾节点
      */
     protected ArrayList<Node> getPathRoute(@Nullable Node end) {
@@ -485,7 +492,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
     /**
      * 获取接近指定坐标的最近的Node
      */
-    protected Node getNearestNodeFromCloseList(Vector3 vector3){
+    protected Node getNearestNodeFromCloseList(Vector3 vector3) {
         double min = Double.MAX_VALUE;
         Node node = null;
         for (Node n : closeList) {

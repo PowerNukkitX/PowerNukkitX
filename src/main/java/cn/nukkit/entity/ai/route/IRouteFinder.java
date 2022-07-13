@@ -13,20 +13,17 @@ import java.util.ArrayList;
 @Since("1.6.0.0-PNX")
 public interface IRouteFinder {
     /**
-     * @return boolean
-     * 是否正在寻路
+     * @return boolean 是否正在寻路
      */
     boolean isSearching();
 
     /**
-     * @return boolean
-     * 是否完成寻路（找到有效路径）
+     * @return boolean 是否完成寻路（找到有效路径）
      */
     boolean isFinished();
 
     /**
-     * @return boolean
-     * 寻路是否被中断了
+     * @return boolean 寻路是否被中断了
      */
     boolean isInterrupt();
 
@@ -38,8 +35,8 @@ public interface IRouteFinder {
 
     /**
      * 尝试寻路
-     * @return boolean
-     * 是否成功找到路径
+     *
+     * @return boolean 是否成功找到路径
      */
     boolean search();
 
