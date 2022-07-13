@@ -154,6 +154,8 @@ public class AddEntityPacket extends DataPacket {
     public float yaw;
     public float pitch;
     public float headYaw;
+    //todo: check what's the usage of this
+    public float bodyYaw = -1;
     public EntityMetadata metadata = new EntityMetadata();
     public Attribute[] attributes = Attribute.EMPTY_ARRAY;
     public EntityLink[] links = EntityLink.EMPTY_ARRAY;
@@ -177,6 +179,7 @@ public class AddEntityPacket extends DataPacket {
         this.putLFloat(this.pitch);
         this.putLFloat(this.yaw);
         this.putLFloat(this.headYaw);
+        this.putLFloat(this.bodyYaw != -1 ? this.bodyYaw : this.yaw);
         this.putAttributeList(this.attributes);
         this.put(Binary.writeMetadata(this.metadata));
         this.putUnsignedVarInt(this.links.length);
@@ -184,4 +187,6 @@ public class AddEntityPacket extends DataPacket {
             putEntityLink(link);
         }
     }
+
+    public AddEntityPacket(){}
 }

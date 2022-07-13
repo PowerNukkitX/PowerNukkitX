@@ -14,7 +14,7 @@ public class Location extends Position {
 
     public double yaw;
     public double pitch;
-    @Since("FUTURE") public double headYaw;
+    @Since("1.6.0.0-PNX") public double headYaw;
 
     public Location() {
         this(0);
