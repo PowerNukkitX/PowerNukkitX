@@ -11,7 +11,7 @@
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
 ## [開發中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
-該版本目前支援了Minecraft:BE `1.19.0 (協議版本527)`.
+該版本目前支援了Minecraft:BE `1.19.10 (協議版本534)`.
 
 ### 新增內容
 
@@ -26,6 +26,7 @@
 - [#307] 實現/function命令。
 - [#326] 實現RAWTEXT（/tellraw /titleraw）。
 - [#352] 實現NPC-API和實現NPC功能。
+- [#354] 實現自定義方塊 / 物品（完善中，[文檔](https://doc.powernukkitx.cn)待補充）。
 - [#363] 實現NPC SKIN切換。
 - [#365] 添加toSnbt。
 - [#370] 添加JS跨插件互操作。
@@ -36,6 +37,9 @@
 - [#414] 實現細雪方塊。
 - [#416] 添加`PlayerFreezeEvent`事件。
 - [#425] 初步完成`JS Feature`架構。
+- [#433] 實現常加載區塊以及對應命令。
+- [#426] 為字節碼調用失敗的事件添加反射逃生門。
+- [#446] 實現DeathInfo。
 
 ### 修改記錄
 
@@ -60,6 +64,8 @@
 - [#411] 優化/version命令。
 - [#418] 優化事件調用性能。
 - [#428] NPC Dialog協議邏輯同步1.19.0。
+- [#443] 完善Mapping。
+- [#445] 實現兼容1.19.10 (協議版本534)。
 
 ### BUG修復
 
@@ -109,6 +115,10 @@
 - [#415] 修復/setblock /fill /spawnpoint的一些小bug。
 - [#422] 修復創造物品欄缺失部分物品的漏洞。
 - [#425] 修復活塞的一個激活問題。
+- [#429] 修復PlayerFreezeEvent & 標註可空性。
+- [#437] 解決因修復地圖時間過長導致watchdog強制停止服務器的問題。
+- [#442] 修復發光墨囊和銅錠在RuntimeMapping::namespacedIdItem中缺失的問題。
+- [#448] 修復輸入/xp崩潰的問題。
 
 ### 安全漏洞修復
 
@@ -923,9 +933,15 @@ Fixes several anvil issues.
 
 ## <a id="CataLogs-Version-history"></a>🔖 Version history / 歷史版本
 
-1. [#V1-dev] PNX-1.6.0.0-dev (協議版本486)
-2. [#V2-dev] PNX-1.6.0.0-dev (協議版本503)
-3. [#V3-dev] PNX-1.6.0.0-dev (協議版本527)
+<details>
+  <summary>1.6.0.0-PNX</summary>
+
+   1. [#V1-dev] PNX-1.6.0.0-dev (協議版本486)
+   2. [#V2-dev] PNX-1.6.0.0-dev (協議版本503)
+   3. [#V3-dev] PNX-1.6.0.0-dev (協議版本527)
+   4. [#V4-dev] PNX-1.6.0.0-dev (協議版本534)
+
+</details>
 
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
@@ -1198,6 +1214,7 @@ Need to switch languages?
 [#346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/346
 [#347]: https://github.com/PowerNukkitX/PowerNukkitX/pull/347
 [#352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/352
+[#354]: https://github.com/PowerNukkitX/PowerNukkitX/pull/354
 [#359]: https://github.com/PowerNukkitX/PowerNukkitX/pull/359
 [#363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/363
 [#364]: https://github.com/PowerNukkitX/PowerNukkitX/pull/364
@@ -1237,9 +1254,18 @@ Need to switch languages?
 [#425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/425
 [#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
 [#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
-
+[#429]:https://github.com/PowerNukkitX/PowerNukkitX/pull/429
+[#433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/433
+[#436]: https://github.com/PowerNukkitX/PowerNukkitX/pull/436
+[#437]: https://github.com/PowerNukkitX/PowerNukkitX/pull/437
+[#442]: https://github.com/PowerNukkitX/PowerNukkitX/pull/442
+[#443]: https://github.com/PowerNukkitX/PowerNukkitX/pull/443
+[#445]: https://github.com/PowerNukkitX/PowerNukkitX/pull/445
+[#446]: https://github.com/PowerNukkitX/PowerNukkitX/pull/446
+[#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
 <!--PowerNukkitX Version history-->
 
+<!--1.6.0.0-PNX Version summary Start-->
 <!--Protocol Version 486-->
 [#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
 
@@ -1247,7 +1273,11 @@ Need to switch languages?
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
 <!--Protocol Version 527-->
-[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2662176331
+
+<!--Protocol Version 534-->
+[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.6.0.0-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
 
