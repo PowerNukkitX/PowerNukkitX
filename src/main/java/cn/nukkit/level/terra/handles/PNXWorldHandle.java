@@ -36,44 +36,45 @@ public class PNXWorldHandle implements WorldHandle {
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
         if (s.equals("minecraft:water"))
-            s = "minecraft:water[level=0]";//special case
+            s = "minecraft:water[level=0]";
         if (s.equals("minecraft:lava"))
-            s = "minecraft:lava[level=0]";//special case
+            s = "minecraft:lava[level=0]";
         if (s.equals("minecraft:deepslate"))
-            s = "minecraft:deepslate[axis=y]";//special case
+            s = "minecraft:deepslate[axis=y]";
         if (s.equals("minecraft:grass_block"))
-            s = "minecraft:grass_block[snowy=false]";//special case
+            s = "minecraft:grass_block[snowy=false]";
         if (s.equals("minecraft:podzol"))
-            s = "minecraft:podzol[snowy=false]";//special case
+            s = "minecraft:podzol[snowy=false]";
         if (s.equals("minecraft:mycelium"))
-            s = "minecraft:mycelium[snowy=false]";//special case
+            s = "minecraft:mycelium[snowy=false]";
         if (s.equals("minecraft:sugar_cane"))
-            s = "minecraft:sugar_cane[age=0]";//special case
-        if (s.equals("minecraft:oak_log"))
-            s = "minecraft:oak_log[axis=y]";//special case
+            s = "minecraft:sugar_cane[age=0]";
         if (s.equals("minecraft:brown_mushroom_block[down=false]"))
-            s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";//special case
+            s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";
         if (s.equals("minecraft:cactus"))
-            s = "minecraft:cactus[age=0]";//special case
-        if (s.equals("minecraft:spruce_log"))
-            s = "minecraft:spruce_log[axis=y]";//special case
+            s = "minecraft:cactus[age=0]";
         if (s.equals("minecraft:mushroom_stem"))
-            s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";//special case
+            s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";
         if (s.equals("minecraft:jungle_wood"))
-            s = "minecraft:jungle_wood[axis=y]";//special case
+            s = "minecraft:jungle_wood[axis=y]";
         if (s.equals("minecraft:redstone_ore"))
-            s = "minecraft:redstone_ore[lit=false]";//special case
+            s = "minecraft:redstone_ore[lit=false]";
         if (s.equals("minecraft:deepslate_redstone_ore"))
-            s = "minecraft:deepslate_redstone_ore[lit=false]";//special case
+            s = "minecraft:deepslate_redstone_ore[lit=false]";
         if (s.equals("minecraft:basalt"))
-            s = "minecraft:basalt[axis=y]";//special case
+            s = "minecraft:basalt[axis=y]";
+        if (s.equals("minecraft:snow"))
+            s = "minecraft:snow[layers=8]";
         State jeBlockStateData = new State(s);
-        if(jeBlockStateData.identifier.equals("minecraft:jungle_leaves"))
-            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
-        if(jeBlockStateData.identifier.equals("minecraft:oak_leaves"))
-            jeBlockStateData.attributes.putIfAbsent("distance","7");//special case
+        if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")){
+            jeBlockStateData.attributes.putIfAbsent("axis","y");
+        }
+        if(jeBlockStateData.identifier.equals("minecraft:jungle_leaves") || jeBlockStateData.identifier.equals("minecraft:spruce_leaves") || jeBlockStateData.identifier.equals("minecraft:oak_leaves")) {
+            jeBlockStateData.attributes.putIfAbsent("distance", "7");
+            jeBlockStateData.attributes.putIfAbsent("persistent","true");
+        }
         if (jeBlockStateData.identifier.equals("minecraft:bee_nest"))
-            jeBlockStateData.attributes.putIfAbsent("honey_level", "0");//special case
+            jeBlockStateData.attributes.putIfAbsent("honey_level", "0");
         if (jeBlockStateData.identifier.equals("minecraft:vine")){
             jeBlockStateData.attributes.putIfAbsent("east", "false");
             jeBlockStateData.attributes.putIfAbsent("north", "false");

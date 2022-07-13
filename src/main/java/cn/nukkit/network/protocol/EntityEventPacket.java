@@ -91,6 +91,8 @@ public class EntityEventPacket extends DataPacket {
     @Since("1.4.0.0-PN")
     public static final int VIBRATION_DETECTE = 77;
 
+    public static final int DRINK_MILK = 78;
+
     @Override
     public byte pid() {
         return NETWORK_ID;
