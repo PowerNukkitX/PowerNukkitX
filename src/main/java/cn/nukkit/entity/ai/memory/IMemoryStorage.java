@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
- * 实体记忆存储器接口
+ * 实体记忆存储器接口<br>
  * 存储从传感器搜集来的数据
  */
 @PowerNukkitXOnly
