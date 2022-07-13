@@ -53,7 +53,7 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (collidesImpassibleBlocks(entity,dx, 0, dz)){
+            if (destination.y > entity.y && collidesImpassibleBlocks(entity,dx, 0, dz)){
                 int id = entity.getLevelBlock().getId();
                 if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER)) && currentJumpCoolDownTick >= JUMP_COOL_DOWN){
                     dy += entity.getJumpingHeight() * 0.43;
