@@ -4,6 +4,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.customblock.BlockCustom;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
@@ -26,7 +27,7 @@ import static com.google.common.base.Verify.verify;
 /**
  * Responsible for mapping item full ids, item network ids and item namespaced ids between each other.
  * <ul>
- * <li>A <b>full id</b> is a combination of <b>item id</b> and <b>item damage</b>. 
+ * <li>A <b>full id</b> is a combination of <b>item id</b> and <b>item damage</b>.
  * The way they are combined may change in future, so you should not combine them by yourself and neither store them
  * permanently. It's mainly used to preserve backward compatibility with plugins that don't support <em>namespaced ids</em>.
  * <li>A <b>network id</b> is an id that is used to communicated with the client, it may change between executions of the
@@ -54,6 +55,10 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final HashMap<String, RuntimeItems.Entry> customItemEntries = new HashMap<>();
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private final HashMap<String, RuntimeItems.Entry> customBlockEntries = new HashMap<>();
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
@@ -84,7 +89,7 @@ public class RuntimeItemMapping {
         this.networkLegacyMap.defaultReturnValue(-1);
         this.networkNamespaceMap = networkNamespaceMap;
         this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
-                .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
+                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), OptionalInt.of(e.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
@@ -116,7 +121,7 @@ public class RuntimeItemMapping {
         }
 
         this.namespaceNetworkMap = namespaceNetworkMap.entrySet().stream()
-                .map(e-> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()))
+                .map(e -> new AbstractMap.SimpleEntry<>(e.getKey(), e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         this.legacyNetworkMap.defaultReturnValue(-1);
@@ -172,8 +177,48 @@ public class RuntimeItemMapping {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public synchronized void registerCustomBlock(List<BlockCustom> blocks) {
+        for (var block : blocks) {
+            int id = 255 - block.getId();
+            RuntimeItems.Entry entry = new RuntimeItems.Entry(
+                    block.getNamespace(),
+                    id,
+                    id,
+                    null,
+                    null,
+                    false
+            );
+            this.customBlockEntries.put(block.getNamespace(),entry);
+            this.entries.add(entry);
+            this.namespacedIdItem.put(block.getNamespace(), block::toItem);
+            this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
+            this.networkNamespaceMap.put(id, block.getNamespace());
+            int fullId = RuntimeItems.getFullId(id, 0);
+            legacyNetworkMap.put(fullId, id << 1);
+            networkLegacyMap.put(id, fullId);
+        }
+        this.generatePalette();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public synchronized void deleteCustomBlock(List<BlockCustom> blocks) {
+        for(var block : blocks){
+            RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespace());
+            if (entry != null) {
+                this.entries.remove(entry);
+                this.namespaceNetworkMap.remove(block.getNamespace());
+                this.networkNamespaceMap.remove(255-block.getId());
+                this.generatePalette();
+            }
+        }
+    }
+
     /**
      * Returns the <b>network id</b> based on the <b>full id</b> of the given item.
+     *
      * @param item Given item
      * @return The <b>network id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
@@ -183,7 +228,7 @@ public class RuntimeItemMapping {
     public int getNetworkFullId(Item item) {
         if (item instanceof StringItem) {
             return namespaceNetworkMap.getOrDefault(item.getNamespaceId(), OptionalInt.empty())
-                    .orElseThrow(()-> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
+                    .orElseThrow(() -> new IllegalArgumentException("Unknown item mapping " + item)) << 1;
         }
 
         int fullId = RuntimeItems.getFullId(item.getId(), item.hasMeta() ? item.getDamage() : -1);
@@ -203,6 +248,7 @@ public class RuntimeItemMapping {
 
     /**
      * Returns the <b>full id</b> of a given <b>network id</b>.
+     *
      * @param networkId The given <b>network id</b>
      * @return The <b>full id</b>
      * @throws IllegalArgumentException If the mapping of the <b>full id</b> to the <b>network id</b> is unknown
@@ -225,6 +271,7 @@ public class RuntimeItemMapping {
 
     /**
      * Returns the <b>namespaced id</b> of a given <b>network id</b>.
+     *
      * @param networkId The given <b>network id</b>
      * @return The <b>namespace id</b> or {@code null} if it is unknown
      */
@@ -237,6 +284,7 @@ public class RuntimeItemMapping {
 
     /**
      * Returns the <b>network id</b> of a given <b>namespaced id</b>.
+     *
      * @param namespaceId The given <b>namespaced id</b>
      * @return A <b>network id</b> wrapped in {@link OptionalInt} or an empty {@link OptionalInt} if it is unknown
      */
@@ -249,10 +297,11 @@ public class RuntimeItemMapping {
 
     /**
      * Creates a new instance of the respective {@link Item} by the <b>namespaced id</b>.
+     *
      * @param namespaceId The namespaced id
-     * @param amount How many items will be in the stack.
+     * @param amount      How many items will be in the stack.
      * @return The correct {@link Item} instance with the write <b>item id</b> and <b>item damage</b> values.
-     * @throws IllegalArgumentException If there are unknown mappings in the process. 
+     * @throws IllegalArgumentException If there are unknown mappings in the process.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -315,7 +364,7 @@ public class RuntimeItemMapping {
 
     @Nonnull
     private static Supplier<Item> itemSupplier(@Nonnull Constructor<? extends Item> constructor) {
-        return ()-> {
+        return () -> {
             try {
                 return constructor.newInstance();
             } catch (ReflectiveOperationException e) {

@@ -13,18 +13,18 @@ public class MoveEntityDeltaPacket extends DataPacket {
     public static final int FLAG_HAS_PITCH = 0B1000;
     public static final int FLAG_HAS_YAW = 0B10000;
     public static final int FLAG_HAS_HEAD_YAW = 0B100000;
-    @Since("FUTURE") public static final int FLAG_ON_GROUND = 0B1000000;
-    @Since("FUTURE") public static final int FLAG_TELEPORTING = 0B10000000;
-    @Since("FUTURE") public static final int FLAG_FORCE_MOVE_LOCAL_ENTITY = 0B100000000;
+    @Since("1.6.0.0-PNX") public static final int FLAG_ON_GROUND = 0B1000000;
+    @Since("1.6.0.0-PNX") public static final int FLAG_TELEPORTING = 0B10000000;
+    @Since("1.6.0.0-PNX") public static final int FLAG_FORCE_MOVE_LOCAL_ENTITY = 0B100000000;
 
-    @Since("FUTURE") public long runtimeEntityId;
+    @Since("1.6.0.0-PNX") public long runtimeEntityId;
     public int flags = 0;
     @Since("1.4.0.0-PN") public float x = 0;
     @Since("1.4.0.0-PN") public float y = 0;
     @Since("1.4.0.0-PN") public float z = 0;
-    @Since("FUTURE") public float pitch = 0;
-    @Since("FUTURE") public float yaw = 0;
-    @Since("FUTURE") public float headYaw = 0;
+    @Since("1.6.0.0-PNX") public float pitch = 0;
+    @Since("1.6.0.0-PNX") public float yaw = 0;
+    @Since("1.6.0.0-PNX") public float headYaw = 0;
 
     @Override
     public byte pid() {
@@ -96,7 +96,7 @@ public class MoveEntityDeltaPacket extends DataPacket {
         this.putByte((byte) (value / (360F / 256F)));
     }
 
-    @Since("FUTURE")
+    @Since("1.6.0.0-PNX")
     public boolean hasFlag(int flag) {
         return (this.flags & flag) != 0;
     }

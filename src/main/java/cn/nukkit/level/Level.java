@@ -39,6 +39,7 @@ import cn.nukkit.level.generator.task.LightPopulationTask;
 import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
+import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -1335,6 +1336,7 @@ public class Level implements ChunkManager, Metadatable {
                                     int z = lcg >>> 16 & 0x0f;
 
                                     BlockState state = section.getBlockState(x, y, z);
+                                    if (state.getBlockId() >= Block.MAX_BLOCK_ID) continue;
                                     if (randomTickBlocks[state.getBlockId()]) {
                                         Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
                                                 << 4) + y, chunkZ * 16 + z);
@@ -3548,7 +3550,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public synchronized boolean unloadChunk(int x, int z, boolean safe, boolean trySave) {
-        if (safe && this.isChunkInUse(x, z)) {
+        if (safe && (this.isChunkInUse(x, z) || getServer().getTickingAreaManager().getTickingAreaByChunk(this.getName(), new TickingArea.ChunkPos(x, z)) != null)) {
             return false;
         }
 
@@ -3977,16 +3979,43 @@ public class Level implements ChunkManager, Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
+    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
-        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-        pk.eid = entity.getId();
-        pk.x = (float) x;
-        pk.y = (float) y;
-        pk.z = (float) z;
-        pk.yaw = (float) yaw;
-        pk.headYaw = (float) headYaw;
-        pk.pitch = (float) pitch;
-        pk.onGround = entity.onGround;
+//        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
+//        pk.eid = entity.getId();
+//        pk.x = (float) x;
+//        pk.y = (float) y;
+//        pk.z = (float) z;
+//        pk.yaw = (float) yaw;
+//        pk.headYaw = (float) headYaw;
+//        pk.pitch = (float) pitch;
+//        pk.onGround = entity.onGround;
+        MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
+        pk.runtimeEntityId = entity.getId();
+        if (entity.lastX != x){
+            pk.x = (float) x;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_X;
+        }
+        if (entity.lastY != y){
+            pk.y = (float) y;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Y;
+        }
+        if (entity.lastZ != z){
+            pk.z = (float) z;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
+        }
+        if (entity.lastYaw != yaw){
+            pk.yaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
+        }
+        if (entity.lastPitch != pitch){
+            pk.pitch = (float) pitch;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
+        }
+        if (entity.lastHeadYaw != headYaw){
+            pk.headYaw = (float) headYaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
+        }
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

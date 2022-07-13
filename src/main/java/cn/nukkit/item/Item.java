@@ -459,6 +459,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
             runtimeMapping.registerNamespacedIdItem(ItemRawGold.class);
             runtimeMapping.registerNamespacedIdItem(ItemRawCopper.class);
+            runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
+            runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
         }
 
         initCreativeItems();
@@ -587,11 +589,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
+    /**
+     * 注册自定义物品
+     *
+     * @param c 传入自定义物品类的实例
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableCustomItem()) {
-            log.warn("The server does not have the custom item feature enabled. " + c.getName() + "Unable to register!");
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled. " + c.getName() + "Unable to register!");
             return;
         }
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
@@ -600,6 +607,31 @@ public class Item implements Cloneable, BlockID, ItemID {
         addCreativeItem(itemCustom);
     }
 
+    /**
+     * 注册自定义方块
+     *
+     * @param itemClassList 传入自定义物品class List
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
+            return;
+        }
+        for (var clazz : itemClassList){
+            ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
+            CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
+            RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
+            addCreativeItem(itemCustom);
+        }
+    }
+
+    /**
+     * 卸载指定的自定义物品
+     *
+     * @param namespaceId 传入自定义物品的namespaceId
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void deleteCustomItem(String namespaceId) {
@@ -607,7 +639,20 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
             removeCreativeItem(itemCustom);
             CUSTOM_ITEMS.remove(namespaceId);
+            RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
+        }
+    }
 
+    /**
+     * 卸载全部的自定义物品
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static void deleteAllCustomItem() {
+        for (String name : CUSTOM_ITEMS.keySet()) {
+            ItemCustom itemCustom = (ItemCustom) fromString(name);
+            removeCreativeItem(itemCustom);
+            CUSTOM_ITEMS.remove(name);
             RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
     }
@@ -700,7 +745,13 @@ public class Item implements Cloneable, BlockID, ItemID {
     public static Item get(int id, Integer meta, int count, byte[] tags) {
         try {
             Class c = null;
-            if (id < 0) {
+            if (id <= 255 - Block.MAX_BLOCK_ID) {
+                var customBlockItem = Block.get(255 - id).toItem();
+                customBlockItem.setCount(count);
+                customBlockItem.setDamage(meta);
+                customBlockItem.setCompoundTag(tags);
+                return customBlockItem;
+            } else if (id < 0) {
                 int blockId = 255 - id;
                 c = Block.list[blockId];
             } else {
@@ -709,7 +760,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             Item item;
 
             if (id < 256) {
-                int blockId = id < 0? 255 - id : id;
+                int blockId = id < 0 ? 255 - id : id;
                 if (meta == 0) {
                     item = new ItemBlock(Block.get(blockId), 0, count);
                 } else if (meta == -1) {
@@ -801,7 +852,22 @@ public class Item implements Cloneable, BlockID, ItemID {
                     }
                 }
                 return itemCustom;
+            } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
+                ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                if (customItemBlock == null) {
+                    return get(AIR);
+                }
+                if (meta.isPresent()) {
+                    int damage = meta.getAsInt();
+                    if (damage < 0) {
+                        customItemBlock = (ItemBlock) customItemBlock.createFuzzyCraftingRecipe();
+                    } else {
+                        customItemBlock.setDamage(damage);
+                    }
+                }
+                return customItemBlock;
             }
+
             MinecraftItemID minecraftItemId = MinecraftItemID.getByNamespaceId(namespacedId);
             if (minecraftItemId != null) {
                 Item item = minecraftItemId.get(1);

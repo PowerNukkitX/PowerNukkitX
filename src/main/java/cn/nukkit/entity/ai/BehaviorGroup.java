@@ -4,12 +4,15 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
-import cn.nukkit.entity.ai.memory.IMemory;
-import cn.nukkit.entity.ai.memory.MemoryStorage;
+import cn.nukkit.entity.ai.controller.IController;
+import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.route.ConcurrentRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
+import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,26 +22,24 @@ import java.util.Set;
 public class BehaviorGroup implements IBehaviorGroup {
 
     //全部行为
-    protected Set<IBehavior> behaviors = new HashSet<>();
+    protected final Set<IBehavior> behaviors = new HashSet<>();
     //传感器
-    protected Set<ISensor> sensors = new HashSet<>();
-    //记忆存储器
-    protected MemoryStorage memory = new MemoryStorage();
+    protected final Set<ISensor> sensors = new HashSet<>();
+    //控制器
+    protected final Set<IController> controllers = new HashSet<>();
     //正在运行的行为
-    protected Set<IBehavior> runningBehaviors = new HashSet<>();
+    protected final Set<IBehavior> runningBehaviors = new HashSet<>();
+    //记忆存储器
+    protected final MemoryStorage memory = new MemoryStorage();
+    //寻路器(使用异步寻路器)
+    protected ConcurrentRouteFinder routeFinder;
+    protected boolean updatingRoute = false;
 
-    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors){
+    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers,ConcurrentRouteFinder routeFinder) {
         this.behaviors.addAll(behaviors);
         this.sensors.addAll(sensors);
-    }
-
-    public void tick(EntityIntelligent entity){
-        //搜集信息并写入记忆
-        collectSensorData(entity);
-        //刷新正在运行的行为
-        tickRunningBehaviors(entity);
-        //评估所有行为
-        evaluateBehaviors(entity);
+        this.controllers.addAll(controllers);
+        this.routeFinder = routeFinder;
     }
 
     public void addBehavior(IBehavior behavior){
@@ -49,22 +50,14 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.sensors.add(sensor);
     }
 
-    /*
-     * @Param Map<IBehavior,Position>
-     * IBehavior -> 要添加的行为
-     * Position -> 评估器的返回值，将会传递给行为的执行器的onStart()方法
-     */
-    protected void addToRunningBehaviors(EntityIntelligent entity, @NotNull Set<IBehavior> behaviors){
-        behaviors.forEach((behavior)->{
-            behavior.onStart(entity);
-            runningBehaviors.add(behavior);
-        });
+    public void addController(IController controller){
+        this.controllers.add(controller);
     }
 
     /**
      * 运行并刷新正在运行的行为
      */
-    protected void tickRunningBehaviors(EntityIntelligent entity){
+    public void tickRunningBehaviors(EntityIntelligent entity){
         Set<IBehavior> removed = new HashSet<>();
         for (IBehavior behavior : runningBehaviors){
             if (!behavior.execute(entity)){
@@ -75,20 +68,13 @@ public class BehaviorGroup implements IBehaviorGroup {
         runningBehaviors.removeAll(removed);
     }
 
-    /**
-     * 中断所有正在运行的行为
-     */
-    protected void interruptAllRunningBehaviors(EntityIntelligent entity){
-        for (var behavior : runningBehaviors){
-            behavior.onInterrupt(entity);
-        }
-        runningBehaviors.clear();
-    }
-
-    protected void collectSensorData(EntityIntelligent entity){
-        for (var sensor : sensors){
+    public void collectSensorData(EntityIntelligent entity){
+        for (ISensor sensor : sensors){
             IMemory<?> memory = sensor.sense(entity);
-            this.memory.put(memory);
+            if (memory.getData() == null)
+                this.memory.remove(memory.getClass());
+            else
+                this.memory.put(memory);
         }
     }
 
@@ -97,7 +83,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity
      * 评估所有行为
      */
-    protected void evaluateBehaviors(EntityIntelligent entity){
+    public void evaluateBehaviors(EntityIntelligent entity){
         //存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>();
         int heightestPriority = Integer.MIN_VALUE;
@@ -135,6 +121,94 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (resultHighestPriority == currentHighestPriority) {
             addToRunningBehaviors(entity,result);
         }
+    }
+
+    @Override
+    public void applyController(EntityIntelligent entity) {
+        for (IController controller : controllers){
+            controller.control(entity);
+        }
+    }
+
+    @Override
+    public void updateRoute(EntityIntelligent entity) {
+        if (needUpdateRoute() && !updatingRoute){
+            //目的地已更新，需要更新路线但还没开始重新规划路线
+            Vector3 target = getRouteTarget();
+            //clone防止寻路器潜在的修改
+            routeFinder.setStart(entity.clone());
+            routeFinder.setTarget(target);
+            routeFinder.asyncSearch();
+            updatingRoute = true;
+        }else if (needUpdateRoute() && updatingRoute){
+            //已经开始重新规划路线，检查是否规划完毕
+            if (routeFinder.isFinished()){
+                //规划完毕，更新Memory
+                updatingRoute = false;
+                setTargetUpdated();
+            }
+        }
+        if (needUpdateMoveDirection()){
+            if (routeFinder.hasNext()){
+                //若有新的移动方向，则更新
+                updateMoveDestination(entity);
+                setMoveDirectionUpdated();
+            }
+        }
+    }
+
+    protected boolean needUpdateRoute(){
+        return memory.contains(NeedUpdateRouteMemory.class);
+    }
+
+    @Nullable
+    protected Vector3 getRouteTarget(){
+        return memory.contains(MoveTargetMemory.class) ? (Vector3)memory.get(MoveTargetMemory.class).getData() : null;
+    }
+
+    protected void setTargetUpdated(){
+        memory.remove(NeedUpdateRouteMemory.class);
+    }
+
+    protected boolean needUpdateMoveDirection(){
+        return memory.contains(NeedUpdateMoveDestinationMemory.class);
+    }
+
+    protected void updateMoveDestination(EntityIntelligent entity){
+        MoveDirectionMemory directionMemory = (MoveDirectionMemory)memory.get(MoveDirectionMemory.class);
+        Vector3 end = null;
+        if (directionMemory != null){
+            end = directionMemory.getEnd();
+        }else{
+            end = entity.clone();
+        }
+        memory.put(new MoveDirectionMemory(end,routeFinder.next().getVector3()));
+    }
+
+    protected void setMoveDirectionUpdated(){
+        memory.remove(NeedUpdateMoveDestinationMemory.class);
+    }
+
+    /**
+     * @Param Map<IBehavior,Position>
+     * IBehavior -> 要添加的行为
+     * Position -> 评估器的返回值，将会传递给行为的执行器的onStart()方法
+     */
+    protected void addToRunningBehaviors(EntityIntelligent entity, Set<IBehavior> behaviors){
+        behaviors.forEach((behavior)->{
+            behavior.onStart(entity);
+            runningBehaviors.add(behavior);
+        });
+    }
+
+    /**
+     * 中断所有正在运行的行为
+     */
+    protected void interruptAllRunningBehaviors(EntityIntelligent entity){
+        for (IBehavior behavior : runningBehaviors){
+            behavior.onInterrupt(entity);
+        }
+        runningBehaviors.clear();
     }
 
     /**

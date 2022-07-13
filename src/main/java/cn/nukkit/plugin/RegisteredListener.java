@@ -23,7 +23,7 @@ public class RegisteredListener {
 
     private final Plugin plugin;
 
-    private final EventExecutor executor;
+    private EventExecutor executor;
 
     private final boolean ignoreCancelled;
 
@@ -57,7 +57,15 @@ public class RegisteredListener {
             }
         }
         this.timing.startTiming();
-        executor.execute(listener, event);
+        try {
+            executor.execute(listener, event);
+        } catch (IllegalAccessError e) { // 动态编译的字节码调用失败时的逃生门
+            if (executor instanceof CompiledExecutor compiledExecutor) {
+                executor = new MethodEventExecutor(compiledExecutor.getOriginMethod());
+                executor.execute(listener, event);
+            }
+        }
+
         this.timing.stopTiming();
     }
 

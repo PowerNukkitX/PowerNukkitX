@@ -7,25 +7,33 @@ import lombok.Getter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 记忆存储器是用来存储传感器或其他地方提供的单个Memory。
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
 public class MemoryStorage implements IMemoryStorage {
 
-    protected Map<String, IMemory<?>> memoryMap = new HashMap<>();
+    protected Map<Class<?>,IMemory<?>> memoryMap = new HashMap<>();
 
     @Override
     public void put(IMemory<?> memory) {
-        memoryMap.put(memory.getName(), memory);
+        this.memoryMap.put(memory.getClass(),memory);
     }
 
     @Override
-    public void remove(String memoryName) {
-        memoryMap.remove(memoryName);
+    public void remove(Class<?> memoryClazz) {
+        memoryMap.remove(memoryClazz);
     }
 
     @Override
-    public IMemory<?> get(String memoryName) {
-        return memoryMap.get(memoryName);
+    public IMemory<?> get(Class<?> memoryClazz) {
+        return memoryMap.get(memoryClazz);
+    }
+
+    @Override
+    public boolean contains(Class<?> memoryClazz) {
+        return memoryMap.containsKey(memoryClazz);
     }
 }

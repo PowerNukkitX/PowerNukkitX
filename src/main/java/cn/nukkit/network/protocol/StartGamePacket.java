@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.Since;
+import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
@@ -10,6 +11,9 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 15-10-13
@@ -48,6 +52,8 @@ public class StartGamePacket extends DataPacket {
     public int spawnY;
     public int spawnZ;
     public boolean hasAchievementsDisabled = true;
+
+    public boolean worldEditor;
     public int dayCycleStopTime = -1; //-1 = not stopped, any positive value = stopped at that time
     public int eduEditionOffer = 0;
     public boolean hasEduFeaturesEnabled = false;
@@ -60,6 +66,7 @@ public class StartGamePacket extends DataPacket {
     public int platformBroadcastIntent = GAME_PUBLISH_SETTING_PUBLIC;
     public boolean commandsEnabled;
     public boolean isTexturePacksRequired = false;
+
     public GameRules gameRules;
     public boolean bonusChest = false;
     public boolean hasStartWithMapEnabled = false;
@@ -83,10 +90,13 @@ public class StartGamePacket extends DataPacket {
     public String premiumWorldTemplateId = "";
     public boolean isTrial = false;
     public boolean isMovementServerAuthoritative;
-    @Since("1.3.0.0-PN") public boolean isInventoryServerAuthoritative;
+    @Since("1.3.0.0-PN")
+    public boolean isInventoryServerAuthoritative;
     public long currentTick;
 
     public int enchantmentSeed;
+
+    public final List<BlockPropertyData> blockProperties = new ArrayList<>();
 
     public String multiplayerCorrelationId = "";
 
@@ -114,6 +124,7 @@ public class StartGamePacket extends DataPacket {
         this.putVarInt(this.difficulty);
         this.putBlockVector3(this.spawnX, this.spawnY, this.spawnZ);
         this.putBoolean(this.hasAchievementsDisabled);
+        this.putBoolean(this.worldEditor);
         this.putVarInt(this.dayCycleStopTime);
         this.putVarInt(this.eduEditionOffer);
         this.putBoolean(this.hasEduFeaturesEnabled);
@@ -158,7 +169,18 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // isServerAuthoritativeBlockBreaking
         this.putLLong(this.currentTick);
         this.putVarInt(this.enchantmentSeed);
-        this.putUnsignedVarInt(0); // Custom blocks
+
+        // Custom blocks
+        this.putUnsignedVarInt(this.blockProperties.size());
+        try {
+            for (BlockPropertyData blockPropertyData : this.blockProperties) {
+                this.putString(blockPropertyData.namespace());
+                this.put(NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true));
+            }
+        } catch (IOException e) {
+            log.error("Error while encoding NBT data of BlockPropertyData", e);
+        }
+
         this.put(RuntimeItems.getRuntimeMapping().getItemDataPalette());
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);

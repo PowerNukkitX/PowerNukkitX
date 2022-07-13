@@ -33,6 +33,9 @@
 - [#385] 实现darkness药水效果。
 - [#387] 支持新版成就界面。
 - [#389] 实现潜声方块实体。
+- [#414] 实现细雪方块。
+- [#416] 添加`PlayerFreezeEvent`事件。
+- [#425] 初步完成`JS Feature`架构。
 
 ### 修改记录
 
@@ -53,6 +56,10 @@
 - [#375] 实现滚动字幕API。
 - [#380] 实现兼容1.19.0 (协议版本527)。
 - [#390] 支持带有_的玩家名称解析。
+- [#402] 合并NukkitX的修改。
+- [#411] 优化/version命令。
+- [#418] 优化事件调用性能。
+- [#428] NPC Dialog协议逻辑同步1.19.0。
 
 ### BUG修复
 
@@ -96,6 +103,12 @@
 - [#382] 修复ListTag#toSnbt()中的低级错误。
 - [#386] 修复观察者模式碰撞问题。
 - [#388] 修复目标选择器Type参数的问题。
+- [#394] 修复BlockEntityCauldron导致的更新区块报错。
+- [#401] 修复在水下食用紫颂果会传送的漏洞（在[#406]中修复）。
+- [#402] 合并NukkitX的修改。
+- [#415] 修复/setblock /fill /spawnpoint的一些小bug。
+- [#422] 修复创造物品栏缺失部分物品的漏洞。
+- [#425] 修复活塞的一个激活问题。
 
 ### 安全漏洞修复
 
@@ -106,6 +119,9 @@
 ### 文档内容
 
 - [#235] 添加缺失的`@PowerNukkitXOnly`
+- [#412] 添加和修正缺失的`@PowerNukkitXOnly`
+- [#417] 修正`PlayerFreezeEvent`事件的文档
+- [#424] 将PowerNukkitX发布至[Maven Central]，并新增[Javadoc]
 
 ## [Unreleased 1.6.0.0-PN] - Future ([点此查看项目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -902,9 +918,8 @@ Fixes several anvil issues.
 
 ## <a id="CataLogs-Join-the-community"></a>💬 Join the Community / 加入我们
 
-* [Discord](https://discord.gg/j7UwsaNu4V)
-* [QQ](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)
-
+* [Discord]
+* [QQ]
 
 ## <a id="CataLogs-Version-history"></a>🔖 Version history / 历史版本
 
@@ -1205,6 +1220,23 @@ Need to switch languages?
 [#388]: https://github.com/PowerNukkitX/PowerNukkitX/pull/388
 [#389]: https://github.com/PowerNukkitX/PowerNukkitX/pull/389
 [#390]: https://github.com/PowerNukkitX/PowerNukkitX/pull/390
+[#394]: https://github.com/PowerNukkitX/PowerNukkitX/pull/394
+[#401]: https://github.com/PowerNukkitX/PowerNukkitX/issues/401
+[#402]: https://github.com/PowerNukkitX/PowerNukkitX/pull/402
+[#405]: https://github.com/PowerNukkitX/PowerNukkitX/pull/405
+[#406]: https://github.com/PowerNukkitX/PowerNukkitX/pull/406
+[#411]: https://github.com/PowerNukkitX/PowerNukkitX/pull/411
+[#412]: https://github.com/PowerNukkitX/PowerNukkitX/pull/412
+[#414]: https://github.com/PowerNukkitX/PowerNukkitX/pull/414
+[#415]: https://github.com/PowerNukkitX/PowerNukkitX/pull/415
+[#416]: https://github.com/PowerNukkitX/PowerNukkitX/pull/416
+[#417]: https://github.com/PowerNukkitX/PowerNukkitX/pull/417
+[#418]: https://github.com/PowerNukkitX/PowerNukkitX/pull/418
+[#422]: https://github.com/PowerNukkitX/PowerNukkitX/pull/422
+[#424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/424
+[#425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/425
+[#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
+[#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
 
 <!--PowerNukkitX Version history-->
 
@@ -1216,3 +1248,14 @@ Need to switch languages?
 
 <!--Protocol Version 527-->
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+
+<!--PowerNukkitX Urls-->
+
+<!--Website Links-->
+[PowerNukkitX]: https://www.powernukkitx.cn
+[Maven Central]: https://search.maven.org/search?q=g:cn.powernukkitx
+[Javadoc]: https://javadoc.io/doc/cn.powernukkitx/powernukkitx
+
+<!--Social Links-->
+[QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
+[Discord]:https://discord.gg/BcPhZCVJHJ
