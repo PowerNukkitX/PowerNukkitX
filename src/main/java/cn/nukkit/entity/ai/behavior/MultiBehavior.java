@@ -30,35 +30,35 @@ public class MultiBehavior implements IBehavior {
      */
     protected final int priority;
 
-    public MultiBehavior(int priority,IBehavior ...behaviors){
+    public MultiBehavior(int priority, IBehavior... behaviors) {
         this.priority = priority;
         this.behaviors = Set.of(behaviors);
     }
 
-    public MultiBehavior(int priority,Set<IBehavior> behaviors){
+    public MultiBehavior(int priority, Set<IBehavior> behaviors) {
         this.priority = priority;
         this.behaviors = behaviors;
     }
 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        Set<IBehavior> result = evaluateBehaviors(entity);
-        if (result.isEmpty()){
+        var result = evaluateBehaviors(entity);
+        if (result.isEmpty()) {
             return false;
         }
-        if (result.size() == 1){
+        if (result.size() == 1) {
             setCurrentBehavior(result.iterator().next());
             return true;
         }
         //根据Weight选取一个行为
         int totalWeight = 0;
-        for (IBehavior behavior : result){
+        for (IBehavior behavior : result) {
             totalWeight += behavior.getWeight();
         }
         int random = (int) (Math.random() * totalWeight);
-        for (IBehavior behavior : result){
+        for (IBehavior behavior : result) {
             random -= behavior.getWeight();
-            if (random <= 0){
+            if (random <= 0) {
                 setCurrentBehavior(behavior);
                 return true;
             }
@@ -68,7 +68,7 @@ public class MultiBehavior implements IBehavior {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (currentBehavior == null){
+        if (currentBehavior == null) {
             return false;
         }
         return currentBehavior.execute(entity);
@@ -76,7 +76,7 @@ public class MultiBehavior implements IBehavior {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        if (currentBehavior == null){
+        if (currentBehavior == null) {
             return;
         }
         currentBehavior.onInterrupt(entity);
@@ -84,7 +84,7 @@ public class MultiBehavior implements IBehavior {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        if (currentBehavior == null){
+        if (currentBehavior == null) {
             return;
         }
         currentBehavior.onStart(entity);
@@ -92,37 +92,36 @@ public class MultiBehavior implements IBehavior {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        if (currentBehavior == null){
+        if (currentBehavior == null) {
             return;
         }
         currentBehavior.onStop(entity);
     }
 
     /**
-     *
-     * @param entity
+     * @param entity 实体
      * @return 最高优先级且评估成功的一组行为（包含评估结果）
      */
-    protected Set<IBehavior> evaluateBehaviors(EntityIntelligent entity){
+    protected Set<IBehavior> evaluateBehaviors(EntityIntelligent entity) {
         //存储评估成功的行为（未过滤优先级）
-        Set<IBehavior> evalSucceed = new HashSet<>();
-        int heightestPriority = Integer.MIN_VALUE;
+        var evalSucceed = new HashSet<IBehavior>();
+        int highestPriority = Integer.MIN_VALUE;
         for (IBehavior behavior : behaviors) {
-            if(behavior.evaluate(entity)){
+            if (behavior.evaluate(entity)) {
                 evalSucceed.add(behavior);
-                if(behavior.getPriority() > heightestPriority){
-                    heightestPriority = behavior.getPriority();
+                if (behavior.getPriority() > highestPriority) {
+                    highestPriority = behavior.getPriority();
                 }
             }
         }
         //如果没有评估结果，则返回空
-        if(evalSucceed.isEmpty()){
+        if (evalSucceed.isEmpty()) {
             return evalSucceed;
         }
         //过滤掉低优先级的行为
-        Set<IBehavior> result = new HashSet<>();
+        var result = new HashSet<IBehavior>();
         for (IBehavior entry : evalSucceed) {
-            if(entry.getPriority() == heightestPriority){
+            if (entry.getPriority() == highestPriority) {
                 result.add(entry);
             }
         }

@@ -10,13 +10,13 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MemoryStorage implements IMemoryStorage{
+public class MemoryStorage implements IMemoryStorage {
 
-    protected Map<String,IMemory<?>> memoryMap = new HashMap<>();
+    protected Map<String, IMemory<?>> memoryMap = new HashMap<>();
 
     @Override
     public void put(IMemory<?> memory) {
-        memoryMap.put(memory.getName(),memory);
+        memoryMap.put(memory.getName(), memory);
     }
 
     @Override

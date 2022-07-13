@@ -15,11 +15,16 @@ public interface ISensor {
     IMemory<?> sense(EntityIntelligent entity);
 
     /**
-     * @return String
      * 返回此传感器的名称,默认返回类名称
+     *
+     * @return String
      */
-    default String getName() { return this.getClass().getSimpleName(); };
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-    default boolean equals(ISensor sensor) { return getName().equals(sensor.getName()); };
+    default boolean equals(ISensor sensor) {
+        return getName().equals(sensor.getName());
+    }
 
 }

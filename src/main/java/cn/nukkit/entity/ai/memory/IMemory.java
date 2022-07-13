@@ -9,8 +9,12 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public interface IMemory<T> {
-    default String getName() {return this.getClass().getSimpleName();};
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
+
     T getData();
+
     default boolean equals(IMemory<T> memory) {
         return getName().equals(memory.getName());
     }

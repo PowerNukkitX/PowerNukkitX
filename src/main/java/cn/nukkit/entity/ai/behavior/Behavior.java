@@ -14,13 +14,13 @@ import lombok.Getter;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class Behavior implements IBehavior{
+public class Behavior implements IBehavior {
 
     protected IBehaviorExecutor executor;
     protected IBehaviorEvaluator evaluator;
     protected final int priority;
 
-    public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority){
+    public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority) {
         this.executor = executor;
         this.evaluator = evaluator;
         this.priority = priority;
