@@ -13,7 +13,7 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MemoryStorage implements IMemoryStorage{
+public class MemoryStorage implements IMemoryStorage {
 
     protected Map<Class<?>,IMemory<?>> memoryMap = new HashMap<>();
 

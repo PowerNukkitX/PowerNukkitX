@@ -13,13 +13,9 @@ import cn.nukkit.entity.EntityIntelligent;
 public interface IBehaviorEvaluator {
 
     /**
-     *
-     * @param entity
-     * 评估目标实体
-     *
+     * @param entity 评估目标实体
      * @return boolean
      * 是否需要启动绑定的执行器
-     *
      */
     boolean evaluate(EntityIntelligent entity);
 
@@ -27,7 +23,11 @@ public interface IBehaviorEvaluator {
      * @return String
      * 返回此评估器的名称,默认返回类名称
      */
-    default String getName() { return this.getClass().getSimpleName(); };
+    default String getName() {
+        return this.getClass().getSimpleName();
+    }
 
-    default boolean equals(IBehaviorEvaluator evaluator) { return getName().equals(evaluator.getName()); };
+    default boolean equals(IBehaviorEvaluator evaluator) {
+        return getName().equals(evaluator.getName());
+    }
 }

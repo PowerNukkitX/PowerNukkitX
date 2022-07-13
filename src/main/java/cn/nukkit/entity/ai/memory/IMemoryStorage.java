@@ -13,6 +13,5 @@ public interface IMemoryStorage {
     void put(IMemory<?> memory);
     IMemory<?> get(Class<?> memoryClazz);
     void remove(Class<?> memoryClazz);
-
     boolean contains(Class<?> memoryClazz);
 }

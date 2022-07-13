@@ -8,15 +8,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Collections;
 
-public abstract class EntityIntelligent extends EntityPhysical{
+public abstract class EntityIntelligent extends EntityPhysical {
 
-    private final IBehaviorGroup behaviorGroup = new BehaviorGroup(Collections.EMPTY_SET,Collections.EMPTY_SET,Collections.EMPTY_SET,null);
+    private final BehaviorGroup behaviorGroup = new BehaviorGroup(Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), null);
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public IBehaviorGroup getBehaviorGroup(){
+    public IBehaviorGroup getBehaviorGroup() {
         return behaviorGroup;
     }
 
