@@ -1,32 +1,26 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.entity.ai.BehaviorGroup;
+import cn.nukkit.entity.ai.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
-import cn.nukkit.entity.ai.route.SimpleAStarRouteFinder;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-
 public abstract class EntityIntelligent extends EntityPhysical {
+
+    public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Nullable
     public IBehaviorGroup getBehaviorGroup(){
-        return null;
+        return EMPTY_BEHAVIOR_GROUP;
     };
 
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
-        //No behavior group
-        if (getBehaviorGroup() == null)
-            return true;
         getBehaviorGroup().tickRunningBehaviors(this);
         getBehaviorGroup().applyController(this);
         return true;
