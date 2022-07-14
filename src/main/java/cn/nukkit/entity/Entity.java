@@ -1141,7 +1141,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     public static boolean registerCustomEntityDefinition(String name, CustomEntityDefinition definition) {
-        definitions.put(name, definition);
+        entityDefinitions.put(name, definition);
         return true;
     }
 
