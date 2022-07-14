@@ -243,7 +243,8 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         }
 
         //我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
-        if (N && E && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0)) {
+        //接触水的时候就不需要这么判断了
+        if (N && E && (((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0) || entity.isTouchingWater())) {
             Vector3 vec = vector3.add(1, y, -1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -259,7 +260,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (E && S && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0)) {
+        if (E && S && (((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0) || entity.isTouchingWater())) {
             Vector3 vec = vector3.add(1, y, 1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -275,7 +276,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && S && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0)) {
+        if (W && S && (((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0) || entity.isTouchingWater())) {
             Vector3 vec = vector3.add(-1, y, 1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -291,7 +292,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && N && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0)) {
+        if (W && N && (((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0) || entity.isTouchingWater())) {
             Vector3 vec = vector3.add(-1, y, -1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);

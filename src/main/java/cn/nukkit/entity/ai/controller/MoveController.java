@@ -44,10 +44,14 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
+            //todo: 这里的跳跃实现有待改进
             if (destination.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
-                int id = entity.getLevelBlock().getId();
-                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER))) {
-                    dy += entity.getJumpingHeight() * 0.43;
+                if (entity.isOnGround() || entity.isTouchingWater()) {
+                    //检查是否需要跳跃（半砖、台阶等可以直接走过去的就不用了）
+                    double yForward = getBlockForward(entity).getCollisionBoundingBox() != null ? getBlockForward(entity).getCollisionBoundingBox().getMaxY() : 0;
+                    if (yForward - entity.getY() > 0.5) {
+                        dy += entity.getJumpingHeight() * 0.43;
+                    }
                     currentJumpCoolDown = 0;
                 }
             }
@@ -57,6 +61,10 @@ public class MoveController implements IController {
             needNewDestination(entity);
             return false;
         }
+    }
+
+    protected Block getBlockForward(EntityIntelligent entity){
+        return entity.getSide(entity.getHorizontalFacing()).getLevelBlock();
     }
 
     protected void needNewDestination(EntityIntelligent entity) {
