@@ -10,6 +10,9 @@ import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 处理实体运动请求
  */
@@ -49,8 +52,12 @@ public class MoveController implements IController {
                 if (entity.isOnGround() || entity.isTouchingWater()) {
                     //todo: 检查是否需要跳跃（半砖、台阶等可以直接走过去的就不用了）
                     //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
-                    dy += entity.getJumpingHeight() * 0.43;
-                    currentJumpCoolDown = 0;
+                    Block[] collisionBlocks =  entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
+                    double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
+                    if (maxY - entity.getY() > 0.5) {
+                        dy += entity.getJumpingHeight() * 0.43;
+                        currentJumpCoolDown = 0;
+                    }
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
