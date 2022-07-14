@@ -48,6 +48,7 @@ public class MoveController implements IController {
             if (destination.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 if (entity.isOnGround() || entity.isTouchingWater()) {
                     //todo: 检查是否需要跳跃（半砖、台阶等可以直接走过去的就不用了）
+                    //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
                     dy += entity.getJumpingHeight() * 0.43;
                     currentJumpCoolDown = 0;
                 }
