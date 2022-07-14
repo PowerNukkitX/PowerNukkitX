@@ -51,6 +51,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -1145,11 +1146,12 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @PowerNukkitXOnly
-    public static void registerCustomEntity(CustomEntity customEntity) {
+    public static void registerCustomEntity(Class<? extends CustomEntity> clazz) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }
+        var customEntity = clazz.getDeclaredConstructor().newInstance();
         entityDefinitions.add(customEntity.getDefinition());
     }
 
