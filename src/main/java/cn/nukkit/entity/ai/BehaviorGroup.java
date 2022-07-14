@@ -6,10 +6,11 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.*;
-import cn.nukkit.entity.ai.route.ConcurrentRouteFinder;
+import cn.nukkit.entity.ai.route.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -31,11 +32,17 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     //记忆存储器
     protected final MemoryStorage memory = new MemoryStorage();
-    //寻路器(使用异步寻路器)
-    protected ConcurrentRouteFinder routeFinder;
-    protected boolean isUpdateRoute = false;
+    //寻路器(非异步，因为没必要，生物AI本身就是并行的)
+    protected SimpleRouteFinder routeFinder;
 
-    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, ConcurrentRouteFinder routeFinder) {
+    //决定多少gt更新一次2路径
+    @Setter
+    protected int routeUpdateCycle = 1;//gt
+
+    //记录距离上次路径更新过去的gt数
+    protected int currentRouteUpdateTick = 0;//gt
+
+    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         this.behaviors.addAll(behaviors);
         this.sensors.addAll(sensors);
         this.controllers.addAll(controllers);
@@ -129,20 +136,17 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     @Override
     public void updateRoute(EntityIntelligent entity) {
-        if (needUpdateRoute() && !isUpdateRoute) {
-            //目的地已更新，需要更新路线但还没开始重新规划路线
+        currentRouteUpdateTick++;
+        //到达更新周期时，开始重新计算新路径
+        if (currentRouteUpdateTick >= routeUpdateCycle) {
             Vector3 target = getRouteTarget();
-            //clone防止寻路器潜在的修改
-            routeFinder.setStart(entity.clone());
-            routeFinder.setTarget(target);
-            routeFinder.asyncSearch();
-            isUpdateRoute = true;
-        } else if (needUpdateRoute() && isUpdateRoute) {
-            //已经开始重新规划路线，检查是否规划完毕
-            if (routeFinder.isFinished()) {
-                //规划完毕，更新Memory
-                isUpdateRoute = false;
-                removeMemory(NeedUpdateRouteMemory.class);
+            //若有路径目标，则计算新路径
+            if (target != null) {
+                //clone防止寻路器潜在的修改
+                routeFinder.setStart(entity.clone());
+                routeFinder.setTarget(target);
+                routeFinder.search();
+                currentRouteUpdateTick = 0;
             }
         }
         if (needUpdateMoveDirection()) {
@@ -152,10 +156,6 @@ public class BehaviorGroup implements IBehaviorGroup {
                 removeMemory(NeedUpdateMoveDestinationMemory.class);
             }
         }
-    }
-
-    protected boolean needUpdateRoute() {
-        return memory.contains(NeedUpdateRouteMemory.class);
     }
 
     @Nullable

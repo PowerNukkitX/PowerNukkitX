@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * MoveDestinationMemory用于存储实体的寻路过程中的某一时刻的目标移动方向

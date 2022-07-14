@@ -8,7 +8,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
-import cn.nukkit.entity.ai.memory.NeedUpdateRouteMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 
@@ -21,12 +20,11 @@ public class MoveController implements IController {
     protected static final int JUMP_COOL_DOWN = 10;
 
     protected int currentJumpCoolDown = 0;
-    protected double lastXZLength = Double.MAX_VALUE;
 
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
-        if(entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateRouteMemory.class)) {
+        if(entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class)) {
             Vector3 target = (Vector3) entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = (MoveDirectionMemory) entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 destination = directionMemory.getEnd();
@@ -38,12 +36,6 @@ public class MoveController implements IController {
             var relativeVector = destination.clone().setComponents(destination.x - entity.x,
                     destination.y - entity.y, destination.z - entity.z);
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            if (xzLength > lastXZLength){
-                needUpdateRoute(entity);
-                lastXZLength = xzLength;
-                return false;
-            }
-            lastXZLength = xzLength;
             if (xzLength < speed) {
                 needNewDestination(entity);
                 return false;
@@ -65,10 +57,6 @@ public class MoveController implements IController {
             needNewDestination(entity);
             return false;
         }
-    }
-
-    protected void needUpdateRoute(EntityIntelligent entity){
-        entity.getMemoryStorage().put(new NeedUpdateRouteMemory(true));
     }
 
     protected void needNewDestination(EntityIntelligent entity) {

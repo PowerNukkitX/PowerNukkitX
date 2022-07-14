@@ -22,7 +22,7 @@ import java.util.PriorityQueue;
 @Since("1.6.0.0-PNX")
 @Getter
 @Setter
-public class AStarRouteFinder extends ConcurrentRouteFinder {
+public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
     //这些常量是为了避免开方运算而设置的
     //直接移动成本
@@ -56,7 +56,7 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
 
     protected int maxSearchDepth = 100;
 
-    public AStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
+    public SimpleAStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
         this.entity = entity;
         this.level = entity.level;
@@ -480,10 +480,14 @@ public class AStarRouteFinder extends ConcurrentRouteFinder {
         if (end == null)
             end = closeList.get(closeList.size() - 1);
         nodes.add(end);
-        while (!end.getParent().getVector3().equals(start)) {
-            nodes.add(end = end.getParent());
+        if (end.getParent() != null) {
+            while (!end.getParent().getVector3().equals(start)) {
+                nodes.add(end = end.getParent());
+            }
+            nodes.add(end.getParent());
+        }else{
+            nodes.add(end);
         }
-        nodes.add(end.getParent());
         Collections.reverse(nodes);
         return nodes;
 
