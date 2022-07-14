@@ -5641,10 +5641,6 @@
     "id": 631
   },
   {
-    "name": "minecraft:warden_spawn_egg",
-    "id": 632
-  },
-  {
     "name": "minecraft:firefly_spawn_egg",
     "id": 632
   },
@@ -5714,35 +5710,43 @@
   },
   {
     "name": "minecraft:boat",
-    "id": 648,
+    "id": 649,
     "oldId": 333,
     "deprecated": true
   },
   {
     "name": "minecraft:dye",
-    "id": 649,
+    "id": 650,
     "oldId": 351,
     "deprecated": true
   },
   {
     "name": "minecraft:banner_pattern",
-    "id": 650,
+    "id": 651,
     "oldId": 434,
     "deprecated": true
   },
   {
     "name": "minecraft:spawn_egg",
-    "id": 651,
+    "id": 652,
     "oldId": 383
   },
   {
     "name": "minecraft:end_crystal",
-    "id": 652,
+    "id": 653,
     "oldId": 426
   },
   {
     "name": "minecraft:glow_berries",
-    "id": 653,
+    "id": 654,
     "oldId": 638
+  },
+  {
+    "name": "minecraft:trader_llama_spawn_egg",
+    "id": 648
+  },
+  {
+    "name": "minecraft:warden_spawn_egg",
+    "id": 632
   }
 ]

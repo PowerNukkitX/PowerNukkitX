@@ -1,5 +1,5 @@
 {
-  "version": 527,
+  "version": 534,
   "recipes": [
     {
       "id": "minecraft:smithingtable_diamond_axe_to_netherite_axe",
@@ -14495,27 +14495,6 @@
       "uuid": "d392b075-4ba1-40ae-8789-af868d56f6ce"
     },
     {
-      "id": "glass_pane:white",
-      "type": 1,
-      "input": {
-        "A": {
-          "legacyId": 160,
-          "id": "minecraft:stained_glass_pane"
-        }
-      },
-      "output": [
-        {
-          "legacyId": -745,
-          "id": "glass_pane:white"
-        }
-      ],
-      "shape": [
-        "A"
-      ],
-      "block": "crafting_table",
-      "priority": 0
-    },
-    {
       "id": "heiroglyphs_redsandstone_recipeId",
       "type": 1,
       "input": {
@@ -22603,7 +22582,7 @@
       },
       "output": [
         {
-          "legacyId": 652,
+          "legacyId": 653,
           "id": "minecraft:end_crystal"
         }
       ],
@@ -28584,8 +28563,8 @@
       },
       "output": [
         {
-          "legacyId": -497,
-          "id": "minecraft:mangrove_wood",
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
           "count": 3
         }
       ],
