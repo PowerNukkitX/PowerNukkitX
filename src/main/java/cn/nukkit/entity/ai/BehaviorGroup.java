@@ -146,6 +146,8 @@ public class BehaviorGroup implements IBehaviorGroup {
                 routeFinder.setStart(entity.clone());
                 routeFinder.setTarget(target);
                 routeFinder.search();
+                //更新Destination
+                updateMoveDestination(entity);
                 currentRouteUpdateTick = 0;
             }
         }

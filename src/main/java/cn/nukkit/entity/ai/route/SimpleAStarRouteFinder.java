@@ -1,20 +1,25 @@
 package cn.nukkit.entity.ai.route;
 
+import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
@@ -134,11 +139,32 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         //写入结果
         this.addNode(findingPath);
+
+        //debug
+        findingPath.forEach(node -> {
+            sendParticle("minecraft:balloon_gas_particle",node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+        });
+
         this.finished = true;
         this.searching = false;
         this.reachable = true;
 
         return true;
+    }
+
+    //debug
+    private void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
+        Arrays.stream(showPlayers).forEach(player -> {
+            if (!player.isOnline())
+                return;
+            SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
+            packet.identifier = identifier;
+            packet.dimensionId = this.entity.level.getDimension();
+            packet.position = pos.asVector3f();
+            try {
+                player.dataPacket(packet);
+            }catch (Throwable t){}
+        });
     }
 
     /**
@@ -217,7 +243,8 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (N && E && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) != -384)) {
+        //我们不允许实体在上坡的时候斜着走，因为这容易导致实体卡脚
+        if (N && E && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) <= 0)) {
             Vector3 vec = vector3.add(1, y, -1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -233,7 +260,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (E && S && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) != -384)) {
+        if (E && S && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) <= 0)) {
             Vector3 vec = vector3.add(1, y, 1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -249,7 +276,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && S && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) != -384)) {
+        if (W && S && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) <= 0)) {
             Vector3 vec = vector3.add(-1, y, 1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -265,7 +292,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && N && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) != -384)) {
+        if (W && N && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) <= 0)) {
             Vector3 vec = vector3.add(-1, y, -1);
             if (isPassable(vec) && !existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -320,7 +347,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         int obliqueCost = (int) (Math.abs(Math.min(target.x - start.x, target.z - start.z)) * OBLIQUE_MOVE_COST);
         //计算剩余直线距离
         int directCost = (int) ((Math.abs(Math.max(target.x - start.x, target.z - start.z)) - Math.abs(Math.min(target.x - start.x, target.z - start.z))) * DIRECT_MOVE_COST);
-        return obliqueCost + directCost;
+        return obliqueCost + directCost + (int) (Math.abs(target.y - start.y) * DIRECT_MOVE_COST);
     }
 
     /**

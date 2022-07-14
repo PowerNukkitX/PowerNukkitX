@@ -35,16 +35,16 @@ public class MoveController implements IController {
             }
             var relativeVector = destination.clone().setComponents(destination.x - entity.x,
                     destination.y - entity.y, destination.z - entity.z);
-            var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            if (xzLength < speed) {
+            var xyzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
+            if (xyzLength < speed) {
                 needNewDestination(entity);
                 return false;
             }
-            var k = speed / xzLength * 0.33;
+            var k = speed / xyzLength * 0.33;
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (destination.y > entity.y && collidesImpassibleBlocks(entity,dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
+            if (destination.y > entity.y && collidesBlocks(entity,dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 int id = entity.getLevelBlock().getId();
                 if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER))){
                     dy += entity.getJumpingHeight() * 0.43;
@@ -64,9 +64,9 @@ public class MoveController implements IController {
         entity.getMemoryStorage().put(new NeedUpdateMoveDestinationMemory(true));
     }
 
-    protected boolean collidesImpassibleBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return Arrays.stream(entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
-                false, Block::isSolid)).filter(block -> !block.canPassThrough()).toArray().length > 0;
+    protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
+        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
+                false, Block::isSolid).length > 0;
     }
 
     protected void setYawAndPitch(EntityIntelligent entity,Vector3 target,MoveDirectionMemory directionMemory){
