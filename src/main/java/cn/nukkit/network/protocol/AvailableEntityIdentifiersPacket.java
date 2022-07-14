@@ -2,11 +2,9 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import com.google.common.io.ByteStreams;
 import lombok.ToString;
 
 import java.io.BufferedInputStream;
@@ -31,8 +29,8 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
             BufferedInputStream bis = new BufferedInputStream(inputStream);
             CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
             ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
-            for (CustomEntityDefinition definition : Entity.entityDefinitions.values()) {
-                list.add(definition.nbt());
+            for (var customEntityDefinition : Entity.getEntityDefinitions()) {
+                list.add(customEntityDefinition.nbt());
             }
             nbt.putList(list);
             TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
