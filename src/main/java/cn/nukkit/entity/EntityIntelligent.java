@@ -23,6 +23,8 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
+        behaviorGroup.tickRunningBehaviors(this);
+        behaviorGroup.applyController(this);
         return true;
     }
 
@@ -32,12 +34,12 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
-        IBehaviorGroup behaviorGroup = getBehaviorGroup();
-        behaviorGroup.collectSensorData(this);
-        behaviorGroup.evaluateBehaviors(this);
-        behaviorGroup.updateRoute(this);
-        behaviorGroup.tickRunningBehaviors(this);
-        behaviorGroup.applyController(this);
+        var behaviorGroup = getBehaviorGroup();
+        if (needsRecalcMovement) {
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.updateRoute(this);
+        }
     }
 
     public IMemoryStorage getMemoryStorage(){
