@@ -8,7 +8,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -181,7 +180,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (E = ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(1, y, 0);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target)));
@@ -197,7 +196,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (S = ((y = getAvailableHorizontalOffset(vector3.add(0, 0, 1))) != -384)) {
             Vector3 vec = vector3.add(0, y, 1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target)));
@@ -213,7 +212,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W = ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(-1, y, 0);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target)));
@@ -229,7 +228,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (N = ((y = getAvailableHorizontalOffset(vector3.add(0, 0, -1))) != -384)) {
             Vector3 vec = vector3.add(0, y, -1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target)));
@@ -246,7 +245,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         //我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
         if (N && E && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, -1))) == 0)) {
             Vector3 vec = vector3.add(1, y, -1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target)));
@@ -262,7 +261,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (E && S && ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 1))) == 0)) {
             Vector3 vec = vector3.add(1, y, 1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target)));
@@ -278,7 +277,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W && S && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))) == 0)) {
             Vector3 vec = vector3.add(-1, y, 1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target)));
@@ -294,7 +293,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W && N && ((y = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))) == 0)) {
             Vector3 vec = vector3.add(-1, y, -1);
-            if (isPassable(vec) && !existInCloseList(vec)) {
+            if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
                     this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target)));
@@ -376,17 +375,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     //todo: 实现方块权重
     protected int evalBlock(Vector3 vector3) {
         Block block = level.getBlock(vector3, false);
-        return blockEvaluator.evalBlock(block);
-    }
-
-    /**
-     * 指定实体模型能否移动到指定坐标上而不发生碰撞
-     */
-    protected boolean isPassable(Vector3 vector3) {
-        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2;
-        float height = this.entity.getHeight() * this.entity.getScale();
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-        return !Utils.hasCollisionImpassableBlocks(this.level, bb)/* && !this.level.getBlock(vector3.add(0, -1, 0), false).canPassThrough()*/;
+        return blockEvaluator.evalBlock(entity,block);
     }
 
     /**
@@ -442,7 +431,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         double height = this.entity.getHeight() * this.entity.getScale();
         for (Vector3 vector3 : list) {
             AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionImpassableBlocks(level, bb)) return true;
+            if (Utils.hasCollisionBlocks(level, bb)) return true;
 
             boolean xIsInt = vector3.getX() % 1 == 0;
             boolean zIsInt = vector3.getZ() % 1 == 0;

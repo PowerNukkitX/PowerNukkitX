@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.route.blockevaluator;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.EntityIntelligent;
 
 /**
  * 方块评估器用于寻路器评估方块<br>
@@ -15,8 +16,9 @@ public interface IBlockEvaluator {
      * 返回移动到此方块的代价，大的代价会指示寻路器寻找更符合要求的其他路径<br>
      * 若返回-1，则代表此方块不可选取（代价无限大）
      *
+     * @param entity 目标实体
      * @param block 评估方块
      * @return int 方块坐标
      */
-    int evalBlock(Block block);
+    int evalBlock(EntityIntelligent entity,Block block);
 }
