@@ -10,16 +10,11 @@ import cn.nukkit.utils.Utils;
 public class OnGroundBlockEvaluator implements IBlockEvaluator {
     @Override
     public int evalBlock(EntityIntelligent entity,Block block) {
+        //居中坐标
+        Vector3 center = block.add(0.5,0,0.5);
         //检查是否可到达
-        if (!block.add(0,1,0).getLevelBlock().canPassThrough())
+        if (!isPassable(entity,center.add(0,1,0)))
             return -1;
-//        //若y轴有变化，我们需要检查能否移动到那里
-//        if ((block.y + 1) > entity.y){
-//            for (double tmpY = entity.y; tmpY <= (block.y + 1); tmpY+=1){
-//                if (!isPassable(entity,new Vector3(entity.x,tmpY,entity.z)))
-//                    return -1;
-//            }
-//        }
         //脚下不能是伤害性方块
         if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)
             return -1;

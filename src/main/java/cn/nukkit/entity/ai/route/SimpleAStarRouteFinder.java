@@ -373,8 +373,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
      * 指定坐标是否有效
      */
     //todo: 实现方块权重
-    protected int evalBlock(Vector3 vector3) {
-        Block block = level.getBlock(vector3, false);
+    protected int evalBlock(Block block) {
         return blockEvaluator.evalBlock(entity,block);
     }
 
