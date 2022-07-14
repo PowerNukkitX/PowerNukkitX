@@ -1,10 +1,17 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.io.ByteStreams;
 import lombok.ToString;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
 @ToString(exclude = {"tag"})
 public class AvailableEntityIdentifiersPacket extends DataPacket {
@@ -15,11 +22,21 @@ public class AvailableEntityIdentifiersPacket extends DataPacket {
     static {
         try {
             InputStream inputStream = Nukkit.class.getClassLoader().getResourceAsStream("entity_identifiers.dat");
+
+
             if (inputStream == null) {
                 throw new AssertionError("Could not find entity_identifiers.dat");
             }
-            //noinspection UnstableApiUsage
-            TAG = ByteStreams.toByteArray(inputStream);
+
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            CompoundTag nbt = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
+            ListTag<CompoundTag> list = nbt.getList("idlist", CompoundTag.class);
+            for (CustomEntityDefinition definition : Entity.entityDefinitions.values()) {
+                list.add(definition.nbt());
+            }
+            nbt.putList(list);
+            System.out.println(nbt);
+            TAG = NBTIO.write(nbt, ByteOrder.BIG_ENDIAN, true);
         } catch (Exception e) {
             throw new AssertionError("Error whilst loading entity_identifiers.dat", e);
         }

@@ -7,6 +7,8 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -445,7 +447,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static long entityCount = 1;
 
-    private static final Map<String, Class<? extends Entity>> knownEntities = new HashMap<>();
+    public static final Map<String, CustomEntityDefinition> entityDefinitions = new HashMap<>();
+     static final Map<String, Class<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
 
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
@@ -1136,6 +1139,12 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @PowerNukkitXOnly
+    public static boolean registerCustomEntityDefinition(String name, CustomEntityDefinition definition) {
+        definitions.put(name, definition);
+        return true;
+    }
+
     @Nonnull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -1335,7 +1344,12 @@ public abstract class Entity extends Location implements Metadatable {
         AddEntityPacket addEntity = new AddEntityPacket();
         addEntity.type = this.getNetworkId();
         addEntity.entityUniqueId = this.getId();
-        addEntity.entityRuntimeId = this.getId();
+        if (this instanceof CustomEntity customEntity) {
+            addEntity.id = customEntity.getDefinition().getStringId();
+            addEntity.entityRuntimeId = customEntity.getDefinition().getRuntimeId();
+        } else {
+            addEntity.entityRuntimeId = this.getId();
+        }
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
