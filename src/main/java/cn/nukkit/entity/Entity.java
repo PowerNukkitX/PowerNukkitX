@@ -1346,10 +1346,8 @@ public abstract class Entity extends Location implements Metadatable {
         addEntity.entityUniqueId = this.getId();
         if (this instanceof CustomEntity customEntity) {
             addEntity.id = customEntity.getDefinition().getStringId();
-            addEntity.entityRuntimeId = customEntity.getDefinition().getRuntimeId();
-        } else {
-            addEntity.entityRuntimeId = this.getId();
         }
+        addEntity.entityRuntimeId = this.getId();
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
