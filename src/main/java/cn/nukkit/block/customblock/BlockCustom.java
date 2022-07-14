@@ -2,7 +2,6 @@ package cn.nukkit.block.customblock;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.nbt.tag.CompoundTag;
