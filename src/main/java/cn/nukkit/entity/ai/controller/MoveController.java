@@ -10,6 +10,9 @@ import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 
+/**
+ * 处理实体运动请求
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class MoveController implements IController {
@@ -32,12 +35,12 @@ public class MoveController implements IController {
             }
             var relativeVector = destination.clone().setComponents(destination.x - entity.x,
                     destination.y - entity.y, destination.z - entity.z);
-            var xyzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            if (xyzLength < speed) {
+            var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
+            if (xzLength < speed) {
                 needNewDestination(entity);
                 return false;
             }
-            var k = speed / xyzLength * 0.33;
+            var k = speed / xzLength * 0.33;
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
