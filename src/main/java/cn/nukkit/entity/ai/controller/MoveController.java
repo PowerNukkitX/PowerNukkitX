@@ -1,6 +1,5 @@
 package cn.nukkit.entity.ai.controller;
 
-
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -10,8 +9,6 @@ import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
-
-import java.util.Arrays;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -24,7 +21,7 @@ public class MoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
-        if(entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class)) {
+        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class)) {
             Vector3 target = (Vector3) entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = (MoveDirectionMemory) entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 destination = directionMemory.getEnd();
@@ -44,16 +41,16 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            if (destination.y > entity.y && collidesBlocks(entity,dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
+            if (destination.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 int id = entity.getLevelBlock().getId();
-                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER))){
+                if ((entity.isOnGround() || (id == Block.FLOWING_WATER || id == Block.STILL_WATER))) {
                     dy += entity.getJumpingHeight() * 0.43;
                     currentJumpCoolDown = 0;
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             return true;
-        }else {
+        } else {
             needNewDestination(entity);
             return false;
         }
@@ -69,14 +66,14 @@ public class MoveController implements IController {
                 false, Block::isSolid).length > 0;
     }
 
-    protected void setYawAndPitch(EntityIntelligent entity,Vector3 target,MoveDirectionMemory directionMemory){
+    protected void setYawAndPitch(EntityIntelligent entity, Vector3 target, MoveDirectionMemory directionMemory) {
         //构建方向向量
         //先设置方向向量，以免出现到达目的地时生物不朝向目标的问题
         BVector3 bv2route = BVector3.fromPos(directionMemory.getEnd().x - entity.x, directionMemory.getEnd().y - entity.y, directionMemory.getEnd().z - entity.z);
         entity.setYaw(bv2route.getYaw());
 
         //构建指向玩家的向量
-        BVector3 bv2player = BVector3.fromPos(target.x - entity.x,target.y - entity.y,target.z - entity.z);
+        BVector3 bv2player = BVector3.fromPos(target.x - entity.x, target.y - entity.y, target.z - entity.z);
         entity.setPitch(bv2player.getPitch());
         entity.setHeadYaw(bv2player.getHeadYaw());
     }
