@@ -513,8 +513,8 @@ public class Utils {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getBlock(x, y, z, false);
-                    //判断是否和方块碰撞箱有碰撞
-                    if (block != null && block.collidesWithBB(bb)) {
+                    //判断是否和非空气方块有碰撞
+                    if (block != null && block.getId() != 0 && block.collidesWithBB(bb)) {
                         return true;
                     }
                 }

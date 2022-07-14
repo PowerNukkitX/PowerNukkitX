@@ -457,6 +457,8 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         return false;
     }
 
+    //todo: 实体在水面上时不能正确平滑路径
+    //虽然说水面上也没必要平滑:(
     /**
      * 使用Floyd算法平滑A*路径
      */
