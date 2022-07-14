@@ -9,20 +9,17 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.Collections;
 
 public abstract class EntityIntelligent extends EntityPhysical {
-
-    private final IBehaviorGroup behaviorGroup = new BehaviorGroup(Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), null);
-
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    public IBehaviorGroup getBehaviorGroup() {
-        return behaviorGroup;
-    }
+    public abstract IBehaviorGroup getBehaviorGroup();
 
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
+        getBehaviorGroup().tickRunningBehaviors(this);
+        getBehaviorGroup().applyController(this);
         return true;
     }
 
@@ -33,11 +30,11 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
         IBehaviorGroup behaviorGroup = getBehaviorGroup();
-        behaviorGroup.collectSensorData(this);
-        behaviorGroup.evaluateBehaviors(this);
-        behaviorGroup.updateRoute(this);
-        behaviorGroup.tickRunningBehaviors(this);
-        behaviorGroup.applyController(this);
+        if (needsRecalcMovement) {
+            getBehaviorGroup().collectSensorData(this);
+            getBehaviorGroup().evaluateBehaviors(this);
+            getBehaviorGroup().updateRoute(this);
+        }
     }
 
     public IMemoryStorage getMemoryStorage(){

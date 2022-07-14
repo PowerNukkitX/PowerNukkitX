@@ -11,10 +11,13 @@ public class OnGroundBlockEvaluator implements IBlockEvaluator {
     @Override
     public int evalBlock(EntityIntelligent entity,Block block) {
         //居中坐标
-        Vector3 center = block.add(0.5,0,0.5);
+        Vector3 blockCenter = block.add(0.5,0,0.5);
         //检查是否可到达
-        if (!isPassable(entity,center.add(0,1,0)))
+        if (!isPassable(entity,blockCenter.add(0,1,0)))
             return -1;
+        //检查碰头
+//        if (block.y > entity.y && !isPassable(entity,entity.floor().add(0.5,entity.getJumpingHeight() + 0.5,0.5)))
+//            return -1;
         //脚下不能是伤害性方块
         if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)
             return -1;
