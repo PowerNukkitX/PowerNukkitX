@@ -39,10 +39,6 @@ public class MoveController implements IController {
             var relativeVector = destination.clone().setComponents(destination.x - entity.x,
                     destination.y - entity.y, destination.z - entity.z);
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
-            if (xzLength < speed) {
-                needNewDestination(entity);
-                return false;
-            }
             var k = speed / xzLength * 0.33;
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
@@ -55,14 +51,18 @@ public class MoveController implements IController {
                     Block[] collisionBlocks =  entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
-                    //若大于0.5，则跳跃
-                    if (maxY - entity.getY() > 0.5) {
+                    //如果不跳就上不去，则跳跃
+                    if (maxY - entity.getY() > entity.getFootHeight()) {
                         dy += entity.getJumpingHeight() * 0.43;
                         currentJumpCoolDown = 0;
                     }
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
+            if (xzLength < speed) {
+                needNewDestination(entity);
+                return false;
+            }
             return true;
         } else {
             needNewDestination(entity);
