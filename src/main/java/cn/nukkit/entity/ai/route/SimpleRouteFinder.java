@@ -102,4 +102,13 @@ public abstract class SimpleRouteFinder implements IRouteFinder{
     public int getNodeIndex() {
         return this.currentIndex;
     }
+
+    @Nullable
+    @Override
+    public Node getNode(int index){
+        if (index + 1 < nodes.size()) {
+            return this.nodes.get(index);
+        }
+        return null;
+    }
 }

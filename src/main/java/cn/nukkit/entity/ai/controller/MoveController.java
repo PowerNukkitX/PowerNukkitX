@@ -53,7 +53,9 @@ public class MoveController implements IController {
                     //todo: 检查是否需要跳跃（半砖、台阶等可以直接走过去的就不用了）
                     //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
                     Block[] collisionBlocks =  entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
+                    //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
+                    //若大于0.5，则跳跃
                     if (maxY - entity.getY() > 0.5) {
                         dy += entity.getJumpingHeight() * 0.43;
                         currentJumpCoolDown = 0;

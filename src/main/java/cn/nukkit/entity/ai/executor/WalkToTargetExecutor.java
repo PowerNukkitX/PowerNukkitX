@@ -31,6 +31,8 @@ public class WalkToTargetExecutor implements IBehaviorExecutor {
         //更新寻路target
         setRouteTarget(entity, target);
 
+        entity.setMovementSpeed(0.3f);
+
         //我们并不一定需要下次继续运行，所以说返回false即可
         return false;
     }
