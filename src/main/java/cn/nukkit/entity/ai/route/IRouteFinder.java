@@ -94,4 +94,9 @@ public interface IRouteFinder {
      * 设置当前索引位置
      */
     void setNodeIndex(int index);
+
+    /**
+     * 获取指定索引位置的Node
+     */
+    Node getNode(int index);
 }

@@ -35,7 +35,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     //寻路器(非异步，因为没必要，生物AI本身就是并行的)
     protected SimpleRouteFinder routeFinder;
 
-    //决定多少gt更新一次2路径
+    //决定多少gt更新一次路径
     @Setter
     protected int routeUpdateCycle = 1;//gt
 
@@ -148,6 +148,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 routeFinder.search();
                 //更新Destination
                 updateMoveDestination(entity);
+                removeMemory(NeedUpdateMoveDestinationMemory.class);
                 currentRouteUpdateTick = 0;
             }
         }
