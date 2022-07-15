@@ -357,6 +357,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+                //todo: 实现方块权重
                 if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
                     return block;
             }
@@ -364,6 +365,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+            //todo: 实现方块权重
             if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
                 return block;
         }
