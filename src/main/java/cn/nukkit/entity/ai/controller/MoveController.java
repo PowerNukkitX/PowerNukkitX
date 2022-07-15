@@ -27,8 +27,8 @@ public class MoveController implements IController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
         if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class)) {
-            Vector3 target = (Vector3) entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
-            MoveDirectionMemory directionMemory = (MoveDirectionMemory) entity.getMemoryStorage().get(MoveDirectionMemory.class);
+            Vector3 target = entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
+            MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 destination = directionMemory.getEnd();
             setYawAndPitch(entity, target, directionMemory);
             var speed = entity.getMovementSpeed();
@@ -45,14 +45,14 @@ public class MoveController implements IController {
             if (destination.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 if (entity.isOnGround() || entity.isTouchingWater()) {
                     //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
-                    Block[] collisionBlocks =  entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
+                    Block[] collisionBlocks = entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //如果不跳就上不去，则跳跃
                     if (maxY - entity.getY() > entity.getFootHeight()) {
                         //TODO: 2022/7/15 按理说不需要这么做，但是不这么做就会出现实体上台阶跳的很高的问题
                         //有时我们并不需要跳那么高，所以说只跳需要跳的高度
-                        dy += Math.min(maxY - entity.getY(),entity.getJumpingHeight()) * 0.43;
+                        dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
                         currentJumpCoolDown = 0;
                     }
                 }

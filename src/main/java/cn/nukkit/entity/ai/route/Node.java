@@ -49,6 +49,6 @@ public class Node implements Comparable<Node> {
 
     @Override
     public String toString() {
-        return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF() + (this.parent != null ? "\tparent:" + String.valueOf(this.parent.getVector3()) : "");
+        return vector3.toString() + "| G:" + this.G + " H:" + this.H + " F" + this.getF() + (this.parent != null ? "\tparent:" + this.parent.getVector3() : "");
     }
 }

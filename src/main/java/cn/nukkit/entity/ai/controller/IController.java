@@ -13,6 +13,7 @@ import cn.nukkit.entity.EntityIntelligent;
 public interface IController {
     /**
      * 实施行为
+     *
      * @param entity 目标实体
      * @return 是否成功实施行为
      */

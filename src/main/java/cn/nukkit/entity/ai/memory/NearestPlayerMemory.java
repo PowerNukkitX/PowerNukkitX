@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public class NearestPlayerMemory extends Vector3Memory {
 
-    public NearestPlayerMemory(Player player){
+    public NearestPlayerMemory(Player player) {
         super(player);
     }
 

@@ -9,7 +9,7 @@ import cn.nukkit.math.Vector3;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MoveTargetMemory extends Vector3Memory{
+public class MoveTargetMemory extends Vector3Memory {
     public MoveTargetMemory(Vector3 vector3) {
         super(vector3);
     }

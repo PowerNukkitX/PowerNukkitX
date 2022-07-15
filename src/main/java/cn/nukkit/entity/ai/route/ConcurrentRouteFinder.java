@@ -87,7 +87,8 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
             if (this.currentIndex + 1 < nodes.size()) {
                 return this.nodes.get(this.currentIndex + 1) != null;
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return false;
     }
 
@@ -111,13 +112,13 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
     }
 
     @Override
-    public void setNodeIndex(int index) {
-        this.currentIndex = index;
+    public int getNodeIndex() {
+        return this.currentIndex;
     }
 
     @Override
-    public int getNodeIndex() {
-        return this.currentIndex;
+    public void setNodeIndex(int index) {
+        this.currentIndex = index;
     }
 
     //异步查找路径

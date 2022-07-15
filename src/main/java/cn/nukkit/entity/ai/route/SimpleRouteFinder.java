@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public abstract class SimpleRouteFinder implements IRouteFinder{
+public abstract class SimpleRouteFinder implements IRouteFinder {
 
     //用于存储寻路结果的List
     protected ArrayList<Node> nodes = new ArrayList<>();
@@ -66,7 +66,8 @@ public abstract class SimpleRouteFinder implements IRouteFinder{
             if (this.currentIndex + 1 < nodes.size()) {
                 return this.nodes.get(this.currentIndex + 1) != null;
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return false;
     }
 
@@ -85,18 +86,18 @@ public abstract class SimpleRouteFinder implements IRouteFinder{
     }
 
     @Override
-    public void setNodeIndex(int index) {
-        this.currentIndex = index;
-    }
-
-    @Override
     public int getNodeIndex() {
         return this.currentIndex;
     }
 
+    @Override
+    public void setNodeIndex(int index) {
+        this.currentIndex = index;
+    }
+
     @Nullable
     @Override
-    public Node getNode(int index){
+    public Node getNode(int index) {
         if (index + 1 < nodes.size()) {
             return this.nodes.get(index);
         }

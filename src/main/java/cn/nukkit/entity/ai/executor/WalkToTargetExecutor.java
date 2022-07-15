@@ -3,7 +3,6 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
 import cn.nukkit.math.Vector3;
@@ -16,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 public class WalkToTargetExecutor implements IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
-    protected Class<?> memoryClazz;
+    protected Class<? extends Vector3Memory> memoryClazz;
 
-    public WalkToTargetExecutor(Class<?> memoryClazz) {
+    public WalkToTargetExecutor(Class<? extends Vector3Memory> memoryClazz) {
         this.memoryClazz = memoryClazz;
     }
 
@@ -29,7 +28,7 @@ public class WalkToTargetExecutor implements IBehaviorExecutor {
             return false;
         }
         //获取目标位置（这个clone很重要）
-        Vector3 target = ((Vector3) entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData()).clone();
+        Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData().clone();
         //更新寻路target
         setRouteTarget(entity, target);
 

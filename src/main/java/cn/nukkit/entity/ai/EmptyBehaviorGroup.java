@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class EmptyBehaviorGroup implements IBehaviorGroup{
+public class EmptyBehaviorGroup implements IBehaviorGroup {
     @Override
     public void evaluateBehaviors(EntityIntelligent entity) {
 

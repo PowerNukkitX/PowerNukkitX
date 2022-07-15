@@ -16,17 +16,17 @@ import lombok.Getter;
 @Getter
 public class Behavior implements IBehavior {
 
-    protected IBehaviorExecutor executor;
-    protected IBehaviorEvaluator evaluator;
     protected final int priority;
     protected final int weight;
+    protected IBehaviorExecutor executor;
+    protected IBehaviorEvaluator evaluator;
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator) {
-        this(executor,evaluator,1);
+        this(executor, evaluator, 1);
     }
 
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority) {
-        this(executor,evaluator,priority,1);
+        this(executor, evaluator, priority, 1);
     }
 
 

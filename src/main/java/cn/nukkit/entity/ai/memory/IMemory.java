@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 /**
  * 实体记忆对象，表示单个实体记忆数据
  * 可被存储到记忆存储器{@link IMemoryStorage}中
+ *
  * @param <T> 包含的数据类型
  */
 @PowerNukkitXOnly

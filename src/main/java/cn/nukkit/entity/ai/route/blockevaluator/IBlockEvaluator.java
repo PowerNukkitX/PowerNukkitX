@@ -17,8 +17,8 @@ public interface IBlockEvaluator {
      * 若返回-1，则代表此方块不可选取（代价无限大）
      *
      * @param entity 目标实体
-     * @param block 评估方块
+     * @param block  评估方块
      * @return 代价
      */
-    int evalBlock(EntityIntelligent entity,Block block);
+    int evalBlock(EntityIntelligent entity, Block block);
 }

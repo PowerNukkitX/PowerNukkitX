@@ -22,18 +22,17 @@ import java.util.Set;
 @Getter
 public class MultiBehavior implements IBehavior {
 
-    protected Set<IBehavior> behaviors;
-    @Setter
-    protected IBehavior currentBehavior;
+    private static final Random rand = new Random();
     /**
      * 此组的优先级 <br/>
      * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
      */
     protected final int priority;
+    protected Set<IBehavior> behaviors;
+    @Setter
+    protected IBehavior currentBehavior;
 
-    private static final Random rand = new Random();
-
-    public MultiBehavior(int priority,IBehavior ...behaviors){
+    public MultiBehavior(int priority, IBehavior... behaviors) {
         this.priority = priority;
         this.behaviors = Set.of(behaviors);
     }
@@ -59,7 +58,7 @@ public class MultiBehavior implements IBehavior {
             totalWeight += behavior.getWeight();
         }
         int random = rand.nextInt(totalWeight + 1);
-        for (IBehavior behavior : result){
+        for (IBehavior behavior : result) {
             random -= behavior.getWeight();
             if (random <= 0) {
                 setCurrentBehavior(behavior);

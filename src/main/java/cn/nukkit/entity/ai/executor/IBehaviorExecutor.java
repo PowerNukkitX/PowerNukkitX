@@ -24,6 +24,7 @@ public interface IBehaviorExecutor {
 
     /**
      * 行为非正常中断时(例如被更高级行为覆盖)调用
+     *
      * @param entity 目标实体
      */
     default void onInterrupt(EntityIntelligent entity) {
@@ -31,6 +32,7 @@ public interface IBehaviorExecutor {
 
     /**
      * 行为评估成功后，进入激活状态前调用
+     *
      * @param entity 目标实体
      */
     default void onStart(EntityIntelligent entity) {
@@ -38,6 +40,7 @@ public interface IBehaviorExecutor {
 
     /**
      * 行为正常结束时(execute()方法返回false)调用
+     *
      * @param entity 目标实体
      */
     default void onStop(EntityIntelligent entity) {

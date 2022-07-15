@@ -15,25 +15,25 @@ import java.util.Map;
 @Getter
 public class MemoryStorage implements IMemoryStorage {
 
-    protected Map<Class<?>,IMemory<?>> memoryMap = new HashMap<>();
+    protected Map<Class<? extends IMemory<?>>, IMemory<?>> memoryMap = new HashMap<>();
 
     @Override
     public void put(IMemory<?> memory) {
-        this.memoryMap.put(memory.getClass(),memory);
+        this.memoryMap.put((Class<? extends IMemory<?>>) memory.getClass(), memory);
     }
 
     @Override
-    public void remove(Class<?> memoryClazz) {
+    public void remove(Class<? extends IMemory<?>> memoryClazz) {
         memoryMap.remove(memoryClazz);
     }
 
     @Override
-    public IMemory<?> get(Class<?> memoryClazz) {
-        return memoryMap.get(memoryClazz);
+    public <T extends IMemory<?>, R extends Class<T>> T get(R memoryClazz) {
+        return (T) memoryMap.get(memoryClazz);
     }
 
     @Override
-    public boolean contains(Class<?> memoryClazz) {
+    public boolean contains(Class<? extends IMemory<?>> memoryClazz) {
         return memoryMap.containsKey(memoryClazz);
     }
 }
