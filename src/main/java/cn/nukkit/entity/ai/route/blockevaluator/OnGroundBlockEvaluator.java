@@ -7,6 +7,9 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 
+/**
+ * 用于标准陆地行走实体的方块评估器
+ */
 public class OnGroundBlockEvaluator implements IBlockEvaluator {
     @Override
     public int evalBlock(EntityIntelligent entity, Block block) {

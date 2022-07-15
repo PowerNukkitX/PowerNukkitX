@@ -83,7 +83,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup{
     }
 
     @Override
-    public IMemoryStorage getMemory() {
+    public IMemoryStorage getMemoryStorage() {
         return null;
     }
 }

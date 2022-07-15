@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
- * 非异步的路径查找抽象类
- * 在PowerNukkitX的生物AI架构中，不同实体的路径查找是并行的而不是异步的
+ * 非异步的路径查找抽象类 <br/>
+ * 在PowerNukkitX的生物AI架构中，不同实体的路径查找是并行的而不是异步的 <br/>
  * 所以说我们并不需要异步路径查找
  */
 @PowerNukkitXOnly
@@ -21,7 +21,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder{
     //用于存储寻路结果的List
     protected ArrayList<Node> nodes = new ArrayList<>();
 
-    //Node索引
+    //索引值
     protected int currentIndex = 0;
 
     //方块评估器
@@ -31,30 +31,21 @@ public abstract class SimpleRouteFinder implements IRouteFinder{
         this.blockEvaluator = blockEvaluator;
     }
 
-    /**
-     * 添加寻路结果节点
-     */
+    //添加寻路结果节点
     protected void addNode(Node node) {
         nodes.add(node);
     }
 
-    /**
-     * 批量添加寻路结果节点
-     */
+    //批量添加寻路结果节点
     protected void addNode(ArrayList<Node> node) {
         nodes.addAll(node);
     }
 
-    /**
-     * 重置结果
-     */
+    //重置寻路结果
     protected void resetNodes() {
         this.nodes.clear();
     }
 
-    /**
-     * 线程安全地获取查找到的路径信息（cloned）
-     */
     @Override
     public ArrayList<Node> getRoute() {
         return new ArrayList<>(this.nodes);

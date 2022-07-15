@@ -1,7 +1,5 @@
 package cn.nukkit.entity.ai.route;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -11,17 +9,18 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
+/**
+ * 标准A*寻路实现（非异步）
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
@@ -392,16 +391,16 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 指定坐标是否有效
+     * 指定方块位置是否可作为一个有效的节点
      */
-    //todo: 实现方块权重
+    //todo: 实现不同方块的移动代价 (H值)
     protected int evalBlock(Block block) {
         return blockEvaluator.evalBlock(entity, block);
     }
 
     /**
      * @param vector3
-     * @return 获取指定坐标可到达的最高点 (limit=4)
+     * @return 指定坐标可到达的最高点 (limit=4)
      */
     protected int getAvailableHorizontalOffset(Vector3 vector3) {
         Block block = getHighestUnder(vector3, 4);
@@ -480,7 +479,6 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
     //todo: 实体在水面上时不能正确平滑路径
     //虽然说水面上也没必要平滑:(
-
     /**
      * 使用Floyd算法平滑A*路径
      */
@@ -547,7 +545,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     }
 
     /**
-     * 坐标是否重叠了
+     * 坐标是否重叠了 <br/>
      * 此方法只会比较坐标的floorX、floorY、floorZ
      */
     protected boolean isPositionOverlap(Vector3 vector2, Vector3 vector2_) {

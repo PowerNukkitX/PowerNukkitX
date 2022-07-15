@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 记忆存储器是用来存储传感器或其他地方提供的单个Memory。
+ * 记忆存储器的标准实现
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

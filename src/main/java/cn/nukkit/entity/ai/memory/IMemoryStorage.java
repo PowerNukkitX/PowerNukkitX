@@ -4,8 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 /**
- * 实体记忆存储器接口<br>
- * 存储从传感器搜集来的数据
+ * 此接口抽象了一个记忆存储器 <br/>
+ * 记忆存储器用于存储多个记忆单元{@link IMemory}
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

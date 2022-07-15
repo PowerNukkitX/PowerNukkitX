@@ -6,8 +6,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 
 /**
- * 方块评估器用于寻路器评估方块<br>
- * 通过编写自己的方块评估器，可以自定义寻路器的寻路策略
+ * 方块评估器用于寻路器评估方块 <br/>
+ * 通过编写特定的方块评估器，可以自定义寻路器的寻路策略
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -18,7 +18,7 @@ public interface IBlockEvaluator {
      *
      * @param entity 目标实体
      * @param block 评估方块
-     * @return int 方块坐标
+     * @return 代价
      */
     int evalBlock(EntityIntelligent entity,Block block);
 }

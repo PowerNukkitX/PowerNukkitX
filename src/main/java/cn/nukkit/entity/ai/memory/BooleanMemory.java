@@ -9,8 +9,10 @@ public abstract class BooleanMemory implements IMemory<Boolean> {
 
     protected Boolean data;
 
+    /**
+     * 若data为false,则将会设置data为null，稍后MemoryStorage会直接删除对应的key-value对
+     */
     public BooleanMemory(Boolean data) {
-        //若data==false,则将会设置data为null，稍后MemoryStorage会直接删除对应的key-value对
         if (!data)
             this.data = null;
         else

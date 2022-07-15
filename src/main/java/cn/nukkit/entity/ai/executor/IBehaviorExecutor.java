@@ -23,34 +23,23 @@ public interface IBehaviorExecutor {
     boolean execute(EntityIntelligent entity);
 
     /**
-     * @param entity 行为中断时(例如被更高级行为覆盖)调用
+     * 行为非正常中断时(例如被更高级行为覆盖)调用
+     * @param entity 目标实体
      */
     default void onInterrupt(EntityIntelligent entity) {
     }
 
     /**
-     * @param entity 行为评估成功后调用
+     * 行为评估成功后，进入激活状态前调用
+     * @param entity 目标实体
      */
     default void onStart(EntityIntelligent entity) {
     }
 
     /**
-     * @param entity 行为结束时(execute()方法返回false)调用
+     * 行为正常结束时(execute()方法返回false)调用
+     * @param entity 目标实体
      */
     default void onStop(EntityIntelligent entity) {
-    }
-
-
-    /**
-     * 返回此执行器的名称,默认返回类名称
-     *
-     * @return String
-     */
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
-
-    default boolean equals(IBehaviorExecutor executor) {
-        return getName().equals(executor.getName());
     }
 }

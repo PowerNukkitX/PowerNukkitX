@@ -3,38 +3,27 @@ package cn.nukkit.entity.ai.route;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 异步路径查找抽象类
- * 实现了此类的寻路器应当提供完整的异步寻路支持
+ * 异步路径查找抽象类 <br/>
+ * 实现了此类的寻路器应当提供完整的异步寻路支持 <br/>
+ * PNX中未使用此寻路方案，但保留以提供API <br/>
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-@Getter
-public abstract class ConcurrentRouteFinder implements IRouteFinder {
-    //用于存储寻路结果的List
-    protected ArrayList<Node> nodes = new ArrayList<>();
+public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
 
-    //Node索引
-    protected int currentIndex = 0;
-
+    //同步访问锁
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    //方块评估器
-    protected IBlockEvaluator blockEvaluator;
-
     public ConcurrentRouteFinder(IBlockEvaluator blockEvaluator) {
-        this.blockEvaluator = blockEvaluator;
+        super(blockEvaluator);
     }
 
-    /**
-     * 添加寻路结果节点
-     */
     protected void addNode(Node node) {
         try {
             lock.writeLock().lock();
@@ -44,9 +33,6 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
         }
     }
 
-    /**
-     * 批量添加寻路结果节点
-     */
     protected void addNode(ArrayList<Node> node) {
         try {
             lock.writeLock().lock();
@@ -56,9 +42,6 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
         }
     }
 
-    /**
-     * 重置结果
-     */
     protected void resetNodes() {
         try {
             this.lock.writeLock().lock();
@@ -137,6 +120,7 @@ public abstract class ConcurrentRouteFinder implements IRouteFinder {
         return this.currentIndex;
     }
 
+    //异步查找路径
     public CompletableFuture<Void> asyncSearch() {
         return CompletableFuture.runAsync(this::search);
     }

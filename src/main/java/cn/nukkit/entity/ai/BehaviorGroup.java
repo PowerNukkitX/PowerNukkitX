@@ -31,7 +31,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     //正在运行的行为
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     //记忆存储器
-    protected final MemoryStorage memory = new MemoryStorage();
+    protected final MemoryStorage memoryStorage = new MemoryStorage();
     //寻路器(非异步，因为没必要，生物AI本身就是并行的)
     protected SimpleRouteFinder routeFinder;
 
@@ -79,9 +79,9 @@ public class BehaviorGroup implements IBehaviorGroup {
         for (ISensor sensor : sensors) {
             IMemory<?> memory = sensor.sense(entity);
             if (memory.getData() == null)
-                this.memory.remove(memory.getClass());
+                this.memoryStorage.remove(memory.getClass());
             else
-                this.memory.put(memory);
+                this.memoryStorage.put(memory);
         }
     }
 
@@ -163,26 +163,26 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     @Nullable
     protected Vector3 getRouteTarget() {
-        return memory.contains(MoveTargetMemory.class) ? (Vector3) memory.get(MoveTargetMemory.class).getData() : null;
+        return memoryStorage.contains(MoveTargetMemory.class) ? (Vector3) memoryStorage.get(MoveTargetMemory.class).getData() : null;
     }
 
     protected boolean needUpdateMoveDirection() {
-        return memory.contains(NeedUpdateMoveDestinationMemory.class);
+        return memoryStorage.contains(NeedUpdateMoveDestinationMemory.class);
     }
 
     protected void removeMemory(Class<?> clazz) {
-        memory.remove(clazz);
+        memoryStorage.remove(clazz);
     }
 
     protected void updateMoveDestination(EntityIntelligent entity) {
-        MoveDirectionMemory directionMemory = (MoveDirectionMemory) memory.get(MoveDirectionMemory.class);
+        MoveDirectionMemory directionMemory = (MoveDirectionMemory) memoryStorage.get(MoveDirectionMemory.class);
         Vector3 end = null;
         if (directionMemory != null) {
             end = directionMemory.getEnd();
         } else {
             end = entity.clone();
         }
-        memory.put(new MoveDirectionMemory(end, routeFinder.next().getVector3()));
+        memoryStorage.put(new MoveDirectionMemory(end, routeFinder.next().getVector3()));
     }
 
     /**

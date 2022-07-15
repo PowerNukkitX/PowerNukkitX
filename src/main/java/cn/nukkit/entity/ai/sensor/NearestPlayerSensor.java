@@ -7,6 +7,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import lombok.Getter;
 
+//存储最近的玩家的Memory
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter

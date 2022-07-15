@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 /**
- * 与MoveDestinationMemory不同，此Memory存储最终目标位置，而不是当前目标位置
+ * 与MoveDirectionMemory不同，此Memory存储最终目标位置，而不是当前目标位置
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

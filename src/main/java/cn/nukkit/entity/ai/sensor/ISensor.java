@@ -8,8 +8,8 @@ import cn.nukkit.entity.ai.memory.IMemory;
 import javax.annotation.Nullable;
 
 /**
- * 传感器接口<br>
- * 传感器用于搜集环境信息并写入MemoryStorage
+ * 此接口抽象了一个传感器 <br/>
+ * 传感器用于搜集环境信息并返回一个记忆{@link IMemory}，且将会被写入记忆存储器{@link cn.nukkit.entity.ai.memory.IMemoryStorage}
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -23,18 +23,4 @@ public interface ISensor {
      */
     @Nullable
     IMemory<?> sense(EntityIntelligent entity);
-
-    /**
-     * 返回此传感器的名称,默认返回类名称
-     *
-     * @return String
-     */
-    default String getName() {
-        return this.getClass().getSimpleName();
-    }
-
-    default boolean equals(ISensor sensor) {
-        return getName().equals(sensor.getName());
-    }
-
 }

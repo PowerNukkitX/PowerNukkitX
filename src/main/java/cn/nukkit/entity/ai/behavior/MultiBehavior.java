@@ -11,11 +11,11 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * 由多个行为组成的组（注意和BehaviorGroup区分）<br>
- * 调用方法execute()前，必须调用此对象的评估函数以确认激活的是哪个行为<br>
- * 在评估时，会将评估下发到所有包含的行为<br>
- * 对于返回成功的行为，将会选取最高优先级的那一组<br>
- * 如果到这一步依然存在多个行为，则会随机选取其中一个作为执行行为
+ * 由多个行为{@link IBehavior}组成的组（注意和行为组{@link cn.nukkit.entity.ai.IBehaviorGroup}区分）<br>
+ * 调用方法{@link #execute(EntityIntelligent)}前，必须调用此对象的评估函数以确认激活的是哪个行为<br>
+ * 在评估时，会评估所有包含的子行为<br>
+ * 筛选出返回成功的行为后，会选取最高优先级的那一组<br>
+ * 如果到这一步依然存在多个行为，则会根据行为的{@link IBehavior#getWeight()}方法的返回值随机选取其中一个作为执行行为
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -26,7 +26,7 @@ public class MultiBehavior implements IBehavior {
     @Setter
     protected IBehavior currentBehavior;
     /**
-     * 此组的优先级
+     * 此组的优先级 <br/>
      * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
      */
     protected final int priority;

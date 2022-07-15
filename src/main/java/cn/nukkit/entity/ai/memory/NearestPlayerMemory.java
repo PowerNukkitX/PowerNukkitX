@@ -6,16 +6,14 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestPlayerMemory implements IMemory<Player> {
-
-    protected Player player;
+public class NearestPlayerMemory extends Vector3Memory {
 
     public NearestPlayerMemory(Player player){
-        this.player = player;
+        super(player);
     }
 
     @Override
     public Player getData() {
-        return this.player;
+        return (Player) super.getData();
     }
 }

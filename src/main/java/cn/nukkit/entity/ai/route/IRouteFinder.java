@@ -4,10 +4,11 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * 寻路器接口
+ * 此接口抽象了一个寻路器
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -28,75 +29,87 @@ public interface IRouteFinder {
     boolean isInterrupt();
 
     /**
-     * 是否可到达终点
-     * 在调用此方法前，你应该首先尝试寻路，否则此方法始将终返回true
+     * 在调用此方法前，你应该首先尝试寻路，否则此方法始将终返回{@code true}
+     *
+     * @return 终点是否可到达
      */
     boolean isReachable();
 
     /**
-     * 尝试寻路
+     * 尝试开始寻路
      *
-     * @return boolean 是否成功找到路径
+     * @return 是否成功找到路径
      */
     boolean search();
 
     /**
-     * 获取起始点
+     * @return 寻路起点
      */
     Vector3 getStart();
 
     /**
      * 设置寻路起点，将会导致寻路中断
+     *
+     * @param vector3 寻路起点
      */
     void setStart(Vector3 vector3);
 
     /**
-     * 获取终点
+     * @return 寻路终点
      */
     Vector3 getTarget();
 
     /**
      * 设置寻路终点，将会导致寻路中断
+     *
+     * @param vector3 寻路终点
      */
     void setTarget(Vector3 vector3);
 
     /**
      * 获取寻路结果
+     *
+     * @return 一个包含 {@link Node} 的列表 {@link List}，应已排序好，第一项为寻路起点，最后一项为寻路终点，之间的为找到的路径点
      */
-    ArrayList<Node> getRoute();
+    List<Node> getRoute();
 
     /**
-     * 是否有下一个节点
+     * @return 是否有下一个节点 {@link Node}
      */
     boolean hasNext();
 
     /**
-     * 下一个节点（如果有的话）
+     * 获取下一个节点{@link Node}（如果有的话）
+     *
+     * @return 下一个节点
      */
+    @Nullable
     Node next();
 
     /**
-     * 当前索引位置是否有节点
+     * @return 当前索引所在位置是否有节点 {@link Node}
      */
     boolean hasCurrentNode();
 
     /**
-     * 获取当前节点
+     * @return 当前索引位置对应的节点 {@link Node}
      */
     Node getCurrentNode();
 
     /**
-     * 获取当前节点索引
+     * @return 当前索引
      */
     int getNodeIndex();
 
     /**
-     * 设置当前索引位置
+     * 设置当前索引
+     *
+     * @param index 索引值
      */
     void setNodeIndex(int index);
 
     /**
-     * 获取指定索引位置的Node
+     * @return 指定索引位置的节点 {@link Node}
      */
     Node getNode(int index);
 }

@@ -10,6 +10,6 @@ import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 public class PlayerEvaluator implements IBehaviorEvaluator{
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        return entity.getBehaviorGroup().getMemory().contains(NearestPlayerMemory.class);
+        return entity.getBehaviorGroup().getMemoryStorage().contains(NearestPlayerMemory.class);
     }
 }
