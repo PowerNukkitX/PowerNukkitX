@@ -16,9 +16,9 @@ import org.jetbrains.annotations.NotNull;
 public class WalkToTargetExecutor implements IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
-    protected Class<Vector3Memory> memoryClazz;
+    protected Class<?> memoryClazz;
 
-    public WalkToTargetExecutor(Class<Vector3Memory> memoryClazz) {
+    public WalkToTargetExecutor(Class<?> memoryClazz) {
         this.memoryClazz = memoryClazz;
     }
 
