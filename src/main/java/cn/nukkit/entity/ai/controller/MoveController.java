@@ -43,17 +43,17 @@ public class MoveController implements IController {
             var dx = relativeVector.x * k;
             var dz = relativeVector.z * k;
             var dy = 0.0d;
-            //todo: 这里的跳跃实现有待改进
             if (destination.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 if (entity.isOnGround() || entity.isTouchingWater()) {
-                    //todo: 检查是否需要跳跃（半砖、台阶等可以直接走过去的就不用了）
                     //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
                     Block[] collisionBlocks =  entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //如果不跳就上不去，则跳跃
                     if (maxY - entity.getY() > entity.getFootHeight()) {
-                        dy += entity.getJumpingHeight() * 0.43;
+                        //TODO: 2022/7/15 按理说不需要这么做，但是不这么做就会出现实体上台阶跳的很高的问题
+                        //有时我们并不需要跳那么高，所以说只跳需要跳的高度
+                        dy += Math.min(maxY - entity.getY(),entity.getJumpingHeight()) * 0.43;
                         currentJumpCoolDown = 0;
                     }
                 }
