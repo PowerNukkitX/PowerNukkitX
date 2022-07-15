@@ -519,18 +519,11 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         if (data.containsKey("blockState")) {
             String blockStateId = data.get("blockState").toString();
-            // TODO Remove this when the support is added to these blocks
-            if (Stream.of(
-                    "minecraft:candle",
-                    "minecraft:smooth_basalt"
-            ).anyMatch(blockStateId::startsWith)) {
-                return null;
-            }
             try {
                 // TODO Remove this when the support is added to these blocks
                 String[] stateParts = blockStateId.split(";", 2);
                 Integer blockId = BlockStateRegistry.getBlockId(stateParts[0]);
-                if (blockId != null && blockId > BlockID.INFESTED_DEEPSLATE) {
+                if (blockId != null && blockId > BlockID.DOUBLE_MANGROVE_SLAB) {
                     return Item.getBlock(BlockID.AIR);
                 }
 
