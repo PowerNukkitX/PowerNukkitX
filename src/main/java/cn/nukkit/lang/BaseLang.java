@@ -18,7 +18,7 @@ public class BaseLang {
 
     protected final String langName;
 
-    protected Map<String, String> lang = new HashMap<>();
+    protected Map<String, String> lang;
     protected Map<String, String> fallbackLang = new HashMap<>();
 
 
@@ -117,10 +117,7 @@ public class BaseLang {
     }
 
     public String translateString(String str, String... params) {
-        if (params != null) {
-            return this.translateString(str, params, null);
-        }
-        return this.translateString(str, EmptyArrays.EMPTY_STRINGS, null);
+        return this.translateString(str, Objects.requireNonNullElse(params, EmptyArrays.EMPTY_STRINGS), null);
     }
 
     public String translateString(String str, Object... params) {
