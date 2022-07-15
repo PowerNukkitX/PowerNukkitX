@@ -40,6 +40,7 @@ import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
+import cn.nukkit.level.util.BlockIndex;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -61,6 +62,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -228,6 +230,8 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2ObjectOpenHashMap<Deque<DataPacket>> chunkPackets = new Long2ObjectOpenHashMap<>();
 
     private final Long2LongMap unloadQueue = Long2LongMaps.synchronize(new Long2LongOpenHashMap());
+
+    private final Object2ObjectOpenHashMap<BlockIndex, Block> tickCachedBlocks = new Object2ObjectOpenHashMap<>();
 
     private float time;
     public boolean stopTime;
@@ -911,6 +915,13 @@ public class Level implements ChunkManager, Metadatable {
         return gameRules;
     }
 
+    public void releaseTickCachedBlocks() {
+        synchronized (this.tickCachedBlocks) {
+            this.tickCachedBlocks.clear();
+            this.tickCachedBlocks.trim();
+        }
+    }
+
     public void doTick(int currentTick) {
         this.timings.doTick.startTiming();
 
@@ -1087,6 +1098,8 @@ public class Level implements ChunkManager, Metadatable {
             Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
             gameRules.refresh();
         }
+
+        tickCachedBlocks.clear();
 
         this.timings.doTick.stopTiming();
     }
@@ -1808,6 +1821,64 @@ public class Level implements ChunkManager, Metadatable {
             around.add(side);
         }
         return around;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos) {
+        return getTickCachedBlock(pos, 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, int layer) {
+        return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, boolean load) {
+        return getTickCachedBlock(pos, 0, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, int layer, boolean load) {
+        return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z) {
+        return getTickCachedBlock(x, y, z, 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, int layer) {
+        return getTickCachedBlock(x, y, z, layer, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, boolean load) {
+        return getTickCachedBlock(x, y, z, 0, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
+        var index = new BlockIndex(x, y, z, layer);
+        var tmp = tickCachedBlocks.get(index);
+        if (tmp != null) {
+            return tickCachedBlocks.get(index);
+        } else {
+            synchronized (tickCachedBlocks) {
+                tmp = getBlock(x, y, z, layer, load);
+                tickCachedBlocks.put(index, tmp);
+                return tmp;
+            }
+        }
     }
 
     public synchronized Block getBlock(Vector3 pos) {

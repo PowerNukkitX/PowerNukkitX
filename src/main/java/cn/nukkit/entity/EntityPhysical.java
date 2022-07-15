@@ -1,13 +1,14 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockLava;
-import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.*;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -108,7 +109,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void handleFrictionMovement() {
         // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+        final double friction = this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
         final double reduce = getMovementSpeed() * (1 - friction * 0.85) * 0.43;
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
             return;
@@ -171,6 +172,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     protected void addPreviousLiquidMovement() {
         addTmpMoveMotion(previousCurrentMotion);
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    protected boolean hasWaterAt(float height) {
+        double y = this.y + height;
+        Block block = this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
+
+        boolean layer1 = false;
+        if (!(block instanceof BlockBubbleColumn) && (
+                block instanceof BlockWater
+                        || (layer1 = block.getTickCachedLevelBlockAtLayer(1) instanceof BlockWater))) {
+            BlockWater water = (BlockWater) (layer1 ? block.getTickCachedLevelBlockAtLayer(1) : block);
+            double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
+            return y < f;
+        }
+
+        return false;
     }
 
     protected void handleFloatingMovement() {

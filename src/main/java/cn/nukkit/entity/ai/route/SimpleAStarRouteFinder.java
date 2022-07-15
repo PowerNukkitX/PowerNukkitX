@@ -140,9 +140,9 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug
-        findingPath.forEach(node -> {
-            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-        });
+//        findingPath.forEach(node -> {
+//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+//        });
 
         this.finished = true;
         this.searching = false;
@@ -375,7 +375,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     protected Block getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
-                Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+                Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
                 //todo: 实现方块权重
                 if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
                     return block;
@@ -383,7 +383,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
-            Block block = this.level.getBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
+            Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
             //todo: 实现方块权重
             if ((evalBlock(block) != -1)/* && level.getBlock(block.add(0, 1, 0), false).getId() == Block.AIR*/)
                 return block;
@@ -452,7 +452,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         double height = this.entity.getHeight() * this.entity.getScale();
         for (Vector3 vector3 : list) {
             AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionBlocks(level, bb)) return true;
+            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
 
             boolean xIsInt = vector3.getX() % 1 == 0;
             boolean zIsInt = vector3.getZ() % 1 == 0;
@@ -489,15 +489,12 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         int total = 2;
         if (array.size() > 2) {
             while (total < array.size()) {
-                if (!hasBarrier(array.get(current), array.get(total)) && total != array.size() - 1) {
-                    total++;
-                } else {
+                if (hasBarrier(array.get(current), array.get(total)) || total == array.size() - 1) {
                     array.get(total - 1).setParent(array.get(current));
                     current = total - 1;
-                    total++;
                 }
+                total++;
             }
-
             Node temp = array.get(array.size() - 1);
             ArrayList<Node> tempL = new ArrayList<>();
             tempL.add(temp);
