@@ -139,7 +139,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         //写入结果
         this.addNode(findingPath);
 
-        //debug
+        //debug only
 //        findingPath.forEach(node -> {
 //            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
 //        });
@@ -151,21 +151,21 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         return true;
     }
 
-    //debug
-    private void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
-        Arrays.stream(showPlayers).forEach(player -> {
-            if (!player.isOnline())
-                return;
-            SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
-            packet.identifier = identifier;
-            packet.dimensionId = this.entity.level.getDimension();
-            packet.position = pos.asVector3f();
-            try {
-                player.dataPacket(packet);
-            } catch (Throwable t) {
-            }
-        });
-    }
+    //debug only
+//    private void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
+//        Arrays.stream(showPlayers).forEach(player -> {
+//            if (!player.isOnline())
+//                return;
+//            SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
+//            packet.identifier = identifier;
+//            packet.dimensionId = this.entity.level.getDimension();
+//            packet.position = pos.asVector3f();
+//            try {
+//                player.dataPacket(packet);
+//            } catch (Throwable t) {
+//            }
+//        });
+//    }
 
     /**
      * 将一个节点周围的有效节点放入OpenList中
