@@ -231,7 +231,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final Long2LongMap unloadQueue = Long2LongMaps.synchronize(new Long2LongOpenHashMap());
 
-    private final Object2ObjectOpenHashMap<BlockIndex, Block> tickCachedBlocks = new Object2ObjectOpenHashMap<>();
+    private final ConcurrentHashMap<BlockIndex, Block> tickCachedBlocks = new ConcurrentHashMap<>();
 
     private float time;
     public boolean stopTime;
@@ -918,7 +918,6 @@ public class Level implements ChunkManager, Metadatable {
     public void releaseTickCachedBlocks() {
         synchronized (this.tickCachedBlocks) {
             this.tickCachedBlocks.clear();
-            this.tickCachedBlocks.trim();
         }
     }
 
