@@ -35,7 +35,6 @@ public abstract class EntityIntelligent extends EntityPhysical {
         //No behavior group
         if (getBehaviorGroup() == null)
             return;
-        IBehaviorGroup behaviorGroup = getBehaviorGroup();
         if (needsRecalcMovement) {
             getBehaviorGroup().collectSensorData(this);
             getBehaviorGroup().evaluateBehaviors(this);

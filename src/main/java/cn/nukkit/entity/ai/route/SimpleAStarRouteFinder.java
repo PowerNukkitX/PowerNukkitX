@@ -141,7 +141,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         //debug
         findingPath.forEach(node -> {
-            sendParticle("minecraft:balloon_gas_particle",node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
         });
 
         this.finished = true;
@@ -162,7 +162,8 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             packet.position = pos.asVector3f();
             try {
                 player.dataPacket(packet);
-            }catch (Throwable t){}
+            } catch (Throwable t) {
+            }
         });
     }
 
@@ -177,6 +178,24 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         Vector3 vector3 = new Vector3(node.getVector3().getFloorX() + 0.5, node.getVector3().getY(), node.getVector3().getFloorZ() + 0.5);
 
         double y;
+
+        if ((y = getAvailableHorizontalOffset(vector3)) != -384) {
+            if (Math.abs(y) > 0.25) {
+                Vector3 vec = vector3.add(1, y, 0);
+                if (!existInCloseList(vec)) {
+                    Node nodeNear = getOpenNode(vec);
+                    if (nodeNear == null) {
+                        this.openList.offer(new Node(vec, node, node.getG(), calH(vec, target)));
+                    } else {
+                        if (node.getG() < nodeNear.getG()) {
+                            nodeNear.setParent(node);
+                            nodeNear.setG(node.getG());
+                            nodeNear.setF(nodeNear.getG() + nodeNear.getH());
+                        }
+                    }
+                }
+            }
+        }
 
         if (E = ((y = getAvailableHorizontalOffset(vector3.add(1, 0, 0))) != -384)) {
             Vector3 vec = vector3.add(1, y, 0);
@@ -375,7 +394,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
      */
     //todo: 实现方块权重
     protected int evalBlock(Block block) {
-        return blockEvaluator.evalBlock(entity,block);
+        return blockEvaluator.evalBlock(entity, block);
     }
 
     /**
@@ -459,6 +478,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
     //todo: 实体在水面上时不能正确平滑路径
     //虽然说水面上也没必要平滑:(
+
     /**
      * 使用Floyd算法平滑A*路径
      */
@@ -503,7 +523,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
                 nodes.add(end = end.getParent());
             }
             nodes.add(end.getParent());
-        }else{
+        } else {
             nodes.add(end);
         }
         Collections.reverse(nodes);
