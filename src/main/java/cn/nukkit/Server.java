@@ -398,9 +398,9 @@ public class Server {
             log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
             String languagesCommaList;
             try {
-                InputStream languageList = this.getClass().getClassLoader().getResourceAsStream("lang/language.list");
+                InputStream languageList = this.getClass().getClassLoader().getResourceAsStream("language/language.list");
                 if (languageList == null) {
-                    throw new IllegalStateException("lang/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
+                    throw new IllegalStateException("language/language.list is missing. If you are running a development version, make sure you have run 'git submodule update --init'.");
                 }
                 String[] lines = Utils.readFile(languageList).split("\n");
                 for (String line : lines) {
@@ -425,7 +425,7 @@ public class Server {
                     lang = this.console.readLine();
                 }
 
-                InputStream conf = this.getClass().getClassLoader().getResourceAsStream("lang/" + lang + "/lang.ini");
+                InputStream conf = this.getClass().getClassLoader().getResourceAsStream("language/" + lang + "/lang.ini");
                 if (conf != null) {
                     language = lang;
                 } else if (predefinedLanguage != null) {
@@ -435,9 +435,9 @@ public class Server {
             }
 
             Properties nukkitYmlLang = new Properties();
-            InputStream nukkitYmlLangIS = this.getClass().getClassLoader().getResourceAsStream("lang/" + language + "/nukkit.yml.properties");
+            InputStream nukkitYmlLangIS = this.getClass().getClassLoader().getResourceAsStream("language/" + language + "/nukkit.yml.properties");
             if (nukkitYmlLangIS == null) {
-                nukkitYmlLangIS = this.getClass().getClassLoader().getResourceAsStream("lang/" + fallback + "/nukkit.yml.properties");
+                nukkitYmlLangIS = this.getClass().getClassLoader().getResourceAsStream("language/" + fallback + "/nukkit.yml.properties");
             }
 
             if (nukkitYmlLangIS == null) {
@@ -615,6 +615,13 @@ public class Server {
         
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
+
+        // 检测启动参数
+        if (!StartArgUtils.isValidStart()) {
+            log.fatal(getLanguage().translateString("nukkit.start.invalid"));
+            return;
+        }
+
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
         log.info(getLanguage().translateString("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
