@@ -1145,12 +1145,13 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @PowerNukkitXOnly
-    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition) {
+    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
         if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }
         entityDefinitions.add(customEntityDefinition);
+        registerEntity(customEntityDefinition.getStringId(), entity, true);
     }
 
     @Nonnull
