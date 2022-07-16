@@ -32,6 +32,7 @@ public class WalkToTargetExecutor implements IBehaviorExecutor {
         //更新寻路target
         setRouteTarget(entity, target);
 
+        //todo: 此语句会破坏EntityPhysics中对摩擦力和阻力的计算
         entity.setMovementSpeed(0.3f);
 
         //我们并不一定需要下次继续运行，所以说返回false即可
