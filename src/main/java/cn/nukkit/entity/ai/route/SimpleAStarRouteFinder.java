@@ -204,7 +204,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (E = ((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) != -384)) {
+        if (E = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, 0))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(1, offsetY, 0);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -220,7 +220,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (S = ((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) != -384)) {
+        if (S = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(0, 0, 1))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, 1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -236,7 +236,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W = ((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) != -384)) {
+        if (W = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, 0))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(-1, offsetY, 0);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -252,7 +252,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (N = ((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) != -384)) {
+        if (N = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(0, 0, -1))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, -1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -270,7 +270,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         //我们不允许实体在上下坡的时候斜着走，因为这容易导致实体卡脚（原版也是这个逻辑）
         //接触水的时候就不需要这么判断了
-        if (N && E && (((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) == 0) || entity.isTouchingWater())) {
+        if (N && E && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, -1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, -1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -286,7 +286,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (E && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) == 0) || entity.isTouchingWater())) {
+        if (E && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, 1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, 1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -302,7 +302,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) == 0) || entity.isTouchingWater())) {
+        if (W && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, 1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
@@ -318,7 +318,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             }
         }
 
-        if (W && N && (((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) == 0) || entity.isTouchingWater())) {
+        if (W && N && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, -1);
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);

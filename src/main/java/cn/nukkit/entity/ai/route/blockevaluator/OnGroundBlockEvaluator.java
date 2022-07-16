@@ -24,7 +24,7 @@ public class OnGroundBlockEvaluator implements IBlockEvaluator {
             return -1;
         //水的H较大
         if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.STILL_WATER)
-            return 10;//排除水
+            return 5;//排除水
         //必须可以站立
         if (block.canPassThrough())
             return -1;
