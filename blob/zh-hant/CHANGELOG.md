@@ -66,6 +66,8 @@
 - [#428] NPC Dialog協議邏輯同步1.19.0。
 - [#443] 完善Mapping。
 - [#445] 實現兼容1.19.10 (協議版本534)。
+- [#455] 更新資源文件。
+- [#461] 更新啟動命令檢測 + 棄用submodule。
 
 ### BUG修復
 
@@ -119,6 +121,8 @@
 - [#437] 解決因修復地圖時間過長導致watchdog強制停止服務器的問題。
 - [#442] 修復發光墨囊和銅錠在RuntimeMapping::namespacedIdItem中缺失的問題。
 - [#448] 修復輸入/xp崩潰的問題。
+- [#462] 修復create Item Entry。
+- [#463] 修復/particle命令。
 
 ### 安全漏洞修復
 
@@ -132,6 +136,7 @@
 - [#412] 添加和修正缺失的`@PowerNukkitXOnly`
 - [#417] 修正`PlayerFreezeEvent`事件的文檔
 - [#424] 將PowerNukkitX發布至[Maven Central]，並新增[Javadoc]
+- [#454] 添加包的註釋信息。
 
 ## [Unreleased 1.6.0.0-PN] - Future ([點此查看項目里程碑](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -1263,6 +1268,11 @@ Need to switch languages?
 [#445]: https://github.com/PowerNukkitX/PowerNukkitX/pull/445
 [#446]: https://github.com/PowerNukkitX/PowerNukkitX/pull/446
 [#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
+[#454]: https://github.com/PowerNukkitX/PowerNukkitX/pull/454
+[#455]: https://github.com/PowerNukkitX/PowerNukkitX/pull/455
+[#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
+[#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
+[#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

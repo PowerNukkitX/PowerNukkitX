@@ -67,6 +67,8 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#428] NPC Dialog protocol logic synchronization 1.19.0.
 - [#443] Improve Mapping.
 - [#445] Implemented to be compatible with 1.19.10 (protocol version 534).
+- [#455] Update resource files.
+- [#461] Update startup command detection + deprecate submodule.
 
 ### Fixes
 
@@ -120,6 +122,8 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#437] Fix issue with watchdog forcing server stop due to long map repair times.
 - [#442] Fix missing glowing ink sacs and copper ingots in RuntimeMapping::namespacedIdItem.
 - [#448] Fix input/xp crash issue.
+- [#462] Fix create Item Entry.
+- [#463] Fix /particle command.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -131,6 +135,7 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#412] Added and fixed missing `@PowerNukkitXOnly`
 - [#417] Fix documentation for `PlayerFreezeEvent` event
 - [#424] Publish PowerNukkitX to [Maven Central] and add [Javadoc]
+- [#454] Add package comment information.
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -1263,6 +1268,11 @@ Need to switch languages?
 [#445]: https://github.com/PowerNukkitX/PowerNukkitX/pull/445
 [#446]: https://github.com/PowerNukkitX/PowerNukkitX/pull/446
 [#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
+[#454]: https://github.com/PowerNukkitX/PowerNukkitX/pull/454
+[#455]: https://github.com/PowerNukkitX/PowerNukkitX/pull/455
+[#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
+[#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
+[#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
