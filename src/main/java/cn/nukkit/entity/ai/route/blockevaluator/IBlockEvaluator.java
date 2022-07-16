@@ -14,7 +14,7 @@ import cn.nukkit.entity.EntityIntelligent;
 public interface IBlockEvaluator {
     /**
      * 返回移动到此方块的代价，大的代价会指示寻路器寻找更符合要求的其他路径<br>
-     * 若返回-1，则代表此方块不可选取（代价无限大）
+     * 若返回值小于等于0，则代表此方块不可选取（代价无限大）
      *
      * @param entity 目标实体
      * @param block  评估方块
