@@ -20,7 +20,7 @@ import java.util.Set;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MultiBehavior implements IBehavior {
+public class WeightedMultiBehavior implements IBehavior {
 
     private static final Random rand = new Random();
     /**
@@ -32,12 +32,12 @@ public class MultiBehavior implements IBehavior {
     @Setter
     protected IBehavior currentBehavior;
 
-    public MultiBehavior(int priority, IBehavior... behaviors) {
+    public WeightedMultiBehavior(int priority, IBehavior... behaviors) {
         this.priority = priority;
         this.behaviors = Set.of(behaviors);
     }
 
-    public MultiBehavior(int priority, Set<IBehavior> behaviors) {
+    public WeightedMultiBehavior(int priority, Set<IBehavior> behaviors) {
         this.priority = priority;
         this.behaviors = behaviors;
     }

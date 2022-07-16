@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.route;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
+import cn.nukkit.entity.ai.route.data.Node;
 import lombok.Getter;
 
 import javax.annotation.Nullable;

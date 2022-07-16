@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.math.Vector3;
 
 import javax.annotation.Nullable;
