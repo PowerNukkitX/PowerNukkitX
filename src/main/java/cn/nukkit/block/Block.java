@@ -7,7 +7,6 @@ import cn.nukkit.block.customblock.BlockPropertyData;
 import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.*;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
