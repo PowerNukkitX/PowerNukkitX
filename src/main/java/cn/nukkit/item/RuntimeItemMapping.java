@@ -4,7 +4,7 @@ import cn.nukkit.api.API;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.customblock.BlockCustom;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
@@ -179,7 +179,7 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void registerCustomBlock(List<BlockCustom> blocks) {
+    public synchronized void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
             int id = 255 - block.getId();
             RuntimeItems.Entry entry = new RuntimeItems.Entry(
@@ -204,13 +204,13 @@ public class RuntimeItemMapping {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public synchronized void deleteCustomBlock(List<BlockCustom> blocks) {
-        for(var block : blocks){
+    public synchronized void deleteCustomBlock(List<CustomBlock> blocks) {
+        for (var block : blocks) {
             RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespace());
             if (entry != null) {
                 this.entries.remove(entry);
                 this.namespaceNetworkMap.remove(block.getNamespace());
-                this.networkNamespaceMap.remove(255-block.getId());
+                this.networkNamespaceMap.remove(255 - block.getId());
                 this.generatePalette();
             }
         }

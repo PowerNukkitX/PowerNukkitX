@@ -1,45 +1,49 @@
 package cn.nukkit.block.customblock;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 继承这个类实现自定义方块
  * 重写Block中的方法控制方块属性
  */
-public abstract class BlockCustom extends Block {
-    protected AtomicBoolean initialized = new AtomicBoolean(false);
-
-    protected CompoundTag compoundTag;
-
-    public BlockCustom() {
-    }
-
+public interface CustomBlock {
     /**
      * 控制自定义方块的命名空间<br>(例如 wiki:test_block)
      */
-    public abstract String getNamespace();
+    String getNamespace();
 
     /**
      * 控制自定义方块所用的材质名称<br>(例如材质图片test.png设置test)
      */
-    public abstract String getTexture();
+    String getTexture();
+
+    /* 以下几个方法需要被手动覆写 */
+    double getFrictionFactor();
+
+    double getResistance();
+
+    int getLightFilter();
+
+    int getLightLevel();
+
+    double calculateBreakTime();
+
+    Item toItem();
+
+    default Block toCustomBlock() {
+        return ((Block) this).clone();
+    }
 
     /**
-     * 控制自定义方块在创造栏中的分类
+     * 控制自定义方块在创造栏中的分类,默认值construction
      *
      * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
      */
-    public String getCreativeCategory() {
+    default String getCreativeCategory() {
         return "construction";
     }
 
@@ -48,14 +52,16 @@ public abstract class BlockCustom extends Block {
      *
      * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html">wiki.bedrock.dev</a>
      */
-    public String getCreativeCategoryGroup() {
+    default String getCreativeCategoryGroup() {
         return "";
     }
 
     /**
-     * 控制自定义方块的渲染方法<br>可选值:<br>opaque<br>alpha_test<br>blend<br>double_sided
+     * 控制自定义方块的渲染方法<p>
+     * 可选值:<br>opaque<br>alpha_test<br>blend<br>double_sided<p>
+     * 默认值: "opaque"
      */
-    public String getRenderMethod() {
+    default String getRenderMethod() {
         return "opaque";
     }
 
@@ -63,45 +69,24 @@ public abstract class BlockCustom extends Block {
      * 控制自定义方块的形状<br>
      * Geometry identifier from geo file in 'RP/models/entity' folder
      */
-    public Optional<String> getGeometry() {
-        return Optional.empty();
+    default String getGeometry() {
+        return "";
     }
 
-    @Override
-    public double calculateBreakTime(@NotNull Item item) {
-        return calculateBreakTime(item, null);
-    }
-
-    /**
-     * 控制自定义方块的挖掘时间(单位s)
-     */
-    @Override
-    public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
-        return 1;
-    }
-
-    @Override
-    public int getId() {
+    /* 下面两个方法需要被覆写,请使用接口的定义 */
+    default int getId() {
         return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespace().toLowerCase(Locale.ENGLISH));
     }
 
-    @Override
-    public String getName() {
+    default String getName() {
         return this.getNamespace().split(":")[1].toLowerCase(Locale.ENGLISH);
     }
 
-    @Override
-    public Item[] getDrops(Item item) {
-        if (canHarvest(item)) {
-            return new Item[]{new ItemBlock(Block.get(getId()))};
-        } else return Item.EMPTY_ARRAY;
-    }
 
-    protected void initBlockPropertyData() {
-        compoundTag = new CompoundTag()
+    default BlockPropertyData getBlockPropertyData() {
+        var compoundTag = new CompoundTag()
                 .putCompound("minecraft:creative_category", new CompoundTag()
-                        .putString("category", getCreativeCategory())
-                        .putString("group", getCreativeCategoryGroup()))
+                        .putString("category", this.getCreativeCategory()))
                 .putCompound("minecraft:friction", new CompoundTag()
                         .putFloat("value", (float) this.getFrictionFactor()))
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
@@ -115,24 +100,21 @@ public abstract class BlockCustom extends Block {
                         .putFloat("y", 0)
                         .putFloat("z", 0))
                 .putCompound("minecraft:destroy_time", new CompoundTag()
-                        .putFloat("value", (float) (calculateBreakTime(Item.get(AIR)) * 2 / 3)))
+                        .putFloat("value", (float) (this.calculateBreakTime() * 2 / 3)))
                 .putCompound("minecraft:material_instances", new CompoundTag()
                         .putCompound("mappings", new CompoundTag())
                         .putCompound("materials", new CompoundTag()
                                 .putCompound("*", new CompoundTag()
                                         .putBoolean("ambient_occlusion", true)
                                         .putBoolean("face_dimming", true)
-                                        .putString("render_method", getRenderMethod())
-                                        .putString("texture", getTexture()))));
-        if (this.getGeometry().isPresent()) {
-            compoundTag.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", this.getGeometry().get()));
+                                        .putString("render_method", this.getRenderMethod())
+                                        .putString("texture", this.getTexture()))));
+        if (!this.getCreativeCategoryGroup().isEmpty()) {
+            compoundTag.getCompound("minecraft:creative_category").putString("group", this.getCreativeCategoryGroup());
         }
-    }
-
-    public BlockPropertyData getBlockPropertyData() {
-        if (initialized.compareAndSet(false, true)) {
-            initBlockPropertyData();
+        if (!this.getGeometry().isEmpty()) {
+            compoundTag.putCompound("minecraft:geometry", new CompoundTag()
+                    .putString("value", this.getGeometry()));
         }
         return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), new CompoundTag().putCompound("components", compoundTag));
     }
