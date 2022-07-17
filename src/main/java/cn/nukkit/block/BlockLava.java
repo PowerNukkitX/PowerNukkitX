@@ -232,4 +232,10 @@ public class BlockLava extends BlockLiquid {
             super.addVelocityToEntity(entity, vector);
         }
     }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public float getDrag() {
+        return 0.2f;
+    }
 }

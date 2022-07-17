@@ -31,7 +31,7 @@ public class MoveController implements IController {
             MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 direction = directionMemory.getEnd();
             setYawAndPitch(entity, target, directionMemory);
-            var speed = entity.getMovementSpeed();
+            var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
             }
