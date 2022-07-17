@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.block.customblock.BlockCustom;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -449,7 +449,7 @@ public class BlockStateRegistry {
 
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
-    public synchronized static void registerCustomBlockState(List<BlockCustom> blockCustoms) {
+    public synchronized static void registerCustomBlockState(List<CustomBlock> blockCustoms) {
         blockStateRegistration.clear();
         stateIdRegistration.clear();
         runtimeIdRegistration.clear();

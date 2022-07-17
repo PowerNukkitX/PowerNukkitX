@@ -1,4 +1,4 @@
-package cn.nukkit.blockproperty;
+package cn.nukkit.block.customblock;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 
