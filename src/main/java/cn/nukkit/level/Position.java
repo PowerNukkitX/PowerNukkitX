@@ -142,6 +142,19 @@ public class Position extends NamedPosition {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
+    public Block getLevelBlock(int layer) {
+        return getValidLevel().getBlock(this, layer);
+    }
+
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getLevelBlock(int layer, boolean load) {
+        return getValidLevel().getBlock(this, layer, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public Block getTickCachedLevelBlock() {
         return getValidLevel().getTickCachedBlock(this);
     }

@@ -1,5 +1,5 @@
 {
-  "version": 527,
+  "version": 534,
   "recipes": [
     {
       "id": "minecraft:smithingtable_diamond_axe_to_netherite_axe",
@@ -22603,7 +22603,7 @@
       },
       "output": [
         {
-          "legacyId": 652,
+          "legacyId": 653,
           "id": "minecraft:end_crystal"
         }
       ],
@@ -28584,8 +28584,8 @@
       },
       "output": [
         {
-          "legacyId": -497,
-          "id": "minecraft:mangrove_wood",
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
           "count": 3
         }
       ],

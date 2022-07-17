@@ -1,7 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.Since;
-import cn.nukkit.blockproperty.BlockPropertyData;
+import cn.nukkit.block.customblock.BlockPropertyData;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
@@ -10,6 +10,9 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.nio.ByteOrder;
 import java.util.ArrayList;

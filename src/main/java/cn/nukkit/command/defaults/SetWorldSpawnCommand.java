@@ -32,23 +32,26 @@ public class SetWorldSpawnCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return false;
         }
+
+        CommandParser parser = new CommandParser(this,sender,args);
+        if(parser.matchCommandForm() == null){
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return false;
+        }
+
         Level level;
         Vector3 pos;
-        if (args.length == 0) {
+        if (!parser.hasNext()){
             level = sender.getPosition().level;
             pos = sender.getPosition().round();
-        } else if (args.length == 3) {
+        }else{
             level = sender.getServer().getDefaultLevel();
-            CommandParser parser = new CommandParser(this,sender,args);
             try {
                 pos = parser.parsePosition();
             } catch (NumberFormatException | CommandSyntaxException e1) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
-        } else {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return false;
         }
         level.setSpawnLocation(pos);
         DecimalFormat round2 = new DecimalFormat("##0.00");

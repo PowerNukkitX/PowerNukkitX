@@ -3726,9 +3726,9 @@ public class Level implements ChunkManager, Metadatable {
     @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
         Position pos = Position.fromObject(vec, this);
-        Block blockUnder = pos.add(0, -1, 0).getLevelBlock();
-        Block block = pos.getLevelBlock();
-        Block blockUpper = pos.add(0, 1, 0).getLevelBlock();
+        Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0,true);
+        Block block = pos.getLevelBlock(0,true);
+        Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0,true);
         if (!allowWaterUnder)
             return !blockUnder.canPassThrough()
                     && block.getId() == BlockID.AIR

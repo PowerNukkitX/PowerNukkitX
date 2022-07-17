@@ -51,9 +51,8 @@ public class ClearSpawnPointCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
                 return false;
             }
-            Position spawn = Server.getInstance().getDefaultLevel().getSpawnLocation();
             for (Player player : players){
-                player.setSpawn(spawn);
+                player.setSpawn(null);
             }
             String players_str = players.stream().map(p -> p.getName()).collect(Collectors.joining(" "));
             if (players.size() > 1){
