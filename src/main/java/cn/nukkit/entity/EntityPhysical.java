@@ -107,10 +107,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
+    /**
+     * 获取实体在某方块处行走的真实速度，此方法会考虑流体阻力
+     *
+     * @param block 实体所在的方块，不是脚下的方块
+     * @return 在某方块处行走的真实速度
+     */
+    public float getMovementSpeedAtBlock(Block block) {
+        if (block instanceof BlockLiquid liquid) {
+            return getMovementSpeed() * liquid.getDrag();
+        } else {
+            return getMovementSpeed();
+        }
+    }
+
     protected void handleFrictionMovement() {
         // 减少移动向量（计算摩擦系数，在冰上滑得更远）
         final double friction = this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
-        final double reduce = getMovementSpeed() * (1 - friction * 0.85) * 0.43;
+        final double reduce = getMovementSpeedAtBlock(this.getTickCachedLevelBlock()) * (1 - friction * 0.85) * 0.43;
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
             return;
         }
@@ -249,8 +263,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
         double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
-        this.previousCollideMotion.setX(-(resultX / len * getMovementSpeed() * 0.32));
-        this.previousCollideMotion.setZ(-(resultZ / len * getMovementSpeed() * 0.32));
+        this.previousCollideMotion.setX(-(resultX / len * 0.2 * 0.32));
+        this.previousCollideMotion.setZ(-(resultZ / len * 0.2 * 0.32));
     }
 
     /**

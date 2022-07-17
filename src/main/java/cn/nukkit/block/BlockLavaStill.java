@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
 
 /**
@@ -36,5 +37,11 @@ public class BlockLavaStill extends BlockLava {
             return super.onUpdate(type);
         }
         return 0;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public float getDrag() {
+        return 0.2f;
     }
 }
