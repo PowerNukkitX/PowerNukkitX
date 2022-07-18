@@ -69,6 +69,7 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#445] Implemented to be compatible with 1.19.10 (protocol version 534).
 - [#455] Update resource files.
 - [#461] Update startup command detection + deprecate submodule.
+- [#466] `Change custom block api.`
 
 ### Fixes
 
@@ -124,6 +125,8 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#448] Fix input/xp crash issue.
 - [#462] Fix create Item Entry.
 - [#463] Fix /particle command.
+- [#464] Fix world spawn.
+- [#465] Fix the calculation problem of spawn points.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -1273,6 +1276,9 @@ Need to switch languages?
 [#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
 [#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
 [#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
+[#464]: https://github.com/PowerNukkitX/PowerNukkitX/pull/464
+[#465]: https://github.com/PowerNukkitX/PowerNukkitX/pull/465
+[#466]: https://github.com/PowerNukkitX/PowerNukkitX/pull/466
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

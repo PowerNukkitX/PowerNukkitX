@@ -68,6 +68,7 @@
 - [#445] 实现兼容1.19.10 (协议版本534)。
 - [#455] 更新资源文件。
 - [#461] 更新启动命令检测 + 弃用submodule。
+- [#466] `修改自定义方块API。`
 
 ### BUG修复
 
@@ -123,6 +124,8 @@
 - [#448] 修复输入/xp崩溃的问题。
 - [#462] 修复create Item Entry。
 - [#463] 修复/particle命令。
+- [#464] 修复世界出生点问题。
+- [#465] 修复出生点计算问题。
 
 ### 安全漏洞修复
 
@@ -1273,6 +1276,9 @@ Need to switch languages?
 [#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
 [#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
 [#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
+[#464]: https://github.com/PowerNukkitX/PowerNukkitX/pull/464
+[#465]: https://github.com/PowerNukkitX/PowerNukkitX/pull/465
+[#466]: https://github.com/PowerNukkitX/PowerNukkitX/pull/466
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
