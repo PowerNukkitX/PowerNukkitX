@@ -13,12 +13,11 @@ import cn.nukkit.entity.EntityIntelligent;
 @Since("1.6.0.0-PNX")
 public interface IBlockEvaluator {
     /**
-     * 返回移动到此方块的代价，大的代价会指示寻路器寻找更符合要求的其他路径<br>
-     * 若返回值小于等于0，则代表此方块不可选取（代价无限大）
+     * 返回目标方块是否可以作为路径点
      *
      * @param entity 目标实体
      * @param block  评估方块
-     * @return 代价
+     * @return 是否可以作为路径点
      */
-    int evalBlock(EntityIntelligent entity, Block block);
+    boolean evalBlock(EntityIntelligent entity, Block block);
 }

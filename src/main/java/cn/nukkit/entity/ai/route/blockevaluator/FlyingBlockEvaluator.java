@@ -9,7 +9,8 @@ import cn.nukkit.entity.EntityIntelligent;
 @Since("1.6.0.0-PNX")
 public class FlyingBlockEvaluator implements IBlockEvaluator{
     @Override
-    public int evalBlock(EntityIntelligent entity, Block block) {
-        return 0;
+    public boolean evalBlock(EntityIntelligent entity, Block block) {
+        //todo: 完善此评估器
+        return true;
     }
 }
