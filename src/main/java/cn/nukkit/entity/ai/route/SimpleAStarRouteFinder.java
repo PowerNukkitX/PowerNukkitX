@@ -17,6 +17,7 @@ import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.graalvm.collections.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -167,24 +168,29 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             packet.position = pos.asVector3f();
             try {
                 player.dataPacket(packet);
-            } catch (Throwable t) {
+            } catch (Throwable ignore) {
+
             }
         });
+    }
+
+    protected int getBlockMoveCostAt(@NotNull Level level, Vector3 pos) {
+        return level.getTickCachedBlock(pos).getWalkThroughExtraCost() + level.getTickCachedBlock(pos.add(0, -1, 0)).getWalkThroughExtraCost();
     }
 
     /**
      * 将一个节点周围的有效节点放入OpenList中
      *
-     * @param node
+     * @param node 节点
      */
-    protected void putNeighborNodeIntoOpen(Node node) {
+    protected void putNeighborNodeIntoOpen(@NotNull Node node) {
         boolean N, E, S, W;
 
         Vector3 vector3 = new Vector3(node.getVector3().getFloorX() + 0.5, node.getVector3().getY(), node.getVector3().getFloorZ() + 0.5);
 
         double offsetY;
 
-        Pair<Integer,Integer> pair = null;
+        Pair<Integer, Integer> pair;
 
         if ((offsetY = (pair = getAvailableHorizontalOffset(vector3)).getLeft()) != -384) {
             if (Math.abs(offsetY) > 0.25) {
@@ -206,14 +212,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (E = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, 0))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(1, offsetY, 0);
+            var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + DIRECT_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + DIRECT_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -222,14 +229,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (S = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(0, 0, 1))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, 1);
+            var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + DIRECT_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + DIRECT_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -238,14 +246,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, 0))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(-1, offsetY, 0);
+            var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + DIRECT_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + DIRECT_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -254,14 +263,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (N = ((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(0, 0, -1))).getLeft()) != -384)) {
             Vector3 vec = vector3.add(0, offsetY, -1);
+            var cost = getBlockMoveCostAt(level, vec) + DIRECT_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, DIRECT_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + DIRECT_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + DIRECT_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -272,14 +282,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         //接触水的时候就不需要这么判断了
         if (N && E && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, -1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, -1);
+            var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + OBLIQUE_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + OBLIQUE_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -288,14 +299,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (E && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(1, 0, 1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(1, offsetY, 1);
+            var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + OBLIQUE_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + OBLIQUE_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -304,14 +316,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W && S && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, 1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, 1);
+            var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + OBLIQUE_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + OBLIQUE_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -320,14 +333,15 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
         if (W && N && (((offsetY = (pair = getAvailableHorizontalOffset(vector3.add(-1, 0, -1))).getLeft()) == 0) || (pair.getRight() != null && entity.isTouchingWater()))) {
             Vector3 vec = vector3.add(-1, offsetY, -1);
+            var cost = getBlockMoveCostAt(level, vec) + OBLIQUE_MOVE_COST + node.getG();
             if (!existInCloseList(vec)) {
                 Node nodeNear = getOpenNode(vec);
                 if (nodeNear == null) {
-                    this.openList.offer(new Node(vec, node, OBLIQUE_MOVE_COST + node.getG(), calH(vec, target) * pair.getRight()));
+                    this.openList.offer(new Node(vec, node, cost, calH(vec, target) * pair.getRight()));
                 } else {
-                    if (node.getG() + OBLIQUE_MOVE_COST < nodeNear.getG()) {
+                    if (cost < nodeNear.getG()) {
                         nodeNear.setParent(node);
-                        nodeNear.setG(node.getG() + OBLIQUE_MOVE_COST);
+                        nodeNear.setG(cost);
                         nodeNear.setF(nodeNear.getG() + nodeNear.getH());
                     }
                 }
@@ -379,13 +393,13 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     /**
      * 获取目标坐标最高有效点（沿Y轴往下检查）
      */
-    protected Pair<Block,Integer> getHighestUnder(Vector3 vector3, int limit) {
+    protected Pair<Block, Integer> getHighestUnder(Vector3 vector3, int limit) {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
                 int blockH;
                 if ((blockH = evalBlock(block)) > 0)
-                    return Pair.create(block,blockH);
+                    return Pair.create(block, blockH);
             }
             return null;
         }
@@ -393,7 +407,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
             Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
             int blockH;
             if ((blockH = evalBlock(block)) > 0)
-                return Pair.create(block,blockH);
+                return Pair.create(block, blockH);
         }
         return null;
     }
@@ -412,10 +426,10 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
      * @return 指定坐标可到达的最高点 (limit=4)
      */
     //             offsetY | blockH
-    protected Pair<Integer,Integer> getAvailableHorizontalOffset(Vector3 vector3) {
+    protected Pair<Integer, Integer> getAvailableHorizontalOffset(Vector3 vector3) {
         var pair = getHighestUnder(vector3, 4);
         if (pair != null) {
-            return Pair.create(pair.getLeft().getFloorY() - vector3.getFloorY() + 1,pair.getRight());
+            return Pair.create(pair.getLeft().getFloorY() - vector3.getFloorY() + 1, pair.getRight());
         }
         return Pair.createLeft(-384);
     }

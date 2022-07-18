@@ -1382,6 +1382,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
+     * 获取走过这个方块所需要的额外代价，通常用于水、浆果丛等难以让实体经过的方块
+     * @return 走过这个方块所需要的额外代价
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getWalkThroughExtraCost() {
+        return 0;
+    }
+
+    /**
      * 控制方块的发光等级
      *
      * @return 发光等级(0 - 15)

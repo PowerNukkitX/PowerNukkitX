@@ -599,4 +599,10 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     public float getDrag() {
         return 0.5f;
     }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public int getWalkThroughExtraCost() {
+        return 20;
+    }
 }
