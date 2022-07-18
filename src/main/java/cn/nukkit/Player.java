@@ -1312,21 +1312,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    public void setSpawn(Vector3 pos) {
-        Level level;
-        if (!(pos instanceof Position)) {
-            level = this.level;
-        } else {
-            level = ((Position) pos).getLevel();
+    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
+    public void setSpawn(@Nullable Vector3 pos) {
+        if (pos != null) {
+            Level level;
+            if (!(pos instanceof Position)) {
+                level = this.level;
+            } else {
+                level = ((Position) pos).getLevel();
+            }
+            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
+            pk.x = (int) this.spawnPosition.x;
+            pk.y = (int) this.spawnPosition.y;
+            pk.z = (int) this.spawnPosition.z;
+            pk.dimension = this.spawnPosition.level.getDimension();
+            this.dataPacket(pk);
+        }else{
+            this.spawnPosition = null;
         }
-        this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
-        SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-        pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
-        pk.x = (int) this.spawnPosition.x;
-        pk.y = (int) this.spawnPosition.y;
-        pk.z = (int) this.spawnPosition.z;
-        pk.dimension = this.spawnPosition.level.getDimension();
-        this.dataPacket(pk);
     }
 
     public void stopSleep() {

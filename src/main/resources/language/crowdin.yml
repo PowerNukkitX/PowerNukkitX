@@ -1,0 +1,3 @@
+files:
+  - source: /eng/*.*
+    translation: /%three_letters_code%/%original_file_name%

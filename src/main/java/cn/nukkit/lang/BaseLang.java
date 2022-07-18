@@ -18,7 +18,7 @@ public class BaseLang {
 
     protected final String langName;
 
-    protected Map<String, String> lang = new HashMap<>();
+    protected Map<String, String> lang;
     protected Map<String, String> fallbackLang = new HashMap<>();
 
 
@@ -35,7 +35,7 @@ public class BaseLang {
         boolean useFallback = !lang.equals(fallback);
 
         if (path == null) {
-            path = "lang/";
+            path = "language/";
             this.lang = this.loadLang(this.getClass().getClassLoader().getResourceAsStream(path + this.langName + "/lang.ini"));
             if (useFallback) this.fallbackLang = this.loadLang(this.getClass().getClassLoader().getResourceAsStream(path + fallback + "/lang.ini"));
         } else {
@@ -117,10 +117,7 @@ public class BaseLang {
     }
 
     public String translateString(String str, String... params) {
-        if (params != null) {
-            return this.translateString(str, params, null);
-        }
-        return this.translateString(str, EmptyArrays.EMPTY_STRINGS, null);
+        return this.translateString(str, Objects.requireNonNullElse(params, EmptyArrays.EMPTY_STRINGS), null);
     }
 
     public String translateString(String str, Object... params) {

@@ -3,10 +3,10 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
-import cn.nukkit.block.customblock.BlockCustom;
+import cn.nukkit.block.customblock.BlockPropertyData;
+import cn.nukkit.block.customblock.CustomBlock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.BlockPropertyData;
 import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.*;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -144,10 +144,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static boolean[] diffusesSkyLight = null;
 
     @PowerNukkitXOnly
-    private static final List<BlockPropertyData> blockPropertyData = new ArrayList<>();
+    private static final List<BlockPropertyData> BLOCK_PROPERTY_DATA = new ArrayList<>();
 
     @PowerNukkitXOnly
-    private static final HashMap<Integer, BlockCustom> customBlock = new HashMap<>();
+    private static final HashMap<Integer, CustomBlock> ID_TO_CUSTOM_BLOCK = new HashMap<>();
 
     @PowerNukkitXOnly
     public static final ConcurrentHashMap<String, Integer> CUSTOM_BLOCK_ID_MAP = new ConcurrentHashMap<>();
@@ -876,7 +876,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (id < 0) {
             id = 255 - id;
         } else if (id > MAX_BLOCK_ID) {
-            return customBlock.get(id).clone();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
         }
         return fullList[id << DATA_BITS].clone();
     }
@@ -885,7 +885,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, Integer meta) {
         if (id > MAX_BLOCK_ID) {
-            return customBlock.get(id).clone();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
         }
         if (id < 0) {
             id = 255 - id;
@@ -918,7 +918,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Block block;
 
         if (id > MAX_BLOCK_ID) {
-            block = customBlock.get(id).clone();
+            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
             block.x = pos.x;
             block.y = pos.y;
             block.z = pos.z;
@@ -952,7 +952,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
         if (id > MAX_BLOCK_ID) {
-            return customBlock.get(id).clone();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
         }
 
         if (id < 0) {
@@ -1002,7 +1002,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Block block;
 
         if (id > MAX_BLOCK_ID) {
-            block = customBlock.get(id).clone();
+            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
             block.x = x;
             block.y = y;
             block.z = z;
@@ -1202,21 +1202,21 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull List<Class<? extends BlockCustom>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
-        SortedMap<String, BlockCustom> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
+        SortedMap<String, CustomBlock> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         for (var clazz : blockClassList) {
-            BlockCustom block = clazz.getDeclaredConstructor().newInstance();
+            CustomBlock block = clazz.getDeclaredConstructor().newInstance();
             sortedCustomBlocks.put(block.getNamespace(), block);
         }
         //自定义方块id从1000开始,按照FNV1 64bit计算hash值排序 hash值大的在前面
         int nextBlockId = 1000;
         for (var block : sortedCustomBlocks.values()) {
-            blockPropertyData.add(block.getBlockPropertyData());
-            customBlock.put(nextBlockId, block);
+            BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());
+            ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);
             CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);
             ++nextBlockId;
         }
@@ -1229,23 +1229,23 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void deleteCustomBlock() {
-        for (var block : customBlock.values()) {
+        for (var block : ID_TO_CUSTOM_BLOCK.values()) {
             Item.removeCreativeItem(block.toItem());
         }
-        RuntimeItems.getRuntimeMapping().deleteCustomBlock(customBlock.values().stream().toList());
+        RuntimeItems.getRuntimeMapping().deleteCustomBlock(ID_TO_CUSTOM_BLOCK.values().stream().toList());
         BlockStateRegistry.deleteCustomBlockState();
-        customBlock.clear();
+        ID_TO_CUSTOM_BLOCK.clear();
         CUSTOM_BLOCK_ID_MAP.clear();
     }
 
     @PowerNukkitXOnly
     public static List<BlockPropertyData> getBlockPropertyDataList() {
-        return blockPropertyData;
+        return BLOCK_PROPERTY_DATA;
     }
 
     @PowerNukkitXOnly
-    public static HashMap<Integer, Block> getCustomBlockMap() {
-        return new HashMap<>(customBlock);
+    public static HashMap<Integer, CustomBlock> getCustomBlockMap() {
+        return new HashMap<>(ID_TO_CUSTOM_BLOCK);
     }
 
     @Nullable
@@ -1381,6 +1381,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0.6;
     }
 
+    /**
+     * 控制方块的发光等级
+     *
+     * @return 发光等级(0 - 15)
+     */
     public int getLightLevel() {
         return 0;
     }
@@ -1592,7 +1597,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return 掉落的物品数组
      */
     public Item[] getDrops(Item item) {
-        if (this.getId() < 0 || this.getId() > list.length) { //Unknown blocks
+        if (this instanceof CustomBlock) {
+            return new Item[]{
+                    this.toItem()
+            };
+        } else if (this.getId() < 0 || this.getId() > list.length) { //Unknown blocks
             return Item.EMPTY_ARRAY;
         } else if (canHarvestWithHand() || canHarvest(item)) {
             return new Item[]{
@@ -1696,6 +1705,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (insideOfWaterWithoutAquaAffinity) speed *= 0.2;
         if (outOfWaterButNotOnGround) speed *= 0.2;
         return 1.0 / speed;
+    }
+
+    @Nonnull
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public double calculateBreakTime() {
+        return calculateBreakTime(Item.get(AIR), null);
     }
 
     /**
