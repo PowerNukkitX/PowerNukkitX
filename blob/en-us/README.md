@@ -1,6 +1,6 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
-<h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
+<h2>🌐多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
@@ -30,13 +30,14 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.0 protocol (under refinement).
+1. Support for 1.19.10 protocol (under refinement).
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Native support for vanilla commands and command block, etc. (under refinement)
 5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
 6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
-7. Todo...
+7. Support custom blocks / items (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be added).
+8. Todo...
 
 ---
 

@@ -1,6 +1,6 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
-<h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
+<h2>🌐多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
@@ -29,13 +29,14 @@
 
 PowerNukkitX的优势：
 
-1. 支持1.19.0协议（完善中）。
+1. 支持1.19.10协议（完善中）。
 2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 原生支持香草命令和命令方块等（完善中）。
 5. 内置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有问题[点此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 6. 支持使用JavaSrcipt语言编写插件 （初步完成，可在[此处](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找开发文档）。
-7. Todo...
+7. 支持自定义方块 / 物品（完善中，[文档](https://doc.powernukkitx.cn)待补充）。
+8. Todo...
 
 ---
 
