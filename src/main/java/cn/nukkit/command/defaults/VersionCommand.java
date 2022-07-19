@@ -83,6 +83,9 @@ public class VersionCommand extends VanillaCommand {
         },15);
     }
 
+    private int lastUpdateTick = 0;
+    private JsonArray listVersionCache = null;
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
@@ -147,6 +150,11 @@ public class VersionCommand extends VanillaCommand {
     @Since("1.6.0.0-PNX")
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
+            if (this.listVersionCache != null) {
+                if (Server.getInstance().getTick() - this.lastUpdateTick < 60 * 20) {
+                    return this.listVersionCache;
+                }
+            }
             var client = HttpClient.newHttpClient();
             var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest")).GET();
             builder.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
@@ -154,7 +162,9 @@ public class VersionCommand extends VanillaCommand {
             try {
                 var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
                 if (result.isJsonArray()) {
-                    return result.getAsJsonArray();
+                    this.lastUpdateTick = Server.getInstance().getTick();
+                    this.listVersionCache = result.getAsJsonArray();
+                    return this.listVersionCache;
                 }
                 return new JsonArray();
             } catch (IOException | InterruptedException e) {
