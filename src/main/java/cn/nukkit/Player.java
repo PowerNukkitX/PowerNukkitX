@@ -3280,6 +3280,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
+                        // 自定义实体在客户端中可以互动, 所以不踢出玩家
                         if (targetEntity instanceof CustomEntity) {
                             break;
                         }
