@@ -7,6 +7,8 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -445,6 +447,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static long entityCount = 1;
 
+    private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, Class<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
 
@@ -1136,6 +1139,21 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @PowerNukkitXOnly
+    public static Set<CustomEntityDefinition> getEntityDefinitions() {
+        return new HashSet<>(entityDefinitions);
+    }
+
+    @PowerNukkitXOnly
+    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
+            return;
+        }
+        entityDefinitions.add(customEntityDefinition);
+        registerEntity(customEntityDefinition.getStringId(), entity, true);
+    }
+
     @Nonnull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
@@ -1335,6 +1353,9 @@ public abstract class Entity extends Location implements Metadatable {
         AddEntityPacket addEntity = new AddEntityPacket();
         addEntity.type = this.getNetworkId();
         addEntity.entityUniqueId = this.getId();
+        if (this instanceof CustomEntity customEntity) {
+            addEntity.id = customEntity.getDefinition().getStringId();
+        }
         addEntity.entityRuntimeId = this.getId();
         addEntity.yaw = (float) this.yaw;
         addEntity.headYaw = (float) this.yaw;
@@ -1765,11 +1786,11 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        if(this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0){
+        if (this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
             this.addFreezingTicks(-tickDiff);
         }
 
-        if(this.getFreezingTicks() != 0 && this instanceof Player player){
+        if (this.getFreezingTicks() != 0 && this instanceof Player player) {
             PlayerFreezeEvent event = new PlayerFreezeEvent(player, 0.05f, 0.1f);
             this.server.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
@@ -1778,10 +1799,10 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         //todo: 取代求余运算提高性能
-        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0){
-            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube){
+        if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
+            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube) {
                 this.attack(5);
-            }else{
+            } else {
                 this.attack(1);
             }
         }
@@ -2296,13 +2317,14 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean isInsideOfWater() {
         return hasWaterAt(this.getEyeHeight());
     }
+
     @PowerNukkitXOnly
-    public boolean isUnderBlock(){
+    public boolean isUnderBlock() {
         int x = this.getFloorX();
         int y = this.getFloorY();
         int z = this.getFloorZ();
-            for (int i = y+1; i <= this.getLevel().getMaxHeight(); i++)
-                if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
+        for (int i = y + 1; i <= this.getLevel().getMaxHeight(); i++)
+            if (this.getLevel().getBlock(x, i, z).getId() != BlockID.AIR) return true;
         return false;
     }
 
@@ -3232,13 +3254,13 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public float getFreezingEffectStrength() {
-        return ((FloatEntityData)this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+        return ((FloatEntityData) this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setFreezingTicks(int ticks){
-        if(ticks < 0 || ticks > 140)
+    public void setFreezingTicks(int ticks) {
+        if (ticks < 0 || ticks > 140)
             throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
         this.freezingTicks = ticks;
         setFreezingEffectStrength(ticks / 140f);
@@ -3246,14 +3268,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public int getFreezingTicks(){
+    public int getFreezingTicks() {
         return this.freezingTicks;
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void addFreezingTicks(int increments){
-        if(freezingTicks + increments < 0 || freezingTicks + increments > 140)
+    public void addFreezingTicks(int increments) {
+        if (freezingTicks + increments < 0 || freezingTicks + increments > 140)
             throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
         this.freezingTicks += increments;
         setFreezingEffectStrength(this.freezingTicks / 140f);

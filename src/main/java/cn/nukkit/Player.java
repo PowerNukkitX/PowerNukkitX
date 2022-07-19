@@ -12,6 +12,7 @@ import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
+import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.passive.EntityNPCEntity;
@@ -3279,6 +3280,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
+                        // 自定义实体在客户端中可以互动, 所以不踢出玩家
+                        if (targetEntity instanceof CustomEntity) {
+                            break;
+                        }
                         this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
                         log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidEntity", this.getName()));
                         break;
