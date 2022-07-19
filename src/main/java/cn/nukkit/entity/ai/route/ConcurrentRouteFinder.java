@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 异步路径查找抽象类 <br/>
+ * 并行路径查找抽象类 <br/>
  * 实现了此类的寻路器应当提供完整的异步寻路支持 <br/>
  * PNX中未使用此寻路方案，但保留以提供API <br/>
  */
