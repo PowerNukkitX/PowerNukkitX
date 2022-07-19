@@ -1868,16 +1868,7 @@ public class Level implements ChunkManager, Metadatable {
     @Since("1.6.0.0-PNX")
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
         var index = BlockIndex.of(x, y, z, layer);
-        var tmp = tickCachedBlocks.get(index);
-        if (tmp != null) {
-            return tickCachedBlocks.get(index);
-        } else {
-            synchronized (tickCachedBlocks) {
-                tmp = getBlock(x, y, z, layer, load);
-                tickCachedBlocks.put(index, tmp);
-                return tmp;
-            }
-        }
+        return tickCachedBlocks.computeIfAbsent(index, key -> getBlock(x, y, z, layer, load));
     }
 
     public synchronized Block getBlock(Vector3 pos) {
