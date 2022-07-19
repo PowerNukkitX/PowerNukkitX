@@ -533,7 +533,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
     /**
      * 将Node链转换成List<Node>样式的路径信息
      *
-     * @param end 链表尾节点
+     * @param end 列表尾节点
      */
     protected ArrayList<Node> getPathRoute(@Nullable Node end) {
         ArrayList<Node> nodes = new ArrayList<>();
