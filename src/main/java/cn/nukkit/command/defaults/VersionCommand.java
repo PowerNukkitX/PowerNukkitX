@@ -95,8 +95,10 @@ public class VersionCommand extends VanillaCommand {
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
-            sender.sendMessage("Checking version, please wait...");
-            queryQueue.add(new Query(sender,listVersion()));
+            if (sender.isOp()) {
+                sender.sendMessage("Checking version, please wait...");
+                queryQueue.add(new Query(sender, listVersion()));
+            }
         } else {
             StringBuilder pluginName = new StringBuilder();
             for (String arg : args) pluginName.append(arg).append(" ");
