@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class WalkToTargetExecutor implements IBehaviorExecutor {
+public class MoveToTargetExecutor implements IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory> memoryClazz;
 
-    public WalkToTargetExecutor(Class<? extends Vector3Memory> memoryClazz) {
+    public MoveToTargetExecutor(Class<? extends Vector3Memory> memoryClazz) {
         this.memoryClazz = memoryClazz;
     }
 
@@ -32,7 +32,6 @@ public class WalkToTargetExecutor implements IBehaviorExecutor {
         //更新寻路target
         setRouteTarget(entity, target);
 
-        //todo: 此语句会破坏EntityPhysics中对摩擦力和阻力的计算
         entity.setMovementSpeed(0.3f);
 
         //我们并不一定需要下次继续运行，所以说返回false即可

@@ -148,7 +148,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 routeFinder.search();
                 //更新Direction
                 updateMoveDirection(entity);
-                removeMemory(NeedUpdateMoveDestinationMemory.class);
+                removeMemory(NeedUpdateMoveDirectionMemory.class);
                 currentRouteUpdateTick = 0;
             }
         }
@@ -156,7 +156,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新
                 updateMoveDirection(entity);
-                removeMemory(NeedUpdateMoveDestinationMemory.class);
+                removeMemory(NeedUpdateMoveDirectionMemory.class);
             }
         }
     }
@@ -167,7 +167,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     protected boolean needUpdateMoveDirection() {
-        return memoryStorage.contains(NeedUpdateMoveDestinationMemory.class);
+        return memoryStorage.contains(NeedUpdateMoveDirectionMemory.class);
     }
 
     protected void removeMemory(Class<? extends IMemory<?>> clazz) {

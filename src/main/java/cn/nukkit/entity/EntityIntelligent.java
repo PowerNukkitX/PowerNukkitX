@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.WalkingController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -61,7 +62,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     /**
      * 返回实体最大的跳跃高度，返回值会用在移动处理上
-     * @see cn.nukkit.entity.ai.controller.MoveController
+     * @see WalkingController
      *
      * @return 实体最大跳跃高度
      */

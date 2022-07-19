@@ -6,18 +6,18 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
-import cn.nukkit.entity.ai.memory.NeedUpdateMoveDestinationMemory;
+import cn.nukkit.entity.ai.memory.NeedUpdateMoveDirectionMemory;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 
 import java.util.Arrays;
 
 /**
- * 处理实体运动请求
+ * 处理陆地行走实体运动
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MoveController implements IController {
+public class WalkingController implements IController {
 
     protected static final int JUMP_COOL_DOWN = 10;
 
@@ -26,7 +26,7 @@ public class MoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
-        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDestinationMemory.class)) {
+        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
             Vector3 target = entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 direction = directionMemory.getEnd();
@@ -59,19 +59,19 @@ public class MoveController implements IController {
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             if (xzLength < speed) {
-                needNewDestination(entity);
+                needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
-            needNewDestination(entity);
+            needNewDirection(entity);
             return false;
         }
     }
 
-    protected void needNewDestination(EntityIntelligent entity) {
+    protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.getMemoryStorage().put(new NeedUpdateMoveDestinationMemory(true));
+        entity.getMemoryStorage().put(new NeedUpdateMoveDirectionMemory(true));
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
