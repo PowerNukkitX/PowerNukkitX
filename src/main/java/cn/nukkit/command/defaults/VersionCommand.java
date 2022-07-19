@@ -151,7 +151,7 @@ public class VersionCommand extends VanillaCommand {
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.listVersionCache != null) {
-                if (Server.getInstance().getTick() - this.lastUpdateTick < 60 * 20) {
+                if (Server.getInstance().getTick() - this.lastUpdateTick < 7200) {//20 * 60 * 60 一小时
                     return this.listVersionCache;
                 }
             }
