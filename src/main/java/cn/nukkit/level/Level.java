@@ -1867,7 +1867,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
-        var index = new BlockIndex(x, y, z, layer);
+        var index = BlockIndex.of(x, y, z, layer);
         var tmp = tickCachedBlocks.get(index);
         if (tmp != null) {
             return tickCachedBlocks.get(index);
