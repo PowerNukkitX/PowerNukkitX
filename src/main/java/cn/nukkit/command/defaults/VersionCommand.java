@@ -80,7 +80,7 @@ public class VersionCommand extends VanillaCommand {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        },1);
+        },15);
     }
 
     @Override
