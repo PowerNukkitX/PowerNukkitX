@@ -16,7 +16,6 @@ import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
-import org.graalvm.collections.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -32,7 +31,7 @@ import java.util.PriorityQueue;
 @Since("1.6.0.0-PNX")
 @Getter
 @Setter
-public class SimpleAStarRouteFinder extends SimpleRouteFinder {
+public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     //这些常量是为了避免开方运算而设置的
     //直接移动成本
@@ -66,7 +65,7 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
 
     protected int maxSearchDepth = 100;
 
-    public SimpleAStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
+    public SimpleFlatAStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
         this.entity = entity;
         this.level = entity.level;
@@ -146,9 +145,9 @@ public class SimpleAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug only
-//        findingPath.forEach(node -> {
-//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-//        });
+        findingPath.forEach(node -> {
+            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+        });
 
         this.finished = true;
         this.searching = false;

@@ -9,7 +9,7 @@ import cn.nukkit.entity.ai.controller.WalkingController;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
-import cn.nukkit.entity.ai.route.SimpleAStarRouteFinder;
+import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.blockevaluator.OnGroundBlockEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
@@ -27,7 +27,7 @@ public class EntityCat extends EntityAnimal {
             ),
             Set.of(new NearestPlayerSensor(50,0)),
             Set.of(new WalkingController()),
-            new SimpleAStarRouteFinder(new OnGroundBlockEvaluator(),this)
+            new SimpleFlatAStarRouteFinder(new OnGroundBlockEvaluator(),this)
     );
 
     @Override

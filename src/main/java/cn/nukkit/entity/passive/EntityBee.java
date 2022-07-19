@@ -12,11 +12,10 @@ import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.controller.FlyingController;
-import cn.nukkit.entity.ai.controller.WalkingController;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
-import cn.nukkit.entity.ai.route.SimpleAStarRouteFinder;
+import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.blockevaluator.FlyingBlockEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
@@ -43,7 +42,7 @@ public class EntityBee extends EntityFlyingAnimal {
             ),
             Set.of(new NearestPlayerSensor(50,0)),
             Set.of(new FlyingController()),
-            new SimpleAStarRouteFinder(new FlyingBlockEvaluator(),this)
+            new SimpleFlatAStarRouteFinder(new FlyingBlockEvaluator(),this)
     );
 
     @Since("1.1.1.0-PN")

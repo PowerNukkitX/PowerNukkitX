@@ -14,6 +14,7 @@ import cn.nukkit.entity.EntityIntelligent;
 public interface IBlockEvaluator {
     /**
      * 返回目标方块是否可以作为路径点
+     * 注意，block被认为是实体脚下的方块，而不是实体位于的方块坐标
      *
      * @param entity 目标实体
      * @param block  评估方块
