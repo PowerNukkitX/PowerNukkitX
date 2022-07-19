@@ -148,7 +148,9 @@ public class VersionCommand extends VanillaCommand {
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
             var client = HttpClient.newHttpClient();
-            var request = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest")).GET().build();
+            var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest")).GET();
+            builder.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
+            var request = builder.build();
             try {
                 var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
                 if (result.isJsonArray()) {
