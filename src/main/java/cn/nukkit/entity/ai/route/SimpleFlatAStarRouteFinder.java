@@ -191,7 +191,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
         boolean N, E, S, W;
 
-        Vector3 vector3 = new Vector3(node.getVector3().getFloorX() + 0.5, node.getVector3().getY(), node.getVector3().getFloorZ() + 0.5);
+        Vector3 vector3 = new Vector3(node.getVector3().getFloorX(), node.getVector3().getY(), node.getVector3().getFloorZ());
 
         double offsetY;
 

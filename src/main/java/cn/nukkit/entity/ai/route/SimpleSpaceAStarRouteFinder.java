@@ -10,6 +10,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 /**
  * 务必注意，三维标准A*寻路的代价十分高昂(比原版的洪水填充低得多)，切忌将最大寻路深度设置得太大！
  * TODO: 用BA*、JPS或者势能场寻路代替
@@ -34,14 +36,14 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
 
     @Override
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
-
-        Vector3 floorXZ = new Vector3(node.getVector3().getFloorX(), node.getVector3().getY(), node.getVector3().getFloorZ());
-
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
-                    var vec = floorXZ.add(0.5, 0, 0.5).add(dx, dy, dz);
-                    if (!existInCloseList(vec) && evalBlock(entity.level.getTickCachedBlock(vec.add(0, -1, 0)))) {
+                    var vec = node.getVector3().add(dx, dy, dz);
+                    if (!existInCloseList(vec) && evalBlock(entity.level.getTickCachedBlock(vec))) {
+                        if (vec.y % 1 + entity.getHeight() > 1 && evalBlock(entity.level.getTickCachedBlock(vec.add(0, 1,0)))) {
+                            continue;
+                        }
                         // 计算移动1格的开销
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
                             case 1 -> DIRECT_MOVE_COST;
@@ -64,5 +66,10 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
                 }
             }
         }
+    }
+
+    @Override
+    protected ArrayList<Node> FloydSmooth(ArrayList<Node> array) {
+        return super.FloydSmooth(array);
     }
 }
