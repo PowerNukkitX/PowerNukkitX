@@ -991,7 +991,7 @@ public enum Sound {
     RECORD_FAR("record.far"),
     RECORD_MALL("record.mall"),
     RECORD_MELLOHI("record.mellohi"),
-    @Since("FUTURE") RECORD_OTHERSIDE("record.otherside"),
+    RECORD_OTHERSIDE("record.otherside"),
     RECORD_PIGSTEP("record.pigstep"),
     RECORD_STAL("record.stal"),
     RECORD_STRAD("record.strad"),

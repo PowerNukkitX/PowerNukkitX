@@ -12,6 +12,7 @@ public class ItemRecordOtherside extends ItemRecord {
 
     public ItemRecordOtherside(Integer meta, int count) {
         super(RECORD_OTHERSIDE, meta, count);
+        name = "Music Disc OtherSide";
     }
 
     @Override
