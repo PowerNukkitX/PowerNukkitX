@@ -16,7 +16,7 @@ public class FlyingBlockEvaluator implements IBlockEvaluator{
     @Override
     public boolean evalBlock(EntityIntelligent entity, Block block) {
         //检查是否可到达
-        return isPassable(entity, block);
+        return isPassable(entity, block) && isPassable(entity, block.add(0, 1).getTickCachedLevelBlock());
     }
 
     /**
