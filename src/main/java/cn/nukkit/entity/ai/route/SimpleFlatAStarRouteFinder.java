@@ -417,7 +417,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * 指定方块位置是否可作为一个有效的节点
      */
     protected boolean evalBlock(Block block) {
-        //返回值为移动代价
         return blockEvaluator.evalBlock(entity, block);
     }
 
