@@ -16,6 +16,7 @@ import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.blockevaluator.FlyingBlockEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
@@ -33,16 +34,16 @@ public class EntityBee extends EntityFlyingAnimal {
 
     @Since("1.1.1.0-PN")
     public static final int NETWORK_ID = 122;
-    
+
     private int beehiveTimer = 600;
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class),new PlayerEvaluator(),1,1)
+                    new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class), new PlayerEvaluator(), 1, 1)
             ),
-            Set.of(new NearestPlayerSensor(50,0)),
+            Set.of(new NearestPlayerSensor(50, 0)),
             Set.of(new FlyingController()),
-            new SimpleFlatAStarRouteFinder(new FlyingBlockEvaluator(),this)
+            new SimpleSpaceAStarRouteFinder(new FlyingBlockEvaluator(), this)
     );
 
     @Since("1.1.1.0-PN")
@@ -90,7 +91,7 @@ public class EntityBee extends EntityFlyingAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setHasNectar(boolean hasNectar) {
-    
+
     }
 
     @PowerNukkitOnly
@@ -102,9 +103,9 @@ public class EntityBee extends EntityFlyingAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(boolean angry) {
-    
+
     }
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
@@ -114,18 +115,18 @@ public class EntityBee extends EntityFlyingAnimal {
             Optional<Block> flower = Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(4, 4, 4), false, true))
                     .filter(block -> block instanceof BlockFlower)
                     .findFirst();
-            
+
             for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5))) {
                 if (collisionBlock instanceof BlockBeehive) {
                     BlockEntityBeehive beehive = ((BlockBeehive) collisionBlock).getOrCreateBlockEntity();
                     double distance;
-                    if(beehive.getOccupantsCount() < 4 && (distance = beehive.distanceSquared(this)) < closestDistance) {
+                    if (beehive.getOccupantsCount() < 4 && (distance = beehive.distanceSquared(this)) < closestDistance) {
                         closestBeehive = beehive;
                         closestDistance = distance;
                     }
                 }
             }
-            
+
             if (closestBeehive != null) {
                 BlockEntityBeehive.Occupant occupant = closestBeehive.addOccupant(this);
                 if (flower.isPresent()) {
@@ -136,7 +137,7 @@ public class EntityBee extends EntityFlyingAnimal {
         }
         return true;
     }
-    
+
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -152,13 +153,13 @@ public class EntityBee extends EntityFlyingAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
-    
+
     }
 
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(Player player) {
-    
+
     }
 
 

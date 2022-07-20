@@ -15,7 +15,7 @@ import cn.nukkit.utils.BVector3;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class FlyingController implements IController{
+public class FlyingController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
