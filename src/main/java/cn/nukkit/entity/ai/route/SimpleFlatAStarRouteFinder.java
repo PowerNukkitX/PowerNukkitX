@@ -441,7 +441,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-//        if (pos1.getFloorY() != pos2.getFloorY()) return true;
+        if (pos1.getFloorY() != pos2.getFloorY()) return true;
         boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
         if (traverseDirection) {
             double loopStart = Math.min(pos1.getX(), pos2.getX());
@@ -475,26 +475,26 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
             if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
 
-//            boolean xIsInt = vector3.getX() % 1 == 0;
-//            boolean zIsInt = vector3.getZ() % 1 == 0;
-//            if (xIsInt && zIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-//                    return true;
-//            } else if (xIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-//                    return true;
-//            } else if (zIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-//                    return true;
-//            } else {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-//                    return true;
-//            }
+            boolean xIsInt = vector3.getX() % 1 == 0;
+            boolean zIsInt = vector3.getZ() % 1 == 0;
+            if (xIsInt && zIsInt) {
+                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
+                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+                    return true;
+            } else if (xIsInt) {
+                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+                    return true;
+            } else if (zIsInt) {
+                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+                    return true;
+            } else {
+                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+                    return true;
+            }
         }
         return false;
     }
