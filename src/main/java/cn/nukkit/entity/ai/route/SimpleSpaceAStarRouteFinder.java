@@ -40,8 +40,8 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
-                    var vec = floorXZ.add(0.5,0,0.5).add(dx, dy, dz);
-                    if (!existInCloseList(vec) && evalBlock(Position.fromObject(vec.add(0,-1,0),entity.level).getLevelBlock())) {
+                    var vec = floorXZ.add(0.5, 0, 0.5).add(dx, dy, dz);
+                    if (!existInCloseList(vec) && evalBlock(entity.level.getTickCachedBlock(vec.add(0, -1, 0)))) {
                         // 计算移动1格的开销
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
                             case 1 -> DIRECT_MOVE_COST;
