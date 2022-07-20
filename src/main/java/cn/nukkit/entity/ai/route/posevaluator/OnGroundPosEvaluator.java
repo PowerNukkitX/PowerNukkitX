@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.route.blockevaluator;
+package cn.nukkit.entity.ai.route.posevaluator;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
@@ -11,14 +11,15 @@ import cn.nukkit.utils.Utils;
 /**
  * 用于标准陆地行走实体的方块评估器
  */
-public class OnGroundBlockEvaluator implements IBlockEvaluator {
+public class OnGroundPosEvaluator implements IPosEvaluator {
     @Override
-    public boolean evalBlock(EntityIntelligent entity, Block block) {
+    public boolean evalPos(EntityIntelligent entity, Vector3 vec) {
         //居中坐标
-        Position blockCenter = block.add(0.5, 0, 0.5);
+        var blockCenter = vec.add(0.5, 0, 0.5);
         //检查是否可到达
-        if (!isPassable(entity, blockCenter.add(0, 1, 0)))
+        if (!isPassable(entity, blockCenter))
             return false;
+        var block = entity.level.getTickCachedBlock(blockCenter.add(0, -1));
         //TODO: 检查碰头
         //脚下不能是伤害性方块
         if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)

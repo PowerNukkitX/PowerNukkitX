@@ -6,7 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -65,7 +65,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected int maxSearchDepth = 100;
 
-    public SimpleFlatAStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
+    public SimpleFlatAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator);
         this.entity = entity;
         this.level = entity.level;
@@ -400,14 +400,14 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (evalBlock(block))
+                if (evalPos(block.add(0, 1)))
                     return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (evalBlock(block))
+            if (evalPos(block.add(0, 1)))
                 return block;
         }
         return null;
@@ -416,8 +416,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     /**
      * 指定方块位置是否可作为一个有效的节点
      */
-    protected boolean evalBlock(Block block) {
-        return blockEvaluator.evalBlock(entity, block);
+    protected boolean evalPos(Vector3 pos) {
+        return evalPos.evalPos(entity, pos);
     }
 
     /**

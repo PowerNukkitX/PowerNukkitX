@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public abstract class ConcurrentRouteFinder extends SimpleRouteFinder {
     //同步访问锁
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public ConcurrentRouteFinder(IBlockEvaluator blockEvaluator) {
+    public ConcurrentRouteFinder(IPosEvaluator blockEvaluator) {
         super(blockEvaluator);
     }
 

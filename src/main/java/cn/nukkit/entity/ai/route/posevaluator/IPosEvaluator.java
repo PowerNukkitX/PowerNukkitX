@@ -1,9 +1,10 @@
-package cn.nukkit.entity.ai.route.blockevaluator;
+package cn.nukkit.entity.ai.route.posevaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.math.Vector3;
 
 /**
  * 方块评估器用于寻路器评估方块 <br/>
@@ -11,14 +12,13 @@ import cn.nukkit.entity.EntityIntelligent;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public interface IBlockEvaluator {
+public interface IPosEvaluator {
     /**
-     * 返回目标方块是否可以作为路径点
-     * 注意，block被认为是实体脚下的方块，而不是实体位于的方块坐标
+     * 返回目标坐标是否可以作为路径点
      *
      * @param entity 目标实体
-     * @param block  评估方块
+     * @param pos  评估坐标
      * @return 是否可以作为路径点
      */
-    boolean evalBlock(EntityIntelligent entity, Block block);
+    boolean evalPos(EntityIntelligent entity, Vector3 pos);
 }

@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
 import lombok.Getter;
 
@@ -26,10 +26,10 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     protected int currentIndex = 0;
 
     //方块评估器
-    protected IBlockEvaluator blockEvaluator;
+    protected IPosEvaluator evalPos;
 
-    public SimpleRouteFinder(IBlockEvaluator blockEvaluator) {
-        this.blockEvaluator = blockEvaluator;
+    public SimpleRouteFinder(IPosEvaluator blockEvaluator) {
+        this.evalPos = blockEvaluator;
     }
 
     //添加寻路结果节点

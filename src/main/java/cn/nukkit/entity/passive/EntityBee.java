@@ -15,9 +15,8 @@ import cn.nukkit.entity.ai.controller.FlyingController;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.SimpleSpaceAStarRouteFinder;
-import cn.nukkit.entity.ai.route.blockevaluator.FlyingBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -43,7 +42,7 @@ public class EntityBee extends EntityFlyingAnimal {
             ),
             Set.of(new NearestPlayerSensor(50, 0)),
             Set.of(new FlyingController()),
-            new SimpleSpaceAStarRouteFinder(new FlyingBlockEvaluator(), this)
+            new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this)
     );
 
     @Since("1.1.1.0-PN")

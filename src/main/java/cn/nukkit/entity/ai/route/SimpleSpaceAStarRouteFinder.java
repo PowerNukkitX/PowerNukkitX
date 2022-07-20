@@ -3,10 +3,9 @@ package cn.nukkit.entity.ai.route;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
@@ -28,7 +27,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     protected final static int OBLIQUE_2D_MOVE_COST = 14;
     protected final static int OBLIQUE_3D_MOVE_COST = 17;
 
-    public SimpleSpaceAStarRouteFinder(IBlockEvaluator blockEvaluator, EntityIntelligent entity) {
+    public SimpleSpaceAStarRouteFinder(IPosEvaluator blockEvaluator, EntityIntelligent entity) {
         super(blockEvaluator, entity);
     }
 
@@ -43,7 +42,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     var vec = node.getVector3().add(dx, dy, dz);
-                    if (!existInCloseList(vec) && evalBlock(entity.level.getTickCachedBlock(vec))) {
+                    if (!existInCloseList(vec) && evalPos(vec)) {
                         // 计算移动1格的开销
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
                             case 1 -> DIRECT_MOVE_COST;

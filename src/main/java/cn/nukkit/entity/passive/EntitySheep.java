@@ -12,7 +12,7 @@ import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.blockevaluator.OnGroundBlockEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.OnGroundPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -42,7 +42,7 @@ public class EntitySheep extends EntityWalkingAnimal {
             ),
             Set.of(new NearestPlayerSensor(50,0)),
             Set.of(new WalkingController()),
-            new SimpleFlatAStarRouteFinder(new OnGroundBlockEvaluator(),this)
+            new SimpleFlatAStarRouteFinder(new OnGroundPosEvaluator(),this)
     );
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
