@@ -6,6 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.blockevaluator.IBlockEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,13 +35,13 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
     @Override
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
 
-        Vector3 vector3 = new Vector3(node.getVector3().getFloorX() + 0.5, node.getVector3().getY(), node.getVector3().getFloorZ() + 0.5);
+        Vector3 floorXZ = new Vector3(node.getVector3().getFloorX(), node.getVector3().getY(), node.getVector3().getFloorZ());
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
-                    var vec = vector3.add(dx, dy, dz);
-                    if (!existInCloseList(vec)) {
+                    var vec = floorXZ.add(0.5,0,0.5).add(dx, dy, dz);
+                    if (!existInCloseList(vec) && evalBlock(Position.fromObject(vec.add(0,-1,0),entity.level).getLevelBlock())) {
                         // 计算移动1格的开销
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {
                             case 1 -> DIRECT_MOVE_COST;
