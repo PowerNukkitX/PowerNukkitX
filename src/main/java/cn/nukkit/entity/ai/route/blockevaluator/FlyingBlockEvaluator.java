@@ -20,8 +20,8 @@ public class FlyingBlockEvaluator implements IBlockEvaluator{
         //检查是否可到达
         if (!isPassable(entity, blockCenter.add(0, 1, 0)))
             return false;
-        if(blockCenter.add(0, 1, 0).getLevelBlock().getId() != 0)
-            return false;
+//        if(blockCenter.add(0, 1, 0).getLevelBlock().getId() != 0)
+//            return false;
         return true;
     }
 
