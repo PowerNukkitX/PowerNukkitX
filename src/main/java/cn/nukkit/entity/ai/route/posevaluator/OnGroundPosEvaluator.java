@@ -37,6 +37,18 @@ public class OnGroundPosEvaluator implements IPosEvaluator {
         return true;
     }
 
+    @Override
+    public boolean evalStandingBlock(EntityIntelligent entity, Block block) {
+        //脚下不能是伤害性方块
+        if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)
+            return false;
+        //水特判
+        if(block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
+            return true;
+        //必须可以站立
+        return !block.canPassThrough();
+    }
+
     /**
      * 指定实体在指定坐标上能否不发生碰撞
      */

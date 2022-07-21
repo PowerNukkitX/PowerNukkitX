@@ -175,6 +175,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     /**
      * 获取指定位置的方块的移动Cost
+     *
      * @param level
      * @param pos
      * @return cost
@@ -400,24 +401,31 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (limit > 0) {
             for (int y = vector3.getFloorY(); y >= vector3.getFloorY() - limit; y--) {
                 Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-                if (evalPos(block.add(0, 1)))
+                if (evalStandingBlock(block))
                     return block;
             }
             return null;
         }
         for (int y = vector3.getFloorY(); y >= -64; y--) {
             Block block = this.level.getTickCachedBlock(vector3.getFloorX(), y, vector3.getFloorZ(), false);
-            if (evalPos(block.add(0, 1)))
+            if (evalStandingBlock(block))
                 return block;
         }
         return null;
     }
 
     /**
-     * 指定方块位置是否可作为一个有效的节点
+     * 指定位置是否可作为一个有效的节点
      */
     protected boolean evalPos(Vector3 pos) {
         return evalPos.evalPos(entity, pos);
+    }
+
+    /**
+     * 指定方块上面是否可作为一个有效的节点
+     */
+    protected boolean evalStandingBlock(Block block) {
+        return evalPos.evalStandingBlock(entity, block);
     }
 
     /**

@@ -18,6 +18,11 @@ public class FlyingPosEvaluator implements IPosEvaluator {
         return isPassable(entity, vec);
     }
 
+    @Override
+    public boolean evalStandingBlock(EntityIntelligent entity, Block block) {
+        return true;
+    }
+
     /**
      * 指定实体在指定坐标上能否不发生碰撞
      * 对于空间中的移动做了特别的优化

@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.route.posevaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 
@@ -20,4 +21,12 @@ public interface IPosEvaluator {
      * @return 是否可以作为路径点
      */
     boolean evalPos(EntityIntelligent entity, Vector3 pos);
+
+    /**
+     * 返回此方块是否可以作为脚下站立的方块
+     * @param entity 目标实体
+     * @param block 评估方块
+     * @return 是否可以作为脚下站立的方块
+     */
+    boolean evalStandingBlock(EntityIntelligent entity, Block block);
 }
