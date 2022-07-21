@@ -4,10 +4,11 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityWalkingAnimal;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityVillager extends EntityCreature implements EntityNPC, EntityAgeable {
+public class EntityVillager extends EntityWalkingAnimal implements EntityNPC, EntityAgeable {
 
     public static final int NETWORK_ID = 115;
 

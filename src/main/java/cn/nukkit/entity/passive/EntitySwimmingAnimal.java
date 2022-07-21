@@ -9,8 +9,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public abstract class EntityWaterAnimal extends EntityCreature implements EntityAgeable {
-    public EntityWaterAnimal(FullChunk chunk, CompoundTag nbt) {
+public abstract class EntitySwimmingAnimal extends EntityCreature implements EntityAgeable {
+    public EntitySwimmingAnimal(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 

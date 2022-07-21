@@ -10,7 +10,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.passive.EntityWaterAnimal;
+import cn.nukkit.entity.passive.EntitySwimmingAnimal;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.*;
@@ -26,7 +26,6 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.utils.BlockIterator;
 import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
@@ -250,7 +249,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             if (!this.hasEffect(Effect.WATER_BREATHING) && !this.hasEffect(Effect.CONDUIT_POWER) && this.isInsideOfWater()) {
-                if (this instanceof EntityWaterAnimal || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
+                if (this instanceof EntitySwimmingAnimal || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
                     this.setAirTicks(400);
                 } else {
                     if (turtleTicks == 0 || turtleTicks == 200) {
@@ -266,7 +265,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                 }
             } else {
-                if (this instanceof EntityWaterAnimal) {
+                if (this instanceof EntitySwimmingAnimal) {
                     hasUpdate = true;
                     int airTicks = getAirTicks() - tickDiff;
 

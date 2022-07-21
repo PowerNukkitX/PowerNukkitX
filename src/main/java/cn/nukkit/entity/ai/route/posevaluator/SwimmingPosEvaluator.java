@@ -15,7 +15,7 @@ import cn.nukkit.utils.Utils;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class WaterPosEvaluator implements IPosEvaluator{
+public class SwimmingPosEvaluator implements IPosEvaluator{
     @Override
     public boolean evalPos(EntityIntelligent entity, Vector3 pos) {
         int blockId = Position.fromObject(pos,entity.level).getLevelBlock().getId();

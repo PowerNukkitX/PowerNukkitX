@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityWalkingAnimal;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -12,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Pub4Game
  * @since 21.06.2016
  */
-public class EntityVillagerV1 extends EntityCreature implements EntityNPC, EntityAgeable {
+public class EntityVillagerV1 extends EntityWalkingAnimal implements EntityNPC, EntityAgeable {
 
     public static final int PROFESSION_FARMER = 0;
     public static final int PROFESSION_LIBRARIAN = 1;

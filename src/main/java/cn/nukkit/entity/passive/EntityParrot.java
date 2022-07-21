@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityFlyingAnimal;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -9,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityParrot extends EntityAnimal {
+public class EntityParrot extends EntityFlyingAnimal {
 
     public static final int NETWORK_ID = 30;
 

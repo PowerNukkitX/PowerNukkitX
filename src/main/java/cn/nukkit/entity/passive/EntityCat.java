@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkingAnimal;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -10,14 +11,14 @@ import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.OnGroundPosEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
 
-public class EntityCat extends EntityAnimal {
+public class EntityCat extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 75;
 
@@ -27,7 +28,7 @@ public class EntityCat extends EntityAnimal {
             ),
             Set.of(new NearestPlayerSensor(50,0)),
             Set.of(new WalkingController()),
-            new SimpleFlatAStarRouteFinder(new OnGroundPosEvaluator(),this)
+            new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(),this)
     );
 
     @Override

@@ -2,10 +2,11 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkingAnimal;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityPanda extends EntityAnimal {
+public class EntityPanda extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 113;
 
