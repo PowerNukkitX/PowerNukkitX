@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 @Since("1.4.0.0-PN")
 @PowerNukkitOnly
-public class EntityPiglinBrute extends EntityMob {
+public class EntityPiglinBrute extends EntityWalkingMob {
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly

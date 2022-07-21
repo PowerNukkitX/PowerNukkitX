@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityWither extends EntityMob implements EntitySmite {
+public class EntityWither extends EntityFlyingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 52;
 

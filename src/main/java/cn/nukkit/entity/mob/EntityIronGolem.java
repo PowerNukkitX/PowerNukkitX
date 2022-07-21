@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
-public class EntityIronGolem extends EntityMob {
+public class EntityIronGolem extends EntityWalkingMob {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int NETWORK_ID = 20;

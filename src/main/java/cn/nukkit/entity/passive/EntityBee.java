@@ -7,7 +7,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.block.BlockFlower;
 import cn.nukkit.blockentity.BlockEntityBeehive;
-import cn.nukkit.entity.EntityFlyingAnimal;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;

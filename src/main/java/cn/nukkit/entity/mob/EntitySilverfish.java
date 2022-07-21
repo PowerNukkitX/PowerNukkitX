@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntitySilverfish extends EntityMob implements EntityArthropod {
+public class EntitySilverfish extends EntityWalkingMob implements EntityArthropod {
 
     public static final int NETWORK_ID = 39;
 

@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityWaterAnimal;
 import cn.nukkit.entity.ai.BehaviorGroup;
 import cn.nukkit.entity.ai.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -22,7 +21,7 @@ import java.util.Set;
 /**
  * @author PetteriM1
  */
-public class EntityDolphin extends EntityWaterAnimal {
+public class EntityDolphin extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 31;
 

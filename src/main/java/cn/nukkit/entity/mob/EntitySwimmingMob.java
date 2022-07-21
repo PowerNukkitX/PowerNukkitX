@@ -1,30 +1,31 @@
-package cn.nukkit.entity;
+package cn.nukkit.entity.mob;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.passive.EntityAnimal;
+import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
- * 水中游泳动物
+ * 水中游泳怪物
  */
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public abstract class EntityWaterAnimal extends EntityAnimal {
-    public EntityWaterAnimal(FullChunk chunk, CompoundTag nbt) {
+public abstract class EntitySwimmingMob extends EntityMob {
+    public EntitySwimmingMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     public boolean attack(EntityDamageEvent source) {
+        super.attack(source);
         if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING){
             source.setCancelled(true);
             return false;
         }
-        return super.attack(source);
+        return true;
     }
 
     @Override

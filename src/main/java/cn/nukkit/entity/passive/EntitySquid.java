@@ -2,7 +2,6 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityWaterAnimal;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.format.FullChunk;
@@ -11,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntitySquid extends EntityWaterAnimal {
+public class EntitySquid extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 17;
 

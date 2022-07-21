@@ -6,7 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityRavager extends EntityMob {
+public class EntityRavager extends EntityWalkingMob {
 
     public static final int NETWORK_ID = 59;
 

@@ -1,4 +1,4 @@
-package cn.nukkit.entity;
+package cn.nukkit.entity.mob;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;

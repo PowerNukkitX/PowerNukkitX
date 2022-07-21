@@ -2,14 +2,13 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.EntityWaterAnimal;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * @author PetteriM1
  */
-public class EntityTropicalFish extends EntityWaterAnimal {
+public class EntityTropicalFish extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 111;
 

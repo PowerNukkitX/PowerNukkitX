@@ -1,32 +1,21 @@
-package cn.nukkit.entity;
+package cn.nukkit.entity.mob;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.mob.EntityMob;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
- * 水中游泳怪物
+ * 空中飞行怪物
  */
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public abstract class EntityWaterMob extends EntityMob {
-    public EntityWaterMob(FullChunk chunk, CompoundTag nbt) {
+public abstract class EntityFlyingMob extends EntityMob {
+    public EntityFlyingMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        super.attack(source);
-        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING){
-            source.setCancelled(true);
-            return false;
-        }
-        return true;
-    }
 
     @Override
     protected void handleGravity() {
@@ -45,7 +34,9 @@ public abstract class EntityWaterMob extends EntityMob {
 
     @Override
     protected void handleFloatingMovement() {
-
+        if (this.isTouchingWater()) {
+            this.motionY += getMovementSpeed() * 0.3;
+        }
     }
 
     @Override
@@ -54,10 +45,5 @@ public abstract class EntityWaterMob extends EntityMob {
         this.motionX = 0;
         this.motionY = 0;
         this.motionZ = 0;
-    }
-
-    @Override
-    public float getMovementSpeedAtBlock(Block block) {
-        return getMovementSpeed();
     }
 }
