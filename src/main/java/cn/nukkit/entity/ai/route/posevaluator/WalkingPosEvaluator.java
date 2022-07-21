@@ -57,7 +57,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
      * 指定实体在指定坐标上能否不发生碰撞
      */
     protected boolean isPassable(EntityIntelligent entity, Vector3 vector3) {
-        double radius = (entity.getWidth() * entity.getScale()) / 2 + 0.1;
+        double radius = (entity.getWidth() * entity.getScale()) / 2;
         float height = entity.getHeight() * entity.getScale();
         AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
         return !Utils.hasCollisionTickCachedBlocks(entity.level, bb);
