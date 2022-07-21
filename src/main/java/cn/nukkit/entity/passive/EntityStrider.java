@@ -2,6 +2,7 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityWalkingAnimal;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -9,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Erik Miller | EinBexiii
  */
 @Since("1.3.1.0-PN")
-public class EntityStrider extends EntityAnimal {
+public class EntityStrider extends EntityWalkingAnimal {
 
     public final static int NETWORK_ID = 125;
 

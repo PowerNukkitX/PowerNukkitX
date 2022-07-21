@@ -11,7 +11,7 @@ import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleSpaceAStarRouteFinder;
-import cn.nukkit.entity.ai.route.posevaluator.WaterPosEvaluator;
+import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
@@ -32,7 +32,7 @@ public class EntityDolphin extends EntityWaterAnimal {
             ),
             Set.of(new NearestPlayerSensor(50,0)),
             Set.of(new SpaceMoveController()),
-            new SimpleSpaceAStarRouteFinder(new WaterPosEvaluator(),this)
+            new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(),this)
     );
 
     public EntityDolphin(FullChunk chunk, CompoundTag nbt) {
