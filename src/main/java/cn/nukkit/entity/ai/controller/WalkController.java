@@ -8,7 +8,6 @@ import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.entity.ai.memory.NeedUpdateMoveDirectionMemory;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BVector3;
 
 import java.util.Arrays;
 
@@ -17,7 +16,7 @@ import java.util.Arrays;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class WalkingController implements IController {
+public class WalkController implements IController {
 
     protected static final int JUMP_COOL_DOWN = 10;
 

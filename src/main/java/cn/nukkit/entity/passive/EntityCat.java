@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
-import cn.nukkit.entity.ai.controller.WalkingController;
+import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
@@ -26,7 +26,7 @@ public class EntityCat extends EntityWalkingAnimal {
                     new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class),new PlayerEvaluator(),1,1)
             ),
             Set.of(new NearestPlayerSensor(50,0)),
-            Set.of(new WalkingController()),
+            Set.of(new WalkController()),
             new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(),this)
     );
 
