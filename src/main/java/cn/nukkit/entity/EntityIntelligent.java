@@ -2,8 +2,8 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.ai.EmptyBehaviorGroup;
-import cn.nukkit.entity.ai.IBehaviorGroup;
+import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkingController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.level.format.FullChunk;

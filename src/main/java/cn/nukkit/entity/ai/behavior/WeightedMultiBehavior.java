@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.behavior;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +12,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * 由多个行为{@link IBehavior}组成的组（注意和行为组{@link cn.nukkit.entity.ai.IBehaviorGroup}区分）<br>
+ * 由多个行为{@link IBehavior}组成的组（注意和行为组{@link IBehaviorGroup}区分）<br>
  * 调用方法{@link #execute(EntityIntelligent)}前，必须调用此对象的评估函数以确认激活的是哪个行为<br>
  * 在评估时，会评估所有包含的子行为<br>
  * 筛选出返回成功的行为后，会选取最高优先级的那一组<br>

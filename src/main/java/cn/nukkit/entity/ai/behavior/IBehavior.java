@@ -2,11 +2,12 @@ package cn.nukkit.entity.ai.behavior;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 
 /**
- * 此接口抽象了一个行为对象，作为行为组{@link cn.nukkit.entity.ai.IBehaviorGroup}的组成部分
+ * 此接口抽象了一个行为对象，作为行为组{@link IBehaviorGroup}的组成部分
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
