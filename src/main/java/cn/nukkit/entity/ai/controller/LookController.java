@@ -38,8 +38,10 @@ public class LookController implements IController{
             //构建方向向量
             BVector3 bv2route = BVector3.fromPos(directionMemory.getEnd().x - entity.x, directionMemory.getEnd().y - entity.y, directionMemory.getEnd().z - entity.z);
             entity.setYaw(bv2route.getYaw());
-            if (!lookAtTarget)
+            if (!lookAtTarget) {
                 entity.setHeadYaw(bv2route.getYaw());
+                entity.setPitch(bv2route.getPitch());
+            }
         }
         if (lookAtTarget) {
             //构建指向玩家的向量
