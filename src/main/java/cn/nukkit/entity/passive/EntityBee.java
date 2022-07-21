@@ -56,11 +56,6 @@ public class EntityBee extends EntityFlyingAnimal {
     }
 
     @Override
-    public float getGravity() {
-        return 0f;
-    }
-
-    @Override
     public int getNetworkId() {
         return NETWORK_ID;
     }

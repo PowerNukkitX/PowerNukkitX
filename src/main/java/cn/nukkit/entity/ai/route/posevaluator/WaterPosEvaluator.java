@@ -4,18 +4,22 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 
+/**
+ * 用于游泳实体的坐标评估器
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class FlyingPosEvaluator implements IPosEvaluator {
+public class WaterPosEvaluator implements IPosEvaluator{
     @Override
-    public boolean evalPos(EntityIntelligent entity, Vector3 vec) {
-        //检查是否可到达
-        return isPassable(entity, vec);
+    public boolean evalPos(EntityIntelligent entity, Vector3 pos) {
+        int blockId = Position.fromObject(pos,entity.level).getLevelBlock().getId();
+        return isPassable(entity, pos) && (blockId == Block.FLOWING_WATER || blockId == Block.STILL_WATER);
     }
 
     /**

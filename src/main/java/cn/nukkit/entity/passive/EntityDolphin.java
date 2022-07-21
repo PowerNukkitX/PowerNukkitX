@@ -2,19 +2,48 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntitySwimmingAnimal;
+import cn.nukkit.entity.ai.BehaviorGroup;
+import cn.nukkit.entity.ai.IBehaviorGroup;
+import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.controller.FlyingController;
+import cn.nukkit.entity.ai.controller.WalkingController;
+import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
+import cn.nukkit.entity.ai.route.SimpleSpaceAStarRouteFinder;
+import cn.nukkit.entity.ai.route.posevaluator.WaterPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.util.Set;
+
 /**
  * @author PetteriM1
  */
-public class EntityDolphin extends EntityAnimal {
+public class EntityDolphin extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 31;
 
+    protected IBehaviorGroup behaviorGroup = new BehaviorGroup(
+            Set.of(
+                    new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class),new PlayerEvaluator(),1,1)
+            ),
+            Set.of(new NearestPlayerSensor(50,0)),
+            Set.of(new FlyingController()),
+            new SimpleSpaceAStarRouteFinder(new WaterPosEvaluator(),this)
+    );
+
     public EntityDolphin(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+
+    @Override
+    public IBehaviorGroup getBehaviorGroup() {
+        return behaviorGroup;
     }
 
     @Override

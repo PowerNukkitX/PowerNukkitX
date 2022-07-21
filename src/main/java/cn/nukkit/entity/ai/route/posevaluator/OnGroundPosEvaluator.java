@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.route.posevaluator;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.level.Position;
@@ -11,6 +13,8 @@ import cn.nukkit.utils.Utils;
 /**
  * 用于标准陆地行走实体的方块评估器
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class OnGroundPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(EntityIntelligent entity, Vector3 vec) {

@@ -15,4 +15,9 @@ public abstract class EntitySwimmingAnimal extends EntityAnimal {
     public EntitySwimmingAnimal(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+
+    @Override
+    public float getGravity() {
+        return 0f;
+    }
 }
