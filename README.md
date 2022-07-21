@@ -20,8 +20,6 @@
 
 * PowerNukkitX要求的最低Java版本为17
 
-* 补充: 如果您的服务器不能安装Java17，你也可以用使用我们提供的[BootStrap](https://ci.lt-name.com/job/PowerNukkitX/job/master/)
-
 加入我们:
 
 * [Discord](https://discord.gg/BcPhZCVJHJ)
@@ -29,12 +27,12 @@
 
 PowerNukkitX的优势：
 
-1. 支持1.19.10协议（完善中）。
+1. 支持1.19.10协议。
 2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 原生支持香草命令和命令方块等（完善中）。
 5. 内置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有问题[点此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
-6. 支持使用JavaSrcipt语言编写插件 （初步完成，可在[此处](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找开发文档）。
+6. 支持使用JavaSrcipt语言编写插件 （可在[此处](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找开发文档）。
 7. 支持自定义方块 / 物品（完善中，[文档](https://doc.powernukkitx.cn)待补充）。
 8. Todo...
 
@@ -42,7 +40,7 @@ PowerNukkitX的优势：
 
 🧾 关于Nukkit核心
 
-[Nukkit](https://github.com/Nukkit/Nukkit)是一款为Minecraft: Pocket Edition而生的服务端，有着如下优势:
+[Nukkit](https://github.com/Nukkit/Nukkit) 是一款为Minecraft: Pocket Edition而生的服务端，有着如下优势:
 
 * 基于Java开发，速度更快，更稳定，高性能。
 * 具有友好的架构，您可简单快速的上手为其开发插件等。
@@ -55,7 +53,7 @@ PowerNukkitX的优势：
 
 * 请注意**PowerNukkitX**非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)（同时请注意阅读[贡献帮助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)中的规定）。
 
-* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkit](https://github.com/powernukkit/powernukkit)或[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)制作的插件，并使用[稳定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)进行部署。
+* 同时我们推荐您进行定期备份等操作，[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)制作的插件，并使用[稳定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)进行部署。
 
 * 大多数[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在该服务端上兼容使用，但在运行时可能会出一些错误等或不支持PowerNukkitX添加的新内容。
 
@@ -101,16 +99,8 @@ dependencies {
 
 🛠 部署运行
 -------------
-* **在任意一个空文件夹**内放入编译完成的核心文件，并使用终端输入 `java -jar powernukkitx-<version>-shaded.jar` 即可开始部署运行。
-
-* 但为了获得更好的性能，我们推荐您使用以下命令用于部署。
-```sh
-java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar powernukkitx-<version>-shaded.jar
-```
-
-* 请酌情根据您的服务器配置调节 `-Xmx` (JVM可以调用的最大内存) 和 `-Xms` (JVM的初始内存)，同时根据您编译的JAR核心名称手动调整 `powernukkitx-<version>-shaded.jar`中的内容。
-
-* 您可在此[文章](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/)中获取更多有关信息。
+我们制作了 [命令行工具](https://github.com/PowerNukkitX/PNX-CLI) 来帮助您运行PNX，您可以在 [此处](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)
+查看如何启动PNX。
 
 🧐 贡献一份力量
 ---
