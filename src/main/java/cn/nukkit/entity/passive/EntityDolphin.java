@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.PlayerEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
@@ -30,7 +31,7 @@ public class EntityDolphin extends EntitySwimmingAnimal {
                     new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class),new PlayerEvaluator(),1,1)
             ),
             Set.of(new NearestPlayerSensor(50,0)),
-            Set.of(new SpaceMoveController()),
+            Set.of(new SpaceMoveController(),new LookController(false,true)),
             new SimpleSpaceAStarRouteFinder(new SwimmingPosEvaluator(),this)
     );
 

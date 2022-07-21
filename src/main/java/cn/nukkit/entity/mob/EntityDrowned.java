@@ -11,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityDrowned extends EntityMob implements EntitySmite {
+public class EntityDrowned extends EntityAmphibiousMob implements EntitySmite {
 
     public static final int NETWORK_ID = 110;
 
