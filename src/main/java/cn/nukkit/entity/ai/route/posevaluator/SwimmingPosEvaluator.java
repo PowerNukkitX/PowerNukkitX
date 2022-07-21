@@ -9,6 +9,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 用于游泳实体的坐标评估器
@@ -17,13 +18,13 @@ import cn.nukkit.utils.Utils;
 @Since("1.6.0.0-PNX")
 public class SwimmingPosEvaluator implements IPosEvaluator{
     @Override
-    public boolean evalPos(EntityIntelligent entity, Vector3 pos) {
+    public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
         int blockId = Position.fromObject(pos,entity.level).getLevelBlock().getId();
         return isPassable(entity, pos) && (blockId == Block.FLOWING_WATER || blockId == Block.STILL_WATER);
     }
 
     @Override
-    public boolean evalStandingBlock(EntityIntelligent entity, Block block) {
+    public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
         return true;
     }
 

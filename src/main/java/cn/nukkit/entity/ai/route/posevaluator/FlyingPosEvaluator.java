@@ -8,18 +8,19 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class FlyingPosEvaluator implements IPosEvaluator {
     @Override
-    public boolean evalPos(EntityIntelligent entity, Vector3 vec) {
+    public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 vec) {
         //检查是否可到达
         return isPassable(entity, vec);
     }
 
     @Override
-    public boolean evalStandingBlock(EntityIntelligent entity, Block block) {
+    public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
         return true;
     }
 
