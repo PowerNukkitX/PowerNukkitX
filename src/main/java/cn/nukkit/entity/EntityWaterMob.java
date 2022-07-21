@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -53,5 +54,10 @@ public abstract class EntityWaterMob extends EntityMob {
         this.motionX = 0;
         this.motionY = 0;
         this.motionZ = 0;
+    }
+
+    @Override
+    public float getMovementSpeedAtBlock(Block block) {
+        return getMovementSpeed();
     }
 }
