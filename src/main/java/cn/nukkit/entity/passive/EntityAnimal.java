@@ -1,8 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityAgeable;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
