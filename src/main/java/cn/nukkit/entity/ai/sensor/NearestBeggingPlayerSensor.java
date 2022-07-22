@@ -5,20 +5,18 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.IMemory;
-import cn.nukkit.entity.ai.memory.NearestBreedingPlayerMemory;
+import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
 import cn.nukkit.entity.passive.EntityAnimal;
-
-import javax.annotation.Nonnull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestBreedingPlayerSensor implements ISensor{
+public class NearestBeggingPlayerSensor implements ISensor{
 
     protected double range;
 
     protected double minRange;
 
-    public NearestBreedingPlayerSensor(double range, double minRange) {
+    public NearestBeggingPlayerSensor(double range, double minRange) {
         this.range = range;
         this.minRange = minRange;
     }
@@ -41,8 +39,8 @@ public class NearestBreedingPlayerSensor implements ISensor{
                     }
                 }
             }
-            return new NearestBreedingPlayerMemory(player);
+            return new NearestBeggingPlayerMemory(player);
         }
-        return new NearestBreedingPlayerMemory(null);
+        return new NearestBeggingPlayerMemory(null);
     }
 }

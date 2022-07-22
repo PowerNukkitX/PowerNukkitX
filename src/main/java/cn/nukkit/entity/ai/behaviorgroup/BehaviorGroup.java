@@ -109,7 +109,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
         //过滤掉低优先级的行为
-        for (var entry : evalSucceed) {
+        for (var entry : evalSucceed.toArray(new IBehavior[0])) {
             if (entry.getPriority() != heightestPriority) {
                 evalSucceed.remove(entry);
             }

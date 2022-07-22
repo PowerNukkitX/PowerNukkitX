@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
@@ -10,12 +11,12 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
-import cn.nukkit.entity.ai.memory.NearestBreedingPlayerMemory;
-import cn.nukkit.entity.ai.memory.RandomRoamTargetMemory;
+import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.memory.AttackMemory;
+import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestBreedingPlayerSensor;
-import cn.nukkit.entity.ai.sensor.RandomRoamTargetSensor;
+import cn.nukkit.entity.ai.sensor.NearestBeggingPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
@@ -40,10 +41,14 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new MoveToTargetExecutor(NearestBreedingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBreedingPlayerMemory.class),2,1),
-                    new Behavior(new MoveToTargetExecutor(RandomRoamTargetMemory.class,0.1f),new MemoryCheckEvaluator(RandomRoamTargetMemory.class),1,1)
+                    new Behavior(new RandomRoamExecutor(0.4f,16,30),(entity) -> {
+                        var attackMemory = entity.getMemoryStorage().get(AttackMemory.class);
+                        return attackMemory != null && (Server.getInstance().getTick() - attackMemory.getAttackTime()) <= 200;
+                    },3,1),
+                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class),2,1),
+                    new Behavior(new RandomRoamExecutor(0.1f,8,100),(entity -> true),1,1)
             ),
-            Set.of(new NearestBreedingPlayerSensor(8,0),new RandomRoamTargetSensor(100,8,8)),
+            Set.of(new NearestBeggingPlayerSensor(8,0)),
             Set.of(new WalkController(),new LookController(true,true)),
             new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(),this)
     );

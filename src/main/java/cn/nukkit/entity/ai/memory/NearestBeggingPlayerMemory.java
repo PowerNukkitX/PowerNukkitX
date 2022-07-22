@@ -6,8 +6,8 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestBreedingPlayerMemory extends PlayerMemory{
-    public NearestBreedingPlayerMemory(Player player) {
+public class NearestBeggingPlayerMemory extends PlayerMemory{
+    public NearestBeggingPlayerMemory(Player player) {
         super(player);
     }
 }
