@@ -19,10 +19,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * 标准A*寻路实现，性能不佳
@@ -42,6 +39,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
 
     protected final ArrayList<Node> closeList = new ArrayList<>();
+    protected final HashSet<Vector3> closeHashSet = new HashSet<>();
 
     protected EntityIntelligent entity;
 
@@ -95,13 +93,16 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         //清空openList和closeList
         openList.clear();
         closeList.clear();
+        closeHashSet.clear();
         //重置寻路深度
         currentSearchDepth = maxSearchDepth;
 
         //将起点放置到closeList中，以开始寻路
         //起点没有父节点，且我们不需要计算他的代价
         Node currentNode = new Node(start, null, 0, 0);
-        closeList.add(new Node(start, null, 0, 0));
+        var tmpNode = new Node(start, null, 0, 0);
+        closeList.add(tmpNode);
+        closeHashSet.add(tmpNode.getVector3());
 
         //若当前寻路点没有到达终点
         while (!isPositionOverlap(currentNode.getVector3(), target)) {
@@ -117,6 +118,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             //若未超出寻路深度，则获取代价最小的一个node并将其设置为currentNode
             if (openList.peek() != null && currentSearchDepth-- > 0) {
                 closeList.add(currentNode = openList.poll());
+                closeHashSet.add(currentNode.getVector3());
             } else {
                 this.searching = false;
                 this.finished = true;
@@ -380,7 +382,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     }
 
     protected boolean existInCloseList(Vector3 vector2) {
-        return getCloseNode(vector2) != null;
+        return closeHashSet.contains(vector2);
     }
 
 

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @PowerNukkitXOnly
