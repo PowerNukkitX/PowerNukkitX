@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
@@ -11,6 +10,7 @@ import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -33,7 +33,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     public IBehaviorGroup getBehaviorGroup(){
         return EMPTY_BEHAVIOR_GROUP;
-    };
+    }
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -62,10 +62,14 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
-        getMemoryStorage().put(new AttackMemory(source));
+        var memory = getMemoryStorage();
+        if (memory != null) {
+            getMemoryStorage().put(new AttackMemory(source));
+        }
         return result;
     }
 
+    @Nullable
     public IMemoryStorage getMemoryStorage(){
         return getBehaviorGroup().getMemoryStorage();
     }
