@@ -9,6 +9,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.AttackTimeCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
@@ -41,10 +42,7 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f,16,30,true),(entity) -> {
-                        var attackMemory = entity.getMemoryStorage().get(AttackMemory.class);
-                        return attackMemory != null && (Server.getInstance().getTick() - attackMemory.getAttackTime()) <= 160;
-                    },3,1),
+                    new Behavior(new RandomRoamExecutor(0.5f,8,30,true),new AttackTimeCheckEvaluator(160),3,1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class),2,1),
                     new Behavior(new RandomRoamExecutor(0.1f,8,100,false),(entity -> true),1,1)
             ),

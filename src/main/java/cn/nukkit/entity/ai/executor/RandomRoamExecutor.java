@@ -5,7 +5,6 @@ import cn.nukkit.entity.ai.memory.LookTargetMemory;
 import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
