@@ -173,7 +173,7 @@ public class Position extends NamedPosition {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public Block getTickCachedLevelBlockAtLayer(int layer) {
-        return getValidLevel().getBlock(this, layer);
+        return getValidLevel().getTickCachedBlock(this, layer);
     }
 
     @Nonnull

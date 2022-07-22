@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 记忆存储器的标准实现
@@ -15,7 +16,7 @@ import java.util.Map;
 @Getter
 public class MemoryStorage implements IMemoryStorage {
 
-    protected Map<Class<? extends IMemory<?>>, IMemory<?>> memoryMap = new HashMap<>();
+    protected ConcurrentHashMap<Class<? extends IMemory<?>>, IMemory<?>> memoryMap = new ConcurrentHashMap<>();
 
     @Override
     public void put(IMemory<?> memory) {
