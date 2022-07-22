@@ -11,7 +11,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 
 /**
- * 处理飞行实体运动
+ * 处理3D实体运动
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
