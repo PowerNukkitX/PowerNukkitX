@@ -23,7 +23,7 @@ public class LookController implements IController{
 
     @Override
     public boolean control(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
+        if (entity.getMemoryStorage().contains(MoveTargetMemory.class) && entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
             Vector3 target = entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             setYawAndPitch(entity, target, directionMemory);

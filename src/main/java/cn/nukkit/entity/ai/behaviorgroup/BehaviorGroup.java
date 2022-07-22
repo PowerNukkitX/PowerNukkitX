@@ -150,6 +150,9 @@ public class BehaviorGroup implements IBehaviorGroup {
                 updateMoveDirection(entity);
                 removeMemory(NeedUpdateMoveDirectionMemory.class);
                 currentRouteUpdateTick = 0;
+            }else{
+                //没有路径目标，则清除路径信息
+                removeMemory(MoveDirectionMemory.class);
             }
         }
         if (needUpdateMoveDirection()) {

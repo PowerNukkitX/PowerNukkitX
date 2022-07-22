@@ -7,6 +7,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import lombok.Getter;
 
+import javax.annotation.Nonnull;
+
 //存储最近的玩家的Memory
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -22,6 +24,7 @@ public class NearestPlayerSensor implements ISensor {
         this.minRange = minRange;
     }
 
+    @Nonnull
     @Override
     public NearestPlayerMemory sense(EntityIntelligent entity) {
         Player player = null;

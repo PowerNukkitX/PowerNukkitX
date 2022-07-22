@@ -26,7 +26,6 @@ public class WalkController implements IController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
         if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
-            Vector3 target = entity.getMemoryStorage().get(MoveTargetMemory.class).getData();
             MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 direction = directionMemory.getEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());

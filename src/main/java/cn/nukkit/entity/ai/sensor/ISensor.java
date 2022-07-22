@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.IMemory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -21,6 +22,6 @@ public interface ISensor {
      * @param entity
      * @return IMemory
      */
-    @Nullable
+    @Nonnull
     IMemory<?> sense(EntityIntelligent entity);
 }

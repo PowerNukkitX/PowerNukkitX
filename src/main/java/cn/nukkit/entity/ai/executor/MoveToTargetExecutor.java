@@ -24,7 +24,8 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.getBehaviorGroup().getMemoryStorage().contains(memoryClazz)) {
-            //未找到玩家
+            //目标丢失
+            removeRouteTarget(entity);
             return false;
         }
         //获取目标位置（这个clone很重要）
@@ -34,11 +35,14 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
 
         entity.setMovementSpeed(0.3f);
 
-        //我们并不一定需要下次继续运行，所以说返回false即可
-        return false;
+        return true;
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
         entity.getMemoryStorage().put(new MoveTargetMemory(vector3));
+    }
+
+    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
+        entity.getMemoryStorage().remove(MoveTargetMemory.class);
     }
 }
