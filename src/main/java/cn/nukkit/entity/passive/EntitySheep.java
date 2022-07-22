@@ -38,7 +38,7 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new MoveToTargetExecutor(NearestBreedingPlayerMemory.class),new MemoryCheckEvaluator(NearestBreedingPlayerMemory.class),1,1)
+                    new Behavior(new MoveToTargetExecutor(NearestBreedingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBreedingPlayerMemory.class),1,1)
             ),
             Set.of(new NearestBreedingPlayerSensor(8,0)),
             Set.of(new WalkController(),new LookController(true,true)),
