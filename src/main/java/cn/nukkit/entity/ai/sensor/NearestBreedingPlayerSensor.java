@@ -23,7 +23,6 @@ public class NearestBreedingPlayerSensor implements ISensor{
         this.minRange = minRange;
     }
 
-    @Nonnull
     @Override
     public IMemory<?> sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {

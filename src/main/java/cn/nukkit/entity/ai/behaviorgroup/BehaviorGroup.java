@@ -78,6 +78,8 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void collectSensorData(EntityIntelligent entity) {
         for (ISensor sensor : sensors) {
             IMemory<?> memory = sensor.sense(entity);
+            if (memory == null)
+                continue;
             if (memory.getData() == null)
                 this.memoryStorage.remove((Class<? extends IMemory<?>>) memory.getClass());
             else

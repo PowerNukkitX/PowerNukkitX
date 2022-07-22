@@ -24,7 +24,6 @@ public class NearestPlayerSensor implements ISensor {
         this.minRange = minRange;
     }
 
-    @Nonnull
     @Override
     public NearestPlayerMemory sense(EntityIntelligent entity) {
         Player player = null;

@@ -22,6 +22,6 @@ public interface ISensor {
      * @param entity
      * @return IMemory
      */
-    @Nonnull
+    @Nullable
     IMemory<?> sense(EntityIntelligent entity);
 }
