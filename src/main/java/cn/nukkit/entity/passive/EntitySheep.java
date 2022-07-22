@@ -41,7 +41,7 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.4f,16,30),(entity) -> {
+                    new Behavior(new RandomRoamExecutor(0.5f,16,30),(entity) -> {
                         var attackMemory = entity.getMemoryStorage().get(AttackMemory.class);
                         return attackMemory != null && (Server.getInstance().getTick() - attackMemory.getAttackTime()) <= 200;
                     },3,1),
