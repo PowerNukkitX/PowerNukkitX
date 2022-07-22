@@ -51,6 +51,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected Vector3 target;
 
+    protected Vector3 reachableTarget;
+
     protected boolean finished = false;
     protected boolean searching = false;
 
@@ -125,12 +127,13 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         //因为在前面是否到达终点的检查中我们只粗略检查了坐标的floor值
         //所以说这里我们还需要将其精确指向到终点
-        Node targetNode = null;
+        Node targetNode = currentNode;
         if (!currentNode.getVector3().equals(target)) {
             targetNode = new Node(target, currentNode, 0, 0);
         }
 
         //如果无法到达，则取最接近终点的一个Node作为尾节点
+        reachableTarget = this.reachable ? target : getNearestNodeFromCloseList(target).getVector3();
         ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(getNearestNodeFromCloseList(target));
         //使用floyd平滑路径
         if (enableFloydSmooth)

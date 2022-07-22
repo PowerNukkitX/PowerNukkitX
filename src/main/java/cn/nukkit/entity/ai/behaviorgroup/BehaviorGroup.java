@@ -157,6 +157,11 @@ public class BehaviorGroup implements IBehaviorGroup {
                 removeMemory(MoveDirectionMemory.class);
             }
         }
+        //若不能再移动了，则清除路径信息
+        if (routeFinder.getReachableTarget() != null && entity.floor().equals(routeFinder.getReachableTarget().floor())){
+            removeMemory(MoveTargetMemory.class);
+            removeMemory(MoveDirectionMemory.class);
+        }
         if (needUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新

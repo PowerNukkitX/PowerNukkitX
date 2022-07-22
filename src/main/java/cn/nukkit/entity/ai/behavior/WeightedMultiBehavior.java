@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 由多个行为{@link IBehavior}组成的组（注意和行为组{@link IBehaviorGroup}区分）<br>
@@ -22,8 +23,6 @@ import java.util.Set;
 @Since("1.6.0.0-PNX")
 @Getter
 public class WeightedMultiBehavior implements IBehavior {
-
-    private static final Random rand = new Random();
     /**
      * 此组的优先级 <br/>
      * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
@@ -58,7 +57,7 @@ public class WeightedMultiBehavior implements IBehavior {
         for (IBehavior behavior : result) {
             totalWeight += behavior.getWeight();
         }
-        int random = rand.nextInt(totalWeight + 1);
+        int random = ThreadLocalRandom.current().nextInt(totalWeight + 1);
         for (IBehavior behavior : result) {
             random -= behavior.getWeight();
             if (random <= 0) {

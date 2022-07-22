@@ -61,6 +61,11 @@ public interface IRouteFinder {
     Vector3 getTarget();
 
     /**
+     * @return 可到达的终点
+     */
+    Vector3 getReachableTarget();
+
+    /**
      * 设置寻路终点，将会导致寻路中断
      *
      * @param vector3 寻路终点

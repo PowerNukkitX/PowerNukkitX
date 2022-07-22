@@ -6,33 +6,36 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.RandomRoamTargetMemory;
 import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class RandomRoamTargetSensor implements ISensor {
-
-    protected Random random = new Random();
     protected int playerSenseRange;
     protected int randomTargetRange;
 
+    protected int frequency;
+    protected int currentTargetCalTick = 0;
 
-    public RandomRoamTargetSensor(int playerSenseRange,int randomTargetRange) {
+    public RandomRoamTargetSensor(int frequency,int playerSenseRange,int randomTargetRange) {
+        this.frequency = frequency;
+        this.currentTargetCalTick = this.frequency;
         this.playerSenseRange = playerSenseRange;
         this.randomTargetRange = randomTargetRange;
     }
 
-    @NotNull
     @Override
     public IMemory<?> sense(EntityIntelligent entity) {
-        //10% chance to roam to a random location
-        if (random.nextInt(100) < 10) {
+        currentTargetCalTick++;
+        if (currentTargetCalTick >= frequency) {
+            //roam to a random location
+            var random = ThreadLocalRandom.current();
             Vector3 target = entity.getPosition().add(random.nextInt(randomTargetRange * 2) - randomTargetRange, 0, random.nextInt(randomTargetRange * 2) - randomTargetRange);
+            currentTargetCalTick = 0;
             return new RandomRoamTargetMemory(target);
         }
-        return new RandomRoamTargetMemory(null);
+        return null;
     }
 
     protected Vector3 next(EntityIntelligent entity){
@@ -44,8 +47,9 @@ public class RandomRoamTargetSensor implements ISensor {
 
     protected Vector3 nextXZ(double centerX, double centerZ, int maxRange) {
         Vector3 vec3 = new Vector3(centerX, 0, centerZ);
-        vec3.x = Math.round(vec3.x) + this.random.nextInt(-maxRange, maxRange) + 0.5;
-        vec3.z = Math.round(vec3.z) + this.random.nextInt(-maxRange, maxRange) + 0.5;
+        var random = ThreadLocalRandom.current();
+        vec3.x = Math.round(vec3.x) + random.nextInt(-maxRange, maxRange) + 0.5;
+        vec3.z = Math.round(vec3.z) + random.nextInt(-maxRange, maxRange) + 0.5;
         return vec3;
     }
 }

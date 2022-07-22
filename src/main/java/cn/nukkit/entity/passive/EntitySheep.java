@@ -11,9 +11,11 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEvaluator;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.memory.NearestBreedingPlayerMemory;
+import cn.nukkit.entity.ai.memory.RandomRoamTargetMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestBreedingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.RandomRoamTargetSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
@@ -38,9 +40,10 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new MoveToTargetExecutor(NearestBreedingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBreedingPlayerMemory.class),1,1)
+                    new Behavior(new MoveToTargetExecutor(NearestBreedingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBreedingPlayerMemory.class),2,1),
+                    new Behavior(new MoveToTargetExecutor(RandomRoamTargetMemory.class,0.1f),new MemoryCheckEvaluator(RandomRoamTargetMemory.class),1,1)
             ),
-            Set.of(new NearestBreedingPlayerSensor(8,0)),
+            Set.of(new NearestBreedingPlayerSensor(8,0),new RandomRoamTargetSensor(100,8,8)),
             Set.of(new WalkController(),new LookController(true,true)),
             new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(),this)
     );
