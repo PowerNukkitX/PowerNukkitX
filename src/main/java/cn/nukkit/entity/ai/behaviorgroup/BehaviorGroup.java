@@ -138,8 +138,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         var currentHighestPriority = runningBehaviors.isEmpty() ? Integer.MIN_VALUE : runningBehaviors.iterator().next().getPriority();
         //result的行为优先级
         int resultHighestPriority = evalSucceed.iterator().next().getPriority();
-        //如果result的优先级低于当前运行的行为，则不执行
-        if (resultHighestPriority <= currentHighestPriority) {
+        if (resultHighestPriority < currentHighestPriority){
+            //如果result的优先级低于当前运行的行为，则不执行
+            return;
+        } else if (resultHighestPriority > currentHighestPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             runningBehaviors.addAll(evalSucceed);
