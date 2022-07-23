@@ -11,13 +11,16 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AttackTimeCheckEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckEvaluator;
+import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
+import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestBeggingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
@@ -36,20 +39,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntitySheep extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 13;
-
-    public boolean sheared = false;
-    public int color = 0;
-
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f,8,30,true),new AttackTimeCheckEvaluator(160),3,1),
-                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class,0.3f),new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class),2,1),
-                    new Behavior(new RandomRoamExecutor(0.1f,8,100,false),(entity -> true),1,1)
+                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true), new AttackTimeCheckEvaluator(160), 4, 1),
+                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class), 3, 1),
+                    new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class), new ProbabilityEvaluator(5), 2, 1),
+                    new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false), (entity -> true), 1, 1)
             ),
-            Set.of(new NearestBeggingPlayerSensor(8,0)),
-            Set.of(new WalkController(),new LookController(true,true)),
-            new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(),this)
+            Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0)),
+            Set.of(new WalkController(), new LookController(true, true)),
+            new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
     );
+    public boolean sheared = false;
+    public int color = 0;
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -149,14 +151,14 @@ public class EntitySheep extends EntityWalkingAnimal {
         return Item.EMPTY_ARRAY;
     }
 
+    public int getColor() {
+        return namedTag.getByte("Color");
+    }
+
     public void setColor(int color) {
         this.color = color;
         this.setDataProperty(new ByteEntityData(DATA_COLOUR, color));
         this.namedTag.putByte("Color", this.color);
-    }
-
-    public int getColor() {
-        return namedTag.getByte("Color");
     }
 
     private int randomColor() {
