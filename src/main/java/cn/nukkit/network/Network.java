@@ -17,16 +17,15 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
+import oshi.SystemInfo;
+import oshi.hardware.NetworkIF;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ProtocolException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -60,15 +59,20 @@ public class Network {
 
     private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>();
 
-    private double upload = 0;
-    private double download = 0;
+    private final LinkedList<NetWorkStatisticData> netWorkStatisticDataList = new LinkedList<>();
 
     private String name;
     private String subName;
 
+    private final List<NetworkIF> hardWareNetworkInterfaces = new SystemInfo().getHardware().getNetworkIFs();
+
     public Network(Server server) {
         this.registerPackets();
         this.server = server;
+    }
+
+    record NetWorkStatisticData(long upload, long download) {
+
     }
 
     @Since("1.3.0.0-PN")
@@ -142,22 +146,31 @@ public class Network {
         }
     }
 
+    @Deprecated(since = "1.6.0.0-PNX")
     public void addStatistics(double upload, double download) {
-        this.upload += upload;
-        this.download += download;
+
     }
 
     public double getUpload() {
-        return upload;
+        return netWorkStatisticDataList.get(1).upload - netWorkStatisticDataList.get(0).upload;
     }
 
     public double getDownload() {
-        return download;
+        return netWorkStatisticDataList.get(1).download - netWorkStatisticDataList.get(0).download;
     }
 
     public void resetStatistics() {
-        this.upload = 0;
-        this.download = 0;
+        var upload = 0;
+        var download = 0;
+        if (netWorkStatisticDataList.size() > 1) {
+            netWorkStatisticDataList.removeFirst();
+        }
+        for (var networkIF : this.hardWareNetworkInterfaces) {
+            networkIF.updateAttributes();
+            upload += networkIF.getBytesSent();
+            download += networkIF.getBytesRecv();
+        }
+        netWorkStatisticDataList.add(new NetWorkStatisticData(upload, download));
     }
 
     public Set<SourceInterface> getInterfaces() {
@@ -221,6 +234,10 @@ public class Network {
 
     public Server getServer() {
         return server;
+    }
+
+    public List<NetworkIF> getHardWareNetworkInterfaces() {
+        return hardWareNetworkInterfaces;
     }
 
     public void processBatch(BatchPacket packet, Player player) {
