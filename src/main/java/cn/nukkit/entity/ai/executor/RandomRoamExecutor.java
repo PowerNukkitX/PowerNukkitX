@@ -48,6 +48,8 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
         currentTargetCalTick = frequency;
     }
 

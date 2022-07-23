@@ -4,14 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AttackTimeCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckEvaluator;
-import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.*;
+import cn.nukkit.entity.ai.executor.EatGrassExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
@@ -41,8 +41,9 @@ public class EntitySheep extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 13;
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false), new AttackTimeCheckEvaluator(100), 4, 1),
-                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class), 3, 1),
+                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false), new AttackTimeCheckEvaluator(100), 5, 1),
+                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
+                    new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(new ProbabilityEvaluator(1),new AnyMatchEvaluator(new BlockCheckEvaluator(Block.GRASS,new Vector3(0,-1,0)),new BlockCheckEvaluator(Block.TALL_GRASS,Vector3.ZERO))),3,1),
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(10), 2, 1),
                     new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false,true), (entity -> true), 1, 1)
             ),
