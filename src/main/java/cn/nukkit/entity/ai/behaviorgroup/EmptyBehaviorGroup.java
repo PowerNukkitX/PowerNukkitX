@@ -8,7 +8,9 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.route.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -59,7 +61,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public Set<ISensor> getSensors() {
-        return null;
+        return Collections.EMPTY_SET;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
 
     @Override
     public Set<IController> getControllers() {
-        return null;
+        return Collections.EMPTY_SET;
     }
 
     @Override
