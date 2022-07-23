@@ -12,6 +12,7 @@ import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
+import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.passive.EntityNPCEntity;
@@ -1023,7 +1024,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
         }
-
+        //玩家第一次进服务器的时候如果使用整数坐标容易陷入地下,这里偏移0.5解决
+        pos = pos.y == pos.getFloorY() ? pos.add(0, 0.5, 0) : pos;
         this.teleport(pos, null);
         lastYaw = yaw;
         lastPitch = pitch;
@@ -3279,6 +3281,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
+                        // 自定义实体在客户端中可以互动, 所以不踢出玩家
+                        if (targetEntity instanceof CustomEntity) {
+                            break;
+                        }
                         this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
                         log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidEntity", this.getName()));
                         break;
@@ -5685,9 +5691,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
-
-        //TODO Remove it! A hack to solve the client-side teleporting bug! (inside into the block)
-        if (super.teleport(to.getY() == to.getFloorY() ? to.add(0, 0.00001, 0) : to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
+        if (super.teleport(to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
             this.removeAllWindows();
 
             this.teleportPosition = new Vector3(this.x, this.y, this.z);

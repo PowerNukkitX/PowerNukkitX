@@ -12,7 +12,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
 
-This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
+This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
 
 ### Added
 
@@ -27,6 +27,7 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#307] Implement the /function command.
 - [#326] Implement RAWTEXT (/tellraw /titleraw).
 - [#352] Implementation of NPC-API and implementation of NPC functions.
+- [#354] Implement custom blocks / itmes (refinement in progress, [documentation](https://doc.powernukkitx.cn) to be added).
 - [#363] Implemented NPC SKIN switch.
 - [#365] Add toSnbt.
 - [#370] Add JS cross-plugin interoperability.
@@ -37,6 +38,9 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#414] Implement fine snow squares.
 - [#416] Add `PlayerFreezeEvent` event.
 - [#425] Preliminary completion of `JS Feature` architecture.
+- [#433] Implement frequently loaded blocks and the corresponding commands.
+- [#426] Add reflection escape door for events where bytecode calls fail.
+- [#446] Implement DeathInfo.
 
 ### Changed
 
@@ -61,6 +65,11 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#411] Optimize /version command.
 - [#418] Optimize event call performance.
 - [#428] NPC Dialog protocol logic synchronization 1.19.0.
+- [#443] Improve Mapping.
+- [#445] Implemented to be compatible with 1.19.10 (protocol version 534).
+- [#455] Update resource files.
+- [#461] Update startup command detection + deprecate submodule.
+- [#466] `Change custom block api.`
 
 ### Fixes
 
@@ -110,6 +119,14 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#415] Fix some minor bugs in /setblock /fill /spawnpoint.
 - [#422] Fix exploit where some items were missing from the create item bar.
 - [#425] Fix an activation issue with pistons.
+- [#429] Fix PlayerFreezeEvent & mark nullability.
+- [#437] Fix issue with watchdog forcing server stop due to long map repair times.
+- [#442] Fix missing glowing ink sacs and copper ingots in RuntimeMapping::namespacedIdItem.
+- [#448] Fix input/xp crash issue.
+- [#462] Fix create Item Entry.
+- [#463] Fix /particle command.
+- [#464] Fix world spawn.
+- [#465] Fix the calculation problem of spawn points.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -121,6 +138,7 @@ This work in progress version supports Minecraft:BE `1.19.0 (Protocol Ver 527)`.
 - [#412] Added and fixed missing `@PowerNukkitXOnly`
 - [#417] Fix documentation for `PlayerFreezeEvent` event
 - [#424] Publish PowerNukkitX to [Maven Central] and add [Javadoc]
+- [#454] Add package comment information.
 
 ## [Unreleased 1.6.0.0-PN] - Future ([Check the milestone](https://github.com/PowerNukkit/PowerNukkit/milestone/29?closed=1))
 Click the link above to see the future.
@@ -922,9 +940,15 @@ Fixes several anvil issues.
 
 ## <a id="CataLogs-Version-history"></a>🔖 Version history / 历史版本
 
-1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Version 486)
-2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Version 503)
-3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 527)
+<details>
+  <summary>1.6.0.0-PNX</summary>
+
+   1. [#V1-dev] PNX-1.6.0.0-dev (Protocol Version 486)
+   2. [#V2-dev] PNX-1.6.0.0-dev (Protocol Version 503)
+   3. [#V3-dev] PNX-1.6.0.0-dev (Protocol Version 527)
+   4. [#V4-dev] PNX-1.6.0.0-dev (Protocol Version 534)
+
+</details>
 
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
@@ -1198,6 +1222,7 @@ Need to switch languages?
 [#346]: https://github.com/PowerNukkitX/PowerNukkitX/pull/346
 [#347]: https://github.com/PowerNukkitX/PowerNukkitX/pull/347
 [#352]: https://github.com/PowerNukkitX/PowerNukkitX/pull/352
+[#354]: https://github.com/PowerNukkitX/PowerNukkitX/pull/354
 [#359]: https://github.com/PowerNukkitX/PowerNukkitX/pull/359
 [#363]: https://github.com/PowerNukkitX/PowerNukkitX/pull/363
 [#364]: https://github.com/PowerNukkitX/PowerNukkitX/pull/364
@@ -1237,9 +1262,26 @@ Need to switch languages?
 [#425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/425
 [#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
 [#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
-
+[#429]:https://github.com/PowerNukkitX/PowerNukkitX/pull/429
+[#433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/433
+[#436]: https://github.com/PowerNukkitX/PowerNukkitX/pull/436
+[#437]: https://github.com/PowerNukkitX/PowerNukkitX/pull/437
+[#442]: https://github.com/PowerNukkitX/PowerNukkitX/pull/442
+[#443]: https://github.com/PowerNukkitX/PowerNukkitX/pull/443
+[#445]: https://github.com/PowerNukkitX/PowerNukkitX/pull/445
+[#446]: https://github.com/PowerNukkitX/PowerNukkitX/pull/446
+[#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
+[#454]: https://github.com/PowerNukkitX/PowerNukkitX/pull/454
+[#455]: https://github.com/PowerNukkitX/PowerNukkitX/pull/455
+[#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
+[#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
+[#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
+[#464]: https://github.com/PowerNukkitX/PowerNukkitX/pull/464
+[#465]: https://github.com/PowerNukkitX/PowerNukkitX/pull/465
+[#466]: https://github.com/PowerNukkitX/PowerNukkitX/pull/466
 <!--PowerNukkitX Version history-->
 
+<!--1.6.0.0-PNX Version summary Start-->
 <!--Protocol Version 486-->
 [#V1-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2179919470 
 
@@ -1247,7 +1289,11 @@ Need to switch languages?
 [#V2-dev]: https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2479714447
 
 <!--Protocol Version 527-->
-[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2662176331
+
+<!--Protocol Version 534-->
+[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.6.0.0-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
 

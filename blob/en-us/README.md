@@ -1,6 +1,6 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
-<h2>多语言文档&ensp;/&ensp;Need to switch languages?</h2>
+<h2>🌐多语言文档&ensp;/&ensp;Need to switch languages?</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
@@ -21,8 +21,6 @@ Attention:
 
 *  PowerNukkitX requires a minimum Java version of 17
 
-* Add: If your server cannot install Java17, you can also use the [BootStrap](https://ci.lt-name.com/job/PowerNukkitX/job/master/) that we provide
-
 Join US:
 
 * [Discord](https://discord.gg/BcPhZCVJHJ)
@@ -30,13 +28,14 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.0 protocol (under refinement).
+1. Support for 1.19.10 protocol.
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
-4. Native support for vanilla commands and command block, etc. (under refinement)
+4. Native support for vanilla commands and command block, etc.
 5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
 6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
-7. Todo...
+7. Support custom blocks / items (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be added).
+8. Todo...
 
 ---
 
@@ -101,18 +100,10 @@ dependencies {
 * Use the JAR that ends with -shaded to run your server.
 
 🛠 Running
--------------
-* Simply run `java -jar powernukkitx-<version>-shaded.jar` in an **empty folder**.
+-------------  
 
-* But for better performance, we recommend you to use the following commands for deployment.
-```sh
-java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar powernukkitx-<version>-shaded.jar
-```
-<!--使用Deepl暴力翻译-->
-* Please adjust `-Xmx` (the maximum memory the JVM can call) and `-Xms` (the initial memory of the JVM) as appropriate for your server configuration, and manually adjust the contents of `powernukkitx-<version>-shaded.jar` according to the name of the JAR core you are compiling. 
-<!--结束-->
+We made a [command line tool](https://github.com/PowerNukkitX/PNX-CLI) to help you run PNX, you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.  
 
-* Check [this page](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/) for information about the arguments above.
 
 🧐 Contributing
 ---

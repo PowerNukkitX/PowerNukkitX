@@ -82,16 +82,29 @@
         <log4j2.version>2.17.1</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jline.version>3.9.0</jline.version>
+        <jline.version>3.21.0</jline.version>
         <skipTests>true</skipTests>
         <skipGpg>true</skipGpg>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <graalvm.version>22.0.0.2</graalvm.version>
         <skipDelombok>true</skipDelombok>
         <skipNexus>true</skipNexus>
+        <skipShade>package</skipShade>
+        <skipCopyLibs>false</skipCopyLibs>
     </properties>
 
     <profiles>
+        <profile>
+            <id>fast-dev</id>
+            <properties>
+                <profiles.active>fast-dev</profiles.active>
+                <skipShade>none</skipShade>
+                <skipCopyLibs>true</skipCopyLibs>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
         <profile>
             <id>dev</id>
             <properties>
@@ -321,6 +334,17 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>net.sf.jopt-simple</groupId>
             <artifactId>jopt-simple</artifactId>
             <version>5.0.4</version>
@@ -367,6 +391,12 @@
             <artifactId>jline-terminal-jna</artifactId>
             <version>${jline.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>jna</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jline</groupId>
@@ -451,6 +481,11 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>5.8.7</version>
         </dependency>
     </dependencies>
 
@@ -642,6 +677,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <skip>${skipCopyLibs}</skip>
                             <outputDirectory>${project.build.directory}/libs</outputDirectory>
                             <excludeScope>provided</excludeScope>
                         </configuration>
@@ -661,7 +697,7 @@
                 </dependencies>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>${skipShade}</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
