@@ -41,10 +41,10 @@ public class EntitySheep extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 13;
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true), new AttackTimeCheckEvaluator(160), 4, 1),
+                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false), new AttackTimeCheckEvaluator(100), 4, 1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckEvaluator(NearestBeggingPlayerMemory.class), 3, 1),
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class), new ProbabilityEvaluator(5), 2, 1),
-                    new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false), (entity -> true), 1, 1)
+                    new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false,true), (entity -> true), 1, 1)
             ),
             Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0)),
             Set.of(new WalkController(), new LookController(true, true)),

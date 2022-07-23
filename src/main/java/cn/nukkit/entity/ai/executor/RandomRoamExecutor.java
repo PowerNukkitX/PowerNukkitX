@@ -16,13 +16,15 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
 
     protected int currentTargetCalTick = 0;
     protected boolean calNextTargetImmediately = false;
+    protected boolean keepRunning;
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately) {
+    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, boolean keepRunning) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
         this.frequency = frequency;
         this.currentTargetCalTick = this.frequency;
         this.calNextTargetImmediately = calNextTargetImmediately;
+        this.keepRunning = keepRunning;
     }
 
     @Override
@@ -41,7 +43,12 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
             currentTargetCalTick = 0;
         }
         //下一gt是否执行取决于评估器的结果
-        return false;
+        return keepRunning;
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        currentTargetCalTick = frequency;
     }
 
     protected boolean needUpdateTarget(EntityIntelligent entity){
