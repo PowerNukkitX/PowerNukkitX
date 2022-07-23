@@ -50,7 +50,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
             if (avoidWater) {
                 int blockId = -1;
                 int time = 0;
-                while (time <= maxRetryTime && ((blockId = entity.level.getBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
+                while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
                     target = next(entity);
                     time++;
                 }

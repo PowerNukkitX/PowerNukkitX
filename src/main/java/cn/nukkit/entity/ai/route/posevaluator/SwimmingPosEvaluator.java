@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class SwimmingPosEvaluator implements IPosEvaluator{
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
-        int blockId = Position.fromObject(pos,entity.level).getLevelBlock().getId();
+        int blockId = entity.level.getTickCachedBlock(Position.fromObject(pos,entity.level)).getId();
         return isPassable(entity, pos) && (blockId == Block.FLOWING_WATER || blockId == Block.STILL_WATER);
     }
 

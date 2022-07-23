@@ -38,8 +38,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
-        getBehaviorGroup().tickRunningBehaviors(this);
-        getBehaviorGroup().applyController(this);
+        var behaviorGroup = getBehaviorGroup();
+        behaviorGroup.tickRunningBehaviors(this);
+        behaviorGroup.applyController(this);
         return true;
     }
 
@@ -49,13 +50,14 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
+        var behaviorGroup = getBehaviorGroup();
         //No behavior group
-        if (getBehaviorGroup() == null)
+        if (behaviorGroup == null)
             return;
         if (needsRecalcMovement) {
-            getBehaviorGroup().collectSensorData(this);
-            getBehaviorGroup().evaluateBehaviors(this);
-            getBehaviorGroup().updateRoute(this);
+            behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateBehaviors(this);
+            behaviorGroup.updateRoute(this);
         }
     }
 
@@ -64,7 +66,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
         var result = super.attack(source);
         var memory = getMemoryStorage();
         if (memory != null) {
-            getMemoryStorage().put(new AttackMemory(source));
+            memory.put(new AttackMemory(source));
         }
         return result;
     }
