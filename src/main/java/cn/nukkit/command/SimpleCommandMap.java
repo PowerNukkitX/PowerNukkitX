@@ -289,7 +289,7 @@ public class SimpleCommandMap implements CommandMap {
             return false;
         }
 
-        boolean output = true;
+        boolean output;
         target.timing.startTiming();
         try {
             output = target.execute(sender, sentCommandLabel, args);
@@ -314,6 +314,7 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public Command getCommand(String name) {
+        name = name.toLowerCase();
         if (this.knownCommands.containsKey(name)) {
             return this.knownCommands.get(name);
         }
