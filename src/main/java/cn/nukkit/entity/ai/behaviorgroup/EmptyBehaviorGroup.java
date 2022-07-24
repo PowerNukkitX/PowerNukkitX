@@ -87,4 +87,14 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     public IMemoryStorage getMemoryStorage() {
         return null;
     }
+
+    @Override
+    public void setForceUpdateRoute(boolean forceUpdateRoute) {
+
+    }
+
+    @Override
+    public boolean isForceUpdateRoute() {
+        return false;
+    }
 }
