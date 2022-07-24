@@ -46,15 +46,4 @@ class NetworkTest {
     void setUp() {
         network = new Network(server);
     }
-
-    @Test
-    void addStatistics() {
-        network.addStatistics(1, 2);
-        assertEquals(1, network.getUpload());
-        assertEquals(2, network.getDownload());
-
-        network.addStatistics(1, 2);
-        assertEquals(2, network.getUpload());
-        assertEquals(4, network.getDownload());
-    }
 }

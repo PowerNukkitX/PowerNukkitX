@@ -826,6 +826,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("1.4.0.0-PN") MUSIC_DISC_WARD,
     @PowerNukkitOnly @Since("1.4.0.0-PN") MUSIC_DISC_11,
     @PowerNukkitOnly @Since("1.4.0.0-PN") MUSIC_DISC_WAIT,
+    @PowerNukkitOnly @Since("1.6.0.0-PNX") MUSIC_DISC_OTHERSIDE,
     @PowerNukkitOnly @Since("1.4.0.0-PN") SHIELD,
     @PowerNukkitOnly @Since("1.4.0.0-PN") CAMPFIRE(false),
     @PowerNukkitOnly @Since("1.4.0.0-PN") SUSPICIOUS_STEW,

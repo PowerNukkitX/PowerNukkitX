@@ -1336,6 +1336,7 @@ public class Level implements ChunkManager, Metadatable {
                                     int z = lcg >>> 16 & 0x0f;
 
                                     BlockState state = section.getBlockState(x, y, z);
+                                    //todo 2022/7/17 实现自定义方块随机刻
                                     if (state.getBlockId() >= Block.MAX_BLOCK_ID) continue;
                                     if (randomTickBlocks[state.getBlockId()]) {
                                         Block block = state.getBlockRepairing(this, chunkX * 16 + x, ((Y - (isOverWorld() ? 4 : 0))
@@ -3635,10 +3636,14 @@ public class Level implements ChunkManager, Metadatable {
                 Position pos = Position.fromObject(spawn, this);
                 pos.setY(y);
                 Position newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
-                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder)) return newSpawn;
-                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder)) return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, horizontalOffset), allowWaterUnder))
+                    return newSpawn;
+                if (standable(newSpawn = pos.add(horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
+                    return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, horizontalOffset), allowWaterUnder))
+                    return newSpawn;
+                if (standable(newSpawn = pos.add(-horizontalOffset, 0, -horizontalOffset), allowWaterUnder))
+                    return newSpawn;
             }
         }
 
@@ -3656,17 +3661,17 @@ public class Level implements ChunkManager, Metadatable {
     @Since("1.6.0.0-PNX")
     public boolean standable(Vector3 vec, boolean allowWaterUnder) {
         Position pos = Position.fromObject(vec, this);
-        Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0,true);
-        Block block = pos.getLevelBlock(0,true);
-        Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0,true);
+        Block blockUnder = pos.add(0, -1, 0).getLevelBlock(0, true);
+        Block block = pos.getLevelBlock(0, true);
+        Block blockUpper = pos.add(0, 1, 0).getLevelBlock(0, true);
         if (!allowWaterUnder)
             return !blockUnder.canPassThrough()
-                    && block.getId() == BlockID.AIR
-                    && blockUpper.getId() == BlockID.AIR;
+                    && (block.getId() == BlockID.AIR || block.canPassThrough())
+                    && (blockUpper.getId() == BlockID.AIR || block.canPassThrough());
         else
             return (!blockUnder.canPassThrough() || blockUnder.getId() == BlockID.WATER || blockUnder.getId() == BlockID.WATER_LILY || blockUnder.getId() == BlockID.STILL_WATER)
-                    && block.getId() == BlockID.AIR
-                    && blockUpper.getId() == BlockID.AIR;
+                    && (block.getId() == BlockID.AIR || block.canPassThrough())
+                    && (blockUpper.getId() == BlockID.AIR || block.canPassThrough());
     }
 
     public int getTime() {

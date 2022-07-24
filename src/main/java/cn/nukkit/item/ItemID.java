@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 import static cn.nukkit.utils.Utils.dynamic;
@@ -261,22 +262,40 @@ public interface ItemID {
 
     int SHIELD = 513;
 
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_ITEM_FRAME = 623;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int GLOW_ITEM_FRAME = 623;
 
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int ITEM_MANGROVE_DOOR = 633;
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int MANGROVE_SIGN = 634;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int ITEM_MANGROVE_DOOR = 633;
 
-    @Since("1.6.0.0-PNX") @PowerNukkitOnly int GLOW_BERRIES = 638;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int RECORD_OTHERSIDE = 626;
 
-    @PowerNukkitOnly int CAMPFIRE = 720;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int MANGROVE_SIGN = 634;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int GLOW_BERRIES = 638;
+
+    @PowerNukkitOnly
+    int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 
-    @Since("1.4.0.0-PN") int LODESTONECOMPASS = 741;
-    @Since("1.4.0.0-PN") @PowerNukkitOnly int LODESTONE_COMPASS = LODESTONECOMPASS;
-    @Since("1.4.0.0-PN") int NETHERITE_INGOT = 742;
+    @Since("1.4.0.0-PN")
+    int LODESTONECOMPASS = 741;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    int LODESTONE_COMPASS = LODESTONECOMPASS;
+    @Since("1.4.0.0-PN")
+    int NETHERITE_INGOT = 742;
     @Since("1.4.0.0-PN") int NETHERITE_SWORD = 743;
     @Since("1.4.0.0-PN") int NETHERITE_SHOVEL = 744;
     @Since("1.4.0.0-PN") int NETHERITE_PICKAXE = 745;
@@ -298,7 +317,6 @@ public interface ItemID {
 
     @Since("1.6.0.0-PNX") int AMETHYST_SHARD = 771;
     @Since("FUTURE") int SPYGLASS = 772;
-    @Since("FUTURE") int RECORD_OTHERSIDE = 773;
 
     @Since("1.4.0.0-PN") @PowerNukkitOnly int SOUL_CAMPFIRE = 801;
     //@PowerNukkitOnly int DEBUG_STICK = <Possible:> 802+;

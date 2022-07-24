@@ -1024,7 +1024,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;
         }
-
+        //玩家第一次进服务器的时候如果使用整数坐标容易陷入地下,这里偏移0.5解决
+        pos = pos.y == pos.getFloorY() ? pos.add(0, 0.5, 0) : pos;
         this.teleport(pos, null);
         lastYaw = yaw;
         lastPitch = pitch;
@@ -5690,9 +5691,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (event.isCancelled()) return false;
             to = event.getTo();
         }
-
-        //TODO Remove it! A hack to solve the client-side teleporting bug! (inside into the block)
-        if (super.teleport(to.getY() == to.getFloorY() ? to.add(0, 0.00001, 0) : to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
+        if (super.teleport(to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
             this.removeAllWindows();
 
             this.teleportPosition = new Vector3(this.x, this.y, this.z);

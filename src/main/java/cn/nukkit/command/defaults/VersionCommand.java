@@ -80,8 +80,11 @@ public class VersionCommand extends VanillaCommand {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        },1);
+        },15);
     }
+
+    private int lastUpdateTick = 0;
+    private JsonArray listVersionCache = null;
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
@@ -95,8 +98,10 @@ public class VersionCommand extends VanillaCommand {
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
-            sender.sendMessage("Checking version, please wait...");
-            queryQueue.add(new Query(sender,listVersion()));
+            if (sender.isOp()) {
+                sender.sendMessage("Checking version, please wait...");
+                queryQueue.add(new Query(sender, listVersion()));
+            }
         } else {
             StringBuilder pluginName = new StringBuilder();
             for (String arg : args) pluginName.append(arg).append(" ");
@@ -145,12 +150,21 @@ public class VersionCommand extends VanillaCommand {
     @Since("1.6.0.0-PNX")
     private CompletableFuture<JsonArray> listVersion() {
         return CompletableFuture.supplyAsync(() -> {
+            if (this.listVersionCache != null) {
+                if (Server.getInstance().getTick() - this.lastUpdateTick < 7200) {//20 * 60 * 60 一小时
+                    return this.listVersionCache;
+                }
+            }
             var client = HttpClient.newHttpClient();
-            var request = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest")).GET().build();
+            var builder = HttpRequest.newBuilder(URI.create("https://api.powernukkitx.cn/get-core-manifest")).GET();
+            builder.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
+            var request = builder.build();
             try {
                 var result = JsonParser.parseString(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
                 if (result.isJsonArray()) {
-                    return result.getAsJsonArray();
+                    this.lastUpdateTick = Server.getInstance().getTick();
+                    this.listVersionCache = result.getAsJsonArray();
+                    return this.listVersionCache;
                 }
                 return new JsonArray();
             } catch (IOException | InterruptedException e) {

@@ -22,10 +22,7 @@ import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
-import cn.nukkit.event.server.BatchPacketsEvent;
-import cn.nukkit.event.server.PlayerDataSerializeEvent;
-import cn.nukkit.event.server.QueryRegenerateEvent;
-import cn.nukkit.event.server.ServerStopEvent;
+import cn.nukkit.event.server.*;
 import cn.nukkit.inventory.CraftingManager;
 import cn.nukkit.inventory.Recipe;
 import cn.nukkit.item.Item;
@@ -1102,6 +1099,8 @@ public class Server {
         this.enablePlugins(PluginLoadOrder.STARTUP);
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
         Timings.reset();
+        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
+        getPluginManager().callEvent(serverStartedEvent);
     }
 
     public void shutdown() {
@@ -1191,6 +1190,8 @@ public class Server {
 
         log.info(this.getLanguage().translateString("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
+        ServerStartedEvent serverStartedEvent = new ServerStartedEvent();
+        getPluginManager().callEvent(serverStartedEvent);
         this.tickProcessor();
         this.forceShutdown();
     }
