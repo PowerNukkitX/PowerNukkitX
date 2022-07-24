@@ -2,8 +2,8 @@ package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;

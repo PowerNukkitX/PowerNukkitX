@@ -3,10 +3,8 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.LookTargetMemory;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BVector3;
 import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
@@ -40,6 +38,6 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
-        entity.getMemoryStorage().put(new LookTargetMemory(vector3));
+        entity.setLookTarget(vector3);
     }
 }

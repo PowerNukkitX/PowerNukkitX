@@ -6,7 +6,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
-import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.memory.IMemory;
+import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
@@ -15,14 +17,20 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
+@Setter
 public class BehaviorGroup implements IBehaviorGroup {
+
+    /**
+     * 决定多少gt更新一次路径
+     */
+    //todo: 根据tps动态调整计算速率
+    protected static final int ROUTE_UPDATE_CYCLE = 20;//gt
 
     /**
      * 全部行为
@@ -47,22 +55,19 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 寻路器(非异步，因为没必要，生物AI本身就是并行的)
      */
-    protected SimpleRouteFinder routeFinder;
+    protected final SimpleRouteFinder routeFinder;
     /**
      * 寻路任务
      */
     protected RouteFindingManager.RouteFindingTask routeFindingTask;
 
     /**
-     * 决定多少gt更新一次路径
-     */
-    //todo: 根据tps动态调整计算速率
-    protected int routeUpdateCycle = 20;//gt
-
-    /**
      * 记录距离上次路径更新过去的gt数
      */
     protected int currentRouteUpdateTick = 0;//gt
+
+    protected boolean forceUpdateRoute = false;
+
 
     public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         this.behaviors.addAll(behaviors);
@@ -155,45 +160,39 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
         //到达更新周期时，开始重新计算新路径
-        if (currentRouteUpdateTick >= routeUpdateCycle) {
-            Vector3 target = getRouteTarget();
+        if (currentRouteUpdateTick >= ROUTE_UPDATE_CYCLE || isForceUpdateRoute()) {
+            Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
             if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
                     //clone防止寻路器潜在的修改
                     RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                         updateMoveDirection(entity);
-                        setMemoryData(NeedUpdateMoveDirectionMemory.class,false);
+                        entity.setNeedUpdateMoveDirection(false);
                         currentRouteUpdateTick = 0;
+                        setForceUpdateRoute(false);
                     })
                     .setStart(entity.clone())
                     .setTarget(target));
             } else {
                 //没有路径目标，则清除路径信息
-                clearMemory(MoveDirectionMemory.class);
+                entity.setMoveDirectionStart(null);
+                entity.setMoveDirectionEnd(null);
             }
         }
         //若不能再移动了，则清除路径信息
         var reachableTarget = routeFinder.getReachableTarget();
         if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
-            clearMemory(MoveTargetMemory.class);
-            clearMemory(MoveDirectionMemory.class);
+            entity.setMoveTarget(null);
+            entity.setMoveDirectionStart(null);
+            entity.setMoveDirectionEnd(null);
         }
-        if (needUpdateMoveDirection()) {
+        if (entity.isNeedUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新
                 updateMoveDirection(entity);
-                setMemoryData(NeedUpdateMoveDirectionMemory.class,false);
+                entity.setNeedUpdateMoveDirection(false);
             }
         }
-    }
-
-    @Nullable
-    protected Vector3 getRouteTarget() {
-        return memoryStorage.get(MoveTargetMemory.class).getData();
-    }
-
-    protected boolean needUpdateMoveDirection() {
-        return memoryStorage.checkData(NeedUpdateMoveDirectionMemory.class,true);
     }
 
     protected void clearMemory(Class<? extends IMemory<?>> clazz) {
@@ -205,18 +204,14 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
-        MoveDirectionMemory directionMemory = memoryStorage.get(MoveDirectionMemory.class);
-        Vector3 end;
-        if (directionMemory != null) {
-            end = directionMemory.getEnd();
-        } else {
+        Vector3 end = entity.getMoveDirectionEnd();
+        if (end == null){
             end = entity.clone();
         }
         var next = routeFinder.next();
         if (next != null) {
-            directionMemory.setStart(end);
-            directionMemory.setEnd(next.getVector3());
-            directionMemory.updateDirection();
+            entity.setMoveDirectionStart(end);
+            entity.setMoveDirectionEnd(next.getVector3());
         }
     }
 

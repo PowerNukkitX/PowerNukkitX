@@ -6,9 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnull;
 
 //存储最近的玩家的Memory
 @PowerNukkitXOnly

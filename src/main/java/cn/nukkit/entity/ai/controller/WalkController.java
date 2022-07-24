@@ -4,9 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
-import cn.nukkit.entity.ai.memory.MoveTargetMemory;
-import cn.nukkit.entity.ai.memory.NeedUpdateMoveDirectionMemory;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
@@ -25,9 +22,8 @@ public class WalkController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
-        if (entity.getMemoryStorage().notEmpty(MoveDirectionMemory.class) && entity.getMemoryStorage().checkData(NeedUpdateMoveDirectionMemory.class,false)) {
-            MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
-            Vector3 direction = directionMemory.getEnd();
+        if (entity.hasMoveDirection() && !entity.isNeedUpdateMoveDirection()) {
+            Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
@@ -67,7 +63,7 @@ public class WalkController implements IController {
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.getMemoryStorage().get(NeedUpdateMoveDirectionMemory.class).setData(true);
+        entity.setNeedUpdateMoveDirection(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

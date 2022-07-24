@@ -104,4 +104,15 @@ public interface IBehaviorGroup {
      * @return 行为组的记忆存储器 {@link IMemoryStorage}
      */
     IMemoryStorage getMemoryStorage();
+
+    /**
+     * 要求下一gt立即更新路径
+     * @param forceUpdateRoute
+     */
+    void setForceUpdateRoute(boolean forceUpdateRoute);
+
+    /**
+     * @return 下一gt是否强制更新路径
+     */
+    boolean isForceUpdateRoute();
 }

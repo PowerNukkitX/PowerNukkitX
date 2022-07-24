@@ -1,13 +1,12 @@
 package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.entity.ai.route.data.Node;
+import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;

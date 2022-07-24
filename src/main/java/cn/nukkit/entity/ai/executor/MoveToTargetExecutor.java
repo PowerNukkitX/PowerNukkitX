@@ -3,14 +3,10 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.LookTargetMemory;
-import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -50,18 +46,18 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.getMemoryStorage().setData(MoveTargetMemory.class,vector3);
+        entity.setMoveTarget(vector3);
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
-        entity.getMemoryStorage().setData(LookTargetMemory.class,vector3);
+        entity.setLookTarget(vector3);
     }
 
     protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.getMemoryStorage().clear(MoveTargetMemory.class);
+        entity.setMoveTarget(null);
     }
 
     protected void removeLookTarget(@NotNull EntityIntelligent entity){
-        entity.getMemoryStorage().clear(LookTargetMemory.class);
+        entity.setLookTarget(null);
     }
 }

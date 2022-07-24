@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.Server;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 

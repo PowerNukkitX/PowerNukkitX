@@ -4,11 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.MoveDirectionMemory;
-import cn.nukkit.entity.ai.memory.MoveTargetMemory;
-import cn.nukkit.entity.ai.memory.NeedUpdateMoveDirectionMemory;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BVector3;
 
 /**
  * 处理3D实体运动
@@ -18,9 +14,8 @@ import cn.nukkit.utils.BVector3;
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().notEmpty(MoveDirectionMemory.class) && entity.getMemoryStorage().checkData(NeedUpdateMoveDirectionMemory.class,false)) {
-            MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
-            Vector3 direction = directionMemory.getEnd();
+        if (entity.hasMoveDirection() && !entity.isNeedUpdateMoveDirection()) {
+            Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 return false;
@@ -45,7 +40,7 @@ public class SpaceMoveController implements IController {
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.getMemoryStorage().get(NeedUpdateMoveDirectionMemory.class).setData(true);
+        entity.setNeedUpdateMoveDirection(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

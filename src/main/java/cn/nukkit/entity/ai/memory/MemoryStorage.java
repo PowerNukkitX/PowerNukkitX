@@ -1,14 +1,10 @@
 package cn.nukkit.entity.ai.memory;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

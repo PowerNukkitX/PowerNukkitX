@@ -8,7 +8,10 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.*;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -18,9 +21,18 @@ import java.util.Set;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
+@Getter
+@Setter
 public abstract class EntityIntelligent extends EntityPhysical {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
+
+    //我们将寻路相关的参数直接作为属性存储到EntityIntelligent中，这样可以提高性能
+    protected Vector3 lookTarget;
+    protected Vector3 moveTarget;
+    protected Vector3 moveDirectionStart;
+    protected Vector3 moveDirectionEnd;
+    protected boolean needUpdateMoveDirection;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -85,5 +97,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     public float getJumpingHeight() {
         return 1.0f;
+    }
+
+    public boolean hasMoveDirection(){
+        return moveDirectionStart != null && moveDirectionEnd != null;
     }
 }

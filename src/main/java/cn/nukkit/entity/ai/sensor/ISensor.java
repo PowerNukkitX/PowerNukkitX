@@ -5,9 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.IMemory;
 
-import javax.annotation.Nullable;
-import java.util.Set;
-
 /**
  * 此接口抽象了一个传感器 <br/>
  * 传感器用于搜集环境信息并向记忆存储器{@link cn.nukkit.entity.ai.memory.IMemoryStorage}写入一个记忆{@link IMemory}

@@ -2,8 +2,6 @@ package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.LookTargetMemory;
-import cn.nukkit.entity.ai.memory.MoveTargetMemory;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,6 +60,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
             //更新视线target
             setLookTarget(entity, target);
             currentTargetCalTick = 0;
+            entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
         }
         //下一gt是否执行取决于评估器的结果
         return keepRunning;
@@ -75,7 +74,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     }
 
     protected boolean needUpdateTarget(EntityIntelligent entity){
-        return entity.getMemoryStorage().isEmpty(MoveTargetMemory.class);
+        return entity.getMoveTarget() == null;
     }
 
     protected Vector3 next(EntityIntelligent entity){
@@ -94,18 +93,18 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.getMemoryStorage().setData(MoveTargetMemory.class, vector3);
+        entity.setMoveTarget(vector3);
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
-        entity.getMemoryStorage().setData(LookTargetMemory.class,vector3);
+        entity.setLookTarget(vector3);
     }
 
     protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.getMemoryStorage().clear(MoveTargetMemory.class);
+        entity.setMoveTarget(null);
     }
 
     protected void removeLookTarget(@NotNull EntityIntelligent entity){
-        entity.getMemoryStorage().clear(LookTargetMemory.class);
+        entity.setLookTarget(null);
     }
 }
