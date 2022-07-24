@@ -14,13 +14,10 @@ import java.util.Set;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public interface ISensor<T extends IMemory<?>> {
+public interface ISensor {
 
     /**
      * @param entity 目标实体
-     * @param currentMemory 当前的memory数据，可能为null
      */
-    void sense(EntityIntelligent entity,@Nullable T currentMemory);
-
-    Class<T> getMemoryType();
+    void sense(EntityIntelligent entity);
 }

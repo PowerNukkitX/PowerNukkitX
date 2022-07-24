@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
+public class NearestPlayerSensor implements ISensor {
 
     protected double range;
 
@@ -26,7 +26,8 @@ public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
     }
 
     @Override
-    public void sense(EntityIntelligent entity, @Nullable NearestPlayerMemory currentMemory) {
+    public void sense(EntityIntelligent entity) {
+        NearestPlayerMemory currentMemory = entity.getMemoryStorage().get(NearestPlayerMemory.class);
         Player player = null;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
@@ -43,10 +44,5 @@ public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
             }
         }
         currentMemory.setData(player);
-    }
-
-    @Override
-    public Class<NearestPlayerMemory> getMemoryType() {
-        return NearestPlayerMemory.class;
     }
 }

@@ -56,8 +56,8 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 决定多少gt更新一次路径
      */
-    @Setter
-    protected int routeUpdateCycle = 1;//gt
+    //todo: 根据tps动态调整计算速率
+    protected int routeUpdateCycle = 20;//gt
 
     /**
      * 记录距离上次路径更新过去的gt数
@@ -99,7 +99,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void collectSensorData(EntityIntelligent entity) {
         for (ISensor sensor : sensors) {
-            sensor.sense(entity, getMemoryStorage().get(sensor.getMemoryType()));
+            sensor.sense(entity);
         }
     }
 
