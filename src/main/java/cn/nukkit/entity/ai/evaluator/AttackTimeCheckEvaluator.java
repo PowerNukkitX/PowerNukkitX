@@ -19,6 +19,6 @@ public class AttackTimeCheckEvaluator implements IBehaviorEvaluator{
     @Override
     public boolean evaluate(EntityIntelligent entity) {
         var attackMemory = entity.getMemoryStorage().get(AttackMemory.class);
-        return attackMemory != null && (Server.getInstance().getTick() - attackMemory.getAttackTime()) <= time;
+        return attackMemory.hasData() && (Server.getInstance().getTick() - attackMemory.getAttackTime()) <= time;
     }
 }

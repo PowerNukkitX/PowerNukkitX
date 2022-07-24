@@ -14,6 +14,11 @@ public class AttackMemory implements IMemory<EntityDamageEvent>{
     protected EntityDamageEvent event;
     protected int attackTime;//gt
 
+    public AttackMemory(){
+        this.event = null;
+        this.attackTime = -1;
+    }
+
     public AttackMemory(EntityDamageEvent event) {
         this.event = event;
         this.attackTime = Server.getInstance().getTick();
@@ -22,5 +27,11 @@ public class AttackMemory implements IMemory<EntityDamageEvent>{
     @Override
     public EntityDamageEvent getData() {
         return event;
+    }
+
+    @Override
+    public void setData(EntityDamageEvent event) {
+        this.event = event;
+        this.attackTime = Server.getInstance().getTick();
     }
 }

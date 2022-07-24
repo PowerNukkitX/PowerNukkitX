@@ -75,7 +75,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     }
 
     protected boolean needUpdateTarget(EntityIntelligent entity){
-        return !entity.getMemoryStorage().contains(MoveTargetMemory.class);
+        return entity.getMemoryStorage().isEmpty(MoveTargetMemory.class);
     }
 
     protected Vector3 next(EntityIntelligent entity){
@@ -94,18 +94,18 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.getMemoryStorage().put(new MoveTargetMemory(vector3));
+        entity.getMemoryStorage().setData(MoveTargetMemory.class, vector3);
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
-        entity.getMemoryStorage().put(new LookTargetMemory(vector3));
+        entity.getMemoryStorage().setData(LookTargetMemory.class,vector3);
     }
 
     protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.getMemoryStorage().remove(MoveTargetMemory.class);
+        entity.getMemoryStorage().clear(MoveTargetMemory.class);
     }
 
     protected void removeLookTarget(@NotNull EntityIntelligent entity){
-        entity.getMemoryStorage().remove(LookTargetMemory.class);
+        entity.getMemoryStorage().clear(LookTargetMemory.class);
     }
 }

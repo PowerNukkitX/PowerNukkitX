@@ -28,7 +28,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
-        if (!entity.getBehaviorGroup().getMemoryStorage().contains(memoryClazz)) {
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) {
             //目标丢失
             removeRouteTarget(entity);
             removeLookTarget(entity);
@@ -50,18 +50,18 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.getMemoryStorage().put(new MoveTargetMemory(vector3));
+        entity.getMemoryStorage().setData(MoveTargetMemory.class,vector3);
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
-        entity.getMemoryStorage().put(new LookTargetMemory(vector3));
+        entity.getMemoryStorage().setData(LookTargetMemory.class,vector3);
     }
 
     protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.getMemoryStorage().remove(MoveTargetMemory.class);
+        entity.getMemoryStorage().clear(MoveTargetMemory.class);
     }
 
     protected void removeLookTarget(@NotNull EntityIntelligent entity){
-        entity.getMemoryStorage().remove(LookTargetMemory.class);
+        entity.getMemoryStorage().clear(LookTargetMemory.class);
     }
 }

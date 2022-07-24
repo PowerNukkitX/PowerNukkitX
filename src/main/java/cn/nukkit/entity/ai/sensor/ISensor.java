@@ -5,23 +5,22 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.IMemory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * 此接口抽象了一个传感器 <br/>
- * 传感器用于搜集环境信息并返回一个记忆{@link IMemory}，且将会被写入记忆存储器{@link cn.nukkit.entity.ai.memory.IMemoryStorage}
+ * 传感器用于搜集环境信息并向记忆存储器{@link cn.nukkit.entity.ai.memory.IMemoryStorage}写入一个记忆{@link IMemory}
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public interface ISensor<T extends IMemory<?>> {
 
     /**
-     * 要求传感器返回一个数据(Memory),若Memory的Data为Null则表示没有数据,MemoryStorage将会删除对应的键值对
-     *
-     * @param entity
-     * @return IMemory
+     * @param entity 目标实体
+     * @param currentMemory 当前的memory数据，可能为null
      */
-    @Nullable
-    T sense(EntityIntelligent entity);
+    void sense(EntityIntelligent entity,@Nullable T currentMemory);
+
+    Class<T> getMemoryType();
 }

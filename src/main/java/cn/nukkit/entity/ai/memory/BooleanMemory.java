@@ -7,20 +7,19 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public abstract class BooleanMemory implements IMemory<Boolean> {
 
-    protected Boolean data;
+    protected boolean data;
 
-    /**
-     * 若data为false,则将会设置data为null，稍后MemoryStorage会直接删除对应的key-value对
-     */
-    public BooleanMemory(Boolean data) {
-        if (!data)
-            this.data = null;
-        else
-            this.data = true;
+    public BooleanMemory(boolean data) {
+        this.data = data;
     }
 
     @Override
     public Boolean getData() {
         return data;
+    }
+
+    @Override
+    public void setData(Boolean data) {
+        this.data = data;
     }
 }

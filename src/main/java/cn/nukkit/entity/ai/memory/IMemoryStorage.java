@@ -14,7 +14,15 @@ public interface IMemoryStorage {
 
     <T extends IMemory<?>, R extends Class<T>> T get(R memoryClazz);
 
-    void remove(Class<? extends IMemory<?>> memoryClazz);
+    void clear(Class<? extends IMemory<?>> memoryClazz);
 
-    boolean contains(Class<? extends IMemory<?>> memoryClazz);
+    boolean isEmpty(Class<? extends IMemory<?>> memoryClazz);
+
+    boolean notEmpty(Class<? extends IMemory<?>> memoryClazz);
+
+    <R,T extends IMemory<R>> boolean checkData(Class<T> memoryClazz,R data);
+
+    <R, T extends IMemory<R>> void setData(Class<T> memoryClazz, R data);
+
+    <R, T extends IMemory<R>> R getData(Class<T> memoryClazz);
 }

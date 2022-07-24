@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
-import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.passive.EntityAnimal;
 
 @PowerNukkitXOnly
@@ -22,7 +21,7 @@ public class NearestBeggingPlayerSensor implements ISensor<NearestBeggingPlayerM
     }
 
     @Override
-    public NearestBeggingPlayerMemory sense(EntityIntelligent entity) {
+    public void sense(EntityIntelligent entity, NearestBeggingPlayerMemory currentMemory) {
         if (entity instanceof EntityAnimal entityAnimal) {
             Player player = null;
             double rangeSquared = this.range * this.range;
@@ -39,8 +38,13 @@ public class NearestBeggingPlayerSensor implements ISensor<NearestBeggingPlayerM
                     }
                 }
             }
-            return new NearestBeggingPlayerMemory(player);
+            currentMemory.setData(player);
         }
-        return new NearestBeggingPlayerMemory(null);
+        currentMemory.setData(null);
+    }
+
+    @Override
+    public Class<NearestBeggingPlayerMemory> getMemoryType() {
+        return NearestBeggingPlayerMemory.class;
     }
 }

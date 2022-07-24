@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * MoveDirectionMemory用于存储实体的寻路过程中的某一时刻的目标移动方向
@@ -11,10 +12,15 @@ import lombok.Getter;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
+@Setter
 public class MoveDirectionMemory extends Vector3Memory {
 
     protected Vector3 start;
     protected Vector3 end;
+
+    public MoveDirectionMemory() {
+        super(null);
+    }
 
     /**
      * @param start 方向向量起点
@@ -22,8 +28,12 @@ public class MoveDirectionMemory extends Vector3Memory {
      */
     public MoveDirectionMemory(Vector3 start, Vector3 end) {
         //构建方向向量
-        super(new Vector3(end.x - start.x, end.y - start.y, end.z - start.z));
+        super(start != null && end != null ? new Vector3(end.x - start.x, end.y - start.y, end.z - start.z) : null);
         this.start = start;
         this.end = end;
+    }
+
+    public void updateDirection(){
+        setData(new Vector3(end.x - start.x, end.y - start.y, end.z - start.z));
     }
 }

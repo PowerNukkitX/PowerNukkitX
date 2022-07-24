@@ -25,7 +25,7 @@ public class LookController implements IController{
         LookTargetMemory lookTargetMemory = entity.getMemoryStorage().get(LookTargetMemory.class);
         MoveDirectionMemory moveDirectionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
 
-        if (lookAtRoute && moveDirectionMemory != null) {
+        if (lookAtRoute && moveDirectionMemory.hasData()) {
             //构建路径方向向量
             BVector3 bv2route = BVector3.fromPos(moveDirectionMemory.getEnd().x - entity.x, moveDirectionMemory.getEnd().y - entity.y, moveDirectionMemory.getEnd().z - entity.z);
             entity.setYaw(bv2route.getYaw());
@@ -34,7 +34,7 @@ public class LookController implements IController{
                 entity.setPitch(bv2route.getPitch());
             }
         }
-        if (lookAtTarget && lookTargetMemory != null) {
+        if (lookAtTarget && lookTargetMemory.hasData()) {
             Vector3 target = lookTargetMemory.getData();
             //构建指向玩家的向量
             BVector3 bv2player = BVector3.fromPos(target.x - entity.x, target.y - entity.y, target.z - entity.z);

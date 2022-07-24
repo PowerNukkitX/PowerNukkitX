@@ -5,12 +5,13 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.memory.AttackMemory;
-import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.ai.memory.*;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -66,7 +67,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
         var result = super.attack(source);
         var memory = getMemoryStorage();
         if (memory != null) {
-            memory.put(new AttackMemory(source));
+            memory.get(AttackMemory.class).setData(source);
         }
         return result;
     }

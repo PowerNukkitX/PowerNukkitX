@@ -18,4 +18,9 @@ public abstract class Vector3Memory implements IMemory<Vector3> {
     public Vector3 getData() {
         return vector3;
     }
+
+    @Override
+    public void setData(Vector3 data) {
+        this.vector3 = data;
+    }
 }

@@ -18,7 +18,7 @@ import cn.nukkit.utils.BVector3;
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        if (entity.getMemoryStorage().contains(MoveDirectionMemory.class) && !entity.getMemoryStorage().contains(NeedUpdateMoveDirectionMemory.class)) {
+        if (entity.getMemoryStorage().notEmpty(MoveDirectionMemory.class) && entity.getMemoryStorage().checkData(NeedUpdateMoveDirectionMemory.class,false)) {
             MoveDirectionMemory directionMemory = entity.getMemoryStorage().get(MoveDirectionMemory.class);
             Vector3 direction = directionMemory.getEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
@@ -45,7 +45,7 @@ public class SpaceMoveController implements IController {
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.getMemoryStorage().put(new NeedUpdateMoveDirectionMemory(true));
+        entity.getMemoryStorage().get(NeedUpdateMoveDirectionMemory.class).setData(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

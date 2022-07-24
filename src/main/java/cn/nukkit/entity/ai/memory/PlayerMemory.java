@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class PlayerMemory extends Vector3Memory{
+
     public PlayerMemory(Player player) {
         super(player);
     }

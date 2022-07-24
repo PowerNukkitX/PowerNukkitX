@@ -6,6 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 
@@ -25,7 +26,7 @@ public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
     }
 
     @Override
-    public NearestPlayerMemory sense(EntityIntelligent entity) {
+    public void sense(EntityIntelligent entity, @Nullable NearestPlayerMemory currentMemory) {
         Player player = null;
         double rangeSquared = this.range * this.range;
         double minRangeSquared = this.minRange * this.minRange;
@@ -41,6 +42,11 @@ public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
                 }
             }
         }
-        return new NearestPlayerMemory(player);
+        currentMemory.setData(player);
+    }
+
+    @Override
+    public Class<NearestPlayerMemory> getMemoryType() {
+        return NearestPlayerMemory.class;
     }
 }

@@ -99,13 +99,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void collectSensorData(EntityIntelligent entity) {
         for (ISensor sensor : sensors) {
-            var memory = sensor.sense(entity);
-            if (memory == null)
-                continue;
-            if (memory.getData() == null)
-                this.memoryStorage.remove((Class<? extends IMemory<?>>) memory.getClass());
-            else
-                this.memoryStorage.put(memory);
+            sensor.sense(entity, getMemoryStorage().get(sensor.getMemoryType()));
         }
     }
 
@@ -168,41 +162,46 @@ public class BehaviorGroup implements IBehaviorGroup {
                     //clone防止寻路器潜在的修改
                     RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                         updateMoveDirection(entity);
-                        removeMemory(NeedUpdateMoveDirectionMemory.class);
+                        setMemoryData(NeedUpdateMoveDirectionMemory.class,false);
                         currentRouteUpdateTick = 0;
                     })
                     .setStart(entity.clone())
                     .setTarget(target));
             } else {
                 //没有路径目标，则清除路径信息
-                removeMemory(MoveDirectionMemory.class);
+                clearMemory(MoveDirectionMemory.class);
             }
         }
         //若不能再移动了，则清除路径信息
-        if (routeFinder.getReachableTarget() != null && entity.floor().equals(routeFinder.getReachableTarget().floor())) {
-            removeMemory(MoveTargetMemory.class);
-            removeMemory(MoveDirectionMemory.class);
+        var reachableTarget = routeFinder.getReachableTarget();
+        if (reachableTarget != null && entity.floor().equals(reachableTarget.floor())) {
+            clearMemory(MoveTargetMemory.class);
+            clearMemory(MoveDirectionMemory.class);
         }
         if (needUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新
                 updateMoveDirection(entity);
-                removeMemory(NeedUpdateMoveDirectionMemory.class);
+                setMemoryData(NeedUpdateMoveDirectionMemory.class,false);
             }
         }
     }
 
     @Nullable
     protected Vector3 getRouteTarget() {
-        return memoryStorage.contains(MoveTargetMemory.class) ? memoryStorage.get(MoveTargetMemory.class).getData() : null;
+        return memoryStorage.get(MoveTargetMemory.class).getData();
     }
 
     protected boolean needUpdateMoveDirection() {
-        return memoryStorage.contains(NeedUpdateMoveDirectionMemory.class);
+        return memoryStorage.checkData(NeedUpdateMoveDirectionMemory.class,true);
     }
 
-    protected void removeMemory(Class<? extends IMemory<?>> clazz) {
-        memoryStorage.remove(clazz);
+    protected void clearMemory(Class<? extends IMemory<?>> clazz) {
+        memoryStorage.clear(clazz);
+    }
+
+    protected <T> void setMemoryData(Class<? extends IMemory<T>> clazz, T data) {
+        memoryStorage.get(clazz).setData(data);
     }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
@@ -215,7 +214,9 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         var next = routeFinder.next();
         if (next != null) {
-            memoryStorage.put(new MoveDirectionMemory(end, next.getVector3()));
+            directionMemory.setStart(end);
+            directionMemory.setEnd(next.getVector3());
+            directionMemory.updateDirection();
         }
     }
 

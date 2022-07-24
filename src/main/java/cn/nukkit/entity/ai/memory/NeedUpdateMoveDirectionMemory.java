@@ -12,6 +12,10 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class NeedUpdateMoveDirectionMemory extends BooleanMemory {
+
+    public NeedUpdateMoveDirectionMemory() {
+        super(false);
+    }
     public NeedUpdateMoveDirectionMemory(Boolean data) {
         super(data);
     }
