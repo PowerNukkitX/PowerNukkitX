@@ -31,6 +31,7 @@ public class SimpleCommandMap implements CommandMap {
 
     private void setDefaultCommands() {
         this.register("nukkit",new ExecuteCommand("execute"));
+        this.register("nukkit",new TpsCommand("tps"));
         this.register("nukkit",new TickingAreaCommand("tickingarea"));
         this.register("nukkit",new TellrawCommand("tellraw"));
         this.register("nukkit",new TitlerawCommand("titleraw"));
