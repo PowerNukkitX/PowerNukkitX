@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class NearestPlayerSensor implements ISensor {
+public class NearestPlayerSensor implements ISensor<NearestPlayerMemory> {
 
     protected double range;
 

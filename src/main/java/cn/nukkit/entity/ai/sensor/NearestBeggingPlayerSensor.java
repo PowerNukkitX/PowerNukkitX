@@ -4,13 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
+import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.passive.EntityAnimal;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestBeggingPlayerSensor implements ISensor{
+public class NearestBeggingPlayerSensor implements ISensor<NearestBeggingPlayerMemory>{
 
     protected double range;
 
@@ -22,7 +22,7 @@ public class NearestBeggingPlayerSensor implements ISensor{
     }
 
     @Override
-    public IMemory<?> sense(EntityIntelligent entity) {
+    public NearestBeggingPlayerMemory sense(EntityIntelligent entity) {
         if (entity instanceof EntityAnimal entityAnimal) {
             Player player = null;
             double rangeSquared = this.range * this.range;

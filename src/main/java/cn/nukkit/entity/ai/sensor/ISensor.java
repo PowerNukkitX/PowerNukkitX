@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public interface ISensor {
+public interface ISensor<T extends IMemory<?>> {
 
     /**
      * 要求传感器返回一个数据(Memory),若Memory的Data为Null则表示没有数据,MemoryStorage将会删除对应的键值对
@@ -23,5 +23,5 @@ public interface ISensor {
      * @return IMemory
      */
     @Nullable
-    IMemory<?> sense(EntityIntelligent entity);
+    T sense(EntityIntelligent entity);
 }
