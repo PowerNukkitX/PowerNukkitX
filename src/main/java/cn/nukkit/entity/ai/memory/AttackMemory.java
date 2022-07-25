@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class AttackMemory implements IMemory<EntityDamageEvent>{
+public class AttackMemory implements IMemory<EntityDamageEvent>,TimedMemory{
 
     protected EntityDamageEvent event;
 
@@ -36,5 +36,10 @@ public class AttackMemory implements IMemory<EntityDamageEvent>{
     public void setData(EntityDamageEvent event) {
         this.event = event;
         this.attackTime = Server.getInstance().getTick();
+    }
+
+    @Override
+    public int getTime() {
+        return attackTime;
     }
 }

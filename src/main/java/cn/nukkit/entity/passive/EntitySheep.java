@@ -14,6 +14,7 @@ import cn.nukkit.entity.ai.executor.EatGrassExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
@@ -40,7 +41,7 @@ public class EntitySheep extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 13;
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new AttackTimeCheckEvaluator(100), 5, 1),
+                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new TimedMemoryCheckEvaluator<>(AttackMemory.class,100), 5, 1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
                     new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(new ProbabilityEvaluator(1,1000),new AnyMatchEvaluator(new BlockCheckEvaluator(Block.GRASS,new Vector3(0,-1,0)),new BlockCheckEvaluator(Block.TALL_GRASS,Vector3.ZERO))),3,1),
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(5,1000), 2, 1),
