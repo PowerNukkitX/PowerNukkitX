@@ -12,11 +12,11 @@ import org.jetbrains.annotations.NotNull;
 public class LookAtTargetExecutor implements IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
-    protected Class<? extends Vector3Memory> memoryClazz;
+    protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected int duration;
     protected int currentTick;
 
-    public LookAtTargetExecutor(Class<? extends Vector3Memory> memoryClazz, int duration) {
+    public LookAtTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, int duration) {
         this.memoryClazz = memoryClazz;
         this.duration = duration;
     }
@@ -24,7 +24,7 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        Vector3Memory vector3Memory = entity.getMemoryStorage().get(memoryClazz);
+        Vector3Memory<?> vector3Memory = entity.getMemoryStorage().get(memoryClazz);
         if (vector3Memory.hasData()){
             Vector3 vector3 = vector3Memory.getData();
             setLookTarget(entity,vector3);

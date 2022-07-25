@@ -9,25 +9,30 @@ import lombok.Setter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class PlayerBreedingMemory extends PlayerMemory<Player> {
+public class PlayerBreedingMemory extends PlayerMemory<Player> implements TimedMemory {
 
     @Getter
     @Setter
-    protected int breedTime;
+    protected int breedingTime;
 
     public PlayerBreedingMemory(){
         super(null);
-        breedTime = -1;
+        breedingTime = -1;
     }
 
     public PlayerBreedingMemory(Player player) {
         super(player);
-        breedTime = Server.getInstance().getTick();
+        breedingTime = Server.getInstance().getTick();
     }
 
     @Override
     public void setData(Player data) {
         super.setData(data);
-        breedTime = Server.getInstance().getTick();
+        breedingTime = Server.getInstance().getTick();
+    }
+
+    @Override
+    public int getTime() {
+        return breedingTime;
     }
 }

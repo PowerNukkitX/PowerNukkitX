@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
@@ -9,10 +10,12 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.PlayerBreedingMemory;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
+import cn.nukkit.event.entity.EntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.EntityEventPacket;
 
 import static cn.nukkit.entity.passive.EntityTamable.DATA_OWNER_NAME;
 import static cn.nukkit.entity.passive.EntityTamable.DATA_TAMED_FLAG;
@@ -73,10 +76,18 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)){
             getMemoryStorage().get(PlayerBreedingMemory.class).setData(player);
+            sendBreedingAnimation(item);
             item.count--;
             return player.getInventory().setItemInHand(item) && superResult;
         }
         return superResult;
+    }
+
+    protected void sendBreedingAnimation(Item item){
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.event = EntityEventPacket.EATING_ITEM;
+        pk.eid = this.getId();
+        Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     @PowerNukkitXOnly

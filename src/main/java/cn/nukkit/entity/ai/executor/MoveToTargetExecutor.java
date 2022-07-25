@@ -14,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 public class MoveToTargetExecutor implements IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
-    protected Class<? extends Vector3Memory> memoryClazz;
+    protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected float speed;
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory> memoryClazz,float speed) {
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz,float speed) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
     }
