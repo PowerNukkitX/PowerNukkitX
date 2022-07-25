@@ -30,7 +30,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 决定多少gt更新一次路径
      */
     //todo: 根据tps动态调整计算速率
-    protected static final int ROUTE_UPDATE_CYCLE = 20;//gt
+    protected static int ROUTE_UPDATE_CYCLE = 20;//gt
 
     /**
      * 全部行为
