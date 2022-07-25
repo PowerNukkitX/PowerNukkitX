@@ -2,6 +2,7 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 此接口抽象了一个记忆存储器 <br/>

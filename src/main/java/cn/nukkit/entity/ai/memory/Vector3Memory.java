@@ -6,21 +6,21 @@ import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class Vector3Memory implements IMemory<Vector3> {
+public abstract class Vector3Memory<V extends Vector3> implements IMemory<V> {
 
-    protected Vector3 vector3;
+    protected V vector3;
 
-    public Vector3Memory(Vector3 vector3) {
+    public Vector3Memory(V vector3) {
         this.vector3 = vector3;
     }
 
     @Override
-    public Vector3 getData() {
+    public V getData() {
         return vector3;
     }
 
     @Override
-    public void setData(Vector3 data) {
+    public void setData(V data) {
         this.vector3 = data;
     }
 }

@@ -10,14 +10,16 @@ import java.util.concurrent.ThreadLocalRandom;
 @Since("1.6.0.0-PNX")
 public class ProbabilityEvaluator implements IBehaviorEvaluator{
 
-    protected int probability;//0 - 1000
+    protected int probability;
+    protected int total;
 
-    public ProbabilityEvaluator(int probability){
+    public ProbabilityEvaluator(int probability,int total){
         this.probability = probability;
+        this.total = total;
     }
 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        return ThreadLocalRandom.current().nextInt(1000) < probability;
+        return ThreadLocalRandom.current().nextInt(total) < probability;
     }
 }

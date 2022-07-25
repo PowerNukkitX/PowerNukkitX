@@ -21,7 +21,6 @@ public class LookController implements IController{
     @Override
     public boolean control(EntityIntelligent entity) {
         Vector3 lookTarget = entity.getLookTarget();
-        Vector3 moveDirectionStart = entity.getMoveDirectionStart();
         Vector3 moveDirectionEnd = entity.getMoveDirectionEnd();
 
         if (lookAtRoute && entity.hasMoveDirection()) {

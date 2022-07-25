@@ -21,6 +21,9 @@ public class AllMatchEvaluator extends MultiBehaviorEvaluator{
 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        return evaluators.stream().allMatch(evaluator -> evaluator.evaluate(entity));
+        for (IBehaviorEvaluator evaluator : evaluators) {
+            if (!evaluator.evaluate(entity)) return false;
+        }
+        return true;
     }
 }

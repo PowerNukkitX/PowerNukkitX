@@ -5,6 +5,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.passive.EntitySheep;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
@@ -28,10 +30,15 @@ public class EatGrassExecutor implements IBehaviorExecutor{
         if (currentTick > duration){
             currentTick = 0;
             entity.level.addParticle(new DestroyBlockParticle(entity, Block.get(Block.TALL_GRASS)));
-            if (entity.getLevelBlock().getId() == Block.TALL_GRASS) {
-                entity.level.setBlock(entity, Block.get(Block.AIR));
-            } else {
-                entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
+            if (entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
+                if (entity.getLevelBlock().getId() == Block.TALL_GRASS) {
+                    entity.level.setBlock(entity, Block.get(Block.AIR));
+                } else {
+                    entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
+                }
+            }
+            if (entity instanceof EntitySheep sheep && sheep.sheared){
+                sheep.growWool();
             }
             return false;
         }
