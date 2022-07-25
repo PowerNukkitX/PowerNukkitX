@@ -10,6 +10,7 @@ import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import static cn.nukkit.entity.passive.EntityTamable.DATA_OWNER_NAME;
@@ -64,6 +65,16 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
 
             namedTag.putBoolean("Sitting", isSitting());
         }
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        boolean superResult = super.onInteract(player, item, clickedPos);
+        if (isBreedingItem(item)){
+            item.count--;
+            return player.getInventory().setItemInHand(item) && superResult;
+        }
+        return superResult;
     }
 
     @PowerNukkitXOnly
