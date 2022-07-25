@@ -12,6 +12,9 @@ import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.RuntimeItemMapping;
+import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -87,6 +90,7 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
         EntityEventPacket pk = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
+        pk.data = RuntimeItems.getFullId(item.getNetworkId(),item.getDamage());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
