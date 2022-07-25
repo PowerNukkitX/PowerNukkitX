@@ -10,13 +10,11 @@ import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.*;
-import cn.nukkit.entity.ai.executor.EatGrassExecutor;
-import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
-import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.NearestBeggingPlayerMemory;
 import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
+import cn.nukkit.entity.ai.memory.PlayerBreedingMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestBeggingPlayerSensor;
@@ -40,6 +38,9 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 13;
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
+            Set.of(
+                    new Behavior(new InLoveExecutor(),new TimedMemoryCheckEvaluator<>(PlayerBreedingMemory.class,400))
+            ),
             Set.of(
                     new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new TimedMemoryCheckEvaluator<>(AttackMemory.class,100), 5, 1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),

@@ -32,6 +32,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     //todo: 根据tps动态调整计算速率
     protected static int ROUTE_UPDATE_CYCLE = 20;//gt
 
+
+    /**
+     * 不会被其他行为覆盖的"核心“行为
+     */
+    protected final Set<IBehavior> coreBehaviors = new HashSet<>();
+
     /**
      * 全部行为
      */
@@ -44,6 +50,10 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 控制器
      */
     protected final Set<IController> controllers = new HashSet<>();
+    /**
+     * 正在运行的”核心“行为
+     */
+    protected final Set<IBehavior> runningCoreBehaviors = new HashSet<>();
     /**
      * 正在运行的行为
      */
@@ -69,7 +79,8 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected boolean forceUpdateRoute = false;
 
 
-    public BehaviorGroup(Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
+    public BehaviorGroup(Set<IBehavior> coreBehaviors,Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
+        this.coreBehaviors.addAll(coreBehaviors);
         this.behaviors.addAll(behaviors);
         this.sensors.addAll(sensors);
         this.controllers.addAll(controllers);
@@ -102,9 +113,29 @@ public class BehaviorGroup implements IBehaviorGroup {
         runningBehaviors.removeAll(removed);
     }
 
+    public void tickRunningCoreBehaviors(EntityIntelligent entity) {
+        Set<IBehavior> removed = new HashSet<>();
+        for (var behavior : runningCoreBehaviors) {
+            if (!behavior.execute(entity)) {
+                removed.add(behavior);
+                behavior.onStop(entity);
+            }
+        }
+        runningCoreBehaviors.removeAll(removed);
+    }
+
     public void collectSensorData(EntityIntelligent entity) {
         for (ISensor sensor : sensors) {
             sensor.sense(entity);
+        }
+    }
+
+    public void evaluateCoreBehaviors(EntityIntelligent entity) {
+        for (IBehavior behavior : coreBehaviors) {
+            if (behavior.evaluate(entity)) {
+                behavior.onStart(entity);
+                runningCoreBehaviors.add(behavior);
+            }
         }
     }
 

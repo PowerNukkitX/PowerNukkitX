@@ -24,12 +24,22 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
+    public void evaluateCoreBehaviors(EntityIntelligent entity) {
+
+    }
+
+    @Override
     public void collectSensorData(EntityIntelligent entity) {
 
     }
 
     @Override
     public void tickRunningBehaviors(EntityIntelligent entity) {
+
+    }
+
+    @Override
+    public void tickRunningCoreBehaviors(EntityIntelligent entity) {
 
     }
 

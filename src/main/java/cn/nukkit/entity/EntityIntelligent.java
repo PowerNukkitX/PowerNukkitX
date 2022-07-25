@@ -52,6 +52,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
         var behaviorGroup = getBehaviorGroup();
+        behaviorGroup.tickRunningCoreBehaviors(this);
         behaviorGroup.tickRunningBehaviors(this);
         behaviorGroup.applyController(this);
         return true;
@@ -69,6 +70,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
             return;
         if (needsRecalcMovement) {
             behaviorGroup.collectSensorData(this);
+            behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
             behaviorGroup.updateRoute(this);
         }

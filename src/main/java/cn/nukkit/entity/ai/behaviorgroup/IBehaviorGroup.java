@@ -26,6 +26,8 @@ public interface IBehaviorGroup {
      */
     void evaluateBehaviors(EntityIntelligent entity);
 
+    void evaluateCoreBehaviors(EntityIntelligent entity);
+
     /**
      * 调用行为组内部的所有传感器{@link ISensor}，并将传感器返回的记忆{@link cn.nukkit.entity.ai.memory.IMemory}写入到记忆存储器中{@link IMemoryStorage}
      *
@@ -39,6 +41,8 @@ public interface IBehaviorGroup {
      * @param entity 目标实体对象
      */
     void tickRunningBehaviors(EntityIntelligent entity);
+
+    void tickRunningCoreBehaviors(EntityIntelligent entity);
 
     /**
      * 应用行为内部所有的控制器{@link IController}
