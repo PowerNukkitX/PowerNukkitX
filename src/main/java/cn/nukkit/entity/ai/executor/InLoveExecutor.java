@@ -11,17 +11,17 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 @Since("1.6.0.0-PNX")
 public class InLoveExecutor implements IBehaviorExecutor {
 
-    protected int maxTick;
+    protected int duration;
     protected int currentTick = 0;
 
-    public InLoveExecutor(int maxTick) {
-        this.maxTick = maxTick;
+    public InLoveExecutor(int duration) {
+        this.duration = duration;
     }
 
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        if (currentTick > maxTick){
+        if (currentTick > duration){
             updateInLoveMemory(entity);
             return false;
         }
