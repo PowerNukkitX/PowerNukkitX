@@ -25,10 +25,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.Chunk;
-import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.*;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -41,6 +38,8 @@ import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.BlockIndex;
+import cn.nukkit.level.util.SimpleTickCachedBlockStore;
+import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -62,7 +61,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -231,7 +229,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final Long2LongMap unloadQueue = Long2LongMaps.synchronize(new Long2LongOpenHashMap());
 
-    private final ConcurrentHashMap<BlockIndex, Block> tickCachedBlocks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
 
     private float time;
     public boolean stopTime;
@@ -439,6 +437,12 @@ public class Level implements ChunkManager, Metadatable {
         byte hi = (byte) (((int) x & 15) + (((int) z & 15) << 4));
         short lo = (short) (level.ensureY((int) y) + 64);
         return (hi & 0xFF) << 16 | lo;
+    }
+
+    public static int localBlockHash(int x, int y, int z, int layer, Level level) {
+        byte hi = (byte) ((x & 15) + ((z & 15) << 4));
+        short lo = (short) (level.ensureY(y) + 64);
+        return ((layer & 127) << 24) | (hi & 0xFF) << 16 | lo;
     }
 
     public static Vector3 getBlockXYZ(long chunkHash, int blockHash, Level level) {
@@ -917,7 +921,9 @@ public class Level implements ChunkManager, Metadatable {
 
     public void releaseTickCachedBlocks() {
         synchronized (this.tickCachedBlocks) {
-            this.tickCachedBlocks.clear();
+            for (var each : tickCachedBlocks.values()) {
+                each.clearCachedStore();
+            }
         }
     }
 
@@ -1098,7 +1104,7 @@ public class Level implements ChunkManager, Metadatable {
             gameRules.refresh();
         }
 
-        tickCachedBlocks.clear();
+        releaseTickCachedBlocks();
 
         this.timings.doTick.stopTiming();
     }
@@ -1868,8 +1874,8 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
-        var index = BlockIndex.of(x, y, z, layer);
-        return tickCachedBlocks.computeIfAbsent(index, key -> getBlock(x, y, z, layer, load));
+        return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
+                .computeFromCachedStore(x, y, z, layer, () -> getBlock(x, y, z, layer, load));
     }
 
     public synchronized Block getBlock(Vector3 pos) {
