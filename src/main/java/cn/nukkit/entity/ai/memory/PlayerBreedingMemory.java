@@ -11,8 +11,6 @@ import lombok.Setter;
 @Since("1.6.0.0-PNX")
 public class PlayerBreedingMemory extends PlayerMemory<Player> implements TimedMemory {
 
-    @Getter
-    @Setter
     protected int breedingTime;
 
     public PlayerBreedingMemory(){
