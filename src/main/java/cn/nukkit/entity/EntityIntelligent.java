@@ -68,7 +68,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
-        if ((currentTick & 127) == 0) { // 每127刻才会计算一次是否为突出区块
+        if (needsRecalcMovement) { // 每次要重新计算实体运动时，都重新计算一次是否活跃
             isActive = level.isHighLightChunk(getFloorX(), getFloorZ());
         }
         var behaviorGroup = getBehaviorGroup();
