@@ -31,7 +31,6 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 决定多少gt更新一次路径
      */
-    //todo: 根据tps动态调整计算速率
     protected static int ROUTE_UPDATE_CYCLE = 16;//gt
 
 
@@ -217,11 +216,24 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
+    /**
+     * 计算活跃实体延迟
+     * @param entity 实体
+     * @param originalDelay 原始延迟
+     * @return 如果实体是非活跃的，则延迟*2
+     */
+    protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
+        if (!entity.isActive()) {
+            return originalDelay << 1;
+        }
+        return originalDelay;
+    }
+
     @Override
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
         //到达更新周期时，开始重新计算新路径
-        if (currentRouteUpdateTick >= ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1) || isForceUpdateRoute()) {
+        if (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) || isForceUpdateRoute()) {
             Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
             if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {

@@ -5,7 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.memory.AttackMemory;
+import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -13,8 +14,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Set;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -26,6 +25,11 @@ import java.util.Set;
 public abstract class EntityIntelligent extends EntityPhysical {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
+
+    /**
+     * 是否为活跃实体，如果实体不活跃，就应当降低AI运行频率
+     */
+    protected boolean isActive = true;
 
     //我们将寻路相关的参数直接作为属性存储到EntityIntelligent中，这样可以提高性能
     protected Vector3 lookTarget;
@@ -51,6 +55,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
+        if ((currentTick & 255) == 0) { // 每256刻才会计算一次是否为突出区块
+            isActive = level.isHighLightChunk(getFloorX(), getFloorZ());
+        }
         var behaviorGroup = getBehaviorGroup();
         behaviorGroup.tickRunningCoreBehaviors(this);
         behaviorGroup.tickRunningBehaviors(this);

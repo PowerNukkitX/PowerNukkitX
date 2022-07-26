@@ -231,6 +231,8 @@ public class Level implements ChunkManager, Metadatable {
 
     private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
 
+    private final LongSet highLightChunks = new LongOpenHashSet();
+
     private float time;
     public boolean stopTime;
     private int nextTimeSendTick;
@@ -504,6 +506,10 @@ public class Level implements ChunkManager, Metadatable {
         } else {
             return tickRateOptDelay >> 1;
         }
+    }
+
+    public boolean isHighLightChunk(int chunkX, int chunkZ) {
+        return highLightChunks.contains(Level.chunkHash(chunkX, chunkZ));
     }
 
     public void initLevel() {
@@ -939,6 +945,22 @@ public class Level implements ChunkManager, Metadatable {
             nextTimeSendTick = currentTick + 30 * 20;
         }
 
+        // 检查突出区块（玩家附近3x3区块）
+        if ((currentTick & 255) == 0) { // 每256刻检查一次是比较合理的
+            highLightChunks.clear();
+            for (var player : this.players.values()) {
+                if (player.isOnline()) {
+                    int chunkX = player.getChunkX();
+                    int chunkZ = player.getChunkZ();
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
+                        }
+                    }
+                }
+            }
+        }
+
         // Tick Weather
         if (this.getDimension() != DIMENSION_NETHER && this.getDimension() != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             this.rainTime--;
@@ -1104,6 +1126,7 @@ public class Level implements ChunkManager, Metadatable {
             gameRules.refresh();
         }
 
+        // 清除所有tick缓存的方块
         releaseTickCachedBlocks();
 
         this.timings.doTick.stopTiming();
