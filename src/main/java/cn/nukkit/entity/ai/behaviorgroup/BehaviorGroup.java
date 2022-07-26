@@ -90,6 +90,8 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected int currentRouteUpdateTick;//gt
 
+    protected int runningBehaviorPriority = Integer.MIN_VALUE;
+
     protected boolean forceUpdateRoute = false;
 
 
@@ -104,12 +106,19 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.initPeriodTimer();
     }
 
+    public void addCoreBehavior(IBehavior behavior) {
+        this.coreBehaviors.add(behavior);
+        this.coreBehaviorPeriodTimer.put(behavior, 0);
+    }
+
     public void addBehavior(IBehavior behavior) {
         this.behaviors.add(behavior);
+        this.behaviorPeriodTimer.put(behavior, 0);
     }
 
     public void addSensor(ISensor sensor) {
         this.sensors.add(sensor);
+        this.sensorPeriodTimer.put(sensor, 0);
     }
 
     public void addController(IController controller) {
@@ -127,6 +136,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             }
         }
         runningBehaviors.removeIf(behavior -> behavior.getBehaviorState() == BehaviorState.STOP);
+        if (runningBehaviors.isEmpty()) this.runningBehaviorPriority = Integer.MIN_VALUE;
     }
 
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
@@ -140,30 +150,32 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     public void collectSensorData(EntityIntelligent entity) {
-        //刷新gt数
-        sensorPeriodTimer.forEach((k, v) -> sensorPeriodTimer.put(k, ++v));
-        for (ISensor sensor : sensors) {
+        sensorPeriodTimer.forEach((sensor, tick) -> {
+            //刷新gt数
+            sensorPeriodTimer.put(sensor, ++tick);
             //没到周期就不评估
-            if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) continue;
+            if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) return;
             sensorPeriodTimer.put(sensor, 0);
             sensor.sense(entity);
-        }
+        });
     }
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
-        //刷新gt数
-        coreBehaviorPeriodTimer.forEach((k, v) -> coreBehaviorPeriodTimer.put(k, ++v));
-        for (IBehavior coreBehavior : coreBehaviors) {
+        coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
+            int nextTick;
+            //刷新gt数
+            coreBehaviorPeriodTimer.put(coreBehavior, nextTick = ++tick);
             //没到周期就不评估
-            if (coreBehaviorPeriodTimer.get(coreBehavior) < coreBehavior.getPeriod()) continue;
+            if (nextTick < coreBehavior.getPeriod()) return;
             //若已经在运行了，就不需要评估了
-            if (runningCoreBehaviors.contains(coreBehavior)) continue;
+            if (runningCoreBehaviors.contains(coreBehavior)) return;
             coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
+                coreBehavior.setBehaviorState(BehaviorState.ACTIVE);
                 runningCoreBehaviors.add(coreBehavior);
             }
-        }
+        });
     }
 
     /**
@@ -172,42 +184,40 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity 评估的实体对象
      */
     public void evaluateBehaviors(EntityIntelligent entity) {
-        //刷新gt数
-        behaviorPeriodTimer.forEach((k, v) -> behaviorPeriodTimer.put(k, ++v));
         //存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>();
         int highestPriority = Integer.MIN_VALUE;
-        for (IBehavior behavior : behaviors) {
+        for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
+            IBehavior behavior = entry.getKey();
+            int tick = entry.getValue();
+            int nextTick;
+            //刷新gt数
+            behaviorPeriodTimer.put(behavior, nextTick = ++tick);
             //没到周期就不评估
-            if (behaviorPeriodTimer.get(behavior) < behavior.getPeriod()) continue;
+            if (nextTick < behavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
             behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
-                evalSucceed.add(behavior);
                 if (behavior.getPriority() > highestPriority) {
+                    evalSucceed.clear();
                     highestPriority = behavior.getPriority();
                 }
+                evalSucceed.add(behavior);
             }
         }
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
-        //过滤掉低优先级的行为
-        final var finalHighestPriority = highestPriority;
-        evalSucceed.removeIf(entry -> entry.getPriority() != finalHighestPriority);
-        if (evalSucceed.isEmpty()) return;
-        //当前运行的行为的优先级（优先级必定都是一样的，所以说不需要比较得出）
-        var currentHighestPriority = runningBehaviors.isEmpty() ? Integer.MIN_VALUE : runningBehaviors.iterator().next().getPriority();
         //如果result的优先级低于当前运行的行为，则不执行
-        if (highestPriority < currentHighestPriority){
+        if (highestPriority < runningBehaviorPriority){
             //do nothing
-        } else if (highestPriority > currentHighestPriority) {
+        } else if (highestPriority > runningBehaviorPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
+            this.runningBehaviorPriority = highestPriority;
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);
-        }
-        //如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
-        else {
+        } else {
+            //如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
             addToRunningBehaviors(entity, evalSucceed);
         }
     }
@@ -217,20 +227,6 @@ public class BehaviorGroup implements IBehaviorGroup {
         for (IController controller : controllers) {
             controller.control(entity);
         }
-    }
-
-    /**
-     * 计算活跃实体延迟
-     *
-     * @param entity        实体
-     * @param originalDelay 原始延迟
-     * @return 如果实体是非活跃的，则延迟*4，否则返回原始延迟
-     */
-    protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
-        if (!entity.isActive()) {
-            return originalDelay << 2;
-        }
-        return originalDelay;
     }
 
     @Override
@@ -272,19 +268,33 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
+    /**
+     * 计算活跃实体延迟
+     *
+     * @param entity        实体
+     * @param originalDelay 原始延迟
+     * @return 如果实体是非活跃的，则延迟*4，否则返回原始延迟
+     */
+    protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
+        if (!entity.isActive()) {
+            return originalDelay << 2;
+        }
+        return originalDelay;
+    }
+
     protected void initPeriodTimer() {
         coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
         behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
         sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
     }
 
-    protected void clearMemory(Class<? extends IMemory<?>> clazz) {
-        memoryStorage.clear(clazz);
-    }
-
-    protected <T> void setMemoryData(Class<? extends IMemory<T>> clazz, T data) {
-        memoryStorage.get(clazz).setData(data);
-    }
+//    protected void clearMemory(Class<? extends IMemory<?>> clazz) {
+//        memoryStorage.clear(clazz);
+//    }
+//
+//    protected <T> void setMemoryData(Class<? extends IMemory<T>> clazz, T data) {
+//        memoryStorage.get(clazz).setData(data);
+//    }
 
     protected void updateMoveDirection(EntityIntelligent entity) {
         Vector3 end = entity.getMoveDirectionEnd();
@@ -323,19 +333,19 @@ public class BehaviorGroup implements IBehaviorGroup {
         runningBehaviors.clear();
     }
 
-    /**
-     * 获取指定Set<IBehavior>内的最高优先级
-     *
-     * @param behaviors 行为组
-     * @return int 最高优先级
-     */
-    protected int getHighestPriority(@NotNull Set<IBehavior> behaviors) {
-        int highestPriority = Integer.MIN_VALUE;
-        for (IBehavior behavior : behaviors) {
-            if (behavior.getPriority() > highestPriority) {
-                highestPriority = behavior.getPriority();
-            }
-        }
-        return highestPriority;
-    }
+//    /**
+//     * 获取指定Set<IBehavior>内的最高优先级
+//     *
+//     * @param behaviors 行为组
+//     * @return int 最高优先级
+//     */
+//    protected int getHighestPriority(@NotNull Set<IBehavior> behaviors) {
+//        int highestPriority = Integer.MIN_VALUE;
+//        for (IBehavior behavior : behaviors) {
+//            if (behavior.getPriority() > highestPriority) {
+//                highestPriority = behavior.getPriority();
+//            }
+//        }
+//        return highestPriority;
+//    }
 }

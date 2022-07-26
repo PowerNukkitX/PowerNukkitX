@@ -58,15 +58,21 @@ public interface IBehaviorGroup {
      */
     void addBehavior(IBehavior behavior);
 
+    void addCoreBehavior(IBehavior behavior);
+
     /**
      * @return 行为组包含的行为 {@link IBehavior}
      */
     Set<IBehavior> getBehaviors();
 
+    Set<IBehavior> getCoreBehaviors();
+
     /**
      * @return 被激活的行为 {@link IBehavior}
      */
     Set<IBehavior> getRunningBehaviors();
+
+    Set<IBehavior> getRunningCoreBehaviors();
 
     /**
      * 为行为组添加一个传感器{@link ISensor}
