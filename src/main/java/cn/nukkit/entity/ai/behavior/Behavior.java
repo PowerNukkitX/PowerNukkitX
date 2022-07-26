@@ -18,6 +18,7 @@ public class Behavior implements IBehavior {
 
     protected final int priority;
     protected final int weight;
+    protected final int period;
     protected IBehaviorExecutor executor;
     protected IBehaviorEvaluator evaluator;
 
@@ -29,12 +30,17 @@ public class Behavior implements IBehavior {
         this(executor, evaluator, priority, 1);
     }
 
-
     public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight) {
+        this(executor, evaluator, priority, weight, 1);
+    }
+
+
+    public Behavior(IBehaviorExecutor executor, IBehaviorEvaluator evaluator, int priority, int weight, int period) {
         this.executor = executor;
         this.evaluator = evaluator;
         this.priority = priority;
         this.weight = weight;
+        this.period = period;
     }
 
     @Override

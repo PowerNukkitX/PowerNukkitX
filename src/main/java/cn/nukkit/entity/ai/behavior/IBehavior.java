@@ -30,4 +30,14 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
     default int getWeight() {
         return 1;
     }
+
+    /**
+     * 返回此行为的刷新周期，小的刷新周期会使得评估器被更频繁的调用
+     * 注意此方法只会影响评估器的调用，而不会影响执行器的调用
+     *
+     * @return 刷新周期
+     */
+    default int getPeriod() {
+        return 1;
+    }
 }

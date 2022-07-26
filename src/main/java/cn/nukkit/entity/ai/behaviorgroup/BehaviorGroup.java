@@ -17,7 +17,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @PowerNukkitXOnly
@@ -59,6 +61,14 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     /**
+     * 用于存储行为距离上次评估逝去的gt数
+     */
+    protected final Map<IBehavior,Integer> coreBehaviorPeriodTimer = new HashMap<>();
+    /**
+     * 用于存储行为距离上次评估逝去的gt数
+     */
+    protected final Map<IBehavior,Integer> behaviorPeriodTimer = new HashMap<>();
+    /**
      * 记忆存储器
      */
     protected final IMemoryStorage memoryStorage = new MemoryStorage();
@@ -82,6 +92,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public BehaviorGroup(Set<IBehavior> coreBehaviors,Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         this.coreBehaviors.addAll(coreBehaviors);
         this.behaviors.addAll(behaviors);
+        this.initBehaviorPeriodTimer();
         this.sensors.addAll(sensors);
         this.controllers.addAll(controllers);
         this.routeFinder = routeFinder;
@@ -131,9 +142,14 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
+        //刷新gt数
+        coreBehaviorPeriodTimer.forEach((k,v) -> coreBehaviorPeriodTimer.put(k,++v));
         for (IBehavior coreBehavior : coreBehaviors) {
+            //没到周期就不评估
+            if (coreBehaviorPeriodTimer.get(coreBehavior) < coreBehavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) continue;
+            var old = coreBehaviorPeriodTimer.put(coreBehavior,0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
                 runningCoreBehaviors.add(coreBehavior);
@@ -147,12 +163,17 @@ public class BehaviorGroup implements IBehaviorGroup {
      * @param entity 评估的实体对象
      */
     public void evaluateBehaviors(EntityIntelligent entity) {
+        //刷新gt数
+        behaviorPeriodTimer.forEach((k,v) -> behaviorPeriodTimer.put(k,++v));
         //存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>();
         int highestPriority = Integer.MIN_VALUE;
         for (IBehavior behavior : behaviors) {
+            //没到周期就不评估
+            if (behaviorPeriodTimer.get(behavior) < behavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
+            behaviorPeriodTimer.put(behavior,0);
             if (behavior.evaluate(entity)) {
                 evalSucceed.add(behavior);
                 if (behavior.getPriority() > highestPriority) {
@@ -226,6 +247,11 @@ public class BehaviorGroup implements IBehaviorGroup {
                 entity.setNeedUpdateMoveDirection(false);
             }
         }
+    }
+
+    protected void initBehaviorPeriodTimer(){
+        coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
+        behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
     }
 
     protected void clearMemory(Class<? extends IMemory<?>> clazz) {

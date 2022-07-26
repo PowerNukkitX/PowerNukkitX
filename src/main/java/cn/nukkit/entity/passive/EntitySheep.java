@@ -41,7 +41,8 @@ public class EntitySheep extends EntityWalkingAnimal {
                             new AllMatchEvaluator(
                                     new PassByTimeEvaluator<>(PlayerBreedingMemory.class,0,400),
                                     new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
-                            )
+                            ),
+                            1,1,20
                     )
             ),
             Set.of(
