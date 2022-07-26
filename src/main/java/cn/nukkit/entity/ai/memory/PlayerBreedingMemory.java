@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import lombok.Getter;
-import lombok.Setter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

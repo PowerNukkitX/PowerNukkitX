@@ -23,6 +23,7 @@ public class InLoveExecutor implements IBehaviorExecutor {
         currentTick++;
         if (currentTick > duration){
             updateInLoveMemory(entity);
+            currentTick = 0;
             return false;
         }
         if (currentTick % 10 == 0){

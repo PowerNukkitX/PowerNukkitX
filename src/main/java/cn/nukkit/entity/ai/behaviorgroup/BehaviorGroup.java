@@ -115,10 +115,10 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
         Set<IBehavior> removed = new HashSet<>();
-        for (var behavior : runningCoreBehaviors) {
-            if (!behavior.execute(entity)) {
-                removed.add(behavior);
-                behavior.onStop(entity);
+        for (var coreBehavior : runningCoreBehaviors) {
+            if (!coreBehavior.execute(entity)) {
+                removed.add(coreBehavior);
+                coreBehavior.onStop(entity);
             }
         }
         runningCoreBehaviors.removeAll(removed);
@@ -131,10 +131,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
-        for (IBehavior behavior : coreBehaviors) {
-            if (behavior.evaluate(entity)) {
-                behavior.onStart(entity);
-                runningCoreBehaviors.add(behavior);
+        for (IBehavior coreBehavior : coreBehaviors) {
+            //若已经在运行了，就不需要评估了
+            if (runningCoreBehaviors.contains(coreBehavior)) continue;
+            if (coreBehavior.evaluate(entity)) {
+                coreBehavior.onStart(entity);
+                runningCoreBehaviors.add(coreBehavior);
             }
         }
     }
