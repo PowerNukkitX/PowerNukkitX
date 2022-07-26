@@ -69,7 +69,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
         if (needsRecalcMovement) { // 每次要重新计算实体运动时，都重新计算一次是否活跃
-            isActive = level.isHighLightChunk(getFloorX(), getFloorZ());
+            isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         }
         var behaviorGroup = getBehaviorGroup();
         //No behavior group
