@@ -93,6 +93,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
 
     public BehaviorGroup(int startRouteUpdateTick, Set<IBehavior> coreBehaviors, Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
+        //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors.addAll(coreBehaviors);
         this.behaviors.addAll(behaviors);
@@ -198,10 +199,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         if (evalSucceed.isEmpty()) return;
         //当前运行的行为的优先级（优先级必定都是一样的，所以说不需要比较得出）
         var currentHighestPriority = runningBehaviors.isEmpty() ? Integer.MIN_VALUE : runningBehaviors.iterator().next().getPriority();
-        //result的行为优先级
-        int resultHighestPriority = evalSucceed.iterator().next().getPriority();
         //如果result的优先级低于当前运行的行为，则不执行
-        if (resultHighestPriority > currentHighestPriority) {
+        if (highestPriority < currentHighestPriority){
+            //do nothing
+        } else if (highestPriority > currentHighestPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             runningBehaviors.addAll(evalSucceed);
