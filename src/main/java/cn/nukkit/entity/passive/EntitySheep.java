@@ -59,7 +59,7 @@ public class EntitySheep extends EntityWalkingAnimal {
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(5,10), 2, 1,100),
                     new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false,true,true,10), (entity -> true), 1, 1)
             ),
-            Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0)),
+            Set.of(new NearestBeggingPlayerSensor(8, 0,20), new NearestPlayerSensor(8, 0,20)),
             Set.of(new WalkController(), new LookController(true, true)),
             new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
     );

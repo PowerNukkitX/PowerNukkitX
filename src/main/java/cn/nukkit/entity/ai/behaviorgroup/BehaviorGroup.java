@@ -61,13 +61,17 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected final Set<IBehavior> runningBehaviors = new HashSet<>();
     /**
-     * 用于存储行为距离上次评估逝去的gt数
+     * 用于存储核心行为距离上次评估逝去的gt数
      */
     protected final Map<IBehavior,Integer> coreBehaviorPeriodTimer = new HashMap<>();
     /**
      * 用于存储行为距离上次评估逝去的gt数
      */
     protected final Map<IBehavior,Integer> behaviorPeriodTimer = new HashMap<>();
+    /**
+     * 用于存储传感器距离上次刷新逝去的gt数
+     */
+    protected final Map<ISensor,Integer> sensorPeriodTimer = new HashMap<>();
     /**
      * 记忆存储器
      */
@@ -92,10 +96,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     public BehaviorGroup(Set<IBehavior> coreBehaviors,Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         this.coreBehaviors.addAll(coreBehaviors);
         this.behaviors.addAll(behaviors);
-        this.initBehaviorPeriodTimer();
         this.sensors.addAll(sensors);
         this.controllers.addAll(controllers);
         this.routeFinder = routeFinder;
+        this.initPeriodTimer();
     }
 
     public void addBehavior(IBehavior behavior) {
@@ -136,7 +140,12 @@ public class BehaviorGroup implements IBehaviorGroup {
     }
 
     public void collectSensorData(EntityIntelligent entity) {
+        //刷新gt数
+        sensorPeriodTimer.forEach((k,v) -> sensorPeriodTimer.put(k,++v));
         for (ISensor sensor : sensors) {
+            //没到周期就不评估
+            if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) continue;
+            sensorPeriodTimer.put(sensor,0);
             sensor.sense(entity);
         }
     }
@@ -149,7 +158,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             if (coreBehaviorPeriodTimer.get(coreBehavior) < coreBehavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) continue;
-            var old = coreBehaviorPeriodTimer.put(coreBehavior,0);
+            coreBehaviorPeriodTimer.put(coreBehavior,0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
                 runningCoreBehaviors.add(coreBehavior);
@@ -249,9 +258,10 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
-    protected void initBehaviorPeriodTimer(){
+    protected void initPeriodTimer(){
         coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
         behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
+        sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
     }
 
     protected void clearMemory(Class<? extends IMemory<?>> clazz) {

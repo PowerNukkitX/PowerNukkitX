@@ -17,4 +17,13 @@ public interface ISensor {
      * @param entity 目标实体
      */
     void sense(EntityIntelligent entity);
+
+    /**
+     * 返回此传感器的刷新周期，小的刷新周期会使得传感器被更频繁的调用
+     *
+     * @return 刷新周期
+     */
+    default int getPeriod() {
+        return 1;
+    }
 }

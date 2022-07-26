@@ -15,9 +15,16 @@ public class NearestBeggingPlayerSensor implements ISensor{
 
     protected double minRange;
 
+    protected int period;
+
     public NearestBeggingPlayerSensor(double range, double minRange) {
+        this(range, minRange, 1);
+    }
+
+    public NearestBeggingPlayerSensor(double range, double minRange, int period) {
         this.range = range;
         this.minRange = minRange;
+        this.period = period;
     }
 
     @Override
@@ -43,5 +50,10 @@ public class NearestBeggingPlayerSensor implements ISensor{
             return;
         }
         currentMemory.setData(null);
+    }
+
+    @Override
+    public int getPeriod() {
+        return period;
     }
 }
