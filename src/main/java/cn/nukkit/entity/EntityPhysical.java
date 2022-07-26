@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -23,6 +24,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
      */
     public static final float PRECISION = 0.00001f;
+
+    public static final AtomicInteger globalCycleTickSpread = new AtomicInteger();
+    /**
+     * 时间泛播延迟，用于缓解在同一时间大量提交任务挤占cpu的情况
+     */
+    public final int tickSpread;
     /**
      * 实体自由落体运动的时间
      */
@@ -40,12 +47,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.tickSpread = globalCycleTickSpread.getAndIncrement() & 0xf;
     }
 
     @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否需要重新计算高开销实体运动
-        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0;
+        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         // 处理运动

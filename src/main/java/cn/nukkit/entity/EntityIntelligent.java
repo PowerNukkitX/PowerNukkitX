@@ -55,9 +55,6 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
-        if ((currentTick & 255) == 0) { // 每256刻才会计算一次是否为突出区块
-            isActive = level.isHighLightChunk(getFloorX(), getFloorZ());
-        }
         var behaviorGroup = getBehaviorGroup();
         behaviorGroup.tickRunningCoreBehaviors(this);
         behaviorGroup.tickRunningBehaviors(this);
@@ -71,6 +68,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public void asyncPrepare(int currentTick) {
         super.asyncPrepare(currentTick);
+        if ((currentTick & 127) == 0) { // 每127刻才会计算一次是否为突出区块
+            isActive = level.isHighLightChunk(getFloorX(), getFloorZ());
+        }
         var behaviorGroup = getBehaviorGroup();
         //No behavior group
         if (behaviorGroup == null)

@@ -35,6 +35,7 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 13;
     private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
+            this.tickSpread,
             Set.of(
                     //用于刷新InLove状态的核心行为
                     new Behavior(
