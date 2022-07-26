@@ -946,7 +946,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         // 检查突出区块（玩家附近3x3区块）
-        if ((currentTick & 255) == 0) { // 每256刻检查一次是比较合理的
+        if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
             highLightChunks.clear();
             for (var player : this.players.values()) {
                 if (player.isOnline()) {

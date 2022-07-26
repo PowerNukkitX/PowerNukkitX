@@ -62,15 +62,15 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 用于存储核心行为距离上次评估逝去的gt数
      */
-    protected final Map<IBehavior,Integer> coreBehaviorPeriodTimer = new HashMap<>();
+    protected final Map<IBehavior, Integer> coreBehaviorPeriodTimer = new HashMap<>();
     /**
      * 用于存储行为距离上次评估逝去的gt数
      */
-    protected final Map<IBehavior,Integer> behaviorPeriodTimer = new HashMap<>();
+    protected final Map<IBehavior, Integer> behaviorPeriodTimer = new HashMap<>();
     /**
      * 用于存储传感器距离上次刷新逝去的gt数
      */
-    protected final Map<ISensor,Integer> sensorPeriodTimer = new HashMap<>();
+    protected final Map<ISensor, Integer> sensorPeriodTimer = new HashMap<>();
     /**
      * 记忆存储器
      */
@@ -87,12 +87,13 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 记录距离上次路径更新过去的gt数
      */
-    protected int currentRouteUpdateTick = 0;//gt
+    protected int currentRouteUpdateTick;//gt
 
     protected boolean forceUpdateRoute = false;
 
 
-    public BehaviorGroup(Set<IBehavior> coreBehaviors,Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
+    public BehaviorGroup(int startRouteUpdateTick, Set<IBehavior> coreBehaviors, Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
+        this.currentRouteUpdateTick = startRouteUpdateTick;
         this.coreBehaviors.addAll(coreBehaviors);
         this.behaviors.addAll(behaviors);
         this.sensors.addAll(sensors);
@@ -140,24 +141,24 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void collectSensorData(EntityIntelligent entity) {
         //刷新gt数
-        sensorPeriodTimer.forEach((k,v) -> sensorPeriodTimer.put(k,++v));
+        sensorPeriodTimer.forEach((k, v) -> sensorPeriodTimer.put(k, ++v));
         for (ISensor sensor : sensors) {
             //没到周期就不评估
             if (sensorPeriodTimer.get(sensor) < sensor.getPeriod()) continue;
-            sensorPeriodTimer.put(sensor,0);
+            sensorPeriodTimer.put(sensor, 0);
             sensor.sense(entity);
         }
     }
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         //刷新gt数
-        coreBehaviorPeriodTimer.forEach((k,v) -> coreBehaviorPeriodTimer.put(k,++v));
+        coreBehaviorPeriodTimer.forEach((k, v) -> coreBehaviorPeriodTimer.put(k, ++v));
         for (IBehavior coreBehavior : coreBehaviors) {
             //没到周期就不评估
             if (coreBehaviorPeriodTimer.get(coreBehavior) < coreBehavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) continue;
-            coreBehaviorPeriodTimer.put(coreBehavior,0);
+            coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
                 runningCoreBehaviors.add(coreBehavior);
@@ -172,7 +173,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     public void evaluateBehaviors(EntityIntelligent entity) {
         //刷新gt数
-        behaviorPeriodTimer.forEach((k,v) -> behaviorPeriodTimer.put(k,++v));
+        behaviorPeriodTimer.forEach((k, v) -> behaviorPeriodTimer.put(k, ++v));
         //存储评估成功的行为（未过滤优先级）
         var evalSucceed = new HashSet<IBehavior>();
         int highestPriority = Integer.MIN_VALUE;
@@ -181,7 +182,7 @@ public class BehaviorGroup implements IBehaviorGroup {
             if (behaviorPeriodTimer.get(behavior) < behavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
-            behaviorPeriodTimer.put(behavior,0);
+            behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
                 evalSucceed.add(behavior);
                 if (behavior.getPriority() > highestPriority) {
@@ -218,13 +219,14 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     /**
      * 计算活跃实体延迟
-     * @param entity 实体
+     *
+     * @param entity        实体
      * @param originalDelay 原始延迟
-     * @return 如果实体是非活跃的，则延迟*2
+     * @return 如果实体是非活跃的，则延迟*4，否则返回原始延迟
      */
     protected int calcActiveDelay(@NotNull EntityIntelligent entity, int originalDelay) {
         if (!entity.isActive()) {
-            return originalDelay << 1;
+            return originalDelay << 2;
         }
         return originalDelay;
     }
@@ -237,15 +239,15 @@ public class BehaviorGroup implements IBehaviorGroup {
             Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
             if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
-                    //clone防止寻路器潜在的修改
-                    RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
-                        updateMoveDirection(entity);
-                        entity.setNeedUpdateMoveDirection(false);
-                        currentRouteUpdateTick = 0;
-                        setForceUpdateRoute(false);
-                    })
-                    .setStart(entity.clone())
-                    .setTarget(target));
+                //clone防止寻路器潜在的修改
+                RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
+                    updateMoveDirection(entity);
+                    entity.setNeedUpdateMoveDirection(false);
+                    currentRouteUpdateTick = 0;
+                    setForceUpdateRoute(false);
+                })
+                        .setStart(entity.clone())
+                        .setTarget(target));
             } else {
                 //没有路径目标，则清除路径信息
                 entity.setMoveDirectionStart(null);
@@ -268,7 +270,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
     }
 
-    protected void initPeriodTimer(){
+    protected void initPeriodTimer() {
         coreBehaviors.forEach(coreBehavior -> coreBehaviorPeriodTimer.put(coreBehavior, 0));
         behaviors.forEach(behavior -> behaviorPeriodTimer.put(behavior, 0));
         sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
@@ -284,7 +286,7 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     protected void updateMoveDirection(EntityIntelligent entity) {
         Vector3 end = entity.getMoveDirectionEnd();
-        if (end == null){
+        if (end == null) {
             end = entity.clone();
         }
         var next = routeFinder.next();
