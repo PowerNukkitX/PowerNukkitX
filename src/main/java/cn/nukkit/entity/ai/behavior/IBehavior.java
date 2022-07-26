@@ -40,4 +40,17 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
     default int getPeriod() {
         return 1;
     }
+
+    /**
+     *
+     * @return 此行为当前的状态
+     */
+    BehaviorState getBehaviorState();
+
+    /**
+     * 设置此行为的状态
+     *
+     * @param state 状态
+     */
+    void setBehaviorState(BehaviorState state);
 }

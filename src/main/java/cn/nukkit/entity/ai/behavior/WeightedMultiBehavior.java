@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class WeightedMultiBehavior implements IBehavior {
+public class WeightedMultiBehavior extends AbstractBehavior {
     /**
      * 此组的优先级 <br/>
      * 在BehaviorGroup中，获取优先级将会返回此值指代整个组的优先级
@@ -81,6 +81,7 @@ public class WeightedMultiBehavior implements IBehavior {
             return;
         }
         currentBehavior.onInterrupt(entity);
+        currentBehavior.setBehaviorState(BehaviorState.STOP);
     }
 
     @Override
@@ -89,6 +90,7 @@ public class WeightedMultiBehavior implements IBehavior {
             return;
         }
         currentBehavior.onStart(entity);
+        currentBehavior.setBehaviorState(BehaviorState.ACTIVE);
     }
 
     @Override
@@ -97,6 +99,7 @@ public class WeightedMultiBehavior implements IBehavior {
             return;
         }
         currentBehavior.onStop(entity);
+        currentBehavior.setBehaviorState(BehaviorState.STOP);
     }
 
     /**

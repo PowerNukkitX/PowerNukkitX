@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemory;
@@ -37,20 +38,20 @@ public class BehaviorGroup implements IBehaviorGroup {
     /**
      * 不会被其他行为覆盖的"核心“行为
      */
-    protected final Set<IBehavior> coreBehaviors = new HashSet<>();
+    protected final Set<IBehavior> coreBehaviors;
 
     /**
      * 全部行为
      */
-    protected final Set<IBehavior> behaviors = new HashSet<>();
+    protected final Set<IBehavior> behaviors;
     /**
      * 传感器
      */
-    protected final Set<ISensor> sensors = new HashSet<>();
+    protected final Set<ISensor> sensors;
     /**
      * 控制器
      */
-    protected final Set<IController> controllers = new HashSet<>();
+    protected final Set<IController> controllers;
     /**
      * 正在运行的”核心“行为
      */
@@ -95,10 +96,10 @@ public class BehaviorGroup implements IBehaviorGroup {
     public BehaviorGroup(int startRouteUpdateTick, Set<IBehavior> coreBehaviors, Set<IBehavior> behaviors, Set<ISensor> sensors, Set<IController> controllers, SimpleRouteFinder routeFinder) {
         //此参数用于错开各个实体路径更新的时间，避免在1gt内提交过多路径更新任务
         this.currentRouteUpdateTick = startRouteUpdateTick;
-        this.coreBehaviors.addAll(coreBehaviors);
-        this.behaviors.addAll(behaviors);
-        this.sensors.addAll(sensors);
-        this.controllers.addAll(controllers);
+        this.coreBehaviors = coreBehaviors;
+        this.behaviors = behaviors;
+        this.sensors = sensors;
+        this.controllers = controllers;
         this.routeFinder = routeFinder;
         this.initPeriodTimer();
     }
@@ -119,25 +120,23 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 运行并刷新正在运行的行为
      */
     public void tickRunningBehaviors(EntityIntelligent entity) {
-        Set<IBehavior> removed = new HashSet<>();
         for (var behavior : runningBehaviors) {
             if (!behavior.execute(entity)) {
-                removed.add(behavior);
                 behavior.onStop(entity);
+                behavior.setBehaviorState(BehaviorState.STOP);
             }
         }
-        runningBehaviors.removeAll(removed);
+        runningBehaviors.removeIf(behavior -> behavior.getBehaviorState() == BehaviorState.STOP);
     }
 
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
-        Set<IBehavior> removed = new HashSet<>();
         for (var coreBehavior : runningCoreBehaviors) {
             if (!coreBehavior.execute(entity)) {
-                removed.add(coreBehavior);
                 coreBehavior.onStop(entity);
+                coreBehavior.setBehaviorState(BehaviorState.STOP);
             }
         }
-        runningCoreBehaviors.removeAll(removed);
+        runningCoreBehaviors.removeIf(coreBehavior -> coreBehavior.getBehaviorState() == BehaviorState.STOP);
     }
 
     public void collectSensorData(EntityIntelligent entity) {
@@ -205,10 +204,12 @@ public class BehaviorGroup implements IBehaviorGroup {
         } else if (highestPriority > currentHighestPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
-            runningBehaviors.addAll(evalSucceed);
+            addToRunningBehaviors(entity, evalSucceed);
         }
         //如果result的优先级和当前运行的行为的优先级一样，则添加result的行为
-        else addToRunningBehaviors(entity, evalSucceed);
+        else {
+            addToRunningBehaviors(entity, evalSucceed);
+        }
     }
 
     @Override
@@ -306,6 +307,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected void addToRunningBehaviors(EntityIntelligent entity, @NotNull Set<IBehavior> behaviors) {
         behaviors.forEach((behavior) -> {
             behavior.onStart(entity);
+            behavior.setBehaviorState(BehaviorState.ACTIVE);
             runningBehaviors.add(behavior);
         });
     }
@@ -316,6 +318,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     protected void interruptAllRunningBehaviors(EntityIntelligent entity) {
         for (IBehavior behavior : runningBehaviors) {
             behavior.onInterrupt(entity);
+            behavior.setBehaviorState(BehaviorState.STOP);
         }
         runningBehaviors.clear();
     }

@@ -14,7 +14,7 @@ import lombok.Getter;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class Behavior implements IBehavior {
+public class Behavior extends AbstractBehavior {
 
     protected final int priority;
     protected final int weight;
