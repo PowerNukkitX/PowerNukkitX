@@ -48,7 +48,8 @@ public class EntitySheep extends EntityWalkingAnimal {
                     )
             ),
             Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 5, 1),
+                    new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 6, 1),
+                    new Behavior(new SheepBreedingExecutor(),new PassByTimeEvaluator<>(InLoveMemory.class,0,400),5,1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
                     new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
                             new ProbabilityEvaluator(1,10),
@@ -60,7 +61,7 @@ public class EntitySheep extends EntityWalkingAnimal {
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(5,10), 2, 1,100),
                     new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false,true,true,10), (entity -> true), 1, 1)
             ),
-            Set.of(new NearestBeggingPlayerSensor(8, 0,20), new NearestPlayerSensor(8, 0,20)),
+            Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
             Set.of(new WalkController(), new LookController(true, true)),
             new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
     );

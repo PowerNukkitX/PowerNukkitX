@@ -30,9 +30,11 @@ public class PassByTimeEvaluator<T extends TimedMemory & IMemory<?>> implements 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
         T instance = entity.getMemoryStorage().get(timedMemory);
-        if (!instance.hasData() && allowEmpty)
-            return true;
+        if (!instance.hasData()){
+            if (allowEmpty) return true;
+            return false;
+        }
         int passByTime = Server.getInstance().getTick() - instance.getTime();
-        return instance.hasData() && passByTime >= minPassByTimeRange && passByTime <= maxPassByTimeRange;
+        return passByTime >= minPassByTimeRange && passByTime <= maxPassByTimeRange;
     }
 }
