@@ -32,7 +32,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      * 决定多少gt更新一次路径
      */
     //todo: 根据tps动态调整计算速率
-    protected static int ROUTE_UPDATE_CYCLE = 20;//gt
+    protected static int ROUTE_UPDATE_CYCLE = 16;//gt
 
 
     /**
@@ -200,10 +200,8 @@ public class BehaviorGroup implements IBehaviorGroup {
         var currentHighestPriority = runningBehaviors.isEmpty() ? Integer.MIN_VALUE : runningBehaviors.iterator().next().getPriority();
         //result的行为优先级
         int resultHighestPriority = evalSucceed.iterator().next().getPriority();
-        if (resultHighestPriority < currentHighestPriority){
-            //如果result的优先级低于当前运行的行为，则不执行
-            return;
-        } else if (resultHighestPriority > currentHighestPriority) {
+        //如果result的优先级低于当前运行的行为，则不执行
+        if (resultHighestPriority > currentHighestPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
             interruptAllRunningBehaviors(entity);
             runningBehaviors.addAll(evalSucceed);
@@ -223,7 +221,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
         //到达更新周期时，开始重新计算新路径
-        if (currentRouteUpdateTick >= ROUTE_UPDATE_CYCLE || isForceUpdateRoute()) {
+        if (currentRouteUpdateTick >= ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1) || isForceUpdateRoute()) {
             Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
             if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
