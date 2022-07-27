@@ -89,6 +89,11 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     @Override
     public boolean search() {
+        //init status
+        this.finished = false;
+        this.searching = true;
+        this.interrupt = false;
+        this.reachable = true;
         //清空openList和closeList
         openList.clear();
         closeList.clear();
@@ -134,8 +139,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         }
 
         //如果无法到达，则取最接近终点的一个Node作为尾节点
-        reachableTarget = this.reachable ? target : getNearestNodeFromCloseList(target).getVector3();
-        ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(getNearestNodeFromCloseList(target));
+        Node reachableNode = null;
+        reachableTarget = this.reachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
+        ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
         //使用floyd平滑路径
         if (enableFloydSmooth)
             findingPath = FloydSmooth(findingPath);

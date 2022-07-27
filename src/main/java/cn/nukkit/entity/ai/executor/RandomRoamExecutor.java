@@ -14,26 +14,27 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     protected int frequency;
 
     protected int currentTargetCalTick = 0;
+    protected int durationTick = 0;
     protected boolean calNextTargetImmediately = false;
-    protected boolean keepRunning;
+    protected int runningTime;
     protected boolean avoidWater;
     protected int maxRetryTime;
 
     public RandomRoamExecutor(float speed,int maxRoamRange, int frequency){
-        this(speed,maxRoamRange,frequency,false,false);
+        this(speed,maxRoamRange,frequency,false,100);
     }
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, boolean keepRunning){
-        this(speed,maxRoamRange,frequency,calNextTargetImmediately,keepRunning,false,10);
+    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime){
+        this(speed,maxRoamRange,frequency,calNextTargetImmediately,runningTime,false,10);
     }
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, boolean keepRunning, boolean avoidWater, int maxRetryTime) {
+    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
         this.frequency = frequency;
         this.currentTargetCalTick = this.frequency;
         this.calNextTargetImmediately = calNextTargetImmediately;
-        this.keepRunning = keepRunning;
+        this.runningTime = runningTime;
         this.avoidWater = avoidWater;
         this.maxRetryTime = maxRetryTime;
     }
@@ -41,12 +42,11 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
         currentTargetCalTick++;
+        durationTick++;
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
-            //roam to a random location
-            var random = ThreadLocalRandom.current();
             Vector3 target = next(entity);
             if (avoidWater) {
-                int blockId = -1;
+                int blockId;
                 int time = 0;
                 while (time <= maxRetryTime && ((blockId = entity.level.getTickCachedBlock(target.add(0, -1, 0)).getId()) == Block.FLOWING_WATER || blockId == Block.STILL_WATER)) {
                     target = next(entity);
@@ -62,15 +62,21 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
             currentTargetCalTick = 0;
             entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
         }
-        //下一gt是否执行取决于评估器的结果
-        return keepRunning;
+        if (durationTick <= runningTime || runningTime == -1)
+            return true;
+        else{
+            currentTargetCalTick = 0;
+            durationTick = 0;
+            return false;
+        }
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
-        currentTargetCalTick = frequency;
+        currentTargetCalTick = 0;
+        durationTick = 0;
     }
 
     protected boolean needUpdateTarget(EntityIntelligent entity){
