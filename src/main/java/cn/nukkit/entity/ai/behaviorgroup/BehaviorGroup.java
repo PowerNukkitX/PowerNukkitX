@@ -106,47 +106,32 @@ public class BehaviorGroup implements IBehaviorGroup {
         this.initPeriodTimer();
     }
 
-    public void addCoreBehavior(IBehavior behavior) {
-        this.coreBehaviors.add(behavior);
-        this.coreBehaviorPeriodTimer.put(behavior, 0);
-    }
-
-    public void addBehavior(IBehavior behavior) {
-        this.behaviors.add(behavior);
-        this.behaviorPeriodTimer.put(behavior, 0);
-    }
-
-    public void addSensor(ISensor sensor) {
-        this.sensors.add(sensor);
-        this.sensorPeriodTimer.put(sensor, 0);
-    }
-
-    public void addController(IController controller) {
-        this.controllers.add(controller);
-    }
-
     /**
      * 运行并刷新正在运行的行为
      */
     public void tickRunningBehaviors(EntityIntelligent entity) {
-        for (var behavior : runningBehaviors) {
+        var iterator = runningBehaviors.iterator();
+        while (iterator.hasNext()) {
+            IBehavior behavior =  iterator.next();
             if (!behavior.execute(entity)) {
                 behavior.onStop(entity);
                 behavior.setBehaviorState(BehaviorState.STOP);
+                iterator.remove();
             }
         }
-        runningBehaviors.removeIf(behavior -> behavior.getBehaviorState() == BehaviorState.STOP);
         if (runningBehaviors.isEmpty()) this.runningBehaviorPriority = Integer.MIN_VALUE;
     }
 
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
-        for (var coreBehavior : runningCoreBehaviors) {
+        var iterator = runningCoreBehaviors.iterator();
+        while (iterator.hasNext()) {
+            IBehavior coreBehavior =  iterator.next();
             if (!coreBehavior.execute(entity)) {
                 coreBehavior.onStop(entity);
                 coreBehavior.setBehaviorState(BehaviorState.STOP);
+                iterator.remove();
             }
         }
-        runningCoreBehaviors.removeIf(coreBehavior -> coreBehavior.getBehaviorState() == BehaviorState.STOP);
     }
 
     public void collectSensorData(EntityIntelligent entity) {
@@ -185,7 +170,7 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     public void evaluateBehaviors(EntityIntelligent entity) {
         //存储评估成功的行为（未过滤优先级）
-        var evalSucceed = new HashSet<IBehavior>();
+        var evalSucceed = new HashSet<IBehavior>(behaviors.size());
         int highestPriority = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
             IBehavior behavior = entry.getKey();

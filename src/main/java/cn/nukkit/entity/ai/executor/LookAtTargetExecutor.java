@@ -26,8 +26,7 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
         currentTick++;
         Vector3Memory<?> vector3Memory = entity.getMemoryStorage().get(memoryClazz);
         if (vector3Memory.hasData()){
-            Vector3 vector3 = vector3Memory.getData();
-            setLookTarget(entity,vector3);
+            setLookTarget(entity,vector3Memory.getData());
         }
         if (currentTick <= duration) {
             return true;

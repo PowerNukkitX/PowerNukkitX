@@ -78,18 +78,11 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     }
 
     protected Vector3 next(EntityIntelligent entity){
-        //随机计算下一个落点
-        Vector3 next = this.nextXZ(entity.getX(), entity.getZ(), maxRoamRange);
-        next.y = entity.getLevel().getHighestBlockAt(next.getFloorX(), next.getFloorZ()) + 1;
-        return next;
-    }
-
-    protected Vector3 nextXZ(double centerX, double centerZ, int maxRange) {
-        Vector3 vec3 = new Vector3(centerX, 0, centerZ);
         var random = ThreadLocalRandom.current();
-        int x = random.nextInt(maxRange * 2) - maxRange;
-        int z = random.nextInt(maxRange * 2) - maxRange;
-        return vec3.add(x,0,z);
+        int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
+        int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
+        double y = entity.getLevel().getHighestBlockAt(x, z) + 1;
+        return new Vector3(x, y, z);
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {

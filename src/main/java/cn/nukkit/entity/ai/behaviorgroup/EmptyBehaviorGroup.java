@@ -49,12 +49,12 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
-    public void addBehavior(IBehavior behavior) {
-
+    public Set<IBehavior> getBehaviors() {
+        return null;
     }
 
     @Override
-    public Set<IBehavior> getBehaviors() {
+    public Set<IBehavior> getCoreBehaviors() {
         return null;
     }
 
@@ -64,18 +64,13 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
-    public void addSensor(ISensor sensor) {
-
+    public Set<IBehavior> getRunningCoreBehaviors() {
+        return null;
     }
 
     @Override
     public Set<ISensor> getSensors() {
         return Collections.EMPTY_SET;
-    }
-
-    @Override
-    public void addController(IController controller) {
-
     }
 
     @Override

@@ -26,6 +26,11 @@ public interface IBehaviorGroup {
      */
     void evaluateBehaviors(EntityIntelligent entity);
 
+    /**
+     * 调用行为组内部的所有核心行为{@link IBehavior}的评估器{@link cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator}
+     *
+     * @param entity 目标实体对象
+     */
     void evaluateCoreBehaviors(EntityIntelligent entity);
 
     /**
@@ -52,19 +57,13 @@ public interface IBehaviorGroup {
     void applyController(EntityIntelligent entity);
 
     /**
-     * 为行为组添加一个行为{@link IBehavior}
-     *
-     * @param behavior 要添加的行为
-     */
-    void addBehavior(IBehavior behavior);
-
-    void addCoreBehavior(IBehavior behavior);
-
-    /**
      * @return 行为组包含的行为 {@link IBehavior}
      */
     Set<IBehavior> getBehaviors();
 
+    /**
+     * @return 行为组包含的核心行为 {@link IBehavior}
+     */
     Set<IBehavior> getCoreBehaviors();
 
     /**
@@ -72,26 +71,15 @@ public interface IBehaviorGroup {
      */
     Set<IBehavior> getRunningBehaviors();
 
-    Set<IBehavior> getRunningCoreBehaviors();
-
     /**
-     * 为行为组添加一个传感器{@link ISensor}
-     *
-     * @param sensor 要添加的传感器
+     * @return 被激活的核心行为 {@link IBehavior}
      */
-    void addSensor(ISensor sensor);
+    Set<IBehavior> getRunningCoreBehaviors();
 
     /**
      * @return 行为组包含的传感器 {@link ISensor}
      */
     Set<ISensor> getSensors();
-
-    /**
-     * 为行为组添加一个控制器{@link IController}
-     *
-     * @param controller 需要添加的控制器
-     */
-    void addController(IController controller);
 
     /**
      * @return 行为组包含的控制器 {@link IController}

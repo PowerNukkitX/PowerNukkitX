@@ -46,7 +46,6 @@ public class InLoveExecutor implements IBehaviorExecutor {
     }
 
     protected void updateInLoveMemory(EntityIntelligent entity){
-        var memory = entity.getMemoryStorage().get(InLoveMemory.class);
-        memory.setData(Server.getInstance().getTick());
+        entity.getMemoryStorage().get(InLoveMemory.class).setData(Server.getInstance().getTick());
     }
 }
