@@ -90,8 +90,6 @@ public class BehaviorGroup implements IBehaviorGroup {
      */
     protected int currentRouteUpdateTick;//gt
 
-    protected int runningBehaviorPriority = Integer.MIN_VALUE;
-
     protected boolean forceUpdateRoute = false;
 
 
@@ -119,7 +117,6 @@ public class BehaviorGroup implements IBehaviorGroup {
                 iterator.remove();
             }
         }
-        if (runningBehaviors.isEmpty()) this.runningBehaviorPriority = Integer.MIN_VALUE;
     }
 
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
@@ -193,12 +190,13 @@ public class BehaviorGroup implements IBehaviorGroup {
         }
         //如果没有评估结果，则返回空
         if (evalSucceed.isEmpty()) return;
+        var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
+        var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
         //如果result的优先级低于当前运行的行为，则不执行
         if (highestPriority < runningBehaviorPriority){
             //do nothing
         } else if (highestPriority > runningBehaviorPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为
-            this.runningBehaviorPriority = highestPriority;
             interruptAllRunningBehaviors(entity);
             addToRunningBehaviors(entity, evalSucceed);
         } else {
