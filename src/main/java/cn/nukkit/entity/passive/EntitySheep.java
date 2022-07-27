@@ -49,14 +49,23 @@ public class EntitySheep extends EntityWalkingAnimal {
             ),
             Set.of(
                     new Behavior(new RandomRoamExecutor(0.5f, 8, 40, true,false,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 6, 1),
-                    new Behavior(new SheepBreedingExecutor(),new PassByTimeEvaluator<>(InLoveMemory.class,0,400),5,1),
+                    new Behavior(new SheepBreedingExecutor(16,100,100,0.5f),new PassByTimeEvaluator<>(InLoveMemory.class,0,400),5,1),
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
                     new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
-                            new ProbabilityEvaluator(1,10),
+                            new AnyMatchEvaluator(
+                                    new AllMatchEvaluator(
+                                            entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
+                                            new ProbabilityEvaluator(1,1000)
+                                    ),
+                                    new AllMatchEvaluator(
+                                            entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
+                                            new ProbabilityEvaluator(1,50)
+                                    )
+                            ),
                             new AnyMatchEvaluator(
                                     new BlockCheckEvaluator(Block.GRASS,new Vector3(0,-1,0)),
                                     new BlockCheckEvaluator(Block.TALL_GRASS,Vector3.ZERO))),
-                            3,1,100
+                            3,1
                     ),
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(5,10), 2, 1,100),
                     new Behavior(new RandomRoamExecutor(0.1f, 8, 100, false,true,true,10), (entity -> true), 1, 1)
@@ -147,7 +156,7 @@ public class EntitySheep extends EntityWalkingAnimal {
     }
 
     public boolean shear() {
-        if (sheared) {
+        if (sheared || this.isBaby()) {
             return false;
         }
 

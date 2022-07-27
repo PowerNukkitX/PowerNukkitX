@@ -37,8 +37,13 @@ public class EatGrassExecutor implements IBehaviorExecutor{
                     entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
                 }
             }
-            if (entity instanceof EntitySheep sheep && sheep.sheared){
-                sheep.growWool();
+            if (entity instanceof EntitySheep sheep){
+                if (sheep.sheared) {
+                    sheep.growWool();
+                    return false;
+                }
+                if (sheep.isBaby())
+                    sheep.setBaby(false);
             }
             return false;
         }

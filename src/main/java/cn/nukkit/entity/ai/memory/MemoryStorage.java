@@ -25,7 +25,7 @@ public class MemoryStorage implements IMemoryStorage {
     }
 
     @Override
-    public void clear(Class<? extends IMemory<?>> memoryClazz) {
+    public <T extends IMemory<?>> void clear(Class<T> memoryClazz) {
         get(memoryClazz).setData(null);
     }
 
@@ -44,12 +44,12 @@ public class MemoryStorage implements IMemoryStorage {
     }
 
     @Override
-    public boolean isEmpty(Class<? extends IMemory<?>> memoryClazz) {
+   public  <T extends IMemory<?>> boolean isEmpty(Class<T> memoryClazz) {
         return !get(memoryClazz).hasData();
     }
 
     @Override
-    public boolean notEmpty(Class<? extends IMemory<?>> memoryClazz) {
+    public <T extends IMemory<?>> boolean notEmpty(Class<T> memoryClazz) {
         return get(memoryClazz).hasData();
     }
 

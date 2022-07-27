@@ -2,6 +2,9 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 @PowerNukkitXOnly
@@ -9,6 +12,9 @@ import org.jetbrains.annotations.Nullable;
 public class InLoveMemory implements IMemory<Integer>,TimedMemory{
 
     protected Integer time;
+    @Getter
+    @Setter
+    protected boolean isInLove;
 
     public InLoveMemory() {
         time = null;

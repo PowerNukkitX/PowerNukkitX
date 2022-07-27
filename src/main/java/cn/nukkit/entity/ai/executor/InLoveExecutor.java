@@ -20,10 +20,16 @@ public class InLoveExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
+        if (currentTick == 0){
+            var memory = entity.getMemoryStorage().get(InLoveMemory.class);
+            memory.setData(Server.getInstance().getTick());
+            memory.setInLove(true);
+        }
         currentTick++;
-        if (currentTick > duration){
-            updateInLoveMemory(entity);
+        var memory = entity.getMemoryStorage().get(InLoveMemory.class);
+        if (currentTick > duration || !memory.isInLove()/*interrupt by other*/){
             currentTick = 0;
+            memory.setInLove(false);
             return false;
         }
         if (currentTick % 10 == 0){
@@ -34,7 +40,7 @@ public class InLoveExecutor implements IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
-        updateInLoveMemory(entity);
+        entity.getMemoryStorage().get(InLoveMemory.class).setInLove(false);
         currentTick = 0;
     }
 
@@ -43,9 +49,5 @@ public class InLoveExecutor implements IBehaviorExecutor {
         pk.eid = entity.getId();
         pk.event = EntityEventPacket.LOVE_PARTICLES;
         Server.broadcastPacket(entity.getViewers().values(),pk);
-    }
-
-    protected void updateInLoveMemory(EntityIntelligent entity){
-        entity.getMemoryStorage().get(InLoveMemory.class).setData(Server.getInstance().getTick());
     }
 }

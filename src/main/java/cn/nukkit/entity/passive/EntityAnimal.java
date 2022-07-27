@@ -153,6 +153,16 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
         return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void setBaby(boolean flag) {
+        this.setDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY, flag);
+        if (flag)
+            this.setScale(0.5f);
+        else
+            this.setScale(1f);
+    }
+
     public boolean isBreedingItem(Item item) {
         return item.getId() == Item.WHEAT; //default
     }
