@@ -1,10 +1,9 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -12,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * 水中游泳动物
  */
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class EntitySwimmingAnimal extends EntityAnimal {
     public EntitySwimmingAnimal(FullChunk chunk, CompoundTag nbt) {

@@ -1,6 +1,8 @@
 package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,6 +18,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * 寻路管理器，所有的寻路任务都应该提交到这个管理器中，管理器负责调度寻路任务，实现资源利用最大化
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class RouteFindingManager {
     private static final AtomicInteger threadCount = new AtomicInteger(0);
     protected static RouteFindingManager INSTANCE = new RouteFindingManager();

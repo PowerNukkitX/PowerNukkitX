@@ -1,9 +1,8 @@
 package cn.nukkit.entity.mob;
 
-import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -11,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * 水中游泳怪物
  */
-@PowerNukkitOnly
+@PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class EntitySwimmingMob extends EntityMob {
     public EntitySwimmingMob(FullChunk chunk, CompoundTag nbt) {
