@@ -21,17 +21,14 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
     protected int findingRangeSquared;
     protected int duration;
     protected int currentTick = 0;
-    protected int tryFindingTime;
-    protected int currentTryFindingTime = 0;
     protected float moveSpeed;
     protected boolean finded;
     protected T another;
 
-    public EntityBreedingExecutor(Class<T> entityClass, int findingRangeSquared, int tryFindingTime, int duration, float moveSpeed) {
+    public EntityBreedingExecutor(Class<T> entityClass, int findingRangeSquared, int duration, float moveSpeed) {
         this.entityClass = entityClass;
         this.findingRangeSquared = findingRangeSquared;
         this.duration = duration;
-        this.tryFindingTime = tryFindingTime;
         this.moveSpeed = moveSpeed;
     }
 
@@ -40,12 +37,8 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
         if (entityClass.isInstance(uncasted)) {
             T entity = entityClass.cast(uncasted);
             if (shouldFindingSpouse(entity)) {
-                currentTryFindingTime++;
-                if (currentTryFindingTime > tryFindingTime) {
-                    //failed to find a spouse
-                    currentTryFindingTime = 0;
+                if (!entity.getMemoryStorage().get(InLoveMemory.class).isInLove())
                     return false;
-                }
                 another = getNearestInLove(entity);
                 if (another == null) return true;
                 setSpouse(entity, another);
