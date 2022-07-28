@@ -12,7 +12,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class EatGrassExecutor implements IBehaviorExecutor{
+public class EatGrassExecutor implements IBehaviorExecutor {
 
     protected int duration;
     protected int currentTick = 0;
@@ -23,11 +23,11 @@ public class EatGrassExecutor implements IBehaviorExecutor{
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (currentTick == 0){
+        if (currentTick == 0) {
             playEatGrassAnimation(entity);
         }
         currentTick++;
-        if (currentTick > duration){
+        if (currentTick > duration) {
             currentTick = 0;
             entity.level.addParticle(new DestroyBlockParticle(entity, Block.get(Block.TALL_GRASS)));
             if (entity.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
@@ -37,7 +37,7 @@ public class EatGrassExecutor implements IBehaviorExecutor{
                     entity.level.setBlock(entity.add(0, -1, 0), Block.get(Block.DIRT));
                 }
             }
-            if (entity instanceof EntitySheep sheep){
+            if (entity instanceof EntitySheep sheep) {
                 if (sheep.sheared) {
                     sheep.growWool();
                     return false;
@@ -55,10 +55,10 @@ public class EatGrassExecutor implements IBehaviorExecutor{
         currentTick = 0;
     }
 
-    protected void playEatGrassAnimation(EntityIntelligent entity){
+    protected void playEatGrassAnimation(EntityIntelligent entity) {
         EntityEventPacket pk = new EntityEventPacket();
         pk.eid = entity.getId();
         pk.event = EntityEventPacket.EAT_GRASS_ANIMATION;
-        Server.broadcastPacket(entity.getViewers().values(),pk);
+        Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 }

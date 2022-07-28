@@ -11,7 +11,7 @@ public class PlayerBreedingMemory extends PlayerMemory<Player> implements TimedM
 
     protected int breedingTime;
 
-    public PlayerBreedingMemory(){
+    public PlayerBreedingMemory() {
         super(null);
         breedingTime = -1;
     }

@@ -7,7 +7,6 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.BehaviorState;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
-import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
@@ -110,7 +109,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void tickRunningBehaviors(EntityIntelligent entity) {
         var iterator = runningBehaviors.iterator();
         while (iterator.hasNext()) {
-            IBehavior behavior =  iterator.next();
+            IBehavior behavior = iterator.next();
             if (!behavior.execute(entity)) {
                 behavior.onStop(entity);
                 behavior.setBehaviorState(BehaviorState.STOP);
@@ -122,7 +121,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void tickRunningCoreBehaviors(EntityIntelligent entity) {
         var iterator = runningCoreBehaviors.iterator();
         while (iterator.hasNext()) {
-            IBehavior coreBehavior =  iterator.next();
+            IBehavior coreBehavior = iterator.next();
             if (!coreBehavior.execute(entity)) {
                 coreBehavior.onStop(entity);
                 coreBehavior.setBehaviorState(BehaviorState.STOP);
@@ -193,7 +192,7 @@ public class BehaviorGroup implements IBehaviorGroup {
         var first = runningBehaviors.isEmpty() ? null : runningBehaviors.iterator().next();
         var runningBehaviorPriority = first != null ? first.getPriority() : Integer.MIN_VALUE;
         //如果result的优先级低于当前运行的行为，则不执行
-        if (highestPriority < runningBehaviorPriority){
+        if (highestPriority < runningBehaviorPriority) {
             //do nothing
         } else if (highestPriority > runningBehaviorPriority) {
             //如果result的优先级比当前运行的行为的优先级高，则替换当前运行的所有行为

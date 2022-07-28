@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomRoamExecutor implements IBehaviorExecutor{
+public class RandomRoamExecutor implements IBehaviorExecutor {
 
     protected float speed;
     protected int maxRoamRange;
@@ -20,15 +20,15 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
     protected boolean avoidWater;
     protected int maxRetryTime;
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency){
-        this(speed,maxRoamRange,frequency,false,100);
+    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
+        this(speed, maxRoamRange, frequency, false, 100);
     }
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime){
-        this(speed,maxRoamRange,frequency,calNextTargetImmediately,runningTime,false,10);
+    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+        this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10);
     }
 
-    public RandomRoamExecutor(float speed,int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
+    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
         this.frequency = frequency;
@@ -64,7 +64,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
         }
         if (durationTick <= runningTime || runningTime == -1)
             return true;
-        else{
+        else {
             currentTargetCalTick = 0;
             durationTick = 0;
             return false;
@@ -79,11 +79,11 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
         durationTick = 0;
     }
 
-    protected boolean needUpdateTarget(EntityIntelligent entity){
+    protected boolean needUpdateTarget(EntityIntelligent entity) {
         return entity.getMoveTarget() == null;
     }
 
-    protected Vector3 next(EntityIntelligent entity){
+    protected Vector3 next(EntityIntelligent entity) {
         var random = ThreadLocalRandom.current();
         int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
@@ -95,7 +95,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
         entity.setMoveTarget(vector3);
     }
 
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
+    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
         entity.setLookTarget(vector3);
     }
 
@@ -103,7 +103,7 @@ public class RandomRoamExecutor implements IBehaviorExecutor{
         entity.setMoveTarget(null);
     }
 
-    protected void removeLookTarget(@NotNull EntityIntelligent entity){
+    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
         entity.setLookTarget(null);
     }
 }

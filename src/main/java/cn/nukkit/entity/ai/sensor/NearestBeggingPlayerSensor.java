@@ -9,7 +9,7 @@ import cn.nukkit.entity.passive.EntityAnimal;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestBeggingPlayerSensor implements ISensor{
+public class NearestBeggingPlayerSensor implements ISensor {
 
     protected double range;
 

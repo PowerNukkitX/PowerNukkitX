@@ -42,7 +42,6 @@ public interface IBehavior extends IBehaviorExecutor, IBehaviorEvaluator {
     }
 
     /**
-     *
      * @return 此行为当前的状态
      */
     BehaviorState getBehaviorState();

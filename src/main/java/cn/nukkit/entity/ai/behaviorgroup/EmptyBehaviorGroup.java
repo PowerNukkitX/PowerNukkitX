@@ -94,12 +94,12 @@ public class EmptyBehaviorGroup implements IBehaviorGroup {
     }
 
     @Override
-    public void setForceUpdateRoute(boolean forceUpdateRoute) {
-
+    public boolean isForceUpdateRoute() {
+        return false;
     }
 
     @Override
-    public boolean isForceUpdateRoute() {
-        return false;
+    public void setForceUpdateRoute(boolean forceUpdateRoute) {
+
     }
 }

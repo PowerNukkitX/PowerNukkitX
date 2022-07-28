@@ -7,7 +7,7 @@ import cn.nukkit.entity.ai.memory.IMemory;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MemoryCheckEmptyEvaluator implements IBehaviorEvaluator{
+public class MemoryCheckEmptyEvaluator implements IBehaviorEvaluator {
 
     protected Class<? extends IMemory<?>> memoryClazz;
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class AllMatchEvaluator extends MultiBehaviorEvaluator{
+public class AllMatchEvaluator extends MultiBehaviorEvaluator {
 
     public AllMatchEvaluator(@NotNull Set<IBehaviorEvaluator> evaluators) {
         super(evaluators);

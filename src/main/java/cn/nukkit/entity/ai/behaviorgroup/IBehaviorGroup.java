@@ -104,13 +104,14 @@ public interface IBehaviorGroup {
     IMemoryStorage getMemoryStorage();
 
     /**
-     * 要求下一gt立即更新路径
-     * @param forceUpdateRoute
-     */
-    void setForceUpdateRoute(boolean forceUpdateRoute);
-
-    /**
      * @return 下一gt是否强制更新路径
      */
     boolean isForceUpdateRoute();
+
+    /**
+     * 要求下一gt立即更新路径
+     *
+     * @param forceUpdateRoute
+     */
+    void setForceUpdateRoute(boolean forceUpdateRoute);
 }

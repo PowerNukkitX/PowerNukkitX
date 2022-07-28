@@ -17,17 +17,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * 寻路管理器，所有的寻路任务都应该提交到这个管理器中，管理器负责调度寻路任务，实现资源利用最大化
  */
 public class RouteFindingManager {
-    protected static RouteFindingManager INSTANCE = new RouteFindingManager();
     private static final AtomicInteger threadCount = new AtomicInteger(0);
-
-    public static RouteFindingManager getInstance() {
-        return INSTANCE;
-    }
-
+    protected static RouteFindingManager INSTANCE = new RouteFindingManager();
     protected final ExecutorService pool;
 
     protected RouteFindingManager() {
         pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), new RouteFindingPoolThreadFactory(), null, true);
+    }
+
+    public static RouteFindingManager getInstance() {
+        return INSTANCE;
     }
 
     public void submit(@NotNull RouteFindingTask task) {
@@ -51,17 +50,17 @@ public class RouteFindingManager {
 
     public static final class RouteFindingPoolThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
         @SuppressWarnings("removal")
+        private static final AccessControlContext ACC = contextWithPermissions(
+                new RuntimePermission("getClassLoader"),
+                new RuntimePermission("setContextClassLoader"));
+
+        @SuppressWarnings("removal")
         static AccessControlContext contextWithPermissions(@NotNull Permission... perms) {
             Permissions permissions = new Permissions();
             for (var perm : perms)
                 permissions.add(perm);
             return new AccessControlContext(new ProtectionDomain[]{new ProtectionDomain(null, permissions)});
         }
-
-        @SuppressWarnings("removal")
-        private static final AccessControlContext ACC = contextWithPermissions(
-                new RuntimePermission("getClassLoader"),
-                new RuntimePermission("setContextClassLoader"));
 
         @SuppressWarnings("removal")
         public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
@@ -71,11 +70,11 @@ public class RouteFindingManager {
 
     public static class RouteFindingTask extends RecursiveAction {
         private final IRouteFinder routeFinder;
-        private Vector3 start;
-        private Vector3 target;
         private final AtomicLong startTime;
         private final AtomicBoolean finished;
         private final FinishCallback onFinish;
+        private Vector3 start;
+        private Vector3 target;
 
         public RouteFindingTask(IRouteFinder routeFinder, FinishCallback onFinish) {
             this.routeFinder = routeFinder;
@@ -103,7 +102,6 @@ public class RouteFindingManager {
         }
 
         /**
-         *
          * @return 是否已经完成寻路，寻路失败也会返回完成
          */
         public boolean getFinished() {

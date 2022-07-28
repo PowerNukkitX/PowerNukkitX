@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public abstract class AbstractBehavior implements IBehavior{
+public abstract class AbstractBehavior implements IBehavior {
     @Getter
     @Setter
     protected BehaviorState behaviorState = BehaviorState.STOP;

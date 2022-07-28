@@ -8,14 +8,13 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.InLoveMemory;
 import cn.nukkit.entity.ai.memory.SpouseMemory;
 import cn.nukkit.entity.passive.EntityAnimal;
-import cn.nukkit.entity.passive.EntitySheep;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehaviorExecutor{
+public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehaviorExecutor {
 
     protected Class<T> entityClass;
     protected int findingRangeSquared;
@@ -65,7 +64,7 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
                 }
             }
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -76,12 +75,12 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
         finded = false;
     }
 
-    protected void setSpouse(T entity1,T entity2){
+    protected void setSpouse(T entity1, T entity2) {
         entity1.getMemoryStorage().setData(SpouseMemory.class, entity2);
         entity2.getMemoryStorage().setData(SpouseMemory.class, entity1);
     }
 
-    protected void clearData(T entity){
+    protected void clearData(T entity) {
         entity.getMemoryStorage().clear(SpouseMemory.class);
         //clear move target
         entity.setMoveTarget(null);
@@ -93,7 +92,7 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
         entity.getMemoryStorage().get(InLoveMemory.class).setInLove(false);
     }
 
-    protected void updateMove(T entity1, T entity2){
+    protected void updateMove(T entity1, T entity2) {
         //clone the vec
         var cloned1 = entity1.clone();
         var cloned2 = entity2.clone();
@@ -108,13 +107,13 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
     }
 
     @Nullable
-    protected T getNearestInLove(EntityIntelligent entity){
+    protected T getNearestInLove(EntityIntelligent entity) {
         var entities = entity.level.getEntities();
         var maxDistanceSquared = -1d;
         T nearestInLove = null;
-        for(var e : entities){
+        for (var e : entities) {
             var newDistance = e.distanceSquared(entity);
-            if(!e.equals(entity) && entityClass.isInstance(e)){
+            if (!e.equals(entity) && entityClass.isInstance(e)) {
                 T another = (T) e;
                 if (!another.isBaby() && another.getMemoryStorage().get(InLoveMemory.class).isInLove() && another.getMemoryStorage().isEmpty(SpouseMemory.class) && (maxDistanceSquared == -1 || newDistance < maxDistanceSquared)) {
                     maxDistanceSquared = newDistance;
@@ -125,13 +124,13 @@ public class EntityBreedingExecutor <T extends EntityAnimal> implements IBehavio
         return nearestInLove;
     }
 
-    protected boolean shouldFindingSpouse(T entity){
+    protected boolean shouldFindingSpouse(T entity) {
         return entity.getMemoryStorage().isEmpty(SpouseMemory.class);
     }
 
-    protected void bear(T entity1 ,T entity2){
+    protected void bear(T entity1, T entity2) {
         var rand = ThreadLocalRandom.current();
-        T baby = (T) Entity.createEntity(entity1.getNetworkId(),entity1.getPosition());
+        T baby = (T) Entity.createEntity(entity1.getNetworkId(), entity1.getPosition());
         baby.setBaby(true);
         //防止小屁孩去生baby
         baby.getMemoryStorage().setData(InLoveMemory.class, Server.getInstance().getTick());

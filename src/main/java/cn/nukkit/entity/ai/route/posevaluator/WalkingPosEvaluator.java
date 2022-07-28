@@ -34,7 +34,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         if (block instanceof BlockFence || block instanceof BlockFenceGate)
             return false;
         //水特判
-        if(block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
+        if (block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
             return true;
         //必须可以站立
         return !block.canPassThrough();
@@ -55,7 +55,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
         if (block instanceof BlockFence || block instanceof BlockFenceGate)
             return false;
         //水特判
-        if(block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
+        if (block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
             return true;
         //必须可以站立
         return !block.canPassThrough();

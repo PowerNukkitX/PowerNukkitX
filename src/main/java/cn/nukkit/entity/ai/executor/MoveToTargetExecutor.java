@@ -17,7 +17,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected float speed;
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz,float speed) {
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
     }
@@ -49,7 +49,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         entity.setMoveTarget(vector3);
     }
 
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3){
+    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
         entity.setLookTarget(vector3);
     }
 
@@ -57,7 +57,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         entity.setMoveTarget(null);
     }
 
-    protected void removeLookTarget(@NotNull EntityIntelligent entity){
+    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
         entity.setLookTarget(null);
     }
 }

@@ -16,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class SwimmingPosEvaluator implements IPosEvaluator{
+public class SwimmingPosEvaluator implements IPosEvaluator {
     @Override
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
-        int blockId = entity.level.getTickCachedBlock(Position.fromObject(pos,entity.level)).getId();
+        int blockId = entity.level.getTickCachedBlock(Position.fromObject(pos, entity.level)).getId();
         return isPassable(entity, pos) && (blockId == Block.FLOWING_WATER || blockId == Block.STILL_WATER);
     }
 

@@ -19,7 +19,7 @@ public interface IPosEvaluator {
      * 如果此使用此评估器的寻路器返回非整数坐标点，才需要实现此方法。
      *
      * @param entity 目标实体
-     * @param pos  评估坐标
+     * @param pos    评估坐标
      * @return 是否可以作为路径点
      */
     default boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 pos) {
@@ -31,7 +31,7 @@ public interface IPosEvaluator {
      * 如果此使用此评估器的寻路器只返回整数坐标点，才需要实现此方块。
      *
      * @param entity 目标实体
-     * @param block 评估方块
+     * @param block  评估方块
      * @return 是否可以作为脚下站立的方块
      */
     default boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {

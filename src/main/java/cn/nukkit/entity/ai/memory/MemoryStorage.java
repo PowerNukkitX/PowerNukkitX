@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,10 +31,10 @@ public class MemoryStorage implements IMemoryStorage {
     @Override
     public <T extends IMemory<?>, R extends Class<T>> T get(R memoryClazz) {
         T memory = (T) memoryMap.get(memoryClazz);
-        if (memory == null){
+        if (memory == null) {
             try {
                 memory = memoryClazz.getDeclaredConstructor().newInstance();
-            }  catch (Throwable e) {
+            } catch (Throwable e) {
                 log.error("Failed to create memory instance, declared constructor not found!", e);
             }
             put(memory);
@@ -44,7 +43,7 @@ public class MemoryStorage implements IMemoryStorage {
     }
 
     @Override
-   public  <T extends IMemory<?>> boolean isEmpty(Class<T> memoryClazz) {
+    public <T extends IMemory<?>> boolean isEmpty(Class<T> memoryClazz) {
         return !get(memoryClazz).hasData();
     }
 

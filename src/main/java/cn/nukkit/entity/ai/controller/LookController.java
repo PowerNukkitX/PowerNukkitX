@@ -8,12 +8,12 @@ import cn.nukkit.utils.BVector3;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public class LookController implements IController{
+public class LookController implements IController {
 
     protected boolean lookAtTarget;
     protected boolean lookAtRoute;
 
-    public LookController(boolean lookAtTarget,boolean lookAtRoute){
+    public LookController(boolean lookAtTarget, boolean lookAtRoute) {
         this.lookAtTarget = lookAtTarget;
         this.lookAtRoute = lookAtRoute;
     }

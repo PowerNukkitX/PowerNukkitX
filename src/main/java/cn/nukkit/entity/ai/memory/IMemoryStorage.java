@@ -2,7 +2,6 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 此接口抽象了一个记忆存储器 <br/>
@@ -21,7 +20,7 @@ public interface IMemoryStorage {
 
     <T extends IMemory<?>> boolean notEmpty(Class<T> memoryClazz);
 
-    <R,T extends IMemory<R>> boolean checkData(Class<T> memoryClazz,R data);
+    <R, T extends IMemory<R>> boolean checkData(Class<T> memoryClazz, R data);
 
     <R, T extends IMemory<R>> void setData(Class<T> memoryClazz, R data);
 
