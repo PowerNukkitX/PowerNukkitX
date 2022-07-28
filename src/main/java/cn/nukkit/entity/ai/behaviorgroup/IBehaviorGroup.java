@@ -13,7 +13,8 @@ import java.util.Set;
 
 /**
  * 行为组是一个基本的、独立的AI单元
- * 它由若干个行为{@link IBehavior}、控制器{@link IController}、传感器{@link ISensor}以及一个寻路器{@link IRouteFinder}和记忆存储器{@link IMemoryStorage}组成
+ * 它由若干个（核心）行为{@link IBehavior}、控制器{@link IController}、传感器{@link ISensor}以及一个寻路器{@link IRouteFinder}和记忆存储器{@link IMemoryStorage}组成
+ * 注：核心行为指的是不会被行为优先级影响的行为，其激活状态只取决于其自身的评估器
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -47,6 +48,11 @@ public interface IBehaviorGroup {
      */
     void tickRunningBehaviors(EntityIntelligent entity);
 
+    /**
+     * 调用行为组内部所有被激活的核心行为{@link IBehavior}的执行器{@link cn.nukkit.entity.ai.executor.IBehaviorExecutor}
+     *
+     * @param entity 目标实体对象
+     */
     void tickRunningCoreBehaviors(EntityIntelligent entity);
 
     /**
