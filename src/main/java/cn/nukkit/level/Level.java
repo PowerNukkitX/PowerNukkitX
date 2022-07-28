@@ -25,7 +25,10 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.*;
+import cn.nukkit.level.format.Chunk;
+import cn.nukkit.level.format.ChunkSection;
+import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -37,7 +40,6 @@ import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
-import cn.nukkit.level.util.BlockIndex;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.math.*;
@@ -229,8 +231,12 @@ public class Level implements ChunkManager, Metadatable {
 
     private final Long2LongMap unloadQueue = Long2LongMaps.synchronize(new Long2LongOpenHashMap());
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     private final LongSet highLightChunks = new LongOpenHashSet();
 
     private float time;
@@ -441,6 +447,8 @@ public class Level implements ChunkManager, Metadatable {
         return (hi & 0xFF) << 16 | lo;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public static int localBlockHash(int x, int y, int z, int layer, Level level) {
         byte hi = (byte) ((x & 15) + ((z & 15) << 4));
         short lo = (short) (level.ensureY(y) + 64);
@@ -508,6 +516,8 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public boolean isHighLightChunk(int chunkX, int chunkZ) {
         return highLightChunks.contains(Level.chunkHash(chunkX, chunkZ));
     }
@@ -925,6 +935,8 @@ public class Level implements ChunkManager, Metadatable {
         return gameRules;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public void releaseTickCachedBlocks() {
         synchronized (this.tickCachedBlocks) {
             for (var each : tickCachedBlocks.values()) {
