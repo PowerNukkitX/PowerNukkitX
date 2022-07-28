@@ -129,6 +129,8 @@ public class ScoreboardManager extends AbstractScoreboardManager {
     }
 
     private void hideOfflinePlayerScore(Player player) {
+        if (player.getUniqueId() == null)
+            return;
         PlayerScorer scorer = new PlayerScorer(player);
 
         SetScorePacket pk = new SetScorePacket();
