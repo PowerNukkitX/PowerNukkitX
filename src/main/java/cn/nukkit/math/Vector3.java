@@ -2,6 +2,7 @@ package cn.nukkit.math;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.SneakyThrows;
 
@@ -13,6 +14,8 @@ import javax.annotation.Nullable;
  */
 public class Vector3 implements Cloneable {
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public static final Vector3 ZERO = new Vector3(0, 0, 0);
 
     public double x;

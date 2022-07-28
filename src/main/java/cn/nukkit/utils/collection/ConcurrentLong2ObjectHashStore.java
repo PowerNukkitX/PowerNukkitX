@@ -1,10 +1,14 @@
 package cn.nukkit.utils.collection;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public final class ConcurrentLong2ObjectHashStore<T> {
     private final Long2ObjectOpenHashMap<T> internalMap;
     private final ReadWriteLock lock;

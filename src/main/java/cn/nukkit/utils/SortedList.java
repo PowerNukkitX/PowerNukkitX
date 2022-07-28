@@ -1,5 +1,8 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -22,6 +25,8 @@ import java.util.*;
  * @see Collection
  * @see AbstractList
  */
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class SortedList<T> extends AbstractList<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = -7115342129716877152L;

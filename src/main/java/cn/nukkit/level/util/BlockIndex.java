@@ -1,5 +1,10 @@
 package cn.nukkit.level.util;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public record BlockIndex(int x, int y, int z, int layer, long hash) {
 
     public static BlockIndex of(int x, int y, int z, int layer) {

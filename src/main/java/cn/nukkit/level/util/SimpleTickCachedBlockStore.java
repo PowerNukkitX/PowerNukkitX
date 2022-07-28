@@ -1,10 +1,14 @@
 package cn.nukkit.level.util;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public final class SimpleTickCachedBlockStore implements TickCachedBlockStore {
     private final ConcurrentHashMap<Integer, Block> tickCachedBlockStore;
     private final Level level;
