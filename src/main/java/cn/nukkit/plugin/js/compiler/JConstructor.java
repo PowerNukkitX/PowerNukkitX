@@ -4,7 +4,8 @@ import org.objectweb.asm.Type;
 
 import java.util.Arrays;
 
-public record JConstructor(JClassBuilder builder, String delegateName, JType[] superTypes , JType... argTypes) {
+public record JConstructor(JClassBuilder builder, String superDelegateName, String constructorDelegateName,
+                           JType[] superTypes, JType... argTypes) {
     public Type[] argAsmTypes() {
         return Arrays.stream(this.argTypes()).map(JType::asmType).toArray(Type[]::new);
     }

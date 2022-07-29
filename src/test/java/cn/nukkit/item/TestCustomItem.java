@@ -16,17 +16,22 @@ public class TestCustomItem extends ItemCustom {
     }
 
     public TestCustomItem(String id, String name) {
-        super(id , name);
+        super(id, name);
         __initJSConstructor__("super_1", new Object[]{id, name});
     }
 
-    public static void  __initJSConstructor__(String delegateName, Object[] args) {
+    public static void __initJSConstructor__(String delegateName, Object[] args) {
         //noinspection SynchronizeOnNonFinalField
         synchronized (context) {
             var tmp = delegate.getMember(delegateName).execute(args);
-            cons = new Value[(int) tmp.getArraySize()];
-            for (int i = 0, len = cons.length; i < len; i++) {
-                cons[i] = tmp.getArrayElement(i);
+            if (tmp.isNull()) return;
+            if (tmp.hasArrayElements()) {
+                cons = new Value[(int) tmp.getArraySize()];
+                for (int i = 0, len = cons.length; i < len; i++) {
+                    cons[i] = tmp.getArrayElement(i);
+                }
+            } else {
+                cons = new Value[]{tmp};
             }
         }
     }

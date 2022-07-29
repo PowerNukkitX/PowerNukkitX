@@ -1,5 +1,6 @@
 package cn.nukkit.plugin.js.compiler;
 
+import cn.nukkit.item.customitem.ItemCustom;
 import lombok.SneakyThrows;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
@@ -25,11 +26,33 @@ public class CompilerTest {
     public void simpleConstructorCompile() {
         var ctx = makeContext();
         var builder = new JClassBuilder(ctx)
-                .setDelegate(execJS(ctx, "simpleConstructorCompile.js", "var a = {testSuper: () => {print('Hello world!');return [];}};a"))
+                .setDelegate(execJS(ctx, "simpleConstructorCompile.js", "var a = {testSuper: () => {print('Hello world!');}};a"))
                 .setClassName("SimpleConstructorTestClass");
-        System.out.println(builder.getDelegate().getMember("testSuper"));
-        builder.addConstructor(new JConstructor(builder, "testSuper", new JType[0]));
+        builder.addConstructor(new JConstructor(builder, "testSuper", "", new JType[0]));
         builder.compileToFile(Path.of("./target/SimpleConstructorTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        System.out.println(obj);
+    }
+
+    @SneakyThrows
+    @Test
+    public void oneArgConstructorCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "oneArgConstructorCompile.js", """
+                var a = {testSuper: () => {
+                    print('oneArgConstructorCompile!');
+                    return ["test:test_item", "JUnit Test Item"];
+                }};
+                a
+                """))
+                .setSuperClass(JType.of(ItemCustom.class))
+                .setClassName("OneArgConstructorTestClass");
+        builder.addConstructor(new JConstructor(builder, "testSuper", "",
+                new JType[]{JType.of(String.class), JType.of(String.class)}));
+        builder.compileToFile(Path.of("./target/OneArgConstructorTestClass.class"));
         var clazz = builder.compileToClass();
         System.out.println(clazz);
         var obj = clazz.getConstructor().newInstance();
