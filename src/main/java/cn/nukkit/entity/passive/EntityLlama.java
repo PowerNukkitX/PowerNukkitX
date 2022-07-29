@@ -8,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityLlama extends EntityAnimal {
+public class EntityLlama extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 29;
 

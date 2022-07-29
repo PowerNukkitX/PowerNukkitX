@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityZombiePigman extends EntityMob implements EntitySmite {
+public class EntityZombiePigman extends EntityWalkingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 36;
 

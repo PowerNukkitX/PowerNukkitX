@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityWolf extends EntityAnimal {
+public class EntityWolf extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 14;
 

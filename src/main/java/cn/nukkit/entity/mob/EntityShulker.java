@@ -8,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityShulker extends EntityMob {
+public class EntityShulker extends EntityWalkingMob {
 
     public static final int NETWORK_ID = 54;
 

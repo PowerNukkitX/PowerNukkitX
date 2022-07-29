@@ -1,19 +1,21 @@
 package cn.nukkit.entity;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.BlockLava;
-import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.*;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -22,6 +24,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      * 移动精度阈值，绝对值小于此阈值的移动被视为没有移动
      */
     public static final float PRECISION = 0.00001f;
+
+    public static final AtomicInteger globalCycleTickSpread = new AtomicInteger();
+    /**
+     * 时间泛播延迟，用于缓解在同一时间大量提交任务挤占cpu的情况
+     */
+    public final int tickSpread;
     /**
      * 实体自由落体运动的时间
      */
@@ -39,12 +47,13 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        this.tickSpread = globalCycleTickSpread.getAndIncrement() & 0xf;
     }
 
     @Override
     public void asyncPrepare(int currentTick) {
         // 计算是否需要重新计算高开销实体运动
-        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || (currentTick & (this.level.tickRateOptDelay - 1)) == 0;
+        this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
         // 处理运动
@@ -106,10 +115,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         }
     }
 
+    /**
+     * 获取实体在某方块处行走的真实速度，此方法会考虑流体阻力
+     *
+     * @param block 实体所在的方块，不是脚下的方块
+     * @return 在某方块处行走的真实速度
+     */
+    public float getMovementSpeedAtBlock(Block block) {
+        if (block instanceof BlockLiquid liquid) {
+            return getMovementSpeed() * liquid.getDrag();
+        } else {
+            return getMovementSpeed();
+        }
+    }
+
     protected void handleFrictionMovement() {
         // 减少移动向量（计算摩擦系数，在冰上滑得更远）
-        final double friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
-        final double reduce = getMovementSpeed() * (1 - friction * 0.85) * 0.43;
+        final double friction = this.getLevel().getTickCachedBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+        final double reduce = getMovementSpeedAtBlock(this.getTickCachedLevelBlock()) * (1 - friction * 0.85) * 0.43;
         if (Math.abs(this.motionZ) < PRECISION && Math.abs(this.motionX) < PRECISION) {
             return;
         }
@@ -173,6 +196,24 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         addTmpMoveMotion(previousCurrentMotion);
     }
 
+    @PowerNukkitOnly
+    @Since("1.6.0.0-PNX")
+    protected boolean hasWaterAt(float height) {
+        double y = this.y + height;
+        Block block = this.level.getTickCachedBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
+
+        boolean layer1 = false;
+        if (!(block instanceof BlockBubbleColumn) && (
+                block instanceof BlockWater
+                        || (layer1 = block.getTickCachedLevelBlockAtLayer(1) instanceof BlockWater))) {
+            BlockWater water = (BlockWater) (layer1 ? block.getTickCachedLevelBlockAtLayer(1) : block);
+            double f = (block.y + 1) - (water.getFluidHeightPercent() - 0.1111111);
+            return y < f;
+        }
+
+        return false;
+    }
+
     protected void handleFloatingMovement() {
         if (this.isTouchingWater()) {
             if (this.motionY < -this.getGravity() && this.hasWaterAt(getFootHeight())) {
@@ -230,8 +271,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         double resultX = (size > 4 ? dxPositives.doubleParallelStream() : dxPositives.doubleStream()).max().orElse(0) - (size > 4 ? dxNegatives.doubleParallelStream() : dxNegatives.doubleStream()).max().orElse(0);
         double resultZ = (size > 4 ? dzPositives.doubleParallelStream() : dzPositives.doubleStream()).max().orElse(0) - (size > 4 ? dzNegatives.doubleParallelStream() : dzNegatives.doubleStream()).max().orElse(0);
         double len = Math.sqrt(resultX * resultX + resultZ * resultZ);
-        this.previousCollideMotion.setX(-(resultX / len * getMovementSpeed() * 0.32));
-        this.previousCollideMotion.setZ(-(resultZ / len * getMovementSpeed() * 0.32));
+        this.previousCollideMotion.setX(-(resultX / len * 0.2 * 0.32));
+        this.previousCollideMotion.setZ(-(resultZ / len * 0.2 * 0.32));
     }
 
     /**

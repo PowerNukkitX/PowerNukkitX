@@ -1382,6 +1382,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     /**
+     * 获取走过这个方块所需要的额外代价，通常用于水、浆果丛等难以让实体经过的方块
+     * @return 走过这个方块所需要的额外代价
+     */
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getWalkThroughExtraCost() {
+        return 0;
+    }
+
+    /**
      * 控制方块的发光等级
      *
      * @return 发光等级(0 - 15)
@@ -1963,6 +1973,45 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean canBeBrokenWith(Item item) {
         return this.getHardness() != -1;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedSide(BlockFace face) {
+        return getTickCachedSideAtLayer(layer, face);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedSide(BlockFace face, int step) {
+        return getTickCachedSideAtLayer(layer, face, step);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedSideAtLayer(int layer, BlockFace face) {
+        if (this.isValid()) {
+            return this.getLevel().getTickCachedBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
+        }
+        return this.getTickCachedSide(face, 1);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedSideAtLayer(int layer, BlockFace face, int step) {
+        if (this.isValid()) {
+            if (step == 1) {
+                return this.getLevel().getTickCachedBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset(), layer);
+            } else {
+                return this.getLevel().getTickCachedBlock((int) x + face.getXOffset() * step, (int) y + face.getYOffset() * step, (int) z + face.getZOffset() * step, layer);
+            }
+        }
+        Block block = Block.get(Item.AIR, 0);
+        block.x = (int) x + face.getXOffset() * step;
+        block.y = (int) y + face.getYOffset() * step;
+        block.z = (int) z + face.getZOffset() * step;
+        block.layer = layer;
+        return block;
     }
 
     @Override

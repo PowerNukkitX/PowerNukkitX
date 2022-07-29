@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityVindicator extends EntityMob {
+public class EntityVindicator extends EntityWalkingMob {
 
     public static final int NETWORK_ID = 57;
 

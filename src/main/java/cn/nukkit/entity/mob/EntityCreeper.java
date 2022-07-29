@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Box.
  */
-public class EntityCreeper extends EntityMob {
+public class EntityCreeper extends EntityWalkingMob {
 
     public static final int NETWORK_ID = 33;
 

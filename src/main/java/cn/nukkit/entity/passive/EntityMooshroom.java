@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityMooshroom extends EntityAnimal {
+public class EntityMooshroom extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 16;
 

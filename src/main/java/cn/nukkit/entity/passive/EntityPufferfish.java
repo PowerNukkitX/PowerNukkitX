@@ -8,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PetteriM1
  */
-public class EntityPufferfish extends EntityAnimal {
+public class EntityPufferfish extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 108;
 

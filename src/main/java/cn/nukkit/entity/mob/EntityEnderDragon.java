@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 /**
  * @author PikyCZ
  */
-public class EntityEnderDragon extends EntityMob {
+public class EntityEnderDragon extends EntityFlyingMob {
 
     public static final int NETWORK_ID = 53;
 

@@ -17,11 +17,11 @@ import java.util.Optional;
  * @author joserobjr
  */
 @Since("1.1.1.0-PN")
-public class EntityBee extends EntityAnimal {
+public class EntityBee extends EntityFlyingAnimal {
 
     @Since("1.1.1.0-PN")
     public static final int NETWORK_ID = 122;
-    
+
     private int beehiveTimer = 600;
 
     @Since("1.1.1.0-PN")
@@ -59,7 +59,7 @@ public class EntityBee extends EntityAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setHasNectar(boolean hasNectar) {
-    
+
     }
 
     @PowerNukkitOnly
@@ -71,29 +71,30 @@ public class EntityBee extends EntityAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(boolean angry) {
-    
+
     }
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
+        super.onUpdate(currentTick);
         if (--beehiveTimer <= 0) {
             BlockEntityBeehive closestBeehive = null;
             double closestDistance = Double.MAX_VALUE;
             Optional<Block> flower = Arrays.stream(level.getCollisionBlocks(getBoundingBox().grow(4, 4, 4), false, true))
                     .filter(block -> block instanceof BlockFlower)
                     .findFirst();
-            
+
             for (Block collisionBlock : level.getCollisionBlocks(getBoundingBox().grow(1.5, 1.5, 1.5))) {
                 if (collisionBlock instanceof BlockBeehive) {
                     BlockEntityBeehive beehive = ((BlockBeehive) collisionBlock).getOrCreateBlockEntity();
                     double distance;
-                    if(beehive.getOccupantsCount() < 4 && (distance = beehive.distanceSquared(this)) < closestDistance) {
+                    if (beehive.getOccupantsCount() < 4 && (distance = beehive.distanceSquared(this)) < closestDistance) {
                         closestBeehive = beehive;
                         closestDistance = distance;
                     }
                 }
             }
-            
+
             if (closestBeehive != null) {
                 BlockEntityBeehive.Occupant occupant = closestBeehive.addOccupant(this);
                 if (flower.isPresent()) {
@@ -104,7 +105,7 @@ public class EntityBee extends EntityAnimal {
         }
         return true;
     }
-    
+
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -120,13 +121,13 @@ public class EntityBee extends EntityAnimal {
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
-    
+
     }
 
     @PowerNukkitOnly
     @Since("1.1.1.0-PN")
     public void setAngry(Player player) {
-    
+
     }
 
 

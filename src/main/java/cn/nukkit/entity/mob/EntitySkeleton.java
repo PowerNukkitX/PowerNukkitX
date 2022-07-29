@@ -14,7 +14,7 @@ import cn.nukkit.potion.Effect;
 /**
  * @author PikyCZ
  */
-public class EntitySkeleton extends EntityMob implements EntitySmite {
+public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 34;
 

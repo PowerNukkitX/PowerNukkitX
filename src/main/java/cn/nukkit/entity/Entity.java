@@ -1509,6 +1509,12 @@ public abstract class Entity extends Location implements Metadatable {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getAge(){
+        return this.age;
+    }
+
     public void heal(EntityRegainHealthEvent source) {
         this.server.getPluginManager().callEvent(source);
         if (source.isCancelled()) {
@@ -1846,13 +1852,16 @@ public abstract class Entity extends Location implements Metadatable {
         return nearestPortal;
     }
 
+    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "implement headYaw")
     public void updateMovement() {
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffRotation = (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
+
             this.lastX = this.x;
             this.lastY = this.y;
             this.lastZ = this.z;
@@ -1861,8 +1870,6 @@ public abstract class Entity extends Location implements Metadatable {
             this.lastYaw = this.yaw;
             this.lastHeadYaw = this.headYaw;
 
-            // If you want to achieve headYaw in movement. You can override it by yourself. Changing would break some mob plugins.
-            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
             this.positionChanged = true;
         } else {
             this.positionChanged = false;
