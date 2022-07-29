@@ -41,6 +41,16 @@ public class EntityPig extends EntityWalkingAnimal {
                                     new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
                             ),
                             1,1
+                    ),
+                    //生长
+                    new Behavior(
+                            new AnimalGrowExecutor(),
+                            //todo：Growth rate
+                            new AllMatchEvaluator(
+                                    new PassByTimeEvaluator<>(BurnTimeMemory.class,20 * 60 * 20,Integer.MAX_VALUE),
+                                    entity -> entity instanceof EntityAnimal animal && animal.isBaby()
+                            )
+                            ,1,1,1200
                     )
             ),
             Set.of(

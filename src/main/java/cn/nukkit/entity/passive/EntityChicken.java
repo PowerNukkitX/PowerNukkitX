@@ -41,18 +41,13 @@ public class EntityChicken extends EntityWalkingAnimal {
                             ),
                             1,1
                     ),
-                    //鸡生长
+                    //生长
                     new Behavior(
-                            entity -> {
-                                if (entity instanceof EntityChicken chicken){
-                                    chicken.setBaby(false);
-                                }
-                                return false;
-                            },
+                            new AnimalGrowExecutor(),
                             //todo：Growth rate
                             new AllMatchEvaluator(
                                     new PassByTimeEvaluator<>(BurnTimeMemory.class,20 * 60 * 20,Integer.MAX_VALUE),
-                                    entity -> entity instanceof EntityChicken chicken && chicken.isBaby()
+                                    entity -> entity instanceof EntityAnimal animal && animal.isBaby()
                             )
                             ,1,1,1200
                     )
@@ -83,9 +78,8 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        //init time
+        //init egg spawn time
         getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
-        getMemoryStorage().setData(BurnTimeMemory.class,Server.getInstance().getTick());
     }
 
     @Override
