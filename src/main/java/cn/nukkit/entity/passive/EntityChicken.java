@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -39,15 +40,6 @@ public class EntityChicken extends EntityWalkingAnimal {
                                     new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
                             ),
                             1,1
-                    ),
-                    //刷新下蛋时间
-                    new Behavior(
-                            new CustomActionExecutor(entity -> {
-                                IMemoryStorage memoryStorage = entity.getMemoryStorage();
-                                memoryStorage.setData(EggMemory.class, memoryStorage.getData(EggMemory.class) + 1);
-                            }),
-                            new PassByTimeEvaluator<>(EggMemory.class,0, 12000,true),
-                            1,1
                     )
             ),
             Set.of(
@@ -56,18 +48,18 @@ public class EntityChicken extends EntityWalkingAnimal {
                     new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
                     new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1),
-                    new Behavior(new CustomActionExecutor(entity -> {
-                        entity.getMemoryStorage().setData(EggMemory.class, 0);
+                    new Behavior(entity -> {
+                        entity.getMemoryStorage().setData(EggMemory.class, Server.getInstance().getTick());
                         entity.getLevel().dropItem(entity, Item.get(Item.EGG));
                         entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
-
-                    }), new AnyMatchEvaluator(
+                        return false;
+                    }, new AnyMatchEvaluator(
                             new AllMatchEvaluator(
                                     new PassByTimeEvaluator<>(EggMemory.class, 6000, 12000),
                                     new ProbabilityEvaluator(20,100)
                             ),
                             new PassByTimeEvaluator<>(EggMemory.class, 12000, Integer.MAX_VALUE, true)
-                    ), 1, 1)
+                    ), 1, 1,20)
             ),
             Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
             Set.of(new WalkController(), new LookController(true, true)),
@@ -76,7 +68,6 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        this.getMemoryStorage().setData(EggMemory.class, 0);
     }
 
     @Override
