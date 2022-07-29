@@ -1,11 +1,13 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
+import cn.nukkit.entity.ai.memory.BurnTimeMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -40,6 +42,10 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        var memoryStorage = getMemoryStorage();
+        if (memoryStorage != null) {
+            getMemoryStorage().setData(BurnTimeMemory.class, Server.getInstance().getTick());
+        }
     }
 
     /**
