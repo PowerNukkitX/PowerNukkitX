@@ -44,7 +44,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
         super(chunk, nbt);
         var memoryStorage = getMemoryStorage();
         if (memoryStorage != null) {
-            getMemoryStorage().setData(BurnTimeMemory.class, Server.getInstance().getTick());
+            memoryStorage.setData(BurnTimeMemory.class, Server.getInstance().getTick());
         }
     }
 
@@ -60,12 +60,11 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        super.onUpdate(currentTick);
         var behaviorGroup = getBehaviorGroup();
         behaviorGroup.tickRunningCoreBehaviors(this);
         behaviorGroup.tickRunningBehaviors(this);
         behaviorGroup.applyController(this);
-        return true;
+        return super.onUpdate(currentTick);
     }
 
     /**
@@ -73,20 +72,18 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     @Override
     public void asyncPrepare(int currentTick) {
-        super.asyncPrepare(currentTick);
         if (needsRecalcMovement) { // 每次要重新计算实体运动时，都重新计算一次是否活跃
             isActive = level.isHighLightChunk(getChunkX(), getChunkZ());
         }
         var behaviorGroup = getBehaviorGroup();
-        //No behavior group
-        if (behaviorGroup == null)
-            return;
+        if (behaviorGroup == null) return;
         if (needsRecalcMovement) {
             behaviorGroup.collectSensorData(this);
             behaviorGroup.evaluateCoreBehaviors(this);
             behaviorGroup.evaluateBehaviors(this);
             behaviorGroup.updateRoute(this);
         }
+        super.asyncPrepare(currentTick);
     }
 
     @Override

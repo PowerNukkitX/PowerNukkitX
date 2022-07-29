@@ -34,46 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntitySheep extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 13;
-    private final IBehaviorGroup behaviorGroup = new BehaviorGroup(
-            this.tickSpread,
-            Set.of(
-                    //用于刷新InLove状态的核心行为
-                    new Behavior(
-                            new InLoveExecutor(400),
-                            new AllMatchEvaluator(
-                                    new PassByTimeEvaluator<>(PlayerBreedingMemory.class,0,400),
-                                    new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
-                            ),
-                            1,1
-                    )
-            ),
-            Set.of(
-                    new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true,100,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 6, 1),
-                    new Behavior(new EntityBreedingExecutor<>(EntitySheep.class,16,100,0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(),5,1),
-                    new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
-                    new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
-                            new AnyMatchEvaluator(
-                                    new AllMatchEvaluator(
-                                            entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
-                                            new ProbabilityEvaluator(1,100)
-                                    ),
-                                    new AllMatchEvaluator(
-                                            entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
-                                            new ProbabilityEvaluator(43,50)
-                                    )
-                            ),
-                            new AnyMatchEvaluator(
-                                    new BlockCheckEvaluator(Block.GRASS,new Vector3(0,-1,0)),
-                                    new BlockCheckEvaluator(Block.TALL_GRASS,Vector3.ZERO))),
-                            3,1,100
-                    ),
-                    new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
-                    new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
-            ),
-            Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
-            Set.of(new WalkController(), new LookController(true, true)),
-            new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-    );
+    private IBehaviorGroup behaviorGroup;
     public boolean sheared = false;
     public int color = 0;
 
@@ -83,6 +44,48 @@ public class EntitySheep extends EntityWalkingAnimal {
 
     @Override
     public IBehaviorGroup getBehaviorGroup() {
+        if (behaviorGroup == null){
+             behaviorGroup = new BehaviorGroup(
+                    this.tickSpread,
+                    Set.of(
+                            //用于刷新InLove状态的核心行为
+                            new Behavior(
+                                    new InLoveExecutor(400),
+                                    new AllMatchEvaluator(
+                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class,0,400),
+                                            new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
+                                    ),
+                                    1,1
+                            )
+                    ),
+                    Set.of(
+                            new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true,100,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class,16,100,0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(),5,1),
+                            new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
+                            new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
+                                    new AnyMatchEvaluator(
+                                            new AllMatchEvaluator(
+                                                    entity -> entity instanceof EntityAnimal animal && !animal.isBaby(),
+                                                    new ProbabilityEvaluator(1,100)
+                                            ),
+                                            new AllMatchEvaluator(
+                                                    entity -> entity instanceof EntityAnimal animal && animal.isBaby(),
+                                                    new ProbabilityEvaluator(43,50)
+                                            )
+                                    ),
+                                    new AnyMatchEvaluator(
+                                            new BlockCheckEvaluator(Block.GRASS,new Vector3(0,-1,0)),
+                                            new BlockCheckEvaluator(Block.TALL_GRASS,Vector3.ZERO))),
+                                    3,1,100
+                            ),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
+                    ),
+                    Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
+                    Set.of(new WalkController(), new LookController(true, true)),
+                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+            );
+        }
         return behaviorGroup;
     }
 
