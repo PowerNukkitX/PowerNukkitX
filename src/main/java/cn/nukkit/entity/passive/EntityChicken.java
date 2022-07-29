@@ -46,7 +46,7 @@ public class EntityChicken extends EntityWalkingAnimal {
                                 IMemoryStorage memoryStorage = entity.getMemoryStorage();
                                 memoryStorage.setData(EggMemory.class, memoryStorage.getData(EggMemory.class) + 1);
                             }),
-                            new PassByTimeEvaluator<>(EggMemory.class,0, 11999,true),
+                            new PassByTimeEvaluator<>(EggMemory.class,0, 12000,true),
                             1,1
                     )
             ),
