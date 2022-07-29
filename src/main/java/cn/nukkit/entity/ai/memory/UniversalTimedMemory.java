@@ -13,6 +13,10 @@ public abstract class UniversalTimedMemory implements IMemory<Integer>, TimedMem
         time = null;
     }
 
+    public UniversalTimedMemory(int time) {
+        this.time = time;
+    }
+
     @Override
     public int getTime() {
         return time;

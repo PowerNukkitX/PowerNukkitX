@@ -40,6 +40,21 @@ public class EntityChicken extends EntityWalkingAnimal {
                                     new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
                             ),
                             1,1
+                    ),
+                    //鸡生长
+                    new Behavior(
+                            entity -> {
+                                if (entity instanceof EntityChicken chicken){
+                                    chicken.setBaby(false);
+                                }
+                                return false;
+                            },
+                            //todo：Growth rate
+                            new AllMatchEvaluator(
+                                    new PassByTimeEvaluator<>(BurnTimeMemory.class,20 * 60 * 20,Integer.MAX_VALUE),
+                                    entity -> entity instanceof EntityChicken chicken && chicken.isBaby()
+                            )
+                            ,1,1,1200
                     )
             ),
             Set.of(
@@ -49,16 +64,16 @@ public class EntityChicken extends EntityWalkingAnimal {
                     new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
                     new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1),
                     new Behavior(entity -> {
-                        entity.getMemoryStorage().setData(EggMemory.class, Server.getInstance().getTick());
+                        entity.getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
                         entity.getLevel().dropItem(entity, Item.get(Item.EGG));
                         entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                         return false;
                     }, new AnyMatchEvaluator(
                             new AllMatchEvaluator(
-                                    new PassByTimeEvaluator<>(EggMemory.class, 6000, 12000),
+                                    new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 6000, 12000),
                                     new ProbabilityEvaluator(20,100)
                             ),
-                            new PassByTimeEvaluator<>(EggMemory.class, 12000, Integer.MAX_VALUE, true)
+                            new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 12000, Integer.MAX_VALUE)
                     ), 1, 1,20)
             ),
             Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
@@ -68,6 +83,9 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+        //init time
+        getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
+        getMemoryStorage().setData(BurnTimeMemory.class,Server.getInstance().getTick());
     }
 
     @Override
