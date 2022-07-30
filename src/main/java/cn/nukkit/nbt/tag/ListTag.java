@@ -62,7 +62,19 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     public String toSnbt() {
-        return "\"" + this.getName() + "\": [" + list.stream().map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":")).collect(Collectors.joining(", ")) + "]";
+        if (this.getName().equals("")) return "[" + list.stream().map(tag -> {
+            if (tag instanceof CompoundTag) return tag.toSnbt();
+            else return StringUtils.afterFirst(tag.toSnbt(), ":");
+        }).collect(Collectors.joining(", ")) + "]";
+        else return "\"" + this.getName() + "\":[" + list.stream().map(tag -> {
+            if (tag instanceof CompoundTag) return tag.toSnbt();
+            else return StringUtils.afterFirst(tag.toSnbt(), ":");
+        }).collect(Collectors.joining(", ")) + "]";
+    }
+
+    @Override
+    public String toSnbt(int space) {
+        return toSnbt();
     }
 
     @Override

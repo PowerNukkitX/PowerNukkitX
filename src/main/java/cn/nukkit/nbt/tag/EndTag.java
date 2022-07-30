@@ -35,6 +35,11 @@ public class EndTag extends Tag {
     }
 
     @Override
+    public String toSnbt(int space) {
+        return "";
+    }
+
+    @Override
     public Tag copy() {
         return new EndTag();
     }

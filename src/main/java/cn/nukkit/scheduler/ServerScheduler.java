@@ -74,6 +74,13 @@ public class ServerScheduler {
         return addTask(null, task, 0, 0, true);
     }
 
+    /**
+     * 设置一个只执行一次的异步任务
+     * Set up an asynchronous task to be executed only once
+     *
+     * @param plugin 插件实例,
+     * @param task   异步任务
+     */
     public TaskHandler scheduleAsyncTask(Plugin plugin, AsyncTask task) {
         return addTask(plugin, task, 0, 0, true);
     }
@@ -91,6 +98,13 @@ public class ServerScheduler {
         throw new UnsupportedOperationException("Cannot increase a working pool size."); //wtf?
     }
 
+    /**
+     * 设置一个只执行一次的非异步延迟任务
+     * Set up a delayed task to be executed only once
+     *
+     * @param task  任务,可用匿名类创建
+     * @param delay 延迟时间,单位tick(20tick = 1s)
+     */
     public TaskHandler scheduleDelayedTask(Task task, int delay) {
         return this.addTask(task, delay, 0, false);
     }
@@ -224,7 +238,7 @@ public class ServerScheduler {
             }
         }
         this.taskMap.clear();
-        this.queueMap .clear();
+        this.queueMap.clear();
         this.currentTaskId.set(0);
     }
 

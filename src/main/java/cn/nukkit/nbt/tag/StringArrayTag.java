@@ -60,6 +60,11 @@ public class StringArrayTag extends Tag{
     }
 
     @Override
+    public String toSnbt(int space) {
+        return "\"" + this.getName() + "\": " + Arrays.toString(data).replace("[", "[I;");
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (super.equals(obj)) {
             StringArrayTag stringArrayTag = (StringArrayTag) obj;
