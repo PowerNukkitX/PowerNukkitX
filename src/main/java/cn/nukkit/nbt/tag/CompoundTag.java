@@ -337,23 +337,11 @@ public class CompoundTag extends Tag implements Cloneable {
 
     public String toSnbt(int space) {
         StringBuilder addSpace = new StringBuilder();
-        addSpace.append(" ".repeat(Math.max(0, space * nestNum)));
+        addSpace.append(" ".repeat(Math.max(0, space)));
         StringJoiner joiner = new StringJoiner(",\n" + addSpace);
-        tags.forEach((key, tag) -> {
-            if (tag instanceof CompoundTag) {
-                nestNum++;
-            }
-            joiner.add(tag.toSnbt(space));
-        });
-        if (nestNum > 1) {
-            nestNum--;
-            var endSpace = addSpace.substring(space);
-            if (this.getName().equals("")) return "{\n" + addSpace + joiner + "\n" + endSpace + "}";
-            else return "\"" + this.getName() + "\": " + "{\n" + addSpace + joiner + "\n" + endSpace + "}";
-        } else {
-            if (this.getName().equals("")) return "{\n" + addSpace + joiner + "\n}";
-            else return "\"" + this.getName() + "\": " + "{\n" + addSpace + joiner + "\n}";
-        }
+        tags.forEach((key, tag) -> joiner.add(tag.toSnbt(space).replace("\n", "\n" + addSpace)));
+        if (this.getName().equals("")) return "{\n" + addSpace + joiner + "\n}";
+        else return "\"" + this.getName() + "\":" + "{\n" + addSpace + joiner + "\n}";
     }
 
     @Override
