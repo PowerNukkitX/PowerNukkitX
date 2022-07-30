@@ -53,6 +53,11 @@ public class StringTag extends Tag {
     }
 
     @Override
+    public String toSnbt(int space) {
+        return "\"" + this.getName() + "\": \"" + data + "\"";
+    }
+
+    @Override
     public Tag copy() {
         return new StringTag(getName(), data);
     }
