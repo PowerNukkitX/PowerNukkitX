@@ -65,16 +65,38 @@ public class ListTag<T extends Tag> extends Tag {
         if (this.getName().equals("")) return "[" + list.stream().map(tag -> {
             if (tag instanceof CompoundTag) return tag.toSnbt();
             else return StringUtils.afterFirst(tag.toSnbt(), ":");
-        }).collect(Collectors.joining(", ")) + "]";
+        }).collect(Collectors.joining(",")) + "]";
         else return "\"" + this.getName() + "\":[" + list.stream().map(tag -> {
             if (tag instanceof CompoundTag) return tag.toSnbt();
             else return StringUtils.afterFirst(tag.toSnbt(), ":");
-        }).collect(Collectors.joining(", ")) + "]";
+        }).collect(Collectors.joining(",")) + "]";
     }
 
     @Override
     public String toSnbt(int space) {
-        return toSnbt();
+        StringBuilder addSpace = new StringBuilder();
+        addSpace.append(" ".repeat(Math.max(0, space)));
+        if (list.get(0) instanceof StringTag) {
+            StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
+            list.forEach(tag -> {
+                var str = tag.toSnbt(space);
+                joiner1.add(str.substring(str.indexOf(":") + 2).replace("\n", "\n" + addSpace));
+            });
+            return "\"" + this.getName() + "\": [\n" + addSpace + joiner1 + "\n]";
+        } else if (list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
+            StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
+            list.forEach(tag -> {
+                joiner1.add(tag.toSnbt(space).replace("\n", "\n" + addSpace));
+            });
+            return "\"" + this.getName() + "\": [\n" + addSpace + joiner1 + "\n]";
+        } else {
+            StringJoiner joiner2 = new StringJoiner(", ");
+            list.forEach(tag -> {
+                var str = tag.toSnbt(space);
+                joiner2.add(str.substring(str.indexOf(":") + 2));
+            });
+            return "\"" + this.getName() + "\": [" + joiner2 + "]";
+        }
     }
 
     @Override
