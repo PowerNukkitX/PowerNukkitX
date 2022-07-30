@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityCaveSpider extends EntityMob implements EntityArthropod {
+public class EntityCaveSpider extends EntityWalkingMob implements EntityArthropod {
 
     public static final int NETWORK_ID = 40;
 

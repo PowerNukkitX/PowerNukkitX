@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityVex extends EntityMob {
+public class EntityVex extends EntityFlyingMob {
 
     public static final int NETWORK_ID = 105;
 

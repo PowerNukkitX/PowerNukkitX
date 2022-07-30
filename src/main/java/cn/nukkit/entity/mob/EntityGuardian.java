@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityGuardian extends EntityMob {
+public class EntityGuardian extends EntitySwimmingMob {
 
     public static final int NETWORK_ID = 49;
 

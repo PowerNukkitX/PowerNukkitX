@@ -10,7 +10,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
 
-public class EntityZombieVillager extends EntityMob implements EntitySmite {
+public class EntityZombieVillager extends EntityWalkingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 116;
 

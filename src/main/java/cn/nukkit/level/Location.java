@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
@@ -96,7 +97,14 @@ public class Location extends Position {
         return this.pitch;
     }
 
-    @Since("FUTURE")
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Location setHeadYaw(double headYaw) {
+        this.headYaw = headYaw;
+        return this;
+    }
+
+    @Since("1.6.0.0-PNX")
     public double getHeadYaw() {
         return this.headYaw;
     }

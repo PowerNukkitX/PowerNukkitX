@@ -40,6 +40,8 @@ import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
+import cn.nukkit.level.util.SimpleTickCachedBlockStore;
+import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -228,6 +230,14 @@ public class Level implements ChunkManager, Metadatable {
     private final Long2ObjectOpenHashMap<Deque<DataPacket>> chunkPackets = new Long2ObjectOpenHashMap<>();
 
     private final Long2LongMap unloadQueue = Long2LongMaps.synchronize(new Long2LongOpenHashMap());
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private final ConcurrentHashMap<Long, TickCachedBlockStore> tickCachedBlocks = new ConcurrentHashMap<>();
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    private final LongSet highLightChunks = new LongOpenHashSet();
 
     private float time;
     public boolean stopTime;
@@ -437,6 +447,14 @@ public class Level implements ChunkManager, Metadatable {
         return (hi & 0xFF) << 16 | lo;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static int localBlockHash(int x, int y, int z, int layer, Level level) {
+        byte hi = (byte) ((x & 15) + ((z & 15) << 4));
+        short lo = (short) (level.ensureY(y) + 64);
+        return ((layer & 127) << 24) | (hi & 0xFF) << 16 | lo;
+    }
+
     public static Vector3 getBlockXYZ(long chunkHash, int blockHash, Level level) {
         int hi = (byte) (blockHash >>> 16);
         int lo = (short) blockHash;
@@ -496,6 +514,12 @@ public class Level implements ChunkManager, Metadatable {
         } else {
             return tickRateOptDelay >> 1;
         }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean isHighLightChunk(int chunkX, int chunkZ) {
+        return highLightChunks.contains(Level.chunkHash(chunkX, chunkZ));
     }
 
     public void initLevel() {
@@ -911,6 +935,16 @@ public class Level implements ChunkManager, Metadatable {
         return gameRules;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public void releaseTickCachedBlocks() {
+        synchronized (this.tickCachedBlocks) {
+            for (var each : tickCachedBlocks.values()) {
+                each.clearCachedStore();
+            }
+        }
+    }
+
     public void doTick(int currentTick) {
         this.timings.doTick.startTiming();
 
@@ -921,6 +955,22 @@ public class Level implements ChunkManager, Metadatable {
         if (currentTick >= nextTimeSendTick) { // Send time to client every 30 seconds to make sure it
             this.sendTime();
             nextTimeSendTick = currentTick + 30 * 20;
+        }
+
+        // 检查突出区块（玩家附近3x3区块）
+        if ((currentTick & 127) == 0) { // 每127刻检查一次是比较合理的
+            highLightChunks.clear();
+            for (var player : this.players.values()) {
+                if (player.isOnline()) {
+                    int chunkX = player.getChunkX();
+                    int chunkZ = player.getChunkZ();
+                    for (int dx = -1; dx <= 1; dx++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            highLightChunks.add(Level.chunkHash(chunkX + dx, chunkZ + dz));
+                        }
+                    }
+                }
+            }
         }
 
         // Tick Weather
@@ -1087,6 +1137,9 @@ public class Level implements ChunkManager, Metadatable {
             Server.broadcastPacket(players.values().toArray(Player.EMPTY_ARRAY), packet);
             gameRules.refresh();
         }
+
+        // 清除所有tick缓存的方块
+        releaseTickCachedBlocks();
 
         this.timings.doTick.stopTiming();
     }
@@ -1809,6 +1862,55 @@ public class Level implements ChunkManager, Metadatable {
             around.add(side);
         }
         return around;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos) {
+        return getTickCachedBlock(pos, 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, int layer) {
+        return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, boolean load) {
+        return getTickCachedBlock(pos, 0, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(Vector3 pos, int layer, boolean load) {
+        return this.getTickCachedBlock(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), layer, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z) {
+        return getTickCachedBlock(x, y, z, 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, int layer) {
+        return getTickCachedBlock(x, y, z, layer, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, boolean load) {
+        return getTickCachedBlock(x, y, z, 0, load);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Block getTickCachedBlock(int x, int y, int z, int layer, boolean load) {
+        return tickCachedBlocks.computeIfAbsent(Level.chunkHash(x >> 4, z >> 4), key -> new SimpleTickCachedBlockStore(this))
+                .computeFromCachedStore(x, y, z, layer, () -> getBlock(x, y, z, layer, load));
     }
 
     public synchronized Block getBlock(Vector3 pos) {
@@ -3984,16 +4086,43 @@ public class Level implements ChunkManager, Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
+    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
-        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
-        pk.eid = entity.getId();
-        pk.x = (float) x;
-        pk.y = (float) y;
-        pk.z = (float) z;
-        pk.yaw = (float) yaw;
-        pk.headYaw = (float) headYaw;
-        pk.pitch = (float) pitch;
-        pk.onGround = entity.onGround;
+//        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
+//        pk.eid = entity.getId();
+//        pk.x = (float) x;
+//        pk.y = (float) y;
+//        pk.z = (float) z;
+//        pk.yaw = (float) yaw;
+//        pk.headYaw = (float) headYaw;
+//        pk.pitch = (float) pitch;
+//        pk.onGround = entity.onGround;
+        MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
+        pk.runtimeEntityId = entity.getId();
+        if (entity.lastX != x){
+            pk.x = (float) x;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_X;
+        }
+        if (entity.lastY != y){
+            pk.y = (float) y;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Y;
+        }
+        if (entity.lastZ != z){
+            pk.z = (float) z;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
+        }
+        if (entity.lastYaw != yaw){
+            pk.yaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
+        }
+        if (entity.lastPitch != pitch){
+            pk.pitch = (float) pitch;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
+        }
+        if (entity.lastHeadYaw != headYaw){
+            pk.headYaw = (float) headYaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
+        }
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

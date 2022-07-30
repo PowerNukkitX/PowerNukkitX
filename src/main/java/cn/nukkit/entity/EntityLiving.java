@@ -4,12 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
 import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.passive.EntityWaterAnimal;
+import cn.nukkit.entity.passive.EntitySwimmingAnimal;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityWeather;
 import cn.nukkit.event.entity.*;
@@ -25,7 +26,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.utils.BlockIterator;
+import cn.nukkit.utils.TickCachedBlockIterator;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
 
@@ -248,7 +249,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
 
             if (!this.hasEffect(Effect.WATER_BREATHING) && !this.hasEffect(Effect.CONDUIT_POWER) && this.isInsideOfWater()) {
-                if (this instanceof EntityWaterAnimal || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
+                if (this instanceof EntitySwimmingAnimal || (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator()))) {
                     this.setAirTicks(400);
                 } else {
                     if (turtleTicks == 0 || turtleTicks == 200) {
@@ -264,7 +265,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                 }
             } else {
-                if (this instanceof EntityWaterAnimal) {
+                if (this instanceof EntitySwimmingAnimal) {
                     hasUpdate = true;
                     int airTicks = getAirTicks() - tickDiff;
 
@@ -301,7 +302,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         // Used to check collisions with magma / cactus blocks
-        var block = this.level.getBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
+        var block = this.level.getTickCachedBlock((int) Math.floor(x), (int) y - 1, (int) Math.floor(z));
         if (block instanceof BlockMagma || block instanceof BlockCactus) block.onEntityCollide(this);
 
         Timings.livingEntityBaseTickTimer.stopTiming();
@@ -337,7 +338,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         List<Block> blocks = new ArrayList<>();
 
-        BlockIterator itr = new BlockIterator(this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
+        var itr = new TickCachedBlockIterator(this.level, this.getPosition(), this.getDirectionVector(), this.getEyeHeight(), maxDistance);
 
         while (itr.hasNext()) {
             Block block = itr.next();
@@ -492,5 +493,23 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (attackTimeByShieldKb && attackTime == 0) {
             attackTime = attackTimeBefore;
         }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getAttackTime() {
+        return attackTime;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean isAttackTimeByShieldKb() {
+        return attackTimeByShieldKb;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public int getAttackTimeBefore() {
+        return attackTimeBefore;
     }
 }

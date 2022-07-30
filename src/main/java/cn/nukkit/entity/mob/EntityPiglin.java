@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Erik Miller | EinBexiii
  */
 @Since("1.3.1.0-PN")
-public class EntityPiglin extends EntityMob implements EntityAgeable {
+public class EntityPiglin extends EntityWalkingMob implements EntityAgeable {
 
     public final static int NETWORK_ID = 123;
 

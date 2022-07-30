@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntitySquid extends EntityWaterAnimal {
+public class EntitySquid extends EntitySwimmingAnimal {
 
     public static final int NETWORK_ID = 17;
 

@@ -8,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntityGhast extends EntityMob {
+public class EntityGhast extends EntityFlyingMob {
 
     public static final int NETWORK_ID = 41;
 

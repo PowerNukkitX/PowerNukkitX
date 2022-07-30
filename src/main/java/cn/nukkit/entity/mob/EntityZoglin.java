@@ -13,7 +13,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 @Since("1.3.1.0-PN")
 @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Implements EntityAgeable only in PowerNukkit!")
-public class EntityZoglin extends EntityMob implements EntityAgeable {
+public class EntityZoglin extends EntityWalkingMob implements EntityAgeable {
 
     public final static int NETWORK_ID = 126;
 

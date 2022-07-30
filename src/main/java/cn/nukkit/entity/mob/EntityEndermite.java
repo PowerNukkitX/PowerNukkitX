@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author Box.
  */
-public class EntityEndermite extends EntityMob implements EntityArthropod {
+public class EntityEndermite extends EntityWalkingMob implements EntityArthropod {
 
     public static final int NETWORK_ID = 55;
 

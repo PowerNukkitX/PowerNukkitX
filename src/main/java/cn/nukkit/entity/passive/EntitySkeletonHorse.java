@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAnimal implements EntitySmite {
+public class EntitySkeletonHorse extends EntityWalkingAnimal implements EntitySmite {
 
     public static final int NETWORK_ID = 26;
 

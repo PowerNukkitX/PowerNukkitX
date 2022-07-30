@@ -30,7 +30,11 @@ public class BVector3{
     }
 
     public static BVector3 fromPos(Vector3 pos){
-        return new BVector3(pos);
+        return new BVector3(pos.clone());
+    }
+
+    public static BVector3 fromPos(double x,double y,double z){
+        return fromPos(new Vector3(x,y,z));
     }
 
     private BVector3(double xzAxisAngle, double yAxisAngle, double length){
@@ -99,6 +103,13 @@ public class BVector3{
     public double getYaw(){
         double res = Double.isNaN(xzAxisAngle+270) ? 0 : xzAxisAngle+270;
         return pos.x < 0 ? res + 180 : res;
+    }
+
+    public double getHeadYaw(){
+        if (pos.x > 0)
+            return xzAxisAngle-90;
+        else
+            return xzAxisAngle+90;
     }
 
     public double getPitch(){
