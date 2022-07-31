@@ -34,6 +34,8 @@ public abstract class Tag {
 
     public abstract String toSnbt();
 
+    public abstract String toSnbt(int space);
+
     public abstract byte getId();
 
     protected Tag(String name) {

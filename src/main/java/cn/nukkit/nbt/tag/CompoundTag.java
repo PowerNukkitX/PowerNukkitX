@@ -140,7 +140,7 @@ public class CompoundTag extends Tag implements Cloneable {
     public boolean contains(String name) {
         return tags.containsKey(name);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean containsCompound(String name) {
@@ -184,7 +184,7 @@ public class CompoundTag extends Tag implements Cloneable {
         if (!(tag instanceof ListTag)) {
             return false;
         }
-        ListTag<?> list = (ListTag<?>)tag;
+        ListTag<?> list = (ListTag<?>) tag;
         byte listType = list.type;
         return listType == 0 || listType == type;
     }
@@ -324,14 +324,24 @@ public class CompoundTag extends Tag implements Cloneable {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
-        return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner.toString() + "\n}";
+        return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
     @Override
     public String toSnbt() {
         StringJoiner joiner = new StringJoiner(",");
         tags.forEach((key, tag) -> joiner.add(tag.toSnbt()));
-        return "\"" + this.getName() + "\":" + "{" + joiner + "}";
+        if (this.getName().equals("")) return "{" + joiner + "}";
+        else return "\"" + this.getName() + "\":" + "{" + joiner + "}";
+    }
+
+    public String toSnbt(int space) {
+        StringBuilder addSpace = new StringBuilder();
+        addSpace.append(" ".repeat(Math.max(0, space)));
+        StringJoiner joiner = new StringJoiner(",\n" + addSpace);
+        tags.forEach((key, tag) -> joiner.add(tag.toSnbt(space).replace("\n", "\n" + addSpace)));
+        if (this.getName().equals("")) return "{\n" + addSpace + joiner + "\n}";
+        else return "\"" + this.getName() + "\": " + "{\n" + addSpace + joiner + "\n}";
     }
 
     @Override
@@ -367,12 +377,12 @@ public class CompoundTag extends Tag implements Cloneable {
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), tags);
     }
-    
+
     /**
      * Check existence of NBT tag
      *

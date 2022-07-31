@@ -21,6 +21,8 @@ package cn.nukkit.nbt;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.powernukkit.tests.junit.jupiter.PowerNukkitExtension;
@@ -40,5 +42,37 @@ class NBTIOTest {
         Item recoveredItem = NBTIO.getItemHelper(compoundTag);
         Item correctItem = MinecraftItemID.COCOA_BEANS.get(12);
         assertEquals(correctItem, recoveredItem);
+    }
+
+    @Test
+    void TestToSnbt() {
+        var compoundTag = new CompoundTag();
+        compoundTag
+                .putList(new ListTag<CompoundTag>("list1")
+                        .add(new CompoundTag()
+                                .putInt("int", 1)
+                                .putString("str", "string"))
+                        .add(new CompoundTag()
+                                .putInt("int", 2)
+                                .putString("str", "string2")))
+                .putCompound("cmp", new CompoundTag()
+                        .putString("str", "string3")
+                        .putCompound("", new CompoundTag()
+                                .putInt("int1", 123)
+                                .putInt("int2", 321)
+                                .putInt("int3", 132)
+                                .putCompound("", new CompoundTag()
+                                        .putString("str1", "test1")
+                                        .putString("str2", "test2")
+                                        .putString("str3", "test3")
+                                        .putCompound("", new CompoundTag()
+                                                .putString("str1", "test1")
+                                                .putString("str2", "test2")
+                                                .putString("str3", "test3")))))
+                .putList(new ListTag<StringTag>("list2")
+                        .add(new StringTag("str", "string4"))
+                        .add(new StringTag("str", "string5"))
+                        .add(new StringTag("str", "string6")));
+        System.out.println(compoundTag.toSnbt(4));
     }
 }

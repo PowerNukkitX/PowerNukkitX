@@ -31,7 +31,12 @@ public class EndTag extends Tag {
 
     @Override
     public String toSnbt() {
-        return "";
+        return "\"" + this.getName() + "\":";
+    }
+
+    @Override
+    public String toSnbt(int space) {
+        return "\"" + this.getName() + "\": ";
     }
 
     @Override

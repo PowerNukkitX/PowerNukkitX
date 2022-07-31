@@ -28,7 +28,6 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
     protected int attackTick;
 
     protected Vector3 oldTarget;
-
     public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;

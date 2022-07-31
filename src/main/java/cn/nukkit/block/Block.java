@@ -1196,6 +1196,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
 
+    //自定义方块id从1000开始,按照FNV1 64bit计算hash值升序排序
+    @PowerNukkitXOnly
+    private static int nextBlockId = 1000;
+
     /**
      * 注册自定义方块
      *
@@ -1207,23 +1211,34 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
+        //方块升序排序
         SortedMap<String, CustomBlock> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         for (var clazz : blockClassList) {
             CustomBlock block = clazz.getDeclaredConstructor().newInstance();
             sortedCustomBlocks.put(block.getNamespace(), block);
         }
-        //自定义方块id从1000开始,按照FNV1 64bit计算hash值排序 hash值大的在前面
-        int nextBlockId = 1000;
-        for (var block : sortedCustomBlocks.values()) {
-            BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());
-            ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);
-            CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);
-            ++nextBlockId;
+        //监测该方块是否已经注册,如果已经注册将他排除
+        if (!CUSTOM_BLOCK_ID_MAP.isEmpty()) {
+            for (var key : sortedCustomBlocks.keySet()) {
+                if (CUSTOM_BLOCK_ID_MAP.containsKey(key)) {
+                    sortedCustomBlocks.remove(key);
+                }
+            }
         }
-        var blocks = sortedCustomBlocks.values().stream().toList();
-        BlockStateRegistry.registerCustomBlockState(blocks);
-        RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);
-        blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+        //排除后可能为空
+        if (!sortedCustomBlocks.isEmpty()) {
+            //注册各种数据
+            for (var block : sortedCustomBlocks.values()) {
+                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
+                ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
+                CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);//自定义方块标识符->自定义方块id
+                ++nextBlockId;
+            }
+            var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
+            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册创造栏物品
+            blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+        }
     }
 
     @PowerNukkitXOnly
@@ -1236,6 +1251,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         BlockStateRegistry.deleteCustomBlockState();
         ID_TO_CUSTOM_BLOCK.clear();
         CUSTOM_BLOCK_ID_MAP.clear();
+        nextBlockId = 1000;
     }
 
     @PowerNukkitXOnly
@@ -1383,6 +1399,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * 获取走过这个方块所需要的额外代价，通常用于水、浆果丛等难以让实体经过的方块
+     *
      * @return 走过这个方块所需要的额外代价
      */
     @PowerNukkitXOnly

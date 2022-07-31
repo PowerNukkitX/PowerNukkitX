@@ -181,9 +181,9 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     public synchronized void registerCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
-            int id = 255 - block.getId();
+            int id = 255 - block.getId();//方块物品id等于 255-方块id(即-750开始递减)
             RuntimeItems.Entry entry = new RuntimeItems.Entry(
-                    block.getNamespace(),
+                    block.getNamespace(),//方块命名空间也是方块物品命名空间
                     id,
                     id,
                     null,
@@ -196,7 +196,7 @@ public class RuntimeItemMapping {
             this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
             this.networkNamespaceMap.put(id, block.getNamespace());
             int fullId = RuntimeItems.getFullId(id, 0);
-            legacyNetworkMap.put(fullId, id << 1);
+            legacyNetworkMap.put(fullId, id << 1);//todo 实现多状态方块需要在这里加入数据值判断
             networkLegacyMap.put(id, fullId);
         }
         this.generatePalette();
