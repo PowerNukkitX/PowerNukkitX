@@ -16,6 +16,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected float speed;
+    protected Vector3 oldTarget;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
         this.memoryClazz = memoryClazz;
@@ -38,6 +39,13 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         setRouteTarget(entity, target);
         //更新视线target
         setLookTarget(entity, target);
+
+        var floor = target.floor();
+
+        if (oldTarget == null || oldTarget.equals(floor))
+            entity.getBehaviorGroup().setForceUpdateRoute(true);
+
+        oldTarget = floor;
 
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);
