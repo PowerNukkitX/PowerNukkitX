@@ -450,11 +450,13 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.6.0.0-PNX")
     public synchronized static void registerCustomBlockState(List<CustomBlock> blockCustoms) {
+        //清空原本的数据
         blockStateRegistration.clear();
         stateIdRegistration.clear();
         runtimeIdRegistration.clear();
+        //按照每组方块(因为每个方块可能有多种状态,将他们归为一个List)的namespace(形如minecraft:xxx)升序排序(遍历时Hash值小的在前面)
         SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(getBlockIdComparator());
-
+        //处理原版方块
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
@@ -465,6 +467,7 @@ public class BlockStateRegistry {
                     var name = tag.getString("name");
                     tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1));
                     if (!namespace2Nbt.containsKey(name)) {
+                        //每个方块可能有多种状态,将他们归为一个ArrayList
                         namespace2Nbt.put(name, new ArrayList<>());
                     }
                     namespace2Nbt.get(name).add(tag);
@@ -473,7 +476,7 @@ public class BlockStateRegistry {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-
+        //处理自定义方块
         for (var blockCustom : blockCustoms) {
             var namespace = blockCustom.getNamespace();
             blockIdToPersistenceName.put(blockCustom.getId(), namespace);
@@ -486,11 +489,13 @@ public class BlockStateRegistry {
                     .putCompound("states", new CompoundTag("states"));
             var nbtList = new ArrayList<CompoundTag>();
             nbtList.add(nbt);
+            //todo 实现多状态方块需要在这里注册
             namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
         }
         List<CompoundTag> tags = new ArrayList<>();
         Set<String> warned = new HashSet<>();
         Integer infoUpdateRuntimeId = null;
+        //由排序好的序列计算runtimeId(递增)
         int runtimeId = 0;
         for (var namespace : namespace2Nbt.keySet()) {
             for (var nbt : namespace2Nbt.get(namespace)) {
@@ -502,6 +507,7 @@ public class BlockStateRegistry {
                     infoUpdateRuntimeId = runtimeId;
                 }
                 if (isNameOwnerOfId(name, block)) {
+                    //注册stateIdRegistration和runtimeIdRegistration
                     registerStateId(nbt, runtimeId);
                 } else if (block == -1) {
                     if (warned.add(name)) {
