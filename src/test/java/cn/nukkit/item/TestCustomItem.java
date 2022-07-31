@@ -13,11 +13,12 @@ public class TestCustomItem extends ItemCustom {
         super(cons[0].as(String.class), cons[1].as(String.class));
         __initJSConstructor__("super_0", new Object[0]);
         cons = null;
+        __callJS__("constructor", new Object[0]);
     }
 
     public TestCustomItem(String id, String name) {
         super(id, name);
-        __initJSConstructor__("super_1", new Object[]{id, name});
+        __callJS__("constructor", new Object[]{id, name});
     }
 
     public static void __initJSConstructor__(String delegateName, Object[] args) {
@@ -32,6 +33,18 @@ public class TestCustomItem extends ItemCustom {
                 }
             } else {
                 cons = new Value[]{tmp};
+            }
+        }
+    }
+
+    private static Value __callJS__(String delegateName, Object[] args) {
+        //noinspection SynchronizeOnNonFinalField
+        synchronized (context) {
+            var func = delegate.getMember(delegateName);
+            if (func.canExecute()) {
+                return func.execute(args);
+            } else {
+                return Value.asValue(null);
             }
         }
     }

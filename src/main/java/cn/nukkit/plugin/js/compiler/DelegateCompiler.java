@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@SuppressWarnings("DuplicatedCode")
 public final class DelegateCompiler {
     private final JClassBuilder builder;
 
@@ -19,14 +20,12 @@ public final class DelegateCompiler {
 
     public byte[] compile() {
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        FieldVisitor fieldVisitor;
-        RecordComponentVisitor recordComponentVisitor;
-        MethodVisitor methodVisitor;
         classWriter.visit(V17, ACC_PUBLIC | ACC_SUPER, builder.getClassInternalName(), null,
                 builder.getSuperClass().asmType().getInternalName(), builder.getAllInterfaceClasses().stream()
                         .map(e -> e.asmType().getInternalName()).toArray(String[]::new));
         compileBasicStaticFields(classWriter);
         compileConstructorIniter(classWriter);
+        compileJSCaller(classWriter);
         builder.getAllConstructors().forEach(e -> compileConstructor(classWriter, e));
         return classWriter.toByteArray();
     }
@@ -72,10 +71,35 @@ public final class DelegateCompiler {
         methodVisitor.visitLabel(label3);
         methodVisitor.visitInsn(ACONST_NULL);
         methodVisitor.visitFieldInsn(PUTSTATIC, builder.getClassInternalName(), "cons", "[Lorg/graalvm/polyglot/Value;");
-        methodVisitor.visitInsn(RETURN);
-        Label label4 = new Label();
-        methodVisitor.visitLabel(label4);
-        methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label1, label4, 0);
+        // 调用主构造代理函数
+        if (jConstructor.constructorDelegateName() != null && !"".equals(jConstructor.constructorDelegateName())) {
+            var label4 = new Label();
+            methodVisitor.visitLabel(label4);
+            methodVisitor.visitLdcInsn(jConstructor.constructorDelegateName());
+            var argAsmTypes = jConstructor.argAsmTypes();
+            methodVisitor.visitLdcInsn(argAsmTypes.length + 1);
+            methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+            {
+                methodVisitor.visitInsn(DUP);
+                methodVisitor.visitInsn(ICONST_0);
+                methodVisitor.visitVarInsn(ALOAD, 0);
+                methodVisitor.visitInsn(AASTORE);
+            }
+            for (int i = 0, len = argAsmTypes.length; i < len; i++) {
+                methodVisitor.visitInsn(DUP);
+                methodVisitor.visitLdcInsn(i + 1);
+                methodVisitor.visitVarInsn(ALOAD, i + 1);
+                methodVisitor.visitInsn(AASTORE);
+            }
+            methodVisitor.visitMethodInsn(INVOKESTATIC, builder.getClassInternalName(), "__callJS__", "(Ljava/lang/String;[Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
+            methodVisitor.visitInsn(POP);
+            methodVisitor.visitInsn(RETURN);
+        } else {
+            methodVisitor.visitInsn(RETURN);
+        }
+        var label5 = new Label();
+        methodVisitor.visitLabel(label5);
+        methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label1, label5, 0);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
     }
@@ -198,6 +222,66 @@ public final class DelegateCompiler {
         methodVisitor.visitLocalVariable("tmp", "Lorg/graalvm/polyglot/Value;", null, label7, label16, 3);
         methodVisitor.visitLocalVariable("delegateName", "Ljava/lang/String;", null, label6, label18, 0);
         methodVisitor.visitLocalVariable("args", "[Ljava/lang/Object;", null, label6, label18, 1);
+        methodVisitor.visitMaxs(0, 0);
+        methodVisitor.visitEnd();
+    }
+
+    public void compileJSCaller(ClassWriter classWriter) {
+        var methodVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC, "__callJS__", "(Ljava/lang/String;[Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", null, null);
+        methodVisitor.visitCode();
+        var label0 = new Label();
+        var label1 = new Label();
+        var label2 = new Label();
+        methodVisitor.visitTryCatchBlock(label0, label1, label2, null);
+        var label3 = new Label();
+        var label4 = new Label();
+        methodVisitor.visitTryCatchBlock(label3, label4, label2, null);
+        var label5 = new Label();
+        methodVisitor.visitTryCatchBlock(label2, label5, label2, null);
+        var label6 = new Label();
+        methodVisitor.visitLabel(label6);
+        methodVisitor.visitFieldInsn(GETSTATIC, builder.getClassInternalName(), "context", "Lorg/graalvm/polyglot/Context;");
+        methodVisitor.visitInsn(DUP);
+        methodVisitor.visitVarInsn(ASTORE, 2);
+        methodVisitor.visitInsn(MONITORENTER);
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitFieldInsn(GETSTATIC, builder.getClassInternalName(), "delegate", "Lorg/graalvm/polyglot/Value;");
+        methodVisitor.visitVarInsn(ALOAD, 0);
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "getMember", "(Ljava/lang/String;)Lorg/graalvm/polyglot/Value;", false);
+        methodVisitor.visitVarInsn(ASTORE, 3);
+        var label7 = new Label();
+        methodVisitor.visitLabel(label7);
+        methodVisitor.visitVarInsn(ALOAD, 3);
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "canExecute", "()Z", false);
+        methodVisitor.visitJumpInsn(IFEQ, label3);
+        var label8 = new Label();
+        methodVisitor.visitLabel(label8);
+        methodVisitor.visitVarInsn(ALOAD, 3);
+        methodVisitor.visitVarInsn(ALOAD, 1);
+        methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "execute", "([Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
+        methodVisitor.visitVarInsn(ALOAD, 2);
+        methodVisitor.visitInsn(MONITOREXIT);
+        methodVisitor.visitLabel(label1);
+        methodVisitor.visitInsn(ARETURN);
+        methodVisitor.visitLabel(label3);
+        methodVisitor.visitInsn(ACONST_NULL);
+        methodVisitor.visitMethodInsn(INVOKESTATIC, "org/graalvm/polyglot/Value", "asValue", "(Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
+        methodVisitor.visitVarInsn(ALOAD, 2);
+        methodVisitor.visitInsn(MONITOREXIT);
+        methodVisitor.visitLabel(label4);
+        methodVisitor.visitInsn(ARETURN);
+        methodVisitor.visitLabel(label2);
+        methodVisitor.visitVarInsn(ASTORE, 4);
+        methodVisitor.visitVarInsn(ALOAD, 2);
+        methodVisitor.visitInsn(MONITOREXIT);
+        methodVisitor.visitLabel(label5);
+        methodVisitor.visitVarInsn(ALOAD, 4);
+        methodVisitor.visitInsn(ATHROW);
+        var label9 = new Label();
+        methodVisitor.visitLabel(label9);
+        methodVisitor.visitLocalVariable("func", "Lorg/graalvm/polyglot/Value;", null, label7, label2, 3);
+        methodVisitor.visitLocalVariable("delegateName", "Ljava/lang/String;", null, label6, label9, 0);
+        methodVisitor.visitLocalVariable("args", "[Ljava/lang/Object;", null, label6, label9, 1);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
     }

@@ -42,17 +42,32 @@ public class CompilerTest {
         var ctx = makeContext();
         var builder = new JClassBuilder(ctx)
                 .setDelegate(execJS(ctx, "oneArgConstructorCompile.js", """
-                var a = {testSuper: () => {
-                    print('oneArgConstructorCompile!');
-                    return ["test:test_item", "JUnit Test Item"];
-                }};
-                a
-                """))
+                        var a = {testSuper: () => {
+                            print('oneArgConstructorCompile!');
+                            return ["test:test_item", "JUnit Test Item"];
+                        }};
+                        a
+                        """))
                 .setSuperClass(JType.of(ItemCustom.class))
                 .setClassName("OneArgConstructorTestClass");
         builder.addConstructor(new JConstructor(builder, "testSuper", "",
                 new JType[]{JType.of(String.class), JType.of(String.class)}));
         builder.compileToFile(Path.of("./target/OneArgConstructorTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        System.out.println(obj);
+    }
+
+    @SneakyThrows
+    @Test
+    public void delegateConstructorCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "delegateConstructorCompile.js", "var a = {testSuper: () => {}, constructor: (self) => print(self + ' From Delegate!')};a"))
+                .setClassName("DelegateConstructorTestClass");
+        builder.addConstructor(new JConstructor(builder, "testSuper", "constructor", new JType[0]));
+        builder.compileToFile(Path.of("./target/DelegateConstructorTestClass.class"));
         var clazz = builder.compileToClass();
         System.out.println(clazz);
         var obj = clazz.getConstructor().newInstance();
