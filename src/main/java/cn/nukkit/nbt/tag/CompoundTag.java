@@ -341,7 +341,7 @@ public class CompoundTag extends Tag implements Cloneable {
         StringJoiner joiner = new StringJoiner(",\n" + addSpace);
         tags.forEach((key, tag) -> joiner.add(tag.toSnbt(space).replace("\n", "\n" + addSpace)));
         if (this.getName().equals("")) return "{\n" + addSpace + joiner + "\n}";
-        else return "\"" + this.getName() + "\":" + "{\n" + addSpace + joiner + "\n}";
+        else return "\"" + this.getName() + "\": " + "{\n" + addSpace + joiner + "\n}";
     }
 
     @Override
