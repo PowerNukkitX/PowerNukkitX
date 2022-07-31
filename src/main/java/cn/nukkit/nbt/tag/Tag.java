@@ -23,7 +23,6 @@ public abstract class Tag {
     public static final byte TAG_Int_Array = 11;
 
     public static final byte TAG_String_Array = 12;
-    protected static int nestNum = 1;//供toSnbt使用,代表嵌套层数
     private String name;
 
     abstract void write(NBTOutputStream dos) throws IOException;
