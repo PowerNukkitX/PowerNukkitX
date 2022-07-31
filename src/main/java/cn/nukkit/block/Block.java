@@ -1196,6 +1196,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Level.setCanRandomTick(blockId, receivesRandomTick);
     }
 
+    //自定义方块id从1000开始,按照FNV1 64bit计算hash值升序排序
+    @PowerNukkitXOnly
+    private static int nextBlockId = 1000;
+
     /**
      * 注册自定义方块
      *
@@ -1212,8 +1216,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             CustomBlock block = clazz.getDeclaredConstructor().newInstance();
             sortedCustomBlocks.put(block.getNamespace(), block);
         }
-        //自定义方块id从1000开始,按照FNV1 64bit计算hash值排序 hash值大的在前面
-        int nextBlockId = 1000;
         for (var block : sortedCustomBlocks.values()) {
             BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());
             ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);
