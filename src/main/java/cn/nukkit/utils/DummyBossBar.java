@@ -118,7 +118,7 @@ public class DummyBossBar {
         pkAdd.entityUniqueId = bossBarId;
         pkAdd.entityRuntimeId = bossBarId;
         pkAdd.x = (float) player.x;
-        pkAdd.y = (float) -10; // Below the bedrock
+        pkAdd.y = (float) -74; // Below the bedrock
         pkAdd.z = (float) player.z;
         pkAdd.speedX = 0;
         pkAdd.speedY = 0;
@@ -194,7 +194,7 @@ public class DummyBossBar {
         MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
         pk.eid = this.bossBarId;
         pk.x = this.player.x;
-        pk.y = -10;
+        pk.y = -74;
         pk.z = this.player.z;
         pk.headYaw = 0;
         pk.yaw = 0;
