@@ -27,6 +27,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
 
     protected int attackTick;
 
+    protected Vector3 oldTarget;
     public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
@@ -57,7 +58,14 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         //更新视线target
         setLookTarget(entity, clonedTarget);
 
-        if (entity.distanceSquared(target) <= 1 && attackTick > coolDown) {
+        var floor = clonedTarget.floor();
+
+        if (oldTarget == null || oldTarget.equals(floor))
+            entity.getBehaviorGroup().setForceUpdateRoute(true);
+
+        oldTarget = floor;
+
+        if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
             float damage = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand().getAttackDamage() : 0.5f;
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity,target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage);
             target.attack(ev);
