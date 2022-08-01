@@ -404,6 +404,8 @@ public class Item implements Cloneable, BlockID, ItemID {
 
             list[GLOW_BERRIES] = ItemGlowBerries.class; //638
 
+            list[CHEST_BOAT] = ItemChestBoat.class; //645
+
             list[CAMPFIRE] = ItemCampfire.class; //720
 
             list[SUSPICIOUS_STEW] = ItemSuspiciousStew.class; //734

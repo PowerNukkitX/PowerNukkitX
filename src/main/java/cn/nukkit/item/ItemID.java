@@ -282,6 +282,9 @@ public interface ItemID {
     @PowerNukkitXOnly
     int GLOW_BERRIES = 638;
 
+    @PowerNukkitXOnly
+    int CHEST_BOAT = 645;
+
     @PowerNukkitOnly
     int CAMPFIRE = 720;
 
