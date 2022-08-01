@@ -4121,8 +4121,11 @@ public class Level implements ChunkManager, Metadatable {
         }
         if (entity.lastHeadYaw != headYaw){
             pk.headYaw = (float) headYaw;
-            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
+        } else {
+            //add this hack for backward compatibility
+            pk.headYaw = (float) yaw;
         }
+        pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

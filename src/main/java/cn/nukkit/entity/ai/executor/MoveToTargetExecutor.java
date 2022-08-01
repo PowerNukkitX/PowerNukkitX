@@ -17,10 +17,16 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected float speed;
     protected Vector3 oldTarget;
+    boolean updateRouteImmediatelyWhenTargetChange;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
+        this(memoryClazz,speed,false);
+    }
+
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
+        this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
     }
 
     @Override
@@ -40,12 +46,14 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         //更新视线target
         setLookTarget(entity, target);
 
-        var floor = target.floor();
+        if (updateRouteImmediatelyWhenTargetChange) {
+            var floor = target.floor();
 
-        if (oldTarget == null || oldTarget.equals(floor))
-            entity.getBehaviorGroup().setForceUpdateRoute(true);
+            if (oldTarget == null || oldTarget.equals(floor))
+                entity.getBehaviorGroup().setForceUpdateRoute(true);
 
-        oldTarget = floor;
+            oldTarget = floor;
+        }
 
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);

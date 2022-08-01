@@ -7,7 +7,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.EntityMemory;
-import cn.nukkit.entity.mob.EntityMob;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
@@ -79,6 +78,17 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
 
     @Override
     public void onStop(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //重置速度
+        entity.setMovementSpeed(0.1f);
+        if (clearDataWhenLose) {
+            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
+        }
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
