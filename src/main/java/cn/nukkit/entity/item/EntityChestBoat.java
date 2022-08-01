@@ -56,7 +56,16 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (player.isSneaking()) player.addWindow(this.inventory);
+        if (player.isSneaking()) {
+            player.addWindow(this.inventory);
+            return false;
+        }
+
+        if (this.passengers.size() >= 1 || getWaterLevel() < -SINKING_DEPTH) {
+            return false;
+        }
+
+        super.mountEntity(player);
         return false;
     }
 
