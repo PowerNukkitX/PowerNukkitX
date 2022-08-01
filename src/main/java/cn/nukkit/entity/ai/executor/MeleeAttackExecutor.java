@@ -80,6 +80,17 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         }
     }
 
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //重置速度
+        entity.setMovementSpeed(0.1f);
+        if (clearDataWhenLose) {
+            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
+        }
+    }
+
     protected void playAttackAnimation(EntityIntelligent entity) {
         EntityEventPacket pk = new EntityEventPacket();
         pk.eid = entity.getId();
