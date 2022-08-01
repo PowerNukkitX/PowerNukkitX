@@ -1,18 +1,30 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
 import cn.nukkit.inventory.EntityInventoryHolder;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.utils.Utils;
 import lombok.Getter;
 
 import java.util.Collection;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -86,6 +98,119 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
             this.namedTag.putList(armorTag);
         }
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (this.isClosed() || !this.isAlive()) {
+            return false;
+        }
+
+        if (source.getCause() != EntityDamageEvent.DamageCause.VOID && source.getCause() != EntityDamageEvent.DamageCause.CUSTOM && source.getCause() != EntityDamageEvent.DamageCause.MAGIC && source.getCause() != EntityDamageEvent.DamageCause.HUNGER) {
+            int armorPoints = 0;
+            int epf = 0;
+//            int toughness = 0;
+
+            var armorInventory = this.getArmorInventory();
+            for (Item armor : armorInventory.getContents().values()) {
+                armorPoints += armor.getArmorPoints();
+                epf += calculateEnchantmentProtectionFactor(armor, source);
+                //toughness += armor.getToughness();
+            }
+
+            if (source.canBeReducedByArmor()) {
+                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, EntityDamageEvent.DamageModifier.ARMOR);
+            }
+
+            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+                    EntityDamageEvent.DamageModifier.ARMOR_ENCHANTMENTS);
+
+            source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), EntityDamageEvent.DamageModifier.ABSORPTION);
+        }
+
+        if (super.attack(source)) {
+            Entity damager = null;
+
+            if (source instanceof EntityDamageByEntityEvent) {
+                damager = ((EntityDamageByEntityEvent) source).getDamager();
+            }
+
+            for (int slot = 0; slot < 4; slot++) {
+                Item armor = damageArmor(armorInventory.getItem(slot), damager);
+                armorInventory.setItem(slot, armor, armor.getId() != BlockID.AIR);
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void setOnFire(int seconds) {
+        int level = 0;
+
+        for (Item armor : this.getArmorInventory().getContents().values()) {
+            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
+
+            if (fireProtection != null && fireProtection.getLevel() > 0) {
+                level = Math.max(level, fireProtection.getLevel());
+            }
+        }
+
+        seconds = (int) (seconds * (1 - level * 0.15));
+
+        super.setOnFire(seconds);
+    }
+
+    protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
+        if (!item.hasEnchantments()) {
+            return 0;
+        }
+
+        double epf = 0;
+
+        if(item.applyEnchantments()) {
+            for (Enchantment ench : item.getEnchantments()) {
+                epf += ench.getProtectionFactor(source);
+            }
+        }
+
+        return epf;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    protected Item damageArmor(Item armor, Entity damager) {
+        if (armor.hasEnchantments()) {
+            if (damager != null) {
+                if(armor.applyEnchantments()) {
+                    for (Enchantment enchantment : armor.getEnchantments()) {
+                        enchantment.doPostAttack(damager, this);
+                    }
+                }
+            }
+
+            Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+            if (durability != null
+                    && durability.getLevel() > 0
+                    && (100 / (durability.getLevel() + 1)) <= Utils.random.nextInt(100)) {
+                return armor;
+            }
+        }
+
+        if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
+            return armor;
+        }
+
+        armor.setDamage(armor.getDamage() + 1);
+
+        if (armor.getDamage() >= armor.getMaxDurability()) {
+            getLevel().addSound(this, Sound.RANDOM_BREAK);
+            return Item.get(BlockID.AIR, 0, 0);
+        }
+
+        return armor;
     }
 
     @Override
