@@ -135,7 +135,7 @@ public class AddEntityPacket extends DataPacket {
             .put(130, "minecraft:axolotl")
             .put(134, "minecraft:allay")
             .put(157, "minecraft:trader_llama")
-            .put(218, "minecraft:chest_boat")
+            .put(EntityChestBoat.NETWORK_ID, "minecraft:chest_boat")
             .build();
 
     @Override
