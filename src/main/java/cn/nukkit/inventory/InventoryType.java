@@ -47,7 +47,7 @@ public enum InventoryType {
     @PowerNukkitOnly CARTOGRAPHY(3, "Cartography Table", 30),
     @PowerNukkitOnly HUD(9, "Cartography Table", 31),
     //@PowerNukkitOnly JIGSAW_EDITOR(3, "Cartography Table", 32),
-    @PowerNukkitOnly CHEST_BOAT(27, "Chest Boat", 34),
+    @PowerNukkitOnly CHEST_BOAT(27, "Chest Boat", 0),// 34
     @PowerNukkitOnly BARREL(27, "Barrel", 0),
     @PowerNukkitOnly CAMPFIRE(4, "Campfire", -9), // -9 = NONE
     @PowerNukkitOnly @Since("1.4.0.0-PN") ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER
