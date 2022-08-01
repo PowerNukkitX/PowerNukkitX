@@ -84,7 +84,7 @@ public class EntityArmorInventory extends BaseInventory {
     @Since("1.4.0.0-PN")
     @PowerNukkitDifference(info = "now this method will return an Boolean",since = "1.6.0.0-PNX")
     public boolean setHelmet(Item item) {
-        return this.setItem(SLOT_CHEST, item);
+        return this.setItem(SLOT_HEAD, item);
     }
 
     @PowerNukkitOnly
