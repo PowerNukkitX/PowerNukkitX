@@ -55,6 +55,6 @@ public class TestCustomItem extends ItemCustom {
 
     @Override
     public boolean allowOffHand() {
-        return __super__allowOffHand();
+        return __callJS__("allowOffHand", new Object[]{}).as(Boolean.class);
     }
 }

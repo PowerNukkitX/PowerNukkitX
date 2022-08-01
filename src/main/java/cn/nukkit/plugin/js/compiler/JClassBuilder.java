@@ -20,17 +20,20 @@ public final class JClassBuilder {
     private JType superClass = JType.of(Object.class);
     private final List<JType> interfaceClasses;
     private final List<JConstructor> jConstructors;
+    private final List<JMethod> jMethods;
 
     public JClassBuilder(CommonJSPlugin jsPlugin) {
         this.jsContext = jsPlugin.getJsContext();
         this.jConstructors = new ArrayList<>();
         this.interfaceClasses = new ArrayList<>();
+        this.jMethods = new ArrayList<>();
     }
 
     public JClassBuilder(Context jsContext) {
         this.jsContext = jsContext;
         this.jConstructors = new ArrayList<>();
         this.interfaceClasses = new ArrayList<>();
+        this.jMethods = new ArrayList<>();
     }
 
     public Context getJsContext() {
@@ -89,6 +92,20 @@ public final class JClassBuilder {
 
     public List<JType> getAllInterfaceClasses() {
         return Collections.unmodifiableList(interfaceClasses);
+    }
+
+    public JClassBuilder addMethod(JMethod method) {
+        jMethods.add(method);
+        return this;
+    }
+
+    public JClassBuilder clearMethods() {
+        jMethods.clear();
+        return this;
+    }
+
+    public List<JMethod> getAllMethods() {
+        return jMethods;
     }
 
     public JClassBuilder setDelegate(Value delegate) {

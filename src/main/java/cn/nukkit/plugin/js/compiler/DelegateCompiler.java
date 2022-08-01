@@ -27,11 +27,60 @@ public final class DelegateCompiler {
         compileConstructorIniter(classWriter);
         compileJSCaller(classWriter);
         builder.getAllConstructors().forEach(e -> compileConstructor(classWriter, e));
+        builder.getAllMethods().forEach(e -> compileMethod(classWriter, e));
         return classWriter.toByteArray();
     }
 
     public Class<?> compileToClass(ClassLoader classLoader) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return loadClass(classLoader, compile());
+    }
+
+    public void compileMethod(ClassWriter classWriter, JMethod jMethod) {
+        var returnAsmType = jMethod.returnAsmType();
+        var argAsmTypes = jMethod.argAsmTypes();
+        var methodType = Type.getMethodType(returnAsmType, argAsmTypes);
+        var methodVisitor = classWriter.visitMethod(ACC_PUBLIC, jMethod.methodName(), methodType.getDescriptor(), null, null);
+        methodVisitor.visitCode();
+        var label0 = new Label();
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitLdcInsn(jMethod.methodName());
+        methodVisitor.visitLdcInsn(argAsmTypes.length + 1);
+        methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        {
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitInsn(AASTORE);
+        }
+        for (int i = 0, len = argAsmTypes.length; i < len; i++) {
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitLdcInsn(i + 1);
+            methodVisitor.visitVarInsn(ALOAD, i + 1);
+            methodVisitor.visitInsn(AASTORE);
+        }
+        methodVisitor.visitMethodInsn(INVOKESTATIC, builder.getClassInternalName(), "__callJS__", "(Ljava/lang/String;[Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
+        var sort = returnAsmType.getSort();
+        if (sort == Type.VOID) {
+            methodVisitor.visitInsn(POP);
+            methodVisitor.visitInsn(RETURN);
+        } else if (sort == Type.ARRAY || sort == Type.OBJECT) {
+            methodVisitor.visitLdcInsn(returnAsmType);
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "as", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
+            methodVisitor.visitTypeInsn(CHECKCAST, returnAsmType.getInternalName());
+            methodVisitor.visitInsn(ARETURN);
+        } else {
+            var boxInternalName = internalNameOfPrimitive(returnAsmType.getClassName());
+            methodVisitor.visitFieldInsn(GETSTATIC, boxInternalName, "TYPE", "Ljava/lang/Class;");
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "as", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
+            methodVisitor.visitTypeInsn(CHECKCAST, boxInternalName);
+            unBox(methodVisitor, boxInternalName);
+            methodVisitor.visitInsn(returnAsmType.getOpcode(IRETURN));
+        }
+        var label1 = new Label();
+        methodVisitor.visitLabel(label1);
+        methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label0, label1, 0);
+        methodVisitor.visitMaxs(0, 0);
+        methodVisitor.visitEnd();
     }
 
     public void compileConstructor(ClassWriter classWriter, JConstructor jConstructor) {
@@ -284,6 +333,33 @@ public final class DelegateCompiler {
         methodVisitor.visitLocalVariable("args", "[Ljava/lang/Object;", null, label6, label9, 1);
         methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
+    }
+
+    private String internalNameOfPrimitive(String primitiveType) {
+        return switch (primitiveType) {
+            case "boolean" -> "java/lang/Boolean";
+            case "byte" -> "java/lang/Byte";
+            case "char" -> "java/lang/Character";
+            case "short" -> "java/lang/Short";
+            case "int" -> "java/lang/Integer";
+            case "long" -> "java/lang/Long";
+            case "float" -> "java/lang/Float";
+            case "double" -> "java/lang/Double";
+            default -> throw new IllegalArgumentException("Unknown primitive type: " + primitiveType);
+        };
+    }
+
+    private void unBox(MethodVisitor methodVisitor, String boxType) {
+        switch (boxType) {
+            case "java/lang/Boolean" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false);
+            case "java/lang/Byte" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B", false);
+            case "java/lang/Short" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S", false);
+            case "java/lang/Character" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C", false);
+            case "java/lang/Integer" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+            case "java/lang/Long" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
+            case "java/lang/Float" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
+            case "java/lang/Double" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
+        }
     }
 
     private static WeakReference<Method> defineClassMethodRef = new WeakReference<>(null);
