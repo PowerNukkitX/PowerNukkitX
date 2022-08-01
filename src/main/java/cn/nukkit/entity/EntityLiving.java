@@ -154,6 +154,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
             pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
+
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.attackTime = source.getAttackCooldown();

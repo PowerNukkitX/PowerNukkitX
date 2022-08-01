@@ -10,9 +10,15 @@ import cn.nukkit.entity.ai.memory.EntityMemory;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.EntityInventoryHolder;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.MinecraftItemID;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -65,8 +71,28 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         oldTarget = floor;
 
         if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
-            float damage = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand().getAttackDamage() : 0.5f;
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity,target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage);
+            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.fromString(MinecraftItemID.AIR.getNamespacedId());
+            float itemDamage = item.getAttackDamage();
+            Enchantment[] enchantments = item.getEnchantments();
+            if (item.applyEnchantments()) {
+                for (Enchantment enchantment : enchantments) {
+                    itemDamage += enchantment.getDamageBonus(target);
+                }
+            }
+
+            Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+            damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
+
+            float knockBack = 0.3f;
+            if (item.applyEnchantments()) {
+                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                if (knockBackEnchantment != null) {
+                    knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                }
+            }
+
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
