@@ -6,12 +6,11 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.*;
 
-@SuppressWarnings("DuplicatedCode")
+@SuppressWarnings({"DuplicatedCode", "ClassCanBeRecord"})
 public final class DelegateCompiler {
     private final JClassBuilder builder;
 
@@ -28,6 +27,7 @@ public final class DelegateCompiler {
         compileConstructorIniter(classWriter);
         compileJSCaller(classWriter);
         builder.getAllConstructors().forEach(e -> compileConstructor(classWriter, e));
+        builder.getAllSuperMethods().forEach(e -> compileSuperMethod(classWriter, e));
         builder.getAllMethods().forEach(e -> compileMethod(classWriter, e));
         return classWriter.toByteArray();
     }
@@ -82,6 +82,27 @@ public final class DelegateCompiler {
             unBox(methodVisitor, boxInternalName);
             methodVisitor.visitInsn(returnAsmType.getOpcode(IRETURN));
         }
+        var label1 = new Label();
+        methodVisitor.visitLabel(label1);
+        methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label0, label1, 0);
+        methodVisitor.visitMaxs(0, 0);
+        methodVisitor.visitEnd();
+    }
+
+    public void compileSuperMethod(ClassWriter classWriter, JSuperMethod jSuperMethod) {
+        var returnAsmType = jSuperMethod.returnAsmType();
+        var argAsmTypes = jSuperMethod.argAsmTypes();
+        var methodType = Type.getMethodType(returnAsmType, argAsmTypes);
+        var methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "__super__" + jSuperMethod.methodName(), methodType.getDescriptor(), null, null);
+        methodVisitor.visitCode();
+        var label0 = new Label();
+        methodVisitor.visitLabel(label0);
+        methodVisitor.visitVarInsn(ALOAD, 0);
+        for (int i = 0, len = argAsmTypes.length; i < len; i++) {
+            methodVisitor.visitVarInsn(argAsmTypes[i].getOpcode(ILOAD), i + 1);
+        }
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, builder.getSuperClass().asmType().getInternalName(), jSuperMethod.methodName(), methodType.getDescriptor(), false);
+        methodVisitor.visitInsn(returnAsmType.getOpcode(IRETURN));
         var label1 = new Label();
         methodVisitor.visitLabel(label1);
         methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label0, label1, 0);

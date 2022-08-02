@@ -113,7 +113,7 @@ public class CompilerTest {
                         """))
                 .setClassName("SimpleMethodTestClass");
         builder.addConstructor(new JConstructor(builder, "testSuper", "",
-                new JType[]{}))
+                        new JType[]{}))
                 .addMethod(new JMethod(builder, "add", "", JType.of(int.class), JType.of(Integer.class), JType.of(long.class)));
         builder.compileToFile(Path.of("./target/SimpleMethodTestClass.class"));
         var clazz = builder.compileToClass();
@@ -122,6 +122,35 @@ public class CompilerTest {
         System.out.println(obj);
         var method = clazz.getMethod("add", Integer.class, long.class);
         Assertions.assertEquals(114514, method.invoke(obj, 114000, 514L));
+    }
+
+    @SneakyThrows
+    @Test
+    public void superMethodCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "superMethodCompile.js", """
+                        var a = {testSuper: () => {
+                            print('superMethodCompile!');
+                            return 114513;
+                        },
+                        incGet(javaThis) {
+                            return javaThis.__super__incrementAndGet();
+                        }};
+                        a
+                        """))
+                .setSuperClass(JType.of(AtomicInteger.class))
+                .setClassName("SuperMethodTestClass");
+        builder.addConstructor(new JConstructor(builder, "testSuper", "",
+                        new JType[]{JType.of(int.class)}))
+                .addSuperMethod(new JSuperMethod(builder, "incrementAndGet", JType.of(int.class)))
+                .addMethod(new JMethod(builder, "incGet", JType.of(int.class)));
+        builder.compileToFile(Path.of("./target/SuperMethodTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        var method = clazz.getMethod("incGet");
+        System.out.println(method.invoke(obj));
     }
 
     private Context makeContext() {
