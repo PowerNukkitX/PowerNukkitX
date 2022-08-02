@@ -56,6 +56,10 @@ public final class DelegateCompiler {
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(i + 1);
             methodVisitor.visitVarInsn(ALOAD, i + 1);
+            var argSort = argAsmTypes[i].getSort();
+            if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
+                box(methodVisitor, argAsmTypes[i].getClassName());
+            }
             methodVisitor.visitInsn(AASTORE);
         }
         methodVisitor.visitMethodInsn(INVOKESTATIC, builder.getClassInternalName(), "__callJS__", "(Ljava/lang/String;[Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
@@ -94,10 +98,15 @@ public final class DelegateCompiler {
         methodVisitor.visitLdcInsn(jConstructor.superDelegateName());
         methodVisitor.visitLdcInsn(jConstructor.argTypes().length);
         methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+        var argAsmTypes = jConstructor.argAsmTypes();
         for (int i = 0, len = jConstructor.argTypes().length; i < len; i++) {
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(i);
             methodVisitor.visitVarInsn(ALOAD, 1 + i);
+            var argSort = argAsmTypes[i].getSort();
+            if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
+                box(methodVisitor, argAsmTypes[i].getClassName());
+            }
             methodVisitor.visitInsn(AASTORE);
         }
         methodVisitor.visitMethodInsn(INVOKESTATIC, builder.getClassInternalName(), "__initJSConstructor__", "(Ljava/lang/String;[Ljava/lang/Object;)V", false);
@@ -110,9 +119,18 @@ public final class DelegateCompiler {
             methodVisitor.visitFieldInsn(GETSTATIC, builder.getClassInternalName(), "cons", "[Lorg/graalvm/polyglot/Value;");
             methodVisitor.visitLdcInsn(i);
             methodVisitor.visitInsn(AALOAD);
-            methodVisitor.visitLdcInsn(superAsmTypes[i]);
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "as", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
-            methodVisitor.visitTypeInsn(CHECKCAST, superAsmTypes[i].getInternalName());
+            var argType = superAsmTypes[i];
+            if (argType.getSort() == Type.OBJECT || argType.getSort() == Type.ARRAY) {
+                methodVisitor.visitLdcInsn(superAsmTypes[i]);
+                methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "as", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
+                methodVisitor.visitTypeInsn(CHECKCAST, superAsmTypes[i].getInternalName());
+            } else {
+                var boxInternalName = internalNameOfPrimitive(argType.getClassName());
+                methodVisitor.visitFieldInsn(GETSTATIC, boxInternalName, "TYPE", "Ljava/lang/Class;");
+                methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "org/graalvm/polyglot/Value", "as", "(Ljava/lang/Class;)Ljava/lang/Object;", false);
+                methodVisitor.visitTypeInsn(CHECKCAST, boxInternalName);
+                unBox(methodVisitor, boxInternalName);
+            }
         }
         methodVisitor.visitMethodInsn(INVOKESPECIAL, builder.getSuperClass().asmType().getInternalName(), "<init>", superType.getDescriptor(), false);
         // 清理cons临时静态变量
@@ -125,7 +143,7 @@ public final class DelegateCompiler {
             var label4 = new Label();
             methodVisitor.visitLabel(label4);
             methodVisitor.visitLdcInsn(jConstructor.constructorDelegateName());
-            var argAsmTypes = jConstructor.argAsmTypes();
+            argAsmTypes = jConstructor.argAsmTypes();
             methodVisitor.visitLdcInsn(argAsmTypes.length + 1);
             methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
             {
@@ -138,6 +156,10 @@ public final class DelegateCompiler {
                 methodVisitor.visitInsn(DUP);
                 methodVisitor.visitLdcInsn(i + 1);
                 methodVisitor.visitVarInsn(ALOAD, i + 1);
+                var argSort = argAsmTypes[i].getSort();
+                if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
+                    box(methodVisitor, argAsmTypes[i].getClassName());
+                }
                 methodVisitor.visitInsn(AASTORE);
             }
             methodVisitor.visitMethodInsn(INVOKESTATIC, builder.getClassInternalName(), "__callJS__", "(Ljava/lang/String;[Ljava/lang/Object;)Lorg/graalvm/polyglot/Value;", false);
@@ -345,7 +367,21 @@ public final class DelegateCompiler {
             case "long" -> "java/lang/Long";
             case "float" -> "java/lang/Float";
             case "double" -> "java/lang/Double";
-            default -> throw new IllegalArgumentException("Unknown primitive type: " + primitiveType);
+            default -> null;
+        };
+    }
+
+    private String primitiveOfClass(String internalName) {
+        return switch (internalName) {
+            case "java/lang/Boolean" -> "boolean";
+            case "java/lang/Byte" -> "byte";
+            case "java/lang/Character" -> "char";
+            case "java/lang/Short" -> "short";
+            case "java/lang/Integer" -> "int";
+            case "java/lang/Long" -> "long";
+            case "java/lang/Float" -> "float";
+            case "java/lang/Double" -> "double";
+            default -> null;
         };
     }
 
@@ -359,6 +395,19 @@ public final class DelegateCompiler {
             case "java/lang/Long" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
             case "java/lang/Float" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
             case "java/lang/Double" -> methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
+        }
+    }
+
+    private void box(MethodVisitor methodVisitor, String primitiveType) {
+        switch (primitiveType) {
+            case "boolean" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
+            case "byte" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;", false);
+            case "char" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;", false);
+            case "short" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;", false);
+            case "int" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            case "long" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
+            case "float" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
+            case "double" -> methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
         }
     }
 
