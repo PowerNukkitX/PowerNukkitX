@@ -6,6 +6,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -96,6 +97,31 @@ public class CompilerTest {
         System.out.println(clazz);
         var obj = clazz.getConstructor().newInstance();
         System.out.println(obj);
+    }
+
+    @SneakyThrows
+    @Test
+    public void simpleMethodCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "simpleMethodCompile.js", """
+                        var a = {testSuper: () => {
+                            print('simpleMethodCompile!');
+                        },
+                        add: (javaThis, a, b) => a + b};
+                        a
+                        """))
+                .setClassName("SimpleMethodTestClass");
+        builder.addConstructor(new JConstructor(builder, "testSuper", "",
+                new JType[]{}))
+                .addMethod(new JMethod(builder, "add", "", JType.of(int.class), JType.of(Integer.class), JType.of(long.class)));
+        builder.compileToFile(Path.of("./target/SimpleMethodTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        System.out.println(obj);
+        var method = clazz.getMethod("add", Integer.class, long.class);
+        Assertions.assertEquals(114514, method.invoke(obj, 114000, 514L));
     }
 
     private Context makeContext() {

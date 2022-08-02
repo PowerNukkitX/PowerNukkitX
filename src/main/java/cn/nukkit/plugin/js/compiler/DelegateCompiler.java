@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -55,10 +56,11 @@ public final class DelegateCompiler {
         for (int i = 0, len = argAsmTypes.length; i < len; i++) {
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(i + 1);
-            methodVisitor.visitVarInsn(ALOAD, i + 1);
-            var argSort = argAsmTypes[i].getSort();
-            if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
-                box(methodVisitor, argAsmTypes[i].getClassName());
+            var argType = argAsmTypes[i];
+            var argSort = argType.getSort();
+            methodVisitor.visitVarInsn(argType.getOpcode(ILOAD), i + 1);
+            if (argSort != Type.OBJECT && argSort != Type.ARRAY) {
+                box(methodVisitor, argType.getClassName());
             }
             methodVisitor.visitInsn(AASTORE);
         }
@@ -102,10 +104,11 @@ public final class DelegateCompiler {
         for (int i = 0, len = jConstructor.argTypes().length; i < len; i++) {
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitLdcInsn(i);
-            methodVisitor.visitVarInsn(ALOAD, 1 + i);
-            var argSort = argAsmTypes[i].getSort();
-            if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
-                box(methodVisitor, argAsmTypes[i].getClassName());
+            var argType = argAsmTypes[i];
+            var argSort = argType.getSort();
+            methodVisitor.visitVarInsn(argType.getOpcode(ILOAD), 1 + i);
+            if (argSort != Type.OBJECT && argSort != Type.ARRAY) {
+                box(methodVisitor, argType.getClassName());
             }
             methodVisitor.visitInsn(AASTORE);
         }
@@ -155,10 +158,11 @@ public final class DelegateCompiler {
             for (int i = 0, len = argAsmTypes.length; i < len; i++) {
                 methodVisitor.visitInsn(DUP);
                 methodVisitor.visitLdcInsn(i + 1);
-                methodVisitor.visitVarInsn(ALOAD, i + 1);
-                var argSort = argAsmTypes[i].getSort();
-                if (argSort == Type.OBJECT || argSort == Type.ARRAY) {
-                    box(methodVisitor, argAsmTypes[i].getClassName());
+                var argType = argAsmTypes[i];
+                var argSort = argType.getSort();
+                methodVisitor.visitVarInsn(argType.getOpcode(ILOAD), i + 1);
+                if (argSort != Type.OBJECT && argSort != Type.ARRAY) {
+                    box(methodVisitor, argType.getClassName());
                 }
                 methodVisitor.visitInsn(AASTORE);
             }
