@@ -239,6 +239,31 @@ public final class JSEventManager {
             return this;
         }
 
+        public CommandBuilder addEnumBlockParameter(String name, boolean optional) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_BLOCK));
+            return this;
+        }
+
+        public CommandBuilder addEnumEntityParameter(String name, boolean optional) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_ENTITY));
+            return this;
+        }
+
+        public CommandBuilder addEnumItemParameter(String name, boolean optional) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_ITEM));
+            return this;
+        }
+
+        public CommandBuilder addEnumBooleanParameter(String name, boolean optional) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_BOOLEAN));
+            return this;
+        }
+
+        public CommandBuilder addEnumGameModeParameter(String name, boolean optional) {
+            currentCommandParameterList.add(CommandParameter.newEnum(name, optional, CommandEnum.ENUM_GAMEMODE));
+            return this;
+        }
+
         public boolean register() {
             if (currentCommandPatternId != null && currentCommandParameterList != null && currentCommandParameterList.size() != 0) {
                 if (commandParameters == null) {

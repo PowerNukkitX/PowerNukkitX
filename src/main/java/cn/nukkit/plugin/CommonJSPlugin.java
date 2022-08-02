@@ -78,7 +78,9 @@ public class CommonJSPlugin implements Plugin, Listener {
                 .allowExperimentalOptions(true)
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.shared-array-buffer", "true")
-                .option("js.foreign-object-prototype", "true");
+                .option("js.foreign-object-prototype", "true")
+                .option("js.nashorn-compat", "true")
+                .option("js.ecmascript-version", "13");
         if (Nukkit.CHROME_DEBUG_PORT != -1 && Nukkit.JS_DEBUG_LIST.contains(description.getName())) {
             cbd.option("inspect", String.valueOf(Nukkit.CHROME_DEBUG_PORT))
                     .option("inspect.Path", description.getName())

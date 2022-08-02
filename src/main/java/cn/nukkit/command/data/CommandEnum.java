@@ -26,6 +26,10 @@ public class CommandEnum {
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_ITEM;
 
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public static final CommandEnum ENUM_ENTITY;
+
     static {
         /*ImmutableList.Builder<String> blocks = ImmutableList.builder();
         for (Field field : BlockID.class.getDeclaredFields()) {
@@ -40,6 +44,8 @@ public class CommandEnum {
             .map(it-> it.substring(10).toLowerCase())
             .toArray(String[]::new)
         )*/ Collections.emptyList());
+
+        ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
     }
 
     private String name;

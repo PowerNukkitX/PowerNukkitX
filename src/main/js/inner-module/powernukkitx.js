@@ -80,6 +80,11 @@ export const PowerNukkitX = {
      *     addFilePathParameter: (name: string, optional: boolean) => this,
      *     addOperatorParameter: (name: string, optional: boolean) => this,
      *     addEnumParameter: (name: string, optional: boolean, ...string) => this,
+     *     addEnumBlockParameter: (name: string, optional: boolean) => this,
+     *     addEnumEntityParameter: (name: string, optional: boolean) => this,
+     *     addEnumItemParameter: (name: string, optional: boolean) => this,
+     *     addEnumBooleanParameter: (name: string, optional: boolean) => this,
+     *     addEnumGameModeParameter: (name: string, optional: boolean) => this,
      *     register: () => boolean
      * }}
      */

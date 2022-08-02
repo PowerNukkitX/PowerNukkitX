@@ -40,6 +40,8 @@ public final class JSJob implements AutoCloseable {
                 .option("js.esm-eval-returns-exports", "true")
                 .option("js.shared-array-buffer", "true")
                 .option("js.foreign-object-prototype", "true")
+                .option("js.nashorn-compat", "true")
+                .option("js.ecmascript-version", "13")
                 .build();
         JSIInitiator.init(jobContext);
         this.sourcePath = fileSystem.parsePath(jobSourcePath);
