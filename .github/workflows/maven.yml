@@ -44,8 +44,6 @@ jobs:
           java-version: 17
       - name: Build with Maven
         run: mvn -B package -Darguments="-Dmaven.javadoc.skip=true"
-      - name: JUnit tests
-        run: mvn -B test
       - name: Rename artifacts
         run: |
           cd target
