@@ -1,11 +1,11 @@
 package cn.nukkit.plugin.js.compiler;
 
+import cn.nukkit.utils.StringUtils;
 import org.objectweb.asm.*;
+import org.objectweb.asm.Type;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -27,6 +27,7 @@ public final class DelegateCompiler {
         compileConstructorIniter(classWriter);
         compileJSCaller(classWriter);
         builder.getAllConstructors().forEach(e -> compileConstructor(classWriter, e));
+        builder.getAllSuperFields().forEach(e -> compileSuperField(classWriter, e));
         builder.getAllSuperMethods().forEach(e -> compileSuperMethod(classWriter, e));
         builder.getAllMethods().forEach(e -> compileMethod(classWriter, e));
         return classWriter.toByteArray();
@@ -34,6 +35,54 @@ public final class DelegateCompiler {
 
     public Class<?> compileToClass(ClassLoader classLoader) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return loadClass(classLoader, compile());
+    }
+
+    public void compileSuperField(ClassWriter classWriter, JSuperField jSuperField) {
+        var asmType = jSuperField.asmType();
+        Field field = null;
+        var clazz = builder.superJavaClassObj;
+        while (clazz != null && clazz != Object.class) {
+            try {
+                field = clazz.getDeclaredField(jSuperField.name());
+                break;
+            } catch (NoSuchFieldException e) {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        // 编译Getter
+        if (field != null && (Modifier.isPublic(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))){
+            var methodType = Type.getMethodType(asmType);
+            var methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "get" + StringUtils.capitalize(jSuperField.name()), methodType.getDescriptor(), null, null);
+            methodVisitor.visitCode();
+            var label0 = new Label();
+            methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitFieldInsn(GETFIELD, builder.getClassInternalName(), jSuperField.name(), asmType.getDescriptor());
+            methodVisitor.visitInsn(asmType.getOpcode(IRETURN));
+            var label1 = new Label();
+            methodVisitor.visitLabel(label1);
+            methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label0, label1, 0);
+            methodVisitor.visitMaxs(0, 0);
+            methodVisitor.visitEnd();
+        }
+        if (field != null && !Modifier.isFinal(field.getModifiers()) && (Modifier.isPublic(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))) {
+            var methodType = Type.getMethodType(Type.VOID_TYPE, asmType);
+            var methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "set" + StringUtils.capitalize(jSuperField.name()), methodType.getDescriptor(), null, null);
+            methodVisitor.visitCode();
+            var label0 = new Label();
+            methodVisitor.visitLabel(label0);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitVarInsn(asmType.getOpcode(ILOAD), 1);
+            methodVisitor.visitFieldInsn(PUTFIELD, builder.getClassInternalName(), jSuperField.name(), asmType.getDescriptor());
+            var label1 = new Label();
+            methodVisitor.visitLabel(label1);
+            methodVisitor.visitInsn(RETURN);
+            var label2 = new Label();
+            methodVisitor.visitLabel(label2);
+            methodVisitor.visitLocalVariable("this", builder.getClassDescriptor(), null, label0, label2, 0);
+            methodVisitor.visitMaxs(0, 0);
+            methodVisitor.visitEnd();
+        }
     }
 
     public void compileMethod(ClassWriter classWriter, JMethod jMethod) {

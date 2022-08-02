@@ -57,4 +57,12 @@ public class TestCustomItem extends ItemCustom {
     public boolean allowOffHand() {
         return __callJS__("allowOffHand", new Object[]{}).as(Boolean.class);
     }
+
+    public int getMeta() {
+        return this.meta;
+    }
+
+    public void setMeta(int meta) {
+        this.meta = meta;
+    }
 }

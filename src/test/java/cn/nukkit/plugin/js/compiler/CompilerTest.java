@@ -153,6 +153,34 @@ public class CompilerTest {
         System.out.println(method.invoke(obj));
     }
 
+    @SneakyThrows
+    @Test
+    public void superFieldCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "superFieldCompile.js", """
+                        var a = {new: () => {
+                            return ["test:test_item", "JUnit Test Item"];
+                        },
+                        constructor(javaThis) {
+                            print(javaThis.meta);
+                            javaThis.setMeta(114514);
+                            print(javaThis.meta);
+                        }};
+                        a
+                        """))
+                .setSuperClass(JType.of(ItemCustom.class))
+                .setClassName("SuperFieldTestClass");
+        builder.addConstructor(new JConstructor(builder, "new", "constructor",
+                new JType[]{JType.of(String.class), JType.of(String.class)}));
+        builder.addSuperField(new JSuperField(builder, "meta", JType.of(int.class)));
+        builder.compileToFile(Path.of("./target/SuperFieldTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        System.out.println(obj);
+    }
+
     private Context makeContext() {
         return Context.newBuilder("js")
                 .allowAllAccess(true)

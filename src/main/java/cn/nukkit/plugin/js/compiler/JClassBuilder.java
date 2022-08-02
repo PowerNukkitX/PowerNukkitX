@@ -22,6 +22,9 @@ public final class JClassBuilder {
     private final List<JConstructor> jConstructors;
     private final List<JMethod> jMethods;
     private final List<JSuperMethod> jSuperMethods;
+    private final List<JSuperField> jSuperFields;
+
+    Class<?> superJavaClassObj = Object.class;
 
     public JClassBuilder(CommonJSPlugin jsPlugin) {
         this.jsContext = jsPlugin.getJsContext();
@@ -29,6 +32,7 @@ public final class JClassBuilder {
         this.interfaceClasses = new ArrayList<>();
         this.jMethods = new ArrayList<>();
         this.jSuperMethods = new ArrayList<>();
+        this.jSuperFields = new ArrayList<>();
     }
 
     public JClassBuilder(Context jsContext) {
@@ -37,6 +41,7 @@ public final class JClassBuilder {
         this.interfaceClasses = new ArrayList<>();
         this.jMethods = new ArrayList<>();
         this.jSuperMethods = new ArrayList<>();
+        this.jSuperFields = new ArrayList<>();
     }
 
     public Context getJsContext() {
@@ -76,6 +81,11 @@ public final class JClassBuilder {
 
     public JClassBuilder setSuperClass(JType superClass) {
         this.superClass = superClass;
+        try {
+            this.superJavaClassObj = Class.forName(superClass.asmType().getClassName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -123,6 +133,20 @@ public final class JClassBuilder {
 
     public List<JSuperMethod> getAllSuperMethods() {
         return jSuperMethods;
+    }
+
+    public JClassBuilder addSuperField(JSuperField superField) {
+        this.jSuperFields.add(superField);
+        return this;
+    }
+
+    public JClassBuilder clearSuperFields() {
+        this.jSuperFields.clear();
+        return this;
+    }
+
+    public List<JSuperField> getAllSuperFields() {
+        return jSuperFields;
     }
 
     public JClassBuilder setDelegate(Value delegate) {
