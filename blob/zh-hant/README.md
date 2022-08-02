@@ -34,7 +34,7 @@ PowerNukkitX的優勢：
 4. 原生支持香草命令和命令方塊等（完善中）。
 5. 內置[Terra](https://github.com/PolyhedralDev/Terra)地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
 6. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
-7. 支持自定義方塊 / 物品（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
+7. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
 8. Todo…
 
 ---
