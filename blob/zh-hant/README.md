@@ -101,16 +101,8 @@ dependencies {
 
 🛠 部署運行
 -------------
-* **在任意一個空文件夾**內放入編譯完成的核心文件，並使用終端輸入 `java -jar powernukkitx-<version>-shaded.jar` 即可開始部署運行。
-
-* 但為了獲得更好的性能，我們推薦您使用以下命令用於部署。
-```sh
-java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -jar powernukkitx-<version>-shaded.jar
-```
-
-* 請酌情根據您的服務器配置調節 `-Xmx` (JVM可以調用的最大內存) 和 `-Xms` (JVM的初始內存)，同時根據您編譯的JAR核心名稱手動調整 `powernukkitx-<version>-shaded.jar`中的內容。
-
-* 您可在此[文章](https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/)中獲取更多有關信息。
+我們製作了 [命令行工具](https://github.com/PowerNukkitX/PNX-CLI) 來幫助您運行PNX，您可以在 [此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)
+查看如何啟動PNX。
 
 🧐 貢獻一份力量
 ---
