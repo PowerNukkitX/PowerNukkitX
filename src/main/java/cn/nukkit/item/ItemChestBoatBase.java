@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
-public class ItemChestBoatBase extends Item {
+public abstract class ItemChestBoatBase extends Item {
 
     public ItemChestBoatBase(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
