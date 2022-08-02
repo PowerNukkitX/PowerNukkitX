@@ -280,7 +280,39 @@ public interface ItemID {
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
-    int GLOW_BERRIES = 638;
+    int OAK_CHEST_BOAT = 638;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int BIRCH_CHEST_BOAT = 639;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int JUNGLE_CHEST_BOAT = 640;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int SPRUCE_CHEST_BOAT = 641;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int ACACIA_CHEST_BOAT = 642;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int DARK_OAK_CHEST_BOAT = 643;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int MANGROVE_CHEST_BOAT = 644;
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    int CHEST_BOAT = 645;
+
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int GLOW_BERRIES = 654;
 
     @PowerNukkitOnly
     int CAMPFIRE = 720;

@@ -2719,6 +2719,7 @@ public class Server {
         Entity.registerEntity("Human", EntityHuman.class, true);
         //Vehicle
         Entity.registerEntity("Boat", EntityBoat.class);
+        Entity.registerEntity("ChestBoat", EntityChestBoat.class);
         Entity.registerEntity("MinecartChest", EntityMinecartChest.class);
         Entity.registerEntity("MinecartHopper", EntityMinecartHopper.class);
         Entity.registerEntity("MinecartRideable", EntityMinecartEmpty.class);
