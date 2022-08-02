@@ -96,6 +96,14 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     }
 
     @Override
+    public String getInteractButtonText(Player player) {
+        if (player.isSneaking()) {
+            return "action.interact.opencontainer";
+        }
+        return "action.interact.ride.boat";
+    }
+
+    @Override
     public void initEntity() {
         super.initEntity();
 
