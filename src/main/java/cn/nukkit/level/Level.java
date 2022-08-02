@@ -3551,7 +3551,8 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public synchronized boolean unloadChunk(int x, int z, boolean safe, boolean trySave) {
-        if (safe && (this.isChunkInUse(x, z) || getServer().getTickingAreaManager().getTickingAreaByChunk(this.getName(), new TickingArea.ChunkPos(x, z)) != null)) {
+        var tickingAreaManager = getServer().getTickingAreaManager();
+        if (safe && (this.isChunkInUse(x, z) || (tickingAreaManager != null && tickingAreaManager.getTickingAreaByChunk(this.getName(), new TickingArea.ChunkPos(x, z)) != null))) {
             return false;
         }
 
