@@ -308,9 +308,9 @@ public class Level implements ChunkManager, Metadatable {
     public int tickRateOptDelay = 1;
 
     private Class<? extends Generator> generatorClass;
-    private IterableThreadLocal<Generator> generators = new IterableThreadLocal<Generator>() {
+    private ThreadLocal<Generator> generators = new ThreadLocal<Generator>() {
         @Override
-        public Generator init() {
+        public Generator initialValue() {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
@@ -587,7 +587,6 @@ public class Level implements ChunkManager, Metadatable {
         this.blockMetadata = null;
         this.temporalPosition = null;
         this.server.getLevels().remove(this.levelId);
-        this.generators.clean();
     }
 
     public void addSound(Vector3 pos, Sound sound) {
