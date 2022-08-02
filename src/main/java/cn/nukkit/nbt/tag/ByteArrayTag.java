@@ -52,7 +52,7 @@ public class ByteArrayTag extends Tag {
 
     @Override
     public String toSnbt() {
-        return "\"" + this.getName() + "\":" + Arrays.toString(data).replace("[", "[B;");
+        return "\"" + this.getName() + "\":" + Arrays.toString(data).replace("[", "[B;").replace(" ", "");
     }
 
     @Override
