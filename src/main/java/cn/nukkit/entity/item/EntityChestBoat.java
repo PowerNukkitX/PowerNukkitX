@@ -7,6 +7,7 @@ import cn.nukkit.inventory.ChestBoatInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -38,15 +39,6 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public void dropItem() {
-        this.level.dropItem(this, Item.get(Item.CHEST));
-        this.level.dropItem(this, Item.fromString("minecraft:chest_boat"));
-        for (Item item : this.inventory.getContents().values()) {
-            this.level.dropItem(this, item);
-        }
-        this.inventory.clearAll();
     }
 
     @Override
@@ -127,5 +119,25 @@ public class EntityChestBoat extends EntityBoat implements InventoryHolder {
                 }
             }
         }
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    protected void dropItem() {
+        switch (this.getVariant()) {
+            case 0 -> this.level.dropItem(this, Item.get(ItemID.OAK_CHEST_BOAT));
+            case 1 -> this.level.dropItem(this, Item.get(ItemID.SPRUCE_CHEST_BOAT));
+            case 2 -> this.level.dropItem(this, Item.get(ItemID.BIRCH_CHEST_BOAT));
+            case 3 -> this.level.dropItem(this, Item.get(ItemID.JUNGLE_CHEST_BOAT));
+            case 4 -> this.level.dropItem(this, Item.get(ItemID.ACACIA_CHEST_BOAT));
+            case 5 -> this.level.dropItem(this, Item.get(ItemID.DARK_OAK_CHEST_BOAT));
+            case 6 -> this.level.dropItem(this, Item.get(ItemID.MANGROVE_CHEST_BOAT));
+            default -> this.level.dropItem(this, Item.get(ItemID.CHEST_BOAT));
+        }
+
+        for (Item item : this.inventory.getContents().values()) {
+            this.level.dropItem(this, item);
+        }
+        this.inventory.clearAll();
     }
 }

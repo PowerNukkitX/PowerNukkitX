@@ -1,10 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
@@ -554,8 +551,14 @@ public class EntityBoat extends EntityVehicle {
         super.kill();
 
         if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
+            dropItem();
         }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    protected void dropItem(){
+        this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
 
     @Override
