@@ -5671,51 +5671,35 @@
   },
   {
     "name": "minecraft:oak_chest_boat",
-    "id": 638,
-    "oldData": 0,
-    "oldId": 645
+    "id": 638
   },
   {
     "name": "minecraft:birch_chest_boat",
-    "id": 639,
-    "oldData": 1,
-    "oldId": 645
+    "id": 639
   },
   {
     "name": "minecraft:jungle_chest_boat",
-    "id": 640,
-    "oldData": 2,
-    "oldId": 645
+    "id": 640
   },
   {
     "name": "minecraft:spruce_chest_boat",
-    "id": 641,
-    "oldData": 3,
-    "oldId": 645
+    "id": 641
   },
   {
     "name": "minecraft:acacia_chest_boat",
-    "id": 642,
-    "oldData": 4,
-    "oldId": 645
+    "id": 642
   },
   {
     "name": "minecraft:dark_oak_chest_boat",
-    "id": 643,
-    "oldData": 5,
-    "oldId": 645
+    "id": 643
   },
   {
     "name": "minecraft:mangrove_chest_boat",
-    "id": 644,
-    "oldData": 6,
-    "oldId": 645
+    "id": 644
   },
   {
     "name": "minecraft:chest_boat",
-    "id": 645,
-    "oldData": 7,
-    "oldId": 645
+    "id": 645
   },
   {
     "name": "minecraft:recovery_compass",

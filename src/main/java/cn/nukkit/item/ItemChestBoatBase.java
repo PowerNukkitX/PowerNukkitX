@@ -23,6 +23,8 @@ public abstract class ItemChestBoatBase extends Item {
         return true;
     }
 
+    public abstract int getBoatId();
+
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (face != BlockFace.UP && !(block instanceof BlockWater)) return false;
@@ -39,7 +41,7 @@ public abstract class ItemChestBoatBase extends Item {
                         .putList(new ListTag<FloatTag>("Rotation")
                                 .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
                                 .add(new FloatTag("", 0)))
-                        .putInt("Variant", getDamage())
+                        .putInt("Variant", getBoatId())
         );
 
         if (boat == null) {
