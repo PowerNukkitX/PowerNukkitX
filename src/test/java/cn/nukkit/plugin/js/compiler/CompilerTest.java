@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CompilerTest {
     @SneakyThrows
@@ -68,6 +69,29 @@ public class CompilerTest {
                 .setClassName("DelegateConstructorTestClass");
         builder.addConstructor(new JConstructor(builder, "testSuper", "constructor", new JType[0]));
         builder.compileToFile(Path.of("./target/DelegateConstructorTestClass.class"));
+        var clazz = builder.compileToClass();
+        System.out.println(clazz);
+        var obj = clazz.getConstructor().newInstance();
+        System.out.println(obj);
+    }
+
+    @SneakyThrows
+    @Test
+    public void unBoxConstructorCompile() {
+        var ctx = makeContext();
+        var builder = new JClassBuilder(ctx)
+                .setDelegate(execJS(ctx, "unBoxConstructorCompile.js", """
+                        var a = {testSuper: () => {
+                            print('unBoxConstructorCompile!');
+                            return 114514;
+                        }};
+                        a
+                        """))
+                .setSuperClass(JType.of(AtomicInteger.class))
+                .setClassName("UnBoxConstructorTestClass");
+        builder.addConstructor(new JConstructor(builder, "testSuper", "",
+                new JType[]{JType.of(int.class)}));
+        builder.compileToFile(Path.of("./target/UnBoxConstructorTestClass.class"));
         var clazz = builder.compileToClass();
         System.out.println(clazz);
         var obj = clazz.getConstructor().newInstance();

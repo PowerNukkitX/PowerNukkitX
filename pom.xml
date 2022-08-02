@@ -83,7 +83,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jline.version>3.21.0</jline.version>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
         <skipGpg>true</skipGpg>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <graalvm.version>22.0.0.2</graalvm.version>
@@ -100,6 +100,7 @@
                 <profiles.active>fast-dev</profiles.active>
                 <skipShade>none</skipShade>
                 <skipCopyLibs>true</skipCopyLibs>
+                <skipTests>true</skipTests>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -549,6 +550,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
