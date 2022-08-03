@@ -4111,23 +4111,34 @@ public class Level implements ChunkManager, Metadatable {
             pk.z = (float) z;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
         }
-        if (entity.lastYaw != yaw){
-            pk.yaw = (float) yaw;
-            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
-        }
         if (entity.lastPitch != pitch){
             pk.pitch = (float) pitch;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
+        }
+        if (entity.lastYaw != yaw){
+            pk.yaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
         }
         if (entity.lastHeadYaw != headYaw){
             pk.headYaw = (float) headYaw;
         } else {
             //add this hack for backward compatibility
-            pk.headYaw = (float) yaw;
+            pk.headYaw = (float) convertYawToHeadYaw(yaw);
         }
         pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
+    }
+
+    private double convertYawToHeadYaw(double yaw){
+        double xzAxisAngle = yaw - 270;
+        double x = BVector3.cos(xzAxisAngle);
+        if (x > 0)
+            return xzAxisAngle-90;
+        else
+            return xzAxisAngle+90;
+//        BVector3 bv = BVector3.fromLocation(new Location(0,0,0,yaw,0),1);
+//        return bv.getHeadYaw();
     }
 
     public boolean isRaining() {
