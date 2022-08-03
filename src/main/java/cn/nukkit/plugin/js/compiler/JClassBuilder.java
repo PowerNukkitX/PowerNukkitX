@@ -174,6 +174,10 @@ public final class JClassBuilder {
         return injectDelegate(new DelegateCompiler(this).compileToClass(Thread.currentThread().getContextClassLoader()));
     }
 
+    public void compileToFile(String path) {
+        compileToFile(Path.of(path));
+    }
+
     public void compileToFile(Path path) {
         try {
             Files.write(path, new DelegateCompiler(this).compile(), StandardOpenOption.CREATE);
