@@ -38,21 +38,18 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public Path parsePath(String path) {
+        Path resolvedPath = null;
         var feature = JSFeatures.getFeatureByModule(path);
         if (feature != null && plugin.usedFeatures.containsKey(feature.getName())) {
-            return Path.of("jsFeature", feature.getName() + "@" + path);
+            resolvedPath = Path.of("jsFeature", feature.getName() + "@" + path);
         } else if (path.startsWith("@")) {
-            var resolvedPath = Path.of(Server.getInstance().getPluginPath(), path);
-            if (!Files.isRegularFile(resolvedPath)) {
-                if (!path.contains("/") && !path.contains("\\")) {
-                    resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + "/index.js");
-                } else {
-                    resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + ".js");
-                }
+            if (!path.contains("/") && !path.contains("\\")) {
+                resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + "/index.js");
+            } else {
+                resolvedPath = Path.of(Server.getInstance().getPluginPath(), path);
             }
-            return resolvedPath;
         } else if (path.startsWith(":")) {
-            return Path.of("inner-module", path.substring(1));
+            resolvedPath = Path.of("inner-module", path.substring(1));
         } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && getDots(path) > 1)) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
@@ -76,12 +73,18 @@ public final class ESMFileSystem implements FileSystem {
                         }
                     }
                 }
-                return Path.of("java-class", path);
+                resolvedPath = Path.of("java-class", path);
             } catch (ClassNotFoundException ignore) {
 
             }
         }
-        return baseDir.toPath().resolve(path);
+        if (resolvedPath == null) {
+            resolvedPath = baseDir.toPath().resolve(path);
+        }
+        if (!Files.isRegularFile(resolvedPath)) {
+            resolvedPath = Path.of(resolvedPath + ".js");
+        }
+        return resolvedPath;
     }
 
     private static int getDots(String originStr) {
