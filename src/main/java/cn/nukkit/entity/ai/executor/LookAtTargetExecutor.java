@@ -24,6 +24,7 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         Vector3Memory<?> vector3Memory = entity.getMemoryStorage().get(memoryClazz);
         if (vector3Memory.hasData()) {
             setLookTarget(entity, vector3Memory.getData());
@@ -31,9 +32,20 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
         if (currentTick <= duration) {
             return true;
         } else {
-            currentTick = 0;
             return false;
         }
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        currentTick = 0;
+        entity.setEnablePitch(false);
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        currentTick = 0;
+        entity.setEnablePitch(false);
     }
 
     protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {

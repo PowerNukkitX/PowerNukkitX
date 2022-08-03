@@ -4111,21 +4111,18 @@ public class Level implements ChunkManager, Metadatable {
             pk.z = (float) z;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
         }
-        if (entity.lastYaw != yaw){
-            pk.yaw = (float) yaw;
-            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
-        }
         if (entity.lastPitch != pitch){
             pk.pitch = (float) pitch;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
         }
+        if (entity.lastYaw != yaw){
+            pk.yaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
+        }
         if (entity.lastHeadYaw != headYaw){
             pk.headYaw = (float) headYaw;
-        } else {
-            //add this hack for backward compatibility
-            pk.headYaw = (float) yaw;
+            pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
         }
-        pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
 
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }

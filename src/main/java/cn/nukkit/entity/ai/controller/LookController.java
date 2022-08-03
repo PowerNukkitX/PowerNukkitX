@@ -29,13 +29,15 @@ public class LookController implements IController {
             entity.setYaw(bv2route.getYaw());
             if (!lookAtTarget) {
                 entity.setHeadYaw(bv2route.getYaw());
-                entity.setPitch(bv2route.getPitch());
+                if (entity.isEnablePitch()) entity.setPitch(bv2route.getPitch());
+                else entity.setPitch(0);
             }
         }
         if (lookAtTarget && lookTarget != null) {
             //构建指向玩家的向量
             BVector3 bv2player = BVector3.fromPos(lookTarget.x - entity.x, lookTarget.y - entity.y, lookTarget.z - entity.z);
-            entity.setPitch(bv2player.getPitch());
+            if (entity.isEnablePitch()) entity.setPitch(bv2player.getPitch());
+            else entity.setPitch(0);
             entity.setHeadYaw(bv2player.getHeadYaw());
         }
         return true;

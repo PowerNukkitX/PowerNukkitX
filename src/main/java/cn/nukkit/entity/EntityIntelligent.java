@@ -15,9 +15,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
-import org.checkerframework.checker.nullness.qual.EnsuresNonNullIf;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -42,6 +39,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
     protected Vector3 moveDirectionStart;
     protected Vector3 moveDirectionEnd;
     protected boolean needUpdateMoveDirection;
+    //控制是否启用pitch
+    //若为true,则实体在看向目标的同时还会调整视线垂直角度
+    protected boolean enablePitch;
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -116,5 +116,11 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     public boolean hasMoveDirection(){
         return moveDirectionStart != null && moveDirectionEnd != null;
+    }
+
+    @Since("1.6.0.0-PNX")
+    @Override
+    public boolean enableHeadYaw() {
+        return true;
     }
 }

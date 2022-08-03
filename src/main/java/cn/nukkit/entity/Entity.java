@@ -1852,10 +1852,14 @@ public abstract class Entity extends Location implements Metadatable {
         return nearestPortal;
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "implement headYaw")
+    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "add support for the new movement packet MoveEntityDeltaPacket")
     public void updateMovement() {
+        //这样做是为了向后兼容旧插件
+        if (!enableHeadYaw()){
+            this.headYaw = this.yaw;
+        }
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
-        double diffRotation = (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
 
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
@@ -1882,6 +1886,12 @@ public abstract class Entity extends Location implements Metadatable {
 
             this.addMotion(this.motionX, this.motionY, this.motionZ);
         }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public boolean enableHeadYaw(){
+        return false;
     }
 
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
