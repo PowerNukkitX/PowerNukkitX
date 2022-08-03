@@ -2,10 +2,12 @@ package cn.nukkit.plugin;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.event.plugin.PluginDisableEvent;
 import cn.nukkit.event.plugin.PluginEnableEvent;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -26,6 +28,9 @@ public class JavaPluginLoader implements PluginLoader {
     private final Server server;
 
     private final Map<String, Class> classes = new HashMap<>();
+
+    @PowerNukkitXOnly
+    @Getter
     protected final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
 
     public JavaPluginLoader(Server server) {

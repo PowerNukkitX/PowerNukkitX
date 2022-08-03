@@ -3,6 +3,7 @@ package cn.nukkit.plugin.js;
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.CommonJSPlugin;
+import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.utils.SeekableInMemoryByteChannel;
 import org.graalvm.polyglot.io.FileSystem;
 
@@ -44,7 +45,7 @@ public final class ESMFileSystem implements FileSystem {
             return Path.of(Server.getInstance().getPluginPath(), path);
         } else if (path.startsWith(":")) {
             return Path.of("inner-module", path.substring(1));
-        } else if ((!path.equals(".js") && getDots(path) > 1)) {
+        } else if ((!path.endsWith(".js") && !path.startsWith("./") && getDots(path) > 1)) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
             try {
@@ -54,6 +55,18 @@ public final class ESMFileSystem implements FileSystem {
                 var clazz = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
+                }
+                outer:
+                for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
+                    if (pl instanceof JavaPluginLoader javaPluginLoader) {
+                        for (var loader : javaPluginLoader.getClassLoaders().values()) {
+                            clazz = loader.loadClass(path);
+                            if (clazz != null) {
+                                javaClassCache.put(path, clazz);
+                                break outer;
+                            }
+                        }
+                    }
                 }
                 return Path.of("java-class", path);
             } catch (ClassNotFoundException ignore) {

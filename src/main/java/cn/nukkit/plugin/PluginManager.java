@@ -3,6 +3,7 @@ package cn.nukkit.plugin;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.command.PluginCommand;
@@ -17,6 +18,7 @@ import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -49,6 +51,8 @@ public class PluginManager {
 
     protected final Set<Permissible> defSubsOp = Collections.newSetFromMap(new WeakHashMap<>());
 
+    @PowerNukkitXOnly
+    @Getter
     protected final Map<String, PluginLoader> fileAssociations = new HashMap<>();
 
     public PluginManager(Server server, SimpleCommandMap commandMap) {
