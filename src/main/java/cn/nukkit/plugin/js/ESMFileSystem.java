@@ -42,10 +42,18 @@ public final class ESMFileSystem implements FileSystem {
         if (feature != null && plugin.usedFeatures.containsKey(feature.getName())) {
             return Path.of("jsFeature", feature.getName() + "@" + path);
         } else if (path.startsWith("@")) {
-            return Path.of(Server.getInstance().getPluginPath(), path);
+            var resolvedPath = Path.of(Server.getInstance().getPluginPath(), path);
+            if (!Files.isRegularFile(resolvedPath)) {
+                if (!path.contains("/") && !path.contains("\\")) {
+                    resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + "/index.js");
+                } else {
+                    resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + ".js");
+                }
+            }
+            return resolvedPath;
         } else if (path.startsWith(":")) {
             return Path.of("inner-module", path.substring(1));
-        } else if ((!path.endsWith(".js") && !path.startsWith("./") && getDots(path) > 1)) {
+        } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && getDots(path) > 1)) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
             try {
