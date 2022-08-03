@@ -60,6 +60,9 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
 
                     currentTick = 0;
                     finded = false;
+                    entity.setEnablePitch(false);
+                    another.setEnablePitch(false);
+                    another = null;
                     return false;
                 }
             }
@@ -73,6 +76,9 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     public void onInterrupt(EntityIntelligent entity) {
         currentTick = 0;
         finded = false;
+        entity.setEnablePitch(false);
+        another.setEnablePitch(false);
+        another = null;
     }
 
     protected void setSpouse(T entity1, T entity2) {
@@ -93,6 +99,9 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
     }
 
     protected void updateMove(T entity1, T entity2) {
+        if (!entity1.isEnablePitch()) entity1.setEnablePitch(true);
+        if (!entity2.isEnablePitch()) entity2.setEnablePitch(true);
+
         //clone the vec
         var cloned1 = entity1.clone();
         var cloned2 = entity2.clone();

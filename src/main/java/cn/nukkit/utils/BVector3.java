@@ -106,10 +106,7 @@ public class BVector3{
     }
 
     public double getHeadYaw(){
-        if (pos.x > 0)
-            return xzAxisAngle-90;
-        else
-            return xzAxisAngle+90;
+        return getYaw();
     }
 
     public double getPitch(){

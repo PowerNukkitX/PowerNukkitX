@@ -43,12 +43,8 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(@NotNull EntityIntelligent entity) {
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) {
-            //目标丢失
-            removeRouteTarget(entity);
-            removeLookTarget(entity);
-            //重置速度
-            entity.setMovementSpeed(0.1f);
             return false;
         }
         //获取目标位置（这个clone很重要）
@@ -57,10 +53,6 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         if (enableRangeTest) {
             var distanceSquared = target.distanceSquared(entity);
             if (distanceSquared > maxFollowRangeSquared || distanceSquared < minFollowRangeSquared) {
-                //清除寻路target
-                removeRouteTarget(entity);
-                //清除视线target
-                removeLookTarget(entity);
                 return false;
             }
         }
@@ -83,6 +75,26 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
             entity.setMovementSpeed(speed);
 
         return true;
+    }
+
+    @Override
+    public void onInterrupt(EntityIntelligent entity) {
+        //目标丢失
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //重置速度
+        entity.setMovementSpeed(0.1f);
+        entity.setEnablePitch(false);
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        //目标丢失
+        removeRouteTarget(entity);
+        removeLookTarget(entity);
+        //重置速度
+        entity.setMovementSpeed(0.1f);
+        entity.setEnablePitch(false);
     }
 
     protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
