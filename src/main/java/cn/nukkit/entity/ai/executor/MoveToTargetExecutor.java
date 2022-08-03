@@ -17,16 +17,28 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     protected Class<? extends Vector3Memory<?>> memoryClazz;
     protected float speed;
     protected Vector3 oldTarget;
-    boolean updateRouteImmediatelyWhenTargetChange;
+    protected boolean updateRouteImmediatelyWhenTargetChange;
+    protected boolean enableRangeTest = false;
+    protected int maxFollowRangeSquared;
+    protected int minFollowRangeSquared;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
         this(memoryClazz,speed,false);
     }
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
+        this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
+    }
+
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange){
         this.memoryClazz = memoryClazz;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
+        if (maxFollowRange >= 0 && minFollowRange >= 0) {
+            this.maxFollowRangeSquared = maxFollowRange * maxFollowRange;
+            this.minFollowRangeSquared = minFollowRange * minFollowRange;
+            enableRangeTest = true;
+        }
     }
 
     @Override
@@ -41,6 +53,18 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         }
         //获取目标位置（这个clone很重要）
         Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData().clone();
+
+        if (enableRangeTest) {
+            var distanceSquared = target.distanceSquared(entity);
+            if (distanceSquared > maxFollowRangeSquared || distanceSquared < minFollowRangeSquared) {
+                //清除寻路target
+                removeRouteTarget(entity);
+                //清除视线target
+                removeLookTarget(entity);
+                return false;
+            }
+        }
+
         //更新寻路target
         setRouteTarget(entity, target);
         //更新视线target

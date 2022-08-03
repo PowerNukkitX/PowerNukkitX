@@ -7,9 +7,9 @@ import cn.nukkit.api.Since;
 @Since("1.6.0.0-PNX")
 public abstract class BooleanMemory implements IMemory<Boolean> {
 
-    protected boolean data;
+    protected Boolean data;
 
-    public BooleanMemory(boolean data) {
+    public BooleanMemory(Boolean data) {
         this.data = data;
     }
 

@@ -4,20 +4,43 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityInteractable;
+import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.LookController;
+import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.executor.EntityExplosionExecutor;
+import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
+import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.memory.AttackTargetMemory;
+import cn.nukkit.entity.ai.memory.EntityExplodeMemory;
+import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
+import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Box.
  */
-public class EntityCreeper extends EntityWalkingMob {
+public class EntityCreeper extends EntityWalkingMob implements EntityInteractable {
 
     public static final int NETWORK_ID = 33;
 
@@ -25,6 +48,53 @@ public class EntityCreeper extends EntityWalkingMob {
     public static final int DATA_SWELL = 17;
     public static final int DATA_SWELL_OLD = 18;
     public static final int DATA_POWERED = 19;
+
+    private IBehaviorGroup behaviorGroup;
+
+    @Override
+    public IBehaviorGroup getBehaviorGroup() {
+        if (behaviorGroup == null) {
+            behaviorGroup = new BehaviorGroup(
+                    this.tickSpread,
+                    Set.of(),
+                    Set.of(new Behavior(
+                                    new EntityExplosionExecutor(30, 3, EntityExplodeMemory.class),
+                                    entity -> entity.getMemoryStorage().checkData(EntityExplodeMemory.class, true), 4, 1
+                            ),
+                            new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
+                                    entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
+                            ),3,1),
+                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
+                                    entity -> {
+                                        if (entity.getMemoryStorage().isEmpty(NearestPlayerMemory.class)) return true;
+                                        Player player = entity.getMemoryStorage().get(NearestPlayerMemory.class).getData();
+                                        return player.isSurvival();
+                                    }
+                            ), 2, 1),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                    ),
+                    Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
+                        var memoryStorage = entity.getMemoryStorage();
+                        Entity attacker = memoryStorage.get(AttackTargetMemory.class).getData();
+                        if (attacker == null)
+                            attacker = memoryStorage.get(NearestPlayerMemory.class).getData();
+                        if (attacker != null && (attacker instanceof Player player ? player.isSurvival() : true) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))){
+                            memoryStorage.setData(EntityExplodeMemory.class,true);
+                            return;
+                        }
+                        if ((attacker == null || (attacker instanceof Player player ? !player.isSurvival() : false) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()){
+                            memoryStorage.setData(EntityExplodeMemory.class,false);
+                            return;
+                        }
+                    }),
+                    Set.of(new WalkController(), new LookController(true, true)),
+                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+            );
+        }
+        return behaviorGroup;
+    }
 
     @Override
     public int getNetworkId() {
@@ -102,6 +172,39 @@ public class EntityCreeper extends EntityWalkingMob {
     @PowerNukkitOnly
     @Override
     public boolean isPreventingSleep(Player player) {
+        return true;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        var result = super.attack(source);
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            //更新仇恨目标
+            getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
+        }
+        return result;
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        var memoryStorage = this.getMemoryStorage();
+        if (item.getId() == Item.FLINT_AND_STEEL && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))) {
+            memoryStorage.setData(EntityExplodeMemory.class, true);
+            memoryStorage.get(EntityExplodeMemory.class).setCancellable(false);
+            this.level.addSound(this, Sound.FIRE_IGNITE);
+            return true;
+        }
+        return super.onInteract(player, item, clickedPos);
+    }
+
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        return "action.interact.creeper";
+    }
+
+    @Override
+    public boolean canDoInteraction() {
         return true;
     }
 }
