@@ -35,7 +35,8 @@ What's new in PowerNukkitX? Let's See：
 5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
 6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
 7. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be added).
-8. Todo...
+8. Built-in Bio AI, no need to install MobPlugin (under development, not perfect).
+9. Todo...
 
 ---
 
