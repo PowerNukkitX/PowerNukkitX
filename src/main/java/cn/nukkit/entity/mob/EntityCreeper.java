@@ -13,6 +13,7 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.EntityExplosionExecutor;
+import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
@@ -58,8 +59,12 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                     Set.of(),
                     Set.of(new Behavior(
                                     new EntityExplosionExecutor(30, 3, EntityExplodeMemory.class),
-                                    entity -> entity.getMemoryStorage().checkData(EntityExplodeMemory.class, true), 3, 1
+                                    entity -> entity.getMemoryStorage().checkData(EntityExplodeMemory.class, true), 4, 1
                             ),
+                            new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
+                                    entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
+                            ),3,1),
                             new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
                                     entity -> {
