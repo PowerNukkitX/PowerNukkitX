@@ -77,12 +77,14 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                     ),
                     Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
                         var memoryStorage = entity.getMemoryStorage();
-                        Player player = memoryStorage.get(NearestPlayerMemory.class).getData();
-                        if (player != null && player.isSurvival() && player.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))){
+                        Entity attacker = memoryStorage.get(AttackTargetMemory.class).getData();
+                        if (attacker == null)
+                            attacker = memoryStorage.get(NearestPlayerMemory.class).getData();
+                        if (attacker != null && (attacker instanceof Player player ? player.isSurvival() : true) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))){
                             memoryStorage.setData(EntityExplodeMemory.class,true);
                             return;
                         }
-                        if ((player == null || !player.isSurvival() || player.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()){
+                        if ((attacker == null || (attacker instanceof Player player ? !player.isSurvival() : false) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()){
                             memoryStorage.setData(EntityExplodeMemory.class,false);
                             return;
                         }
