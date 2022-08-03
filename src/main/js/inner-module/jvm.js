@@ -2,7 +2,7 @@
 
 import {id} from ":plugin-id"
 import {JSJVMManager} from "cn.nukkit.plugin.js.JSJVMManager"
-import {JType} from "cn.nukkit.plugin.js.compiler";
+import {JType} from "cn.nukkit.plugin.js.compiler.JType";
 import {CommonJSPlugin as CommonJSPluginClass} from "cn.nukkit.plugin.CommonJSPlugin"
 import {JClassBuilder} from "cn.nukkit.plugin.js.compiler.JClassBuilder";
 import {JMethod} from "cn.nukkit.plugin.js.compiler.JMethod";
