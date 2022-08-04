@@ -86,7 +86,7 @@
         <skipTests>true</skipTests>
         <skipGpg>true</skipGpg>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <graalvm.version>22.0.0.2</graalvm.version>
+        <graalvm.version>22.2.0</graalvm.version>
         <skipDelombok>true</skipDelombok>
         <skipNexus>true</skipNexus>
         <skipShade>package</skipShade>

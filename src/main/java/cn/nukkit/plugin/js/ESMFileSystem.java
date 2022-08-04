@@ -83,8 +83,11 @@ public final class ESMFileSystem implements FileSystem {
         if (resolvedPath == null) {
             resolvedPath = baseDir.toPath().resolve(path);
         }
-        if (!Files.isRegularFile(resolvedPath)) {
-            resolvedPath = Path.of(resolvedPath + ".js");
+        if (!resolvedPath.startsWith("java-class") && !resolvedPath.startsWith("jsFeature") && !resolvedPath.startsWith("inner-module") && !Files.isRegularFile(resolvedPath)) {
+            var tmpPath = Path.of(resolvedPath + ".js");
+            if (Files.isRegularFile(tmpPath)) {
+                resolvedPath = tmpPath;
+            }
         }
         return resolvedPath;
     }
