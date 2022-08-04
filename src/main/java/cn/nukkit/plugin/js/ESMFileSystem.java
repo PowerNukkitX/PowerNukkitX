@@ -60,20 +60,22 @@ public final class ESMFileSystem implements FileSystem {
                 var clazz = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
-                }
-                outer:
-                for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
-                    if (pl instanceof JavaPluginLoader javaPluginLoader) {
-                        for (var loader : javaPluginLoader.getClassLoaders().values()) {
-                            clazz = loader.loadClass(path);
-                            if (clazz != null) {
-                                javaClassCache.put(path, clazz);
-                                break outer;
+                    resolvedPath = Path.of("java-class", path);
+                } else {
+                    outer:
+                    for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
+                        if (pl instanceof JavaPluginLoader javaPluginLoader) {
+                            for (var loader : javaPluginLoader.getClassLoaders().values()) {
+                                clazz = loader.loadClass(path);
+                                if (clazz != null) {
+                                    javaClassCache.put(path, clazz);
+                                    resolvedPath = Path.of("java-class", path);
+                                    break outer;
+                                }
                             }
                         }
                     }
                 }
-                resolvedPath = Path.of("java-class", path);
             } catch (ClassNotFoundException ignore) {
 
             }
