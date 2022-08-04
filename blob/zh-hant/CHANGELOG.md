@@ -26,7 +26,7 @@
 - [#307] 實現/function命令。
 - [#326] 實現RAWTEXT（/tellraw /titleraw）。
 - [#352] 實現NPC-API和實現NPC功能。
-- [#354] 實現自定義方塊 / 物品（完善中，[文檔](https://doc.powernukkitx.cn)待補充）。
+- [#354] 實現自定義方塊 / 物品 / 實體（完善中，[文檔](https://doc.powernukkitx.cn)待補充，自定義實體在[#458]中實現）。
 - [#363] 實現NPC SKIN切換。
 - [#365] 添加toSnbt。
 - [#370] 添加JS跨插件互操作。
@@ -37,9 +37,17 @@
 - [#414] 實現細雪方塊。
 - [#416] 添加`PlayerFreezeEvent`事件。
 - [#425] 初步完成`JS Feature`架構。
+- [#431] 新的生物AI（基本架構）。
 - [#433] 實現常加載區塊以及對應命令。
 - [#426] 為字節碼調用失敗的事件添加反射逃生門。
 - [#446] 實現DeathInfo。
+- [#468] 添加`ServerStartedEvent`事件。
+- [#470] 添加OtherSide唱片。
+- [#481] 實現豬牛雞的生物AI。
+- [#483] 實現殭屍的生物AI。
+- [#492] 添加SNBT反序列化。
+- [#494] 新增箱船（Chest boat）。
+- [#500] 實現苦力怕生物AI。
 
 ### 修改記錄
 
@@ -69,6 +77,12 @@
 - [#455] 更新資源文件。
 - [#461] 更新啟動命令檢測 + 棄用submodule。
 - [#466] `修改自定義方塊API。`
+- [#467] 調整Version命令更新檢查。
+- [#473] 改進status命令+更新依賴庫。
+- [#489] 優化尋路邏輯。
+- [#490] 更改boss實體位置以適配384高度。
+- [#491] 改進實體AI。
+- [#499] SNBT格式小改。
 
 ### BUG修復
 
@@ -126,6 +140,13 @@
 - [#463] 修復/particle命令。
 - [#464]修復世界出生點問題。
 - [#465]修復出生點計算問題。
+- [#474] 修復錯誤的玩家出生點。
+- [#476] 修復大寫命令提示不存在的問題。
+- [#478] 修復計分板概率空指針問題。
+- [#479] 修復`player.getCraftingGrid().clearAll()`不工作（在[#480]中修復）。
+- [#487] 修復registerCustomBlock（在[#488]中修復另外一處漏洞）。
+- [#493] 修復實體傷害計算。
+- [#498] 修復速度二藥水時長錯誤。
 
 ### 安全漏洞修復
 
@@ -1263,6 +1284,7 @@ Need to switch languages?
 [#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
 [#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
 [#429]:https://github.com/PowerNukkitX/PowerNukkitX/pull/429
+[#431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/431
 [#433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/433
 [#436]: https://github.com/PowerNukkitX/PowerNukkitX/pull/436
 [#437]: https://github.com/PowerNukkitX/PowerNukkitX/pull/437
@@ -1273,12 +1295,35 @@ Need to switch languages?
 [#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
 [#454]: https://github.com/PowerNukkitX/PowerNukkitX/pull/454
 [#455]: https://github.com/PowerNukkitX/PowerNukkitX/pull/455
+[#458]: https://github.com/PowerNukkitX/PowerNukkitX/pull/458
 [#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
 [#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
 [#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
 [#464]: https://github.com/PowerNukkitX/PowerNukkitX/pull/464
 [#465]: https://github.com/PowerNukkitX/PowerNukkitX/pull/465
 [#466]: https://github.com/PowerNukkitX/PowerNukkitX/pull/466
+[#467]: https://github.com/PowerNukkitX/PowerNukkitX/pull/467
+[#468]: https://github.com/PowerNukkitX/PowerNukkitX/pull/468
+[#470]: https://github.com/PowerNukkitX/PowerNukkitX/pull/470
+[#473]: https://github.com/PowerNukkitX/PowerNukkitX/pull/473
+[#474]: https://github.com/PowerNukkitX/PowerNukkitX/pull/474
+[#476]: https://github.com/PowerNukkitX/PowerNukkitX/pull/476
+[#478]: https://github.com/PowerNukkitX/PowerNukkitX/pull/478
+[#479]: https://github.com/PowerNukkitX/PowerNukkitX/issues/479
+[#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
+[#481]: https://github.com/PowerNukkitX/PowerNukkitX/pull/481
+[#483]: https://github.com/PowerNukkitX/PowerNukkitX/pull/483
+[#487]: https://github.com/PowerNukkitX/PowerNukkitX/pull/487
+[#488]: https://github.com/PowerNukkitX/PowerNukkitX/pull/488
+[#489]: https://github.com/PowerNukkitX/PowerNukkitX/pull/489
+[#490]: https://github.com/PowerNukkitX/PowerNukkitX/pull/490
+[#491]: https://github.com/PowerNukkitX/PowerNukkitX/pull/491
+[#492]: https://github.com/PowerNukkitX/PowerNukkitX/pull/492
+[#493]: https://github.com/PowerNukkitX/PowerNukkitX/pull/493
+[#494]: https://github.com/PowerNukkitX/PowerNukkitX/pull/494
+[#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
+[#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
+[#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
