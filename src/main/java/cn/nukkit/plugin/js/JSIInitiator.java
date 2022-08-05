@@ -164,14 +164,23 @@ public final class JSIInitiator {
             return NULL;
         });
         global.putMember("contain", (ProxyExecutable) arguments -> {
-            var externals = new JSExternal[arguments.length];
-            for (int i = 0; i < arguments.length; i++) {
-                var tmp = arguments[i];
+            if (arguments.length == 1) {
+                var tmp = arguments[0];
                 if (tmp.isString()) {
-                    externals[i] = CommonJSPlugin.jsExternalMap.get(tmp.asString());
+                    return CommonJSPlugin.jsExternalMap.get(tmp.asString());
+                } else {
+                    return NULL;
                 }
+            } else {
+                var externals = new JSExternal[arguments.length];
+                for (int i = 0; i < arguments.length; i++) {
+                    var tmp = arguments[i];
+                    if (tmp.isString()) {
+                        externals[i] = CommonJSPlugin.jsExternalMap.get(tmp.asString());
+                    }
+                }
+                return ProxyArray.fromArray((Object[]) externals);
             }
-            return ProxyArray.fromArray((Object[]) externals);
         });
     }
 
