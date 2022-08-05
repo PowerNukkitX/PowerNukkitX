@@ -5,6 +5,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.StringItem;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -97,7 +99,11 @@ public abstract class ItemCustom extends StringItem {
     }
 
     private static CompoundTag xyzToCompoundTag(float x, float y, float z) {
-        return new CompoundTag().putCompound("scale", new CompoundTag().putFloat("x", x).putFloat("y", y).putFloat("z", z));
+        var listTag = new ListTag<FloatTag>("scale");
+        listTag.add(new FloatTag("", x));
+        listTag.add(new FloatTag("", y));
+        listTag.add(new FloatTag("", z));
+        return new CompoundTag().putList(listTag);
     }
 
     @Override
