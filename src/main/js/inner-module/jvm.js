@@ -40,14 +40,6 @@ export function gc() {
  * @external JavaClass
  */
 
-/**
- * @private
- * @return {JavaClass}
- */
-function jImport(className) {
-    return Java.type(className);
-}
-
 export class JavaClassBuilder {
     /**
      * 构造一个Java类生成器，用于在JS中对Java类进行相关操作
@@ -76,9 +68,9 @@ export class JavaClassBuilder {
      */
     _toJType(type) {
         if (typeof type === "string") {
-            this._classBuilder.setSuperClass(JType.ofClassName(type));
+            return JType.ofClassName(type);
         } else {
-            this._classBuilder.setSuperClass(JType.of(type));
+            return JType.of(type);
         }
     }
 
