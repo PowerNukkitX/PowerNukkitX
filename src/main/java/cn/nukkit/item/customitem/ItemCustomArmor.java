@@ -151,26 +151,13 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
             final int tier = this.getTier();
             switch (tier) {
-                case TIER_CHAIN:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
-                    break;
-                case TIER_DIAMOND:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
-                    break;
-                case TIER_GOLD:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
-                    break;
-                case TIER_IRON:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
-                    break;
-                case TIER_LEATHER:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
-                    break;
-                case TIER_NETHERITE:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
-                    break;
-                default:
-                    player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
+                case TIER_CHAIN -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_CHAIN);
+                case TIER_DIAMOND -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_DIAMOND);
+                case TIER_GOLD -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GOLD);
+                case TIER_IRON -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_IRON);
+                case TIER_LEATHER -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_LEATHER);
+                case TIER_NETHERITE -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_NETHERITE);
+                default -> player.getLevel().addSound(player, Sound.ARMOR_EQUIP_GENERIC);
             }
         }
 
@@ -179,21 +166,14 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
 
     @Override
     public int getEnchantAbility() {
-        switch (this.getTier()) {
-            case TIER_CHAIN:
-                return 12;
-            case TIER_LEATHER:
-            case TIER_NETHERITE:
-                return 15;
-            case TIER_DIAMOND:
-                return 10;
-            case TIER_GOLD:
-                return 25;
-            case TIER_IRON:
-                return 9;
-        }
-
-        return 0;
+        return switch (this.getTier()) {
+            case TIER_CHAIN -> 12;
+            case TIER_LEATHER, TIER_NETHERITE -> 15;
+            case TIER_DIAMOND -> 10;
+            case TIER_GOLD -> 25;
+            case TIER_IRON -> 9;
+            default -> 0;
+        };
     }
 
     @Override
