@@ -8,6 +8,7 @@ import {Item} from "cn.nukkit.item.Item";
 import {Food} from "cn.nukkit.item.food.Food";
 import {FoodNormal} from "cn.nukkit.item.food.FoodNormal";
 import {ItemCustomTool} from "cn.nukkit.item.customitem.ItemCustomTool";
+import {ItemCustomArmor} from "cn.nukkit.item.customitem.ItemCustomArmor";
 
 const JPrimitiveBoolean = Java.type("boolean");
 const JPrimitiveInt = Java.type("int");
@@ -66,6 +67,45 @@ export class ToolTier {
     /**
      * @private
      * @param tierId 工具分级ID
+     */
+    constructor(tierId) {
+        this.tierId = tierId;
+    }
+}
+
+/**
+ * 防具种类
+ */
+export class ArmorType {
+    static HELMET = new ArmorType(0);
+    static CHESTPLATE = new ArmorType(1);
+    static LEGGINGS = new ArmorType(2);
+    static BOOTS = new ArmorType(3);
+
+    /**
+     * @private
+     * @param typeId 防具种类ID
+     */
+    constructor(typeId) {
+        this.typeId = typeId;
+    }
+}
+
+/**
+ * 防具分级
+ */
+export class ArmorTier {
+    static LEATHER = new ArmorTier(ItemCustomArmor.TIER_LEATHER);
+    static CHAIN = new ArmorTier(ItemCustomArmor.TIER_CHAIN);
+    static IRON = new ArmorTier(ItemCustomArmor.TIER_IRON);
+    static GOLD = new ArmorTier(ItemCustomArmor.TIER_GOLD);
+    static DIAMOND = new ArmorTier(ItemCustomArmor.TIER_DIAMOND);
+    static NETHERITE = new ArmorTier(ItemCustomArmor.TIER_NETHERITE);
+    static OTHER = new ArmorTier(ItemCustomArmor.TIER_OTHER);
+
+    /**
+     * @private
+     * @param tierId 防具分级ID
      */
     constructor(tierId) {
         this.tierId = tierId;
@@ -246,6 +286,74 @@ export class BlockItemUtil {
             .addJavaMethod("getMaxDurability", "getMaxDurability", JPrimitiveInt)
             .addJavaMethod("noDamageOnAttack", "noDamageOnAttack", JPrimitiveBoolean)
             .addJavaMethod("noDamageOnBreak", "noDamageOnBreak", JPrimitiveBoolean)
+            .setJSDelegate(delegate);
+        Item.registerCustomItem(jClassBuilder.compileToJavaClass());
+    }
+
+    /**
+     * 注册一个防具自定义物品
+     * @param id {string} 物品ID
+     * @param name {string} 物品ID
+     * @param type {CreativeInventoryType} 创造物品栏分类
+     * @param textureName {string} 贴图名称，在材质包中可以指定
+     * @param textureSize {number} 贴图大小，单位为像素，如为非正方形则以长边为准
+     * @param stackSize {number} 最大堆叠
+     * @param canOnOffhand {boolean} 是否可以装备在副手
+     * @param armorType {ArmorType} 防具种类
+     * @param armorTier {ArmorTier} 防具等级
+     * @param durability {number} 防具耐久
+     * @param armorPoint {number} 防具提供的盔甲点数
+     */
+    static registerArmorItem(id, name, type, textureName, textureSize,
+                             stackSize, canOnOffhand, armorType, armorTier,
+                             durability, armorPoint) {
+        const jClassBuilder = new JavaClassBuilder(id.replaceAll(":", "."), "cn.nukkit.item.customitem.ItemCustomArmor");
+        const delegate = {
+            new() {
+                return [id, name, textureName];
+            },
+            constructor(javaThis) {
+                javaThis.setTextureSize(textureSize);
+            },
+            allowOffHand() {
+                return canOnOffhand;
+            },
+            getMaxStackSize() {
+                return stackSize;
+            },
+            getCreativeCategory() {
+                return type.typeId;
+            },
+            getTier() {
+                return armorTier.tierId;
+            },
+            getMaxDurability() {
+                return durability;
+            },
+            getArmorPoint() {
+                return armorPoint;
+            }
+        };
+        jClassBuilder.setJSDelegate(delegate).addJavaConstructor("new", "constructor", [JString, JString, JString])
+            .addJavaMethod("allowOffHand", "allowOffHand", JPrimitiveBoolean)
+            .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
+            .addJavaMethod("getCreativeCategory", "getCreativeCategory", JPrimitiveInt);
+        if (armorType === ArmorType.HELMET) {
+            jClassBuilder.addJavaMethod("isHelmet", "isHelmet", JPrimitiveBoolean);
+            delegate.isHelmet = () => true;
+        } else if (armorType === ArmorType.CHESTPLATE) {
+            jClassBuilder.addJavaMethod("isChestplate", "isChestplate", JPrimitiveBoolean);
+            delegate.isChestplate = () => true;
+        } else if (armorType === ArmorType.LEGGINGS) {
+            jClassBuilder.addJavaMethod("isLeggings", "isLeggings", JPrimitiveBoolean);
+            delegate.isLeggings = () => true;
+        } else if (armorType === ArmorType.BOOTS) {
+            jClassBuilder.addJavaMethod("isBoots", "isBoots", JPrimitiveBoolean);
+            delegate.isBoots = () => true;
+        }
+        jClassBuilder.addJavaMethod("getTier", "getTier", JPrimitiveInt)
+            .addJavaMethod("getMaxDurability", "getMaxDurability", JPrimitiveInt)
+            .addJavaMethod("getArmorPoint", "getArmorPoint", JPrimitiveInt)
             .setJSDelegate(delegate);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
     }
