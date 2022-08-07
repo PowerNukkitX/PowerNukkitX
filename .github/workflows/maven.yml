@@ -44,14 +44,18 @@ jobs:
           java-version: 17
       - name: Build with Maven
         run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
+      - name: Read version data
+        id: read_file
+        uses: andstor/file-reader-action@v1
+        with:
+          path: "src/main/resources/VERSION.txt"
       - name: Rename artifacts
         run: |
           cd target
           ls
           cd ../
-          mv target/powernukkitx-*-shaded.jar target/powernukkitx-full.jar
-          mv target/powernukkitx-*-sources.jar target/powernukkitx-sources.jar
-          mv target/powernukkitx-*.jar target/powernukkitx.jar
+          mv target/powernukkitx-${{ steps.read_file.outputs.contents }}-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-${{ steps.read_file.outputs.contents }}.jar target/powernukkitx.jar
           tar -vczf target/libs.tar.gz target/libs
       - name: Archive PNX Core
         uses: actions/upload-artifact@v3
@@ -74,12 +78,6 @@ jobs:
       - name: Get Short SHA
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      - name: Read version data
-        id: read_file
-        if: success() && contains(github.event.commits[0].message, '+u')
-        uses: andstor/file-reader-action@v1
-        with:
-          path: "src/main/resources/VERSION.txt"
       - uses: ncipollo/release-action@v1
         name: Release new version
         if: success() && contains(github.event.commits[0].message, '+u')
