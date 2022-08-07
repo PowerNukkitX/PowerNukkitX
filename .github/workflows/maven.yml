@@ -44,18 +44,18 @@ jobs:
           java-version: 17
       - name: Build with Maven
         run: mvn -B package -DskipTests=false -Darguments="-Dmaven.javadoc.skip=true"
-      - name: Read version data
-        id: read_file
-        uses: andstor/file-reader-action@v1
+      - name: get-pom-version
+        id: pom-version
+        uses: CptMokoena/maven-get-version-action@1.0.3
         with:
-          path: "src/main/resources/VERSION.txt"
+          path: .
       - name: Rename artifacts
         run: |
           cd target
           ls
           cd ../
-          mv target/powernukkitx-${{ steps.read_file.outputs.contents }}-shaded.jar target/powernukkitx-full.jar
-          mv target/powernukkitx-${{ steps.read_file.outputs.contents }}.jar target/powernukkitx.jar
+          mv target/powernukkitx-${{ steps.pom-version.outputs.version }}-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-${{ steps.pom-version.outputs.version }}.jar target/powernukkitx.jar
           tar -vczf target/libs.tar.gz target/libs
       - name: Archive PNX Core
         uses: actions/upload-artifact@v3
@@ -83,9 +83,9 @@ jobs:
         if: success() && contains(github.event.commits[0].message, '+u')
         with:
           artifacts: "target/powernukkitx.jar,target/libs.tar.gz"
-          tag: ${{ steps.read_file.outputs.contents }}
+          tag: ${{ steps.pom-version.outputs.version }}
           prerelease: ${{ contains(github.ref_name, 'patch') || contains(github.ref_name, 'feature') }}
-          body: ${{ steps.read_file.outputs.contents }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
+          body: ${{ steps.pom-version.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}
           allowUpdates: true
