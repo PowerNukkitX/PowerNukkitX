@@ -49,8 +49,9 @@ jobs:
           cd target
           ls
           cd ../
-          mv target/powernukkitx-*-PNX.jar target/powernukkitx.jar
-          mv target/powernukkitx-*-PNX-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-*-shaded.jar target/powernukkitx-full.jar
+          mv target/powernukkitx-*-sources.jar target/powernukkitx-sources.jar
+          mv target/powernukkitx-*.jar target/powernukkitx.jar
           tar -vczf target/libs.tar.gz target/libs
       - name: Archive PNX Core
         uses: actions/upload-artifact@v3
