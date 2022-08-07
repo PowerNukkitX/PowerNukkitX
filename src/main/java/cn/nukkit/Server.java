@@ -1582,6 +1582,10 @@ public class Server {
         return Nukkit.VERSION;
     }
 
+    public String getBStatsNukkitVersion() {
+        return Nukkit.VERSION + "-PNX";
+    }
+
     @PowerNukkitOnly
     public String getGitCommit() {
         return Nukkit.GIT_COMMIT;
