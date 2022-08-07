@@ -36,7 +36,7 @@ public class QueryRegenerateEvent extends ServerEvent {
 
     private final String gameType;
     private final String version;
-    private final String server_engine;
+    private String server_engine;
     private String map;
     private int numPlayers;
     private int maxPlayers;
@@ -137,6 +137,10 @@ public class QueryRegenerateEvent extends ServerEvent {
 
     public void setExtraData(Map<String, String> extraData) {
         this.extraData = extraData;
+    }
+    
+    public void setServerEngine(String engine) {
+        this.server_engine = engine;
     }
 
     public byte[] getLongQuery(byte[] buffer) {
