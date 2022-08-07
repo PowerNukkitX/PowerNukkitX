@@ -110,7 +110,7 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> server.getOnlinePlayers().size()));
         metrics.addCustomChart(new Metrics.SimplePie("codename", server::getCodename));
         metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", server::getVersion));
-        metrics.addCustomChart(new Metrics.SimplePie("nukkit_version", server::getNukkitVersion));
+        metrics.addCustomChart(new Metrics.SimplePie("nukkit_version", server::getBStatsNukkitVersion));
         metrics.addCustomChart(new Metrics.SimplePie("xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
 
         metrics.addCustomChart(new Metrics.AdvancedPie("player_platform", () -> server.getOnlinePlayers().values().stream()
