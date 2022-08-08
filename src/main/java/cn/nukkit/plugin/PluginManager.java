@@ -639,7 +639,7 @@ public class PluginManager {
                     break;
                 }
             }
-            EventExecutor eventExecutor = MethodEventExecutor.compile(plugin, listener.getClass(), method);
+            EventExecutor eventExecutor = MethodEventExecutor.compile(listener.getClass(), method);
             if (eventExecutor == null) {
                 eventExecutor = new MethodEventExecutor(method);
                 log.debug("Compile fast EventExecutor {} for {} failed!", eventClass.getName(), plugin.getName());
