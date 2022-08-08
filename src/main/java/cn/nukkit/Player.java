@@ -1809,7 +1809,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.server.getPluginManager().callEvent(ev);
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
-                    if (!to.equals(ev.getTo())) { //If plugins modify the destination
+                    if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
                         this.teleport(ev.getTo(), null);
                     } else {
                         this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
