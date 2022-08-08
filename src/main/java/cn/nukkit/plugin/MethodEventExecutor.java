@@ -55,12 +55,8 @@ public class MethodEventExecutor implements EventExecutor {
         return method;
     }
 
-    public static EventExecutor compile(Plugin plugin, Class<? extends Listener> listenerClass, Method method) {
-        var pluginLoader = plugin.getPluginLoader();
-        if (pluginLoader instanceof JavaPluginLoader javaPluginLoader) {
-            return compile(javaPluginLoader.classLoaders.get(plugin.getDescription().getName()), listenerClass, method);
-        }
-        return null;
+    public static EventExecutor compile(Class<? extends Listener> listenerClass, Method method) {
+        return compile(listenerClass.getClassLoader(), listenerClass, method);
     }
 
     public static EventExecutor compile(ClassLoader classLoader, Class<? extends Listener> listenerClass, Method method) {
