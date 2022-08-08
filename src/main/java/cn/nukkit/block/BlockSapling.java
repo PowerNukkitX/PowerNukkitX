@@ -12,6 +12,7 @@ import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.event.level.StructureGrowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ListChunkManager;
 import cn.nukkit.level.generator.object.BasicGenerator;
@@ -224,7 +225,27 @@ public class BlockSapling extends BlockFlowable {
                     return;
                 }
                 break;
-            //TODO: big spruce
+            case SPRUCE:
+                if ((vector2 = this.findSaplings(WoodType.SPRUCE)) != null) {
+                    vector3 = this.add(vector2.getFloorX(), 0, vector2.getFloorY());
+                    generator = new HugeTreesGenerator(0, 0, null, null) {
+                        @Override
+                        public boolean generate(ChunkManager level, NukkitRandom rand, Vector3 position) {
+                            var object = new ObjectBigSpruceTree(0.75f, 4);
+                            object.setRandomTreeHeight(rand);
+                            if (!this.ensureGrowable(level, rand, position, object.getTreeHeight())) {
+                                return false;
+                            }
+                            object.placeObject(level, position.getFloorX(), position.getFloorY(), position.getFloorZ(), rand);
+                            return true;
+                        }
+                    };
+                    bigTree = true;
+                }
+
+                if (bigTree) {
+                    break;
+                }
             default:
                 ListChunkManager chunkManager = new ListChunkManager(this.level);
                 ObjectTree.growTree(chunkManager, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new NukkitRandom(), getWoodType(), false);
