@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>powernukkitx</name>
-    <description>A fork of PowerNukkit</description>
+    <description>Make Nukkit great again!</description>
     <url>https://github.com/PowerNukkitX/PowerNukkitX</url>
 
     <groupId>cn.powernukkitx</groupId>
@@ -631,7 +631,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>delombok</goal>
                         </goals>
