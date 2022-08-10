@@ -140,7 +140,7 @@
         "component_based": false
     },
     "minecraft:banner_pattern": {
-        "runtime_id": 650,
+        "runtime_id": 651,
         "component_based": false
     },
     "minecraft:barrel": {
@@ -328,7 +328,7 @@
         "component_based": false
     },
     "minecraft:boat": {
-        "runtime_id": 648,
+        "runtime_id": 649,
         "component_based": false
     },
     "minecraft:bone": {
@@ -1192,7 +1192,7 @@
         "component_based": false
     },
     "minecraft:dye": {
-        "runtime_id": 649,
+        "runtime_id": 650,
         "component_based": false
     },
     "minecraft:echo_shard": {
@@ -1724,7 +1724,7 @@
         "component_based": false
     },
     "minecraft:end_crystal": {
-        "runtime_id": 652,
+        "runtime_id": 653,
         "component_based": false
     },
     "minecraft:end_gateway": {
@@ -1932,7 +1932,7 @@
         "component_based": false
     },
     "minecraft:glow_berries": {
-        "runtime_id": 653,
+        "runtime_id": 654,
         "component_based": false
     },
     "minecraft:glow_frame": {
@@ -3780,7 +3780,7 @@
         "component_based": false
     },
     "minecraft:spawn_egg": {
-        "runtime_id": 651,
+        "runtime_id": 652,
         "component_based": false
     },
     "minecraft:spider_eye": {
@@ -4077,6 +4077,10 @@
     },
     "minecraft:totem_of_undying": {
         "runtime_id": 568,
+        "component_based": false
+    },
+    "minecraft:trader_llama_spawn_egg": {
+        "runtime_id": 648,
         "component_based": false
     },
     "minecraft:trapdoor": {
