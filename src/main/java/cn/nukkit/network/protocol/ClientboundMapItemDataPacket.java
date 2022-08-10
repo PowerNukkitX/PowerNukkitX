@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import io.netty.util.internal.EmptyArrays;
@@ -20,6 +21,8 @@ import java.util.List;
 @ToString
 public class ClientboundMapItemDataPacket extends DataPacket {
 
+    public static final byte NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+
     public int[] eids = EmptyArrays.EMPTY_INTS;
 
     public long mapId;
@@ -32,6 +35,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public int offsetZ;
 
     public byte dimensionId;
+    public BlockVector3 origin = new BlockVector3();
 
     public final List<MapTrackedObject> trackedObjects = new ObjectArrayList<>();
     public MapDecorator[] decorators = MapDecorator.EMPTY_ARRAY;
@@ -39,13 +43,13 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public BufferedImage image = null;
 
     //update
-    public static final int TEXTURE_UPDATE = 0x2;
-    public static final int DECORATIONS_UPDATE = 0x4;
-    public static final int ENTITIES_UPDATE = 0x8;
+    public static final int TEXTURE_UPDATE = 0x02;
+    public static final int DECORATIONS_UPDATE = 0x04;
+    public static final int ENTITIES_UPDATE = 0x08;
 
     @Override
     public byte pid() {
-        return ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+        return NETWORK_ID;
     }
 
     @Override
@@ -72,6 +76,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         this.putUnsignedVarInt(update);
         this.putByte(this.dimensionId);
         this.putBoolean(this.isLocked);
+        this.putBlockVector3(this.origin);
 
         if ((update & ENTITIES_UPDATE) != 0) { //TODO: find out what these are for
             this.putUnsignedVarInt(eids.length);
@@ -79,7 +84,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
                 this.putEntityUniqueId(eid);
             }
         }
-        if ((update & (TEXTURE_UPDATE | DECORATIONS_UPDATE)) != 0) {
+        if ((update & (ENTITIES_UPDATE | TEXTURE_UPDATE | DECORATIONS_UPDATE)) != 0) {
             this.putByte(this.scale);
         }
 
