@@ -28,7 +28,7 @@
 PowerNukkitX的優勢：
 
 
-1. 支持1.19.10協議（完善中）。
+1. 支持1.19.20協議。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
 4. 原生支持香草命令和命令方塊等（完善中）。
@@ -72,7 +72,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.10-r1'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r1'
 }
 ```
 
@@ -83,7 +83,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.10-r1</version>
+        <version>1.19.20-r1</version>
     </dependency>
 </dependencies>
 ```

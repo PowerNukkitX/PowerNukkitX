@@ -61,7 +61,7 @@ public class AllResourceUpdater {
         Potion.init();
         ItemIdDumper.main(EmptyArrays.EMPTY_STRINGS);
         RuntimeBlockStateDumper.main(EmptyArrays.EMPTY_STRINGS);
-        init();
+        //init();
         updateRecipes();
         updateCreativeItems();
         System.exit(0);
