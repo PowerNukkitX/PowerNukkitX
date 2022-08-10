@@ -28,7 +28,7 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.10 protocol.
+1. Support for 1.19.20 protocol.
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Native support for vanilla commands and command block, etc.
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.10-r1'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r1'
 }
 ```
 
@@ -84,7 +84,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.10-r1</version>
+        <version>1.19.20-r1</version>
     </dependency>
 </dependencies>
 ```
