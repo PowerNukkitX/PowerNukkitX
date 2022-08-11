@@ -22,16 +22,16 @@ import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.TextFormat;
+import com.google.common.base.Splitter;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class ExecuteCommand extends VanillaCommand{
+
+    private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
 
     public ExecuteCommand(String name) {
         super(name,"commands.execute.description", "commands.execute.usage");
@@ -167,27 +167,28 @@ public class ExecuteCommand extends VanillaCommand{
                             return false;
                         }
                         case "score" -> {
+                            boolean matched = false;
+                            ScoreboardManager manager = Server.getInstance().getScoreboardManager();
+                            String target_str = parser.parseString(false);
+
+                            Set<Scorer> targetScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                            if (targetScorers.size() > 1) {
+                                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
+                                return false;
+                            }
+                            if (targetScorers.size() == 0) {
+                                targetScorers.add(new FakeScorer(target_str));
+                            }
+                            Scorer targetScorer = targetScorers.iterator().next();
+
+                            String targetObjectiveName = parser.parseString();
+
+                            if (!manager.hasScoreboard(targetObjectiveName)) {
+                                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName));
+                                return false;
+                            }
+                            Scoreboard targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
                             if (!parser.parseString(false).equals("matches")) {
-                                ScoreboardManager manager = Server.getInstance().getScoreboardManager();
-                                String target_str = parser.parseString(false);
-
-                                Set<Scorer> targetScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
-                                if (targetScorers.size() > 1) {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
-                                    return false;
-                                }
-                                if (targetScorers.size() == 0) {
-                                    targetScorers.add(new FakeScorer(target_str));
-                                }
-                                Scorer targetScorer = targetScorers.iterator().next();
-
-                                String targetObjectiveName = parser.parseString();
-
-                                if (!manager.hasScoreboard(targetObjectiveName)) {
-                                    sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName));
-                                    return false;
-                                }
-                                Scoreboard targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
                                 String operation = parser.parseString();
 
@@ -217,7 +218,7 @@ public class ExecuteCommand extends VanillaCommand{
                                 int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
                                 int sourceScore = sourceScoreboard.getLines().get(sourceScorer).getScore();
 
-                                boolean matched = switch (operation) {
+                                matched = switch (operation) {
                                     case "<" -> targetScore < sourceScore;
                                     case "<=" -> targetScore <= sourceScore;
                                     case "=" -> targetScore == sourceScore;
@@ -225,14 +226,32 @@ public class ExecuteCommand extends VanillaCommand{
                                     case ">" -> targetScore > sourceScore;
                                     default -> false;
                                 };
-
-                                if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
-                                    return nextSubCommand(sender, new CommandParser(parser));
-                                }
-                                return false;
                             }else{
-
+                                parser.parseString();//skip "matches"
+                                int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
+                                String range = parser.parseString();
+                                if (range.contains("..")) {
+                                    int min = Integer.MIN_VALUE;
+                                    int max = Integer.MAX_VALUE;
+                                    Iterator<String> score_scope_split = SCORE_SCOPE_SEPARATOR.split(range).iterator();
+                                    String min_str = score_scope_split.next();
+                                    if (!min_str.isEmpty()) {
+                                        min = Integer.parseInt(min_str);
+                                    }
+                                    String max_str = score_scope_split.next();
+                                    if (!max_str.isEmpty()) {
+                                        max = Integer.parseInt(max_str);
+                                    }
+                                    matched = targetScore >= min && targetScore <= max;
+                                }else{
+                                    int score = Integer.parseInt(range);
+                                    matched = targetScore == score;
+                                }
                             }
+                            if ((matched && shouldMatch) || (!matched && !shouldMatch)) {
+                                return nextSubCommand(sender, new CommandParser(parser));
+                            }
+                            return false;
                         }
                     }
                 }
