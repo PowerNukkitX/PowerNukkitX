@@ -1782,7 +1782,13 @@ public class Level implements ChunkManager, Metadatable {
         return level;
     }
 
+    @PowerNukkitXDifference(since = "1.19.20-r3")
     public int calculateSkylightSubtracted(float tickDiff) {
+        float d = 1.0F - (this.getRainStrength(tickDiff) * 5.0F) / 16.0F;
+        float e = 1.0F - (this.getThunderStrength(tickDiff) * 5.0F) / 16.0F;
+        float f = 0.5F + 2.0F * MathHelper.clamp(MathHelper.cos(this.getCelestialAngle(tickDiff) * 6.2831855F), -0.25F, 0.25F);
+        return  (int)((1.0F - f * d * e) * 11.0F);
+        /* Old NukkitX Code
         float angle = this.getCelestialAngle(tickDiff);
         float light = 1.0F - (MathHelper.cos(angle * ((float) Math.PI * 2F)) * 2.0F + 0.5F);
         light = MathHelper.clamp(light, 0.0F, 1.0F);
@@ -1791,6 +1797,7 @@ public class Level implements ChunkManager, Metadatable {
         light = (float) ((double) light * (1.0D - (double) (this.getThunderStrength(tickDiff) * 5.0F) / 16.0D));
         light = 1.0F - light;
         return (int) (light * 11.0F);
+         */
     }
 
     @PowerNukkitOnly
