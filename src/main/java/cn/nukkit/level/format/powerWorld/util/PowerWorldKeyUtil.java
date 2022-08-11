@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
  */
 public final class PowerWorldKeyUtil {
     static ByteBuffer _versionKey;
+    static ByteBuffer _worldDataKey;
 
     private PowerWorldKeyUtil() {
 
@@ -18,6 +19,7 @@ public final class PowerWorldKeyUtil {
      * 版本号
      * @return 0x00
      */
+    @NotNull
     public static ByteBuffer versionKey() {
         if (_versionKey == null) {
             _versionKey = ByteBuffer.allocateDirect(1);
@@ -157,16 +159,48 @@ public final class PowerWorldKeyUtil {
     }
 
     /**
-     * 将int放入byte[]中
-     * @param n 要放入byte[]中的int
-     * @param offset 偏移量
-     * @param array 要被放入的数组
+     * 区块中的某一个实体
+     * @param chunkX 区块X
+     * @param chunkZ 区块Z
+     * @param chunkEntityID 区块中的实体ID
+     * @return 0x09 int(chunkX) int(chunkZ) long(chunkEntityID)
      */
-    private static void putIntIntoBytes(int n, int offset, @NotNull byte[] array) {
-        array[offset + 3] = (byte) (n & 0xff);
-        array[offset + 2] = (byte) (n >> 8 & 0xff);
-        array[offset + 1] = (byte) (n >> 16 & 0xff);
-        array[offset] = (byte) (n >> 24 & 0xff);
+    @NotNull
+    public static ByteBuffer chunkEntityKey(int chunkX, int chunkZ, long chunkEntityID) {
+        var buf = ByteBuffer.allocateDirect(17);
+        buf.put((byte) 0x09);
+        buf.putInt(chunkX);
+        buf.putInt(chunkZ);
+        buf.putLong(chunkEntityID);
+        return buf;
+    }
+
+    /**
+     * 区块数据
+     * @param chunkX 区块X
+     * @param chunkZ 区块Z
+     * @return 0x0A int(chunkX) int(chunkZ)
+     */
+    @NotNull
+    public static ByteBuffer chunkDataKey(int chunkX, int chunkZ) {
+        var buf = ByteBuffer.allocateDirect(9);
+        buf.put((byte) 0xa);
+        buf.putInt(chunkX);
+        buf.putInt(chunkZ);
+        return buf;
+    }
+
+    /**
+     * 世界数据
+     * @return 0x0B
+     */
+    @NotNull
+    public static ByteBuffer worldDataKey() {
+        if (_worldDataKey == null) {
+            _worldDataKey = ByteBuffer.allocateDirect(1);
+            _worldDataKey.put((byte) 0xb);
+        }
+        return _worldDataKey;
     }
 
 }

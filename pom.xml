@@ -559,6 +559,8 @@
                 <version>2.22.2</version>
                 <configuration>
                     <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/java.nio=ALL-UNNAMED</argLine>
+                    <argLine>--add-opens java.base/sun.nio.ch=ALL-UNNAMED</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
