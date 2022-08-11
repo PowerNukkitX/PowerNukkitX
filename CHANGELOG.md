@@ -10,7 +10,31 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [开发中 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
+## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - Future - (Dev)
+该版本目前支持了Minecraft:BE `1.19.20 (协议版本544)`.
+
+### 修改记录
+
+- [#515] 实现兼容1.19.20（协议版本544）。
+
+### BUG修复
+
+- [#511] 修复无法种植大型云杉树的问题。
+- [#512] 修复修复与jar-in-jar多级插件间的兼容。
+- [#514] 修复当玩家在坐骑时速度过快会被误检为瞬移的问题。
+
+## [1.19.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - 2022-8-7
+该版本目前支持了Minecraft:BE `1.19.10 (协议版本534)`.
+
+### 新增内容
+
+- [#510] 1.19.10-r1正式发布。
+
+### 修改记录
+
+- [#506] 1.19.10-r1版本更新。
+
+## [1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758) - EOL - (Dev)
 该版本目前支持了Minecraft:BE `1.19.10 (协议版本534)`.
 
 ### 新增内容
@@ -79,6 +103,7 @@
 - [#466] `修改自定义方块API。`
 - [#467] 调整Version命令更新检查。
 - [#473] 改进status命令+更新依赖库。
+- [#477] 增强JS引擎的自定义性和兼容性。
 - [#489] 优化寻路逻辑。
 - [#490] 更改boss实体位置以适配384高度。
 - [#491] 改进实体AI。
@@ -972,6 +997,20 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.10-r1-PNX</summary>
+
+   1. [#1.19.10-r1] PNX-1.19.10-r1 (协议版本534)
+
+</details>
+
+<details>
+  <summary>1.19.20-r1-PNX</summary>
+
+   1. [#1.19.20-r1] PNX-1.19.20-r1 (协议版本544)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1308,6 +1347,7 @@ Need to switch languages?
 [#473]: https://github.com/PowerNukkitX/PowerNukkitX/pull/473
 [#474]: https://github.com/PowerNukkitX/PowerNukkitX/pull/474
 [#476]: https://github.com/PowerNukkitX/PowerNukkitX/pull/476
+[#477]: https://github.com/PowerNukkitX/PowerNukkitX/pull/477
 [#478]: https://github.com/PowerNukkitX/PowerNukkitX/pull/478
 [#479]: https://github.com/PowerNukkitX/PowerNukkitX/issues/479
 [#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
@@ -1324,6 +1364,12 @@ Need to switch languages?
 [#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
 [#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
 [#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
+[#506]: https://github.com/PowerNukkitX/PowerNukkitX/pull/506
+[#510]: https://github.com/PowerNukkitX/PowerNukkitX/pull/510
+[#511]: https://github.com/PowerNukkitX/PowerNukkitX/pull/511
+[#512]: https://github.com/PowerNukkitX/PowerNukkitX/pull/512
+[#514]: https://github.com/PowerNukkitX/PowerNukkitX/pull/514
+[#515]: https://github.com/PowerNukkitX/PowerNukkitX/pull/515
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1337,8 +1383,16 @@ Need to switch languages?
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2662176331
 
 <!--Protocol Version 534-->
-[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758
 <!--1.6.0.0-PNX Version summary End-->
+
+<!--1.19.xx-PNX Version summary Start-->
+<!--1.19.10-r1-PNX Protocol Version 534-->
+[#1.19.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1
+
+<!--1.19.20-r1-PNX Protocol Verison 544-->
+[#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
 

@@ -10,7 +10,33 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
+## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - Future - (Dev)
+
+This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
+
+### Changed
+
+- [#515] Implemented compatibility with 1.19.20 (protocol version 544).
+
+### Fixes
+
+- [#511] Fix the problem of not being able to grow large spruce trees.
+- [#512] Fix fix compatibility with jar-in-jar multi-level plugins.
+- [#514] Fix the issue that when the player is too fast while riding, it will be mistakenly checked as instantaneous.
+
+## [1.19.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - 2022-8-7
+
+This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
+
+### Added
+
+- [#510] 1.19.10-r1 Release。
+
+### Changed
+
+- [#506] 1.19.10-r1 Version Updates。
+
+## [1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758) - EOL - (Dev)
 
 This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
 
@@ -80,6 +106,7 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#466] `Change custom block api.`
 - [#467] Tweak Version command to update checks.
 - [#473] Improve status command + update dependency library.
+- [#477] Enhance customizability and compatibility of JS engine.
 - [#489] Optimize pathfinding logic.
 - [#490] Change boss entity position to fit 384 height.
 - [#491] Improve entity AI.
@@ -971,6 +998,20 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.10-r1-PNX</summary>
+
+   1. [#1.19.10-r1] PNX-1.19.10-r1 (Protocol Verison 534)
+
+</details>
+
+<details>
+  <summary>1.19.20-r1-PNX</summary>
+
+   1. [#1.19.20-r1] PNX-1.19.20-r1 (Protocol Version 544)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1308,6 +1349,7 @@ Need to switch languages?
 [#473]: https://github.com/PowerNukkitX/PowerNukkitX/pull/473
 [#474]: https://github.com/PowerNukkitX/PowerNukkitX/pull/474
 [#476]: https://github.com/PowerNukkitX/PowerNukkitX/pull/476
+[#477]: https://github.com/PowerNukkitX/PowerNukkitX/pull/477
 [#478]: https://github.com/PowerNukkitX/PowerNukkitX/pull/478
 [#479]: https://github.com/PowerNukkitX/PowerNukkitX/issues/479
 [#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
@@ -1324,6 +1366,12 @@ Need to switch languages?
 [#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
 [#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
 [#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
+[#506]: https://github.com/PowerNukkitX/PowerNukkitX/pull/506
+[#510]: https://github.com/PowerNukkitX/PowerNukkitX/pull/510
+[#511]: https://github.com/PowerNukkitX/PowerNukkitX/pull/511
+[#512]: https://github.com/PowerNukkitX/PowerNukkitX/pull/512
+[#514]: https://github.com/PowerNukkitX/PowerNukkitX/pull/514
+[#515]: https://github.com/PowerNukkitX/PowerNukkitX/pull/515
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1337,8 +1385,16 @@ Need to switch languages?
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2662176331
 
 <!--Protocol Version 534-->
-[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758
 <!--1.6.0.0-PNX Version summary End-->
+
+<!--1.19.xx-PNX Version summary Start-->
+<!--1.19.10-r1-PNX Protocol Version 534-->
+[#1.19.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1
+
+<!--1.19.20-r1-PNX Protocol Verison 544-->
+[#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
 
