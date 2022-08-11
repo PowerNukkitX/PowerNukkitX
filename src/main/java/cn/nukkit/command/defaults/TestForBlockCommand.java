@@ -46,7 +46,7 @@ public class TestForBlockCommand extends VanillaCommand {
             int tileId = BlockState.of(tileName.startsWith("minecraft:") ? tileName : "minecraft:" + tileName).getBlockId();
             int dataValue = 0;
 
-            if (args.length > 4) {
+            if (parser.hasNext()) {
                 dataValue = parser.parseInt();
             }
 

@@ -47,8 +47,7 @@ public class TestForBlocksCommand extends VanillaCommand {
             Position destination = parser.parsePosition().floor();
             TestForBlocksMode mode = TestForBlocksMode.ALL;
 
-            if (args.length > 9) {
-
+            if (parser.hasNext()) {
                 mode = parser.parseEnum(TestForBlocksMode.class);
             }
 
