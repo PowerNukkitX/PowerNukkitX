@@ -255,8 +255,11 @@ public class Anvil extends BaseLevelProvider {
         if (lastPosition > maxIterations) lastPosition = 0;
         int i;
         synchronized (chunks) {
-            ObjectIterator<BaseFullChunk> iter = chunks.values().iterator();
-            if (lastPosition != 0) iter.skip(lastPosition);
+            var iter = chunks.values().iterator();
+            if (lastPosition != 0) {
+                var tmpI = lastPosition;
+                while (tmpI-- != 0 && iter.hasNext()) iter.next();
+            }
             for (i = 0; i < maxIterations; i++) {
                 if (!iter.hasNext()) {
                     iter = chunks.values().iterator();
