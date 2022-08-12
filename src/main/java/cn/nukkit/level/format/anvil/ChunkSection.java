@@ -82,6 +82,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         this.y = y;
         this.contentVersion = ChunkUpdater.getCurrentContentVersion();
         layerStorage = LayerStorage.EMPTY;
+        biomeId = new byte[4096];
         hasBlockLight = false;
         hasSkyLight = false;
     }
@@ -908,5 +909,9 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Override
     public void setBiomeId(int x, int y, int z, byte id) {
         this.biomeId[getAnvilIndex(x, y, z)] = id;
+//        if (id < 0) {
+//            System.out.println("Error id:" + id);
+//            new RuntimeException().printStackTrace();
+//        }
     }
 }

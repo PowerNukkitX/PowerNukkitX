@@ -225,12 +225,7 @@ public class Chunk extends BaseChunk {
 
     @Override
     public int getBiomeId(int x, int z) {
-        for (var section : sections) {
-            if (section instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
-                return anvilSection.getBiomeId(x, 0, z);
-            }
-        }
-        return super.getBiomeId(x, z);
+        return getBiomeId(x, 70, z);
     }
 
     @Override
@@ -238,7 +233,7 @@ public class Chunk extends BaseChunk {
         for (var section : sections) {
             if (section instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
                 for (int dy = 0; dy < 16; dy++) {
-                    anvilSection.getBiomeId(x, dy, z);
+                    anvilSection.setBiomeId(x, dy, z, biomeId);
                 }
             }
         }
@@ -248,7 +243,7 @@ public class Chunk extends BaseChunk {
     @Override
     public int getBiomeId(int x, int y, int z) {
         if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
-            return anvilSection.getBiomeId(x, y & 0xf, z);
+            return anvilSection.getBiomeId(x, y & 0xf, z) & 0xFF;
         }
         return super.getBiomeId(x, y, z);
     }
@@ -261,6 +256,11 @@ public class Chunk extends BaseChunk {
             return;
         }
         super.setBiomeId(x, y, z, biomeId);
+    }
+
+    @Override
+    public void setBiome(int x, int y, int z, Biome biome) {
+        setBiomeId(x, y, z, (byte) biome.getId());
     }
 
     public CompoundTag getNBT() {
