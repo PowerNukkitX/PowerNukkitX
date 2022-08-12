@@ -4,16 +4,24 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ExecutorCommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
+import cn.nukkit.command.data.CommandParamType;
+import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.CommandParser;
-import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.ScoreboardManager;
@@ -27,15 +35,115 @@ import com.google.common.base.Splitter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.utils.Utils.getLevelBlocks;
+
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+@Since("1.19.20-r2")
 public class ExecuteCommand extends VanillaCommand{
 
     private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
+    private static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0","run","as","at","positioned","if","unless","in","align","anchored");
+    private static final CommandParameter CHAINED_COMMAND_PARAM = CommandParameter.newEnum("chainedCommand",false,CHAINED_COMMAND_ENUM);
+    private static final CommandParameter COMMAND_PARAM = CommandParameter.newType("command", CommandParamType.COMMAND);
+
+    static {
+        CHAINED_COMMAND_PARAM.paramOptions = List.of(CommandParamOption.ENUM_AS_CHAINED_COMMAND);
+        COMMAND_PARAM.paramOptions = List.of(CommandParamOption.HAS_SEMANTIC_CONSTRAINT);
+    }
 
     public ExecuteCommand(String name) {
         super(name,"commands.execute.description", "commands.execute.usage");
         this.setPermission("nukkit.command.execute");
+        this.getCommandParameters().clear();
+        this.addCommandParameters("as", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_As","as")),
+                CommandParameter.newType("origin",CommandParamType.TARGET),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("at", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_At","at")),
+                CommandParameter.newType("origin",CommandParamType.TARGET),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("in", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_In","in")),
+                CommandParameter.newType("dimension",CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("align", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Align","align")),
+                CommandParameter.newType("axes",CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("anchored", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Anchored","anchored")),
+                CommandParameter.newEnum("anchor",new String[]{"eyes","feet"}),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("positioned", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Positioned","positioned")),
+                CommandParameter.newType("position",CommandParamType.POSITION),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("positioned as", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Positioned","positioned")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_As","as")),
+                CommandParameter.newType("origin",CommandParamType.TARGET),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-block", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Block","block")),
+                CommandParameter.newType("position",CommandParamType.POSITION),
+                CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-block-data", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Block","block")),
+                CommandParameter.newType("position",CommandParamType.POSITION),
+                CommandParameter.newEnum("block", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("data",CommandParamType.INT),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-blocks", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Blocks","blocks")),
+                CommandParameter.newType("begin",CommandParamType.POSITION),
+                CommandParameter.newType("end",CommandParamType.POSITION),
+                CommandParameter.newType("destination",CommandParamType.POSITION),
+                CommandParameter.newEnum("scan mode", true, new String[]{"all","masked"}),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-entity", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Entity","entity")),
+                CommandParameter.newType("target",CommandParamType.TARGET),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-score", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Score","score")),
+                CommandParameter.newType("target",CommandParamType.TARGET),
+                CommandParameter.newType("objective", CommandParamType.STRING),
+                CommandParameter.newEnum("operation",new String[]{"<","<=","=",">=",">"}),
+                CommandParameter.newType("source",CommandParamType.TARGET),
+                CommandParameter.newType("objective", CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("if-unless-score-matches", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_If_Unless","if","unless")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Score","score")),
+                CommandParameter.newType("target",CommandParamType.TARGET),
+                CommandParameter.newType("objective", CommandParamType.STRING),
+                CommandParameter.newEnum("matches",new String[]{"matches"}),
+                CommandParameter.newType("range", CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("run", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Run","run")),
+                COMMAND_PARAM
+        });
     }
 
     @Override
@@ -101,6 +209,42 @@ public class ExecuteCommand extends VanillaCommand{
                     }
                     return success;
                 }
+                case "in" -> {
+                    String levelName = parser.parseString();
+                    Level level = Server.getInstance().getLevelByName(levelName);
+                    if (level == null){
+                        return false;
+                    }
+                    Location location = sender.getLocation();
+                    location.setLevel(level);
+                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                    return nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender));
+                }
+                case "align" -> {
+                    String axes = parser.parseString();
+                    Location location = sender.getLocation();
+                    for (char c : axes.toCharArray()){
+                        switch (c){
+                            case 'x' -> location.x = location.getFloorX();
+                            case 'y' -> location.y = location.getFloorY();
+                            case 'z' -> location.z = location.getFloorZ();
+                        }
+                    }
+                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                    return nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender));
+                }
+                case "anchored" -> {
+                    if (!sender.isEntity()) return false;
+                    Location location = sender.getLocation();
+                    switch (parser.parseString()){
+                        case "feet" -> {
+                            //do nothing
+                        }
+                        case "eyes" -> location = location.add(0,sender.asEntity().getEyeHeight(),0);
+                    }
+                    ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                    return nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender));
+                }
                 case "at" -> {
                     List<Entity> locations = parser.parseTargets();
                     if (locations.isEmpty()) return false;
@@ -149,15 +293,118 @@ public class ExecuteCommand extends VanillaCommand{
                     switch(parser.parseString()){
                         case "block" -> {
                             Position pos = parser.parsePosition();
+                            Block block = pos.getLevelBlock();
                             String blockName = parser.parseString();
                             int id = BlockState.of(blockName.startsWith("minecraft:") ? blockName : "minecraft:" + blockName).getBlockId();
-                            if ((id == pos.getLevelBlock().getId() && shouldMatch) || (id != pos.getLevelBlock().getId() && !shouldMatch)){
+                            String next = parser.parseString(false);
+                            int data = -1;
+                            try{
+                                data = Integer.parseInt(next);
+                                parser.parseString();
+                            }catch (NumberFormatException e){
+                                //failed
+                            }
+                            boolean matched = id == block.getId() && (data == -1 || data == block.getDamage());
+                            if ((matched && shouldMatch) || (!matched && !shouldMatch)){
                                 return nextSubCommand(sender, new CommandParser(parser));
                             }
                             return false;
                         }
                         case "blocks" -> {
+                            Position begin = parser.parsePosition().floor();
+                            Position end = parser.parsePosition().floor();
+                            Position destination = parser.parsePosition().floor();
+                            TestForBlocksCommand.TestForBlocksMode mode = TestForBlocksCommand.TestForBlocksMode.ALL;
 
+                            if (parser.hasNext()) {
+                                mode = parser.parseEnum(TestForBlocksCommand.TestForBlocksMode.class);
+                            }
+
+                            AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
+                            int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
+
+                            if (size > 16 * 16 * 256 * 8) {
+                                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 256 * 8)));
+                                sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
+                            }
+
+                            Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
+                            AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
+
+                            if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
+                                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
+                                if (!shouldMatch){
+                                    return nextSubCommand(sender, new CommandParser(parser));
+                                }
+                                return false;
+                            }
+
+                            Level level = begin.getLevel();
+
+                            for (int sourceChunkX = NukkitMath.floorDouble(blocksAABB.getMinX()) >> 4, destinationChunkX = NukkitMath.floorDouble(destinationAABB.getMinX()) >> 4; sourceChunkX <= NukkitMath.floorDouble(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
+                                for (int sourceChunkZ = NukkitMath.floorDouble(blocksAABB.getMinZ()) >> 4, destinationChunkZ = NukkitMath.floorDouble(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= NukkitMath.floorDouble(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {
+                                    if (level.getChunkIfLoaded(sourceChunkX, sourceChunkZ) == null) {
+                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
+                                        if (!shouldMatch){
+                                            return nextSubCommand(sender, new CommandParser(parser));
+                                        }
+                                        return false;
+                                    }
+                                    if (level.getChunkIfLoaded(destinationChunkX, destinationChunkZ) == null) {
+                                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.outOfWorld"));
+                                        if (!shouldMatch){
+                                            return nextSubCommand(sender, new CommandParser(parser));
+                                        }
+                                        return false;
+                                    }
+                                }
+                            }
+
+                            Block[] blocks = getLevelBlocks(level, blocksAABB);
+                            Block[] destinationBlocks = getLevelBlocks(level, destinationAABB);
+                            int count = 0;
+
+                            boolean matched = true;
+
+                            switch (mode) {
+                                case ALL:
+                                    for (int i = 0; i < blocks.length; i++) {
+                                        Block block = blocks[i];
+                                        Block destinationBlock = destinationBlocks[i];
+
+                                        if (block.equalsBlock(destinationBlock)) {
+                                            ++count;
+                                        } else {
+                                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));
+                                            matched =  false;
+                                            break;
+                                        }
+                                    }
+
+                                    break;
+                                case MASKED:
+                                    for (int i = 0; i < blocks.length; i++) {
+                                        Block block = blocks[i];
+                                        Block destinationBlock = destinationBlocks[i];
+
+                                        if (block.equalsBlock(destinationBlock)) {
+                                            ++count;
+                                        } else if (block.getId() != Block.AIR) {
+                                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.compare.failed"));
+                                            matched =  false;
+                                            break;
+                                        }
+                                    }
+
+                                    break;
+                            }
+
+                            sender.sendMessage(new TranslationContainer("%commands.compare.success", String.valueOf(count)));
+
+                            if ((matched && shouldMatch) || (!matched && !shouldMatch)){
+                                return nextSubCommand(sender, new CommandParser(parser));
+                            }
+                            return false;
                         }
                         case "entity" -> {
                             boolean found = !parser.parseTargets().isEmpty();

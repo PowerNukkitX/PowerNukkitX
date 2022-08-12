@@ -103,7 +103,7 @@ public class TeleportCommand extends VanillaCommand {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                         return false;
                     }
-                    Entity victim = sender.asEntity();
+                    Location victim = sender.getLocation();
                     Location target = destination.get(0).setYaw(victim.getYaw()).setPitch(victim.getPitch());
                     boolean checkForBlocks = false;
                     if(p.hasNext()){
@@ -111,14 +111,14 @@ public class TeleportCommand extends VanillaCommand {
                     }
                     if(checkForBlocks){
                         if(!target.getLevelBlock().isSolid() && !target.add(0,1,0).getLevelBlock().isSolid()){
-                            victim.teleport(target);
+                            sender.asEntity().teleport(target);
                             sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
                         }else{
-                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail",victim.getName(),destination.get(0).getName()));
+                            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.tp.safeTeleportFail",sender.asEntity().getName(),destination.get(0).getName()));
                             return false;
                         }
                     }else{
-                        victim.teleport(target);
+                        sender.asEntity().teleport(target);
                         sender.sendMessage(new TranslationContainer("commands.tp.successVictim", destination.get(0).getName()));
                     }
                     return true;
@@ -280,11 +280,11 @@ public class TeleportCommand extends VanillaCommand {
                     }
                     CommandParser p = new CommandParser(parser);
                     Position pos = p.parsePosition();
-                    double yRot = sender.asEntity().pitch;
+                    double yRot = sender.getLocation().pitch;
                     if(p.hasNext()){
                         yRot = p.parseOffsetDouble(yRot);
                     }
-                    double xRot = sender.asEntity().yaw;
+                    double xRot = sender.getLocation().yaw;
                     if(p.hasNext()){
                         xRot = p.parseOffsetDouble(xRot);
                     }

@@ -126,7 +126,7 @@ public class TestForBlocksCommand extends VanillaCommand {
         return true;
     }
 
-    private enum TestForBlocksMode {
+    public enum TestForBlocksMode {
         ALL,
         MASKED
     }
