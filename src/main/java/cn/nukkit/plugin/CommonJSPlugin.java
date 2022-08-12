@@ -13,6 +13,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class CommonJSPlugin implements Plugin, Listener {
 
     public final int id = globalMaxId++;
 
-    public final void init(JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
+    public final void init(@NotNull JSPluginLoader jsPluginLoader, File pluginDir, PluginDescription pluginDescription) {
         this.jsPluginLoader = jsPluginLoader;
         this.server = jsPluginLoader.server;
         this.pluginDir = pluginDir;

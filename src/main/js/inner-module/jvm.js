@@ -37,6 +37,14 @@ export function gc() {
 }
 
 /**
+ * 从指定路径动态加载jar包
+ * @param jarPath {string} jar包路径
+ */
+export function loadJar(jarPath) {
+    jsPlugin.getClassLoader().addJar(jarPath);
+}
+
+/**
  * @external JavaClass
  */
 
