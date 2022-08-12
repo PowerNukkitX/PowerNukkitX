@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
@@ -406,10 +407,18 @@ public abstract class BaseLevelProvider implements LevelProvider {
         return this.getChunk(chunkX, chunkZ, false);
     }
 
+    @Nullable
+    protected final BaseFullChunk getThreadLastChunk() {
+        var ref = lastChunk.get();
+        if (ref == null) {
+            return null;
+        }
+        return ref.get();
+    }
+
     @Override
     public BaseFullChunk getLoadedChunk(int chunkX, int chunkZ) {
-        var ref = lastChunk.get();
-        var tmp = ref.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
@@ -420,8 +429,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public BaseFullChunk getLoadedChunk(long hash) {
-        var ref = lastChunk.get();
-        var tmp = ref.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getIndex() == hash) {
             return tmp;
         }
@@ -431,8 +439,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public BaseFullChunk getChunk(int chunkX, int chunkZ, boolean create) {
-        var ref = lastChunk.get();
-        var tmp = ref.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
