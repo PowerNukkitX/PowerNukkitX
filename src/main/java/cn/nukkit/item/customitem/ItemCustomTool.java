@@ -28,15 +28,15 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
     public static final int TIER_STONE = ItemTool.TIER_STONE;
     public static final int TIER_IRON = ItemTool.TIER_IRON;
     public static final int TIER_DIAMOND = ItemTool.TIER_DIAMOND;
-    public static final int TIER_NETHERITE =  ItemTool.TIER_NETHERITE;
+    public static final int TIER_NETHERITE = ItemTool.TIER_NETHERITE;
 
-    public static final int TYPE_NONE =  ItemTool.TYPE_NONE;
-    public static final int TYPE_SWORD =  ItemTool.TYPE_SWORD;
-    public static final int TYPE_SHOVEL =  ItemTool.TYPE_SHOVEL;
-    public static final int TYPE_PICKAXE =  ItemTool.TYPE_PICKAXE;
-    public static final int TYPE_AXE =  ItemTool.TYPE_AXE;
-    public static final int TYPE_SHEARS =  ItemTool.TYPE_SHEARS;
-    public static final int TYPE_HOE =  ItemTool.TYPE_HOE;
+    public static final int TYPE_NONE = ItemTool.TYPE_NONE;
+    public static final int TYPE_SWORD = ItemTool.TYPE_SWORD;
+    public static final int TYPE_SHOVEL = ItemTool.TYPE_SHOVEL;
+    public static final int TYPE_PICKAXE = ItemTool.TYPE_PICKAXE;
+    public static final int TYPE_AXE = ItemTool.TYPE_AXE;
+    public static final int TYPE_SHEARS = ItemTool.TYPE_SHEARS;
+    public static final int TYPE_HOE = ItemTool.TYPE_HOE;
 
     public static final int DURABILITY_WOODEN = ItemTool.DURABILITY_WOODEN;
     public static final int DURABILITY_GOLD = ItemTool.DURABILITY_GOLD;
@@ -78,21 +78,21 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
                 .putInt("damage", this.getAttackDamage())
                 .putInt("enchantable_value", this.getEnchantableValue());
 
-        if(this.isPickaxe()) {
+        if (this.isPickaxe()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "pickaxe");
             data.getCompound("components")
-                    .putCompound("minecraft:digger", getPickaxeDiggerNBT(this.getTier()));
-        }else if(this.isAxe()) {
+                    .putCompound("minecraft:digger", getPickaxeDiggerNBT());
+        } else if (this.isAxe()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "axe");
             data.getCompound("components")
-                    .putCompound("minecraft:digger", getAxeDiggerNBT(this.getTier()));
-        }else if (this.isShovel()) {
+                    .putCompound("minecraft:digger", getAxeDiggerNBT());
+        } else if (this.isShovel()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "shovel");
             data.getCompound("components")
-                    .putCompound("minecraft:digger", getShovelDiggerNBT(this.getTier()));
+                    .putCompound("minecraft:digger", getShovelDiggerNBT());
         } else if (this.isHoe()) {
             data.getCompound("components").getCompound("item_properties")
                     .putString("enchantable_slot", "hoe");
@@ -206,6 +206,7 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
 
     /**
      * No damage to item when it's used to attack entities
+     *
      * @return whether the item should take damage when used to attack entities
      */
     public boolean noDamageOnAttack() {
@@ -214,28 +215,38 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
 
     /**
      * No damage to item when it's used to break blocks
+     *
      * @return whether the item should take damage when used to break blocks
      */
     public boolean noDamageOnBreak() {
         return false;
     }
 
-    public static CompoundTag getPickaxeDiggerNBT(int tier){
-        int speed = 1;
-        if(tier == 0){
-            return new CompoundTag().putBoolean("use_efficiency",true);
-        }else if(tier == 5){
-            speed = 6;
-        }else if(tier == 4){
-            speed = 5;
-        }else if(tier == 3){
-            speed = 4;
-        }else if(tier == 2){
-            speed = 3;
-        }else if(tier == 1){
-            speed = 2;
+    /**
+     * 控制工具的挖掘速度(默认0 使用工具等级计算挖掘速度)
+     *
+     * @return 挖掘速度
+     */
+    public int getDestroySpeeds() {
+        return 0;
+    }
+
+    public CompoundTag getPickaxeDiggerNBT() {
+        if (this.getTier() == 0) {
+            return new CompoundTag().putBoolean("use_efficiency", true);
         }
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency",true);
+        var speed = switch (this.getTier()) {
+            case 6 -> 7;
+            case 5 -> 6;
+            case 4 -> 5;
+            case 3 -> 4;
+            case 2 -> 3;
+            case 1 -> 2;
+            default -> 1;
+        };
+        int customSpeed = getDestroySpeeds();
+        if (customSpeed > 0) speed = customSpeed;
+        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
         ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
         destroy_speeds.add(new CompoundTag()
                 .putCompound("block",
@@ -246,22 +257,22 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
         return diggerRoot.putList(destroy_speeds);
     }
 
-    public static CompoundTag getAxeDiggerNBT(int tier){
-        int speed = 1;
-        if(tier == 0){
-            return new CompoundTag().putBoolean("use_efficiency",true);
-        }else if(tier == 5){
-            speed = 6;
-        }else if(tier == 4){
-            speed = 5;
-        }else if(tier == 3){
-            speed = 4;
-        }else if(tier == 2){
-            speed = 3;
-        }else if(tier == 1){
-            speed = 2;
+    public CompoundTag getAxeDiggerNBT() {
+        if (this.getTier() == 0) {
+            return new CompoundTag().putBoolean("use_efficiency", true);
         }
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency",true);
+        var speed = switch (this.getTier()) {
+            case 6 -> 7;
+            case 5 -> 6;
+            case 4 -> 5;
+            case 3 -> 4;
+            case 2 -> 3;
+            case 1 -> 2;
+            default -> 1;
+        };
+        int customSpeed = getDestroySpeeds();
+        if (customSpeed > 0) speed = customSpeed;
+        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
         ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
         destroy_speeds.add(new CompoundTag()
                 .putCompound("block",
@@ -271,22 +282,22 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
         return diggerRoot.putList(destroy_speeds);
     }
 
-    public static CompoundTag getShovelDiggerNBT(int tier){
-        int speed = 1;
-        if(tier == 0){
-            return new CompoundTag().putBoolean("use_efficiency",true);
-        }else if(tier == 5){
-            speed = 6;
-        }else if(tier == 4){
-            speed = 5;
-        }else if(tier == 3){
-            speed = 4;
-        }else if(tier == 2){
-            speed = 3;
-        }else if(tier == 1){
-            speed = 2;
+    public CompoundTag getShovelDiggerNBT() {
+        if (this.getTier() == 0) {
+            return new CompoundTag().putBoolean("use_efficiency", true);
         }
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency",true);
+        var speed = switch (this.getTier()) {
+            case 6 -> 7;
+            case 5 -> 6;
+            case 4 -> 5;
+            case 3 -> 4;
+            case 2 -> 3;
+            case 1 -> 2;
+            default -> 1;
+        };
+        int customSpeed = getDestroySpeeds();
+        if (customSpeed > 0) speed = customSpeed;
+        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
         ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
         destroy_speeds.add(new CompoundTag()
                 .putCompound("block",

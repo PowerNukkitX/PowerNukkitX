@@ -2424,6 +2424,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
         this.dataPacketImmediately(startGamePacket);
 
+        //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
         if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
 
