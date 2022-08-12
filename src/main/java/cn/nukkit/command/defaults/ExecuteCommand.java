@@ -29,6 +29,7 @@ import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
+import cn.nukkit.utils.BVector3;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Splitter;
 
@@ -42,7 +43,7 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class ExecuteCommand extends VanillaCommand{
 
     private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
-    private static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0","run","as","at","positioned","if","unless","in","align","anchored","rotated");
+    private static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0","run","as","at","positioned","if","unless","in","align","anchored","rotated","facing");
     private static final CommandParameter CHAINED_COMMAND_PARAM = CommandParameter.newEnum("chainedCommand",false,CHAINED_COMMAND_ENUM);
     private static final CommandParameter COMMAND_PARAM = CommandParameter.newType("command", CommandParamType.COMMAND);
 
@@ -68,6 +69,18 @@ public class ExecuteCommand extends VanillaCommand{
         this.addCommandParameters("in", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_In","in")),
                 CommandParameter.newType("dimension",CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("facing", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Facing","facing")),
+                CommandParameter.newType("pos", CommandParamType.POSITION),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("facing-entity", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Facing","facing")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_Entity","entity")),
+                CommandParameter.newType("targets",CommandParamType.TARGET),
+                CommandParameter.newEnum("anchor",new String[]{"eyes","feet"}),
                 CHAINED_COMMAND_PARAM
         });
         this.addCommandParameters("rotated", new CommandParameter[]{
@@ -220,6 +233,34 @@ public class ExecuteCommand extends VanillaCommand{
                         }
                     }
                     return success;
+                }
+                case "facing" -> {
+                    if (parser.parseString(false).equals("entity")){
+                        parser.parseString();
+                        List<Entity> targets = parser.parseTargets();
+                        if (targets.isEmpty()) return false;
+                        boolean anchorAtEyes = parser.parseString().equals("eyes");
+                        boolean success = true;
+                        for (Entity target : targets) {
+                            Location source = sender.getLocation();
+                            BVector3 bv = BVector3.fromPos(target.x - source.x, target.y + (anchorAtEyes ? target.getEyeHeight() : 0) - source.y, target.z - source.z);
+                            source.setPitch(bv.getPitch());
+                            source.setYaw(bv.getYaw());
+                            ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(),source);
+                            if (!nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender)) && success) {
+                                success = false;
+                            }
+                        }
+                        return success;
+                    }else{
+                        Vector3 pos = parser.parseVector3();
+                        Location source = sender.getLocation();
+                        BVector3 bv = BVector3.fromPos(pos.x - source.x, pos.y - source.y, pos.z - source.z);
+                        source.setPitch(bv.getPitch());
+                        source.setYaw(bv.getYaw());
+                        ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(),source);
+                        return nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender));
+                    }
                 }
                 case "rotated" -> {
                     if (parser.parseString(false).equals("as")){
