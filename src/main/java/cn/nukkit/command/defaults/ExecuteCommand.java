@@ -42,7 +42,7 @@ import static cn.nukkit.utils.Utils.getLevelBlocks;
 public class ExecuteCommand extends VanillaCommand{
 
     private static final Splitter SCORE_SCOPE_SEPARATOR = Splitter.on("..").limit(2);
-    private static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0","run","as","at","positioned","if","unless","in","align","anchored");
+    private static final CommandEnum CHAINED_COMMAND_ENUM = new CommandEnum("ExecuteChainedOption_0","run","as","at","positioned","if","unless","in","align","anchored","rotated");
     private static final CommandParameter CHAINED_COMMAND_PARAM = CommandParameter.newEnum("chainedCommand",false,CHAINED_COMMAND_ENUM);
     private static final CommandParameter COMMAND_PARAM = CommandParameter.newType("command", CommandParamType.COMMAND);
 
@@ -68,6 +68,18 @@ public class ExecuteCommand extends VanillaCommand{
         this.addCommandParameters("in", new CommandParameter[]{
                 CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_In","in")),
                 CommandParameter.newType("dimension",CommandParamType.STRING),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("rotated", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Rotated","rotated")),
+                CommandParameter.newType("yaw", true, CommandParamType.VALUE),
+                CommandParameter.newType("pitch", true, CommandParamType.VALUE),
+                CHAINED_COMMAND_PARAM
+        });
+        this.addCommandParameters("rotated as", new CommandParameter[]{
+                CommandParameter.newEnum("subcommand",false, new CommandEnum("Option_Rotated","rotated")),
+                CommandParameter.newEnum("secondary subcommand",false, new CommandEnum("Option_As","as")),
+                CommandParameter.newType("targets",CommandParamType.TARGET),
                 CHAINED_COMMAND_PARAM
         });
         this.addCommandParameters("align", new CommandParameter[]{
@@ -208,6 +220,33 @@ public class ExecuteCommand extends VanillaCommand{
                         }
                     }
                     return success;
+                }
+                case "rotated" -> {
+                    if (parser.parseString(false).equals("as")){
+                        parser.parseString();
+                        List<Entity> executors = parser.parseTargets();
+                        boolean success = true;
+                        for (Entity executor : executors) {
+                            Location location = sender.getLocation();
+                            location.setYaw(executor.getYaw());
+                            location.setPitch(executor.getPitch());
+                            ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                            if (!nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender)) && success) {
+                                success = false;
+                            }
+                        }
+                        return success;
+                    }else{
+                        double yaw = sender.getLocation().yaw;
+                        yaw = parser.parseOffsetDouble(yaw);
+                        double pitch = sender.getLocation().pitch;
+                        pitch = parser.parseOffsetDouble(pitch);
+                        Location location = sender.getLocation();
+                        location.setYaw(yaw);
+                        location.setPitch(pitch);
+                        ExecutorCommandSender executorCommandSender = new ExecutorCommandSender(sender, sender.asEntity(), location);
+                        return nextSubCommand(executorCommandSender, new CommandParser(parser, executorCommandSender));
+                    }
                 }
                 case "in" -> {
                     String levelName = parser.parseString();
