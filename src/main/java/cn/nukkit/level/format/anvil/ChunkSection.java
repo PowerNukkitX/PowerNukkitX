@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 
 /**
@@ -53,6 +55,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     private static final BigInteger BYTE_MASK = BigInteger.valueOf(0xFF);
 
     private final int y;
+    protected final ReentrantReadWriteLock sectionLock = new ReentrantReadWriteLock();
 
     private LayerStorage layerStorage;
 
@@ -273,7 +276,12 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @PowerNukkitOnly
     @Override
     public int getBlockId(int x, int y, int z, int layer) {
-        return layerStorage.getStorageOrEmpty(layer).getBlockId(x, y, z);
+        sectionLock.readLock().lock();
+        try {
+            return layerStorage.getStorageOrEmpty(layer).getBlockId(x, y, z);
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -283,14 +291,19 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
     @PowerNukkitOnly
     @Override
-    public synchronized void setBlockId(int x, int y, int z, int layer, int id) {
-        if (id != 0) {
-            layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockId(x, y, z, id);
-        } else {
-            BlockStorage storage = layerStorage.getStorageOrNull(layer);
-            if (storage != null) {
-                storage.setBlockId(x, y, z, id);
+    public void setBlockId(int x, int y, int z, int layer, int id) {
+        sectionLock.writeLock().lock();
+        try {
+            if (id != 0) {
+                layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockId(x, y, z, id);
+            } else {
+                BlockStorage storage = layerStorage.getStorageOrNull(layer);
+                if (storage != null) {
+                    storage.setBlockId(x, y, z, id);
+                }
             }
+        } finally {
+            sectionLock.writeLock().unlock();
         }
     }
 
@@ -310,16 +323,21 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public synchronized boolean setFullBlockId(int x, int y, int z, int layer, int fullId) {
-        if (fullId != 0) {
-            layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setFullBlock(x, y, z, fullId);
-        } else {
-            BlockStorage storage = layerStorage.getStorageOrNull(layer);
-            if (storage != null) {
-                storage.setFullBlock(x, y, z, fullId);
+    public boolean setFullBlockId(int x, int y, int z, int layer, int fullId) {
+        sectionLock.writeLock().lock();
+        try {
+            if (fullId != 0) {
+                layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setFullBlock(x, y, z, fullId);
+            } else {
+                BlockStorage storage = layerStorage.getStorageOrNull(layer);
+                if (storage != null) {
+                    storage.setFullBlock(x, y, z, fullId);
+                }
             }
+            return true;
+        } finally {
+            sectionLock.writeLock().unlock();
         }
-        return true;
     }
 
     @Deprecated
@@ -334,7 +352,12 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @PowerNukkitOnly
     @Override
     public int getBlockData(int x, int y, int z, int layer) {
-        return layerStorage.getStorageOrEmpty(layer).getBlockData(x, y, z);
+        sectionLock.readLock().lock();
+        try {
+            return layerStorage.getStorageOrEmpty(layer).getBlockData(x, y, z);
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Deprecated
@@ -348,14 +371,19 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public synchronized void setBlockData(int x, int y, int z, int layer, int data) {
-        if (data != 0) {
-            layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockData(x, y, z, data);
-        } else {
-            BlockStorage storage = layerStorage.getStorageOrNull(layer);
-            if (storage != null) {
-                storage.setBlockData(x, y, z, data);
+    public void setBlockData(int x, int y, int z, int layer, int data) {
+        sectionLock.writeLock().lock();
+        try {
+            if (data != 0) {
+                layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockData(x, y, z, data);
+            } else {
+                BlockStorage storage = layerStorage.getStorageOrNull(layer);
+                if (storage != null) {
+                    storage.setBlockData(x, y, z, data);
+                }
             }
+        } finally {
+            sectionLock.writeLock().unlock();
         }
     }
 
@@ -370,7 +398,12 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Nonnull
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        return layerStorage.getStorageOrEmpty(layer).getBlockState(x, y, z);
+        sectionLock.readLock().lock();
+        try {
+            return layerStorage.getStorageOrEmpty(layer).getBlockState(x, y, z);
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @PowerNukkitOnly
@@ -378,7 +411,12 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @DeprecationDetails(reason = "The data is limited to 32 bits", replaceWith = "getBlockState", since = "1.4.0.0-PN")
     @Override
     public int getFullBlock(int x, int y, int z, int layer) {
-        return layerStorage.getStorageOrEmpty(layer).getFullBlock(x, y, z);
+        sectionLock.readLock().lock();
+        try {
+            return layerStorage.getStorageOrEmpty(layer).getFullBlock(x, y, z);
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -401,37 +439,47 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @PowerNukkitOnly
     @Nonnull
     @Override
-    public synchronized Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
-        BlockStorage storage;
-        if (block.getId() != 0 || !block.isDefaultState()) {
-            storage = layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer);
-        } else {
-            storage = layerStorage.getStorageOrNull(layer);
-            if (storage == null) {
-                return BlockState.AIR.getBlock();
-            }
-        }
-
-        BlockState state = storage.getAndSetBlockState(x, y, z, block.getCurrentState());
+    public Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
+        sectionLock.writeLock().lock();
         try {
-            return state.getBlock();
-        } catch (InvalidBlockStateException ignored) {
-            return new BlockUnknown(state.getBlockId(), state.getExactIntStorage());
+            BlockStorage storage;
+            if (block.getId() != 0 || !block.isDefaultState()) {
+                storage = layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer);
+            } else {
+                storage = layerStorage.getStorageOrNull(layer);
+                if (storage == null) {
+                    return BlockState.AIR.getBlock();
+                }
+            }
+
+            BlockState state = storage.getAndSetBlockState(x, y, z, block.getCurrentState());
+            try {
+                return state.getBlock();
+            } catch (InvalidBlockStateException ignored) {
+                return new BlockUnknown(state.getBlockId(), state.getExactIntStorage());
+            }
+        } finally {
+            sectionLock.writeLock().unlock();
         }
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override
-    public synchronized BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state) {
-        if (!BlockState.AIR.equals(state)) {
-            return layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).getAndSetBlockState(x, y, z, state);
-        } else {
-            BlockStorage storage = layerStorage.getStorageOrNull(layer);
-            if (storage == null) {
-                return BlockState.AIR;
+    public BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state) {
+        sectionLock.writeLock().lock();
+        try {
+            if (!BlockState.AIR.equals(state)) {
+                return layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).getAndSetBlockState(x, y, z, state);
+            } else {
+                BlockStorage storage = layerStorage.getStorageOrNull(layer);
+                if (storage == null) {
+                    return BlockState.AIR;
+                }
+                return storage.getAndSetBlockState(x, y, z, state);
             }
-            return storage.getAndSetBlockState(x, y, z, state);
+        } finally {
+            sectionLock.writeLock().unlock();
         }
     }
 
@@ -452,7 +500,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
     @PowerNukkitOnly
     @Override
-    public synchronized boolean setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state) {
+    public boolean setBlockStateAtLayer(int x, int y, int z, int layer, BlockState state) {
         BlockState previous = getAndSetBlockState(x, y, z, layer, state);
         return !state.equals(previous);
     }
@@ -460,18 +508,28 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @PowerNukkitOnly
     @Override
     public int getBlockChangeStateAbove(int x, int y, int z) {
-        BlockStorage storage = layerStorage.getStorageOrNull(0);
-        if (storage == null) {
-            return 0;
+        sectionLock.readLock().lock();
+        try {
+            BlockStorage storage = layerStorage.getStorageOrNull(0);
+            if (storage == null) {
+                return 0;
+            }
+            return storage.getBlockChangeStateAbove(x, y, z);
+        } finally {
+            sectionLock.readLock().unlock();
         }
-        return storage.getBlockChangeStateAbove(x, y, z);
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public synchronized void delayPaletteUpdates() {
-        layerStorage.delayPaletteUpdates();
+        sectionLock.writeLock().lock();
+        try {
+            layerStorage.delayPaletteUpdates();
+        } finally {
+            sectionLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -822,41 +880,46 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
-    public synchronized List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
-        BlockStorage storage = layerStorage.getStorageOrNull(0);
-        if (storage == null) {
-            return Collections.emptyList();
-        }
+    public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
+        sectionLock.readLock().lock();
+        try {
+            BlockStorage storage = layerStorage.getStorageOrNull(0);
+            if (storage == null) {
+                return Collections.emptyList();
+            }
 
-        final List<Block> results = new ArrayList<>();
-        final BlockVector3 current = new BlockVector3();
-        final boolean isOverWorld = provider.isOverWorld();
-        int offsetY = getY() << 4;
-        int minX = Math.max(0, min.x - offsetX);
-        int minY = Math.max(0, min.y - offsetY);
-        int minZ = Math.max(0, min.z - offsetZ);
+            final List<Block> results = new ArrayList<>();
+            final BlockVector3 current = new BlockVector3();
+            final boolean isOverWorld = provider.isOverWorld();
+            int offsetY = getY() << 4;
+            int minX = Math.max(0, min.x - offsetX);
+            int minY = Math.max(0, min.y - offsetY);
+            int minZ = Math.max(0, min.z - offsetZ);
 
-        for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
-            current.x = offsetX + x;
-            for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
-                current.z = offsetZ + z;
-                for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
-                    current.y = offsetY + y;
-                    BlockState state = storage.getBlockState(x, y, z);
-                    if (condition.test(current, state)) {
-                        if (isOverWorld) {
-                            current.y -= 64;
-                            results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
-                            current.y += 64;
-                        } else {
-                            results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+            for (int x = Math.min(max.x - offsetX, 15); x >= minX; x--) {
+                current.x = offsetX + x;
+                for (int z = Math.min(max.z - offsetZ, 15); z >= minZ; z--) {
+                    current.z = offsetZ + z;
+                    for (int y = Math.min(max.y - offsetY, 15); y >= minY; y--) {
+                        current.y = offsetY + y;
+                        BlockState state = storage.getBlockState(x, y, z);
+                        if (condition.test(current, state)) {
+                            if (isOverWorld) {
+                                current.y -= 64;
+                                results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                                current.y += 64;
+                            } else {
+                                results.add(state.getBlockRepairing(provider.getLevel(), current, 0));
+                            }
                         }
                     }
                 }
             }
-        }
 
-        return results;
+            return results;
+        } finally {
+            sectionLock.readLock().unlock();
+        }
     }
 
     @Override
@@ -909,9 +972,5 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Override
     public void setBiomeId(int x, int y, int z, byte id) {
         this.biomeId[getAnvilIndex(x, y, z)] = id;
-//        if (id < 0) {
-//            System.out.println("Error id:" + id);
-//            new RuntimeException().printStackTrace();
-//        }
     }
 }
