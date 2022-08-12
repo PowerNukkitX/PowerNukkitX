@@ -17,15 +17,15 @@ import java.util.Map;
 @Since("1.6.0.0-PNX")
 public class FunctionCommand extends VanillaCommand {
     public FunctionCommand(String name) {
-        super(name,"commands.function.description");
+        super(name, "commands.function.description");
         this.setPermission("nukkit.command.function");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-            CommandParameter.newType("name", CommandParamType.FILE_PATH)
+                CommandParameter.newType("name", CommandParamType.FILE_PATH)
         });
         this.commandParameters.put("opera", new CommandParameter[]{
                 CommandParameter.newEnum("opera", false, new String[]{"opera"}),
-                CommandParameter.newEnum("type", false, new String[]{"list","reload"}),
+                CommandParameter.newEnum("type", false, new String[]{"list", "reload"}),
         });
     }
 
@@ -54,7 +54,7 @@ public class FunctionCommand extends VanillaCommand {
             }
             if (args[1].equals("list")) {
                 sender.sendMessage(TextFormat.GREEN + "The following functions exist\n");
-                for(Map.Entry<String,Function> entry : Server.getInstance().getFunctionManager().getFunctions().entrySet()){
+                for (Map.Entry<String, Function> entry : Server.getInstance().getFunctionManager().getFunctions().entrySet()) {
                     sender.sendMessage("- " + "name: '" + entry.getKey() + "',commands length: " + entry.getValue().getCommands().size() + "\n");
                 }
             }

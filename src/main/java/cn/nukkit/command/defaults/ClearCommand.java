@@ -28,10 +28,10 @@ public class ClearCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clear");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player",true, CommandParamType.TARGET),
-                CommandParameter.newEnum("itemName",true, CommandEnum.ENUM_ITEM),
-                CommandParameter.newType("data", true,CommandParamType.INT),
-                CommandParameter.newType("maxCount", true,CommandParamType.INT)
+                CommandParameter.newType("player", true, CommandParamType.TARGET),
+                CommandParameter.newEnum("itemName", true, CommandEnum.ENUM_ITEM),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("maxCount", true, CommandParamType.INT)
         });
     }
 
@@ -95,9 +95,9 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items", target.getName()));
                     } else {
-                        sender.sendMessage(new TranslationContainer("commands.clear.success",target.getName(),String.valueOf(count)));
+                        sender.sendMessage(new TranslationContainer("commands.clear.success", target.getName(), String.valueOf(count)));
                     }
                 } else if (maxCount == 0) {
                     int count = 0;
@@ -116,10 +116,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items", target.getName()));
                         return false;
                     } else {
-                        sender.sendMessage(new TranslationContainer("%commands.clear.testing",target.getName(),String.valueOf(count)));
+                        sender.sendMessage(new TranslationContainer("%commands.clear.testing", target.getName(), String.valueOf(count)));
                     }
                 } else if (maxCount == -1) {
                     int count = 0;
@@ -140,10 +140,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (count == 0) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items", target.getName()));
                         return false;
                     } else {
-                        sender.sendMessage(new TranslationContainer("%commands.clear.success",target.getName(),String.valueOf(count)));
+                        sender.sendMessage(new TranslationContainer("%commands.clear.success", target.getName(), String.valueOf(count)));
                     }
                 } else {
                     int remaining = maxCount;
@@ -177,10 +177,10 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (remaining == maxCount) {
-                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items",target.getName()));
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clear.failure.no.items", target.getName()));
                         return false;
                     } else {
-                        sender.sendMessage(new TranslationContainer("%commands.clear.success",target.getName(),String.valueOf(maxCount - remaining)));
+                        sender.sendMessage(new TranslationContainer("%commands.clear.success", target.getName(), String.valueOf(maxCount - remaining)));
                     }
                 }
             }

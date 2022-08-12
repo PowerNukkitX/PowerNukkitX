@@ -33,18 +33,18 @@ public class SetWorldSpawnCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
-        if(parser.matchCommandForm() == null){
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
         Level level;
         Vector3 pos;
-        if (!parser.hasNext()){
+        if (!parser.hasNext()) {
             level = sender.getPosition().level;
             pos = sender.getPosition().round();
-        }else{
+        } else {
             level = sender.getServer().getDefaultLevel();
             try {
                 pos = parser.parsePosition();

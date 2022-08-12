@@ -20,7 +20,7 @@ public class DayLockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.daylock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("lock", true,new String[]{"true","false"})
+                CommandParameter.newEnum("lock", true, new String[]{"true", "false"})
         });
     }
 
@@ -50,7 +50,7 @@ public class DayLockCommand extends VanillaCommand {
                 level.startTime();
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

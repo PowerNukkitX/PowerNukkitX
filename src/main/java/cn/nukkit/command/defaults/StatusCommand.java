@@ -1,10 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Nukkit;
-import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
-import cn.nukkit.command.data.CommandEnum;
-import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
@@ -33,6 +30,35 @@ public final class StatusCommand extends VanillaCommand {
             TextFormat.RED + "%d" + TextFormat.GOLD + " hours " +
             TextFormat.RED + "%d" + TextFormat.GOLD + " minutes " +
             TextFormat.RED + "%d" + TextFormat.GOLD + " seconds";
+    private static final Map<String, String> vmVendor = new HashMap<>(10, 0.99f);
+    private static final Map<String, String> vmMac = new HashMap<>(10, 0.99f);
+    private static final String[] vmModelArray = new String[]{"Linux KVM", "Linux lguest", "OpenVZ", "Qemu",
+            "Microsoft Virtual PC", "VMWare", "linux-vserver", "Xen", "FreeBSD Jail", "VirtualBox", "Parallels",
+            "Linux Containers", "LXC", "Bochs"};
+
+    static {
+        vmVendor.put("bhyve", "bhyve");
+        vmVendor.put("KVM", "KVM");
+        vmVendor.put("TCG", "QEMU");
+        vmVendor.put("Microsoft Hv", "Microsoft Hyper-V or Windows Virtual PC");
+        vmVendor.put("lrpepyh vr", "Parallels");
+        vmVendor.put("VMware", "VMware");
+        vmVendor.put("XenVM", "Xen HVM");
+        vmVendor.put("ACRN", "Project ACRN");
+        vmVendor.put("QNXQVMBSQG", "QNX Hypervisor");
+    }
+
+    static {
+        vmMac.put("00:50:56", "VMware ESX 3");
+        vmMac.put("00:0C:29", "VMware ESX 3");
+        vmMac.put("00:05:69", "VMware ESX 3");
+        vmMac.put("00:03:FF", "Microsoft Hyper-V");
+        vmMac.put("00:1C:42", "Parallels Desktop");
+        vmMac.put("00:0F:4B", "Virtual Iron 4");
+        vmMac.put("00:16:3E", "Xen or Oracle VM");
+        vmMac.put("08:00:27", "VirtualBox");
+        vmMac.put("02:42:AC", "Docker Container");
+    }
 
     private final SystemInfo systemInfo = new SystemInfo();
 
@@ -43,6 +69,95 @@ public final class StatusCommand extends VanillaCommand {
         this.addCommandParameters("default", new CommandParameter[]{
                 CommandParameter.newEnum("mode", true, new String[]{"full", "simple"})
         });
+    }
+
+    private static String formatKB(double bytes) {
+        return NukkitMath.round((bytes / 1024 * 1000), 2) + " KB";
+    }
+
+    private static String formatKB(long bytes) {
+        return NukkitMath.round((bytes / 1024d * 1000), 2) + " KB";
+    }
+
+    private static String formatMB(double bytes) {
+        return NukkitMath.round((bytes / 1024 / 1024 * 1000), 2) + " MB";
+    }
+
+    private static String formatMB(long bytes) {
+        return NukkitMath.round((bytes / 1024d / 1024 * 1000), 2) + " MB";
+    }
+
+    private static String formatFreq(long hz) {
+        if (hz >= 1000000000) {
+            return String.format("%.2fGHz", hz / 1000000000.0);
+        } else if (hz >= 1000 * 1000) {
+            return String.format("%.2fMHz", hz / 1000000.0);
+        } else if (hz >= 1000) {
+            return String.format("%.2fKHz", hz / 1000.0);
+        } else {
+            return String.format("%dHz", hz);
+        }
+    }
+
+    private static String formatUptime(long uptime) {
+        long days = TimeUnit.MILLISECONDS.toDays(uptime);
+        uptime -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(uptime);
+        uptime -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
+        uptime -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
+        return String.format(UPTIME_FORMAT, days, hours, minutes, seconds);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static String isInVM(HardwareAbstractionLayer hardware) {
+        // CPU型号检测
+        String vendor = hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
+        if (vmVendor.containsKey(vendor)) {
+            return vmVendor.get(vendor);
+        }
+
+        // MAC地址检测
+        List<NetworkIF> nifs = hardware.getNetworkIFs();
+        for (NetworkIF nif : nifs) {
+            String mac = nif.getMacaddr().toUpperCase();
+            String oui = mac.length() > 7 ? mac.substring(0, 8) : mac;
+            if (vmMac.containsKey(oui)) {
+                return vmVendor.get(oui);
+            }
+        }
+
+        // 模型检测
+        String model = hardware.getComputerSystem().getModel();
+        for (String vm : vmModelArray) {
+            if (model.contains(vm)) {
+                return vm;
+            }
+        }
+        String manufacturer = hardware.getComputerSystem().getManufacturer();
+        if ("Microsoft Corporation".equals(manufacturer) && "Virtual Machine".equals(model)) {
+            return "Microsoft Hyper-V";
+        }
+
+        //内存型号检测
+        if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
+            return "QEMU";
+        }
+
+        //检查Windows系统参数
+        //Wmi虚拟机查询只能在Windows上使用，Linux上不执行这个部分即可
+        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
+            WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
+            var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
+            if (tmp != null && tmp.toString().equals("true")) {
+                return "Hyper-V";
+            }
+        }
+
+        return null;
+
     }
 
     @Override
@@ -249,127 +364,6 @@ public final class StatusCommand extends VanillaCommand {
 
 
         return true;
-    }
-
-    private static String formatKB(double bytes) {
-        return NukkitMath.round((bytes / 1024 * 1000), 2) + " KB";
-    }
-
-    private static String formatKB(long bytes) {
-        return NukkitMath.round((bytes / 1024d * 1000), 2) + " KB";
-    }
-
-    private static String formatMB(double bytes) {
-        return NukkitMath.round((bytes / 1024 / 1024 * 1000), 2) + " MB";
-    }
-
-    private static String formatMB(long bytes) {
-        return NukkitMath.round((bytes / 1024d / 1024 * 1000), 2) + " MB";
-    }
-
-    private static String formatFreq(long hz) {
-        if (hz >= 1000000000) {
-            return String.format("%.2fGHz", hz / 1000000000.0);
-        } else if (hz >= 1000 * 1000) {
-            return String.format("%.2fMHz", hz / 1000000.0);
-        } else if (hz >= 1000) {
-            return String.format("%.2fKHz", hz / 1000.0);
-        } else {
-            return String.format("%dHz", hz);
-        }
-    }
-
-    private static String formatUptime(long uptime) {
-        long days = TimeUnit.MILLISECONDS.toDays(uptime);
-        uptime -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(uptime);
-        uptime -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
-        uptime -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
-        return String.format(UPTIME_FORMAT, days, hours, minutes, seconds);
-    }
-
-    private static final Map<String, String> vmVendor = new HashMap<>(10, 0.99f);
-
-    static {
-        vmVendor.put("bhyve", "bhyve");
-        vmVendor.put("KVM", "KVM");
-        vmVendor.put("TCG", "QEMU");
-        vmVendor.put("Microsoft Hv", "Microsoft Hyper-V or Windows Virtual PC");
-        vmVendor.put("lrpepyh vr", "Parallels");
-        vmVendor.put("VMware", "VMware");
-        vmVendor.put("XenVM", "Xen HVM");
-        vmVendor.put("ACRN", "Project ACRN");
-        vmVendor.put("QNXQVMBSQG", "QNX Hypervisor");
-    }
-
-    private static final Map<String, String> vmMac = new HashMap<>(10, 0.99f);
-
-    static {
-        vmMac.put("00:50:56", "VMware ESX 3");
-        vmMac.put("00:0C:29", "VMware ESX 3");
-        vmMac.put("00:05:69", "VMware ESX 3");
-        vmMac.put("00:03:FF", "Microsoft Hyper-V");
-        vmMac.put("00:1C:42", "Parallels Desktop");
-        vmMac.put("00:0F:4B", "Virtual Iron 4");
-        vmMac.put("00:16:3E", "Xen or Oracle VM");
-        vmMac.put("08:00:27", "VirtualBox");
-        vmMac.put("02:42:AC", "Docker Container");
-    }
-
-    private static final String[] vmModelArray = new String[]{"Linux KVM", "Linux lguest", "OpenVZ", "Qemu",
-            "Microsoft Virtual PC", "VMWare", "linux-vserver", "Xen", "FreeBSD Jail", "VirtualBox", "Parallels",
-            "Linux Containers", "LXC", "Bochs"};
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static String isInVM(HardwareAbstractionLayer hardware) {
-        // CPU型号检测
-        String vendor = hardware.getProcessor().getProcessorIdentifier().getVendor().trim();
-        if (vmVendor.containsKey(vendor)) {
-            return vmVendor.get(vendor);
-        }
-
-        // MAC地址检测
-        List<NetworkIF> nifs = hardware.getNetworkIFs();
-        for (NetworkIF nif : nifs) {
-            String mac = nif.getMacaddr().toUpperCase();
-            String oui = mac.length() > 7 ? mac.substring(0, 8) : mac;
-            if (vmMac.containsKey(oui)) {
-                return vmVendor.get(oui);
-            }
-        }
-
-        // 模型检测
-        String model = hardware.getComputerSystem().getModel();
-        for (String vm : vmModelArray) {
-            if (model.contains(vm)) {
-                return vm;
-            }
-        }
-        String manufacturer = hardware.getComputerSystem().getManufacturer();
-        if ("Microsoft Corporation".equals(manufacturer) && "Virtual Machine".equals(model)) {
-            return "Microsoft Hyper-V";
-        }
-
-        //内存型号检测
-        if (hardware.getMemory().getPhysicalMemory().get(0).getManufacturer().equals("QEMU")) {
-            return "QEMU";
-        }
-
-        //检查Windows系统参数
-        //Wmi虚拟机查询只能在Windows上使用，Linux上不执行这个部分即可
-        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
-            WbemcliUtil.WmiQuery<Win32ComputerSystem.ComputerSystemProperty> computerSystemQuery = new WbemcliUtil.WmiQuery("Win32_ComputerSystem", ComputerSystemEntry.class);
-            WbemcliUtil.WmiResult result = WmiQueryHandler.createInstance().queryWMI(computerSystemQuery);
-            var tmp = result.getValue(ComputerSystemEntry.HYPERVISORPRESENT, 0);
-            if (tmp != null && tmp.toString().equals("true")) {
-                return "Hyper-V";
-            }
-        }
-
-        return null;
-
     }
 
     public enum ComputerSystemEntry {

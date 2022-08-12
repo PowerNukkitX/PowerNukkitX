@@ -42,11 +42,11 @@ public class KickCommand extends VanillaCommand {
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if (sender.getServer().getPlayer(args[0]) != null){
+        } else if (sender.getServer().getPlayer(args[0]) != null) {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
-        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
+        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
 
         if (players.isEmpty()) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
@@ -62,7 +62,7 @@ public class KickCommand extends VanillaCommand {
             reason = new StringBuilder(reason.substring(0, reason.length() - 1));
         }
 
-        for(Player player : players) {
+        for (Player player : players) {
             player.kick(PlayerKickEvent.Reason.KICKED_BY_ADMIN, reason.toString());
             if (reason.length() >= 1) {
                 Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kick.success.reason", player.getName(), reason.toString())

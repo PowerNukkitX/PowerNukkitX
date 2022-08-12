@@ -28,7 +28,7 @@ public class SetBlockCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("tileData",true,CommandParamType.INT),
+                CommandParameter.newType("tileData", true, CommandParamType.INT),
                 CommandParameter.newEnum("oldBlockHandling", true, new String[]{"destroy", "keep", "replace"})
         });
     }

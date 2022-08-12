@@ -20,10 +20,11 @@ import java.util.List;
 @Since("1.6.0.0-PNX")
 public class TitlerawCommand extends VanillaCommand {
 
-    public TitlerawCommand(String name){
+    public TitlerawCommand(String name) {
         super(name, "commands.titleraw.description");
         this.setPermission("nukkit.command.titleraw");
-        this.commandParameters.clear();this.commandParameters.put("clear", new CommandParameter[]{
+        this.commandParameters.clear();
+        this.commandParameters.put("clear", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newEnum("clear", new CommandEnum("TitleClear", "clear"))
         });
