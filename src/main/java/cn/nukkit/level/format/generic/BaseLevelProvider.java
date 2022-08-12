@@ -26,6 +26,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +56,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
     //protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
 
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "允许多线程彻底地并发获取区块")
-    private final ThreadLocal<BaseFullChunk> lastChunk = new ThreadLocal<>();
+    private final ThreadLocal<WeakReference<BaseFullChunk>> lastChunk = new ThreadLocal<>();
     //private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
@@ -407,38 +408,41 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public BaseFullChunk getLoadedChunk(int chunkX, int chunkZ) {
-        BaseFullChunk tmp = lastChunk.get();
+        var ref = lastChunk.get();
+        var tmp = ref.get();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
         long index = Level.chunkHash(chunkX, chunkZ);
-        lastChunk.set(tmp = chunks.get(index));
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         return tmp;
     }
 
     @Override
     public BaseFullChunk getLoadedChunk(long hash) {
-        BaseFullChunk tmp = lastChunk.get();
+        var ref = lastChunk.get();
+        var tmp = ref.get();
         if (tmp != null && tmp.getIndex() == hash) {
             return tmp;
         }
-        lastChunk.set(tmp = chunks.get(hash));
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(hash)));
         return tmp;
     }
 
     @Override
     public BaseFullChunk getChunk(int chunkX, int chunkZ, boolean create) {
-        BaseFullChunk tmp = lastChunk.get();
+        var ref = lastChunk.get();
+        var tmp = ref.get();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
         long index = Level.chunkHash(chunkX, chunkZ);
-        lastChunk.set(tmp = chunks.get(index));
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         if (tmp != null) {
             return tmp;
         } else {
             tmp = this.loadChunk(index, chunkX, chunkZ, create);
-            lastChunk.set(tmp);
+            lastChunk.set(new WeakReference<>(tmp));
             return tmp;
         }
     }
