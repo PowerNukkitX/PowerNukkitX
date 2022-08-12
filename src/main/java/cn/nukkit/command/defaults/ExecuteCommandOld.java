@@ -20,22 +20,22 @@ import java.util.List;
 public class ExecuteCommandOld extends VanillaCommand {
 
     public ExecuteCommandOld(String name) {
-        super(name,"old execute command", "commands.execute.usage");
+        super(name, "old execute command", "commands.execute.usage");
         this.setPermission("nukkit.command.executeold");
         this.commandParameters.clear();
-        this.commandParameters.put("default",new CommandParameter[]{
-                CommandParameter.newType("origin",CommandParamType.TARGET),
-                CommandParameter.newType("position",CommandParamType.POSITION),
-                CommandParameter.newType("command",CommandParamType.COMMAND)
+        this.commandParameters.put("default", new CommandParameter[]{
+                CommandParameter.newType("origin", CommandParamType.TARGET),
+                CommandParameter.newType("position", CommandParamType.POSITION),
+                CommandParameter.newType("command", CommandParamType.COMMAND)
         });
-        this.commandParameters.put("detect",new CommandParameter[]{
-                CommandParameter.newType("origin",CommandParamType.TARGET),
-                CommandParameter.newType("position",CommandParamType.POSITION),
-                CommandParameter.newEnum("detect",new String[]{"detect"}),
-                CommandParameter.newType("detectPos",CommandParamType.POSITION),
-                CommandParameter.newType("block",CommandParamType.INT),
-                CommandParameter.newType("data",CommandParamType.INT),
-                CommandParameter.newType("command",CommandParamType.COMMAND)
+        this.commandParameters.put("detect", new CommandParameter[]{
+                CommandParameter.newType("origin", CommandParamType.TARGET),
+                CommandParameter.newType("position", CommandParamType.POSITION),
+                CommandParameter.newEnum("detect", new String[]{"detect"}),
+                CommandParameter.newType("detectPos", CommandParamType.POSITION),
+                CommandParameter.newType("block", CommandParamType.INT),
+                CommandParameter.newType("data", CommandParamType.INT),
+                CommandParameter.newType("command", CommandParamType.COMMAND)
         });
     }
 
@@ -45,30 +45,30 @@ public class ExecuteCommandOld extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender, args);
-        try{
+        CommandParser parser = new CommandParser(this, sender, args);
+        try {
             List<Entity> entities = parser.parseTargets();
-            if(entities.isEmpty()) {
+            if (entities.isEmpty()) {
                 sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
             CommandParser executePosParser = new CommandParser(parser);
             parser.parsePosition();//skip execute position
-            String form = new CommandParser(this,sender, args).matchCommandForm();
-            if (form == null){
+            String form = new CommandParser(this, sender, args).matchCommandForm();
+            if (form == null) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
-            if (form.equals("default")){
+            if (form.equals("default")) {
                 String command = parser.parseString();
                 for (Entity entity : entities) {
-                    CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity.getPosition(), false),entity.level,entity.yaw,entity.pitch));
+                    CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity.getPosition(), false), entity.level, entity.yaw, entity.pitch));
                     if (!Server.getInstance().dispatchCommand(executeSender, command)) {
                         sender.sendMessage(new TranslationContainer("commands.execute.failed", entity.getName(), command));
                         return false;
                     }
                 }
-            }else{//detect
+            } else {//detect
                 parser.parseString();//skip "detect"
                 CommandParser detectPosParser = new CommandParser(parser);
                 parser.parsePosition();//skip detect position
@@ -76,22 +76,22 @@ public class ExecuteCommandOld extends VanillaCommand {
                 int meta = parser.parseInt();
                 String command = parser.parseString();
                 for (Entity entity : entities) {
-                    Position detectPos = detectPosParser.parsePosition(entity,false);
+                    Position detectPos = detectPosParser.parsePosition(entity, false);
                     if (detectPos.getLevelBlock().getId() == blockid && detectPos.getLevelBlock().getDamage() == meta) {
-                        CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity.getPosition(), false),entity.level,entity.yaw,entity.pitch));
+                        CommandSender executeSender = new ExecutorCommandSender(sender, entity, Location.fromObject(executePosParser.parsePosition(entity.getPosition(), false), entity.level, entity.yaw, entity.pitch));
                         if (!Server.getInstance().dispatchCommand(executeSender, command)) {
-                            sender.sendMessage(new TranslationContainer("commands.execute.failed",entity.getName(),command));
+                            sender.sendMessage(new TranslationContainer("commands.execute.failed", entity.getName(), command));
                             return false;
                         }
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 }
             }
             return true;
-        }catch (Exception e){
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+        } catch (Exception e) {
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
     }

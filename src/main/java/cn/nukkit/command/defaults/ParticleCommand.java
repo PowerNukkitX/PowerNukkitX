@@ -27,7 +27,7 @@ public class ParticleCommand extends VanillaCommand {
             particles.add(particle.getIdentifier());
         }
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("effect", new CommandEnum("particle",particles,false)),
+                CommandParameter.newEnum("effect", new CommandEnum("particle", particles, false)),
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newType("count", true, CommandParamType.INT)
         });
@@ -39,8 +39,8 @@ public class ParticleCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
-        if(parser.matchCommandForm() == null){
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
@@ -63,7 +63,7 @@ public class ParticleCommand extends VanillaCommand {
 
             sender.sendMessage(new TranslationContainer("commands.particle.success", name, String.valueOf(count)));
             return true;
-        }catch (CommandSyntaxException e){
+        } catch (CommandSyntaxException e) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }

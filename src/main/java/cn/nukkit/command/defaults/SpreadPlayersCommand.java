@@ -27,11 +27,11 @@ public class SpreadPlayersCommand extends VanillaCommand {
         this.setPermission("nukkit.command.spreadplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("x",false, CommandParamType.VALUE),
-                CommandParameter.newType("z",false, CommandParamType.VALUE),
-                CommandParameter.newType("spreadDistance",false, CommandParamType.FLOAT),
-                CommandParameter.newType("maxRange",false, CommandParamType.FLOAT),
-                CommandParameter.newType("victim",false, CommandParamType.TARGET)
+                CommandParameter.newType("x", false, CommandParamType.VALUE),
+                CommandParameter.newType("z", false, CommandParamType.VALUE),
+                CommandParameter.newType("spreadDistance", false, CommandParamType.FLOAT),
+                CommandParameter.newType("maxRange", false, CommandParamType.FLOAT),
+                CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
         this.random = ThreadLocalRandom.current();
     }
@@ -68,9 +68,9 @@ public class SpreadPlayersCommand extends VanillaCommand {
                 target.teleport(vec3);
             }
 
-            sender.sendMessage(new TranslationContainer("commands.spreadplayers.success.players",String.valueOf(targets.size()), String.valueOf(vec2.getFloorX()), String.valueOf(vec2.getFloorY())));
+            sender.sendMessage(new TranslationContainer("commands.spreadplayers.success.players", String.valueOf(targets.size()), String.valueOf(vec2.getFloorX()), String.valueOf(vec2.getFloorY())));
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

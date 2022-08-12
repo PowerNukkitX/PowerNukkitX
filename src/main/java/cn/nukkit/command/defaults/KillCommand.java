@@ -47,7 +47,7 @@ public class KillCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return true;
             }
-            List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender,args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
+            List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender, args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
             entities = entities.stream().filter(entity -> {
                 if (entity instanceof Player player)
                     return !player.isCreative();

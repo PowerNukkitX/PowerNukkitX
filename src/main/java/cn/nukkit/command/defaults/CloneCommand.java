@@ -27,19 +27,19 @@ public class CloneCommand extends VanillaCommand {
         this.setPermission("nukkit.command.clone");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin", false,CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false,CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("maskMode",true, new String[]{"masked", "replace"}),
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("maskMode", true, new String[]{"masked", "replace"}),
                 CommandParameter.newEnum("cloneMode", true, new String[]{"force", "move", "normal"})});
         this.addCommandParameters("filtered", new CommandParameter[]{
-                CommandParameter.newType("begin",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("maskMode",false,new String[]{"filtered"}),
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("maskMode", false, new String[]{"filtered"}),
                 CommandParameter.newEnum("cloneMode", false, new String[]{"force", "move", "normal"}),
-                CommandParameter.newType("tileId",false,CommandParamType.INT),
-                CommandParameter.newType("tileData",false, CommandParamType.INT)
+                CommandParameter.newType("tileId", false, CommandParamType.INT),
+                CommandParameter.newType("tileData", false, CommandParamType.INT)
         });
     }
 
@@ -74,7 +74,7 @@ public class CloneCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
             if (size > 16 * 16 * 256 * 8) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clone.tooManyBlocks",String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.clone.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
                 sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
@@ -167,7 +167,7 @@ public class CloneCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.clone.success", String.valueOf(count)));
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

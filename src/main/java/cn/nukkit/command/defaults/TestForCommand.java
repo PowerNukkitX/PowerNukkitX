@@ -22,7 +22,7 @@ public class TestForCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testfor");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("victim",false, CommandParamType.TARGET)
+                CommandParameter.newType("victim", false, CommandParamType.TARGET)
         });
     }
 
@@ -43,7 +43,7 @@ public class TestForCommand extends VanillaCommand {
 
             sender.sendMessage(new TranslationContainer("commands.testfor.success", targets.stream().map(Entity::getName).collect(Collectors.joining(","))));
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

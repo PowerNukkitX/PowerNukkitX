@@ -17,7 +17,7 @@ public class ReloadCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[0]);
         this.commandParameters.put("function", new CommandParameter[]{
-            CommandParameter.newEnum("type",true,new String[]{"function"})
+                CommandParameter.newEnum("type", true, new String[]{"function"})
         });
     }
 

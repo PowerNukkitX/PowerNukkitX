@@ -24,8 +24,8 @@ public class AbilityCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", false, CommandParamType.TARGET),
-                CommandParameter.newEnum("ability",false, new String[]{"mayfly","mute","worldbuilder"}),
-                CommandParameter.newEnum("value", true,CommandEnum.ENUM_BOOLEAN)
+                CommandParameter.newEnum("ability", false, new String[]{"mayfly", "mute", "worldbuilder"}),
+                CommandParameter.newEnum("value", true, CommandEnum.ENUM_BOOLEAN)
         });
     }
 
@@ -35,22 +35,22 @@ public class AbilityCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
-        if(parser.matchCommandForm() == null){
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
         try {
             List<Player> players = parser.parseTargetPlayers();
-            if(players.size() == 0){
+            if (players.size() == 0) {
                 sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
                 return false;
             }
 
             String ability_str;
 
-            AdventureSettings.Type type = switch(ability_str = parser.parseString()){
+            AdventureSettings.Type type = switch (ability_str = parser.parseString()) {
                 case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;
                 case "mute" -> AdventureSettings.Type.MUTED;
                 case "worldbuilder" -> AdventureSettings.Type.WORLD_BUILDER;
@@ -63,14 +63,14 @@ public class AbilityCommand extends VanillaCommand {
                     player.getAdventureSettings().set(type, value);
                     player.getAdventureSettings().update();
                     if (value)
-                        player.sendMessage(new TranslationContainer("commands.ability.granted",ability_str));
+                        player.sendMessage(new TranslationContainer("commands.ability.granted", ability_str));
                     else
-                        player.sendMessage(new TranslationContainer("commands.ability.revoked",ability_str));
+                        player.sendMessage(new TranslationContainer("commands.ability.revoked", ability_str));
                 }
                 sender.sendMessage(new TranslationContainer("commands.ability.success"));
                 return true;
-            }else{
-                if (!sender.isPlayer()){
+            } else {
+                if (!sender.isPlayer()) {
                     return false;
                 }
                 boolean value = sender.asPlayer().getAdventureSettings().get(type);

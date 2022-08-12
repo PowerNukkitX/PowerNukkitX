@@ -21,7 +21,7 @@ import java.util.List;
 @Since("1.6.0.0-PNX")
 public class SummonCommand extends VanillaCommand {
 
-    public SummonCommand(String name){
+    public SummonCommand(String name) {
         super(name, "commands.summon.description");
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
@@ -31,10 +31,10 @@ public class SummonCommand extends VanillaCommand {
             entity_key.add(key.substring(10));
         }
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("entityType",false, entity_key.toArray(new String[0])),
-                CommandParameter.newType("spawnPos",true, CommandParamType.POSITION),
-                CommandParameter.newType("nameTag",true, CommandParamType.STRING),
-                CommandParameter.newEnum("nameTagAlwaysVisible",true,CommandEnum.ENUM_BOOLEAN)
+                CommandParameter.newEnum("entityType", false, entity_key.toArray(new String[0])),
+                CommandParameter.newType("spawnPos", true, CommandParamType.POSITION),
+                CommandParameter.newType("nameTag", true, CommandParamType.STRING),
+                CommandParameter.newEnum("nameTagAlwaysVisible", true, CommandEnum.ENUM_BOOLEAN)
         });
     }
 
@@ -44,7 +44,7 @@ public class SummonCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
+        CommandParser parser = new CommandParser(this, sender, args);
         try {
             String entityType = parser.parseString();
             if (!entityType.startsWith("minecraft:"))
@@ -74,7 +74,7 @@ public class SummonCommand extends VanillaCommand {
             if (parser.hasNext()) {
                 nameTagAlwaysVisible = parser.parseBoolean();
             }
-            Entity entity = Entity.createEntity(entityId,pos);
+            Entity entity = Entity.createEntity(entityId, pos);
             if (nameTag != null) {
                 entity.setNameTag(nameTag);
                 entity.setNameTagAlwaysVisible(nameTagAlwaysVisible);

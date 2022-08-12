@@ -27,9 +27,9 @@ public class TestForBlockCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testforblock");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("position",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("tileName",false, CommandEnum.ENUM_BLOCK),
-                CommandParameter.newType("dataValue",true, CommandParamType.INT)
+                CommandParameter.newType("position", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", false, CommandEnum.ENUM_BLOCK),
+                CommandParameter.newType("dataValue", true, CommandParamType.INT)
         });
     }
 
@@ -72,12 +72,12 @@ public class TestForBlockCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.testforblock.success", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ())));
                 return true;
             } else {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.failed.tile",String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ()), String.valueOf(id),String.valueOf(tileId)));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.testforblock.failed.tile", String.valueOf(position.getFloorX()), String.valueOf(position.getFloorY()), String.valueOf(position.getFloorZ()), String.valueOf(id), String.valueOf(tileId)));
                 return false;
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-             return false;
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return false;
         }
     }
 }

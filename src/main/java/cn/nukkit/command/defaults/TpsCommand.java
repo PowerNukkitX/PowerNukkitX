@@ -7,13 +7,13 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.TextFormat;
 
-public class TpsCommand extends VanillaCommand{
+public class TpsCommand extends VanillaCommand {
     public TpsCommand(String name) {
         super(name, "get server tps");
         this.setPermission("nukkit.tps.status");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("count",true,CommandParamType.INT)
+                CommandParameter.newType("count", true, CommandParamType.INT)
         });
     }
 
@@ -28,16 +28,16 @@ public class TpsCommand extends VanillaCommand{
             count = Integer.parseInt(args[0]);
         }
 
-        if (count == 1){
+        if (count == 1) {
             float currentTps = Server.getInstance().getTicksPerSecond();
             sender.sendMessage(getTpsColor(currentTps) + " Current TPS: " + currentTps);
-        }else {
+        } else {
             Server.getInstance().getScheduler().scheduleRepeatingTask(new TpsTestTask(sender, count), 20);
         }
         return true;
     }
 
-    private TextFormat getTpsColor(float tps){
+    private TextFormat getTpsColor(float tps) {
         TextFormat tpsColor = TextFormat.GREEN;
         if (tps < 17) {
             tpsColor = TextFormat.GOLD;
@@ -47,14 +47,14 @@ public class TpsCommand extends VanillaCommand{
         return tpsColor;
     }
 
-    private class TpsTestTask extends Task{
+    private class TpsTestTask extends Task {
 
         private CommandSender sender;
         private int count;
         private int currentCount = 0;
         private float tpsSum = 0;
 
-        public TpsTestTask(CommandSender sender,int count) {
+        public TpsTestTask(CommandSender sender, int count) {
             this.sender = sender;
             this.count = count;
         }

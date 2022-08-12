@@ -50,7 +50,7 @@ public class EnchantCommand extends VanillaCommand {
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if(sender.getServer().getPlayer(args[0]) != null){
+        } else if (sender.getServer().getPlayer(args[0]) != null) {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
@@ -65,7 +65,7 @@ public class EnchantCommand extends VanillaCommand {
         Enchantment enchantment;
         try {
             enchantment = Enchantment.getEnchantment(args[1]);
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             sender.sendMessage(new TranslationContainer("commands.enchant.notFound", args[1]));
             return false;
         }
@@ -73,7 +73,7 @@ public class EnchantCommand extends VanillaCommand {
         boolean successExecute = true;
         for (Entity entity : entities) {
             Player player = (Player) entity;
-            enchantment.setLevel(enchantLevel,false);
+            enchantment.setLevel(enchantLevel, false);
             Item item = player.getInventory().getItemInHand();
             if (item.getId() == 0) {
                 sender.sendMessage(new TranslationContainer("commands.enchant.noItem"));

@@ -39,11 +39,11 @@ public class MeCommand extends VanillaCommand {
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)){
-                for (Entity entity : EntitySelector.matchEntities(sender, arg)){
+            if (EntitySelector.hasArguments(arg)) {
+                for (Entity entity : EntitySelector.matchEntities(sender, arg)) {
                     msg.append(entity.getName()).append(" ");
                 }
-            }else {
+            } else {
                 msg.append(arg).append(" ");
             }
         }

@@ -27,10 +27,10 @@ public class TestForBlocksCommand extends VanillaCommand {
         this.setPermission("nukkit.command.testforblocks");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("begin",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("end",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("destination",false, CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("mode", true, new String[]{"all","masked"})
+                CommandParameter.newType("begin", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("end", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("destination", false, CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("mode", true, new String[]{"all", "masked"})
         });
     }
 
@@ -55,7 +55,7 @@ public class TestForBlocksCommand extends VanillaCommand {
             int size = NukkitMath.floorDouble((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));
 
             if (size > 16 * 16 * 256 * 8) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size),String.valueOf(16 * 16 * 256 * 8)));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.fill.tooManyBlocks", String.valueOf(size), String.valueOf(16 * 16 * 256 * 8)));
                 sender.sendMessage(TextFormat.RED + "Operation will continue, but too many blocks may cause stuttering");
             }
 
@@ -119,7 +119,7 @@ public class TestForBlocksCommand extends VanillaCommand {
 
             sender.sendMessage(new TranslationContainer("%commands.compare.success", String.valueOf(count)));
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

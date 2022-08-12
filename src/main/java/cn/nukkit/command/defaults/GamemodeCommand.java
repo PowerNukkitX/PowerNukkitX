@@ -57,8 +57,8 @@ public class GamemodeCommand extends VanillaCommand {
             if (sender.hasPermission("nukkit.command.gamemode.other")) {
 
                 if (EntitySelector.hasArguments(args[1])) {
-                    players = EntitySelector.matchEntities(sender, args[1]).stream().filter(p -> p instanceof Player).map(p -> (Player)p).collect(Collectors.toList());
-                } else if(sender.getServer().getPlayer(args[1]) != null){
+                    players = EntitySelector.matchEntities(sender, args[1]).stream().filter(p -> p instanceof Player).map(p -> (Player) p).collect(Collectors.toList());
+                } else if (sender.getServer().getPlayer(args[1]) != null) {
                     players = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
@@ -76,7 +76,6 @@ public class GamemodeCommand extends VanillaCommand {
         } else {
             players = List.of(sender.asPlayer());
         }
-
 
 
         if ((gameMode == 0 && !sender.hasPermission("nukkit.command.gamemode.survival")) ||

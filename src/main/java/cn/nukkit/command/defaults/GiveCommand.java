@@ -52,11 +52,11 @@ public class GiveCommand extends VanillaCommand {
         List<Entity> entities = List.of();
         if (EntitySelector.hasArguments(args[0])) {
             entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if(sender.getServer().getPlayer(args[0]) != null){
+        } else if (sender.getServer().getPlayer(args[0]) != null) {
             entities = List.of(sender.getServer().getPlayer(args[0]));
         }
 
-        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
+        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
         Item item;
 
         try {

@@ -19,7 +19,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
         this.setPermission("nukkit.command.setmaxplayers");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("maxPlayers",false, CommandParamType.INT)
+                CommandParameter.newType("maxPlayers", false, CommandParamType.INT)
         });
     }
 
@@ -47,7 +47,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.setmaxplayers.success.lowerbound"));
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
