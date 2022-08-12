@@ -3223,6 +3223,18 @@ public class Level implements ChunkManager, Metadatable {
         this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, z & 0x0f, biomeId);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    public int getBiomeId(int x, int y, int z) {
+        return this.getChunk(x >> 4, z >> 4, true).getBiomeId(x & 0x0f, y, z & 0x0f);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    public void setBiomeId(int x, int y, int z, byte biomeId) {
+        this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, y, z & 0x0f, biomeId);
+    }
+
     public int getHeightMap(int x, int z) {
         return this.getChunk(x >> 4, z >> 4, true).getHeightMap(x & 0x0f, z & 0x0f);
     }

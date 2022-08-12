@@ -1,13 +1,16 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseChunk;
+import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
@@ -73,11 +76,26 @@ public class Chunk extends BaseChunk {
             return;
         }
 
+        if (nbt.contains("BiomeColors")) {
+            this.biomes = new byte[16 * 16];
+            int[] biomeColors = nbt.getIntArray("BiomeColors");
+            if (biomeColors != null && biomeColors.length == 256) {
+                BiomePalette palette = new BiomePalette(biomeColors);
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        this.biomes[(x << 4) | z] = (byte) (palette.get(x, z) >> 24);
+                    }
+                }
+            }
+        } else {
+            this.biomes = Arrays.copyOf(nbt.getByteArray("Biomes"), 256);
+        }
+
         for (Tag section : nbt.getList("Sections").getAll()) {
             if (section instanceof CompoundTag) {
                 int y = ((CompoundTag) section).getByte("Y");
                 if (y < getChunkSectionCount()) {
-                    final ChunkSection chunkSection = new ChunkSection((CompoundTag) section);
+                    final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
                     if (chunkSection.hasBlocks()) {
                         sections[y] = chunkSection;
                     } else {
@@ -101,21 +119,6 @@ public class Chunk extends BaseChunk {
         this.setPosition(nbt.getInt("xPos"), nbt.getInt("zPos"));
         if (sections.length > getChunkSectionCount()) {
             throw new ChunkException("Invalid amount of chunks");
-        }
-
-        if (nbt.contains("BiomeColors")) {
-            this.biomes = new byte[16 * 16];
-            int[] biomeColors = nbt.getIntArray("BiomeColors");
-            if (biomeColors != null && biomeColors.length == 256) {
-                BiomePalette palette = new BiomePalette(biomeColors);
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        this.biomes[(x << 4) | z] = (byte) (palette.get(x, z) >> 24);
-                    }
-                }
-            }
-        } else {
-            this.biomes = Arrays.copyOf(nbt.getByteArray("Biomes"), 256);
         }
 
         int[] heightMap = nbt.getIntArray("HeightMap");
@@ -178,6 +181,12 @@ public class Chunk extends BaseChunk {
         }
     }
 
+    @Since("1.19.20-r3")
+    @Override
+    public boolean isChunkSection3DBiomeSupported() {
+        return true;
+    }
+
     @Override
     public boolean isPopulated() {
         return this.terrainPopulated;
@@ -212,6 +221,46 @@ public class Chunk extends BaseChunk {
             this.terrainGenerated = value;
             setChanged();
         }
+    }
+
+    @Override
+    public int getBiomeId(int x, int z) {
+        for (var section : sections) {
+            if (section instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
+                return anvilSection.getBiomeId(x, 0, z);
+            }
+        }
+        return super.getBiomeId(x, z);
+    }
+
+    @Override
+    public void setBiomeId(int x, int z, byte biomeId) {
+        for (var section : sections) {
+            if (section instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
+                for (int dy = 0; dy < 16; dy++) {
+                    anvilSection.getBiomeId(x, dy, z);
+                }
+            }
+        }
+        super.setBiomeId(x, z, biomeId);
+    }
+
+    @Override
+    public int getBiomeId(int x, int y, int z) {
+        if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
+            return anvilSection.getBiomeId(x, y & 0xf, z);
+        }
+        return super.getBiomeId(x, y, z);
+    }
+
+    @Override
+    public void setBiomeId(int x, int y, int z, byte biomeId) {
+        if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
+            anvilSection.setBiomeId(x, y & 0xf, z, biomeId);
+            this.setChanged();
+            return;
+        }
+        super.setBiomeId(x, y, z, biomeId);
     }
 
     public CompoundTag getNBT() {

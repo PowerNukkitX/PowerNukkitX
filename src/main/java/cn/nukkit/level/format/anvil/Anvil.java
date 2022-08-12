@@ -9,6 +9,7 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -176,7 +177,7 @@ public class Anvil extends BaseLevelProvider {
 
         // In 1.18 3D biome palettes were introduced. However, current world format
         // used internally doesn't support them, so we need to convert from legacy 2D
-        byte[] biomePalettes = convert2DBiomesTo3D(chunk, maxDimensionSections);
+        byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
         BinaryStream stream = ThreadCache.binaryStream.get().reset();
 
         // Overworld has negative coordinates, but we currently do not support them
@@ -206,24 +207,41 @@ public class Anvil extends BaseLevelProvider {
         }
     }
 
-    private static byte[] convert2DBiomesTo3D(BaseFullChunk chunk, int sections) {
-        PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
-                for (int y = 0; y < 16; y++) {
-                    palette.setBlock(x, y, z, biomeId);
+    private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
+        PalettedBlockStorage palette;
+        var stream = ThreadCache.binaryStream.get().reset();
+        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
+            var sections = sectionChunk.getSections();
+            for (int i = 0, len = sections.length; i < len && i < sectionCount; i++) {
+                var each = (ChunkSection3DBiome) sections[i];
+                palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        for (int y = 0; y < 16; y++) {
+                            palette.setBlock(x, y, z, Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z)));
+                        }
+                    }
+                }
+                palette.writeTo(stream);
+            }
+        } else {
+            palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
+                    for (int y = 0; y < 16; y++) {
+                        palette.setBlock(x, y, z, biomeId);
+                    }
                 }
             }
-        }
 
-        BinaryStream stream = ThreadCache.binaryStream.get().reset();
-        palette.writeTo(stream);
-        byte[] bytes = stream.getBuffer();
-        stream.reset();
+            palette.writeTo(stream);
+            byte[] bytes = stream.getBuffer();
+            stream.reset();
 
-        for (int i = 0; i < sections; i++) {
-            stream.put(bytes);
+            for (int i = 0; i < sectionCount; i++) {
+                stream.put(bytes);
+            }
         }
         return stream.getBuffer();
     }
