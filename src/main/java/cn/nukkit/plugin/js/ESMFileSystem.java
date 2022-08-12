@@ -18,13 +18,14 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.nukkit.plugin.js.JSClassLoader.javaClassCache;
+
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
     private final CommonJSPlugin plugin;
     private ClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
-    final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 
     public ESMFileSystem(File baseDir, CommonJSPlugin plugin) {
         this.baseDir = baseDir;
