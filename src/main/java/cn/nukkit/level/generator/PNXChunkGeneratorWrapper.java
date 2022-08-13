@@ -3,10 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.PNXPlatform;
-import cn.nukkit.level.terra.delegate.PNXBiomeProviderDelegate;
-import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
-import cn.nukkit.level.terra.delegate.PNXProtoChunk;
-import cn.nukkit.level.terra.delegate.PNXProtoWorld;
+import cn.nukkit.level.terra.delegate.*;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -183,7 +180,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, getChunkGeneratorDelegate(), pack, getBiomeProviderDelegate(), chunkX, chunkZ);
+        var world = new PNXServerWorld(chunkManager,getChunkGeneratorDelegate(), pack, getBiomeProviderDelegate());
+        var tmp = new PNXProtoWorld(world, chunkManager, getChunkGeneratorDelegate(), pack, getBiomeProviderDelegate(), chunkX, chunkZ);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);

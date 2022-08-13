@@ -144,11 +144,9 @@ public class PNXWorldHandle implements WorldHandle {
     public @NotNull
     EntityType getEntity(@NotNull String s) {
         //TODO: remove this hack
-        String s2;
         if (s.startsWith("minecraft:")) s = s.substring(10);
-        s2 = s;
-        if (s.equals("bee")) s2 = "Bee";
-        var entityType = new PNXEntityType(knownEntities.get(s2));
+        if (s.equals("bee")) s = "Bee";
+        var entityType = new PNXEntityType(s);
         if (entityType.getHandle() == null){
             System.out.println("null entityType!");
         }
