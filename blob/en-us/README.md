@@ -1,11 +1,11 @@
 [<img alt="PowerNukkitX" width="838" src="https://raw.githubusercontent.com/PowerNukkitX/PowerNukkitX/master/blob/images/PNX_BANNER.png" />](https://www.powernukkitx.com)
 
-<h2>🌐多语言文档&ensp;/&ensp;Need to switch languages?</h2>
+<h2>🌐Need to switch languages?&ensp;/&ensp;多语言文档</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
@@ -32,42 +32,107 @@ What's new in PowerNukkitX? Let's See：
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Native support for vanilla commands and command block, etc.
-5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
-6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
-7. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be added).
+5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
+   questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
+6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be
+   found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
+7. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
+   added).
 8. Built-in Bio AI, no need to install MobPlugin (under development, not perfect).
 9. Todo...
 
 ---
 
-🧾 About Nukkit
+## 🎮 How to use
 
-[Nukkit](https://github.com/Nukkit/Nukkit) is nuclear-powered server software for Minecraft: Pocket Edition. It has a few key advantages over other server software:
+**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
+variables**
 
-* Written in Java, Nukkit is faster and more stable.
-* Having a friendly structure, it's easy to contribute to Nukkit's development and rewrite plugins from other platforms into Nukkit plugins.
-* Nukkit is **under improvement** yet, we welcome contributions.
+### Steps
 
+1. Download libs.tar.gz and powernukkitx.jar from [release](https://github.com/PowerNukkitX/PowerNukkitX/releases)
+2. Extract the libs folder in libs.tar.gz to the same path as powernukkitx.jar
+3. Run the following command
+
+##### Windows Version
+
+```shell
+java -Dfile.encoding=UTF-8 ^
+-Djansi.passthrough=true ^
+-Dterminal.ansi=true ^
+-XX:+UnlockExperimentalVMOptions ^
+-XX:+UseG1GC ^
+-XX:+UseStringDeduplication ^
+-XX:+EnableJVMCI ^
+--module-path=.\libs\graal-sdk-22.2.0.jar;.\libs\truffle-api-22.2.0.jar; ^
+--add-opens java.base/java.lang=ALL-UNNAMED ^
+--add-opens java.base/java.io=ALL-UNNAMED ^
+-cp .\powernukkitx.jar;.\libs\* ^
+cn.nukkit.Nukkit
+```
+
+##### Linux Version
+
+```shell
+java -Dfile.encoding=UTF-8 \
+-Djansi.passthrough=true \
+-Dterminal.ansi=true \
+-XX:+UnlockExperimentalVMOptions \
+-XX:+UseG1GC \
+-XX:+UseStringDeduplication \
+-XX:+EnableJVMCI \
+--module-path=./libs/truffle-api-22.2.0.jar:./libs/graal-sdk-22.2.0.jar: \
+--add-opens java.base/java.lang=ALL-UNNAMED \
+--add-opens java.base/java.io=ALL-UNNAMED \
+-cp ./powernukkitx.jar:./libs/* \
+cn.nukkit.Nukkit
+```
+
+---
 📌 Statement
 ---
 <!-- Just Do it :-D -->
 <!--使用DeepL暴力翻译-->
-**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more feature support, etc., such as [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin compatibility, etc.
+**PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more
+feature support, etc., such as [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin
+compatibility, etc.
 
-* Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to read the rules in the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
+* Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community
+  to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should
+  first [create an issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) in this repository (please also note to
+  read the rules in
+  the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
 
-* We also recommend that you perform regular backups and other operations, and use the plug-ins made for [PowerNukkit](https://github.com/powernukkit/powernukkit) or [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and use [stable version](https://github.com/PowerNukkitX/PowerNukkitX/releases) for deployment.
+* We also recommend that you perform regular backups and other operations, and use the plug-ins made
+  for [PowerNukkit](https://github.com/powernukkit/powernukkit)
+  or [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and
+  use [stable version](https://github.com/PowerNukkitX/PowerNukkitX/releases) for deployment.
+
 <!--结束-->
 
-* Most [Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit) plugins are supported but they may not understand the new blocks and items and the new stuff that you can do with PowerNukkitX.
+* Most [Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit) plugins are supported but they may not understand the
+  new blocks and items and the new stuff that you can do with PowerNukkitX.
+
+🧾 About Nukkit
+
+[Nukkit](https://github.com/Nukkit/Nukkit) is nuclear-powered server software for Minecraft: Pocket Edition. It has a
+few key advantages over other server software:
+
+* Written in Java, Nukkit is faster and more stable.
+* Having a friendly structure, it's easy to contribute to Nukkit's development and rewrite plugins from other platforms
+  into Nukkit plugins.
+* Nukkit is **under improvement** yet, we welcome contributions.
 
 ---
 
 🛠 Creating Plugins
 ---
-* Add PowerNukkit to your dependencies (it is hosted by Maven Central, so you don't need to specify a custom repository).
+
+* Add PowerNukkit to your dependencies (it is hosted by Maven Central, so you don't need to specify a custom repository)
+  .
 
 [Click here to see full Gradle Example](https://github.com/PowerNukkitX/ExamplePlugin-Gradle)
+
 ```groovy
 repositories {
     mavenCentral()
