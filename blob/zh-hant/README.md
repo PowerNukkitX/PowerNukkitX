@@ -4,8 +4,8 @@
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
@@ -14,11 +14,7 @@
 
 🤔什麼是PowerNukkitX ？
 ---
-[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一個分支版本，由[BlocklyNukkit](https://github.com/BlocklyNukkit)小組負責開發維護，如遇任何問題可提交[Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)反饋。
-
-注意事項：
-
-* PowerNukkitX要求的最低Java版本為17
+[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一個分支版本，由[PowerNukkitX](https://github.com/PowerNukkitX)小組負責開發維護，如遇任何問題可提交[Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)反饋。
 
 加入我們:
 
@@ -51,8 +47,8 @@ _**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變�
 3. 提供高效自適應的啓動命令,無需手動編寫
 4. 纯命令行操作,簡介有效,linux命令風格
 5. github版本同步,更新版本無需重複下載依賴庫,只需一鍵命令
-
-##### 如果你的平台不適合使用PNX-CLI,那麽請查看以下步驟
+##### 您可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何啟動PNX。
+##### 如果你的平台不適合使用PNX-CLI,那麽請查看以下步驟。
 
 ### 使用步驟:
 
@@ -62,7 +58,7 @@ _**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變�
 
 ##### Windows版本
 
-```shell
+```
 java -Dfile.encoding=UTF-8 ^
 -Djansi.passthrough=true ^
 -Dterminal.ansi=true ^
@@ -79,79 +75,7 @@ cn.nukkit.Nukkit
 
 ##### Linux版本
 
-```shell
-java -Dfile.encoding=UTF-8 \
--Djansi.passthrough=true \
--Dterminal.ansi=true \
--XX:+UnlockExperimentalVMOptions \
--XX:+UseG1GC \
--XX:+UseStringDeduplication \
--XX:+EnableJVMCI \
---module-path=./libs/truffle-api-22.2.0.jar:./libs/graal-sdk-22.2.0.jar: \
---add-opens java.base/java.lang=ALL-UNNAMED \
---add-opens java.base/java.io=ALL-UNNAMED \
--cp ./powernukkitx.jar:./libs/* \
-cn.nukkit.Nukkit
 ```
-
----
-📌 聲明
----
-
-**PowerNukkitX**
-是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)
-（完善中）插件兼容等。
-
-* 請注意**PowerNukkitX**
-  非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
-  （同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
-
-* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkit](https://github.com/powernukkit/powernukkit)
-  或[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
-  製作的插件，並使用[穩定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)進行部署。
-
-* 大多數[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在該服務端上兼容使用，但在運行時可能會出一些錯誤等或不支持PowerNukkitX添加的新內容。
-
-## 🎮 如何使用
-
-_**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量**_
-
-### 我們建議你使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)運行PowerNukkitX,爲什麽?
-
-1. PNX-CLI使用GraalVM Native Image編譯,無需java運行環境即可使用,占用内存小,運行效率高
-2. 簡化GraalJit和JDK的安裝,擁有GraalJit,你的JS插件運行效率會提升100倍
-3. 提供高效自適應的啓動命令,無需手動編寫
-4. 纯命令行操作,簡介有效,linux命令風格
-5. github版本同步,更新版本無需重複下載依賴庫,只需一鍵命令
-
-##### 如果你的平台不適合使用PNX-CLI,那麽請查看以下步驟
-
-### 使用步驟:
-
-1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
-2. 将libs.tar.gz中的libs文件夾解壓到和powernukkitx.jar同一路徑下
-3. 運行以下命令
-
-##### Windows版本
-
-```shell
-java -Dfile.encoding=UTF-8 ^
--Djansi.passthrough=true ^
--Dterminal.ansi=true ^
--XX:+UnlockExperimentalVMOptions ^
--XX:+UseG1GC ^
--XX:+UseStringDeduplication ^
--XX:+EnableJVMCI ^
---module-path=.\libs\graal-sdk-22.2.0.jar;.\libs\truffle-api-22.2.0.jar; ^
---add-opens java.base/java.lang=ALL-UNNAMED ^
---add-opens java.base/java.io=ALL-UNNAMED ^
--cp .\powernukkitx.jar;.\libs\* ^
-cn.nukkit.Nukkit
-```
-
-##### Linux版本
-
-```shell
 java -Dfile.encoding=UTF-8 \
 -Djansi.passthrough=true \
 -Dterminal.ansi=true \
@@ -233,12 +157,7 @@ dependencies {
 
 * 編譯後的JAR文件可在 `target/` 目錄中找到。
 
-* 在編譯完成的JAR文件後添加啟動參數 `-shaded` 即可開始亦可賽艇 :D
-
-🛠 部署運行
--------------
-我們製作了 [命令行工具](https://github.com/PowerNukkitX/PNX-CLI) 來幫助您運行PNX，您可以在 [此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)
-查看如何啟動PNX。
+* 編譯完成的JAR文件运行請查閲[如何使用](#使用步驟:)。
 
 🧐 貢獻一份力量
 ---

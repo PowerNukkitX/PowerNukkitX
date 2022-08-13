@@ -4,22 +4,17 @@
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
 
-
 🤔What is PowerNukkitX ?
 ---
-[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) is a branch version based on [PowerNukkit](https://github.com/PowerNukkit/PowerNukkit), developed and maintained by [BlocklyNukkit](https://github.com/BlocklyNukkit), any problems can be submitted to [Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) feedback.
-
-Attention:
-
-*  PowerNukkitX requires a minimum Java version of 17
+[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) is a branch version based on [PowerNukkit](https://github.com/PowerNukkit/PowerNukkit), developed and maintained by [PowerNukkitX](https://github.com/PowerNukkitX), any problems can be submitted to [Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues) feedback.
 
 Join US:
 
@@ -57,8 +52,8 @@ variables.**_
 4. Pure command line operation, concise and effective, Linux command style
 5. Github version synchronization,update version does not need to repeat the download of dependent libraries,just a key
    command
-
-##### If your platform is not suitable for using PNX-CLI,then please read the following steps
+##### you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
+##### If your platform is not suitable for using PNX-CLI,then please read the following steps.
 
 ### Steps:
 
@@ -68,7 +63,7 @@ variables.**_
 
 ##### Windows Version
 
-```shell
+```
 java -Dfile.encoding=UTF-8 ^
 -Djansi.passthrough=true ^
 -Dterminal.ansi=true ^
@@ -85,7 +80,7 @@ cn.nukkit.Nukkit
 
 ##### Linux Version
 
-```shell
+```
 java -Dfile.encoding=UTF-8 \
 -Djansi.passthrough=true \
 -Dterminal.ansi=true \
@@ -175,13 +170,8 @@ dependencies {
 - `./mvnw clean package`
 
 * The compiled JAR can be found in the target/ directory.
-* Use the JAR that ends with -shaded to run your server.
-
-🛠 Running
--------------  
-
-We made a [command line tool](https://github.com/PowerNukkitX/PNX-CLI) to help you run PNX, you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.  
-
+* Please check how to use the compiled JAR file when you run it.
+* To run the jar please see [How to use](#Steps:).
 
 🧐 Contributing
 ---
