@@ -25,10 +25,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.Chunk;
-import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.*;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -378,6 +375,9 @@ public class Level implements ChunkManager, Metadatable {
         LevelProvider levelProvider = requireProvider();
         this.timings = new LevelTimings(this);
         levelProvider.updateLevelName(name);
+        if (levelProvider instanceof DimensionDataProvider dimensionDataProvider) {
+            this.dimensionData = dimensionDataProvider.getDimensionData();
+        }
 
         log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
                 TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
@@ -522,9 +522,21 @@ public class Level implements ChunkManager, Metadatable {
         return highLightChunks.contains(Level.chunkHash(chunkX, chunkZ));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
     public void initLevel() {
+        this.initLevel(null);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.20-r3")
+    public void initLevel(@Nullable DimensionData givenDimensionData) {
         Generator generator = generators.get();
-        this.dimensionData = generator.getDimensionData();
+        if (dimensionData == null || givenDimensionData != null) {
+            this.dimensionData = givenDimensionData == null ? generator.getDimensionData() : givenDimensionData;
+            if (this.requireProvider() instanceof DimensionDataProvider dimensionDataProvider) {
+                dimensionDataProvider.setDimensionData(dimensionData);
+            }
+        }
         this.gameRules = this.requireProvider().getGamerules();
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());

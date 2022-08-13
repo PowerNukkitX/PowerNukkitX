@@ -10,6 +10,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.ChunkSection3DBiome;
+import cn.nukkit.level.format.DimensionDataProvider;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -27,6 +28,7 @@ import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -41,7 +43,7 @@ import java.util.regex.Pattern;
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
-public class Anvil extends BaseLevelProvider {
+public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     @PowerNukkitDifference(info = "pre-1.17 old chunk version", since = "1.6.0.0-PNX")
     public static final int OLD_VERSION = 19133;
     @PowerNukkitDifference(info = "1.18 new chunk support version", since = "1.6.0.0-PNX")
@@ -53,10 +55,17 @@ public class Anvil extends BaseLevelProvider {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final boolean isOldAnvil;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    private DimensionData dimensionData;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
         isOldAnvil = getLevelData().getInt("version") == OLD_VERSION;
+        if (getLevelData().contains("dimensionData")) {
+            var dimNBT = getLevelData().getCompound("dimensionData");
+            dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"));
+        }
         getLevelData().putInt("version", VERSION);
     }
 
@@ -362,5 +371,23 @@ public class Anvil extends BaseLevelProvider {
     @Override
     public int getMaximumLayer() {
         return 1;
+    }
+
+    @Nullable
+    @Override
+    public DimensionData getDimensionData() {
+        return dimensionData;
+    }
+
+    @Override
+    public void setDimensionData(DimensionData dimensionData) {
+        this.dimensionData = dimensionData;
+        if (dimensionData != null) {
+            levelData.putCompound("dimensionData", new CompoundTag("dimensionData")
+                    .putString("dimensionName", dimensionData.getDimensionName())
+                    .putInt("dimensionId", dimensionData.getDimensionId())
+                    .putInt("maxHeight", dimensionData.getMaxHeight())
+                    .putInt("minHeight", dimensionData.getMinHeight()));
+        }
     }
 }
