@@ -169,11 +169,14 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     public void generateChunk(int chunkX, int chunkZ) {
         getChunkGeneratorDelegate().generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
                 getBiomeProviderDelegate(), chunkX, chunkZ);
-
+        var chunk = chunkManager.getChunk(chunkX, chunkZ);
+        int minHeight = chunk.isOverWorld() ? -64 : 0;
+        int maxHeight = chunk.isOverWorld() ? 320 : 256;
         for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                //todo: 3D biomes support
-                chunkManager.getChunk(chunkX, chunkZ).setBiome(x,z,(Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x,0, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+            for (int y = minHeight; y < maxHeight; y++) {
+                for (int z = 0; z < 16; z++) {
+                    chunk.setBiome(x, y, z, (Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+                }
             }
         }
     }

@@ -22,6 +22,7 @@ import java.util.Map;
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
+    public static Map<String, Class<? extends Entity>> knownEntities = Entity.getKnownEntities();
 
     static {
         final var jeBlockMappingConfig = new Config(Config.JSON);
@@ -142,8 +143,16 @@ public class PNXWorldHandle implements WorldHandle {
     @Override
     public @NotNull
     EntityType getEntity(@NotNull String s) {
+        //TODO: remove this hack
+        String s2;
         if (s.startsWith("minecraft:")) s = s.substring(10);
-        return new PNXEntityType(Entity.createEntity(s, new Position(0, 0, 0, Server.getInstance().getDefaultLevel())));
+        s2 = s;
+        if (s.equals("bee")) s2 = "Bee";
+        var entityType = new PNXEntityType(knownEntities.get(s2));
+        if (entityType.getHandle() == null){
+            System.out.println("null entityType!");
+        }
+        return entityType;
     }
 
     private static class State {

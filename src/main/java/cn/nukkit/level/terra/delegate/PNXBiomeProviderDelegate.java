@@ -2,6 +2,8 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.math.Vector2;
+import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.util.MathUtil;
 import com.dfsek.terra.api.world.biome.Biome;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
@@ -20,10 +22,9 @@ public class PNXBiomeProviderDelegate implements BiomeProvider {
         cacheMap = new WeakHashMap<>();
     }
 
-    //todo: support 3D biomes
     @Override
     public Biome getBiome(int x,int y, int z, long seed) {
-        final var hash = MathUtil.squash(x, z);
+        final long hash = (x ^ ((long) z << 12)) ^ ((long) y << 24);
         final var obj = cacheMap.get(hash);
         if (obj != null) {
             return obj;
