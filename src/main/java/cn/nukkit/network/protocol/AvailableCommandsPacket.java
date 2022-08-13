@@ -171,7 +171,15 @@ public class AvailableCommandsPacket extends DataPacket {
 
                     putLInt(type);
                     putBoolean(parameter.optional);
-                    putByte(parameter.options); // TODO: 19/03/2019 Bit flags. Only first bit is used for GameRules.
+//                    putByte(parameter.options); // TODO: 19/03/2019 Bit flags. Only first bit is used for GameRules.
+                    byte options = 0;
+
+                    if (parameter.paramOptions != null) {
+                        for (CommandParamOption option : parameter.paramOptions) {
+                            options |= 1 << option.ordinal();
+                        }
+                    }
+                    this.putByte(options);
                 }
             }
         });

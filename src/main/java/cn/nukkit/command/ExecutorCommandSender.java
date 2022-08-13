@@ -42,7 +42,7 @@ public class ExecutorCommandSender implements CommandSender {
     public void sendMessage(String message) {
         if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
             return;
-        if(entity instanceof Player){
+        if (entity instanceof Player) {
             ((Player) entity).sendMessage(message);
         }
     }
@@ -51,7 +51,7 @@ public class ExecutorCommandSender implements CommandSender {
     public void sendMessage(TextContainer message) {
         if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
             return;
-        if(entity instanceof Player){
+        if (entity instanceof Player) {
             ((Player) entity).sendMessage(message);
         }
     }

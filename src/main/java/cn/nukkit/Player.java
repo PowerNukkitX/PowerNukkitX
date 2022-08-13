@@ -1786,6 +1786,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     } else {
                         this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
                     }
+                    //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];
+                    //sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
                 } else {
                     this.blocksAround = blocksAround;
                     this.collisionBlocks = collidingBlocks;
@@ -2360,6 +2362,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
         this.dataPacketImmediately(startGamePacket);
 
+        //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
         if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
 
@@ -2599,8 +2602,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 }
                             }
                         }
-
-
                     };
 
                     this.server.getScheduler().scheduleAsyncTask(this.preLoginEventTask);
@@ -3304,6 +3305,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         case InteractPacket.ACTION_OPEN_INVENTORY:
                             if (targetEntity instanceof EntityRideable) {
+                                if(targetEntity instanceof EntityChestBoat chestBoat){
+                                    this.addWindow(chestBoat.getInventory());
+                                    break;
+                                }
                                 if (!(targetEntity instanceof EntityBoat || targetEntity instanceof EntityMinecartEmpty)) {
                                     break;
                                 }

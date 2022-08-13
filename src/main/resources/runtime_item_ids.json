@@ -5671,35 +5671,43 @@
   },
   {
     "name": "minecraft:oak_chest_boat",
-    "id": 638
+    "id": 638,
+    "oldId": 638
   },
   {
     "name": "minecraft:birch_chest_boat",
-    "id": 639
+    "id": 639,
+    "oldId": 639
   },
   {
     "name": "minecraft:jungle_chest_boat",
-    "id": 640
+    "id": 640,
+    "oldId": 640
   },
   {
     "name": "minecraft:spruce_chest_boat",
-    "id": 641
+    "id": 641,
+    "oldId": 641
   },
   {
     "name": "minecraft:acacia_chest_boat",
-    "id": 642
+    "id": 642,
+    "oldId": 642
   },
   {
     "name": "minecraft:dark_oak_chest_boat",
-    "id": 643
+    "id": 643,
+    "oldId": 643
   },
   {
     "name": "minecraft:mangrove_chest_boat",
-    "id": 644
+    "id": 644,
+    "oldId": 644
   },
   {
     "name": "minecraft:chest_boat",
-    "id": 645
+    "id": 645,
+    "oldId": 645
   },
   {
     "name": "minecraft:recovery_compass",
@@ -5740,7 +5748,7 @@
   {
     "name": "minecraft:glow_berries",
     "id": 654,
-    "oldId": 638
+    "oldId": 654
   },
   {
     "name": "minecraft:trader_llama_spawn_egg",

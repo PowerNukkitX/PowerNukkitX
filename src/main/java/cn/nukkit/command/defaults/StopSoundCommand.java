@@ -25,8 +25,8 @@ public class StopSoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.stopsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newType("player",false, CommandParamType.TARGET),
-                CommandParameter.newType("sound",true, CommandParamType.STRING)
+                CommandParameter.newType("player", false, CommandParamType.TARGET),
+                CommandParameter.newType("sound", true, CommandParamType.STRING)
         });
     }
 
@@ -60,13 +60,13 @@ public class StopSoundCommand extends VanillaCommand {
 
             String players_str = targets.stream().map(Player::getName).collect(Collectors.joining(" "));
 
-            if(packet.stopAll){
+            if (packet.stopAll) {
                 sender.sendMessage(new TranslationContainer("commands.stopsound.success.all", players_str));
-            }else{
+            } else {
                 sender.sendMessage(new TranslationContainer("commands.stopsound.success", sound, players_str));
             }
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

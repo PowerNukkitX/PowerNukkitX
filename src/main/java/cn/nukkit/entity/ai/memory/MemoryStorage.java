@@ -54,7 +54,8 @@ public class MemoryStorage implements IMemoryStorage {
 
     @Override
     public <R, T extends IMemory<R>> boolean checkData(Class<T> memoryClazz, R data) {
-        return get(memoryClazz).getData().equals(data);
+        T memory;
+        return (memory = get(memoryClazz)).hasData() && memory.getData().equals(data);
     }
 
     public <R, T extends IMemory<R>> void setData(Class<T> memoryClazz, R data) {

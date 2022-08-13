@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>powernukkitx</name>
-    <description>A fork of PowerNukkit</description>
+    <description>Make Nukkit great again!</description>
     <url>https://github.com/PowerNukkitX/PowerNukkitX</url>
 
     <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
-    <version>1.6.0.0-PNX</version>
+    <version>1.19.20-r3</version>
 
     <inceptionYear>2022</inceptionYear>
     <organization>
@@ -86,7 +86,7 @@
         <skipTests>true</skipTests>
         <skipGpg>true</skipGpg>
         <maven.javadoc.skip>true</maven.javadoc.skip>
-        <graalvm.version>22.0.0.2</graalvm.version>
+        <graalvm.version>22.2.0</graalvm.version>
         <skipDelombok>true</skipDelombok>
         <skipNexus>true</skipNexus>
         <skipShade>package</skipShade>
@@ -100,6 +100,7 @@
                 <profiles.active>fast-dev</profiles.active>
                 <skipShade>none</skipShade>
                 <skipCopyLibs>true</skipCopyLibs>
+                <skipTests>true</skipTests>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -534,13 +535,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <compileSourceRoots>src/main/java</compileSourceRoots>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-                    <!-- The semantics of this option are reversed, see MCOMPILER-209. -->
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                     <compilerArgs>
-                        <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
                         <arg>-Xpkginfo:always</arg>
                     </compilerArgs>
                 </configuration>
@@ -549,6 +547,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <trimStackTrace>false</trimStackTrace>
                 </configuration>
@@ -587,7 +586,7 @@
                         <id>enforce</id>
                         <configuration>
                             <rules>
-                                <DependencyConvergence />
+                                <DependencyConvergence/>
                                 <requireJavaVersion>
                                     <version>1.8</version>
                                 </requireJavaVersion>
@@ -632,7 +631,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>delombok</goal>
                         </goals>
@@ -790,6 +789,10 @@
                 </executions>
                 <configuration>
                     <skip>${skipGpg}</skip>
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
                 </configuration>
             </plugin>
             <plugin>

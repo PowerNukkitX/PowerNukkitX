@@ -10,7 +10,33 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [Under Development 1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future - (Dev)
+## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - Future - (Dev)
+
+This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
+
+### Changed
+
+- [#515] Implemented compatibility with 1.19.20 (protocol version 544).
+
+### Fixes
+
+- [#511] Fix the problem of not being able to grow large spruce trees.
+- [#512] Fix fix compatibility with jar-in-jar multi-level plugins.
+- [#514] Fix the issue that when the player is too fast while riding, it will be mistakenly checked as instantaneous.
+
+## [1.19.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - 2022-8-7
+
+This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
+
+### Added
+
+- [#510] 1.19.10-r1 Release。
+
+### Changed
+
+- [#506] 1.19.10-r1 Version Updates。
+
+## [1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758) - EOL - (Dev)
 
 This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
 
@@ -27,7 +53,7 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#307] Implement the /function command.
 - [#326] Implement RAWTEXT (/tellraw /titleraw).
 - [#352] Implementation of NPC-API and implementation of NPC functions.
-- [#354] Implement custom blocks / itmes (refinement in progress, [documentation](https://doc.powernukkitx.cn) to be added).
+- [#354] Implementing custom blocks / items / entities (refinement in progress, [documentation](https://doc.powernukkitx.cn) to be added, custom entities implemented in [#458]).
 - [#363] Implemented NPC SKIN switch.
 - [#365] Add toSnbt.
 - [#370] Add JS cross-plugin interoperability.
@@ -38,9 +64,17 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#414] Implement fine snow squares.
 - [#416] Add `PlayerFreezeEvent` event.
 - [#425] Preliminary completion of `JS Feature` architecture.
+- [#431] New BioAI (Basic Architecture).
 - [#433] Implement frequently loaded blocks and the corresponding commands.
 - [#426] Add reflection escape door for events where bytecode calls fail.
 - [#446] Implement DeathInfo.
+- [#468] Add `ServerStartedEvent` event.
+- [#470] Add OtherSide record.
+- [#481] Implement creature AI for pigs, cows and chickens.
+- [#483] Implement zombie creature AI.
+- [#492] Add SNBT deserialization.
+- [#494] Added Chest boat.
+- [#500] Implement creeper creature AI.
 
 ### Changed
 
@@ -70,6 +104,13 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#455] Update resource files.
 - [#461] Update startup command detection + deprecate submodule.
 - [#466] `Change custom block api.`
+- [#467] Tweak Version command to update checks.
+- [#473] Improve status command + update dependency library.
+- [#477] Enhance customizability and compatibility of JS engine.
+- [#489] Optimize pathfinding logic.
+- [#490] Change boss entity position to fit 384 height.
+- [#491] Improve entity AI.
+- [#499] Minor changes to SNBT format.
 
 ### Fixes
 
@@ -127,6 +168,13 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#463] Fix /particle command.
 - [#464] Fix world spawn.
 - [#465] Fix the calculation problem of spawn points.
+- [#474] Fix wrong player birth point.
+- [#476] Fix non-existent capitalization command prompt.
+- [#478] Fix the probable null pointer issue of scoreboard.
+- [#479] Fix `player.getCraftingGrid().clearAll()` not working (fixed in [#480]).
+- [#487] Fix registerCustomBlock (fix another bug in [#488]).
+- [#493] Fix entity damage calculation.
+- [#498] Fix Speed II potion duration bug.
 
 ### CRITICAL SECURITY FIX
 - [#16] Changed Log4J Library from `2.17.0` to `2.17.1`, fix CVE-2021-44832.
@@ -950,6 +998,20 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.10-r1-PNX</summary>
+
+   1. [#1.19.10-r1] PNX-1.19.10-r1 (Protocol Verison 534)
+
+</details>
+
+<details>
+  <summary>1.19.20-r1-PNX</summary>
+
+   1. [#1.19.20-r1] PNX-1.19.20-r1 (Protocol Version 544)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1263,6 +1325,7 @@ Need to switch languages?
 [#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
 [#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
 [#429]:https://github.com/PowerNukkitX/PowerNukkitX/pull/429
+[#431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/431
 [#433]: https://github.com/PowerNukkitX/PowerNukkitX/pull/433
 [#436]: https://github.com/PowerNukkitX/PowerNukkitX/pull/436
 [#437]: https://github.com/PowerNukkitX/PowerNukkitX/pull/437
@@ -1273,12 +1336,42 @@ Need to switch languages?
 [#448]: https://github.com/PowerNukkitX/PowerNukkitX/pull/448
 [#454]: https://github.com/PowerNukkitX/PowerNukkitX/pull/454
 [#455]: https://github.com/PowerNukkitX/PowerNukkitX/pull/455
+[#458]: https://github.com/PowerNukkitX/PowerNukkitX/pull/458
 [#461]: https://github.com/PowerNukkitX/PowerNukkitX/pull/461
 [#462]: https://github.com/PowerNukkitX/PowerNukkitX/pull/462
 [#463]: https://github.com/PowerNukkitX/PowerNukkitX/pull/463
 [#464]: https://github.com/PowerNukkitX/PowerNukkitX/pull/464
 [#465]: https://github.com/PowerNukkitX/PowerNukkitX/pull/465
 [#466]: https://github.com/PowerNukkitX/PowerNukkitX/pull/466
+[#467]: https://github.com/PowerNukkitX/PowerNukkitX/pull/467
+[#468]: https://github.com/PowerNukkitX/PowerNukkitX/pull/468
+[#470]: https://github.com/PowerNukkitX/PowerNukkitX/pull/470
+[#473]: https://github.com/PowerNukkitX/PowerNukkitX/pull/473
+[#474]: https://github.com/PowerNukkitX/PowerNukkitX/pull/474
+[#476]: https://github.com/PowerNukkitX/PowerNukkitX/pull/476
+[#477]: https://github.com/PowerNukkitX/PowerNukkitX/pull/477
+[#478]: https://github.com/PowerNukkitX/PowerNukkitX/pull/478
+[#479]: https://github.com/PowerNukkitX/PowerNukkitX/issues/479
+[#480]: https://github.com/PowerNukkitX/PowerNukkitX/pull/480
+[#481]: https://github.com/PowerNukkitX/PowerNukkitX/pull/481
+[#483]: https://github.com/PowerNukkitX/PowerNukkitX/pull/483
+[#487]: https://github.com/PowerNukkitX/PowerNukkitX/pull/487
+[#488]: https://github.com/PowerNukkitX/PowerNukkitX/pull/488
+[#489]: https://github.com/PowerNukkitX/PowerNukkitX/pull/489
+[#490]: https://github.com/PowerNukkitX/PowerNukkitX/pull/490
+[#491]: https://github.com/PowerNukkitX/PowerNukkitX/pull/491
+[#492]: https://github.com/PowerNukkitX/PowerNukkitX/pull/492
+[#493]: https://github.com/PowerNukkitX/PowerNukkitX/pull/493
+[#494]: https://github.com/PowerNukkitX/PowerNukkitX/pull/494
+[#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
+[#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
+[#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
+[#506]: https://github.com/PowerNukkitX/PowerNukkitX/pull/506
+[#510]: https://github.com/PowerNukkitX/PowerNukkitX/pull/510
+[#511]: https://github.com/PowerNukkitX/PowerNukkitX/pull/511
+[#512]: https://github.com/PowerNukkitX/PowerNukkitX/pull/512
+[#514]: https://github.com/PowerNukkitX/PowerNukkitX/pull/514
+[#515]: https://github.com/PowerNukkitX/PowerNukkitX/pull/515
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1292,8 +1385,16 @@ Need to switch languages?
 [#V3-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2662176331
 
 <!--Protocol Version 534-->
-[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#V4-dev]:https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758
 <!--1.6.0.0-PNX Version summary End-->
+
+<!--1.19.xx-PNX Version summary Start-->
+<!--1.19.10-r1-PNX Protocol Version 534-->
+[#1.19.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1
+
+<!--1.19.20-r1-PNX Protocol Verison 544-->
+[#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
 

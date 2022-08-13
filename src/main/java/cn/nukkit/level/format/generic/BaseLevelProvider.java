@@ -4,6 +4,7 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
@@ -23,11 +24,15 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -47,9 +52,13 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     protected final Long2ObjectMap<BaseRegionLoader> regions = new Long2ObjectOpenHashMap<>();
 
-    protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
+    @PowerNukkitXDifference(since = "1.19.20-r3", info = "同步开销甚至远大于装拆箱开销")
+    protected final ConcurrentMap<Long, BaseFullChunk> chunks = new ConcurrentHashMap<>();
+    //protected final Long2ObjectMap<BaseFullChunk> chunks = new Long2ObjectOpenHashMap<>();
 
-    private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
+    @PowerNukkitXDifference(since = "1.19.20-r3", info = "允许多线程彻底地并发获取区块")
+    private final ThreadLocal<WeakReference<BaseFullChunk>> lastChunk = new ThreadLocal<>();
+    //private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
     public BaseLevelProvider(Level level, String path) throws IOException {
@@ -57,13 +66,14 @@ public abstract class BaseLevelProvider implements LevelProvider {
         this.path = path;
         File filePath = new File(this.path);
         if (!filePath.exists() && !filePath.mkdirs()) {
-            throw new LevelException("Could not create the directory "+filePath);
+            throw new LevelException("Could not create the directory " + filePath);
         }
 
         CompoundTag levelData;
         File levelDatFile = new File(getPath(), "level.dat");
         try (FileInputStream fos = new FileInputStream(levelDatFile); BufferedInputStream input = new BufferedInputStream(fos)) {
-            levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);;
+            levelData = NBTIO.readCompressed(input, ByteOrder.BIG_ENDIAN);
+            ;
         } catch (Exception e) {
             log.fatal("Failed to load the level.dat file at {}, attempting to load level.dat_old instead!", levelDatFile.getAbsolutePath(), e);
             try {
@@ -87,7 +97,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
                 throw ex;
             }
         }
-        
+
         if (levelData.get("Data") instanceof CompoundTag) {
             this.levelData = levelData.getCompound("Data");
         } else {
@@ -101,7 +111,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         if (!this.levelData.contains("generatorOptions")) {
             this.levelData.putString("generatorOptions", "");
         }
-        
+
         this.levelData.putList(new ListTag<>("ServerBrand").add(new StringTag("", Nukkit.CODENAME)));
 
         this.spawn = new Vector3(this.levelData.getInt("SpawnX"), this.levelData.getInt("SpawnY"), this.levelData.getInt("SpawnZ"));
@@ -119,14 +129,12 @@ public abstract class BaseLevelProvider implements LevelProvider {
     public abstract BaseFullChunk loadChunk(long index, int chunkX, int chunkZ, boolean create);
 
     public int size() {
-        synchronized (chunks) {
-            return this.chunks.size();
-        }
+        return this.chunks.size();
     }
 
     @Override
     public void unloadChunks() {
-        ObjectIterator<BaseFullChunk> iter = chunks.values().iterator();
+        var iter = chunks.values().iterator();
         while (iter.hasNext()) {
             iter.next().unload(true, false);
             iter.remove();
@@ -149,9 +157,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public Map<Long, BaseFullChunk> getLoadedChunks() {
-        synchronized (chunks) {
-            return ImmutableMap.copyOf(chunks);
-        }
+        return ImmutableMap.copyOf(chunks);
     }
 
     @Override
@@ -160,16 +166,12 @@ public abstract class BaseLevelProvider implements LevelProvider {
     }
 
     public void putChunk(long index, BaseFullChunk chunk) {
-        synchronized (chunks) {
-            chunks.put(index, chunk);
-        }
+        chunks.put(index, chunk);
     }
 
     @Override
     public boolean isChunkLoaded(long hash) {
-        synchronized (chunks) {
-            return this.chunks.containsKey(hash);
-        }
+        return this.chunks.containsKey(hash);
     }
 
     public BaseRegionLoader getRegion(int x, int z) {
@@ -332,12 +334,10 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public void saveChunks() {
-        synchronized (chunks) {
-            for (BaseFullChunk chunk : this.chunks.values()) {
-                if (chunk.getChanges() != 0) {
-                    chunk.setChanged(false);
-                    this.saveChunk(chunk.getX(), chunk.getZ());
-                }
+        for (BaseFullChunk chunk : this.chunks.values()) {
+            if (chunk.getChanges() != 0) {
+                chunk.setChanged(false);
+                this.saveChunk(chunk.getX(), chunk.getZ());
             }
         }
     }
@@ -352,7 +352,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         File levelDataFile = new File(getPath(), "level.dat");
         try {
             Utils.safeWrite(levelDataFile, file -> {
-                try(FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
+                try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream out = new BufferedOutputStream(fos)) {
                     NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), out);
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -379,10 +379,8 @@ public abstract class BaseLevelProvider implements LevelProvider {
     @Override
     public boolean loadChunk(int chunkX, int chunkZ, boolean create) {
         long index = Level.chunkHash(chunkX, chunkZ);
-        synchronized (chunks) {
-            if (this.chunks.containsKey(index)) {
-                return true;
-            }
+        if (this.chunks.containsKey(index)) {
+            return true;
         }
         return loadChunk(index, chunkX, chunkZ, create) != null;
     }
@@ -395,13 +393,11 @@ public abstract class BaseLevelProvider implements LevelProvider {
     @Override
     public boolean unloadChunk(int X, int Z, boolean safe) {
         long index = Level.chunkHash(X, Z);
-        synchronized (chunks) {
-            BaseFullChunk chunk = this.chunks.get(index);
-            if (chunk != null && chunk.unload(false, safe)) {
-                lastChunk.set(null);
-                this.chunks.remove(index, chunk);
-                return true;
-            }
+        BaseFullChunk chunk = this.chunks.get(index);
+        if (chunk != null && chunk.unload(false, safe)) {
+            lastChunk.set(null);
+            this.chunks.remove(index, chunk);
+            return true;
         }
         return false;
     }
@@ -411,46 +407,49 @@ public abstract class BaseLevelProvider implements LevelProvider {
         return this.getChunk(chunkX, chunkZ, false);
     }
 
+    @Nullable
+    protected final BaseFullChunk getThreadLastChunk() {
+        var ref = lastChunk.get();
+        if (ref == null) {
+            return null;
+        }
+        return ref.get();
+    }
+
     @Override
     public BaseFullChunk getLoadedChunk(int chunkX, int chunkZ) {
-        BaseFullChunk tmp = lastChunk.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
         long index = Level.chunkHash(chunkX, chunkZ);
-        synchronized (chunks) {
-            lastChunk.set(tmp = chunks.get(index));
-        }
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         return tmp;
     }
 
     @Override
     public BaseFullChunk getLoadedChunk(long hash) {
-        BaseFullChunk tmp = lastChunk.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getIndex() == hash) {
             return tmp;
         }
-        synchronized (chunks) {
-            lastChunk.set(tmp = chunks.get(hash));
-        }
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(hash)));
         return tmp;
     }
 
     @Override
     public BaseFullChunk getChunk(int chunkX, int chunkZ, boolean create) {
-        BaseFullChunk tmp = lastChunk.get();
+        var tmp = getThreadLastChunk();
         if (tmp != null && tmp.getX() == chunkX && tmp.getZ() == chunkZ) {
             return tmp;
         }
         long index = Level.chunkHash(chunkX, chunkZ);
-        synchronized (chunks) {
-            lastChunk.set(tmp = chunks.get(index));
-        }
+        lastChunk.set(new WeakReference<>(tmp = chunks.get(index)));
         if (tmp != null) {
             return tmp;
         } else {
             tmp = this.loadChunk(index, chunkX, chunkZ, create);
-            lastChunk.set(tmp);
+            lastChunk.set(new WeakReference<>(tmp));
             return tmp;
         }
     }
@@ -463,12 +462,10 @@ public abstract class BaseLevelProvider implements LevelProvider {
         chunk.setProvider(this);
         chunk.setPosition(chunkX, chunkZ);
         long index = Level.chunkHash(chunkX, chunkZ);
-        synchronized (chunks) {
-            if (this.chunks.containsKey(index) && !this.chunks.get(index).equals(chunk)) {
-                this.unloadChunk(chunkX, chunkZ, false);
-            }
-            this.chunks.put(index, (BaseFullChunk) chunk);
+        if (this.chunks.containsKey(index) && !this.chunks.get(index).equals(chunk)) {
+            this.unloadChunk(chunkX, chunkZ, false);
         }
+        this.chunks.put(index, (BaseFullChunk) chunk);
     }
 
     @Override

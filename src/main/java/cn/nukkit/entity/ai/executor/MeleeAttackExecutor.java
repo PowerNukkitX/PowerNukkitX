@@ -44,8 +44,9 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
-        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
 
         //获取目标位置（这个clone很重要）
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
@@ -111,6 +112,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
         }
+        entity.setEnablePitch(false);
     }
 
     @Override
@@ -122,6 +124,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         if (clearDataWhenLose) {
             entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
         }
+        entity.setEnablePitch(false);
     }
 
     protected void playAttackAnimation(EntityIntelligent entity) {

@@ -23,14 +23,14 @@ public class CameraShakeCommand extends VanillaCommand {
         this.setPermission("nukkit.command.camerashake");
         this.commandParameters.clear();
         this.commandParameters.put("add", new CommandParameter[]{
-                CommandParameter.newEnum("add",false,new String[]{"add"}),
+                CommandParameter.newEnum("add", false, new String[]{"add"}),
                 CommandParameter.newType("player", false, CommandParamType.TARGET),
-                CommandParameter.newType("intensity",false,CommandParamType.FLOAT),
-                CommandParameter.newType("second",false,CommandParamType.FLOAT),
-                CommandParameter.newEnum("shakeType",false,new String[]{"positional","rotational"})
+                CommandParameter.newType("intensity", false, CommandParamType.FLOAT),
+                CommandParameter.newType("second", false, CommandParamType.FLOAT),
+                CommandParameter.newEnum("shakeType", false, new String[]{"positional", "rotational"})
         });
         this.commandParameters.put("stop", new CommandParameter[]{
-                CommandParameter.newEnum("stop",false,new String[]{"stop"}),
+                CommandParameter.newEnum("stop", false, new String[]{"stop"}),
                 CommandParameter.newType("player", false, CommandParamType.TARGET),
         });
     }
@@ -41,10 +41,10 @@ public class CameraShakeCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
+        CommandParser parser = new CommandParser(this, sender, args);
 
         String form = parser.matchCommandForm();
-        if(form == null){
+        if (form == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
@@ -58,7 +58,7 @@ public class CameraShakeCommand extends VanillaCommand {
                 case "add" -> {
                     float intensity = (float) parser.parseDouble();
                     float second = (float) parser.parseDouble();
-                    CameraShakePacket.CameraShakeType shakeType = switch(parser.parseString()){
+                    CameraShakePacket.CameraShakeType shakeType = switch (parser.parseString()) {
                         case "positional" -> CameraShakePacket.CameraShakeType.POSITIONAL;
                         case "rotational" -> CameraShakePacket.CameraShakeType.ROTATIONAL;
                         default -> throw new CommandSyntaxException();

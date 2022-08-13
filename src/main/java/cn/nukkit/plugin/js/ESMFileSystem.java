@@ -3,6 +3,7 @@ package cn.nukkit.plugin.js;
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.CommonJSPlugin;
+import cn.nukkit.plugin.JavaPluginLoader;
 import cn.nukkit.utils.SeekableInMemoryByteChannel;
 import org.graalvm.polyglot.io.FileSystem;
 
@@ -17,13 +18,14 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.nukkit.plugin.js.JSClassLoader.javaClassCache;
+
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
     private final CommonJSPlugin plugin;
     private ClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
-    final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 
     public ESMFileSystem(File baseDir, CommonJSPlugin plugin) {
         this.baseDir = baseDir;
@@ -37,14 +39,19 @@ public final class ESMFileSystem implements FileSystem {
 
     @Override
     public Path parsePath(String path) {
+        Path resolvedPath = null;
         var feature = JSFeatures.getFeatureByModule(path);
         if (feature != null && plugin.usedFeatures.containsKey(feature.getName())) {
-            return Path.of("jsFeature", feature.getName() + "@" + path);
+            resolvedPath = Path.of("jsFeature", feature.getName() + "@" + path);
         } else if (path.startsWith("@")) {
-            return Path.of(Server.getInstance().getPluginPath(), path);
+            if (!path.contains("/") && !path.contains("\\")) {
+                resolvedPath = Path.of(Server.getInstance().getPluginPath(), path + "/index.js");
+            } else {
+                resolvedPath = Path.of(Server.getInstance().getPluginPath(), path);
+            }
         } else if (path.startsWith(":")) {
-            return Path.of("inner-module", path.substring(1));
-        } else if ((!path.equals(".js") && getDots(path) > 1)) {
+            resolvedPath = Path.of("inner-module", path.substring(1));
+        } else if ((!path.endsWith(".js") && !path.startsWith("./") && !path.startsWith("../") && getDots(path) > 1)) {
             if (mainClassLoader == null)
                 mainClassLoader = Thread.currentThread().getContextClassLoader();
             try {
@@ -54,13 +61,52 @@ public final class ESMFileSystem implements FileSystem {
                 var clazz = mainClassLoader.loadClass(path);
                 if (clazz != null) {
                     javaClassCache.put(path, clazz);
+                    resolvedPath = Path.of("java-class", path);
+                } else {
+                    outer:
+                    for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
+                        if (pl instanceof JavaPluginLoader javaPluginLoader) {
+                            for (var loader : javaPluginLoader.getClassLoaders().values()) {
+                                clazz = loader.loadClass(path);
+                                if (clazz != null) {
+                                    javaClassCache.put(path, clazz);
+                                    resolvedPath = Path.of("java-class", path);
+                                    break outer;
+                                }
+                            }
+                        }
+                    }
                 }
-                return Path.of("java-class", path);
             } catch (ClassNotFoundException ignore) {
+                outer2:
+                for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
+                    if (pl instanceof JavaPluginLoader javaPluginLoader) {
+                        for (var loader : javaPluginLoader.getClassLoaders().values()) {
+                            try {
+                                var clazz = loader.loadClass(path);
+                                if (clazz != null) {
+                                    javaClassCache.put(path, clazz);
+                                    resolvedPath = Path.of("java-class", path);
+                                    break outer2;
+                                }
+                            } catch (ClassNotFoundException ignore2) {
 
+                            }
+                        }
+                    }
+                }
             }
         }
-        return baseDir.toPath().resolve(path);
+        if (resolvedPath == null) {
+            resolvedPath = baseDir.toPath().resolve(path);
+        }
+        if (!resolvedPath.startsWith("java-class") && !resolvedPath.startsWith("jsFeature") && !resolvedPath.startsWith("inner-module") && !Files.isRegularFile(resolvedPath)) {
+            var tmpPath = Path.of(resolvedPath + ".js");
+            if (Files.isRegularFile(tmpPath)) {
+                resolvedPath = tmpPath;
+            }
+        }
+        return resolvedPath;
     }
 
     private static int getDots(String originStr) {

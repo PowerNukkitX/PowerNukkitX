@@ -42,9 +42,9 @@ public class TellCommand extends VanillaCommand {
         String target = args[0].toLowerCase();
 
         List<Player> players = null;
-        if(EntitySelector.hasArguments(target)){
+        if (EntitySelector.hasArguments(target)) {
             players = EntitySelector.matchEntities(sender, target).stream().filter(p -> p instanceof Player).map(p -> (Player) p).toList();
-        }else {
+        } else {
             players = Collections.singletonList(sender.getServer().getPlayer(target));
         }
         if (players.isEmpty()) {
@@ -62,7 +62,7 @@ public class TellCommand extends VanillaCommand {
 
         for (Player player : players) {
             sender.sendMessage(new TranslationContainer("commands.message.display.outgoing", player.getName(), msg.toString()));
-            player.sendMessage(new TranslationContainer("commands.message.display.incoming",sender.getName(),msg.toString()));
+            player.sendMessage(new TranslationContainer("commands.message.display.incoming", sender.getName(), msg.toString()));
         }
         return true;
     }

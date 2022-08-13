@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
@@ -114,6 +115,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
+        checkAndRecoveryBlockEntity();
         BlockDaylightDetectorInverted block = new BlockDaylightDetectorInverted();
         getLevel().setBlock(this, block, true, true);
         block.updatePower();
@@ -129,6 +131,14 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
             return true;
         }
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    private void checkAndRecoveryBlockEntity() {
+        if (!(this.getLevel().getBlockEntity(this) instanceof BlockEntityDaylightDetector)) {
+            BlockEntityHolder.setBlockAndCreateEntity(this);
+        }
     }
 
     @Override
@@ -151,7 +161,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta implements Redst
         int i;
         if (getLevel().getDimension() == Level.DIMENSION_OVERWORLD) {
             i = getLevel().getBlockSkyLightAt((int) x, (int) y, (int) z) - getLevel().calculateSkylightSubtracted(1.0F);
-            float f = getLevel().getCelestialAngle(1.0F);
+            float f = getLevel().getCelestialAngle(1.0F) * 6.2831855F;
 
             if (this.isInverted()) {
                 i = 15 - i;

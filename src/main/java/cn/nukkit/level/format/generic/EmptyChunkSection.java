@@ -2,10 +2,12 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.format.ChunkSection;
+import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.math.BlockVector3;
@@ -24,7 +26,7 @@ import java.util.function.BiPredicate;
  * @author MagicDroidX (Nukkit Project)
  */
 @ParametersAreNonnullByDefault
-public class EmptyChunkSection implements ChunkSection {
+public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
     @SuppressWarnings("java:S2386")
@@ -55,6 +57,9 @@ public class EmptyChunkSection implements ChunkSection {
     @PowerNukkitOnly
     public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
     private static final byte[] EMPTY_CHUNK_DATA;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    public static final byte[] EMPTY_BIOME_ARRAY = new byte[4096];
 
     static {
         BinaryStream stream = new BinaryStream();
@@ -310,5 +315,15 @@ public class EmptyChunkSection implements ChunkSection {
     @Override
     public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public int getBiomeId(int x, int y, int z) {
+        return 0;
+    }
+
+    @Override
+    public void setBiomeId(int x, int y, int z, byte id) {
+        if (id != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
     }
 }
