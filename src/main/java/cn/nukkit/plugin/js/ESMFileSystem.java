@@ -18,13 +18,14 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static cn.nukkit.plugin.js.JSClassLoader.javaClassCache;
+
 public final class ESMFileSystem implements FileSystem {
     final File baseDir;
     private final CommonJSPlugin plugin;
     private ClassLoader mainClassLoader;
 
     private final static Map<String, byte[]> innerModuleCache = new WeakHashMap<>(1, 1f);
-    final static Map<String, Class<?>> javaClassCache = new ConcurrentHashMap<>();
 
     public ESMFileSystem(File baseDir, CommonJSPlugin plugin) {
         this.baseDir = baseDir;
@@ -77,7 +78,23 @@ public final class ESMFileSystem implements FileSystem {
                     }
                 }
             } catch (ClassNotFoundException ignore) {
+                outer2:
+                for (var pl : Server.getInstance().getPluginManager().getFileAssociations().values()) {
+                    if (pl instanceof JavaPluginLoader javaPluginLoader) {
+                        for (var loader : javaPluginLoader.getClassLoaders().values()) {
+                            try {
+                                var clazz = loader.loadClass(path);
+                                if (clazz != null) {
+                                    javaClassCache.put(path, clazz);
+                                    resolvedPath = Path.of("java-class", path);
+                                    break outer2;
+                                }
+                            } catch (ClassNotFoundException ignore2) {
 
+                            }
+                        }
+                    }
+                }
             }
         }
         if (resolvedPath == null) {

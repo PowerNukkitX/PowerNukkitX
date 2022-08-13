@@ -29,12 +29,12 @@ public class PlaySoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("sound",false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()),false)),
-                CommandParameter.newType("player",true, CommandParamType.TARGET),
-                CommandParameter.newType("position",true, CommandParamType.POSITION),
-                CommandParameter.newType("volume",true, CommandParamType.FLOAT),
-                CommandParameter.newType("pitch",true, CommandParamType.FLOAT),
-                CommandParameter.newType("minimumVolume",true, CommandParamType.FLOAT)
+                CommandParameter.newEnum("sound", false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()), false)),
+                CommandParameter.newType("player", true, CommandParamType.TARGET),
+                CommandParameter.newType("position", true, CommandParamType.POSITION),
+                CommandParameter.newType("volume", true, CommandParamType.FLOAT),
+                CommandParameter.newType("pitch", true, CommandParamType.FLOAT),
+                CommandParameter.newType("minimumVolume", true, CommandParamType.FLOAT)
         });
     }
 
@@ -114,7 +114,7 @@ public class PlaySoundCommand extends VanillaCommand {
 
             sender.sendMessage(new TranslationContainer("commands.playsound.success", sound, String.join(", ", successes)));
         } catch (CommandSyntaxException e) {
-             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 

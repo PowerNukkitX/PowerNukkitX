@@ -17,9 +17,9 @@ import java.util.List;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class TellrawCommand extends VanillaCommand{
+public class TellrawCommand extends VanillaCommand {
 
-    public TellrawCommand(String name){
+    public TellrawCommand(String name) {
         super(name, "commands.tellraw.description");
         this.setPermission("nukkit.command.tellraw");
         this.commandParameters.clear();
@@ -35,8 +35,8 @@ public class TellrawCommand extends VanillaCommand{
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
-        if(parser.matchCommandForm() == null){
+        CommandParser parser = new CommandParser(this, sender, args);
+        if (parser.matchCommandForm() == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }

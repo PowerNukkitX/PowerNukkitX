@@ -39,12 +39,12 @@ public class SayCommand extends VanillaCommand {
 
         StringBuilder msg = new StringBuilder();
         for (String arg : args) {
-            if (EntitySelector.hasArguments(arg)){
+            if (EntitySelector.hasArguments(arg)) {
                 List<Entity> entities = EntitySelector.matchEntities(sender, arg);
-                for(Entity entity : entities){
+                for (Entity entity : entities) {
                     msg.append(entity.getName()).append(" ");
                 }
-            }else {
+            } else {
                 msg.append(arg).append(" ");
             }
         }

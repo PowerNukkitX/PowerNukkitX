@@ -47,7 +47,7 @@ public class SpawnpointCommand extends VanillaCommand {
             }
         } else {
             if (EntitySelector.hasArguments(args[0])) {
-                players = EntitySelector.matchEntities(sender, args[0]).stream().filter(e -> e instanceof Player).map(e -> (Player)e).toList();
+                players = EntitySelector.matchEntities(sender, args[0]).stream().filter(e -> e instanceof Player).map(e -> (Player) e).toList();
             } else if (sender.getServer().getPlayer(args[0]) != null) {
                 players = List.of(sender.getServer().getPlayer(args[0]));
             }
@@ -70,7 +70,7 @@ public class SpawnpointCommand extends VanillaCommand {
                     sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                     return false;
                 }
-                if(level.isOverWorld()) {
+                if (level.isOverWorld()) {
                     if (position.y < -64) position.y = -64;
                     if (position.y > 320) position.y = 320;
                 } else {

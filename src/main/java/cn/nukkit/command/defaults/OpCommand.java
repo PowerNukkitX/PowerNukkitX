@@ -39,15 +39,15 @@ public class OpCommand extends VanillaCommand {
             return false;
         }
 
-        CommandParser parser = new CommandParser(this,sender,args);
+        CommandParser parser = new CommandParser(this, sender, args);
         try {
-            List<IPlayer> players = parser.parseTargetPlayers().stream().map(p -> (IPlayer)p).collect(Collectors.toList());
+            List<IPlayer> players = parser.parseTargetPlayers().stream().map(p -> (IPlayer) p).collect(Collectors.toList());
             if (players.size() == 0) {
                 players.add(sender.getServer().getOfflinePlayer(args[0]));
             }
 
             for (IPlayer player : players) {
-                if (player.isOp()){
+                if (player.isOp()) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.op.failed", player.getName()));
                     return false;
                 }

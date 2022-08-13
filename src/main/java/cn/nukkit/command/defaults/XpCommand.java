@@ -51,11 +51,11 @@ public class XpCommand extends Command {
             List<Entity> entities = List.of();
             if (EntitySelector.hasArguments(args[1])) {
                 entities = EntitySelector.matchEntities(sender, args[1]);
-            } else if (sender.getServer().getPlayer(args[1]) != null){
+            } else if (sender.getServer().getPlayer(args[1]) != null) {
                 entities = List.of(sender.getServer().getPlayer(args[1]));
             }
 
-            players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
+            players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
             if (players.size() == 0) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return false;
@@ -71,11 +71,11 @@ public class XpCommand extends Command {
                 List<Entity> entities = List.of();
                 if (EntitySelector.hasArguments(args[1])) {
                     entities = EntitySelector.matchEntities(sender, args[1]);
-                } else if(sender.getServer().getPlayer(args[1]) != null){
+                } else if (sender.getServer().getPlayer(args[1]) != null) {
                     entities = List.of(sender.getServer().getPlayer(args[1]));
                 }
 
-                players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player)p).toList();
+                players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
                 if (players.size() == 0) {
                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                     return false;

@@ -17,6 +17,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BVector3;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.Getter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
+@Getter
 public class CommandParser {
 
     private static final String STRING_PATTERN = "(\\S+)";
@@ -47,28 +49,40 @@ public class CommandParser {
 
     private record PatternCache(Pattern pattern,int length){}
 
-    private final Command command;
-    private final CommandSender sender;
-    private final String[] args;
+    private Command command;
+    private CommandSender sender;
+    private String[] args;
     private String[] parsedArgs;
     private String matchedCommandForm;
+
+    private boolean useParsedArgs = false;
 
     private int cursor = -1;
 
     public CommandParser(Command command, CommandSender sender, String[] args) {
+        this(command, sender, args, true);
+    }
+
+    public CommandParser(Command command, CommandSender sender, String[] args, boolean useParsedArgs){
         this.command = command;
         this.sender = sender;
         this.args = args;
-        matchCommandForm();
+        this.useParsedArgs = useParsedArgs;
+        if (useParsedArgs) matchCommandForm();
     }
 
     public CommandParser(CommandParser parser) {
+        this(parser,parser.getSender());
+    }
+
+    public CommandParser(CommandParser parser, CommandSender sender) {
         this.command = parser.command;
-        this.sender = parser.sender;
+        this.sender = sender;
         this.args = parser.args;
         this.parsedArgs = parser.parsedArgs;
         this.matchedCommandForm = parser.matchedCommandForm;
         this.cursor = parser.cursor;
+        this.useParsedArgs = parser.useParsedArgs;
     }
 
     private String next() throws ArrayIndexOutOfBoundsException {
@@ -77,9 +91,9 @@ public class CommandParser {
 
     private String next(boolean moveCursor) throws ArrayIndexOutOfBoundsException {
         if (moveCursor)
-            return this.parsedArgs[++this.cursor];
+            return useParsedArgs ? this.parsedArgs[++this.cursor] : this.args[++this.cursor];
         else
-            return this.parsedArgs[this.cursor + 1];
+            return useParsedArgs ? this.parsedArgs[this.cursor + 1] : this.args[this.cursor + 1];
     }
 
     public String matchCommandForm() {
@@ -268,7 +282,9 @@ public class CommandParser {
     }
 
     public boolean hasNext() {
-        return this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null;
+        return this.useParsedArgs ?
+                this.cursor < this.parsedArgs.length - 1 && this.parsedArgs[this.cursor + 1] != null :
+                this.cursor < this.args.length - 1 && this.args[this.cursor + 1] != null;
     }
 
     public int parseInt() throws CommandSyntaxException {
@@ -465,8 +481,8 @@ public class CommandParser {
                 sb.append(this.next()).append(" ");
             }
         } else {
-            for (int i = this.cursor; i < this.parsedArgs.length; i++) {
-                sb.append(this.parsedArgs[i]).append(" ");
+            for (int i = this.cursor; i < (this.useParsedArgs ? this.parsedArgs.length : this.args.length); i++) {
+                sb.append((this.useParsedArgs ? this.parsedArgs : this.args)[i]).append(" ");
             }
         }
         return sb.toString();

@@ -28,25 +28,25 @@ public class ReplaceItemCommand extends VanillaCommand {
         this.setPermission("nukkit.command.replaceitem");
         this.commandParameters.clear();
         this.commandParameters.put("block", new CommandParameter[]{
-                CommandParameter.newEnum("block",false,new String[]{"block"}),
+                CommandParameter.newEnum("block", false, new String[]{"block"}),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("slot.container",false,new String[]{"slot.container"}),
+                CommandParameter.newEnum("slot.container", false, new String[]{"slot.container"}),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
-                CommandParameter.newType("amount",true, CommandParamType.INT),
-                CommandParameter.newType("data",true, CommandParamType.INT),
-                CommandParameter.newType("components",true, CommandParamType.JSON),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON),
         });
         this.commandParameters.put("block-oldItemHandling", new CommandParameter[]{
-                CommandParameter.newEnum("block",false,new String[]{"block"}),
+                CommandParameter.newEnum("block", false, new String[]{"block"}),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("slot.container",false,new String[]{"slot.container"}),
+                CommandParameter.newEnum("slot.container", false, new String[]{"slot.container"}),
                 CommandParameter.newType("slotId", CommandParamType.INT),
-                CommandParameter.newEnum("oldItemHandling",false,new String[]{"destroy","keep"}),
+                CommandParameter.newEnum("oldItemHandling", false, new String[]{"destroy", "keep"}),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
-                CommandParameter.newType("amount",true, CommandParamType.INT),
-                CommandParameter.newType("data",true, CommandParamType.INT),
-                CommandParameter.newType("components",true, CommandParamType.JSON),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON),
         });
         List<String> slotTypes = List.of(
                 "slot.weapon.mainhand",
@@ -63,25 +63,25 @@ public class ReplaceItemCommand extends VanillaCommand {
                 "slot.equippable"
         );
         this.commandParameters.put("entity", new CommandParameter[]{
-                CommandParameter.newEnum("entity",false,new String[]{"entity"}),
+                CommandParameter.newEnum("entity", false, new String[]{"entity"}),
                 CommandParameter.newType("target", CommandParamType.TARGET),
-                CommandParameter.newEnum("slotType",false,slotTypes.toArray(new String[0])),
+                CommandParameter.newEnum("slotType", false, slotTypes.toArray(new String[0])),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
-                CommandParameter.newType("amount",true, CommandParamType.INT),
-                CommandParameter.newType("data",true, CommandParamType.INT),
-                CommandParameter.newType("components",true, CommandParamType.JSON),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON),
         });
         this.commandParameters.put("entity-oldItemHandling", new CommandParameter[]{
-                CommandParameter.newEnum("entity",false,new String[]{"entity"}),
+                CommandParameter.newEnum("entity", false, new String[]{"entity"}),
                 CommandParameter.newType("target", CommandParamType.TARGET),
-                CommandParameter.newEnum("slotType",false,slotTypes.toArray(new String[0])),
+                CommandParameter.newEnum("slotType", false, slotTypes.toArray(new String[0])),
                 CommandParameter.newType("slotId", CommandParamType.INT),
-                CommandParameter.newEnum("oldItemHandling",false,new String[]{"destroy","keep"}),
+                CommandParameter.newEnum("oldItemHandling", false, new String[]{"destroy", "keep"}),
                 CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
-                CommandParameter.newType("amount",true, CommandParamType.INT),
-                CommandParameter.newType("data",true, CommandParamType.INT),
-                CommandParameter.newType("components",true, CommandParamType.JSON),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newType("components", true, CommandParamType.JSON),
         });
     }
 
@@ -367,7 +367,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                                         return false;
                                     }
                                 }
-                                if (entity instanceof EntityInventoryHolder entityMob){
+                                if (entity instanceof EntityInventoryHolder entityMob) {
                                     Item old = entityMob.getInventory().getItem(slotId);
                                     if (oldItemHandling.equals("keep") && !old.isNull()) {
                                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.keepFailed", slotType, String.valueOf(slotId)));
@@ -389,7 +389,7 @@ public class ReplaceItemCommand extends VanillaCommand {
                         }
                     }
                 }
-                    break;
+                break;
                 case "block", "block-oldItemHandling": {
                     parser.parseString();
                     Block block = parser.parsePosition().getLevelBlock();
@@ -428,14 +428,14 @@ public class ReplaceItemCommand extends VanillaCommand {
                     if (parser.hasNext()) {
                         item.readItemJsonComponents(Item.ItemJsonComponents.fromJson(parser.parseString()));
                     }
-                    if(holder.getInventory().setItem(slotId, item)) {
+                    if (holder.getInventory().setItem(slotId, item)) {
                         sender.sendMessage(new TranslationContainer("commands.replaceitem.success", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
-                    }else{
+                    } else {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.replaceitem.failed", "slot.container", String.valueOf(old.getId()), String.valueOf(item.getCount()), item.getName()));
                         return false;
                     }
                 }
-                    break;
+                break;
             }
         } catch (CommandSyntaxException e) {
             e.printStackTrace();

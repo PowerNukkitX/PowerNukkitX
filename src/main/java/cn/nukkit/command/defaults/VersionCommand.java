@@ -30,28 +30,17 @@ import java.util.concurrent.ExecutionException;
  */
 public class VersionCommand extends VanillaCommand {
 
-    public VersionCommand(String name) {
-        super(name,
-                "%nukkit.command.version.description",
-                "%nukkit.command.version.usage",
-                new String[]{"ver", "about"}
-        );
-        this.setPermission("nukkit.command.version");
-        this.commandParameters.clear();
-        this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newType("pluginName", true, CommandParamType.STRING)
-        });
-    }
-
-    private record Query(CommandSender sender,CompletableFuture<JsonArray> jsonArrayFuture){};
-
     private List<Query> queryQueue = new LinkedList<>();
+    private int lastUpdateTick = 0;
+
+    ;
+    private JsonArray listVersionCache = null;
 
     {
         Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
             try {
                 for (Query query : queryQueue.toArray(new Query[queryQueue.size()])) {
-                    if (query.jsonArrayFuture.isDone()){
+                    if (query.jsonArrayFuture.isDone()) {
                         JsonArray cores = query.jsonArrayFuture.get();
                         String localCommitInfo = Server.getInstance().getGitCommit();
                         localCommitInfo = localCommitInfo.substring(4);
@@ -59,14 +48,14 @@ public class VersionCommand extends VanillaCommand {
                         for (int i = 0, len = cores.size(); i < len; i++) {
                             var entry = cores.get(i).getAsJsonObject();
                             var remoteCommitInfo = entry.get("name").getAsString().split("-")[1];
-                            if (remoteCommitInfo.equals(localCommitInfo)){
+                            if (remoteCommitInfo.equals(localCommitInfo)) {
                                 versionMissed = i;
                                 break;
                             }
                         }
                         if (versionMissed == 0)
                             query.sender.sendMessage(TextFormat.GREEN + "You are using the latest version of PowerNukkitX!");
-                        else if(versionMissed > 0){
+                        else if (versionMissed > 0) {
                             query.sender.sendMessage(TextFormat.YELLOW + "You are using an outdated version of PowerNukkitX!, " + versionMissed + " versions behind!");
                             query.sender.sendMessage(TextFormat.YELLOW + "The latest version is " + cores.get(0).getAsJsonObject().get("name").getAsString());
                         } else {
@@ -80,11 +69,21 @@ public class VersionCommand extends VanillaCommand {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-        },15);
+        }, 15);
     }
 
-    private int lastUpdateTick = 0;
-    private JsonArray listVersionCache = null;
+    public VersionCommand(String name) {
+        super(name,
+                "%nukkit.command.version.description",
+                "%nukkit.command.version.usage",
+                new String[]{"ver", "about"}
+        );
+        this.setPermission("nukkit.command.version");
+        this.commandParameters.clear();
+        this.commandParameters.put("default", new CommandParameter[]{
+                CommandParameter.newType("pluginName", true, CommandParamType.STRING)
+        });
+    }
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
@@ -93,7 +92,7 @@ public class VersionCommand extends VanillaCommand {
         }
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("nukkit.server.info.extended", sender.getServer().getName(),
-                    sender.getServer().getNukkitVersion() + " ("+sender.getServer().getGitCommit()+")",
+                    sender.getServer().getNukkitVersion() + " (" + sender.getServer().getGitCommit() + ")",
                     sender.getServer().getCodename(),
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
@@ -171,5 +170,8 @@ public class VersionCommand extends VanillaCommand {
                 return new JsonArray();
             }
         });
+    }
+
+    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) {
     }
 }

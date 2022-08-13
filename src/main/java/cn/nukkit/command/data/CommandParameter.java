@@ -7,6 +7,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommandParameter {
     
@@ -17,8 +18,12 @@ public class CommandParameter {
     public String name;
     public CommandParamType type;
     public boolean optional;
+    @Deprecated
+    @DeprecationDetails(since = "1.19.20-r1",reason = "use CommandParamOption instead")
     public byte options = 0;
-
+    @PowerNukkitXOnly
+    @Since("1.19.20-r2")
+    public List<CommandParamOption> paramOptions;
     public CommandEnum enumData;
     public String postFix;
 
