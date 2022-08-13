@@ -245,7 +245,7 @@ public class Chunk extends BaseChunk {
         if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
             return anvilSection.getBiomeId(x, y & 0xf, z) & 0xFF;
         }
-        return super.getBiomeId(x, y, z);
+        return super.getBiomeId(x, z);
     }
 
     @Override
@@ -255,7 +255,7 @@ public class Chunk extends BaseChunk {
             this.setChanged();
             return;
         }
-        super.setBiomeId(x, y, z, biomeId);
+        super.setBiomeId(x, z, biomeId);
     }
 
     @Override
