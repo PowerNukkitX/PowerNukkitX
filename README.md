@@ -46,9 +46,10 @@ _**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变�
 2. 简化GraalJit和JDK的安装,拥有GraalJit,您的JS插件运行效率会提升100倍
 3. 提供高效自适应的启动命令,无需手动编写
 4. 纯命令行操作,简洁有效,linux命令风格
-5. github版本同步,更新版本无需重复下载依赖库,只需一键命令
+5. github版本同步,更新版本无需重复下载依赖库,只需一键命令  
 
-##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤
+##### 您可以在[此处](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何启动PNX。
+##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤。
 
 ### 使用步骤:
 
@@ -58,7 +59,7 @@ _**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变�
 
 ##### Windows版本
 
-```shell
+```
 java -Dfile.encoding=UTF-8 ^
 -Djansi.passthrough=true ^
 -Dterminal.ansi=true ^
@@ -75,7 +76,7 @@ cn.nukkit.Nukkit
 
 ##### Linux版本
 
-```shell
+```
 java -Dfile.encoding=UTF-8 \
 -Djansi.passthrough=true \
 -Dterminal.ansi=true \
@@ -155,12 +156,7 @@ dependencies {
 
 * 编译后的JAR文件可在 `target/` 目录中找到。
 
-* 在编译完成的JAR文件后添加启动参数 `-shaded` 即可开始亦可赛艇 :D
-
-🛠 部署运行
--------------
-我们制作了 [命令行工具](https://github.com/PowerNukkitX/PNX-CLI) 来帮助您运行PNX，您可以在 [此处](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)
-查看如何启动PNX。
+* 编译完成的JAR文件运行参见[如何使用](#使用步骤:)。
 
 🧐 贡献一份力量
 ---

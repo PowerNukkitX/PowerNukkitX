@@ -52,8 +52,8 @@ variables.**_
 4. Pure command line operation, concise and effective, Linux command style
 5. Github version synchronization,update version does not need to repeat the download of dependent libraries,just a key
    command
-
-##### If your platform is not suitable for using PNX-CLI,then please read the following steps
+##### you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
+##### If your platform is not suitable for using PNX-CLI,then please read the following steps.
 
 ### Steps:
 
@@ -63,7 +63,7 @@ variables.**_
 
 ##### Windows Version
 
-```shell
+```
 java -Dfile.encoding=UTF-8 ^
 -Djansi.passthrough=true ^
 -Dterminal.ansi=true ^
@@ -80,7 +80,7 @@ cn.nukkit.Nukkit
 
 ##### Linux Version
 
-```shell
+```
 java -Dfile.encoding=UTF-8 \
 -Djansi.passthrough=true \
 -Dterminal.ansi=true \
@@ -170,13 +170,8 @@ dependencies {
 - `./mvnw clean package`
 
 * The compiled JAR can be found in the target/ directory.
-* Use the JAR that ends with -shaded to run your server.
-
-🛠 Running
--------------  
-
-We made a [command line tool](https://github.com/PowerNukkitX/PNX-CLI) to help you run PNX, you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.  
-
+* Please check how to use the compiled JAR file when you run it.
+* To run the jar please see [How to use](#Steps:).
 
 🧐 Contributing
 ---
