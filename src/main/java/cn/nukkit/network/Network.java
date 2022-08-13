@@ -73,7 +73,7 @@ public class Network {
         List<NetworkIF> tmpIfs = null;
         try {
             tmpIfs = new SystemInfo().getHardware().getNetworkIFs();
-        } catch (Exception e) {
+        } catch (Throwable t) {
             log.warn(Server.getInstance().getLanguage().get("nukkit.start.hardwareMonitorDisabled"));
         } finally {
             this.hardWareNetworkInterfaces = tmpIfs;
