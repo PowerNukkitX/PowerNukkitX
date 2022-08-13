@@ -18,7 +18,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.network.protocol.BatchPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import javax.annotation.Nonnull;
@@ -34,11 +36,11 @@ import java.util.stream.Stream;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class BaseFullChunk implements FullChunk, ChunkManager {
-    protected Map<Long, Entity> entities;
+    protected Long2ObjectMap<Entity> entities;
 
-    protected Map<Long, BlockEntity> tiles;
+    protected Long2ObjectMap<BlockEntity> tiles;
 
-    protected Map<Integer, BlockEntity> tileList;
+    protected Int2ObjectMap<BlockEntity> tileList;
 
     /**
      * encoded as:

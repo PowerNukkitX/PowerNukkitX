@@ -184,12 +184,9 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         int maxDimensionSections = dimensionData.getHeight() >> 4;
         subChunkCount = Math.min(maxDimensionSections, subChunkCount);
 
-        // In 1.18 3D biome palettes were introduced. However, current world format
-        // used internally doesn't support them, so we need to convert from legacy 2D
         byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
         BinaryStream stream = ThreadCache.binaryStream.get().reset();
 
-        // Overworld has negative coordinates, but we currently do not support them
         int writtenSections = subChunkCount;
 
         for (int i = 0; i < subChunkCount; i++) {
@@ -277,7 +274,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                 BaseFullChunk chunk = iter.next();
                 if (chunk == null) continue;
                 if (chunk.isGenerated() && chunk.isPopulated() && chunk instanceof Chunk) {
-                    Chunk anvilChunk = (Chunk) chunk;
                     chunk.compress();
                     if (System.currentTimeMillis() - start >= time) break;
                 }
