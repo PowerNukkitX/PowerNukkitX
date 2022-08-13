@@ -38,9 +38,19 @@ PowerNukkitX的优势：
 
 ## 🎮 如何使用
 
-**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量**
+_**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量.**_
 
-### 使用步骤
+### 我们建议您使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)运行PowerNukkitX,为什么?
+
+1. PNX-CLI使用GraalVM Native Image编译,无需java运行环境即可使用,占用内存小,运行效率高
+2. 简化GraalJit和JDK的安装,拥有GraalJit,您的JS插件运行效率会提升100倍
+3. 提供高效自适应的启动命令,无需手动编写
+4. 纯命令行操作,简洁有效,linux命令风格
+5. github版本同步,更新版本无需重复下载依赖库,只需一键命令
+
+##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤
+
+### 使用步骤:
 
 1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
 2. 将libs.tar.gz中的libs文件夹解压到和powernukkitx.jar同一路径下
