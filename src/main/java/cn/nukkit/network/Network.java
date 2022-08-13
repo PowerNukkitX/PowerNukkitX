@@ -2,10 +2,7 @@ package cn.nukkit.network;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.BinaryStream;
@@ -17,6 +14,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 import oshi.SystemInfo;
 import oshi.hardware.NetworkIF;
 
@@ -64,11 +62,22 @@ public class Network {
     private String name;
     private String subName;
 
-    private final List<NetworkIF> hardWareNetworkInterfaces = new SystemInfo().getHardware().getNetworkIFs();
+    @Nullable
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    private final List<NetworkIF> hardWareNetworkInterfaces;
 
     public Network(Server server) {
         this.registerPackets();
         this.server = server;
+        List<NetworkIF> tmpIfs = null;
+        try {
+            tmpIfs = new SystemInfo().getHardware().getNetworkIFs();
+        } catch (Exception e) {
+            log.warn(Server.getInstance().getLanguage().get("nukkit.start.hardwareMonitorDisabled"));
+        } finally {
+            this.hardWareNetworkInterfaces = tmpIfs;
+        }
     }
 
     record NetWorkStatisticData(long upload, long download) {
@@ -165,10 +174,12 @@ public class Network {
         if (netWorkStatisticDataList.size() > 1) {
             netWorkStatisticDataList.removeFirst();
         }
-        for (var networkIF : this.hardWareNetworkInterfaces) {
-            networkIF.updateAttributes();
-            upload += networkIF.getBytesSent();
-            download += networkIF.getBytesRecv();
+        if (this.hardWareNetworkInterfaces != null) {
+            for (var networkIF : this.hardWareNetworkInterfaces) {
+                networkIF.updateAttributes();
+                upload += networkIF.getBytesSent();
+                download += networkIF.getBytesRecv();
+            }
         }
         netWorkStatisticDataList.add(new NetWorkStatisticData(upload, download));
     }
@@ -236,6 +247,7 @@ public class Network {
         return server;
     }
 
+    @Nullable
     public List<NetworkIF> getHardWareNetworkInterfaces() {
         return hardWareNetworkInterfaces;
     }
