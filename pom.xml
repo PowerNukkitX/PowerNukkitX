@@ -476,7 +476,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.0.0</version>
+            <version>6.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
