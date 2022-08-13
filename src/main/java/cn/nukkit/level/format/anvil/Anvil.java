@@ -9,6 +9,8 @@ import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection3DBiome;
+import cn.nukkit.level.format.DimensionDataProvider;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -26,6 +28,7 @@ import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.ByteOrder;
@@ -40,7 +43,7 @@ import java.util.regex.Pattern;
  * @author MagicDroidX (Nukkit Project)
  */
 @Log4j2
-public class Anvil extends BaseLevelProvider {
+public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     @PowerNukkitDifference(info = "pre-1.17 old chunk version", since = "1.6.0.0-PNX")
     public static final int OLD_VERSION = 19133;
     @PowerNukkitDifference(info = "1.18 new chunk support version", since = "1.6.0.0-PNX")
@@ -52,10 +55,17 @@ public class Anvil extends BaseLevelProvider {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private final boolean isOldAnvil;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    private DimensionData dimensionData;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
         isOldAnvil = getLevelData().getInt("version") == OLD_VERSION;
+        if (getLevelData().contains("dimensionData")) {
+            var dimNBT = getLevelData().getCompound("dimensionData");
+            dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"));
+        }
         getLevelData().putInt("version", VERSION);
     }
 
@@ -174,12 +184,9 @@ public class Anvil extends BaseLevelProvider {
         int maxDimensionSections = dimensionData.getHeight() >> 4;
         subChunkCount = Math.min(maxDimensionSections, subChunkCount);
 
-        // In 1.18 3D biome palettes were introduced. However, current world format
-        // used internally doesn't support them, so we need to convert from legacy 2D
-        byte[] biomePalettes = convert2DBiomesTo3D(chunk, maxDimensionSections);
+        byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
         BinaryStream stream = ThreadCache.binaryStream.get().reset();
 
-        // Overworld has negative coordinates, but we currently do not support them
         int writtenSections = subChunkCount;
 
         for (int i = 0; i < subChunkCount; i++) {
@@ -206,24 +213,41 @@ public class Anvil extends BaseLevelProvider {
         }
     }
 
-    private static byte[] convert2DBiomesTo3D(BaseFullChunk chunk, int sections) {
-        PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
-                for (int y = 0; y < 16; y++) {
-                    palette.setBlock(x, y, z, biomeId);
+    private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
+        PalettedBlockStorage palette;
+        var stream = ThreadCache.binaryStream.get().reset();
+        if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
+            var sections = sectionChunk.getSections();
+            for (int i = 0, len = sections.length; i < len && i < sectionCount; i++) {
+                var each = (ChunkSection3DBiome) sections[i];
+                palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        for (int y = 0; y < 16; y++) {
+                            palette.setBlock(x, y, z, Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z)));
+                        }
+                    }
+                }
+                palette.writeTo(stream);
+            }
+        } else {
+            palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
+                    for (int y = 0; y < 16; y++) {
+                        palette.setBlock(x, y, z, biomeId);
+                    }
                 }
             }
-        }
 
-        BinaryStream stream = ThreadCache.binaryStream.get().reset();
-        palette.writeTo(stream);
-        byte[] bytes = stream.getBuffer();
-        stream.reset();
+            palette.writeTo(stream);
+            byte[] bytes = stream.getBuffer();
+            stream.reset();
 
-        for (int i = 0; i < sections; i++) {
-            stream.put(bytes);
+            for (int i = 0; i < sectionCount; i++) {
+                stream.put(bytes);
+            }
         }
         return stream.getBuffer();
     }
@@ -237,8 +261,11 @@ public class Anvil extends BaseLevelProvider {
         if (lastPosition > maxIterations) lastPosition = 0;
         int i;
         synchronized (chunks) {
-            ObjectIterator<BaseFullChunk> iter = chunks.values().iterator();
-            if (lastPosition != 0) iter.skip(lastPosition);
+            var iter = chunks.values().iterator();
+            if (lastPosition != 0) {
+                var tmpI = lastPosition;
+                while (tmpI-- != 0 && iter.hasNext()) iter.next();
+            }
             for (i = 0; i < maxIterations; i++) {
                 if (!iter.hasNext()) {
                     iter = chunks.values().iterator();
@@ -247,7 +274,6 @@ public class Anvil extends BaseLevelProvider {
                 BaseFullChunk chunk = iter.next();
                 if (chunk == null) continue;
                 if (chunk.isGenerated() && chunk.isPopulated() && chunk instanceof Chunk) {
-                    Chunk anvilChunk = (Chunk) chunk;
                     chunk.compress();
                     if (System.currentTimeMillis() - start >= time) break;
                 }
@@ -341,5 +367,23 @@ public class Anvil extends BaseLevelProvider {
     @Override
     public int getMaximumLayer() {
         return 1;
+    }
+
+    @Nullable
+    @Override
+    public DimensionData getDimensionData() {
+        return dimensionData;
+    }
+
+    @Override
+    public void setDimensionData(DimensionData dimensionData) {
+        this.dimensionData = dimensionData;
+        if (dimensionData != null) {
+            levelData.putCompound("dimensionData", new CompoundTag("dimensionData")
+                    .putString("dimensionName", dimensionData.getDimensionName())
+                    .putInt("dimensionId", dimensionData.getDimensionId())
+                    .putInt("maxHeight", dimensionData.getMaxHeight())
+                    .putInt("minHeight", dimensionData.getMinHeight()));
+        }
     }
 }
