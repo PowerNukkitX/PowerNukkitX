@@ -137,18 +137,65 @@ public class ModifyRecipes {
             config.loadAsJson(recipesStream, GSON);
             var newRecipes = config.getMapList("recipes").stream().peek(map -> {
                 //fix recipes for a variety of wool to recolor
-                var input = castList(map.get("input"), Object.class);
-                if (input != null) {
-                    var listmap = castListMap(input, String.class, Object.class);
+                var input1 = castList(map.get("input"), Object.class);
+                if (input1 != null) {
+                    var listmap = castListMap(input1, String.class, Object.class);
                     if (listmap != null) {
                         if (listmap.size() == 2) {
+                            var p1 = listmap.get(0).get("id");
+                            var p2 = listmap.get(1).get("id");
+                            int deyMeta1 = dyeDamage((String) listmap.get(0).get("id"));
+                            int deyMeta2 = dyeDamage((String) listmap.get(1).get("id"));
+                            if (deyMeta1 != -1 && (p2.equals("minecraft:wool"))) {
+                                var output = castList(map.get("output"), Object.class);
+                                if (output != null) {
+                                    var target = castMap(output.get(0), String.class, Object.class);
+                                    output.remove(0);
+                                    target.put("damage", deyMeta1);
+                                    output.add(target);
+                                    map.put("output", output);
+                                }
+                            } else if ((p1.equals("minecraft:shulker_box") || p1.equals("minecraft:undyed_shulker_box")) && deyMeta2 != -1) {
+                                var output = castList(map.get("output"), Object.class);
+                                if (output != null) {
+                                    var target = castMap(output.get(0), String.class, Object.class);
+                                    output.remove(0);
+                                    target.put("damage", deyMeta2);
+                                    output.add(target);
+                                    map.put("output", output);
+                                }
+                            }
+                        } else if (listmap.size() == 9) {
                             int deyMeta = dyeDamage((String) listmap.get(0).get("id"));
-                            if (deyMeta != -1 && listmap.get(1).get("id").equals("minecraft:wool")) {
+                            var name = listmap.get(1).get("id");
+                            if (deyMeta != -1 && name.equals("minecraft:sand")) {
                                 var output = castList(map.get("output"), Object.class);
                                 if (output != null) {
                                     var target = castMap(output.get(0), String.class, Object.class);
                                     output.remove(0);
                                     target.put("damage", deyMeta);
+                                    output.add(target);
+                                    map.put("output", output);
+                                }
+                            }
+                        }
+                    }
+                }
+                var input2 = castMap(map.get("input"), String.class, Object.class);
+                if (input2 != null) {
+                    if (input2.keySet().size() == 2 && input2.containsKey("A") && input2.containsKey("B")) {
+                        var AA = castMap(input2.get("A"), String.class, Object.class);
+                        var BB = castMap(input2.get("B"), String.class, Object.class);
+                        if (AA != null && BB != null) {
+                            var p1 = AA.get("id");
+                            int p2 = dyeDamage((String) BB.get("id"));
+                            if ((p1.equals("minecraft:glass") || p1.equals("minecraft:glass_pane")
+                                    || p1.equals("minecraft:carpet") || p1.equals("minecraft:hardened_clay")) && p2 != -1) {
+                                var output = castList(map.get("output"), Object.class);
+                                if (output != null) {
+                                    var target = castMap(output.get(0), String.class, Object.class);
+                                    output.remove(0);
+                                    target.put("damage", p2);
                                     output.add(target);
                                     map.put("output", output);
                                 }
@@ -210,7 +257,6 @@ public class ModifyRecipes {
 
     private static int dyeDamage(String name) {
         return switch (name) {
-            case "minecraft:white_dye" -> 0;
             case "minecraft:orange_dye" -> 1;
             case "minecraft:magenta_dye" -> 2;
             case "minecraft:light_blue_dye" -> 3;
@@ -222,10 +268,10 @@ public class ModifyRecipes {
             case "minecraft:cyan_dye" -> 9;
             case "minecraft:purple_dye" -> 10;
             case "minecraft:blue_dye" -> 11;
-            case "minecraft:brown_dye" -> 12;
+            case "minecraft:cocoa_beans", "minecraft:brown_dye" -> 12;
             case "minecraft:green_dye" -> 13;
             case "minecraft:red_dye" -> 14;
-            case "minecraft:black_dye" -> 15;
+            case "minecraft:ink_sac", "minecraft:black_dye" -> 15;
             default -> -1;
         };
     }

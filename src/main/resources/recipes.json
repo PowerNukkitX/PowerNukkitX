@@ -16108,9 +16108,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -16168,9 +16169,10 @@
       ],
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -16223,9 +16225,10 @@
       ],
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -16284,9 +16287,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -16313,9 +16317,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -16366,9 +16371,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -16395,9 +16401,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -16424,9 +16431,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -16677,9 +16685,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -16737,9 +16746,10 @@
       ],
       "output": [
         {
+          "damage": 11,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -16877,9 +16887,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -16959,9 +16970,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -16988,9 +17000,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -17631,9 +17644,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -17691,9 +17705,10 @@
       ],
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -17746,9 +17761,10 @@
       ],
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -17788,9 +17804,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -17817,9 +17834,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -17870,9 +17888,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -17899,9 +17918,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -17928,9 +17948,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -20945,9 +20966,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -21005,9 +21027,10 @@
       ],
       "output": [
         {
+          "damage": 9,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -21075,9 +21098,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -21128,9 +21152,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -21157,9 +21182,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -23731,9 +23757,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -23791,9 +23818,10 @@
       ],
       "output": [
         {
+          "damage": 7,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -23907,9 +23935,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -23960,9 +23989,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -23989,9 +24019,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -24093,9 +24124,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -24153,9 +24185,10 @@
       ],
       "output": [
         {
+          "damage": 13,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -24177,9 +24210,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -24230,9 +24264,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -24259,9 +24294,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -26317,9 +26353,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -26377,9 +26414,10 @@
       ],
       "output": [
         {
+          "damage": 3,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -26512,9 +26550,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -26565,9 +26604,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -26594,9 +26634,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -26622,9 +26663,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -26758,9 +26800,10 @@
       ],
       "output": [
         {
+          "damage": 8,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -26993,9 +27036,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -27046,9 +27090,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -27075,9 +27120,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -27149,9 +27195,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -27285,9 +27332,10 @@
       ],
       "output": [
         {
+          "damage": 5,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -27355,9 +27403,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -27408,9 +27457,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -27437,9 +27487,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -27712,9 +27763,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -27772,9 +27824,10 @@
       ],
       "output": [
         {
+          "damage": 2,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -28036,9 +28089,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -28089,9 +28143,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -28118,9 +28173,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -29677,9 +29733,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -29737,9 +29794,10 @@
       ],
       "output": [
         {
+          "damage": 1,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -29803,9 +29861,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -29856,9 +29915,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -29885,9 +29945,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -30083,9 +30144,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -30143,9 +30205,10 @@
       ],
       "output": [
         {
+          "damage": 6,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -30252,9 +30315,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -30305,9 +30369,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -30334,9 +30399,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -31255,9 +31321,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -31315,9 +31382,10 @@
       ],
       "output": [
         {
+          "damage": 10,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -31385,9 +31453,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -31438,9 +31507,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -31467,9 +31537,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -32020,9 +32091,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -32080,9 +32152,10 @@
       ],
       "output": [
         {
+          "damage": 14,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -32329,9 +32402,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -32382,9 +32456,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -32411,9 +32486,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -38795,9 +38871,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 8,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 8
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -38855,9 +38932,10 @@
       ],
       "output": [
         {
+          "damage": 4,
+          "count": 8,
           "legacyId": 237,
-          "id": "minecraft:concrete_powder",
-          "count": 8
+          "id": "minecraft:concrete_powder"
         }
       ],
       "block": "crafting_table",
@@ -38916,9 +38994,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 8,
           "legacyId": 241,
-          "id": "minecraft:stained_glass",
-          "count": 8
+          "id": "minecraft:stained_glass"
         }
       ],
       "shape": [
@@ -38969,9 +39048,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 8,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 8
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -38998,9 +39078,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 8,
           "legacyId": 159,
-          "id": "minecraft:stained_hardened_clay",
-          "count": 8
+          "id": "minecraft:stained_hardened_clay"
         }
       ],
       "shape": [
@@ -40218,6 +40299,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40242,6 +40324,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40266,6 +40349,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40290,6 +40374,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40314,6 +40399,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40337,6 +40423,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40361,6 +40448,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40385,6 +40473,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40409,6 +40498,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40433,6 +40523,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40457,6 +40548,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40481,6 +40573,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40505,6 +40598,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40529,6 +40623,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40553,6 +40648,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40577,6 +40673,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40601,6 +40698,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40625,6 +40723,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40649,6 +40748,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40673,6 +40773,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40696,6 +40797,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40720,6 +40822,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40744,6 +40847,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40768,6 +40872,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40792,6 +40897,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40816,6 +40922,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40840,6 +40947,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40864,6 +40972,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40888,6 +40997,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40912,6 +41022,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40936,6 +41047,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40960,6 +41072,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -40984,6 +41097,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41008,6 +41122,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41032,6 +41147,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41055,6 +41171,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41079,6 +41196,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41103,6 +41221,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41127,6 +41246,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41151,6 +41271,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41175,6 +41296,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41199,6 +41321,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41223,6 +41346,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41247,6 +41371,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41271,6 +41396,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41295,6 +41421,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41319,6 +41446,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41343,6 +41471,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41367,6 +41496,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41391,6 +41521,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41414,6 +41545,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41438,6 +41570,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41462,6 +41595,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41486,6 +41620,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41510,6 +41645,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41534,6 +41670,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41558,6 +41695,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41582,6 +41720,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41606,6 +41745,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41630,6 +41770,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41654,6 +41795,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41678,6 +41820,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41702,6 +41845,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41726,6 +41870,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41750,6 +41895,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41773,6 +41919,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41797,6 +41944,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41821,6 +41969,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41845,6 +41994,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41869,6 +42019,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41893,6 +42044,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41917,6 +42069,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41941,6 +42094,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41965,6 +42119,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -41989,6 +42144,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42013,6 +42169,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42037,6 +42194,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42061,6 +42219,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42085,6 +42244,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42109,6 +42269,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42132,6 +42293,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42156,6 +42318,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42180,6 +42343,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42204,6 +42368,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42228,6 +42393,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42252,6 +42418,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42276,6 +42443,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42300,6 +42468,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42324,6 +42493,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42348,6 +42518,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42732,6 +42903,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42756,6 +42928,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42780,6 +42953,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42804,6 +42978,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42828,6 +43003,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42851,6 +43027,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42875,6 +43052,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42899,6 +43077,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42923,6 +43102,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42947,6 +43127,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42971,6 +43152,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -42995,6 +43177,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43019,6 +43202,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43043,6 +43227,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43067,6 +43252,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43091,6 +43277,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43115,6 +43302,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43139,6 +43327,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43163,6 +43352,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43187,6 +43377,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43211,6 +43402,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43234,6 +43426,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43258,6 +43451,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43282,6 +43476,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43306,6 +43501,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43330,6 +43526,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43354,6 +43551,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43378,6 +43576,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43402,6 +43601,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43426,6 +43626,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43450,6 +43651,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43474,6 +43676,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43498,6 +43701,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43522,6 +43726,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43546,6 +43751,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43570,6 +43776,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43593,6 +43800,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43617,6 +43825,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43641,6 +43850,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43665,6 +43875,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43689,6 +43900,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43713,6 +43925,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43737,6 +43950,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43761,6 +43975,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -43785,6 +44000,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44169,6 +44385,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44193,6 +44410,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44217,6 +44435,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44241,6 +44460,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44265,6 +44485,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44289,6 +44510,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44312,6 +44534,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44336,6 +44559,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44360,6 +44584,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44384,6 +44609,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44408,6 +44634,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44432,6 +44659,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44456,6 +44684,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44480,6 +44709,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44504,6 +44734,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44528,6 +44759,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44552,6 +44784,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44576,6 +44809,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44600,6 +44834,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44624,6 +44859,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44648,6 +44884,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44671,6 +44908,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44695,6 +44933,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44719,6 +44958,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44743,6 +44983,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44767,6 +45008,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44791,6 +45033,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44815,6 +45058,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44839,6 +45083,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44863,6 +45108,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44887,6 +45133,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44911,6 +45158,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44935,6 +45183,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44959,6 +45208,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -44983,6 +45233,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45007,6 +45258,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45030,6 +45282,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45054,6 +45307,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45078,6 +45332,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45102,6 +45357,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45126,6 +45382,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45150,6 +45407,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45174,6 +45432,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45198,6 +45457,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45222,6 +45482,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45605,6 +45866,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45629,6 +45891,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45653,6 +45916,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45677,6 +45941,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45701,6 +45966,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45725,6 +45991,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45748,6 +46015,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45772,6 +46040,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45796,6 +46065,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45820,6 +46090,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45844,6 +46115,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45868,6 +46140,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45892,6 +46165,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45916,6 +46190,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45940,6 +46215,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45964,6 +46240,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -45988,6 +46265,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46012,6 +46290,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46036,6 +46315,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46060,6 +46340,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46084,6 +46365,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46107,6 +46389,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46131,6 +46414,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46155,6 +46439,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46179,6 +46464,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46203,6 +46489,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46227,6 +46514,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46251,6 +46539,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46275,6 +46564,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46299,6 +46589,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46323,6 +46614,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46347,6 +46639,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46371,6 +46664,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46395,6 +46689,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46419,6 +46714,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46443,6 +46739,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46466,6 +46763,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46490,6 +46788,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46514,6 +46813,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46538,6 +46838,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46562,6 +46863,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46586,6 +46888,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46610,6 +46913,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46634,6 +46938,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46658,6 +46963,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46682,6 +46988,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46706,6 +47013,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46730,6 +47038,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46754,6 +47063,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46778,6 +47088,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46802,6 +47113,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46825,6 +47137,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46849,6 +47162,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46873,6 +47187,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46897,6 +47212,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46921,6 +47237,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46945,6 +47262,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46969,6 +47287,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -46993,6 +47312,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47017,6 +47337,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47041,6 +47362,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47065,6 +47387,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47089,6 +47412,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47113,6 +47437,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47137,6 +47462,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47161,6 +47487,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47184,6 +47511,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47208,6 +47536,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47232,6 +47561,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47256,6 +47586,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47280,6 +47611,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47304,6 +47636,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47328,6 +47661,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47352,6 +47686,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47376,6 +47711,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47399,6 +47735,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47422,6 +47759,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47445,6 +47783,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47468,6 +47807,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47491,6 +47831,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47514,6 +47855,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47560,6 +47902,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47583,6 +47926,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47606,6 +47950,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47652,6 +47997,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47675,6 +48021,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47698,6 +48045,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47744,6 +48092,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47767,6 +48116,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47790,6 +48140,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47813,6 +48164,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -47836,6 +48188,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 218,
           "id": "minecraft:shulker_box"
         }
@@ -49716,6 +50069,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49740,6 +50094,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49764,6 +50119,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49788,6 +50144,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49812,6 +50169,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49836,6 +50194,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49859,6 +50218,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49883,6 +50243,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49907,6 +50268,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49931,6 +50293,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49955,6 +50318,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -49979,6 +50343,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50003,6 +50368,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50027,6 +50393,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50051,6 +50418,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50075,6 +50443,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50099,6 +50468,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50123,6 +50493,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50147,6 +50518,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50171,6 +50543,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50195,6 +50568,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50218,6 +50592,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50242,6 +50617,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50266,6 +50642,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50290,6 +50667,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50314,6 +50692,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50338,6 +50717,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50362,6 +50742,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50386,6 +50767,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50410,6 +50792,7 @@
       ],
       "output": [
         {
+          "damage": 5,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50434,6 +50817,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50458,6 +50842,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50482,6 +50867,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50506,6 +50892,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50530,6 +50917,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50554,6 +50942,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50577,6 +50966,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50601,6 +50991,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50625,6 +51016,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50649,6 +51041,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50673,6 +51066,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50697,6 +51091,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50721,6 +51116,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50745,6 +51141,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50769,6 +51166,7 @@
       ],
       "output": [
         {
+          "damage": 4,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50793,6 +51191,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50817,6 +51216,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50841,6 +51241,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50865,6 +51266,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50889,6 +51291,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50913,6 +51316,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50936,6 +51340,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50960,6 +51365,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -50984,6 +51390,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51008,6 +51415,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51032,6 +51440,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51056,6 +51465,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51080,6 +51490,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51104,6 +51515,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51128,6 +51540,7 @@
       ],
       "output": [
         {
+          "damage": 3,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51152,6 +51565,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51176,6 +51590,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51200,6 +51615,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51224,6 +51640,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51248,6 +51665,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51272,6 +51690,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51295,6 +51714,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51319,6 +51739,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51343,6 +51764,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51367,6 +51789,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51391,6 +51814,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51415,6 +51839,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51439,6 +51864,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51463,6 +51889,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51487,6 +51914,7 @@
       ],
       "output": [
         {
+          "damage": 2,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51511,6 +51939,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51535,6 +51964,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51559,6 +51989,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51583,6 +52014,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51607,6 +52039,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51631,6 +52064,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51654,6 +52088,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51678,6 +52113,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51702,6 +52138,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51726,6 +52163,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51750,6 +52188,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51774,6 +52213,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51798,6 +52238,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51822,6 +52263,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -51846,6 +52288,7 @@
       ],
       "output": [
         {
+          "damage": 1,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52230,6 +52673,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52254,6 +52698,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52278,6 +52723,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52302,6 +52748,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52326,6 +52773,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52350,6 +52798,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52373,6 +52822,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52397,6 +52847,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52421,6 +52872,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52445,6 +52897,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52469,6 +52922,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52493,6 +52947,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52517,6 +52972,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52541,6 +52997,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52565,6 +53022,7 @@
       ],
       "output": [
         {
+          "damage": 15,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52589,6 +53047,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52613,6 +53072,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52637,6 +53097,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52661,6 +53122,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52685,6 +53147,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52709,6 +53172,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52733,6 +53197,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52756,6 +53221,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52780,6 +53246,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52804,6 +53271,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52828,6 +53296,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52852,6 +53321,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52876,6 +53346,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52900,6 +53371,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52924,6 +53396,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52948,6 +53421,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52972,6 +53446,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -52996,6 +53471,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53020,6 +53496,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53044,6 +53521,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53068,6 +53546,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53092,6 +53571,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53115,6 +53595,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53139,6 +53620,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53163,6 +53645,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53187,6 +53670,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53211,6 +53695,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53235,6 +53720,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53259,6 +53745,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53283,6 +53770,7 @@
       ],
       "output": [
         {
+          "damage": 11,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53667,6 +54155,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53691,6 +54180,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53715,6 +54205,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53739,6 +54230,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53763,6 +54255,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53787,6 +54280,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53810,6 +54304,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53834,6 +54329,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53858,6 +54354,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53882,6 +54379,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53906,6 +54404,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53930,6 +54429,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53954,6 +54454,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -53978,6 +54479,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54002,6 +54504,7 @@
       ],
       "output": [
         {
+          "damage": 14,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54026,6 +54529,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54050,6 +54554,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54074,6 +54579,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54098,6 +54604,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54122,6 +54629,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54146,6 +54654,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54170,6 +54679,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54193,6 +54703,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54217,6 +54728,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54241,6 +54753,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54265,6 +54778,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54289,6 +54803,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54313,6 +54828,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54337,6 +54853,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54361,6 +54878,7 @@
       ],
       "output": [
         {
+          "damage": 13,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54385,6 +54903,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54409,6 +54928,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54433,6 +54953,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54457,6 +54978,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54481,6 +55003,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54505,6 +55028,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54529,6 +55053,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54552,6 +55077,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54576,6 +55102,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54600,6 +55127,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54624,6 +55152,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54648,6 +55177,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54672,6 +55202,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54696,6 +55227,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -54720,6 +55252,7 @@
       ],
       "output": [
         {
+          "damage": 12,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55103,6 +55636,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55127,6 +55661,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55151,6 +55686,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55175,6 +55711,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55199,6 +55736,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55223,6 +55761,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55247,6 +55786,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55270,6 +55810,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55294,6 +55835,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55318,6 +55860,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55342,6 +55885,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55366,6 +55910,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55390,6 +55935,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55414,6 +55960,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55438,6 +55985,7 @@
       ],
       "output": [
         {
+          "damage": 10,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55462,6 +56010,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55486,6 +56035,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55510,6 +56060,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55534,6 +56085,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55558,6 +56110,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55582,6 +56135,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55606,6 +56160,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55629,6 +56184,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55653,6 +56209,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55677,6 +56234,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55701,6 +56259,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55725,6 +56284,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55749,6 +56309,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55773,6 +56334,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55797,6 +56359,7 @@
       ],
       "output": [
         {
+          "damage": 9,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55821,6 +56384,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55845,6 +56409,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55869,6 +56434,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55893,6 +56459,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55917,6 +56484,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55941,6 +56509,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55965,6 +56534,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -55988,6 +56558,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56012,6 +56583,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56036,6 +56608,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56060,6 +56633,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56084,6 +56658,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56108,6 +56683,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56132,6 +56708,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56156,6 +56733,7 @@
       ],
       "output": [
         {
+          "damage": 8,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56180,6 +56758,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56204,6 +56783,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56228,6 +56808,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56252,6 +56833,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56276,6 +56858,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56300,6 +56883,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56324,6 +56908,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56347,6 +56932,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56371,6 +56957,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56395,6 +56982,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56419,6 +57007,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56443,6 +57032,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56467,6 +57057,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56491,6 +57082,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56515,6 +57107,7 @@
       ],
       "output": [
         {
+          "damage": 7,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56539,6 +57132,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56563,6 +57157,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56587,6 +57182,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56611,6 +57207,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56635,6 +57232,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56659,6 +57257,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56683,6 +57282,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56706,6 +57306,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56730,6 +57331,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56754,6 +57356,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56778,6 +57381,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56802,6 +57406,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56826,6 +57431,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56850,6 +57456,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
@@ -56874,6 +57481,7 @@
       ],
       "output": [
         {
+          "damage": 6,
           "legacyId": 35,
           "id": "minecraft:wool"
         }
