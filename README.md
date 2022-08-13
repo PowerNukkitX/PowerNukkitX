@@ -14,7 +14,7 @@
 
 🤔什么是PowerNukkitX ？
 ---
-[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一个分支版本，由[BlocklyNukkit](https://github.com/BlocklyNukkit)小组负责开发维护，如遇任何问题可提交[Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)反馈。
+[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)是基于[PowerNukkit](https://github.com/PowerNukkit/PowerNukkit)的一个分支版本，由[PowerNukkitX](https://github.com/PowerNukkitX)小组负责开发维护，如遇任何问题可提交[Issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)反馈。
 
 加入我们:
 
