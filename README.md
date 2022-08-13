@@ -38,9 +38,91 @@ PowerNukkitX的优势：
 
 ## 🎮 如何使用
 
-**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量**
+_**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量.**_
 
-### 使用步骤
+### 我们建议您使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)运行PowerNukkitX,为什么?
+
+1. PNX-CLI使用GraalVM Native Image编译,无需java运行环境即可使用,占用内存小,运行效率高
+2. 简化GraalJit和JDK的安装,拥有GraalJit,您的JS插件运行效率会提升100倍
+3. 提供高效自适应的启动命令,无需手动编写
+4. 纯命令行操作,简洁有效,linux命令风格
+5. github版本同步,更新版本无需重复下载依赖库,只需一键命令
+
+##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤
+
+### 使用步骤:
+
+1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
+2. 将libs.tar.gz中的libs文件夹解压到和powernukkitx.jar同一路径下
+3. 运行以下命令
+
+##### Windows版本
+
+```shell
+java -Dfile.encoding=UTF-8 ^
+-Djansi.passthrough=true ^
+-Dterminal.ansi=true ^
+-XX:+UnlockExperimentalVMOptions ^
+-XX:+UseG1GC ^
+-XX:+UseStringDeduplication ^
+-XX:+EnableJVMCI ^
+--module-path=.\libs\graal-sdk-22.2.0.jar;.\libs\truffle-api-22.2.0.jar; ^
+--add-opens java.base/java.lang=ALL-UNNAMED ^
+--add-opens java.base/java.io=ALL-UNNAMED ^
+-cp .\powernukkitx.jar;.\libs\* ^
+cn.nukkit.Nukkit
+```
+
+##### Linux版本
+
+```shell
+java -Dfile.encoding=UTF-8 \
+-Djansi.passthrough=true \
+-Dterminal.ansi=true \
+-XX:+UnlockExperimentalVMOptions \
+-XX:+UseG1GC \
+-XX:+UseStringDeduplication \
+-XX:+EnableJVMCI \
+--module-path=./libs/truffle-api-22.2.0.jar:./libs/graal-sdk-22.2.0.jar: \
+--add-opens java.base/java.lang=ALL-UNNAMED \
+--add-opens java.base/java.io=ALL-UNNAMED \
+-cp ./powernukkitx.jar:./libs/* \
+cn.nukkit.Nukkit
+```
+
+---
+
+📌 声明
+---
+
+**PowerNukkitX**
+是基于PowerNukkit和Nukkit的修改优化版本，修复了其BUG，添加了更多的功能支持等，如[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)
+（完善中）插件兼容等。
+
+* 请注意**PowerNukkitX**
+  非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
+  （同时请注意阅读[贡献帮助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)中的规定）。
+
+* 同时我们推荐您进行定期备份等操作，[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
+  制作的插件，并使用[稳定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)进行部署。
+
+* 大多数[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在该服务端上兼容使用，但在运行时可能会出一些错误等或不支持PowerNukkitX添加的新内容。
+
+## 🎮 如何使用
+
+_**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量.**_
+
+### 我们建议您使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)运行PowerNukkitX,为什么?
+
+1. PNX-CLI使用GraalVM Native Image编译,无需java运行环境即可使用,占用内存小,运行效率高
+2. 简化GraalJit和JDK的安装,拥有GraalJit,您的JS插件运行效率会提升100倍
+3. 提供高效自适应的启动命令,无需手动编写
+4. 纯命令行操作,简洁有效,linux命令风格
+5. github版本同步,更新版本无需重复下载依赖库,只需一键命令
+
+##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤
+
+### 使用步骤:
 
 1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
 2. 将libs.tar.gz中的libs文件夹解压到和powernukkitx.jar同一路径下
