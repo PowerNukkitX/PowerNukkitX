@@ -45,10 +45,22 @@ What's new in PowerNukkitX? Let's See：
 
 ## 🎮 How to use
 
-**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
-variables**
+_**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
+variables.**_
 
-### Steps
+### We suggest that you use [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI) to run PowerNukkitX, Why?
+
+1. PNX-CLI is compiled using GraalVM Native Image,which can be used without java runtime environment,with small memory
+   consumption and high running efficiency.
+2. Simplify GraalJit and JDK installation.With GraalJit,your JS plugin will run 100 times more efficiently
+3. Provides efficient and adaptive startup commands without the need to write them manually
+4. Pure command line operation, concise and effective, Linux command style
+5. Github version synchronization,update version does not need to repeat the download of dependent libraries,just a key
+   command
+
+##### If your platform is not suitable for using PNX-CLI,then please read the following steps
+
+### Steps:
 
 1. Download libs.tar.gz and powernukkitx.jar from [release](https://github.com/PowerNukkitX/PowerNukkitX/releases)
 2. Extract the libs folder in libs.tar.gz to the same path as powernukkitx.jar

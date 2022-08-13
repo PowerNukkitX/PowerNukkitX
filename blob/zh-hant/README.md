@@ -102,6 +102,78 @@ cn.nukkit.Nukkit
 
 * 大多數[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在該服務端上兼容使用，但在運行時可能會出一些錯誤等或不支持PowerNukkitX添加的新內容。
 
+## 🎮 如何使用
+
+_**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量**_
+
+### 我們建議你使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)運行PowerNukkitX,爲什麽?
+
+1. PNX-CLI使用GraalVM Native Image編譯,無需java運行環境即可使用,占用内存小,運行效率高
+2. 簡化GraalJit和JDK的安裝,擁有GraalJit,你的JS插件運行效率會提升100倍
+3. 提供高效自適應的啓動命令,無需手動編寫
+4. 纯命令行操作,簡介有效,linux命令風格
+5. github版本同步,更新版本無需重複下載依賴庫,只需一鍵命令
+
+##### 如果你的平台不適合使用PNX-CLI,那麽請查看以下步驟
+
+### 使用步驟:
+
+1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
+2. 将libs.tar.gz中的libs文件夾解壓到和powernukkitx.jar同一路徑下
+3. 運行以下命令
+
+##### Windows版本
+
+```shell
+java -Dfile.encoding=UTF-8 ^
+-Djansi.passthrough=true ^
+-Dterminal.ansi=true ^
+-XX:+UnlockExperimentalVMOptions ^
+-XX:+UseG1GC ^
+-XX:+UseStringDeduplication ^
+-XX:+EnableJVMCI ^
+--module-path=.\libs\graal-sdk-22.2.0.jar;.\libs\truffle-api-22.2.0.jar; ^
+--add-opens java.base/java.lang=ALL-UNNAMED ^
+--add-opens java.base/java.io=ALL-UNNAMED ^
+-cp .\powernukkitx.jar;.\libs\* ^
+cn.nukkit.Nukkit
+```
+
+##### Linux版本
+
+```shell
+java -Dfile.encoding=UTF-8 \
+-Djansi.passthrough=true \
+-Dterminal.ansi=true \
+-XX:+UnlockExperimentalVMOptions \
+-XX:+UseG1GC \
+-XX:+UseStringDeduplication \
+-XX:+EnableJVMCI \
+--module-path=./libs/truffle-api-22.2.0.jar:./libs/graal-sdk-22.2.0.jar: \
+--add-opens java.base/java.lang=ALL-UNNAMED \
+--add-opens java.base/java.io=ALL-UNNAMED \
+-cp ./powernukkitx.jar:./libs/* \
+cn.nukkit.Nukkit
+```
+
+---
+📌 聲明
+---
+
+**PowerNukkitX**
+是基於PowerNukkit和Nukkit的修改優化版本，修復了其BUG，添加了更多的功能支持等，如[LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs)
+（完善中）插件兼容等。
+
+* 請注意**PowerNukkitX**
+  非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
+  （同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
+
+* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkit](https://github.com/powernukkit/powernukkit)
+  或[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
+  製作的插件，並使用[穩定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)進行部署。
+
+* 大多數[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在該服務端上兼容使用，但在運行時可能會出一些錯誤等或不支持PowerNukkitX添加的新內容。
+
 🧾 關於Nukkit核心
 
 [Nukkit](https://github.com/Nukkit/Nukkit)是一款為Minecraft: Pocket Edition而生的服務端，有著如下優勢:
