@@ -178,10 +178,10 @@ public final class StatusCommand extends VanillaCommand {
 
             TextFormat tpsColor = TextFormat.GREEN;
             float tps = server.getTicksPerSecond();
-            if (tps < 17) {
-                tpsColor = TextFormat.GOLD;
-            } else if (tps < 12) {
+            if (tps < 12) {
                 tpsColor = TextFormat.RED;
+            } else if (tps < 17) {
+                tpsColor = TextFormat.GOLD;
             }
 
             sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
@@ -237,10 +237,10 @@ public final class StatusCommand extends VanillaCommand {
                 // TPS
                 TextFormat tpsColor = TextFormat.GREEN;
                 float tps = server.getTicksPerSecond();
-                if (tps < 17) {
-                    tpsColor = TextFormat.GOLD;
-                } else if (tps < 12) {
+                if (tps < 12) {
                     tpsColor = TextFormat.RED;
+                } else if (tps < 17) {
+                    tpsColor = TextFormat.GOLD;
                 }
                 sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
                 // 游戏刻负载
@@ -290,19 +290,21 @@ public final class StatusCommand extends VanillaCommand {
             // 网络信息
             {
                 var network = server.getNetwork();
-                sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
-                sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + formatKB(network.getUpload()) + "/s");
-                sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + formatKB(network.getDownload()) + "/s");
-                sender.sendMessage(TextFormat.GOLD + "Network hardware list: ");
-                ObjectArrayList<String> list;
-                for (var each : network.getHardWareNetworkInterfaces()) {
-                    list = new ObjectArrayList<>(each.getIPv4addr().length + each.getIPv6addr().length);
-                    list.addElements(0, each.getIPv4addr());
-                    list.addElements(list.size(), each.getIPv6addr());
-                    sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
-                    sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
+                if (network.getHardWareNetworkInterfaces() != null) {
+                    sender.sendMessage(TextFormat.YELLOW + ">>> " + TextFormat.WHITE + "Network Info" + TextFormat.YELLOW + " <<<" + TextFormat.RESET);
+                    sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + formatKB(network.getUpload()) + "/s");
+                    sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + formatKB(network.getDownload()) + "/s");
+                    sender.sendMessage(TextFormat.GOLD + "Network hardware list: ");
+                    ObjectArrayList<String> list;
+                    for (var each : network.getHardWareNetworkInterfaces()) {
+                        list = new ObjectArrayList<>(each.getIPv4addr().length + each.getIPv6addr().length);
+                        list.addElements(0, each.getIPv4addr());
+                        list.addElements(list.size(), each.getIPv6addr());
+                        sender.sendMessage(TextFormat.AQUA + "  " + each.getDisplayName());
+                        sender.sendMessage(TextFormat.RESET + "    " + formatKB(each.getSpeed()) + "/s " + TextFormat.GRAY + String.join(", ", list));
+                    }
+                    sender.sendMessage("");
                 }
-                sender.sendMessage("");
             }
             // CPU信息
             {

@@ -90,8 +90,6 @@ java -Dfile.encoding=UTF-8 \
 cn.nukkit.Nukkit
 ```
 
----
-
 📌 声明
 ---
 
