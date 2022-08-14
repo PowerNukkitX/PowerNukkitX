@@ -1,7 +1,9 @@
 package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
+import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
@@ -86,7 +88,7 @@ public class PopulationTask extends AsyncTask {
                         if (ck == centerChunk) continue;
                         if (ck == null) {
                             try {
-                                this.chunks[index] = (BaseFullChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z);
+                                this.chunks[index] = (BaseFullChunk) centerChunk.getClass().getMethod("getEmptyChunk", int.class, int.class, DimensionData.class).invoke(null, centerChunk.getX() + x, centerChunk.getZ() + z, level.getDimensionData());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
