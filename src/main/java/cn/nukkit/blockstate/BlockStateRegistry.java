@@ -14,6 +14,7 @@ import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.HumanStringComparator;
@@ -495,56 +496,57 @@ public class BlockStateRegistry {
             // 多状态方块注册
             if (blockCustom instanceof Block block) {
                 var properties = block.getProperties().getAllProperties()
-                        .stream().map(BlockProperties.RegisteredBlockProperty::getProperty).toList();
+                        .stream().map(BlockProperties.RegisteredBlockProperty::getProperty)
+                        .sorted((a, b) -> -MinecraftNamespaceComparator.compareFNV(a.getName(), b.getName())).toList();
                 List<CompoundTag> stateNbtList = null;
                 for (var eachProperty : properties) {
                     var newStateNbtList = new LinkedList<CompoundTag>();
                     if (stateNbtList == null) {
                         if (eachProperty instanceof BooleanBlockProperty) {
-                            newStateNbtList.add(new CompoundTag("states").putBoolean(eachProperty.getName(), true));
-                            newStateNbtList.add(new CompoundTag("states").putBoolean(eachProperty.getName(), false));
+                            newStateNbtList.add(new LinkedCompoundTag("states").putBoolean(eachProperty.getName(), false));
+                            newStateNbtList.add(new LinkedCompoundTag("states").putBoolean(eachProperty.getName(), true));
                         } else if (eachProperty instanceof IntBlockProperty intBlockProperty) {
                             for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
-                                newStateNbtList.add(new CompoundTag("states").putInt(eachProperty.getName(), i));
+                                newStateNbtList.add(new LinkedCompoundTag("states").putInt(eachProperty.getName(), i));
                             }
                         } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
                             for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
-                                newStateNbtList.add(new CompoundTag("states").putLong(eachProperty.getName(), i));
+                                newStateNbtList.add(new LinkedCompoundTag("states").putLong(eachProperty.getName(), i));
                             }
                         } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                             if (arrayBlockProperty.isOrdinal()) {
                                 var universe = arrayBlockProperty.getUniverse();
                                 for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                    newStateNbtList.add(new CompoundTag("states").putInt(eachProperty.getName(), i));
+                                    newStateNbtList.add(new LinkedCompoundTag("states").putInt(eachProperty.getName(), i));
                                 }
                             } else {
                                 for (var each : arrayBlockProperty.getUniverse()) {
-                                    newStateNbtList.add(new CompoundTag("states").putString(eachProperty.getName(), each.toString()));
+                                    newStateNbtList.add(new LinkedCompoundTag("states").putString(eachProperty.getName(), each.toString()));
                                 }
                             }
                         }
                     } else {
                         for (var stateNbt : stateNbtList) {
                             if (eachProperty instanceof BooleanBlockProperty) {
-                                newStateNbtList.add(stateNbt.clone().putBoolean(eachProperty.getName(), true));
-                                newStateNbtList.add(stateNbt.clone().putBoolean(eachProperty.getName(), false));
+                                newStateNbtList.add(stateNbt.copy().putBoolean(eachProperty.getName(), false));
+                                newStateNbtList.add(stateNbt.copy().putBoolean(eachProperty.getName(), true));
                             } else if (eachProperty instanceof IntBlockProperty intBlockProperty) {
                                 for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
-                                    newStateNbtList.add(stateNbt.clone().putInt(eachProperty.getName(), i));
+                                    newStateNbtList.add(stateNbt.copy().putInt(eachProperty.getName(), i));
                                 }
                             } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
                                 for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
-                                    newStateNbtList.add(stateNbt.clone().putLong(eachProperty.getName(), i));
+                                    newStateNbtList.add(stateNbt.copy().putLong(eachProperty.getName(), i));
                                 }
                             } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
                                 if (arrayBlockProperty.isOrdinal()) {
                                     var universe = arrayBlockProperty.getUniverse();
                                     for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                                        newStateNbtList.add(stateNbt.clone().putInt(eachProperty.getName(), i));
+                                        newStateNbtList.add(stateNbt.copy().putInt(eachProperty.getName(), i));
                                     }
                                 } else {
                                     for (var each : arrayBlockProperty.getUniverse()) {
-                                        newStateNbtList.add(stateNbt.clone().putString(eachProperty.getName(), each.toString()));
+                                        newStateNbtList.add(stateNbt.copy().putString(eachProperty.getName(), each.toString()));
                                     }
                                 }
                             }
@@ -554,7 +556,7 @@ public class BlockStateRegistry {
                 }
                 if (stateNbtList != null) {
                     for (var each : stateNbtList) {
-                        nbtList.add(nbt.clone().putCompound("states", each));
+                        nbtList.add(nbt.copy().putCompound("states", each));
                     }
                 } else {
                     nbtList.add(nbt.clone());
