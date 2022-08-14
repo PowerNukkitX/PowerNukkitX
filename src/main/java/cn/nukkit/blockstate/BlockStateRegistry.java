@@ -477,6 +477,8 @@ public class BlockStateRegistry {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
+
+        var version = -1;
         //处理自定义方块
         for (var blockCustom : blockCustoms) {
             var namespace = blockCustom.getNamespace();
@@ -486,7 +488,7 @@ public class BlockStateRegistry {
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())
                     .putString("name", namespace)
-                    .putInt("version", namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version"))
+                    .putInt("version", version == -1 ? version = namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version") : version)
                     .putCompound("states", new CompoundTag("states"));
             var nbtList = new ArrayList<CompoundTag>();
 

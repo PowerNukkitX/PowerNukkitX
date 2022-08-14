@@ -1229,9 +1229,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (!sortedCustomBlocks.isEmpty()) {
             //注册各种数据
             for (var block : sortedCustomBlocks.values()) {
-                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
                 ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
                 CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);//自定义方块标识符->自定义方块id
+                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
                 ++nextBlockId;
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
