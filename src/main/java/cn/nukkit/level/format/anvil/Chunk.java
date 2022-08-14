@@ -220,6 +220,24 @@ public class Chunk extends BaseChunk {
         }
     }
 
+    @Since("1.19.20-r4")
+    @Override
+    public int getMaxHeight() {
+        if (dimensionData != null) {
+            return dimensionData.getMaxHeight() + 1;
+        }
+        return getChunkSectionCount() == 24 ? 320 : 256;
+    }
+
+    @Since("1.19.20-r4")
+    @Override
+    public int getMinHeight() {
+        if (dimensionData != null) {
+            return dimensionData.getMinHeight();
+        }
+        return getChunkSectionCount() == 24 ? -64 : 0;
+    }
+
     @Since("1.19.20-r3")
     @Override
     public boolean isChunkSection3DBiomeSupported() {
