@@ -3,35 +3,31 @@ package cn.nukkit.level.generator;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.PNXPlatform;
-import cn.nukkit.level.terra.delegate.PNXBiomeProviderDelegate;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.terra.delegate.PNXProtoWorld;
+import cn.nukkit.level.terra.delegate.PNXServerWorld;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
+import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
 public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
-    private WeakReference<ChunkGenerator> delegate;
-    private ConfigPack pack;
-    private final BlockState air;
-    @NotNull
-    private WeakReference<PNXBiomeProviderDelegate> biomeProvider = new WeakReference<>(null);
-
-    private ChunkManager chunkManager = null;
-    private NukkitRandom nukkitRandom = null;
-
+    private final ChunkGenerator chunkGenerator;
+    private final ConfigPack pack;
     private final WorldProperties worldProperties;
+    private final ServerWorld world;
+    private final BlockState air;
+    private final BiomeProvider biomeProvider;
+    private ChunkManager chunkManager;
 
     public PNXChunkGeneratorWrapper() {
         this(createGenerator(), createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR));
@@ -43,13 +39,40 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
             packName = "default";
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-        try {
-            this.delegate = new WeakReference<>(createGenerator(packName));
-            this.pack = createConfigPack(packName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        worldProperties = new WorldProperties() {
+        this.pack = createConfigPack(packName);
+        this.chunkGenerator = createGenerator(packName);
+        this.biomeProvider = this.pack.getBiomeProvider().caching();
+        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.biomeProvider);
+        this.worldProperties = new WorldProperties() {
+            @Override
+            public long getSeed() {
+                return chunkManager.getSeed();
+            }
+
+            @Override
+            public int getMaxHeight() {
+                return 320;
+            }
+
+            @Override
+            public int getMinHeight() {
+                return -64;
+            }
+
+            @Override
+            public Object getHandle() {
+                return null;
+            }
+        };
+    }
+
+    public PNXChunkGeneratorWrapper(ChunkGenerator chunkGenerator, ConfigPack pack, BlockState air) {
+        this.air = air;
+        this.pack = pack;
+        this.chunkGenerator = chunkGenerator;
+        this.biomeProvider = this.pack.getBiomeProvider().caching();
+        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.biomeProvider);
+        this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
                 return chunkManager.getSeed();
@@ -98,62 +121,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    public PNXChunkGeneratorWrapper(ChunkGenerator delegate, ConfigPack pack, BlockState air) {
-        this.delegate = new WeakReference<>(delegate);
-        this.pack = pack;
-        this.air = air;
-        worldProperties = new WorldProperties() {
-            @Override
-            public long getSeed() {
-                return chunkManager.getSeed();
-            }
-
-            @Override
-            public int getMaxHeight() {
-                return 320;
-            }
-
-            @Override
-            public int getMinHeight() {
-                return -64;
-            }
-
-            @Override
-            public Object getHandle() {
-                return null;
-            }
-        };
-    }
-
-    public void setDelegate(ChunkGenerator delegate) {
-        this.delegate = new WeakReference<>(delegate);
-    }
-
-    public void setPack(ConfigPack pack) {
-        this.pack = pack;
-        setDelegate(pack.getGeneratorProvider().newInstance(pack));
-    }
-
-    private ChunkGenerator getChunkGeneratorDelegate() {
-        final var gen = delegate.get();
-        if (gen != null) {
-            return gen;
-        }
-        final var newGen = createGenerator(this.pack);
-        delegate = new WeakReference<>(newGen);
-        return newGen;
-    }
-
-    private BiomeProvider getBiomeProviderDelegate() {
-        final var provider = biomeProvider.get();
-        if(provider != null) {
-            return provider;
-        }
-        final var newProvider = pack.getBiomeProvider();
-        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider));
-        return newProvider;
-    }
-
     @Override
     public int getId() {
         return TYPE_INFINITE;
@@ -162,25 +129,28 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
         this.chunkManager = level;
-        this.nukkitRandom = random;
+        //this.nukkitRandom = random; unused
     }
 
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
-        getChunkGeneratorDelegate().generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
-                getBiomeProviderDelegate(), chunkX, chunkZ);
-
+        chunkGenerator.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
+                biomeProvider, chunkX, chunkZ);
+        var chunk = chunkManager.getChunk(chunkX, chunkZ);
+        int minHeight = chunk.isOverWorld() ? -64 : 0;
+        int maxHeight = chunk.isOverWorld() ? 320 : 256;
         for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                //todo: 3D biomes support
-                chunkManager.getChunk(chunkX, chunkZ).setBiome(x,z,(Biome) getBiomeProviderDelegate().getBiome(chunkX * 16 + x,0, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+            for (int y = minHeight; y < maxHeight; y++) {
+                for (int z = 0; z < 16; z++) {
+                    chunk.setBiome(x, y, z, (Biome) biomeProvider.getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+                }
             }
         }
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(chunkManager, getChunkGeneratorDelegate(), pack, getBiomeProviderDelegate(), chunkX, chunkZ);
+        var tmp = new PNXProtoWorld(world, chunkManager, chunkGenerator, pack, biomeProvider, chunkX, chunkZ);
         for (var generationStage : pack.getStages()) {
             try {
                 generationStage.populate(tmp);
@@ -188,8 +158,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
                 e.printStackTrace();
             }
         }
-        // 释放掉旧的区块生成器代理以释放内存
-        delegate.clear();
         // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
         chunk.populateSkyLight();
@@ -218,6 +186,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public ChunkGenerator getHandle() {
-        return getChunkGeneratorDelegate();
+        return chunkGenerator;
     }
 }

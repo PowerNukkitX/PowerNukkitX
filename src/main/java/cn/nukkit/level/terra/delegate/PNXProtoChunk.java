@@ -16,7 +16,7 @@ public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
     @Override
     public void setBlock(int i, int i1, int i2, @NotNull BlockState blockState) {
         if (chunk.getBlockId(i, i1, i2) == BlockID.WATERLILY || chunk.getBlockId(i, i1, i2) == BlockID.STILL_WATER || chunk.getBlockId(i, i1, i2) == BlockID.FLOWING_WATER)
-            chunk.setBlockStateAt(i, i1, i2,1, ((PNXBlockStateDelegate) blockState).getHandle());
+            chunk.setBlockStateAt(i, i1, i2, 1, ((PNXBlockStateDelegate) blockState).getHandle());
         chunk.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
     }
 

@@ -1,10 +1,8 @@
 package cn.nukkit.level.terra.handles;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXEntityType;
@@ -21,16 +19,16 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
+    public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
     public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
+    public static Map<String, Class<? extends Entity>> knownEntities = Entity.getKnownEntities();
+    public static int err = 0;
 
     static {
         final var jeBlockMappingConfig = new Config(Config.JSON);
         jeBlockMappingConfig.load(PNXWorldHandle.class.getClassLoader().getResourceAsStream("jeBlocksMapping.json"));
         jeBlockMappingConfig.getAll().forEach((k, v) -> jeBlockMapping.put(new State(k), (Map<String, Object>) v));
     }
-
-    public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-    public static int err = 0;
 
     @Override
     public @NotNull
@@ -66,16 +64,16 @@ public class PNXWorldHandle implements WorldHandle {
         if (s.equals("minecraft:snow"))
             s = "minecraft:snow[layers=8]";
         State jeBlockStateData = new State(s);
-        if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")){
-            jeBlockStateData.attributes.putIfAbsent("axis","y");
+        if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")) {
+            jeBlockStateData.attributes.putIfAbsent("axis", "y");
         }
-        if(jeBlockStateData.identifier.equals("minecraft:jungle_leaves") || jeBlockStateData.identifier.equals("minecraft:spruce_leaves") || jeBlockStateData.identifier.equals("minecraft:oak_leaves")) {
+        if (jeBlockStateData.identifier.equals("minecraft:jungle_leaves") || jeBlockStateData.identifier.equals("minecraft:spruce_leaves") || jeBlockStateData.identifier.equals("minecraft:oak_leaves")) {
             jeBlockStateData.attributes.putIfAbsent("distance", "7");
-            jeBlockStateData.attributes.putIfAbsent("persistent","true");
+            jeBlockStateData.attributes.putIfAbsent("persistent", "true");
         }
         if (jeBlockStateData.identifier.equals("minecraft:bee_nest"))
             jeBlockStateData.attributes.putIfAbsent("honey_level", "0");
-        if (jeBlockStateData.identifier.equals("minecraft:vine")){
+        if (jeBlockStateData.identifier.equals("minecraft:vine")) {
             jeBlockStateData.attributes.putIfAbsent("east", "false");
             jeBlockStateData.attributes.putIfAbsent("north", "false");
             jeBlockStateData.attributes.putIfAbsent("south", "false");
@@ -142,19 +140,25 @@ public class PNXWorldHandle implements WorldHandle {
     @Override
     public @NotNull
     EntityType getEntity(@NotNull String s) {
+        //TODO: remove this hack
         if (s.startsWith("minecraft:")) s = s.substring(10);
-        return new PNXEntityType(Entity.createEntity(s, new Position(0, 0, 0, Server.getInstance().getDefaultLevel())));
+        if (s.equals("bee")) s = "Bee";
+        var entityType = new PNXEntityType(s);
+        if (entityType.getHandle() == null) {
+            System.out.println("null entityType!");
+        }
+        return entityType;
     }
 
     private static class State {
 
-        public boolean equalsIgnoreAttributes = false;
-        public boolean equalsIgnoreWaterlogged = false;
         private final String identifier;
         private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
+        public boolean equalsIgnoreAttributes = false;
+        public boolean equalsIgnoreWaterlogged = false;
 
         public State(String str) {
-            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ","").split(",");
+            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ", "").split(",");
             identifier = strings[0];
             if (strings.length > 1) {
                 for (int i = 1; i < strings.length; i++) {
@@ -168,7 +172,7 @@ public class PNXWorldHandle implements WorldHandle {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof State state) {
-                if(equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
+                if (equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
                     if (state.identifier.equals(identifier)) return true;
                 }
                 if (equalsIgnoreWaterlogged || state.equalsIgnoreWaterlogged) {
@@ -178,7 +182,7 @@ public class PNXWorldHandle implements WorldHandle {
                         m1.remove("waterlogged");
                     if (m2.containsKey("waterlogged"))
                         m2.remove("waterlogged");
-                    if(state.identifier.equals(identifier) && m1.equals(m2)) return true;
+                    if (state.identifier.equals(identifier) && m1.equals(m2)) return true;
                 }
                 return state.identifier.equals(identifier) && attributes.equals(state.attributes);
             }
@@ -194,7 +198,7 @@ public class PNXWorldHandle implements WorldHandle {
         @Override
         public String toString() {
             StringBuilder ret = new StringBuilder(identifier).append(";");
-            attributes.forEach((k,v) -> ret.append(k).append("=").append(v).append(";"));
+            attributes.forEach((k, v) -> ret.append(k).append("=").append(v).append(";"));
             return ret.toString();
         }
     }
