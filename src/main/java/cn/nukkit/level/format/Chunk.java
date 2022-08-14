@@ -15,6 +15,22 @@ public interface Chunk extends FullChunk {
 
     ChunkSection[] getSections();
 
+    /**
+     * 最大高度，请注意此高度不能放置方块，-1之后才能
+     * @return 最大高度
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    int getMaxHeight();
+
+    /**
+     * 最低高度，此高度可以放置方块
+     * @return 最低高度
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    int getMinHeight();
+
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     default boolean isChunkSection3DBiomeSupported() {

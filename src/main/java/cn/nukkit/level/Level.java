@@ -4323,15 +4323,26 @@ public class Level implements ChunkManager, Metadatable {
         return this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()) < pos.getY();
     }
 
+    /**
+     * @return 最低高度
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMinHeight() {
+        if (dimensionData != null)
+            return dimensionData.getMinHeight();
         return isOverWorld() ? -64 : 0;
     }
 
+    /**
+     * 最大高度，请注意此y值不能放置方块
+     * @return 最大高度
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMaxHeight() {
+        if (dimensionData != null)
+            return dimensionData.getMaxHeight() + 1;
         return isOverWorld() ? 320 : 256;
     }
 
