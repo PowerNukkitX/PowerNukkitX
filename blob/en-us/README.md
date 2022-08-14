@@ -111,8 +111,7 @@ compatibility, etc.
   the [Contribution Help Guide](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)).
 
 * We also recommend that you perform regular backups and other operations, and use the plug-ins made
-  for [PowerNukkit](https://github.com/powernukkit/powernukkit)
-  or [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and
+  for [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) and
   use [stable version](https://github.com/PowerNukkitX/PowerNukkitX/releases) for deployment.
 
 <!--结束-->
