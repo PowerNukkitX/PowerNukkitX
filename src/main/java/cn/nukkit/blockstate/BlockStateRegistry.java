@@ -560,8 +560,8 @@ public class BlockStateRegistry {
                     }
                 } else {
                     nbtList.add(nbt.clone());
-                    namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
                 }
+                namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
             } else {
                 nbtList.add(nbt.clone());
                 namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
