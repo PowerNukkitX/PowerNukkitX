@@ -23,7 +23,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private ConfigPack pack;
     private final BlockState air;
     @NotNull
-    private WeakReference<PNXBiomeProviderDelegate> biomeProvider = new WeakReference<>(null);
+    private WeakReference<BiomeProvider> biomeProvider = new WeakReference<>(null);
 
     private ChunkManager chunkManager = null;
     private NukkitRandom nukkitRandom = null;
@@ -147,7 +147,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
             return provider;
         }
         final var newProvider = pack.getBiomeProvider();
-        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider));
+        biomeProvider = new WeakReference<>(new PNXBiomeProviderDelegate(newProvider).caching());
         return newProvider;
     }
 
