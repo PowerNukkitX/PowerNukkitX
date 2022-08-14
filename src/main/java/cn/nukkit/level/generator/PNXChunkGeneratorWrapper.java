@@ -3,7 +3,10 @@ package cn.nukkit.level.generator;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.PNXPlatform;
-import cn.nukkit.level.terra.delegate.*;
+import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
+import cn.nukkit.level.terra.delegate.PNXProtoChunk;
+import cn.nukkit.level.terra.delegate.PNXProtoWorld;
+import cn.nukkit.level.terra.delegate.PNXServerWorld;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -92,6 +95,32 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         };
     }
 
+    private static ConfigPack createConfigPack() {
+        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow()
+        );
+    }
+
+    private static ConfigPack createConfigPack(final String packName) {
+        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(
+                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow()
+        );
+    }
+
+    private static ChunkGenerator createGenerator() {
+        var config = createConfigPack();
+        return config.getGeneratorProvider().newInstance(config);
+    }
+
+    private static ChunkGenerator createGenerator(ConfigPack config) {
+        return config.getGeneratorProvider().newInstance(config);
+    }
+
+    private static ChunkGenerator createGenerator(final String packName) {
+        var config = createConfigPack(packName);
+        return config.getGeneratorProvider().newInstance(config);
+    }
+
     @Override
     public int getId() {
         return TYPE_INFINITE;
@@ -158,31 +187,5 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public ChunkGenerator getHandle() {
         return chunkGenerator;
-    }
-
-    private static ConfigPack createConfigPack() {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow()
-        );
-    }
-
-    private static ConfigPack createConfigPack(final String packName) {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow()
-        );
-    }
-
-    private static ChunkGenerator createGenerator() {
-        var config = createConfigPack();
-        return config.getGeneratorProvider().newInstance(config);
-    }
-
-    private static ChunkGenerator createGenerator(ConfigPack config) {
-        return config.getGeneratorProvider().newInstance(config);
-    }
-
-    private static ChunkGenerator createGenerator(final String packName) {
-        var config = createConfigPack(packName);
-        return config.getGeneratorProvider().newInstance(config);
     }
 }

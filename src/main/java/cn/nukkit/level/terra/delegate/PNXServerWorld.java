@@ -9,15 +9,13 @@ import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.entity.Entity;
 import com.dfsek.terra.api.entity.EntityType;
-import com.dfsek.terra.api.util.vector.Vector3;
 import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 
-import javax.annotation.Nonnull;
-
-public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider) implements ServerWorld {
+public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack,
+                             BiomeProvider biomeProvider) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
@@ -27,7 +25,7 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier,new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
         return new PNXEntity(nukkitEntity, this);
     }
 
@@ -79,6 +77,6 @@ public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGene
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(chunkManager.getChunk(i ,i1), chunkManager, chunkGenerator, configPack, biomeProvider);
+        return new PNXChunkDelegate(chunkManager.getChunk(i, i1), chunkManager, chunkGenerator, configPack, biomeProvider);
     }
 }

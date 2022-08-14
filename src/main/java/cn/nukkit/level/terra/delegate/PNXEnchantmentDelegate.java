@@ -15,7 +15,7 @@ public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment inne
 
     @Override
     public boolean conflictsWith(Enchantment enchantment) {
-        return !innerEnchantment.isCompatibleWith(((PNXEnchantmentDelegate)enchantment).innerEnchantment);
+        return !innerEnchantment.isCompatibleWith(((PNXEnchantmentDelegate) enchantment).innerEnchantment);
     }
 
     @Override

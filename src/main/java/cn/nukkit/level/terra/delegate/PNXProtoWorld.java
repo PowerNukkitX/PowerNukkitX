@@ -15,7 +15,9 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider,int centerChunkX,int centerChunkZ) implements ProtoWorld {
+public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, ChunkGenerator chunkGenerator,
+                            ConfigPack configPack, BiomeProvider biomeProvider, int centerChunkX,
+                            int centerChunkZ) implements ProtoWorld {
     @Override
     public int centerChunkX() {
         return centerChunkX;
@@ -33,9 +35,9 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
+        if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
-                chunkManager.setBlockStateAt(i, i1, i2,1, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(i, i1, i2, 1, pnxBlockState.getHandle());
             chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
         }
     }
@@ -43,7 +45,7 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier,new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
         return new PNXEntity(nukkitEntity, serverWorld);
     }
 
