@@ -3,6 +3,8 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -73,6 +75,15 @@ public interface CustomBlock {
         return "";
     }
 
+    /**
+     * 控制自定义方块的客户端状态
+     * @return Permutations NBT Tag
+     */
+    @Nullable
+    default ListTag<CompoundTag> getPermutations() {
+        return null;
+    }
+
     /* 下面两个方法需要被覆写,请使用接口的定义 */
     default int getId() {
         return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespace().toLowerCase(Locale.ENGLISH));
@@ -81,7 +92,6 @@ public interface CustomBlock {
     default String getName() {
         return this.getNamespace().split(":")[1].toLowerCase(Locale.ENGLISH);
     }
-
 
     default BlockPropertyData getBlockPropertyData() {
         var compoundTag = new CompoundTag()
@@ -116,6 +126,12 @@ public interface CustomBlock {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry()));
         }
-        return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), new CompoundTag().putCompound("components", compoundTag));
+        var nbt = new CompoundTag().putCompound("components", compoundTag);
+        if (getPermutations() != null) {
+            var permutations = getPermutations();
+            permutations.setName("permutations");
+            nbt.putList(permutations);
+        }
+        return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), new CompoundTag());
     }
 }
