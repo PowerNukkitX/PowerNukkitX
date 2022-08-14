@@ -4329,7 +4329,9 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMinHeight() {
-        return dimensionData.getMinHeight();
+        if (dimensionData != null)
+            return dimensionData.getMinHeight();
+        return isOverWorld() ? -64 : 0;
     }
 
     /**
@@ -4339,7 +4341,9 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int getMaxHeight() {
-        return dimensionData.getMaxHeight() + 1;
+        if (dimensionData != null)
+            return dimensionData.getMaxHeight() + 1;
+        return isOverWorld() ? 320 : 256;
     }
 
     public int getStrongPower(Vector3 pos, BlockFace direction) {
