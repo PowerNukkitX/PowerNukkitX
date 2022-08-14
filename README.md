@@ -103,7 +103,7 @@ cn.nukkit.Nukkit
   非Cloudburst的开发人员维护，它依靠的是开源社区的开发者们用爱发电，如果您在使用PowerNukkitX时遇到了发现了任何问题，您首先应该在此存储库[创建一条issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
   （同时请注意阅读[贡献帮助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)中的规定）。
 
-* 同时我们推荐您进行定期备份等操作，[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
+* 同时我们推荐您进行定期备份等操作，并使用为[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
   制作的插件，并使用[稳定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)进行部署。
 
 * 大多数[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在该服务端上兼容使用，但在运行时可能会出一些错误等或不支持PowerNukkitX添加的新内容。
