@@ -123,7 +123,7 @@ public interface LevelProvider {
     }
 
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")//todo: have problem in async environment (nullpointer)
+    @Since("1.6.0.0-PNX")
     default int getDimension() {
         if (this instanceof DimensionDataProvider dimensionDataProvider) {
             var dimData = dimensionDataProvider.getDimensionData();
