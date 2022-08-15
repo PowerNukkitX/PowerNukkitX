@@ -181,7 +181,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
             }
         }
 
-        int maxDimensionSections = dimensionData.getChunkSectionCount();
+        int maxDimensionSections = dimensionData.getHeight() >> 4;
         subChunkCount = Math.min(maxDimensionSections, subChunkCount);
 
         byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
