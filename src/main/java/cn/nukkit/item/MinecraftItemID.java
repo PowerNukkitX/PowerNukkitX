@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 /**
  * An enum containing all valid vanilla Minecraft items.
+ * 添加原版新物品时一定不要忘记在这里补上命名空间的枚举(例如 minecraft:quartz_bricks 这里填写QUARTZ_BRICKS)
  *
  * @author joserobjr
  * @since 2020-12-20
@@ -1085,7 +1086,20 @@ public enum MinecraftItemID {
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
     @PowerNukkitOnly @Since("FUTURE") SPYGLASS,
     @PowerNukkitOnly @Since("FUTURE") GLOW_BERRIES,
-
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_STAIRS,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_TRAPDOOR,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_ROOTS,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MUDDY_MANGROVE_ROOTS,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_SLAB,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_BUTTON,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_LOG,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_FENCE,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_FENCE_GATE,
+    @PowerNukkitXOnly @Since("1.19.20-r4") STRIPPED_MANGROVE_LOG,
+    @PowerNukkitXOnly @Since("1.19.20-r4") STRIPPED_MANGROVE_WOOD,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_PLANKS,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_WOOD,
+    @PowerNukkitXOnly @Since("1.19.20-r4") MANGROVE_PRESSURE_PLATE,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_DOOR,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_SIGN,
