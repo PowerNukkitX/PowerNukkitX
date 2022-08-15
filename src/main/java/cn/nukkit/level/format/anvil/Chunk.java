@@ -659,9 +659,7 @@ public class Chunk extends BaseChunk {
     @Since("1.19.20-r4")
     @Override
     public int getChunkSectionCount() {
-        if (dimensionData != null) {
-            return dimensionData.getHeight() >> 4 + ((dimensionData.getHeight() & 15) == 0 ? 0 : 1);
-        }
+        if (dimensionData != null) return dimensionData.getChunkSectionCount();
         return super.getChunkSectionCount();
     }
 

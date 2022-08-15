@@ -64,7 +64,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         isOldAnvil = getLevelData().getInt("version") == OLD_VERSION;
         if (getLevelData().contains("dimensionData")) {
             var dimNBT = getLevelData().getCompound("dimensionData");
-            dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"));
+            dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"), dimNBT.getInt("chunkSectionCount"));
         }
         getLevelData().putInt("version", VERSION);
     }
@@ -383,7 +383,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                     .putString("dimensionName", dimensionData.getDimensionName())
                     .putInt("dimensionId", dimensionData.getDimensionId())
                     .putInt("maxHeight", dimensionData.getMaxHeight())
-                    .putInt("minHeight", dimensionData.getMinHeight()));
+                    .putInt("minHeight", dimensionData.getMinHeight()))
+                    .putInt("chunkSectionCount", dimensionData.getChunkSectionCount());
         }
     }
 }
