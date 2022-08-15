@@ -149,8 +149,20 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        this.putLInt(0); // Experiment count
-        this.putBoolean(false); // Were experiments previously toggled
+        this.putLInt(5); // Experiment count
+        {
+            this.putString("data_driven_items");
+            this.putBoolean(true);
+            this.putString("data_driven_biomes");
+            this.putBoolean(true);
+            this.putString("upcoming_creator_features");
+            this.putBoolean(true);
+            this.putString("gametest");
+            this.putBoolean(true);
+            this.putString("experimental_molang_features");
+            this.putBoolean(true);
+        }
+        this.putBoolean(true); // Were experiments previously toggled
         this.putBoolean(this.bonusChest);
         this.putBoolean(this.hasStartWithMapEnabled);
         this.putVarInt(this.permissionLevel);

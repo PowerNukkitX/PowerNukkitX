@@ -1,9 +1,9 @@
 package cn.nukkit.block.customblock;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -77,11 +77,65 @@ public interface CustomBlock {
 
     /**
      * 控制自定义方块的客户端状态
+     *
      * @return Permutations NBT Tag
      */
     @Nullable
     default ListTag<CompoundTag> getPermutations() {
         return null;
+    }
+
+    /**
+     * 获取方块属性NBT定义
+     *
+     * @return BlockProperties in NBT Tag format
+     */
+    @Nullable
+    default ListTag<CompoundTag> getPropertiesNBT() {
+        if (this instanceof Block block) {
+            var properties = block.getProperties();
+            if (properties == CommonBlockProperties.EMPTY_PROPERTIES || properties.getAllProperties().size() == 0) {
+                return null;
+            }
+            var nbtList = new ListTag<CompoundTag>("properties");
+            for (var each : properties.getAllProperties()) {
+                if (each.getProperty() instanceof BooleanBlockProperty booleanBlockProperty) {
+                    nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
+                            .putList(new ListTag<>("enum")
+                                    .add(new IntTag("", 0))
+                                    .add(new IntTag("", 1))));
+                } else if (each.getProperty() instanceof IntBlockProperty intBlockProperty) {
+                    var enumList = new ListTag<IntTag>("enum");
+                    for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
+                        enumList.add(new IntTag("", i));
+                    }
+                    nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
+                } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
+                    var enumList = new ListTag<LongTag>("enum");
+                    for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
+                        enumList.add(new LongTag("", i));
+                    }
+                    nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
+                } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                    var enumList = new ListTag<StringTag>("enum");
+                    for (var e : arrayBlockProperty.getUniverse()) {
+                        enumList.add(new StringTag("", e.toString()));
+                    }
+                    nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
+                }
+            }
+            return nbtList;
+        }
+        return null;
+    }
+
+    /**
+     * 对自动生成的ComponentNBT进行处理
+     * @param componentNBT 自动生成的component NBT
+     * @return 处理后的ComponentNBT
+     */
+    default CompoundTag componentNBTProcessor(CompoundTag componentNBT) {
+        return componentNBT;
     }
 
     /* 下面两个方法需要被覆写,请使用接口的定义 */
@@ -126,12 +180,19 @@ public interface CustomBlock {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry()));
         }
+        compoundTag = componentNBTProcessor(compoundTag);
         var nbt = new CompoundTag().putCompound("components", compoundTag);
         if (getPermutations() != null) {
             var permutations = getPermutations();
             permutations.setName("permutations");
             nbt.putList(permutations);
         }
-        return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), new CompoundTag());
+        nbt.putInt("molangVersion", 0);
+        var propertiesNBT = getPropertiesNBT();
+        if (propertiesNBT != null) {
+            propertiesNBT.setName("properties");
+            nbt.putList(propertiesNBT);
+        }
+        return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), nbt);
     }
 }

@@ -301,7 +301,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
-        if (state.getBlockId() > Block.MAX_BLOCK_ID) {
+        if (state.getBlockId() > Block.MAX_BLOCK_ID && !Block.ID_TO_CUSTOM_BLOCK.containsKey(state.getBlockId())) {
             return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
         }
         return getRegistration(convertToNewState(state)).runtimeId;
@@ -573,6 +573,7 @@ public class BlockStateRegistry {
         //由排序好的序列计算runtimeId(递增)
         int runtimeId = 0;
         for (var namespace : namespace2Nbt.keySet()) {
+            var first = true;
             for (var nbt : namespace2Nbt.get(namespace)) {
                 nbt.putInt("runtimeId", runtimeId);
                 tags.add(nbt);
@@ -683,6 +684,9 @@ public class BlockStateRegistry {
     @Nonnull
     public BlockProperties getProperties(int blockId) {
         int fullId = blockId << Block.DATA_BITS;
+        if (Block.ID_TO_CUSTOM_BLOCK.get(blockId) instanceof Block block1) {
+            return block1.getProperties();
+        }
         Block block;
         if (fullId >= Block.fullList.length || fullId < 0 || (block = Block.fullList[fullId]) == null) {
             return BlockUnknown.PROPERTIES;
