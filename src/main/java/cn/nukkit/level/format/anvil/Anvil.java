@@ -383,8 +383,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                     .putString("dimensionName", dimensionData.getDimensionName())
                     .putInt("dimensionId", dimensionData.getDimensionId())
                     .putInt("maxHeight", dimensionData.getMaxHeight())
-                    .putInt("minHeight", dimensionData.getMinHeight()))
-                    .putInt("chunkSectionCount", dimensionData.getChunkSectionCount());
+                    .putInt("minHeight", dimensionData.getMinHeight())
+                    .putInt("chunkSectionCount", dimensionData.getChunkSectionCount()));
         }
     }
 }
