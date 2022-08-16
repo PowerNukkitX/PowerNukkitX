@@ -159,6 +159,8 @@ public interface CustomBlock {
                         .putFloat("value", (float) this.getLightFilter() / 15))
                 .putCompound("minecraft:light_emission", new CompoundTag()
                         .putByte("emission", (byte) this.getLightLevel()))
+                .putCompound("minecraft:geometry", new CompoundTag()
+                        .putString("value", "geometry.blocks"))
                 .putCompound("minecraft:rotation", new CompoundTag()
                         .putFloat("x", 0)
                         .putFloat("y", 0)

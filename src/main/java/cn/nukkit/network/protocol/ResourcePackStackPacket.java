@@ -48,7 +48,7 @@ public class ResourcePackStackPacket extends DataPacket {
             this.putString(experimentData.getName());
             this.putBoolean(experimentData.isEnabled());
         }
-        this.putBoolean(false); // Were experiments previously toggled
+        this.putBoolean(true); // Were experiments previously toggled
     }
 
     @Override
