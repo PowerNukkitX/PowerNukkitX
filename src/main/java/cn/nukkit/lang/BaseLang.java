@@ -36,8 +36,13 @@ public class BaseLang {
 
         if (path == null) {
             path = "language/";
-            this.lang = this.loadLang(this.getClass().getClassLoader().getResourceAsStream(path + this.langName + "/lang.ini"));
-            if (useFallback) this.fallbackLang = this.loadLang(this.getClass().getClassLoader().getResourceAsStream(path + fallback + "/lang.ini"));
+            try {
+                this.lang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + this.langName + "/lang.ini"));
+                if (useFallback)
+                    this.fallbackLang = this.loadLang(this.getClass().getModule().getResourceAsStream(path + fallback + "/lang.ini"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             this.lang = this.loadLang(path + this.langName + "/lang.ini");
             if (useFallback) this.fallbackLang = this.loadLang(path + fallback + "/lang.ini");
@@ -86,7 +91,7 @@ public class BaseLang {
             return null;
         }
     }
-    
+
     private Map<String, String> parseLang(BufferedReader reader) throws IOException {
         Map<String, String> d = new HashMap<>();
         String line;
@@ -101,7 +106,7 @@ public class BaseLang {
             }
             String key = t[0];
             String value = t[1];
-            if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length()-1) == '"') {
+            if (value.length() > 1 && value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                 value = value.substring(1, value.length() - 1).replace("\\\"", "\"").replace("\\\\", "\\");
             }
             if (value.isEmpty()) {

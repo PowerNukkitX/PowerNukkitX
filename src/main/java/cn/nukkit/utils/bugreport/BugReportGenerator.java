@@ -79,7 +79,7 @@ public class BugReportGenerator extends Thread {
 
         File mdReport = new File(reports, date + "_" + throwable.getClass().getSimpleName() + ".md");
         mdReport.createNewFile();
-        String content = Utils.readFile(this.getClass().getClassLoader().getResourceAsStream("report_template.md"));
+        String content = Utils.readFile(this.getClass().getModule().getResourceAsStream("report_template.md"));
 
         String cpuType = System.getenv("PROCESSOR_IDENTIFIER");
         OperatingSystemMXBean osMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();

@@ -207,7 +207,11 @@ abstract public class PluginBase implements Plugin {
 
     @Override
     public InputStream getResource(String filename) {
-        return this.getClass().getClassLoader().getResourceAsStream(filename);
+        try {
+            return this.getClass().getModule().getResourceAsStream(filename);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
