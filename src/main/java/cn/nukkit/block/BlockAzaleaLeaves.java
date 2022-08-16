@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -52,6 +51,7 @@ public class BlockAzaleaLeaves extends BlockLeaves {
         return PROPERTIES;
     }
 
+    /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
     @Override
     public WoodType getType() {
         return WoodType.OAK;
