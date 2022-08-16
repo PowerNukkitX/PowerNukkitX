@@ -380,4 +380,15 @@ public class BlockBamboo extends BlockTransparentMeta {
         age = MathHelper.clamp(age, 0, 1);
         setBooleanValue(AGED, age == 1);
     }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @PowerNukkitOnly
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }
