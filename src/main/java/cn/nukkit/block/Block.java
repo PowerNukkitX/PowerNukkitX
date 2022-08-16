@@ -887,7 +887,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, Integer meta) {
         if (id > MAX_BLOCK_ID) {
-            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(meta);
         }
         if (id < 0) {
             id = 255 - id;
@@ -920,7 +920,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Block block;
 
         if (id > MAX_BLOCK_ID) {
-            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(meta);
             block.x = pos.x;
             block.y = pos.y;
             block.z = pos.z;
@@ -954,7 +954,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
         if (id > MAX_BLOCK_ID) {
-            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(data);
         }
 
         if (id < 0) {
@@ -979,7 +979,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public static Block get(int fullId, Level level, int x, int y, int z, int layer) {
-        Block block = fullList[fullId].clone();
+        var id = fullId >> DATA_BITS;
+        if (id > MAX_BLOCK_ID) {
+            var block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock((~(id << DATA_BITS)) & fullId);
+            block.x = x;
+            block.y = y;
+            block.z = z;
+            block.level = level;
+            block.layer = layer;
+            return block;
+        }
+        var block = fullList[fullId].clone();
         block.x = x;
         block.y = y;
         block.z = z;
@@ -1288,7 +1298,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
-    protected final MutableBlockState getMutableState() {
+    public final MutableBlockState getMutableState() {
         if (mutableState == null) {
             mutableState = getProperties().createMutableState(getId());
         }

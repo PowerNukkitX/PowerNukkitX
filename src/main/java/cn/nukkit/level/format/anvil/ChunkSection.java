@@ -1,9 +1,11 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -17,10 +19,13 @@ import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.ByteArrayTag;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.*;
+import it.unimi.dsi.fastutil.ints.*;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,9 +119,18 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                 break;
         }
 
+        var customBlocksIdNbt = nbt.getCompound("CustomBlocksIdMap");
+        if (customBlocksIdNbt == null) {
+            customBlocksIdNbt = new CompoundTag();
+        }
+        var customBlocksIdMap = new Int2ObjectOpenHashMap<String>(customBlocksIdNbt.getTags().size() + 1, 0.9999f);
+        for (var entry : customBlocksIdNbt.getTags().entrySet()) {
+            customBlocksIdMap.put(((IntTag) entry.getValue()).getData().intValue(), entry.getKey());
+        }
+
         for (int i = 0; i < storageTagList.size(); i++) {
             CompoundTag storageTag = storageTagList.get(i);
-            loadStorage(i, storageTag);
+            loadStorage(i, storageTag, customBlocksIdMap);
         }
 
         layerStorage.compress(this::setLayerStorage);
@@ -139,7 +153,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         }
     }
 
-    private void loadStorage(int layer, CompoundTag storageTag) {
+    private void loadStorage(int layer, CompoundTag storageTag, @NotNull Int2ObjectMap<String> customBlocksIdMap) {
         byte[] blocks = storageTag.getByteArray("Blocks");
         boolean hasBlockIds = false;
         if (blocks.length == 0) {
@@ -185,12 +199,29 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
         BlockStorage storage = layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer);
 
+        var currentCustomBlocksIdMap = new Int2IntOpenHashMap(customBlocksIdMap.size() + 1, 0.9999f);
         // Convert YZX to XZY
         for (int bx = 0; bx < 16; bx++) {
             for (int bz = 0; bz < 16; bz++) {
                 for (int by = 0; by < 16; by++) {
                     int index = getAnvilIndex(bx, by, bz);
                     int blockId = composeBlockId(blocks[index], blocksExtra[index]);
+                    if (blockId > Block.MAX_BLOCK_ID) {
+                        if (currentCustomBlocksIdMap.containsKey(blockId)) {
+                            blockId = currentCustomBlocksIdMap.get(blockId);
+                        } else {
+                            var namespaceId = customBlocksIdMap.get(blockId);
+                            if (namespaceId != null) {
+                                var tmp = Block.CUSTOM_BLOCK_ID_MAP.get(namespaceId);
+                                if (tmp == null) {
+                                    log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.load.unknown-custom-block", namespaceId));
+                                    storage.setBlockState(bx, by, bz, BlockState.AIR);
+                                    continue;
+                                }
+                                currentCustomBlocksIdMap.put(blockId, blockId = tmp);
+                            }
+                        }
+                    }
                     int composedData = composeData(data.get(index), dataExtra.get(index));
                     BlockState state = loadState(index, blockId, composedData, hugeDataList, hugeDataSize);
                     storage.setBlockState(bx, by, bz, state);
@@ -686,7 +717,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     @Nullable
     private List<byte[]> saveData(
             BlockStorage storage, byte[] idsBase, @Nullable byte[] idsExtra,
-            NibbleArray dataBase, @Nullable NibbleArray dataExtra) {
+            NibbleArray dataBase, @Nullable NibbleArray dataExtra, @NotNull IntSet usedCustomBlockIds) {
         boolean huge = storage.hasBlockDataHuge();
         boolean big = huge || storage.hasBlockDataBig();
         List<byte[]> hugeList = big ? new ArrayList<>(huge ? 3 : 1) : null;
@@ -699,6 +730,10 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
             int blockId = state.getBlockId();
             if (blockId == 0) {
                 return;
+            }
+
+            if (blockId > Block.MAX_BLOCK_ID) {
+                usedCustomBlockIds.add(blockId);
             }
 
             idsBase[anvil] = (byte) (blockId & 0xFF);
@@ -799,7 +834,9 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
                 NibbleArray dataBase = new NibbleArray(BlockStorage.SECTION_SIZE);
                 NibbleArray dataExtra = storage.hasBlockDataExtras() ? new NibbleArray(BlockStorage.SECTION_SIZE) : null;
-                List<byte[]> dataHuge = saveData(storage, idsBase, idsExtra, dataBase, dataExtra);
+
+                IntSet usedCustomIds = new IntOpenHashSet();
+                List<byte[]> dataHuge = saveData(storage, idsBase, idsExtra, dataBase, dataExtra, usedCustomIds);
 
                 storageTag.putByteArray("Blocks", idsBase);
                 storageTag.putByteArray("Data", dataBase.getData());
@@ -818,6 +855,20 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                         hugeDataListTag.add(new ByteArrayTag("", hugeData));
                     }
                     storageTag.putList(hugeDataListTag);
+                }
+
+                if (!usedCustomIds.isEmpty()) {
+                    var customBlocksIdMap = new CompoundTag();
+                    for (IntIterator iterator = usedCustomIds.intIterator(); iterator.hasNext(); ) {
+                        int each = iterator.nextInt();
+                        var namespaceId = Block.ID_TO_CUSTOM_BLOCK.get(each).getNamespace();
+                        if (namespaceId == null) {
+                            log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.save.unknown-custom-block", each));
+                        } else {
+                            customBlocksIdMap.putInt(namespaceId, each);
+                        }
+                    }
+                    storageTag.putCompound("CustomBlocksIdMap", customBlocksIdMap);
                 }
             }
 

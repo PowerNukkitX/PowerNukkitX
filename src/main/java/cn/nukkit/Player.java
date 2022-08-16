@@ -2700,9 +2700,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             if (this.getServer().isEnableExperimentMode()) {
                                 stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("wild_update", true)
-                                );
-                                stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
                                 );
                                 stackPacket.experiments.add(

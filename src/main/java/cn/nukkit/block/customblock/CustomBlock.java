@@ -1,6 +1,9 @@
 package cn.nukkit.block.customblock;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFallableMeta;
+import cn.nukkit.block.BlockMeta;
+import cn.nukkit.block.BlockSolidMeta;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.*;
@@ -41,6 +44,14 @@ public interface CustomBlock {
 
     default Block toCustomBlock() {
         return ((Block) this).clone();
+    }
+
+    default Block toCustomBlock(int meta) {
+        var block = toCustomBlock();
+        if (block instanceof BlockMeta || block instanceof BlockFallableMeta) {
+            block.getMutableState().setDataStorageFromInt(meta, true);
+        }
+        return block;
     }
 
     /**
