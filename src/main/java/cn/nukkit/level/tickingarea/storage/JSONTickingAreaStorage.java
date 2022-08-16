@@ -1,5 +1,7 @@
 package cn.nukkit.level.tickingarea.storage;
 
+import cn.nukkit.Server;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.tickingarea.TickingArea;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -7,7 +9,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,6 +29,8 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
      * 存储常加载区域的根目录
      */
     protected Path filePath;
+    //               row     column
+    //            LevelName AreaName
     protected Table<String, String, TickingArea> areaMap = HashBasedTable.create();
 
     public JSONTickingAreaStorage(String path) {
@@ -91,12 +97,16 @@ public class JSONTickingAreaStorage implements TickingAreaStorage {
     }
 
     private void save() {
-        for (var each : areaMap.rowMap().entrySet()) {
-            try {
-                Files.writeString(Path.of(filePath.toString(), each.getKey(), "tickingarea.json"), gson.toJson(each.getValue().values().toArray()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        try {
+            for (Level level : Server.getInstance().getLevels().values()) {
+                if (areaMap.containsRow(level.getName())) {
+                    Files.writeString(Path.of(filePath.toString(), level.getName(), "tickingarea.json"), gson.toJson(areaMap.rowMap().get(level.getName()).values().toArray()));
+                }else{
+                    Files.deleteIfExists(Path.of(filePath.toString(), level.getName(), "tickingarea.json"));
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

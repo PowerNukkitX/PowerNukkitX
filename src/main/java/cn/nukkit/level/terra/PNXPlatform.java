@@ -32,10 +32,9 @@ import java.util.zip.ZipFile;
 @Since("1.6.0.0-PNX")
 public class PNXPlatform extends AbstractPlatform {
     public static final File DATA_PATH;
-    private static PNXPlatform INSTANCE = null;
-
     private static final PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
     private static final PNXItemHandle pnxItemHandle = new PNXItemHandle();
+    private static PNXPlatform INSTANCE = null;
 
     static {
         DATA_PATH = new File("./terra");
@@ -45,7 +44,7 @@ public class PNXPlatform extends AbstractPlatform {
             }
         }
         var targetFile = new File("./terra/config.yml");
-        if(!targetFile.exists()) {
+        if (!targetFile.exists()) {
             var terraDefaultConfigStream = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
             if (terraDefaultConfigStream != null) {
                 try {
@@ -87,6 +86,13 @@ public class PNXPlatform extends AbstractPlatform {
         }
         INSTANCE = platform;
         return platform;
+    }
+
+    private static PNXBiomeDelegate parseBiome(String str) {
+        if (str.startsWith("minecraft:")) str = str.substring(10);
+        var id = BiomeLegacyId2StringIdMap.INSTANCE.string2Legacy(str);
+        if (id == -1) id = 1;
+        return PNXAdapter.adapt(Biome.getBiome(id));
     }
 
     @Override
@@ -137,12 +143,5 @@ public class PNXPlatform extends AbstractPlatform {
         super.register(registry);
         registry.registerLoader(PlatformBiome.class, (type, o, loader, depthTracker) -> parseBiome((String) o))
                 .registerLoader(BlockState.class, (type, o, loader, depthTracker) -> pnxWorldHandle.createBlockState((String) o));
-    }
-
-    private static PNXBiomeDelegate parseBiome(String str) {
-        if (str.startsWith("minecraft:")) str = str.substring(10);
-        var id = BiomeLegacyId2StringIdMap.INSTANCE.string2Legacy(str);
-        if (id == -1) id = 1;
-        return PNXAdapter.adapt(Biome.getBiome(id));
     }
 }

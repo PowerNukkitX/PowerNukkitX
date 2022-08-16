@@ -18,6 +18,17 @@ public class ModifyRecipes {
     public static void modifyRecipes() {
         HashMap<String, Integer> modify = new HashMap<>();
         //fix recipes for a variety of logs and wood
+        modify.put("minecraft:oak_wood_stripped", 8);
+        modify.put("minecraft:spruce_wood", 1);
+        modify.put("minecraft:spruce_wood_stripped", 9);
+        modify.put("minecraft:acacia_wood", 4);
+        modify.put("minecraft:acacia_wood_stripped", 12);
+        modify.put("minecraft:birch_wood", 2);
+        modify.put("minecraft:birch_wood_stripped", 10);
+        modify.put("minecraft:dark_oak_wood", 5);
+        modify.put("minecraft:dark_oak_wood_stripped", 13);
+        modify.put("minecraft:jungle_wood", 3);
+        modify.put("minecraft:jungle_wood_stripped", 11);
         modify.put("minecraft:spruce_planks", 1);
         modify.put("minecraft:spruce_wooden_slab", 1);
         modify.put("minecraft:spruce_planks_from_wood", 1);
@@ -127,8 +138,11 @@ public class ModifyRecipes {
         modify.put("minecraft:stonecutter_double_stone_slab", 2);
         modify.put("stoneslab4_cut_sandstone_cut_recipeId", 3);
         modify.put("stoneslab4_cut_redsandstone_cut_recipeId", 4);
-
-
+        //fix recipes for stone_block_slab to Chiseled Quartz Block
+        modify.put("chiseled_quartz_recipeId", 1);
+        modify.put("chiseled_stonebrick_recipeId", 3);
+        //fix recipes for pillar_quartz_block
+        modify.put("minecraft:pillar_quartz_block", 2);
         Config config = new Config(Config.JSON);
         try (InputStream recipesStream = new FileInputStream("src/main/resources/recipes.json")) {
             if (recipesStream == null) {
@@ -181,6 +195,7 @@ public class ModifyRecipes {
                         }
                     }
                 }
+                //修复玻璃 玻璃板 地毯 粘土
                 var input2 = castMap(map.get("input"), String.class, Object.class);
                 if (input2 != null) {
                     if (input2.keySet().size() == 2 && input2.containsKey("A") && input2.containsKey("B")) {
@@ -200,6 +215,16 @@ public class ModifyRecipes {
                                     map.put("output", output);
                                 }
                             }
+                        }
+                    }
+                }
+                var block = map.get("block");
+                if (block != null) {
+                    if (block.equals("furnace") && input2.get("id").equals("minecraft:quartz_block")) {
+                        var output = castMap(map.get("output"), String.class, Object.class);
+                        if (output != null) {
+                            output.put("damage", 3);
+                            map.put("output", output);
                         }
                     }
                 }

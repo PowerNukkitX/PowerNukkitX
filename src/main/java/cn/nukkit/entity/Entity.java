@@ -1165,6 +1165,13 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @Nonnull
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    public static Map<String, Class<? extends Entity>> getKnownEntities() {
+        return new HashMap<>(knownEntities);
+    }
+
+    @Nonnull
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static List<String> getSaveIds() {

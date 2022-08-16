@@ -102,8 +102,7 @@ cn.nukkit.Nukkit
   非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
   （同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
 
-* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkit](https://github.com/powernukkit/powernukkit)
-  或[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
+* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
   製作的插件，並使用[穩定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)進行部署。
 
 * 大多數[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在該服務端上兼容使用，但在運行時可能會出一些錯誤等或不支持PowerNukkitX添加的新內容。
@@ -131,7 +130,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r2'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r4'
 }
 ```
 
@@ -142,7 +141,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.20-r2</version>
+        <version>1.19.20-r4</version>
     </dependency>
 </dependencies>
 ```

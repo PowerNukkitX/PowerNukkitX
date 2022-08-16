@@ -14427,6 +14427,7 @@
       },
       "output": [
         {
+          "damage": 1,
           "legacyId": 155,
           "id": "minecraft:quartz_block"
         }
@@ -14450,6 +14451,7 @@
       },
       "output": [
         {
+          "damage": 3,
           "legacyId": 98,
           "id": "minecraft:stonebrick"
         }
@@ -14900,9 +14902,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -14924,9 +14927,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -15935,9 +15939,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -15959,9 +15964,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -21462,9 +21468,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -21486,9 +21493,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -25787,9 +25795,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -25811,9 +25820,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -29574,9 +29584,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -30041,9 +30052,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": 155,
-          "id": "minecraft:quartz_block",
-          "count": 2
+          "id": "minecraft:quartz_block"
         }
       ],
       "shape": [
@@ -35483,9 +35495,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -35507,9 +35520,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -58563,6 +58577,7 @@
         "id": "minecraft:quartz_block"
       },
       "output": {
+        "damage": 3,
         "legacyId": 155,
         "id": "minecraft:quartz_block"
       },

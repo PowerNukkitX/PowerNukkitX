@@ -34,11 +34,13 @@
   },
   {
     "name": "minecraft:mangrove_fence_gate",
-    "id": -492
+    "id": -492,
+    "oldId": -492
   },
   {
     "name": "minecraft:mangrove_fence",
-    "id": -491
+    "id": -491,
+    "oldId": -491
   },
   {
     "name": "minecraft:mangrove_pressure_plate",
@@ -52,11 +54,13 @@
   },
   {
     "name": "minecraft:mangrove_stairs",
-    "id": -488
+    "id": -488,
+    "oldId": -488
   },
   {
     "name": "minecraft:mangrove_button",
-    "id": -487
+    "id": -487,
+    "oldId": -487
   },
   {
     "name": "minecraft:mangrove_planks",
