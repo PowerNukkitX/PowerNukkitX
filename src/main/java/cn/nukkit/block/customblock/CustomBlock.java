@@ -21,7 +21,10 @@ public interface CustomBlock {
     /**
      * 控制自定义方块所用的材质名称<br>(例如材质图片test.png设置test)
      */
-    String getTexture();
+    @Nullable
+    default String getTexture() {
+        return null;
+    }
 
     /* 以下几个方法需要被手动覆写 */
     double getFrictionFactor();
@@ -159,28 +162,31 @@ public interface CustomBlock {
                         .putFloat("value", (float) this.getLightFilter() / 15))
                 .putCompound("minecraft:light_emission", new CompoundTag()
                         .putByte("emission", (byte) this.getLightLevel()))
-                .putCompound("minecraft:geometry", new CompoundTag()
-                        .putString("value", "geometry.blocks"))
                 .putCompound("minecraft:rotation", new CompoundTag()
                         .putFloat("x", 0)
                         .putFloat("y", 0)
                         .putFloat("z", 0))
                 .putCompound("minecraft:destructible_by_mining", new CompoundTag()
-                        .putFloat("value", (float) (this.calculateBreakTime() * 2 / 3)))
-                .putCompound("minecraft:material_instances", new CompoundTag()
-                        .putCompound("mappings", new CompoundTag())
-                        .putCompound("materials", new CompoundTag()
-                                .putCompound("*", new CompoundTag()
-                                        .putBoolean("ambient_occlusion", true)
-                                        .putBoolean("face_dimming", true)
-                                        .putString("render_method", this.getRenderMethod())
-                                        .putString("texture", this.getTexture()))));
+                        .putFloat("value", (float) (this.calculateBreakTime() * 2 / 3)));
+        if (this.getTexture() != null) {
+            compoundTag.putCompound("minecraft:material_instances", new CompoundTag()
+                    .putCompound("mappings", new CompoundTag())
+                    .putCompound("materials", new CompoundTag()
+                            .putCompound("*", new CompoundTag()
+                                    .putBoolean("ambient_occlusion", true)
+                                    .putBoolean("face_dimming", true)
+                                    .putString("render_method", this.getRenderMethod())
+                                    .putString("texture", this.getTexture()))));
+        }
         if (!this.getCreativeCategoryGroup().isEmpty()) {
             compoundTag.getCompound("minecraft:creative_category").putString("group", this.getCreativeCategoryGroup());
         }
         if (!this.getGeometry().isEmpty()) {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry()));
+        } else {
+            compoundTag.putCompound("minecraft:geometry", new CompoundTag()
+                    .putString("value", "geometry.blocks"));
         }
         compoundTag = componentNBTProcessor(compoundTag);
         var nbt = new CompoundTag().putCompound("components", compoundTag);

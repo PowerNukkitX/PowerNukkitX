@@ -57,7 +57,7 @@ public class GameRules {
         gameRules.gameRules.put(SPAWN_RADIUS, new Value<>(Type.INTEGER, 5));
         gameRules.gameRules.put(TNT_EXPLODES, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_TAGS, new Value<>(Type.BOOLEAN, true));
-        gameRules.gameRules.put(EXPERIMENTAL_GAMEPLAY, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(EXPERIMENTAL_GAMEPLAY, new Value<>(Type.BOOLEAN, true));
 
         return gameRules;
     }
