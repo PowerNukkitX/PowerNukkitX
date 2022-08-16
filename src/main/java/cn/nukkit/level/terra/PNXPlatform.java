@@ -45,14 +45,14 @@ public class PNXPlatform extends AbstractPlatform {
         }
         var targetFile = new File("./terra/config.yml");
         if (!targetFile.exists()) {
-            var terraDefaultConfigStream = Server.class.getClassLoader().getResourceAsStream("terra_default_config.yml");
-            if (terraDefaultConfigStream != null) {
-                try {
+            try {
+                var terraDefaultConfigStream = Server.class.getModule().getResourceAsStream("terra_default_config.yml");
+                if (terraDefaultConfigStream != null) {
                     Files.copy(terraDefaultConfigStream, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
+                } else {
                     log.info("Failed to extract terra config.");
                 }
-            } else {
+            } catch (IOException e) {
                 log.info("Failed to extract terra config.");
             }
         }

@@ -248,7 +248,12 @@ public class Nukkit {
     }
 
     private static Properties getGitInfo() {
-        InputStream gitFileStream = Nukkit.class.getClassLoader().getResourceAsStream("git.properties");
+        InputStream gitFileStream = null;
+        try {
+            gitFileStream = Nukkit.class.getModule().getResourceAsStream("git.properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (gitFileStream == null) {
             return null;
         }
@@ -262,7 +267,12 @@ public class Nukkit {
     }
 
     private static String getVersion() {
-        InputStream resourceAsStream = Nukkit.class.getClassLoader().getResourceAsStream("VERSION.txt");
+        InputStream resourceAsStream = null;
+        try {
+            resourceAsStream = Nukkit.class.getModule().getResourceAsStream("VERSION.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (resourceAsStream == null) {
             return "Unknown-PNX-SNAPSHOT";
         }
