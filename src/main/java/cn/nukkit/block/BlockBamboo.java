@@ -381,14 +381,9 @@ public class BlockBamboo extends BlockTransparentMeta {
         setBooleanValue(AGED, age == 1);
     }
 
-    @Override
-    public boolean canBePushed() {
-        return false;
-    }
-
     @PowerNukkitOnly
     @Override
-    public boolean canBePulled() {
-        return false;
+    public boolean breaksWhenMoved() {
+        return true;
     }
 }
