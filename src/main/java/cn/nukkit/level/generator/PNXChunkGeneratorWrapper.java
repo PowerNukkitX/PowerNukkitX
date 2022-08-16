@@ -12,7 +12,6 @@ import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
 import com.dfsek.terra.api.world.ServerWorld;
-import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
@@ -23,10 +22,9 @@ import java.util.Map;
 public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
     private final ChunkGenerator chunkGenerator;
     private final ConfigPack pack;
+    private final BlockState air;
     private final WorldProperties worldProperties;
     private final ServerWorld world;
-    private final BlockState air;
-    private final BiomeProvider biomeProvider;
     private ChunkManager chunkManager;
 
     public PNXChunkGeneratorWrapper() {
@@ -41,8 +39,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         this.pack = createConfigPack(packName);
         this.chunkGenerator = createGenerator(packName);
-        this.biomeProvider = this.pack.getBiomeProvider().caching();
-        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.biomeProvider);
+        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.pack.getBiomeProvider());
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
@@ -70,8 +67,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.air = air;
         this.pack = pack;
         this.chunkGenerator = chunkGenerator;
-        this.biomeProvider = this.pack.getBiomeProvider().caching();
-        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.biomeProvider);
+        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.pack.getBiomeProvider());
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
@@ -135,14 +131,14 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
         chunkGenerator.generateChunkData(new PNXProtoChunk(chunkManager.getChunk(chunkX, chunkZ)), worldProperties,
-                biomeProvider, chunkX, chunkZ);
+                pack.getBiomeProvider(), chunkX, chunkZ);
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
         int minHeight = chunk.isOverWorld() ? -64 : 0;
         int maxHeight = chunk.isOverWorld() ? 320 : 256;
         for (int x = 0; x < 16; x++) {
             for (int y = minHeight; y < maxHeight; y++) {
                 for (int z = 0; z < 16; z++) {
-                    chunk.setBiome(x, y, z, (Biome) biomeProvider.getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
+                    chunk.setBiome(x, y, z, (Biome) pack.getBiomeProvider().getBiome(chunkX * 16 + x, y, chunkZ * 16 + z, chunkManager.getSeed()).getPlatformBiome().getHandle());
                 }
             }
         }
@@ -150,13 +146,13 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(world, chunkManager, chunkGenerator, pack, biomeProvider, chunkX, chunkZ);
-        for (var generationStage : pack.getStages()) {
-            try {
+        var tmp = new PNXProtoWorld(world, chunkManager, chunkGenerator, pack, pack.getBiomeProvider(), chunkX, chunkZ);
+        try {
+            for (var generationStage : pack.getStages()) {
                 generationStage.populate(tmp);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
