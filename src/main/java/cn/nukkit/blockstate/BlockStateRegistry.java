@@ -9,11 +9,12 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.block.customblock.CustomBlock;
-import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.*;
 import cn.nukkit.blockproperty.exception.BlockPropertyNotFoundException;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LinkedCompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.HumanStringComparator;
@@ -38,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -70,7 +72,7 @@ public class BlockStateRegistry {
     }
     //</editor-fold>
 
-    private void init(){
+    private void init() {
         //<editor-fold desc="Loading block_ids.csv" defaultstate="collapsed">
         try (InputStream stream = Server.class.getModule().getResourceAsStream("block_ids.csv")) {
             if (stream == null) {
@@ -299,7 +301,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public int getRuntimeId(BlockState state) {
-        if (state.getBlockId() > Block.MAX_BLOCK_ID) {
+        if (state.getBlockId() > Block.MAX_BLOCK_ID && !Block.ID_TO_CUSTOM_BLOCK.containsKey(state.getBlockId())) {
             return stateIdRegistration.get(blockIdToPersistenceName.get(state.getBlockId())).runtimeId;
         }
         return getRegistration(convertToNewState(state)).runtimeId;
@@ -476,6 +478,8 @@ public class BlockStateRegistry {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
+
+        var version = -1;
         //处理自定义方块
         for (var blockCustom : blockCustoms) {
             var namespace = blockCustom.getNamespace();
@@ -485,12 +489,83 @@ public class BlockStateRegistry {
             CompoundTag nbt = new CompoundTag()
                     .putInt("blockId", blockCustom.getId())
                     .putString("name", namespace)
-                    .putInt("version", namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version"))
+                    .putInt("version", version == -1 ? version = namespace2Nbt.values().stream().findFirst().get().get(0).getInt("version") : version)
                     .putCompound("states", new CompoundTag("states"));
             var nbtList = new ArrayList<CompoundTag>();
-            nbtList.add(nbt);
-            //todo 实现多状态方块需要在这里注册
-            namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+
+            // 多状态方块注册
+            if (blockCustom instanceof Block block) {
+                var properties = block.getProperties().getAllProperties()
+                        .stream().map(BlockProperties.RegisteredBlockProperty::getProperty)
+                        .sorted((a, b) -> -MinecraftNamespaceComparator.compareFNV(a.getName(), b.getName())).toList();
+                List<CompoundTag> stateNbtList = null;
+                for (var eachProperty : properties) {
+                    var newStateNbtList = new LinkedList<CompoundTag>();
+                    if (stateNbtList == null) {
+                        if (eachProperty instanceof BooleanBlockProperty) {
+                            newStateNbtList.add(new LinkedCompoundTag("states").putBoolean(eachProperty.getName(), false));
+                            newStateNbtList.add(new LinkedCompoundTag("states").putBoolean(eachProperty.getName(), true));
+                        } else if (eachProperty instanceof IntBlockProperty intBlockProperty) {
+                            for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
+                                newStateNbtList.add(new LinkedCompoundTag("states").putInt(eachProperty.getName(), i));
+                            }
+                        } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
+                            for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
+                                newStateNbtList.add(new LinkedCompoundTag("states").putLong(eachProperty.getName(), i));
+                            }
+                        } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                            if (arrayBlockProperty.isOrdinal()) {
+                                var universe = arrayBlockProperty.getUniverse();
+                                for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
+                                    newStateNbtList.add(new LinkedCompoundTag("states").putInt(eachProperty.getName(), i));
+                                }
+                            } else {
+                                for (var each : arrayBlockProperty.getUniverse()) {
+                                    newStateNbtList.add(new LinkedCompoundTag("states").putString(eachProperty.getName(), each.toString()));
+                                }
+                            }
+                        }
+                    } else {
+                        for (var stateNbt : stateNbtList) {
+                            if (eachProperty instanceof BooleanBlockProperty) {
+                                newStateNbtList.add(stateNbt.copy().putBoolean(eachProperty.getName(), false));
+                                newStateNbtList.add(stateNbt.copy().putBoolean(eachProperty.getName(), true));
+                            } else if (eachProperty instanceof IntBlockProperty intBlockProperty) {
+                                for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
+                                    newStateNbtList.add(stateNbt.copy().putInt(eachProperty.getName(), i));
+                                }
+                            } else if (eachProperty instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
+                                for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
+                                    newStateNbtList.add(stateNbt.copy().putLong(eachProperty.getName(), i));
+                                }
+                            } else if (eachProperty instanceof ArrayBlockProperty<?> arrayBlockProperty) {
+                                if (arrayBlockProperty.isOrdinal()) {
+                                    var universe = arrayBlockProperty.getUniverse();
+                                    for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
+                                        newStateNbtList.add(stateNbt.copy().putInt(eachProperty.getName(), i));
+                                    }
+                                } else {
+                                    for (var each : arrayBlockProperty.getUniverse()) {
+                                        newStateNbtList.add(stateNbt.copy().putString(eachProperty.getName(), each.toString()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    stateNbtList = newStateNbtList;
+                }
+                if (stateNbtList != null) {
+                    for (var each : stateNbtList) {
+                        nbtList.add(nbt.copy().putCompound("states", each));
+                    }
+                } else {
+                    nbtList.add(nbt.clone());
+                }
+                namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+            } else {
+                nbtList.add(nbt.clone());
+                namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+            }
         }
         List<CompoundTag> tags = new ArrayList<>();
         Set<String> warned = new HashSet<>();
@@ -498,6 +573,7 @@ public class BlockStateRegistry {
         //由排序好的序列计算runtimeId(递增)
         int runtimeId = 0;
         for (var namespace : namespace2Nbt.keySet()) {
+            var first = true;
             for (var nbt : namespace2Nbt.get(namespace)) {
                 nbt.putInt("runtimeId", runtimeId);
                 tags.add(nbt);
@@ -608,6 +684,9 @@ public class BlockStateRegistry {
     @Nonnull
     public BlockProperties getProperties(int blockId) {
         int fullId = blockId << Block.DATA_BITS;
+        if (Block.ID_TO_CUSTOM_BLOCK.get(blockId) instanceof Block block1) {
+            return block1.getProperties();
+        }
         Block block;
         if (fullId >= Block.fullList.length || fullId < 0 || (block = Block.fullList[fullId]) == null) {
             return BlockUnknown.PROPERTIES;

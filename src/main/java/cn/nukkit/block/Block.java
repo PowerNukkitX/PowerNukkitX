@@ -34,6 +34,8 @@ import cn.nukkit.utils.InvalidBlockDamageException;
 import cn.nukkit.utils.MinecraftNamespaceComparator;
 import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
@@ -147,7 +149,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static final List<BlockPropertyData> BLOCK_PROPERTY_DATA = new ArrayList<>();
 
     @PowerNukkitXOnly
-    private static final HashMap<Integer, CustomBlock> ID_TO_CUSTOM_BLOCK = new HashMap<>();
+    public static final Int2ObjectMap<CustomBlock> ID_TO_CUSTOM_BLOCK = new Int2ObjectOpenHashMap<>();
 
     @PowerNukkitXOnly
     public static final ConcurrentHashMap<String, Integer> CUSTOM_BLOCK_ID_MAP = new ConcurrentHashMap<>();
@@ -885,7 +887,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, Integer meta) {
         if (id > MAX_BLOCK_ID) {
-            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(meta);
         }
         if (id < 0) {
             id = 255 - id;
@@ -918,7 +920,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         Block block;
 
         if (id > MAX_BLOCK_ID) {
-            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(meta);
             block.x = pos.x;
             block.y = pos.y;
             block.z = pos.z;
@@ -952,7 +954,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @DeprecationDetails(reason = "The meta is limited to 32 bits", replaceWith = "BlockState.getBlock()", since = "1.4.0.0-PN")
     public static Block get(int id, int data) {
         if (id > MAX_BLOCK_ID) {
-            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock();
+            return ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock(data);
         }
 
         if (id < 0) {
@@ -977,7 +979,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN")
     public static Block get(int fullId, Level level, int x, int y, int z, int layer) {
-        Block block = fullList[fullId].clone();
+        var id = fullId >> DATA_BITS;
+        if (id > MAX_BLOCK_ID) {
+            var block = ID_TO_CUSTOM_BLOCK.get(id).toCustomBlock((~(id << DATA_BITS)) & fullId);
+            block.x = x;
+            block.y = y;
+            block.z = z;
+            block.level = level;
+            block.layer = layer;
+            return block;
+        }
+        var block = fullList[fullId].clone();
         block.x = x;
         block.y = y;
         block.z = z;
@@ -1206,32 +1218,42 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
+    @Deprecated(since = "1.19.20-r5")
     public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        var map = new HashMap<String, Class<? extends CustomBlock>>(blockClassList.size() + 1, 0.99f);
+        for (var each : blockClassList) {
+            map.put(each.getDeclaredConstructor().newInstance().getNamespace(), each);
+        }
+        registerCustomBlock(map);
+    }
+
+    /**
+     * 注册自定义方块
+     *
+     * @param blockNamespaceClassMap 传入自定义方块classMap { key: NamespaceID, value: Class }
+     */
+    @PowerNukkitXOnly
+    public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
         //方块升序排序
-        SortedMap<String, CustomBlock> sortedCustomBlocks = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
-        for (var clazz : blockClassList) {
-            CustomBlock block = clazz.getDeclaredConstructor().newInstance();
-            sortedCustomBlocks.put(block.getNamespace(), block);
-        }
+        SortedMap<String, Class<? extends CustomBlock>> sortedCustomBlockClasses = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
         //监测该方块是否已经注册,如果已经注册将他排除
-        if (!CUSTOM_BLOCK_ID_MAP.isEmpty()) {
-            for (var key : sortedCustomBlocks.keySet()) {
-                if (CUSTOM_BLOCK_ID_MAP.containsKey(key)) {
-                    sortedCustomBlocks.remove(key);
-                }
+        for (var entry : blockNamespaceClassMap.entrySet()) {
+            if (!CUSTOM_BLOCK_ID_MAP.containsKey(entry.getKey())) {
+                sortedCustomBlockClasses.put(entry.getKey(), entry.getValue());
             }
         }
         //排除后可能为空
-        if (!sortedCustomBlocks.isEmpty()) {
+        if (!sortedCustomBlockClasses.isEmpty()) {
             //注册各种数据
-            for (var block : sortedCustomBlocks.values()) {
-                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
+            for (var entry : sortedCustomBlockClasses.entrySet()) {
+                CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
+                CustomBlock block = entry.getValue().getDeclaredConstructor().newInstance();
                 ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
-                CUSTOM_BLOCK_ID_MAP.put(block.getNamespace(), nextBlockId);//自定义方块标识符->自定义方块id
+                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
                 ++nextBlockId;
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
@@ -1276,7 +1298,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nonnull
-    protected final MutableBlockState getMutableState() {
+    public final MutableBlockState getMutableState() {
         if (mutableState == null) {
             mutableState = getProperties().createMutableState(getId());
         }

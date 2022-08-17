@@ -135,7 +135,6 @@ public abstract class BlockEntity extends Position {
     }
 
     public static BlockEntity createBlockEntity(String type, FullChunk chunk, CompoundTag nbt, Object... args) {
-        type = type.replaceFirst("BlockEntity", ""); //TODO: Remove this after the first release
         BlockEntity blockEntity = null;
 
         Class<? extends BlockEntity> clazz = knownBlockEntities.get(type);

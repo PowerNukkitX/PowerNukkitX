@@ -250,11 +250,9 @@ export class BlockItemUtil {
                 return durability;
             },
             noDamageOnAttack() {
-                print("Attack")
                 return !damageOnAttackEntity;
             },
             noDamageOnBreak() {
-                print("Break")
                 return !damageOnBreakBlock;
             }
         };
