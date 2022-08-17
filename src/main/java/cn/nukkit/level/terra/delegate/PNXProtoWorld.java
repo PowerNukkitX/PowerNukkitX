@@ -15,9 +15,8 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, ChunkGenerator chunkGenerator,
-                            ConfigPack configPack, BiomeProvider biomeProvider, int centerChunkX,
-                            int centerChunkZ) implements ProtoWorld {
+public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int centerChunkZ) implements ProtoWorld {
+
     @Override
     public int centerChunkX() {
         return centerChunkX;
@@ -30,12 +29,13 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
 
     @Override
     public ServerWorld getWorld() {
-        return new PNXServerWorld(chunkManager, chunkGenerator, configPack, biomeProvider);
+        return serverWorld;
     }
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
         if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
+            var chunkManager = getHandle();
             if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
                 chunkManager.setBlockStateAt(i, i1, i2, 1, pnxBlockState.getHandle());
             chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
@@ -51,7 +51,7 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return PNXAdapter.adapt(chunkManager.getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(getHandle().getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -61,22 +61,22 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
 
     @Override
     public ChunkGenerator getGenerator() {
-        return chunkGenerator;
+        return serverWorld.getGenerator();
     }
 
     @Override
     public BiomeProvider getBiomeProvider() {
-        return biomeProvider;
+        return serverWorld.getBiomeProvider();
     }
 
     @Override
     public ConfigPack getPack() {
-        return configPack;
+        return serverWorld.getPack();
     }
 
     @Override
     public long getSeed() {
-        return chunkManager.getSeed();
+        return getHandle().getSeed();
     }
 
     @Override
@@ -91,6 +91,6 @@ public record PNXProtoWorld(ServerWorld serverWorld, ChunkManager chunkManager, 
 
     @Override
     public ChunkManager getHandle() {
-        return chunkManager;
+        return (ChunkManager) serverWorld.getHandle();
     }
 }
