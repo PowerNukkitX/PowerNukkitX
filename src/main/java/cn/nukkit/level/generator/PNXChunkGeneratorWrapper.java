@@ -24,7 +24,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private final ConfigPack pack;
     private final BlockState air;
     private final WorldProperties worldProperties;
-    private final ServerWorld world;
+    private ServerWorld world;
     private ChunkManager chunkManager;
 
     public PNXChunkGeneratorWrapper() {
@@ -39,7 +39,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         this.pack = createConfigPack(packName);
         this.chunkGenerator = createGenerator(packName);
-        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.pack.getBiomeProvider());
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
@@ -67,7 +66,6 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.air = air;
         this.pack = pack;
         this.chunkGenerator = chunkGenerator;
-        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack, this.pack.getBiomeProvider());
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
@@ -125,6 +123,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
         this.chunkManager = level;
+        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack);
         //this.nukkitRandom = random; unused
     }
 
@@ -146,7 +145,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(world, chunkManager, chunkGenerator, pack, pack.getBiomeProvider(), chunkX, chunkZ);
+        var tmp = new PNXProtoWorld(world, chunkX, chunkZ);
         try {
             for (var generationStage : pack.getStages()) {
                 generationStage.populate(tmp);
