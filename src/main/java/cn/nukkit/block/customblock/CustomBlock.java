@@ -3,9 +3,10 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
-import cn.nukkit.block.BlockSolidMeta;
+import cn.nukkit.block.customblock.type.MaterialsFactory;
 import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,10 +25,7 @@ public interface CustomBlock {
     /**
      * 控制自定义方块所用的材质名称<br>(例如材质图片test.png设置test)
      */
-    @Nullable
-    default String getTexture() {
-        return null;
-    }
+    String getTexture();
 
     /* 以下几个方法需要被手动覆写 */
     double getFrictionFactor();
@@ -39,6 +37,15 @@ public interface CustomBlock {
     int getLightLevel();
 
     double calculateBreakTime();
+
+    /* 下面两个方法需要被覆写,请使用接口的定义 */
+    default int getId() {
+        return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespace().toLowerCase(Locale.ENGLISH));
+    }
+
+    default String getName() {
+        return this.getNamespace().split(":")[1].toLowerCase(Locale.ENGLISH);
+    }
 
     Item toItem();
 
@@ -73,17 +80,27 @@ public interface CustomBlock {
     }
 
     /**
-     * 控制自定义方块的渲染方法<p>
-     * 可选值:<br>opaque<br>alpha_test<br>blend<br>double_sided<p>
-     * 默认值: "opaque"
+     * 将几何文件中的face(面)名称映射到实际的材质实例
      */
-    default String getRenderMethod() {
-        return "opaque";
+    default CompoundTag getMaterials() {
+        return MaterialsFactory.of(new CompoundTag()).process("*", "opaque", getTexture()).build();
+    }
+
+    /**
+     * 以度为单位设置块围绕立方体中心的旋转,旋转顺序为 xyz.角度必须是90的倍数。
+     */
+    default Vector3 getRotation() {
+        return new Vector3(0, 0, 0);
+    }
+
+    @Nullable
+    default ListTag<StringTag> getBlockTags() {
+        return null;
     }
 
     /**
      * 控制自定义方块的形状<br>
-     * Geometry identifier from geo file in 'RP/models/entity' folder
+     * Geometry identifier from geo file in 'RP/models/blocks' folder
      */
     default String getGeometry() {
         return "";
@@ -145,6 +162,7 @@ public interface CustomBlock {
 
     /**
      * 对自动生成的ComponentNBT进行处理
+     *
      * @param componentNBT 自动生成的component NBT
      * @return 处理后的ComponentNBT
      */
@@ -152,16 +170,8 @@ public interface CustomBlock {
         return componentNBT;
     }
 
-    /* 下面两个方法需要被覆写,请使用接口的定义 */
-    default int getId() {
-        return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespace().toLowerCase(Locale.ENGLISH));
-    }
-
-    default String getName() {
-        return this.getNamespace().split(":")[1].toLowerCase(Locale.ENGLISH);
-    }
-
     default BlockPropertyData getBlockPropertyData() {
+        //内部处理components组件
         var compoundTag = new CompoundTag()
                 .putCompound("minecraft:creative_category", new CompoundTag()
                         .putString("category", this.getCreativeCategory()))
@@ -169,49 +179,50 @@ public interface CustomBlock {
                         .putFloat("value", (float) this.getFrictionFactor()))
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
                         .putInt("value", (int) this.getResistance()))
-                .putCompound("minecraft:block_light_absorption", new CompoundTag()
-                        .putFloat("value", (float) this.getLightFilter() / 15))
+                .putCompound("minecraft:block_light_filter", new CompoundTag()
+                        .putFloat("lightLevel", (byte) this.getLightFilter()))
                 .putCompound("minecraft:light_emission", new CompoundTag()
                         .putByte("emission", (byte) this.getLightLevel()))
                 .putCompound("minecraft:rotation", new CompoundTag()
-                        .putFloat("x", 0)
-                        .putFloat("y", 0)
-                        .putFloat("z", 0))
+                        .putFloat("x", (float) this.getRotation().x)
+                        .putFloat("y", (float) this.getRotation().y)
+                        .putFloat("z", (float) this.getRotation().z))
                 .putCompound("minecraft:destructible_by_mining", new CompoundTag()
                         .putFloat("value", (float) (this.calculateBreakTime() * 2 / 3)));
         if (this.getTexture() != null) {
             compoundTag.putCompound("minecraft:material_instances", new CompoundTag()
                     .putCompound("mappings", new CompoundTag())
-                    .putCompound("materials", new CompoundTag()
-                            .putCompound("*", new CompoundTag()
-                                    .putBoolean("ambient_occlusion", true)
-                                    .putBoolean("face_dimming", true)
-                                    .putString("render_method", this.getRenderMethod())
-                                    .putString("texture", this.getTexture()))));
+                    .putCompound("materials", this.getMaterials()));
         }
         if (!this.getCreativeCategoryGroup().isEmpty()) {
             compoundTag.getCompound("minecraft:creative_category").putString("group", this.getCreativeCategoryGroup());
         }
+        //设置方块对应的几何模型，需要在资源包定义
         if (!this.getGeometry().isEmpty()) {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry()));
-        } else {
-            compoundTag.putCompound("minecraft:geometry", new CompoundTag()
-                    .putString("value", "geometry.blocks"));
         }
+        //提供外部操作components组件
         compoundTag = componentNBTProcessor(compoundTag);
-        var nbt = new CompoundTag().putCompound("components", compoundTag);
+        //方块components
+        var nbt = new CompoundTag()
+                .putCompound("components", compoundTag);
+        //方块BlockTags
+        if (getBlockTags() != null) nbt.putList(getBlockTags());
+        //设置方块的permutations
         if (getPermutations() != null) {
             var permutations = getPermutations();
             permutations.setName("permutations");
             nbt.putList(permutations);
         }
-        nbt.putInt("molangVersion", 0);
+        //设置方块的properties
         var propertiesNBT = getPropertiesNBT();
         if (propertiesNBT != null) {
             propertiesNBT.setName("properties");
             nbt.putList(propertiesNBT);
         }
-        return new BlockPropertyData(this.getNamespace().toLowerCase(Locale.ENGLISH), nbt);
+        //molang版本
+//        nbt.putInt("molangVersion", 6);
+        return new BlockPropertyData(this.getNamespace(), nbt);
     }
 }

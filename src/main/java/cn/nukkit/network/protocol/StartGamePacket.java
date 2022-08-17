@@ -151,22 +151,22 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
         if (Server.getInstance().isEnableExperimentMode()) {
-            this.putLInt(6); // Experiment count
+            this.putLInt(3); // Experiment count
             {
-                this.putString("spectator_mode");
-                this.putBoolean(true);
+//                this.putString("spectator_mode");
+//                this.putBoolean(true);
                 this.putString("data_driven_items");
                 this.putBoolean(true);
-                this.putString("data_driven_biomes");
-                this.putBoolean(true);
+//                this.putString("data_driven_biomes");
+//                this.putBoolean(true);
                 this.putString("upcoming_creator_features");
                 this.putBoolean(true);
-                this.putString("gametest");
-                this.putBoolean(true);
+//                this.putString("gametest");
+//                this.putBoolean(true);
                 this.putString("experimental_molang_features");
                 this.putBoolean(true);
-                this.putBoolean(true); // Were experiments previously toggled
             }
+            this.putBoolean(true); // Were experiments previously toggled
         } else {
             this.putLInt(0);
             this.putBoolean(false); // Were experiments previously toggled

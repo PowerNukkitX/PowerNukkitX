@@ -2699,27 +2699,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
                             if (this.getServer().isEnableExperimentMode()) {
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("vanilla_experiments", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );
