@@ -13,6 +13,7 @@ import com.dfsek.terra.api.handle.WorldHandle;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,11 @@ public class PNXWorldHandle implements WorldHandle {
 
     static {
         final var jeBlockMappingConfig = new Config(Config.JSON);
-        jeBlockMappingConfig.load(PNXWorldHandle.class.getClassLoader().getResourceAsStream("jeBlocksMapping.json"));
+        try {
+            jeBlockMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeBlocksMapping.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         jeBlockMappingConfig.getAll().forEach((k, v) -> jeBlockMapping.put(new State(k), (Map<String, Object>) v));
     }
 

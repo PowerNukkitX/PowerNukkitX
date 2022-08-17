@@ -74,7 +74,7 @@ public class BlockStateRegistry {
 
     private void init() {
         //<editor-fold desc="Loading block_ids.csv" defaultstate="collapsed">
-        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_ids.csv")) {
+        try (InputStream stream = Server.class.getModule().getResourceAsStream("block_ids.csv")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block_ids.csv");
             }
@@ -108,7 +108,7 @@ public class BlockStateRegistry {
         //<editor-fold desc="Loading canonical_block_states.nbt" defaultstate="collapsed">
         List<CompoundTag> tags = new ArrayList<>();
         List<String> loadingKnownStateIds = new ArrayList<>();
-        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("canonical_block_states.nbt")) {
+        try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
             }
@@ -459,7 +459,7 @@ public class BlockStateRegistry {
         //按照每组方块(因为每个方块可能有多种状态,将他们归为一个List)的namespace(形如minecraft:xxx)升序排序(遍历时Hash值小的在前面)
         SortedMap<String, List<CompoundTag>> namespace2Nbt = new TreeMap<>(getBlockIdComparator());
         //处理原版方块
-        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("canonical_block_states.nbt")) {
+        try (InputStream stream = Server.class.getModule().getResourceAsStream("canonical_block_states.nbt")) {
             if (stream == null) {
                 throw new AssertionError("Unable to locate block state nbt");
             }

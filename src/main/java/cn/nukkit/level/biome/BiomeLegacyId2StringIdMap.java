@@ -25,7 +25,7 @@ public final class BiomeLegacyId2StringIdMap {
     private final Object2IntOpenHashMap<String> string2LegacyMap = new Object2IntOpenHashMap<>(82);
 
     private BiomeLegacyId2StringIdMap() {
-        try (final InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("biome_id_map.json")) {
+        try (final InputStream inputStream = Server.class.getModule().getResourceAsStream("biome_id_map.json")) {
             if (inputStream == null) {
                 log.warn("Cannot read biome_id_map.json. No biomes will be sent to client.");
             } else {
