@@ -1,15 +1,14 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.scheduler;
+package cn.nukkit.level.generator.task;
 
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
-import cn.nukkit.level.generator.populator.impl.structure.village.structure.StructureStart;
 import cn.nukkit.scheduler.AsyncTask;
 
 import java.util.function.Consumer;
 
-public class CallbackableChunkGenerationTask<T extends StructureStart> extends AsyncTask {
+public class CallbackableChunkGenerationTask<T> extends AsyncTask {
 
     public boolean state = true;
 

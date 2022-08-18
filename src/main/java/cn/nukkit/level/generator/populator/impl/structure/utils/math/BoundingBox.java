@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.math;
+package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;

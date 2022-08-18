@@ -1,7 +1,8 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.math;
+package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
 import cn.nukkit.block.BlockID;
 
+//todo: 更改为基于BlockProperty的实现
 public enum Rotation {
     NONE,
     CLOCKWISE_90,

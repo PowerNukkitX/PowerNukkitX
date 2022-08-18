@@ -1,7 +1,7 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.structure;
+package cn.nukkit.level.generator.populator.impl.structure.utils.structure;
 
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.generator.populator.impl.structure.village.math.BoundingBox;
+import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;

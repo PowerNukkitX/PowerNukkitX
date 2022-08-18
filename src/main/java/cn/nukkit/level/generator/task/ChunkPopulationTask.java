@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.scheduler;
+package cn.nukkit.level.generator.task;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
@@ -12,9 +12,9 @@ public class ChunkPopulationTask extends AsyncTask {
 
     private final ChunkManager level;
     private final FullChunk chunk;
-    private final Collection<Populator> populators;
+    private final Populator[] populators;
 
-    public ChunkPopulationTask(ChunkManager level, FullChunk chunk, Collection<Populator> populators) {
+    public ChunkPopulationTask(ChunkManager level, FullChunk chunk, Populator... populators) {
         this.level = level;
         this.chunk = chunk;
         this.populators = populators;
@@ -25,6 +25,8 @@ public class ChunkPopulationTask extends AsyncTask {
         int chunkX = this.chunk.getX();
         int chunkZ = this.chunk.getZ();
         NukkitRandom random = new NukkitRandom(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        this.populators.forEach(populator -> populator.populate(this.level, chunkX, chunkZ, random, this.chunk));
+        for (var populator : this.populators) {
+            populator.populate(this.level, chunkX, chunkZ, random, this.chunk);
+        }
     }
 }

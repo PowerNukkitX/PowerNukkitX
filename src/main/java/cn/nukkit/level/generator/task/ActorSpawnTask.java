@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.scheduler;
+package cn.nukkit.level.generator.task;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;

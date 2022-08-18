@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.block.state;
+package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
 //\\ VanillaStates::UpperBlockBit
 public final class UpperBlockBit {

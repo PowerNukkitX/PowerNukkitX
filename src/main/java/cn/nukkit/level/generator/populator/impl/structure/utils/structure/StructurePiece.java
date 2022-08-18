@@ -1,12 +1,11 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.structure;
+package cn.nukkit.level.generator.populator.impl.structure.utils.structure;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.village.block.BlockTypes;
-import cn.nukkit.level.generator.populator.impl.structure.village.block.state.*;
-import cn.nukkit.level.generator.populator.impl.structure.village.math.BoundingBox;
-import cn.nukkit.level.generator.populator.impl.structure.village.math.Rotation;
+import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.*;
+import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
+import cn.nukkit.level.generator.populator.impl.structure.utils.math.Rotation;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
@@ -80,6 +79,10 @@ public abstract class StructurePiece {
         return piece;
     }
 
+    protected boolean isLiquid(int id){
+        return id == Block.FLOWING_WATER || id == Block.STILL_WATER || id == Block.FLOWING_LAVA || id == Block.STILL_LAVA;
+    }
+
     protected boolean edgesLiquid(ChunkManager level, final BoundingBox boundingBox) {
         int x0 = Math.max(this.boundingBox.x0 - 1, boundingBox.x0);
         int y0 = Math.max(this.boundingBox.y0 - 1, boundingBox.y0);
@@ -90,21 +93,21 @@ public abstract class StructurePiece {
 
         for (int x = x0; x <= x1; ++x) {
             for (int z = z0; z <= z1; ++z) {
-                if (BlockTypes.isLiquid(level.getBlockIdAt(x, y0, z)) || BlockTypes.isLiquid(level.getBlockIdAt(x, y1, z))) {
+                if (isLiquid(level.getBlockIdAt(x, y0, z)) || isLiquid(level.getBlockIdAt(x, y1, z))) {
                     return true;
                 }
             }
         }
         for (int x = x0; x <= x1; ++x) {
             for (int y = y0; y <= y1; ++y) {
-                if (BlockTypes.isLiquid(level.getBlockIdAt(x, y, z0)) || BlockTypes.isLiquid(level.getBlockIdAt(x, y, z1))) {
+                if (isLiquid(level.getBlockIdAt(x, y, z0)) || isLiquid(level.getBlockIdAt(x, y, z1))) {
                     return true;
                 }
             }
         }
         for (int z = z0; z <= z1; ++z) {
             for (int y = y0; y <= y1; ++y) {
-                if (BlockTypes.isLiquid(level.getBlockIdAt(x0, y, z)) || BlockTypes.isLiquid(level.getBlockIdAt(x1, y, z))) {
+                if (isLiquid(level.getBlockIdAt(x0, y, z)) || isLiquid(level.getBlockIdAt(x1, y, z))) {
                     return true;
                 }
             }

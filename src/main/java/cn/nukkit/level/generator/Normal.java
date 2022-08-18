@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockStone;
@@ -400,8 +401,12 @@ public class Normal extends Generator {
         @SuppressWarnings("deprecation")
         Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+    }
 
-        PopulatorStructure.populateAll(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
+    @Since("1.19.20-r6")
+    @Override
+    public boolean shouldGenerateStructures() {
+        return true;
     }
 
     @Override

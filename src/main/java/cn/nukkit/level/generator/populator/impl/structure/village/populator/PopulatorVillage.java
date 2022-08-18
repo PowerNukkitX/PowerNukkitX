@@ -1,14 +1,15 @@
 package cn.nukkit.level.generator.populator.impl.structure.village.populator;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.village.math.BoundingBox;
-import cn.nukkit.level.generator.populator.impl.structure.village.scheduler.CallbackableChunkGenerationTask;
-import cn.nukkit.level.generator.populator.impl.structure.village.structure.StructurePiece;
-import cn.nukkit.level.generator.populator.impl.structure.village.structure.StructureStart;
+import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
+import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
+import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
+import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructureStart;
 import cn.nukkit.level.generator.populator.impl.structure.village.structure.VillagePieces;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.math.NukkitRandom;
@@ -138,5 +139,11 @@ public class PopulatorVillage extends PopulatorStructure {
         public String getType() {
             return "Village";
         }
+    }
+
+    @Since("1.19.20-r6")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 }
