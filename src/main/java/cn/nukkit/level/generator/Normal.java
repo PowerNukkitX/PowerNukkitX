@@ -14,6 +14,7 @@ import cn.nukkit.level.generator.noise.vanilla.f.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.type.Populator;
+import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
@@ -399,6 +400,8 @@ public class Normal extends Generator {
         @SuppressWarnings("deprecation")
         Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+
+        PopulatorStructure.populateAll(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
     }
 
     @Override
