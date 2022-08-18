@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.math.Vector3;
 
 import java.util.Arrays;
@@ -30,6 +31,10 @@ public class WalkController implements IController {
             }
             var relativeVector = direction.clone().setComponents(direction.x - entity.x,
                     direction.y - entity.y, direction.z - entity.z);
+            var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
+            if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
+                return false;
+            }
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
             var k = speed / xzLength * 0.33;
             var dx = relativeVector.x * k;
