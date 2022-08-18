@@ -2140,8 +2140,13 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    @PowerNukkitXDifference(since = "1.19.20-r5")
     public void resetFallDistance() {
-        this.highestPosition = 0;
+        if (this.level != null) {
+            this.highestPosition = this.level.getMinHeight();
+        } else {
+            this.highestPosition = 0;
+        }
     }
 
     protected void updateFallState(boolean onGround) {
