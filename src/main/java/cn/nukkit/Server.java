@@ -604,6 +604,7 @@ public class Server {
                 put("xbox-auth", true);
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
+                put("allow-shaded", false);
             }
         });
 
@@ -624,6 +625,14 @@ public class Server {
         // 检测启动参数
         if (!StartArgUtils.isValidStart()) {
             log.fatal(getLanguage().translateString("nukkit.start.invalid"));
+            return;
+        }
+
+        // 检测非法使用shaded包启动
+        if (!this.properties.getBoolean("allow-shaded", false) && StartArgUtils.isShaded()) {
+            log.fatal(getLanguage().translateString("nukkit.start.shaded1"));
+            log.fatal(getLanguage().translateString("nukkit.start.shaded2"));
+            log.fatal(getLanguage().translateString("nukkit.start.shaded3"));
             return;
         }
 
