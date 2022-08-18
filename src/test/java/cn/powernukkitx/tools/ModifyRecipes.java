@@ -234,7 +234,7 @@ public class ModifyRecipes {
                             }
                         }
                         if (input2.get("id").equals("minecraft:stone")) {
-                            input2.put("damage", -1);
+                            input2.put("damage", 0);
                             map.put("input", input2);
                         }
                     }
