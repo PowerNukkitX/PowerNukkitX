@@ -30554,9 +30554,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -30959,9 +30960,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -31008,9 +31010,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -58174,7 +58177,8 @@
       "type": 3,
       "input": {
         "legacyId": 1,
-        "id": "minecraft:stone"
+        "id": "minecraft:stone",
+        "damage": 0
       },
       "output": {
         "legacyId": -183,

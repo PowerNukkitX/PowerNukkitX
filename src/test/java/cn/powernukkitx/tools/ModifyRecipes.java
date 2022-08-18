@@ -143,6 +143,10 @@ public class ModifyRecipes {
         modify.put("chiseled_stonebrick_recipeId", 3);
         //fix recipes for pillar_quartz_block
         modify.put("minecraft:pillar_quartz_block", 2);
+        //fix recipes for stone to polished stone
+        modify.put("minecraft:polished_andesite", 6);
+        modify.put("minecraft:polished_granite", 2);
+        modify.put("minecraft:polished_diorite", 4);
         Config config = new Config(Config.JSON);
         try (InputStream recipesStream = new FileInputStream("src/main/resources/recipes.json")) {
             if (recipesStream == null) {
@@ -218,13 +222,20 @@ public class ModifyRecipes {
                         }
                     }
                 }
+                //修复熔炉配方
                 var block = map.get("block");
                 if (block != null) {
-                    if (block.equals("furnace") && input2.get("id").equals("minecraft:quartz_block")) {
+                    if (block.equals("furnace")) {
                         var output = castMap(map.get("output"), String.class, Object.class);
-                        if (output != null) {
-                            output.put("damage", 3);
-                            map.put("output", output);
+                        if (input2.get("id").equals("minecraft:quartz_block")) {
+                            if (output != null) {
+                                output.put("damage", 3);
+                                map.put("output", output);
+                            }
+                        }
+                        if (input2.get("id").equals("minecraft:stone")) {
+                            input2.put("damage", -1);
+                            map.put("input", input2);
                         }
                     }
                 }
