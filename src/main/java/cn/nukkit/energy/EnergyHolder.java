@@ -1,6 +1,7 @@
 package cn.nukkit.energy;
 
 import cn.nukkit.math.BlockFace;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -10,6 +11,12 @@ import org.jetbrains.annotations.Nullable;
  * @author superice666
  */
 public interface EnergyHolder {
+    /**
+     * @return The name of this energy holder.
+     */
+    @NotNull
+    String getName();
+
     /**
      * @param energyType The type of energy to accept.
      * @return If this energy holder can accept input.
