@@ -1,9 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.DimensionData;
@@ -220,19 +217,35 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
             var sections = sectionChunk.getSections();
             for (int i = 0, len = sections.length; i < len && i < sectionCount; i++) {
-                var each = (ChunkSection3DBiome) sections[i];
-                palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        for (int y = 0; y < 16; y++) {
-                            palette.setBlock(x, y, z, Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z)));
+                if (sections[i] instanceof ChunkSection3DBiome each) {
+                    palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            for (int y = 0; y < 16; y++) {
+                                var tmpBiome = Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z) & 0xFF);
+//                                if (tmpBiome == 0) {
+//                                    System.out.println((chunk.getX() * 16 + x) + ", " + (i * 16 + y) + ", " +(chunk.getZ() * 16 + z) + ": 0");
+//                                }
+                                palette.setBlock(x, y, z, tmpBiome);
+                            }
                         }
                     }
+                    palette.writeTo(stream);
+                } else {
+                    palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z) & 0xFF);
+                            for (int y = 0; y < 16; y++) {
+                                palette.setBlock(x, y, z, biomeId);
+                            }
+                        }
+                    }
+                    palette.writeTo(stream);
                 }
-                palette.writeTo(stream);
             }
         } else {
-            palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0)));
+            palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));
@@ -337,6 +350,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         }
     }
 
+    @UsedByReflection
     public static ChunkSection createChunkSection(int y) {
         ChunkSection cs = new ChunkSection(y);
         cs.hasSkyLight = true;
