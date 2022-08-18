@@ -19,7 +19,9 @@ public abstract class BlockFallable extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         Block down = this.down();
-        if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid || down.getLevelBlockAtLayer(1) instanceof BlockLiquid) && !BlockPistonBase.isBlockLocked(new Position(down.x, down.y, down.z, this.getLevel()))) {
+        if ((down.getId() == AIR || down instanceof BlockFire || down instanceof BlockLiquid ||
+                (down instanceof BlockBubbleColumn && down.getLevelBlockAtLayer(1) instanceof BlockLiquid)) &&
+                !BlockPistonBase.isBlockLocked(new Position(down.x, down.y, down.z, this.getLevel()))) {
             BlockFallEvent event = new BlockFallEvent(this);
             this.level.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
