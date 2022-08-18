@@ -218,7 +218,12 @@ public class EntityBoat extends EntityVehicle {
         }
 
         // A killer task
-        if (y < -16) {
+        if (this.level != null) {
+            if (y < this.level.getMinHeight() - 16) {
+                kill();
+                return false;
+            }
+        } else if (y < -16) {
             kill();
             return false;
         }
