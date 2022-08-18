@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockAzalea extends BlockFlowable {
 
 
-
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly
@@ -159,32 +158,7 @@ public class BlockAzalea extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        int dropOdds;
-        Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
-        int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
-
-        switch (fortune) {
-            case 0:
-                dropOdds = 16;
-                break;
-            case 1:
-                dropOdds = 12;
-                break;
-            case 2:
-                dropOdds = 10;
-                break;
-            default:
-                dropOdds = 20;
-                break;
-        }
-
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (random.nextInt(dropOdds) == 0) {
-            return new Item[]{toItem()};
-        }
-
-        return Item.EMPTY_ARRAY;
-
+        return new Item[]{toItem()};
     }
 
     @Override
@@ -204,7 +178,7 @@ public class BlockAzalea extends BlockFlowable {
         Vector3 vector3 = new Vector3();
 
         generator = new ObjectAzaleaTree();
-        vector3 = this.add(0,0,0);
+        vector3 = this.add(0, 0, 0);
 
         ListChunkManager chunkManager = new ListChunkManager(this.level);
         boolean success = generator.generate(chunkManager, new NukkitRandom(), vector3);
@@ -214,7 +188,7 @@ public class BlockAzalea extends BlockFlowable {
             return;
         }
 
-        for(Block block : ev.getBlockList()) {
+        for (Block block : ev.getBlockList()) {
             this.level.setBlock(block, block);
         }
         this.level.setBlock(this, Block.get(LOG));
