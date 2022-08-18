@@ -1024,4 +1024,20 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public void setBiomeId(int x, int y, int z, byte id) {
         this.biomeId[getAnvilIndex(x, y, z)] = id;
     }
+
+    @Override
+    public String toString() {
+        return "ChunkSection{" +
+                "y=" + y +
+                ", sectionLock=" + sectionLock +
+                ", layerStorage=" + layerStorage +
+                ", biomeId=" + Arrays.toString(biomeId) +
+                ", blockLight=" + Arrays.toString(blockLight) +
+                ", skyLight=" + Arrays.toString(skyLight) +
+                ", compressedLight=" + Arrays.toString(compressedLight) +
+                ", hasBlockLight=" + hasBlockLight +
+                ", hasSkyLight=" + hasSkyLight +
+                ", contentVersion=" + contentVersion +
+                '}';
+    }
 }

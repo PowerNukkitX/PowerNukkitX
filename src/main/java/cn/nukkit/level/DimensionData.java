@@ -18,7 +18,7 @@ public class DimensionData {
         this(dimensionId, minHeight, maxHeight, null);
     }
 
-    public DimensionData(int dimensionId, int minHeight, int maxHeight,@Nullable Integer chunkSectionCount) {
+    public DimensionData(int dimensionId, int minHeight, int maxHeight, @Nullable Integer chunkSectionCount) {
         this(switch (dimensionId) {
             case 1 -> "minecraft:nether";
             case 2 -> "minecraft:the_end";
@@ -30,7 +30,7 @@ public class DimensionData {
         this(dimensionName, dimensionId, minHeight, maxHeight, null);
     }
 
-    public DimensionData(String dimensionName, int dimensionId, int minHeight, int maxHeight,@Nullable Integer chunkSectionCount) {
+    public DimensionData(String dimensionName, int dimensionId, int minHeight, int maxHeight, @Nullable Integer chunkSectionCount) {
         this.dimensionName = dimensionName;
         this.dimensionId = dimensionId;
         this.minHeight = minHeight;
