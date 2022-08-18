@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
@@ -125,7 +126,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
         this.chunkManager = level;
-        this.world = new PNXServerWorld(this.chunkManager, this.chunkGenerator, this.pack);
+        this.world = new PNXServerWorld(this.getLevel(), this.chunkManager, this.chunkGenerator, this.pack);
         this.nukkitRandom = random;
     }
 
@@ -158,10 +159,14 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         // 在装饰区块的时候就计算好天光避免重复计算导致内存泄露
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
 
-        PopulatorStructure.populateAll(this.chunkManager, chunkX, chunkZ, this.nukkitRandom, chunk);
-
         chunk.populateSkyLight();
         chunk.setLightPopulated(true);
+    }
+
+    @Since("1.19.20-r6")
+    @Override
+    public boolean shouldGenerateStructures() {
+        return true;
     }
 
     @Override

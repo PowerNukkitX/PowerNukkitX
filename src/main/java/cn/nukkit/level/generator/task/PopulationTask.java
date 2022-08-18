@@ -162,6 +162,13 @@ public class PopulationTask extends AsyncTask {
             }
 
             level.generateChunkCallback(centerChunk.getX(), centerChunk.getZ(), centerChunk, isPopulated);
+
+            //需要在全部地形生成完毕后再尝试生成结构
+            //todo: 异步？
+            var generator = level.getGenerator();
+            if (generator.shouldGenerateStructures()){
+                generator.populateStructure(centerChunk.getX(), centerChunk.getZ());
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.populator;
+package cn.nukkit.level.generator.populator.impl.structure.village.scheduler;
 
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;

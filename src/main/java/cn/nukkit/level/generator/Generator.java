@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -7,6 +8,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
@@ -23,6 +25,17 @@ public abstract class Generator implements BlockID {
     public static final int TYPE_NETHER = 3;
     public static final int TYPE_THE_END = 4;
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    protected Level level;
+
+    @Since("1.19.20-r6")
+    protected ChunkManager chunkManager;
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    protected NukkitRandom random;
+
     public abstract int getId();
 
     public DimensionData getDimensionData() {
@@ -31,6 +44,51 @@ public abstract class Generator implements BlockID {
             dimensionData = DimensionEnum.OVERWORLD.getDimensionData();
         }
         return dimensionData;
+    }
+
+    /**
+     * 返回此生成器实例绑定的世界
+     * 你不应该将此方法的返回值用于{@link cn.nukkit.level.generator.populator.type.Populator}上，而是使用{@code getChunkManager()}方法
+     * 以更好地利用多线程
+     * @return {@link cn.nukkit.level.generator.populator.type.Populator}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public Level getLevel() {
+        return level;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public NukkitRandom getRandom() {
+        return random;
+    }
+
+    /**
+     * 返回生成器的目标区块管理器
+     * 可能为{@link ChunkManager}的任何实现类
+     * @return {@link ChunkManager}
+     */
+    @PowerNukkitXDifference
+    @Since("1.19.20-r6")
+    public ChunkManager getChunkManager() {
+        return chunkManager;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public void setChunkManager(ChunkManager chunkManager) {
+        this.chunkManager = chunkManager;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void setRandom(NukkitRandom random) {
+        this.random = random;
     }
 
     @Deprecated
@@ -92,11 +150,23 @@ public abstract class Generator implements BlockID {
         return Generator.TYPE_INFINITE;
     }
 
-    public abstract void init(ChunkManager level, NukkitRandom random);
+    public abstract void init(ChunkManager chunkManager, NukkitRandom random);
 
     public abstract void generateChunk(int chunkX, int chunkZ);
 
     public abstract void populateChunk(int chunkX, int chunkZ);
+
+
+    /**
+     * 在指定区块上尝试生成结构
+     * @param chunkX
+     * @param chunkZ
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void populateStructure(int chunkX, int chunkZ){
+        PopulatorStructure.populateAll(chunkManager, chunkX, chunkZ, random, chunkManager.getChunk(chunkX, chunkZ));
+    }
 
     public abstract Map<String, Object> getSettings();
 
@@ -104,5 +174,13 @@ public abstract class Generator implements BlockID {
 
     public abstract Vector3 getSpawn();
 
-    public abstract ChunkManager getChunkManager();
+    /**
+     * 若返回值为true，则将会在区块地形生成完毕后调用 {@link Generator} 的 populateStructure(int chunkX, int chunkZ) 方法
+     * @return 是否需要生成结构
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public boolean shouldGenerateStructures() {
+        return false;
+    }
 }
