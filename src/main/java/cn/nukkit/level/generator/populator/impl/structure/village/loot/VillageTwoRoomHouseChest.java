@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.generator.populator.impl.structure.utils.loot.RandomizableContainer;
 import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/village_two_room_house.json (1.9.0.15)

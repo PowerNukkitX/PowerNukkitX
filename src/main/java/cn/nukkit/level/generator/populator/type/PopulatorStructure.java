@@ -8,6 +8,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator.PopulatorOceanMonument;
 import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDesertWell;
 import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDungeon;
+import cn.nukkit.level.generator.populator.impl.structure.stronghold.populator.PopulatorStronghold;
 import cn.nukkit.level.generator.populator.impl.structure.village.populator.PopulatorVillage;
 import cn.nukkit.level.generator.task.ChunkPopulationTask;
 import cn.nukkit.math.NukkitRandom;
@@ -26,6 +27,7 @@ public abstract class PopulatorStructure extends Populator {
         STRUCTURE_POPULATORS.add(new PopulatorOceanMonument());
         STRUCTURE_POPULATORS.add(new PopulatorDesertWell());
         STRUCTURE_POPULATORS.add(new PopulatorDungeon());
+        STRUCTURE_POPULATORS.add(new PopulatorStronghold());
     }
 
     public static List<PopulatorStructure> getPopulators() {

@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.quasi.loot;
+package cn.nukkit.level.generator.populator.impl.structure.utils.loot;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -130,7 +130,7 @@ public class RandomizableContainer {
         }
     }
 
-    protected static class PoolBuilder {
+    public static class PoolBuilder {
 
         private final List<ItemEntry> pool = Lists.newArrayList();
         private int totalWeight = 0;
