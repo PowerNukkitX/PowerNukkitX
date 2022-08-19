@@ -66,7 +66,7 @@ public abstract class Generator implements BlockID {
 
     /**
      * 返回生成器的目标区块管理器
-     * 可能为{@link ChunkManager}的任何实现类
+     * 实际为{@link PopChunkManager}
      * @return {@link ChunkManager}
      */
     @PowerNukkitXDifference

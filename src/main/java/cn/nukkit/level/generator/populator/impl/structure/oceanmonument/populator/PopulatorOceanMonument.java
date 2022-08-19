@@ -19,7 +19,6 @@ import com.google.common.collect.Sets;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class PopulatorOceanMonument extends PopulatorStructure {
 

@@ -318,12 +318,11 @@ public class Level implements ChunkManager, Metadatable {
                 generator.setLevel(Level.this);
                 if (Server.getInstance().isPrimaryThread()) {
                     generator.init(Level.this, rand);
-                    generator.setChunkManager(Level.this);
-                }else {
-                    ChunkManager manager;
-                    generator.init(manager = new PopChunkManager(getSeed()), rand);
-                    generator.setChunkManager(manager);
                 }
+                ChunkManager manager;
+                //Level.this不能用于生成区块，这里我们使用PopChunkManager再进行一遍init()
+                generator.init(manager = new PopChunkManager(getSeed()), rand);
+                generator.setChunkManager(manager);
                 return generator;
             } catch (Throwable e) {
                 e.printStackTrace();
