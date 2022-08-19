@@ -26,13 +26,14 @@ public class PopulatorDungeon extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.getProvider().isOverWorld()) return;
         int sourceX = chunkX << 4;
         int sourceZ = chunkZ << 4;
 
         chance:
         for (int chance = 0; chance < 8; ++chance) {
             int x = sourceX + random.nextBoundedInt(16) + 8;
-            int y = random.nextBoundedInt(256);
+            int y = random.nextBoundedInt(384) - 64;
             int z = sourceZ + random.nextBoundedInt(16) + 8;
 
             int xv = random.nextBoundedInt(2) + 2;
