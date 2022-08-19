@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.oceanmonument.util;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.Collections;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class NukkitCollections {
 
     private static final int SHUFFLE_THRESHOLD = 5;

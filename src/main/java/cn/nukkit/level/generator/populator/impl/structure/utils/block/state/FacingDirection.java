@@ -1,6 +1,11 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 //\\ VanillaStates::FacingDirection
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public final class FacingDirection {
 
     public static final int DOWN = 0b000;

@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
@@ -20,6 +21,8 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class PopulatorOceanMonument extends PopulatorStructure {
 
     protected static final int SPACING = 32;

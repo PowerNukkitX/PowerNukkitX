@@ -1,6 +1,8 @@
 package cn.nukkit.level.generator.populator.impl.structure.oceanmonument.structure;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockPrismarine;
 import cn.nukkit.block.BlockSponge;
@@ -23,6 +25,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class OceanMonumentPieces {
 
     private static final BlockState PRISMARINE = new BlockState(Block.PRISMARINE, BlockPrismarine.NORMAL);

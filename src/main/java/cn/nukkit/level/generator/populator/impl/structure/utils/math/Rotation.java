@@ -1,8 +1,12 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 
 //todo: 更改为基于BlockProperty的实现
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public enum Rotation {
     NONE,
     CLOCKWISE_90,

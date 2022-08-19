@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.structure;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -15,6 +17,8 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public abstract class StructurePiece {
 
     protected ChunkManager level;

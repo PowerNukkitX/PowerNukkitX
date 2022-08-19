@@ -165,7 +165,9 @@ public abstract class Generator implements BlockID {
     @PowerNukkitXOnly
     @Since("1.19.20-r6")
     public void populateStructure(int chunkX, int chunkZ){
-        PopulatorStructure.populateAll(chunkManager, chunkX, chunkZ, random, chunkManager.getChunk(chunkX, chunkZ));
+        //这里不能使用chunkManager而是使用level
+        //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
+        PopulatorStructure.populateAll(level, chunkX, chunkZ, random, level.getChunk(chunkX, chunkZ));
     }
 
     public abstract Map<String, Object> getSettings();

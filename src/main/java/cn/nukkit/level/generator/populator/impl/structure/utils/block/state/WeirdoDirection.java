@@ -1,6 +1,11 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
 //\\ VanillaStates::WeirdoDirection
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public final class WeirdoDirection {
 
     public static final int EAST = 0b00;

@@ -1,10 +1,14 @@
 package cn.nukkit.level.generator.populator.impl.structure.village.loot;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.inventory.InventoryType;
 import cn.nukkit.item.Item;
 import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/village_two_room_house.json (1.9.0.15)
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class VillageTwoRoomHouseChest extends RandomizableContainer {
 
     private static final VillageTwoRoomHouseChest INSTANCE = new VillageTwoRoomHouseChest();

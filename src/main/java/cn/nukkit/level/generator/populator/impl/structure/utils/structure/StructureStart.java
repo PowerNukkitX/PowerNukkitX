@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.structure;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
 import cn.nukkit.math.NukkitRandom;
@@ -9,6 +11,8 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public abstract class StructureStart {
 
     protected final ChunkManager level;

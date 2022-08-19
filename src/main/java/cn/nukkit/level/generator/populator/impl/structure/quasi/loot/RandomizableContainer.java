@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.village.loot;
+package cn.nukkit.level.generator.populator.impl.structure.quasi.loot;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -33,7 +33,7 @@ public class RandomizableContainer {
             for (int i = roll.getMin() == -1 ? roll.getMax() : random.nextRange(roll.getMin(), roll.getMax()); i > 0; --i) {
                 int result = random.nextBoundedInt(roll.getTotalWeight());
                 for (ItemEntry entry : pool) {
-                    result -= entry.getWeight();
+                    result -=  entry.getWeight();
                     if (result < 0) {
                         int index = random.nextBoundedInt(tags.length);
                         tags[index] = NBTIO.putItemHelper(Item.get(entry.getId(), entry.getMeta(), random.nextRange(entry.getMinCount(), entry.getMaxCount())), index);

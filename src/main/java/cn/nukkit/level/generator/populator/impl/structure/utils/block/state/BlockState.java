@@ -1,10 +1,14 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.block.state;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.Rotation;
 
 //todo: 替换为自带的BlockState
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class BlockState {
 
     public static final BlockState AIR = new BlockState(0);

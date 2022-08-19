@@ -1,10 +1,15 @@
 package cn.nukkit.level.generator.populator.impl.structure.utils.math;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.IntArrayTag;
 import com.google.common.base.MoreObjects;
 
+//todo: 使用自带的BoundingBox
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class BoundingBox {
 
     public int x0;

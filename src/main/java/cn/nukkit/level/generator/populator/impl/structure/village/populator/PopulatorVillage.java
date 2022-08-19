@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.populator.impl.structure.village.populator;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.EnumBiome;
@@ -16,6 +17,8 @@ import cn.nukkit.math.NukkitRandom;
 
 import java.util.List;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class PopulatorVillage extends PopulatorStructure {
 
     protected static final int SIZE = 0;
