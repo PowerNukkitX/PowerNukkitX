@@ -19,7 +19,7 @@ PLUGIN ERROR: ${PLUGIN_ERROR}
 
 ### OS and Versions
 
-* PowerNukkit Version: ${NUKKIT_VERSION} 
+* PowerNukkitX Version: ${NUKKIT_VERSION} 
 * Git Commit: ${NUKKIT_COMMIT}
 * Java Version: ${JAVA_VERSION}
 
