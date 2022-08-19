@@ -10,6 +10,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
@@ -116,6 +119,10 @@ public interface CustomBlock {
         return null;
     }
 
+    default boolean reverseSending() {
+        return true;
+    }
+
     /**
      * 获取方块属性NBT定义
      *
@@ -129,7 +136,11 @@ public interface CustomBlock {
                 return null;
             }
             var nbtList = new ListTag<CompoundTag>("properties");
-            for (var each : properties.getAllProperties()) {
+            var tmpList = new ArrayList<>(properties.getAllProperties());
+            if (reverseSending()) {
+                Collections.reverse(tmpList);
+            }
+            for (var each : tmpList) {
                 if (each.getProperty() instanceof BooleanBlockProperty booleanBlockProperty) {
                     nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
                             .putList(new ListTag<>("enum")
@@ -137,22 +148,31 @@ public interface CustomBlock {
                                     .add(new IntTag("", 1))));
                 } else if (each.getProperty() instanceof IntBlockProperty intBlockProperty) {
                     var enumList = new ListTag<IntTag>("enum");
-                    for (int i = intBlockProperty.getMinValue(); i < intBlockProperty.getMaxValue(); i++) {
+                    for (int i = intBlockProperty.getMinValue(); i <= intBlockProperty.getMaxValue(); i++) {
                         enumList.add(new IntTag("", i));
                     }
                     nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
                 } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
                     var enumList = new ListTag<LongTag>("enum");
-                    for (long i = unsignedIntBlockProperty.getMinValue(); i < unsignedIntBlockProperty.getMaxValue(); i++) {
+                    for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
                         enumList.add(new LongTag("", i));
                     }
                     nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
                 } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                    var enumList = new ListTag<StringTag>("enum");
-                    for (var e : arrayBlockProperty.getUniverse()) {
-                        enumList.add(new StringTag("", e.toString()));
+                    if (arrayBlockProperty.isOrdinal()) {
+                        var enumList = new ListTag<IntTag>("enum");
+                        var universe = arrayBlockProperty.getUniverse();
+                        for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
+                            enumList.add(new IntTag("", i));
+                        }
+                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
+                    } else {
+                        var enumList = new ListTag<StringTag>("enum");
+                        for (var e : arrayBlockProperty.getUniverse()) {
+                            enumList.add(new StringTag("", e.toString()));
+                        }
+                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
                     }
-                    nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
                 }
             }
             return nbtList;
@@ -201,6 +221,8 @@ public interface CustomBlock {
         if (!this.getGeometry().isEmpty()) {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
                     .putString("value", this.getGeometry()));
+        } else {
+            compoundTag.putCompound("minecraft:unit_cube", new CompoundTag());
         }
         //提供外部操作components组件
         compoundTag = componentNBTProcessor(compoundTag);
@@ -222,7 +244,7 @@ public interface CustomBlock {
             nbt.putList(propertiesNBT);
         }
         //molang版本
-//        nbt.putInt("molangVersion", 6);
+        nbt.putInt("molangVersion", 6);
         return new BlockPropertyData(this.getNamespace(), nbt);
     }
 }
