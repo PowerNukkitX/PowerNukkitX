@@ -111,7 +111,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
 
     {
         var input1 = Item.fromString("minecraft:string");
-        var input12 = Item.get(123);
+        var input12 = Item.fromString("minecraft:emerald");
         input1.setCount(20);
         input12.setCount(2);
         var output1 = Item.fromString("minecraft:iron_sword");
