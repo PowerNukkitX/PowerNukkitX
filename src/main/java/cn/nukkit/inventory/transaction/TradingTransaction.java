@@ -31,7 +31,6 @@ public class TradingTransaction extends InventoryTransaction {
     @Override
     public boolean execute() {
         for (InventoryAction action : this.actions) {
-            System.out.println(action);
             if (action instanceof SlotChangeAction slotChangeAction) {
                 if (slotChangeAction.execute(this.source)) {
                     slotChangeAction.onExecuteSuccess(this.source);
