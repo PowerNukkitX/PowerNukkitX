@@ -211,7 +211,6 @@ public class Server {
 
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
-    private boolean antiXray = false;
 
     private BaseLang baseLang;
 
@@ -606,7 +605,6 @@ public class Server {
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
-                put("anti-xray", false);
             }
         });
 
@@ -623,8 +621,6 @@ public class Server {
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
-
-        this.antiXray = this.properties.getBoolean("anti-xray", false);
 
         // 检测启动参数
         if (!StartArgUtils.isValidStart()) {
@@ -2458,18 +2454,6 @@ public class Server {
 
     public Network getNetwork() {
         return network;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r6")
-    public boolean isAntiXray() {
-        return antiXray;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r6")
-    public void setAntiXray(boolean antiXray) {
-        this.antiXray = antiXray;
     }
 
     //Revising later...

@@ -1,18 +1,18 @@
 package cn.nukkit.level.format.anvil.util;
 
-import cn.nukkit.api.API;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.functional.BlockPositionDataConsumer;
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnegative;
@@ -32,36 +32,41 @@ public class BlockStorage {
     @Since("1.4.0.0-PN")
     public static final BlockStorage[] EMPTY_ARRAY = new BlockStorage[0];
 
-    private static final byte FLAG_HAS_ID           = 0b00_0001;
-    private static final byte FLAG_HAS_ID_EXTRA     = 0b00_0010;
-    private static final byte FLAG_HAS_DATA_EXTRA   = 0b00_0100;
-    private static final byte FLAG_HAS_DATA_BIG     = 0b00_1000;
-    private static final byte FLAG_HAS_DATA_HUGE    = 0b01_0000;
-    private static final byte FLAG_PALETTE_UPDATED  = 0b10_0000;
-    
-    private static final byte FLAG_ENABLE_ID_EXTRA  = FLAG_HAS_ID | FLAG_HAS_ID_EXTRA;
-    private static final byte FLAG_ENABLE_DATA_EXTRA= FLAG_HAS_ID | FLAG_HAS_DATA_EXTRA;
-    private static final byte FLAG_ENABLE_DATA_BIG  = FLAG_ENABLE_DATA_EXTRA | FLAG_HAS_DATA_BIG;
-    private static final byte FLAG_ENABLE_DATA_HUGE = FLAG_ENABLE_DATA_BIG | FLAG_HAS_DATA_HUGE;
-    
-    private static final byte FLAG_EVERYTHING_ENABLED = FLAG_ENABLE_DATA_HUGE | FLAG_ENABLE_ID_EXTRA | FLAG_PALETTE_UPDATED;
-    
-    private static final int BLOCK_ID_MASK          = 0x00FF;
-    private static final int BLOCK_ID_EXTRA_MASK    = 0xFF00;
-    private static final int BLOCK_ID_FULL          = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
+    private static final byte FLAG_HAS_ID = 0b00_0001;
+    private static final byte FLAG_HAS_ID_EXTRA = 0b00_0010;
+    private static final byte FLAG_HAS_DATA_EXTRA = 0b00_0100;
+    private static final byte FLAG_HAS_DATA_BIG = 0b00_1000;
+    private static final byte FLAG_HAS_DATA_HUGE = 0b01_0000;
+    private static final byte FLAG_PALETTE_UPDATED = 0b10_0000;
 
-    @PowerNukkitOnly public static final int SECTION_SIZE = 4096;
-    
+    private static final byte FLAG_ENABLE_ID_EXTRA = FLAG_HAS_ID | FLAG_HAS_ID_EXTRA;
+    private static final byte FLAG_ENABLE_DATA_EXTRA = FLAG_HAS_ID | FLAG_HAS_DATA_EXTRA;
+    private static final byte FLAG_ENABLE_DATA_BIG = FLAG_ENABLE_DATA_EXTRA | FLAG_HAS_DATA_BIG;
+    private static final byte FLAG_ENABLE_DATA_HUGE = FLAG_ENABLE_DATA_BIG | FLAG_HAS_DATA_HUGE;
+
+    private static final byte FLAG_EVERYTHING_ENABLED = FLAG_ENABLE_DATA_HUGE | FLAG_ENABLE_ID_EXTRA | FLAG_PALETTE_UPDATED;
+
+    private static final int BLOCK_ID_MASK = 0x00FF;
+    private static final int BLOCK_ID_EXTRA_MASK = 0xFF00;
+    private static final int BLOCK_ID_FULL = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
+
+    @PowerNukkitOnly
+    public static final int SECTION_SIZE = 4096;
+
     private static final BlockState[] EMPTY = new BlockState[SECTION_SIZE];
+
     static {
         Arrays.fill(EMPTY, BlockState.AIR);
     }
-    
+
     private final PalettedBlockStorage palette;
     private final BlockState[] states;
     private byte flags = FLAG_PALETTE_UPDATED;
     @Nullable
     private BitSet denyStates = null;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    private boolean needReObfuscate = true;
 
     public BlockStorage() {
         states = EMPTY.clone();
@@ -100,15 +105,15 @@ public class BlockStorage {
     public int getBlockData(int x, int y, int z) {
         return states[getIndex(x, y, z)].getSignedBigDamage();
     }
-    
+
     @Nonnegative
     public int getBlockId(int x, int y, int z) {
         return states[getIndex(x, y, z)].getBlockId();
     }
-    
+
     public void setBlockId(int x, int y, int z, @Nonnegative int id) {
         int index = getIndex(x, y, z);
-        setBlockState(index, states[index].withBlockId(id));    
+        setBlockState(index, states[index].withBlockId(id));
     }
 
     @Deprecated
@@ -151,13 +156,13 @@ public class BlockStorage {
     public BlockState getAndSetBlockState(int x, int y, int z, BlockState state) {
         return setBlockState(getIndex(x, y, z), state);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setBlockState(int x, int y, int z, BlockState state) {
         setBlockState(getIndex(x, y, z), state);
     }
-    
+
     @Deprecated
     @DeprecationDetails(reason = "The meta is limited to 32 bits", since = "1.3.0.0-PN", replaceWith = "getAndSetFullBlock")
     public int getAndSetFullBlock(int x, int y, int z, int value) {
@@ -213,7 +218,7 @@ public class BlockStorage {
         if (previous.equals(state)) {
             return previous;
         }
-        
+
         states[index] = state;
         updateFlags(index, previous, state);
         if (getFlag(FLAG_PALETTE_UPDATED)) {
@@ -224,7 +229,7 @@ public class BlockStorage {
                 palette.setBlock(index, runtimeId);
             }
         }
-        
+
         return previous;
     }
 
@@ -249,14 +254,14 @@ public class BlockStorage {
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public void recheckBlocks() {
-        flags = computeFlags((byte)(flags & FLAG_PALETTE_UPDATED), states);
+        flags = computeFlags((byte) (flags & FLAG_PALETTE_UPDATED), states);
     }
-    
+
     private void updateFlags(int index, BlockState previous, BlockState state) {
         if (flags != FLAG_EVERYTHING_ENABLED) {
             flags = computeFlags(flags, state);
         }
-        
+
         if (denyStates != null) {
             switch (previous.getBlockId()) {
                 case BlockID.DENY:
@@ -271,7 +276,7 @@ public class BlockStorage {
                 default:
             }
         }
-        
+
         switch (state.getBlockId()) {
             case BlockID.DENY:
                 deny(index);
@@ -294,10 +299,10 @@ public class BlockStorage {
         for (int y = 0; y <= 0xF; y++) {
             denyStates.set(index++);    // Deny
             denyStates.set(index++);    // Allow
-                                        // Both deny and allow means border
+            // Both deny and allow means border
         }
     }
-    
+
     private void deny(int index) {
         if (denyStates == null) {
             denyStates = new BitSet();
@@ -319,11 +324,11 @@ public class BlockStorage {
                     denyStates.clear(index + 1);
                 }
             }
-            
+
             denyStates.set(index);
         }
     }
-    
+
     private void allow(int index) {
         if (denyStates == null) {
             denyStates = new BitSet();
@@ -349,7 +354,7 @@ public class BlockStorage {
             denyStates.set(index + 1);
         }
     }
-    
+
     private void clearAllow(int index) {
         assert denyStates != null;
         int y = index & 0xF;
@@ -358,7 +363,7 @@ public class BlockStorage {
             if (denyStates.get(index)) { // Deny or border
                 break;
             }
-            
+
             denyStates.clear(index + 1); // Remove the allow
         }
     }
@@ -375,10 +380,10 @@ public class BlockStorage {
             denyStates.clear(index); // Remove the deny
         }
     }
-    
+
     private void clearBorder(final int index) {
         assert denyStates != null;
-        
+
         // Check if there's an other border
         final int bottomIndex = index & ~0xF;
         final int topIndex = index | 0xF;
@@ -387,7 +392,7 @@ public class BlockStorage {
                 return;
             }
         }
-        
+
         // Clear the border flags
         boolean removeDeny = true;
         boolean removeAllow = true;
@@ -411,7 +416,7 @@ public class BlockStorage {
             }
         }
     }
-    
+
     private byte computeFlags(byte newFlags, BlockState... states) {
         for (BlockState state : states) {
             int blockId = state.getBlockId();
@@ -436,14 +441,14 @@ public class BlockStorage {
                 return newFlags;
             }
         }
-        
-        return newFlags; 
+
+        return newFlags;
     }
 
     @Since("1.4.0.0-PN")
     public BlockStorage copy() {
         BitSet deny = denyStates;
-        return new BlockStorage(states.clone(), flags, palette.copy(), (BitSet) (deny != null? deny.clone() : null));
+        return new BlockStorage(states.clone(), flags, palette.copy(), (BitSet) (deny != null ? deny.clone() : null));
     }
 
     @PowerNukkitOnly
@@ -452,11 +457,11 @@ public class BlockStorage {
     public ImmutableBlockStorage immutableCopy() {
         return new ImmutableBlockStorage(states, flags, palette, denyStates);
     }
-    
+
     private boolean getFlag(byte flag) {
         return (flags & flag) == flag;
     }
-    
+
     private void setFlag(byte flag, boolean value) {
         if (value) {
             flags |= flag;
@@ -491,7 +496,7 @@ public class BlockStorage {
     public boolean hasBlockDataHuge() {
         return getFlag(FLAG_HAS_DATA_HUGE);
     }
-    
+
     private boolean isPaletteUpdated() {
         return getFlag(FLAG_PALETTE_UPDATED);
     }
@@ -505,6 +510,53 @@ public class BlockStorage {
             setFlag(FLAG_PALETTE_UPDATED, true);
         }
         palette.writeTo(stream);
+    }
+
+    protected final boolean canBeObfuscated(IntSet transparentBlockSet, int x, int y, int z) {
+        return !transparentBlockSet.contains(states[getIndex(x + 1, y, z)].getRuntimeId()) &&
+                !transparentBlockSet.contains(states[getIndex(x - 1, y, z)].getRuntimeId()) &&
+                !transparentBlockSet.contains(states[getIndex(x, y + 1, z)].getRuntimeId()) &&
+                !transparentBlockSet.contains(states[getIndex(x, y - 1, z)].getRuntimeId()) &&
+                !transparentBlockSet.contains(states[getIndex(x, y, z + 1)].getRuntimeId()) &&
+                !transparentBlockSet.contains(states[getIndex(x, y, z - 1)].getRuntimeId());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void writeObfuscatedTo(BinaryStream stream, Level level) {
+        var realOreToFakeMap = level.getRawRealOreToReplacedRuntimeIdMap();
+        var fakeBlockMap = level.getRawFakeOreToPutRuntimeIdMap();
+        var transparentBlockSet = Level.getRawTransparentBlockRuntimeIds();
+        var nukkitRandom = new NukkitRandom(level.getSeed());
+        if (!isPaletteUpdated() || needReObfuscate) {
+            for (int i = 0; i < states.length; i++) {
+                int x = (i >> 8) & 0xF;
+                int z = (i >> 4) & 0xF;
+                int y = i & 0xF;
+                var rid = states[i].getRuntimeId();
+                if (x != 0 && z != 0 && y != 0 && x != 15 && z != 15 && y != 15) {
+                    var tmp = realOreToFakeMap.getOrDefault(rid, Integer.MAX_VALUE);
+                    if (tmp != Integer.MAX_VALUE  && canBeObfuscated(transparentBlockSet, x, y, z)) {
+                        rid = tmp;
+                    } else {
+                        var tmp2 = fakeBlockMap.get(rid);
+                        if (tmp2 != null && (nukkitRandom.nextSignedInt() & 3) == 0 && canBeObfuscated(transparentBlockSet, x, y, z)) {
+                            rid = tmp2.getInt(nukkitRandom.nextRange(0, tmp2.size() - 1));
+                        }
+                    }
+                }
+                palette.setBlock(i, rid);
+            }
+            this.needReObfuscate = true;
+            setFlag(FLAG_PALETTE_UPDATED, true);
+        }
+        palette.writeTo(stream);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void setNeedReObfuscate() {
+        this.needReObfuscate = true;
     }
 
     @PowerNukkitOnly
@@ -528,6 +580,6 @@ public class BlockStorage {
             return 0;
         }
         int index = getIndex(x, y, z) << 1;
-        return (denyFlags.get(index)? 0x1 : 0x0) | (denyFlags.get(index + 1)? 0x2 : 0x0);
+        return (denyFlags.get(index) ? 0x1 : 0x0) | (denyFlags.get(index + 1) ? 0x2 : 0x0);
     }
 }

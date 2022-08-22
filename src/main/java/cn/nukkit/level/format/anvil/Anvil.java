@@ -15,6 +15,7 @@ import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -22,6 +23,7 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
@@ -29,10 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -98,10 +98,12 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return isValid;
     }
 
+    @UsedByReflection
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator) throws IOException {
         generate(path, name, seed, generator, new HashMap<>());
     }
 
+    @UsedByReflection
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
         File regionDir = new File(path + "/region");
@@ -163,7 +165,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return null;
     }
 
-    public static void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
+    @PowerNukkitXDifference(info = "Non-static")
+    public final void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
         byte[] blockEntities;
         if (chunk.getBlockEntities().isEmpty()) {
             blockEntities = new byte[0];
@@ -192,7 +195,11 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         for (int i = 0; i < subChunkCount; i++) { // 确保全部在主线程上分配
             tmpSubChunkStreams[i] = new BinaryStream(new byte[8192]).reset(); // 8KB
         }
-        IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
+        if (level != null && level.isAntiXrayEnabled()) {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
+        } else {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
+        }
         for (int i = 0; i < subChunkCount; i++) {
             stream.put(tmpSubChunkStreams[i].getBuffer());
         }
