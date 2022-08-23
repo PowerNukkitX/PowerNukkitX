@@ -86,7 +86,12 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             BlockVector3 vec = blockInfo.pos.add(0, position.getY());
             
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
-                chunk.setBlock(vec.getX(), vec.getY(), vec.getZ(), entry.getId(), entry.getMeta());
+                int blockIdLayer0 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 0);
+                int blockIdLayer1 = chunk.getBlockId(vec.getX(), vec.getY(), vec.getZ(), 1);
+                boolean shouldFillWater = blockIdLayer0 == BlockID.FLOWING_WATER || blockIdLayer0 == BlockID.STILL_WATER ||
+                        blockIdLayer1 == BlockID.FLOWING_WATER || blockIdLayer1 == BlockID.STILL_WATER;
+                chunk.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
+                if (shouldFillWater) chunk.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             }
 
             if (blockInfo.nbt != null) {
@@ -130,7 +135,12 @@ public class ReadOnlyLegacyStructureTemplate extends AbstractLegacyStructureTemp
             BlockVector3 vec = blockInfo.pos.add(position);
 
             if (entry.getId() != BlockID.STRUCTURE_BLOCK) {
-                level.setBlockAt(vec.getX(), vec.getY(), vec.getZ(), entry.getId(), entry.getMeta());
+                int blockIdLayer0 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 0);
+                int blockIdLayer1 = level.getBlockIdAt(vec.getX(), vec.getY(), vec.getZ(), 1);
+                boolean shouldFillWater = blockIdLayer0 == BlockID.FLOWING_WATER || blockIdLayer0 == BlockID.STILL_WATER ||
+                                          blockIdLayer1 == BlockID.FLOWING_WATER || blockIdLayer1 == BlockID.STILL_WATER;
+                level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 0, entry.getId(), entry.getMeta());
+                if (shouldFillWater) level.setBlockAtLayer(vec.getX(), vec.getY(), vec.getZ(), 1, BlockID.STILL_WATER);
             }
 
             if (blockInfo.nbt != null) {

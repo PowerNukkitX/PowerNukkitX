@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator.task;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
@@ -8,6 +10,8 @@ import cn.nukkit.scheduler.AsyncTask;
 
 import java.util.function.Consumer;
 
+@PowerNukkitXOnly
+@Since("1.19.20-r6")
 public class CallbackableChunkGenerationTask<T> extends AsyncTask {
 
     public boolean state = true;

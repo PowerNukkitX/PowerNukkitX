@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -9,16 +10,21 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
+import cn.nukkit.level.generator.task.ChunkPopulationTask;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class Generator implements BlockID {
+
     public static final int TYPE_OLD = 0;
     public static final int TYPE_INFINITE = 1;
     public static final int TYPE_FLAT = 2;
@@ -36,7 +42,26 @@ public abstract class Generator implements BlockID {
     @Since("1.19.20-r6")
     protected NukkitRandom random;
 
+    protected List<PopulatorStructure> structurePopulators = new ArrayList<>();
+
+    {
+        if (shouldGenerateStructures()) {
+            try {
+                for (Class<? extends PopulatorStructure> cz : PopulatorStructure.getPopulators()) {
+                    structurePopulators.add(cz.getConstructor().newInstance());
+                }
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public abstract int getId();
+
+    public List<PopulatorStructure> getStructurePopulators() {
+        return structurePopulators;
+    }
 
     public DimensionData getDimensionData() {
         DimensionData dimensionData = DimensionEnum.getDataFromId(this.getDimension());
@@ -50,6 +75,7 @@ public abstract class Generator implements BlockID {
      * 返回此生成器实例绑定的世界
      * 你不应该将此方法的返回值用于{@link cn.nukkit.level.generator.populator.type.Populator}上，而是使用{@code getChunkManager()}方法
      * 以更好地利用多线程
+     *
      * @return {@link cn.nukkit.level.generator.populator.type.Populator}
      */
     @PowerNukkitXOnly
@@ -67,6 +93,7 @@ public abstract class Generator implements BlockID {
     /**
      * 返回生成器的目标区块管理器
      * 实际为{@link PopChunkManager}
+     *
      * @return {@link ChunkManager}
      */
     @PowerNukkitXDifference
@@ -159,15 +186,20 @@ public abstract class Generator implements BlockID {
 
     /**
      * 在指定区块上尝试生成结构
+     *
      * @param chunkX
      * @param chunkZ
      */
     @PowerNukkitXOnly
     @Since("1.19.20-r6")
-    public void populateStructure(int chunkX, int chunkZ){
+    public void populateStructure(int chunkX, int chunkZ) {
         //这里不能使用chunkManager而是使用level
         //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
-        PopulatorStructure.populateAll(level, chunkX, chunkZ, random, level.getChunk(chunkX, chunkZ));
+        var chunk = level.getChunk(chunkX, chunkZ);
+        for (PopulatorStructure populator : structurePopulators) {
+            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
+            else populator.populate(level, chunkX, chunkZ, random, chunk);
+        }
     }
 
     public abstract Map<String, Object> getSettings();
@@ -178,6 +210,7 @@ public abstract class Generator implements BlockID {
 
     /**
      * 若返回值为true，则将会在区块地形生成完毕后调用 {@link Generator} 的 populateStructure(int chunkX, int chunkZ) 方法
+     *
      * @return 是否需要生成结构
      */
     @PowerNukkitXOnly

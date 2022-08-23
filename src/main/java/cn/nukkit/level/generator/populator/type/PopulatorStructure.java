@@ -1,10 +1,7 @@
 package cn.nukkit.level.generator.populator.type;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.fossil.PopulatorFossil;
 import cn.nukkit.level.generator.populator.impl.structure.netherfortress.populator.PopulatorNetherFortress;
 import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator.PopulatorOceanMonument;
@@ -13,8 +10,6 @@ import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.Popula
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.PopulatorShipwreck;
 import cn.nukkit.level.generator.populator.impl.structure.stronghold.populator.PopulatorStronghold;
 import cn.nukkit.level.generator.populator.impl.structure.village.populator.PopulatorVillage;
-import cn.nukkit.level.generator.task.ChunkPopulationTask;
-import cn.nukkit.math.NukkitRandom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,40 +18,33 @@ import java.util.List;
 @Since("1.19.20-r6")
 public abstract class PopulatorStructure extends Populator {
 
-    protected static List<PopulatorStructure> STRUCTURE_POPULATORS = new ArrayList<>();
+    protected static List<Class<? extends PopulatorStructure>> STRUCTURE_POPULATORS = new ArrayList<>();
 
     static{
-        STRUCTURE_POPULATORS.add(new PopulatorVillage());
-        STRUCTURE_POPULATORS.add(new PopulatorOceanMonument());
-        STRUCTURE_POPULATORS.add(new PopulatorDesertWell());
-        STRUCTURE_POPULATORS.add(new PopulatorDungeon());
-        STRUCTURE_POPULATORS.add(new PopulatorStronghold());
-        STRUCTURE_POPULATORS.add(new PopulatorNetherFortress());
-        STRUCTURE_POPULATORS.add(new PopulatorShipwreck());
-        STRUCTURE_POPULATORS.add(new PopulatorFossil());
+        STRUCTURE_POPULATORS.add(PopulatorVillage.class);
+        STRUCTURE_POPULATORS.add(PopulatorOceanMonument.class);
+        STRUCTURE_POPULATORS.add(PopulatorDesertWell.class);
+        STRUCTURE_POPULATORS.add(PopulatorDungeon.class);
+        STRUCTURE_POPULATORS.add(PopulatorStronghold.class);
+        STRUCTURE_POPULATORS.add(PopulatorNetherFortress.class);
+        STRUCTURE_POPULATORS.add(PopulatorShipwreck.class);
+        STRUCTURE_POPULATORS.add(PopulatorFossil.class);
     }
 
-    public static List<PopulatorStructure> getPopulators() {
+    public static List<Class<? extends PopulatorStructure>> getPopulators() {
         return STRUCTURE_POPULATORS;
     }
 
-    public static void addPopulator(PopulatorStructure populator) {
+    public static void addPopulator(Class<? extends PopulatorStructure> populator) {
         STRUCTURE_POPULATORS.add(populator);
     }
 
-    public static void removePopulator(PopulatorStructure populator) {
+    public static void removePopulator(Class<? extends PopulatorStructure> populator) {
         STRUCTURE_POPULATORS.remove(populator);
     }
 
     public static void clearPopulators() {
         STRUCTURE_POPULATORS.clear();
-    }
-
-    public static void populateAll(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        for (PopulatorStructure populator : STRUCTURE_POPULATORS) {
-            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
-            else populator.populate(level, chunkX, chunkZ, random, chunk);
-        }
     }
 
     /**
