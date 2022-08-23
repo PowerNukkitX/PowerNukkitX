@@ -341,7 +341,12 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.20-r6")
     private boolean antiXrayEnabled = false;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
     private int fakeOreDenominator = 16;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    private boolean preDeObfuscate = true;
     @PowerNukkitXOnly
     @Since("1.19.20-r6")
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
@@ -404,6 +409,7 @@ public class Level implements ChunkManager, Metadatable {
                 case "normal", "middle" -> 8;
                 default -> 16;
             });
+            this.setPreDeObfuscate(server.getConfig("anti-xray." + name + ".pre-deobfuscate", true));
         }
 
         log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
@@ -565,6 +571,18 @@ public class Level implements ChunkManager, Metadatable {
     @Since("1.19.20-r6")
     public void setFakeOreDenominator(int fakeOreDenominator) {
         this.fakeOreDenominator = fakeOreDenominator;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public boolean isPreDeObfuscate() {
+        return preDeObfuscate;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void setPreDeObfuscate(boolean preDeObfuscate) {
+        this.preDeObfuscate = preDeObfuscate;
     }
 
     @PowerNukkitXOnly

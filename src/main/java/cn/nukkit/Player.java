@@ -2998,6 +2998,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     pk.z = (float) pos.z;
                                     pk.data = (int) (65535 / breakTime);
                                     this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                                    // 优化反矿透时玩家的挖掘体验
+                                    if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
+                                        var vecList = new ArrayList<Vector3WithRuntimeId>(5);
+                                        Vector3WithRuntimeId tmpVec;
+                                        for (var each : BlockFace.values()) {
+                                            if (each == face) continue;
+                                            var tmpX = target.getFloorX() + each.getXOffset();
+                                            var tmpY = target.getFloorY() + each.getYOffset();
+                                            var tmpZ = target.getFloorZ() + each.getZOffset();
+                                            tmpVec = new Vector3WithRuntimeId(tmpX, tmpY, tmpZ, getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0), getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
+                                            if (getLevel().getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
+                                                vecList.add(tmpVec);
+                                            }
+                                        }
+                                        this.getLevel().sendBlocks(new Player[]{this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                                    }
                                 }
                             }
 
