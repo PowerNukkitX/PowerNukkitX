@@ -113,7 +113,6 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
 
         //Beach
         VALID_BIOMES[EnumBiome.BEACH.id] = VALID_BEACH_BIOMES[EnumBiome.BEACH.id] = true;
-        VALID_BIOMES[EnumBiome.STONE_BEACH.id] = VALID_BEACH_BIOMES[EnumBiome.STONE_BEACH.id] = true;
         VALID_BIOMES[EnumBiome.COLD_BEACH.id] = VALID_BEACH_BIOMES[EnumBiome.COLD_BEACH.id] = true;
     }
 

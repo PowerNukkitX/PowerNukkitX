@@ -2,13 +2,16 @@ package cn.nukkit.level.generator.populator.type;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.level.generator.populator.impl.structure.desertpyramid.PopulatorDesertPyramid;
 import cn.nukkit.level.generator.populator.impl.structure.fossil.PopulatorFossil;
+import cn.nukkit.level.generator.populator.impl.structure.jungletemple.PopulatorJungleTemple;
 import cn.nukkit.level.generator.populator.impl.structure.netherfortress.populator.PopulatorNetherFortress;
 import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator.PopulatorOceanMonument;
 import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDesertWell;
 import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDungeon;
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.PopulatorShipwreck;
 import cn.nukkit.level.generator.populator.impl.structure.stronghold.populator.PopulatorStronghold;
+import cn.nukkit.level.generator.populator.impl.structure.swamphut.PopulatorSwampHut;
 import cn.nukkit.level.generator.populator.impl.structure.village.populator.PopulatorVillage;
 
 import java.util.ArrayList;
@@ -29,6 +32,9 @@ public abstract class PopulatorStructure extends Populator {
         STRUCTURE_POPULATORS.add(PopulatorNetherFortress.class);
         STRUCTURE_POPULATORS.add(PopulatorShipwreck.class);
         STRUCTURE_POPULATORS.add(PopulatorFossil.class);
+        STRUCTURE_POPULATORS.add(PopulatorDesertPyramid.class);
+        STRUCTURE_POPULATORS.add(PopulatorJungleTemple.class);
+        STRUCTURE_POPULATORS.add(PopulatorSwampHut.class);
     }
 
     public static List<Class<? extends PopulatorStructure>> getPopulators() {

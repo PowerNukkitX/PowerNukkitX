@@ -3,6 +3,7 @@ package cn.nukkit.level.generator.populator.impl.structure.utils.template;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
+//todo: 替换为核心内部实现
 @PowerNukkitXOnly
 @Since("1.19.20-r6")
 public class BlockEntry {
