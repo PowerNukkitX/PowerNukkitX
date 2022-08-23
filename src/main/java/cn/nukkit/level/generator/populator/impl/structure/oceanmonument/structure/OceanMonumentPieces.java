@@ -1935,8 +1935,4 @@ public class OceanMonumentPieces {
 
         OceanMonumentPiece create(BlockFace orientation, RoomDefinition roomDefinition, NukkitRandom random);
     }
-
-    public static void init() {
-        //NOOP
-    }
 }

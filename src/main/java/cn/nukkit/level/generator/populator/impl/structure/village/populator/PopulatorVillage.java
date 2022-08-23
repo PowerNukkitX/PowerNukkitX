@@ -8,11 +8,11 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
-import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructureStart;
 import cn.nukkit.level.generator.populator.impl.structure.village.structure.VillagePieces;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
+import cn.nukkit.level.generator.task.CallbackableChunkGenerationTask;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.List;
