@@ -527,6 +527,7 @@ public class BlockStorage {
         var realOreToFakeMap = level.getRawRealOreToReplacedRuntimeIdMap();
         var fakeBlockMap = level.getRawFakeOreToPutRuntimeIdMap();
         var transparentBlockSet = Level.getRawTransparentBlockRuntimeIds();
+        var XAndDenominator = level.getFakeOreDenominator() - 1;
         var nukkitRandom = new NukkitRandom(level.getSeed());
         if (!isPaletteUpdated() || needReObfuscate) {
             for (int i = 0; i < states.length; i++) {
@@ -540,7 +541,7 @@ public class BlockStorage {
                         rid = tmp;
                     } else {
                         var tmp2 = fakeBlockMap.get(rid);
-                        if (tmp2 != null && (nukkitRandom.nextSignedInt() & 3) == 0 && canBeObfuscated(transparentBlockSet, x, y, z)) {
+                        if (tmp2 != null && (nukkitRandom.nextSignedInt() & XAndDenominator) == 0 && canBeObfuscated(transparentBlockSet, x, y, z)) {
                             rid = tmp2.getInt(nukkitRandom.nextRange(0, tmp2.size() - 1));
                         }
                     }
