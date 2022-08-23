@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class OceanMonumentPieces {
 
     private static final BlockState PRISMARINE = new BlockState(Block.PRISMARINE, BlockPrismarine.NORMAL);

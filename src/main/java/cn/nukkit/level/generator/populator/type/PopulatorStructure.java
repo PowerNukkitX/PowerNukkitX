@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public abstract class PopulatorStructure extends Populator {
 
     protected static List<Class<? extends PopulatorStructure>> STRUCTURE_POPULATORS = new ArrayList<>();
@@ -66,7 +66,7 @@ public abstract class PopulatorStructure extends Populator {
      * @return boolean
      */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public boolean isAsync() {
         return false;
     }

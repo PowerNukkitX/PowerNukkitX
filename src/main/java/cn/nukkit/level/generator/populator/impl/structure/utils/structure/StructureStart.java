@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public abstract class StructureStart {
 
     protected final ChunkManager level;

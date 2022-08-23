@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_library.json
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class StrongholdLibraryChest extends RandomizableContainer {
 
     private static final StrongholdLibraryChest INSTANCE = new StrongholdLibraryChest();

@@ -11,7 +11,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import java.util.Collection;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class ChunkPopulationTask extends AsyncTask {
 
     private final ChunkManager level;

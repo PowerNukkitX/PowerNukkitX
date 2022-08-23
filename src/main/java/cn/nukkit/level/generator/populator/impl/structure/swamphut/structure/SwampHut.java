@@ -12,7 +12,7 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class SwampHut extends ScatteredStructurePiece {
 
     public SwampHut(BlockVector3 pos) {

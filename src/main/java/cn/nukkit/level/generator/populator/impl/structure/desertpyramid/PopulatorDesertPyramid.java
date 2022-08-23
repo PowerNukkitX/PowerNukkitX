@@ -11,7 +11,7 @@ import cn.nukkit.math.NukkitRandom;
 
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class PopulatorDesertPyramid extends PopulatorScatteredStructure {
 
     @Override

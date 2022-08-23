@@ -14,7 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class DesertPyramid extends ScatteredStructurePiece {
 
     public DesertPyramid(BlockVector3 pos) {

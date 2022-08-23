@@ -32,14 +32,14 @@ public abstract class Generator implements BlockID {
     public static final int TYPE_THE_END = 4;
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     protected Level level;
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     protected ChunkManager chunkManager;
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     protected NukkitRandom random;
 
     protected List<PopulatorStructure> structurePopulators = new ArrayList<>();
@@ -79,13 +79,13 @@ public abstract class Generator implements BlockID {
      * @return {@link cn.nukkit.level.generator.populator.type.Populator}
      */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public Level getLevel() {
         return level;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public NukkitRandom getRandom() {
         return random;
     }
@@ -97,13 +97,13 @@ public abstract class Generator implements BlockID {
      * @return {@link ChunkManager}
      */
     @PowerNukkitXDifference
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public ChunkManager getChunkManager() {
         return chunkManager;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public void setLevel(Level level) {
         this.level = level;
     }
@@ -113,7 +113,7 @@ public abstract class Generator implements BlockID {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public void setRandom(NukkitRandom random) {
         this.random = random;
     }
@@ -191,7 +191,7 @@ public abstract class Generator implements BlockID {
      * @param chunkZ
      */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public void populateStructure(int chunkX, int chunkZ) {
         //这里不能使用chunkManager而是使用level
         //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
@@ -214,7 +214,7 @@ public abstract class Generator implements BlockID {
      * @return 是否需要生成结构
      */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     public boolean shouldGenerateStructures() {
         return false;
     }

@@ -10,7 +10,7 @@ import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.math.NukkitRandom;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class PopulatorDesertWell extends PopulatorStructure {
 
     @Override
@@ -78,7 +78,7 @@ public class PopulatorDesertWell extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean isAsync() {
         return true;

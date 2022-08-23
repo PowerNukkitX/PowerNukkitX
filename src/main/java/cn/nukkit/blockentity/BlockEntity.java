@@ -68,7 +68,7 @@ public abstract class BlockEntity extends Position {
     @PowerNukkitOnly @Since("1.6.0.0-PNX") public static final String SCULK_SENSOR = "SculkSensor";
     @PowerNukkitOnly @Since("1.6.0.0-PNX") public static final String SCULK_CATALYST = "SculkCatalyst";
     @PowerNukkitOnly @Since("1.6.0.0-PNX") public static final String SCULK_SHRIEKER = "SculkShrieker";
-    @PowerNukkitXOnly @Since("1.19.20-r6") public static final String STRUCTURE_BLOCK = "StructureBlock";
+    @PowerNukkitXOnly @Since("1.19.21-r6") public static final String STRUCTURE_BLOCK = "StructureBlock";
 
     public static long count = 1;
 

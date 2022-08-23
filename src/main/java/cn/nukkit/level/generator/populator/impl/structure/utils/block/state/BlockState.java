@@ -8,7 +8,7 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.math.Rotation;
 
 //todo: 替换为自带的BlockState
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class BlockState {
 
     public static final BlockState AIR = new BlockState(0);

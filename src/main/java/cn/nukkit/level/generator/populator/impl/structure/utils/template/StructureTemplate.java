@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.BlockVector3;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public interface StructureTemplate {
 
     BlockVector3 getSize();

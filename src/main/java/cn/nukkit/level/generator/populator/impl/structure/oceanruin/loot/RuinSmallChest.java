@@ -8,7 +8,7 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.loot.Randomizabl
 import com.google.common.collect.Maps;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class RuinSmallChest extends RandomizableContainer {
 
     private static final RuinSmallChest INSTANCE = new RuinSmallChest();

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class PopulatorFossil extends PopulatorStructure {
 
     protected static final ReadableStructureTemplate[] FOSSILS = {
@@ -70,7 +70,7 @@ public class PopulatorFossil extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean isAsync() {
         return true;

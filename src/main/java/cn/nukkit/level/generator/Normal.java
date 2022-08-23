@@ -403,7 +403,7 @@ public class Normal extends Generator {
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean shouldGenerateStructures() {
         return true;

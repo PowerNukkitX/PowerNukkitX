@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import java.util.Map;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class JungleTemple extends ScatteredStructurePiece {
 
     public JungleTemple(BlockVector3 pos) {

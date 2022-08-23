@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class PopulatorPillagerOutpost extends PopulatorStructure {
 
     protected static final ReadableStructureTemplate WATCHTOWER = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/pillageroutpost/watchtower.nbt"));
@@ -185,7 +185,7 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean isAsync() {
         return true;

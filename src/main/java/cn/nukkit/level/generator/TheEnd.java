@@ -283,7 +283,7 @@ public class TheEnd extends Generator {
         return islandHeight1;
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean shouldGenerateStructures() {
         return true;

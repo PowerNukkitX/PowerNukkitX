@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public abstract class AbstractLegacyStructureTemplate extends AbstractStructureTemplate {
 
     protected final List<StructureBlockInfo> blockInfoList = Lists.newArrayList();

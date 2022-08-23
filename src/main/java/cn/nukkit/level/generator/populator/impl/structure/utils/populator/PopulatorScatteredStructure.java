@@ -21,7 +21,7 @@ import java.util.Set;
 
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public abstract class PopulatorScatteredStructure extends PopulatorStructure {
 
     protected static final int MIN_DISTANCE = 8;
@@ -84,7 +84,7 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
 
     protected abstract ScatteredStructurePiece getPiece(int chunkX, int chunkZ);
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r6")
     @Override
     public boolean isAsync() {
         return true;

@@ -13,7 +13,7 @@ import cn.nukkit.scheduler.AsyncTask;
 
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class CallbackableGenerationTask extends AsyncTask {
 
     public boolean state = true;

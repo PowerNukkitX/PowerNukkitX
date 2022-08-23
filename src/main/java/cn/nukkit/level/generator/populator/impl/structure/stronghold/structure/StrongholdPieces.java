@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class StrongholdPieces {
 
     private static final BlockState INFESTED_STONE_BRICKS = new BlockState(Block.MONSTER_EGG, BlockMonsterEgg.STONE_BRICK);

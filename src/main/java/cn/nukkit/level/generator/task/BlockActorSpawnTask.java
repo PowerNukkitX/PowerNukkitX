@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.Task;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r6")
 public class BlockActorSpawnTask extends Task {
 
     private final Level level;
