@@ -26,13 +26,14 @@ PowerNukkitX的優勢：
 1. 支持1.19.20協議。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
-4. 原生支持香草命令和命令方塊等（完善中）。
-5. 內置[Terra](https://github.com/PolyhedralDev/Terra)
+4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
+5. 原生支持香草命令和命令方塊等（完善中）。
+6. 內置[Terra](https://github.com/PolyhedralDev/Terra)
    地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
-6. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
-7. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
-8. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
-9. Todo...
+7. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
+8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
+9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
+10. Todo...
 
 ---
 
@@ -130,7 +131,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r4'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r5'
 }
 ```
 
@@ -141,7 +142,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.20-r4</version>
+        <version>1.19.20-r5</version>
     </dependency>
 </dependencies>
 ```

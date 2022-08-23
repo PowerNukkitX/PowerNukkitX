@@ -26,15 +26,16 @@ What's new in PowerNukkitX? Let's See：
 1. Support for 1.19.20 protocol.
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
-4. Native support for vanilla commands and command block, etc.
-5. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
+4. Support 3D biomes (improving) .<!--Custom dimension interface TODO-->
+5. Native support for vanilla commands and command block, etc.
+6. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
    questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
-6. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be
+7. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be
    found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
-7. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
+8. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
    added).
-8. Built-in Bio AI, no need to install MobPlugin (under development, not perfect).
-9. Todo...
+9. Built-in Bio AI, no need to install MobPlugin (under development, not perfect).
+10. Todo...
 
 ---
 
@@ -145,7 +146,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r4'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r5'
 }
 ```
 
@@ -155,7 +156,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.20-r4</version>
+        <version>1.19.20-r5</version>
     </dependency>
 </dependencies>
 ```
