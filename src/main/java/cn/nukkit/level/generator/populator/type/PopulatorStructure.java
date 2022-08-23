@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.populator.impl.structure.desertpyramid.PopulatorDesertPyramid;
 import cn.nukkit.level.generator.populator.impl.structure.fossil.PopulatorFossil;
 import cn.nukkit.level.generator.populator.impl.structure.jungletemple.PopulatorJungleTemple;
+import cn.nukkit.level.generator.populator.impl.structure.mineshaft.PopulatorMineshaft;
 import cn.nukkit.level.generator.populator.impl.structure.netherfortress.populator.PopulatorNetherFortress;
 import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator.PopulatorOceanMonument;
 import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDesertWell;
@@ -35,6 +36,7 @@ public abstract class PopulatorStructure extends Populator {
         STRUCTURE_POPULATORS.add(PopulatorDesertPyramid.class);
         STRUCTURE_POPULATORS.add(PopulatorJungleTemple.class);
         STRUCTURE_POPULATORS.add(PopulatorSwampHut.class);
+        STRUCTURE_POPULATORS.add(PopulatorMineshaft.class);
     }
 
     public static List<Class<? extends PopulatorStructure>> getPopulators() {
