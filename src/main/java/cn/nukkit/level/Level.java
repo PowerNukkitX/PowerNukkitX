@@ -400,9 +400,9 @@ public class Level implements ChunkManager, Metadatable {
             this.setAntiXrayEnabled(true);
             this.reinitAntiXray(false);
             this.setFakeOreDenominator(switch (server.getConfig("anti-xray." + name + ".level", "low")) {
-                case "high" -> 2;
-                case "normal", "middle" -> 4;
-                default -> 8;
+                case "high" -> 4;
+                case "normal", "middle" -> 8;
+                default -> 16;
             });
         }
 
