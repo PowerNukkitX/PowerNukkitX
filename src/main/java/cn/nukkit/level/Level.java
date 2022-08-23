@@ -341,8 +341,15 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.20-r6")
     private boolean antiXrayEnabled = false;
+    private int fakeOreDenominator = 16;
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
 
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
@@ -392,6 +399,11 @@ public class Level implements ChunkManager, Metadatable {
         if (server.getConfig("anti-xray." + name + ".enabled", false)) {
             this.setAntiXrayEnabled(true);
             this.reinitAntiXray(false);
+            this.setFakeOreDenominator(switch (server.getConfig("anti-xray." + name + ".level", "low")) {
+                case "high" -> 2;
+                case "normal", "middle" -> 4;
+                default -> 8;
+            });
         }
 
         log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
@@ -541,6 +553,18 @@ public class Level implements ChunkManager, Metadatable {
     @Since("1.19.20-r6")
     public void setAntiXrayEnabled(boolean antiXrayEnabled) {
         this.antiXrayEnabled = antiXrayEnabled;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public int getFakeOreDenominator() {
+        return fakeOreDenominator;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r6")
+    public void setFakeOreDenominator(int fakeOreDenominator) {
+        this.fakeOreDenominator = fakeOreDenominator;
     }
 
     @PowerNukkitXOnly
@@ -2481,11 +2505,11 @@ public class Level implements ChunkManager, Metadatable {
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
         if (direct) {
-            this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             if (antiXrayEnabled && block.isTransparent()) {
                 this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}
                         , UpdateBlockPacket.FLAG_ALL_PRIORITY);
             }
+            this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             //this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(new Player[0]), new Block[]{block.getLevelBlockAtLayer(0)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             //this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(new Player[0]), new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
         } else {
