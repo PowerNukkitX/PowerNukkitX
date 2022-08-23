@@ -22,6 +22,6 @@ public class BlockActorSpawnTask extends Task {
     @Override
     public void onRun(int currentTick) {
         BlockEntity.createBlockEntity(this.nbt.getString("id"),
-                this.level.getChunk(this.nbt.getInt("x") >> 4, this.nbt.getInt("z") >> 4), this.nbt);
+                this.level.getChunk(this.nbt.getInt("x") >> 4, this.nbt.getInt("z") >> 4, true), this.nbt);
     }
 }

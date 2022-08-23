@@ -62,7 +62,7 @@ public class PopulatorFossil extends PopulatorStructure {
         }
     }
 
-    public static CompoundTag loadNBT(String path) {
+    private static CompoundTag loadNBT(String path) {
         try (InputStream inputStream = PopulatorFossil.class.getModule().getResourceAsStream(path)) {
             return NBTIO.readCompressed(inputStream);
         } catch (IOException e) {

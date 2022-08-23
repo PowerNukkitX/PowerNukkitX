@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
+import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -88,5 +89,11 @@ public class BlockMangroveLeaves extends BlockLeaves{
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
+    }
+
+    /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
+    @Override
+    public WoodType getType() {
+        return WoodType.OAK;
     }
 }
