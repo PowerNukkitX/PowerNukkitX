@@ -548,7 +548,7 @@ public class BlockStorage {
                 }
                 palette.setBlock(i, rid);
             }
-            this.needReObfuscate = true;
+            this.needReObfuscate = false;
             setFlag(FLAG_PALETTE_UPDATED, true);
         }
         palette.writeTo(stream);
