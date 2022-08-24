@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r7")
+@Since("1.19.21-r7")
 public class RecipeBuildUtils {
     private final CompoundTag recipe;
     private final int size;

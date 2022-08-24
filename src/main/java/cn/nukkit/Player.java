@@ -147,7 +147,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
     public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
     public static final @PowerNukkitXOnly
-    @Since("1.19.20-r7") int TRADE_WINDOW_ID = 500;
+    @Since("1.19.21-r7") int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -214,7 +214,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     protected SmithingTransaction smithingTransaction;
     @PowerNukkitXOnly
-    @Since("1.19.20-r7")
+    @Since("1.19.21-r7")
     protected TradingTransaction tradingTransaction;
 
     public long creationTime = 0;
