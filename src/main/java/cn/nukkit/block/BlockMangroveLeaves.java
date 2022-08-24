@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
-import cn.nukkit.blockproperty.value.WoodType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -42,30 +41,22 @@ public class BlockMangroveLeaves extends BlockLeaves{
         Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
 
         int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
-        int appleOdds;
         int stickOdds;
         switch (fortune) {
             case 0 -> {
-                appleOdds = 200;
                 stickOdds = 50;
             }
             case 1 -> {
-                appleOdds = 180;
                 stickOdds = 45;
             }
             case 2 -> {
-                appleOdds = 160;
                 stickOdds = 40;
             }
             default -> {
-                appleOdds = 120;
                 stickOdds = 30;
             }
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (canDropApple() && random.nextInt(appleOdds) == 0) {
-            drops.add(Item.get(ItemID.APPLE));
-        }
         if (random.nextInt(stickOdds) == 0) {
             drops.add(Item.get(ItemID.STICK));
         }
@@ -89,11 +80,5 @@ public class BlockMangroveLeaves extends BlockLeaves{
     @Override
     public BlockProperties getProperties() {
         return PROPERTIES;
-    }
-
-    /*这里写木质类型为OAK只是为了获取凋落物时的概率正确，并不代表真的就是橡木*/
-    @Override
-    public WoodType getType() {
-        return WoodType.OAK;
     }
 }
