@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public abstract class StructurePiece {
 
     protected ChunkManager level;

@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class PopulatorIgloo extends PopulatorStructure {
 
     protected static final ReadableStructureTemplate IGLOO = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/igloo/igloo_top_no_trapdoor.nbt"));
@@ -137,7 +137,7 @@ public class PopulatorIgloo extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r6")
+    @Since("1.19.21-r2")
     @Override
     public boolean isAsync() {
         return true;

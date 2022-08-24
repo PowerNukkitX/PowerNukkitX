@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/stronghold_crossing.json
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class StrongholdCrossingChest extends RandomizableContainer {
 
     private static final StrongholdCrossingChest INSTANCE = new StrongholdCrossingChest();

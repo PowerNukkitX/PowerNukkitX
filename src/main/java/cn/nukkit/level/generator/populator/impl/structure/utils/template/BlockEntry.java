@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 //todo: 替换为核心内部实现
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class BlockEntry {
 
     private final int id;

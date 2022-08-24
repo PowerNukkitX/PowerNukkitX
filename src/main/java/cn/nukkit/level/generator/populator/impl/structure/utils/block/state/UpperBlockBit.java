@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 //\\ VanillaStates::UpperBlockBit
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public final class UpperBlockBit {
 
     public static final int LOWER = 0b0000;

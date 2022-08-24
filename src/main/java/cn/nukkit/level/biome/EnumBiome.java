@@ -1,6 +1,5 @@
 package cn.nukkit.level.biome;
 
-import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
@@ -43,7 +42,7 @@ import cn.nukkit.level.biome.impl.taiga.*;
  * Also just looks cleaner than listing everything as static final in {@link Biome}
  * </p>
  */
-@PowerNukkitXDifference(since = "1.19.21-r6", info = "update biomes id")
+@PowerNukkitXDifference(since = "1.19.21-r2", info = "update biomes id")
 public enum EnumBiome {
     OCEAN(0, new OceanBiome()),
     PLAINS(1, new PlainsBiome()),

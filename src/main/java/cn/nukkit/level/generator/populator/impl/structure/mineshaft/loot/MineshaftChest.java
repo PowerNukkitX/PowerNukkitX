@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/abandoned_mineshaft.json
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class MineshaftChest extends RandomizableContainer {
 
     private static final MineshaftChest INSTANCE = new MineshaftChest();

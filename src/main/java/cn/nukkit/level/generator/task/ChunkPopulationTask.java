@@ -8,10 +8,8 @@ import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.scheduler.AsyncTask;
 
-import java.util.Collection;
-
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class ChunkPopulationTask extends AsyncTask {
 
     private final ChunkManager level;

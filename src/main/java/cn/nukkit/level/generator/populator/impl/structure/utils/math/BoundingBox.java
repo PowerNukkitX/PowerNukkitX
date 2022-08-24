@@ -9,7 +9,7 @@ import com.google.common.base.MoreObjects;
 
 //todo: 使用自带的BoundingBox
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class BoundingBox {
 
     public int x0;

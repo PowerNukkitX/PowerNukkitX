@@ -213,7 +213,7 @@ public class Nether extends Generator {
         }
     }
 
-    @Since("1.19.21-r6")
+    @Since("1.19.21-r2")
     @Override
     public boolean shouldGenerateStructures() {
         return true;

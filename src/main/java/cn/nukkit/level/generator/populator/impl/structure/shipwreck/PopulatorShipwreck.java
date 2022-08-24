@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class PopulatorShipwreck extends PopulatorStructure implements CallbackableTemplateStructurePopulator {
 
     protected static final ReadableStructureTemplate WITH_MAST = new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/shipwreck/swwithmast.nbt"));
@@ -290,7 +290,7 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
         }
     }
 
-    @Since("1.19.21-r6")
+    @Since("1.19.21-r2")
     @Override
     public boolean isAsync() {
         return true;

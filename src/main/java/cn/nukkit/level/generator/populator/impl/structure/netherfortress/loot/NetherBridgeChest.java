@@ -8,7 +8,7 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.loot.Randomizabl
 import com.google.common.collect.Maps;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 //\\ ./data/behavior_packs/vanilla/loot_tables/chests/nether_bridge.json
 public class NetherBridgeChest extends RandomizableContainer {
 

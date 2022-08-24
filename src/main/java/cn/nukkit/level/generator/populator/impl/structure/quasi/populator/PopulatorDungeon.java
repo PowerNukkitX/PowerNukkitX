@@ -19,7 +19,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class PopulatorDungeon extends PopulatorStructure {
 
     private static final int[] MOBS = {EntitySkeleton.NETWORK_ID, EntityZombie.NETWORK_ID, EntityZombie.NETWORK_ID, EntitySpider.NETWORK_ID};
@@ -140,7 +140,7 @@ public class PopulatorDungeon extends PopulatorStructure {
         }
     }
 
-    @Since("1.19.21-r6")
+    @Since("1.19.21-r2")
     @Override
     public boolean isAsync() {
         return true;

@@ -3,7 +3,6 @@ package cn.nukkit.level.generator;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXProtoChunk;
@@ -163,7 +162,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         chunk.setLightPopulated(true);
     }
 
-    @Since("1.19.21-r6")
+    @Since("1.19.21-r2")
     @Override
     public boolean shouldGenerateStructures() {
         return true;

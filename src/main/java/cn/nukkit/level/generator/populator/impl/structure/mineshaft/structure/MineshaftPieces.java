@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class MineshaftPieces {
 
     private static final BlockState OAK_PLANKS = new BlockState(Block.PLANKS, BlockPlanks.OAK);

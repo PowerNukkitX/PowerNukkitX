@@ -7,7 +7,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.function.Consumer;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class StructurePlaceSettings {
 
     public static final StructurePlaceSettings DEFAULT = new StructurePlaceSettings();

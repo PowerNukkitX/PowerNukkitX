@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r6")
+@Since("1.19.21-r2")
 public class IdMapper<T> implements Iterable<T> {
 
     private int nextId;
