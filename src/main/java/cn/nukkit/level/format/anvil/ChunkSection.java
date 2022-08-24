@@ -74,7 +74,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     protected boolean hasSkyLight;
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r7")
+    @Since("1.19.21-r1")
     protected boolean invalidCustomBlockWhenLoad = false;
 
     private int contentVersion;

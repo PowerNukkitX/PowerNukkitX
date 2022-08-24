@@ -121,7 +121,7 @@ public class ItemSpawnEgg extends Item {
     }
 
     @PowerNukkitOnly
-    @Since("1.19.21-r7")
+    @Since("1.19.21-r1")
     @Nullable
     public String getEntityName() {
         String saveId = Entity.getSaveId(getEntityNetworkId());
