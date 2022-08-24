@@ -73,6 +73,10 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     protected boolean hasBlockLight;
     protected boolean hasSkyLight;
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r7")
+    protected boolean invalidCustomBlockWhenLoad = false;
+
     private int contentVersion;
 
     private ChunkSection(
@@ -218,6 +222,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                                 if (tmp == null) {
                                     log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.load.unknown-custom-block", namespaceId));
                                     storage.setBlockState(bx, by, bz, BlockState.AIR);
+                                    invalidCustomBlockWhenLoad = true;
                                     continue;
                                 }
                                 currentCustomBlocksIdMap.put(blockId, blockId = tmp);
