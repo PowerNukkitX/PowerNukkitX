@@ -20,14 +20,19 @@ public class ModifyRecipes {
         //fix recipes for a variety of logs and wood
         modify.put("minecraft:oak_wood_stripped", 8);
         modify.put("minecraft:spruce_wood", 1);
+        modify.put("minecraft:spruce_fence", 1);
         modify.put("minecraft:spruce_wood_stripped", 9);
         modify.put("minecraft:acacia_wood", 4);
+        modify.put("minecraft:acacia_fence", 4);
         modify.put("minecraft:acacia_wood_stripped", 12);
         modify.put("minecraft:birch_wood", 2);
+        modify.put("minecraft:birch_fence", 2);
         modify.put("minecraft:birch_wood_stripped", 10);
         modify.put("minecraft:dark_oak_wood", 5);
+        modify.put("minecraft:dark_oak_fence", 5);
         modify.put("minecraft:dark_oak_wood_stripped", 13);
         modify.put("minecraft:jungle_wood", 3);
+        modify.put("minecraft:jungle_fence", 3);
         modify.put("minecraft:jungle_wood_stripped", 11);
         modify.put("minecraft:spruce_planks", 1);
         modify.put("minecraft:spruce_wooden_slab", 1);
@@ -159,6 +164,7 @@ public class ModifyRecipes {
                 if (input1 != null) {
                     var listmap = castListMap(input1, String.class, Object.class);
                     if (listmap != null) {
+                        //处理羊毛染色
                         if (listmap.size() == 2) {
                             var p1 = listmap.get(0).get("id");
                             var p2 = listmap.get(1).get("id");
@@ -183,6 +189,7 @@ public class ModifyRecipes {
                                     map.put("output", output);
                                 }
                             }
+                            //处理混凝土染色
                         } else if (listmap.size() == 9) {
                             int deyMeta = dyeDamage((String) listmap.get(0).get("id"));
                             var name = listmap.get(1).get("id");
@@ -199,9 +206,9 @@ public class ModifyRecipes {
                         }
                     }
                 }
-                //修复玻璃 玻璃板 地毯 粘土
                 var input2 = castMap(map.get("input"), String.class, Object.class);
                 if (input2 != null) {
+                    //修复玻璃 玻璃板 地毯 粘土染色
                     if (input2.keySet().size() == 2 && input2.containsKey("A") && input2.containsKey("B")) {
                         var AA = castMap(input2.get("A"), String.class, Object.class);
                         var BB = castMap(input2.get("B"), String.class, Object.class);
@@ -215,6 +222,23 @@ public class ModifyRecipes {
                                     var target = castMap(output.get(0), String.class, Object.class);
                                     output.remove(0);
                                     target.put("damage", p2);
+                                    output.add(target);
+                                    map.put("output", output);
+                                }
+                            }
+                        }
+                    }
+                    //修复染色玻璃合成染色玻璃板,染色羊毛合成染色羊毛毯
+                    else if (input2.keySet().size() == 1 && input2.containsKey("A")) {
+                        var AA = castMap(input2.get("A"), String.class, Object.class);
+                        if (AA != null && (AA.get("id").equals("minecraft:wool") || AA.get("id").equals("minecraft:stained_glass"))) {
+                            var damage = AA.get("damage");
+                            if (damage != null) {
+                                var output = castList(map.get("output"), Object.class);
+                                if (output != null) {
+                                    var target = castMap(output.get(0), String.class, Object.class);
+                                    output.remove(0);
+                                    target.put("damage", damage);
                                     output.add(target);
                                     map.put("output", output);
                                 }

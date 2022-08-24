@@ -19,7 +19,9 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.ImmutableBlockStorage;
 import cn.nukkit.utils.BinaryStream;
@@ -137,6 +139,29 @@ public final class SingleLayerStorage extends LayerStorage {
 
         stream.putByte((byte) 1);
         blockStorage.writeTo(stream);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    @Override
+    public void writeObfuscatedTo(BinaryStream stream, Level level) {
+        stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
+        BlockStorage blockStorage = this.storage;
+
+        if (blockStorage == ImmutableBlockStorage.EMPTY) {
+            stream.putByte((byte) 0);
+            return;
+        }
+
+        stream.putByte((byte) 1);
+        blockStorage.writeObfuscatedTo(stream, level);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    @Override
+    public void setNeedReObfuscate() {
+        storage.setNeedReObfuscate();
     }
 
     @Since("1.4.0.0-PN")

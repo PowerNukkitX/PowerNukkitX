@@ -137,7 +137,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public static final int SURVIVAL_SLOTS = 36;
     public static final int CREATIVE_SLOTS = 112;
-
     public static final int CRAFTING_SMALL = 0;
     public static final int CRAFTING_BIG = 1;
     public static final int CRAFTING_ANVIL = 2;
@@ -147,6 +146,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final @PowerNukkitOnly int CRAFTING_STONECUTTER = 1001;
     public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
     public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
+    public static final @PowerNukkitXOnly
+    @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -212,6 +213,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     protected SmithingTransaction smithingTransaction;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    protected TradingTransaction tradingTransaction;
 
     public long creationTime = 0;
 
@@ -1090,7 +1094,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        if(Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
+        if (Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
             Server.getInstance().getScoreboardManager().onPlayerJoin(this);
         }
     }
@@ -1330,7 +1334,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pk.z = (int) this.spawnPosition.z;
             pk.dimension = this.spawnPosition.level.getDimension();
             this.dataPacket(pk);
-        }else{
+        } else {
             this.spawnPosition = null;
         }
     }
@@ -2442,7 +2446,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                         i++;
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     log.error("ItemComponentPacket encoding error", e);
                 }
             }
@@ -2998,6 +3002,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     pk.z = (float) pos.z;
                                     pk.data = (int) (65535 / breakTime);
                                     this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                                    // 优化反矿透时玩家的挖掘体验
+                                    if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
+                                        var vecList = new ArrayList<Vector3WithRuntimeId>(5);
+                                        Vector3WithRuntimeId tmpVec;
+                                        for (var each : BlockFace.values()) {
+                                            if (each == face) continue;
+                                            var tmpX = target.getFloorX() + each.getXOffset();
+                                            var tmpY = target.getFloorY() + each.getYOffset();
+                                            var tmpZ = target.getFloorZ() + each.getZOffset();
+                                            tmpVec = new Vector3WithRuntimeId(tmpX, tmpY, tmpZ, getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0), getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
+                                            if (getLevel().getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
+                                                vecList.add(tmpVec);
+                                            }
+                                        }
+                                        this.getLevel().sendBlocks(new Player[]{this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                                    }
                                 }
                             }
 
@@ -3213,8 +3233,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (npcRequestPacket.getSceneName().isEmpty() && this.level.getEntity(npcRequestPacket.getRequestedEntityRuntimeId()) instanceof EntityNPCEntity npcEntity) {
                         FormWindowDialog dialog = npcEntity.getDialog();
 
-                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
-                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket, dialog);
+                        for (FormDialogHandler handler : dialog.getHandlers()) {
                             handler.handle(this, response);
                         }
 
@@ -3228,12 +3248,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
                             dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
                             dialogWindows.invalidate(npcRequestPacket.getSceneName());
-                        }else{
-                           dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
+                        } else {
+                            dialog = dialogWindows.getIfPresent(npcRequestPacket.getSceneName());
                         }
 
-                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket,dialog);
-                        for(FormDialogHandler handler : dialog.getHandlers()) {
+                        FormResponseDialog response = new FormResponseDialog(npcRequestPacket, dialog);
+                        for (FormDialogHandler handler : dialog.getHandlers()) {
                             handler.handle(this, response);
                         }
 
@@ -3241,14 +3261,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         getServer().getPluginManager().callEvent(event);
 
                         //close dialog after clicked button (otherwise the client will not be able to close the window)
-                        if(response.getClickedButton() != null && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION){
+                        if (response.getClickedButton() != null && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
                             closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
                             closeWindowPacket.setSceneName(response.getSceneName());
                             closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
                             this.dataPacket(closeWindowPacket);
                         }
-                        if(response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null){
+                        if (response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
                             response.getClickedButton().getNextDialog().send(this);
                         }
                     }
@@ -3300,7 +3320,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         case InteractPacket.ACTION_OPEN_INVENTORY:
                             if (targetEntity instanceof EntityRideable) {
-                                if(targetEntity instanceof EntityChestBoat chestBoat){
+                                if (targetEntity instanceof EntityChestBoat chestBoat) {
                                     this.addWindow(chestBoat.getInventory());
                                     break;
                                 }
@@ -3975,6 +3995,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                         }
                         return;
+                    } else if (transactionPacket.isTradeItemPart) {
+                        if (this.tradingTransaction == null) {
+                            this.tradingTransaction = new TradingTransaction(this, actions);
+                        } else {
+                            for (InventoryAction action : actions) {
+                                this.tradingTransaction.addAction(action);
+                            }
+                        }
+                        if (this.tradingTransaction.canExecute()) {
+                            this.tradingTransaction.execute();
+                            this.tradingTransaction = null;
+                        }
+                        return;
                     } else if (this.craftingTransaction != null) {
                         if (craftingTransaction.checkForCraftingPart(actions)) {
                             for (InventoryAction action : actions) {
@@ -4642,7 +4675,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void sendRawTextMessage(RawText text){
+    public void sendRawTextMessage(RawText text) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_OBJECT;
         pk.message = text.toRawText();
@@ -4725,7 +4758,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setRawTextSubTitle(RawText text){
+    public void setRawTextSubTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE_JSON;
         pk.text = text.toRawText();
@@ -4751,7 +4784,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setRawTextTitle(RawText text){
+    public void setRawTextTitle(RawText text) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_TITLE_JSON;
         pk.text = text.toRawText();
@@ -4791,13 +4824,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setRawTextActionBar(RawText text){
+    public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout){
+    public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTIONBAR_JSON;
         pk.text = text.toRawText();
@@ -5166,7 +5199,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (this.inventory != null) {
                     new HashMap<>(this.inventory.slots).forEach((slot, item) -> {
-                        if(!item.keepOnDeath()){
+                        if (!item.keepOnDeath()) {
                             this.inventory.clear(slot);
                         }
                     });
@@ -5240,7 +5273,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Vector3 spawnBlock = getSpawnBlock();
         Block respawnBlock = null;
         int respawnBlockDim = Level.DIMENSION_OVERWORLD;
-        if(spawnBlock != null) {
+        if (spawnBlock != null) {
             Position spawnBlockPos = new Position(spawnBlock.x, spawnBlock.y, spawnBlock.z, playerRespawnEvent.getRespawnPosition().getLevel());
             respawnBlockDim = spawnBlockPos.level.getDimension();
             playerRespawnEvent.setRespawnBlockPosition(spawnBlockPos);
@@ -5791,7 +5824,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window, int id) {
-        if(this.formWindows.size() > 100){
+        if (this.formWindows.size() > 100) {
             this.kick("Possible DoS vulnerability: More Than 10 FormWindow sent to client already.");
             return id;
         }
@@ -5804,11 +5837,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return id;
     }
 
-    public void showDialogWindow(FormWindowDialog dialog){
-        showDialogWindow(dialog,true);
+    public void showDialogWindow(FormWindowDialog dialog) {
+        showDialogWindow(dialog, true);
     }
 
-    public void showDialogWindow(FormWindowDialog dialog,boolean book){
+    public void showDialogWindow(FormWindowDialog dialog, boolean book) {
         String actionJson = dialog.getButtonJSONData();
 
         if (book && dialogWindows.getIfPresent(dialog.getSceneName()) != null) dialog.updateSceneName();

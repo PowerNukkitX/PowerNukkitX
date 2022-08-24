@@ -6,6 +6,7 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAsyncPrepare;
@@ -55,15 +56,13 @@ import cn.nukkit.utils.*;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -342,6 +341,26 @@ public class Level implements ChunkManager, Metadatable {
 
     public GameRules gameRules;
 
+    /* Anti-xray related. 反矿透相关 */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private boolean antiXrayEnabled = false;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private int fakeOreDenominator = 16;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private boolean preDeObfuscate = true;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
+
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
         this(server, name, path,
                 () -> {
@@ -384,6 +403,17 @@ public class Level implements ChunkManager, Metadatable {
         levelProvider.updateLevelName(name);
         if (levelProvider instanceof DimensionDataProvider dimensionDataProvider) {
             this.dimensionData = dimensionDataProvider.getDimensionData();
+        }
+
+        if (server.getConfig("anti-xray." + name + ".enabled", false)) {
+            this.setAntiXrayEnabled(true);
+            this.reinitAntiXray(false);
+            this.setFakeOreDenominator(switch (server.getConfig("anti-xray." + name + ".level", "low")) {
+                case "high" -> 4;
+                case "normal", "middle" -> 8;
+                default -> 16;
+            });
+            this.setPreDeObfuscate(server.getConfig("anti-xray." + name + ".pre-deobfuscate", true));
         }
 
         log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
@@ -520,6 +550,156 @@ public class Level implements ChunkManager, Metadatable {
             return 1;
         } else {
             return tickRateOptDelay >> 1;
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public boolean isAntiXrayEnabled() {
+        return antiXrayEnabled;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void setAntiXrayEnabled(boolean antiXrayEnabled) {
+        this.antiXrayEnabled = antiXrayEnabled;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public int getFakeOreDenominator() {
+        return fakeOreDenominator;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void setFakeOreDenominator(int fakeOreDenominator) {
+        this.fakeOreDenominator = fakeOreDenominator;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public boolean isPreDeObfuscate() {
+        return preDeObfuscate;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void setPreDeObfuscate(boolean preDeObfuscate) {
+        this.preDeObfuscate = preDeObfuscate;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void addAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
+        this.realOreToReplacedRuntimeIds.put(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void removeAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
+        this.realOreToReplacedRuntimeIds.remove(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
+    }
+
+    @PowerNukkitXInternal
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
+        return this.realOreToReplacedRuntimeIds;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void addAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
+        var rid = originBlock.getRuntimeId();
+        var list = this.fakeOreToPutRuntimeIds.get(rid);
+        if (list == null) {
+            this.fakeOreToPutRuntimeIds.put(rid, list = new IntArrayList(8));
+        }
+        for (var each : fakeBlocks) {
+            list.add(each.getRuntimeId());
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void removeAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
+        var rid = originBlock.getRuntimeId();
+        var list = this.fakeOreToPutRuntimeIds.get(rid);
+        if (list != null) {
+            for (var each : fakeBlocks) {
+                var tmp = each.getRuntimeId();
+                list.removeIf(i -> i == tmp);
+            }
+        }
+    }
+
+    @PowerNukkitXInternal
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
+        return this.fakeOreToPutRuntimeIds;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public static synchronized void addAntiXrayTransparentBlock(@NotNull Block block) {
+        transparentBlockRuntimeIds.add(block.getRuntimeId());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public static IntSet getRawTransparentBlockRuntimeIds() {
+        return transparentBlockRuntimeIds;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void reinitAntiXray(boolean global) {
+        var stone = new BlockStone();
+        var netherRack = new BlockNetherrack();
+        var deepSlate = new BlockDeepslate();
+        {
+            getRawFakeOreToPutRuntimeIdMap().clear();
+            getRawRealOreToReplacedRuntimeIdMap().clear();
+        }
+        {
+            addAntiXrayOreBlock(new BlockOreCoal(), stone);
+            addAntiXrayOreBlock(new BlockOreDiamond(), stone);
+            addAntiXrayOreBlock(new BlockOreEmerald(), stone);
+            addAntiXrayOreBlock(new BlockOreGold(), stone);
+            addAntiXrayOreBlock(new BlockOreIron(), stone);
+            addAntiXrayOreBlock(new BlockOreLapis(), stone);
+            addAntiXrayOreBlock(new BlockOreRedstone(), stone);
+            addAntiXrayOreBlock(new BlockOreQuartz(), netherRack);
+            addAntiXrayOreBlock(new BlockOreGoldNether(), netherRack);
+            addAntiXrayOreBlock(new BlockAncientDebris(), netherRack);
+            addAntiXrayOreBlock(new BlockOreCoalDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreDiamondDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreEmeraldDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreGoldDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreIronDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreLapisDeepslate(), deepSlate);
+            addAntiXrayOreBlock(new BlockOreRedstoneDeepslate(), deepSlate);
+        }
+        {
+            addAntiXrayFakeBlock(stone, List.of(new BlockOreCoal(), new BlockOreDiamond(), new BlockOreEmerald(), new BlockOreGold(), new BlockOreIron(), new BlockOreLapis(), new BlockOreRedstone()));
+            addAntiXrayFakeBlock(netherRack, List.of(new BlockOreQuartz(), new BlockOreGoldNether(), new BlockAncientDebris()));
+            addAntiXrayFakeBlock(deepSlate, List.of(new BlockOreCoalDeepslate(), new BlockOreDiamondDeepslate(), new BlockOreEmeraldDeepslate(), new BlockOreGoldDeepslate(), new BlockOreIronDeepslate(), new BlockOreLapisDeepslate(), new BlockOreRedstoneDeepslate()));
+        }
+        if (global || transparentBlockRuntimeIds.isEmpty()) {
+            transparentBlockRuntimeIds.clear();
+            for (var each : BlockStateRegistry.getPersistenceNames()) {
+                try {
+                    var block = BlockState.of(each);
+                    if (BlockState.of(each).getBlock().isTransparent()) {
+                        transparentBlockRuntimeIds.add(block.getRuntimeId());
+                    }
+                } catch (Exception ignore) {
+
+                }
+            }
+            ((IntOpenHashSet) transparentBlockRuntimeIds).trim();
         }
     }
 
@@ -1109,19 +1289,80 @@ public class Level implements ChunkManager, Metadatable {
                         int chunkZ = Level.getHashZ(index);
                         if (blocks == null || blocks.size() > MAX_BLOCK_CACHE) {
                             FullChunk chunk = this.getChunk(chunkX, chunkZ);
+                            chunk.reObfuscateChunk();
                             for (Player p : this.getChunkPlayers(chunkX, chunkZ).values()) {
                                 p.onChunkChanged(chunk);
                             }
                         } else {
                             Collection<Player> toSend = this.getChunkPlayers(chunkX, chunkZ).values();
                             Player[] playerArray = toSend.toArray(Player.EMPTY_ARRAY);
-                            Vector3[] blocksArray = new Vector3[blocks.size()];
-                            int i = 0;
-                            for (int blockHash : blocks.keySet()) {
-                                Vector3 hash = getBlockXYZ(index, blockHash, this);
-                                blocksArray[i++] = hash;
+                            var size = blocks.size();
+                            if (antiXrayEnabled) {
+                                var vectorSet = new IntOpenHashSet(size * 6);
+                                var vRidList = new ArrayList<Vector3WithRuntimeId>(size * 7);
+                                Vector3WithRuntimeId tmpV3Rid;
+                                for (int blockHash : blocks.keySet()) {
+                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                    var x = hash.getFloorX();
+                                    var y = hash.getFloorY();
+                                    var z = hash.getFloorZ();
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        tmpV3Rid = new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1));
+                                        vRidList.add(tmpV3Rid);
+                                        if (!transparentBlockRuntimeIds.contains(tmpV3Rid.getRuntimeIdLayer0())) {
+                                            continue;
+                                        }
+                                    }
+                                    x++;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                    x -= 2;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                    x++;
+                                    y++;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                    y -= 2;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                    y++;
+                                    z++;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                    z -= 2;
+                                    blockHash = localBlockHash(x, y, z, 0, this);
+                                    if (!vectorSet.contains(blockHash)) {
+                                        vectorSet.add(blockHash);
+                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                    }
+                                }
+                                this.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                            } else {
+                                var blocksArray = new Vector3[size];
+                                int i = 0;
+                                for (int blockHash : blocks.keySet()) {
+                                    Vector3 hash = getBlockXYZ(index, blockHash, this);
+                                    blocksArray[i++] = hash;
+                                }
+                                this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
                             }
-                            this.sendBlocks(playerArray, blocksArray, UpdateBlockPacket.FLAG_ALL);
                         }
                     }
                 }
@@ -1322,6 +1563,12 @@ public class Level implements ChunkManager, Metadatable {
             int runtimeId;
             if (b instanceof Block) {
                 runtimeId = ((Block) b).getRuntimeId();
+            } else if (b instanceof Vector3WithRuntimeId vRid) {
+                if (dataLayer == 0) {
+                    runtimeId = vRid.getRuntimeIdLayer0();
+                } else {
+                    runtimeId = vRid.getRuntimeIdLayer1();
+                }
             } else {
                 runtimeId = getBlockRuntimeId((int) b.x, (int) b.y, (int) b.z, dataLayer);
             }
@@ -1806,7 +2053,7 @@ public class Level implements ChunkManager, Metadatable {
         float d = 1.0F - (this.getRainStrength(tickDiff) * 5.0F) / 16.0F;
         float e = 1.0F - (this.getThunderStrength(tickDiff) * 5.0F) / 16.0F;
         float f = 0.5F + 2.0F * MathHelper.clamp(MathHelper.cos(this.getCelestialAngle(tickDiff) * 6.2831855F), -0.25F, 0.25F);
-        return  (int)((1.0F - f * d * e) * 11.0F);
+        return (int) ((1.0F - f * d * e) * 11.0F);
         /* Old NukkitX Code
         float angle = this.getCelestialAngle(tickDiff);
         float light = 1.0F - (MathHelper.cos(angle * ((float) Math.PI * 2F)) * 2.0F + 0.5F);
@@ -2280,6 +2527,10 @@ public class Level implements ChunkManager, Metadatable {
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
         if (direct) {
+            if (antiXrayEnabled && block.isTransparent()) {
+                this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Vector3[]{block.add(-1), block.add(1), block.add(0, -1), block.add(0, 1), block.add(0, 0, 1), block.add(0, 0, -1)}
+                        , UpdateBlockPacket.FLAG_ALL_PRIORITY);
+            }
             this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(Player.EMPTY_ARRAY), new Block[]{block}, UpdateBlockPacket.FLAG_ALL_PRIORITY, block.layer);
             //this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(new Player[0]), new Block[]{block.getLevelBlockAtLayer(0)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             //this.sendBlocks(this.getChunkPlayers(cx, cz).values().toArray(new Player[0]), new Block[]{block.getLevelBlockAtLayer(1)}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 1);
@@ -4126,7 +4377,7 @@ public class Level implements ChunkManager, Metadatable {
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
+    @PowerNukkitDifference(since = "1.6.0.0-PNX", info = "use MoveEntityDeltaPacket instead of MoveEntityAbsolutePacket to implement headYaw")
     public void addEntityMovement(Entity entity, double x, double y, double z, double yaw, double pitch, double headYaw) {
 //        MoveEntityAbsolutePacket pk = new MoveEntityAbsolutePacket();
 //        pk.eid = entity.getId();
@@ -4139,27 +4390,27 @@ public class Level implements ChunkManager, Metadatable {
 //        pk.onGround = entity.onGround;
         MoveEntityDeltaPacket pk = new MoveEntityDeltaPacket();
         pk.runtimeEntityId = entity.getId();
-        if (entity.lastX != x){
+        if (entity.lastX != x) {
             pk.x = (float) x;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_X;
         }
-        if (entity.lastY != y){
+        if (entity.lastY != y) {
             pk.y = (float) y;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Y;
         }
-        if (entity.lastZ != z){
+        if (entity.lastZ != z) {
             pk.z = (float) z;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_Z;
         }
-        if (entity.lastPitch != pitch){
+        if (entity.lastPitch != pitch) {
             pk.pitch = (float) pitch;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_PITCH;
         }
-        if (entity.lastYaw != yaw){
+        if (entity.lastYaw != yaw) {
             pk.yaw = (float) yaw;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_YAW;
         }
-        if (entity.lastHeadYaw != headYaw){
+        if (entity.lastHeadYaw != headYaw) {
             pk.headYaw = (float) headYaw;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
         }
@@ -4340,6 +4591,7 @@ public class Level implements ChunkManager, Metadatable {
 
     /**
      * 最大高度，请注意此y值不能放置方块
+     *
      * @return 最大高度
      */
     @PowerNukkitXOnly

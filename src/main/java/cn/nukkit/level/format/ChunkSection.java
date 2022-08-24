@@ -2,12 +2,16 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
+import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -133,6 +137,23 @@ public interface ChunkSection {
 
     @Since("1.4.0.0-PN")
     void writeTo(BinaryStream stream);
+
+    /**
+     * 以混淆方式将子区块写入二进制流，通常用于反矿透
+     * @param stream 二进制流
+     * @param level 子区块所在世界，包含混淆所用数据
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    default void writeObfuscatedTo(BinaryStream stream, Level level) {
+        writeTo(stream);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    default void setNeedReObfuscate() {
+
+    }
 
     @PowerNukkitOnly
     int getMaximumLayer();

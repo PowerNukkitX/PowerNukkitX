@@ -15,6 +15,7 @@ import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -22,6 +23,7 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
@@ -29,12 +31,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -61,7 +62,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         isOldAnvil = getLevelData().getInt("version") == OLD_VERSION;
         if (getLevelData().contains("dimensionData")) {
             var dimNBT = getLevelData().getCompound("dimensionData");
-            int chunkSectionCount = 0;
+            int chunkSectionCount;
             dimensionData = new DimensionData(dimNBT.getString("dimensionName"), dimNBT.getInt("dimensionId"), dimNBT.getInt("minHeight"), dimNBT.getInt("maxHeight"), (chunkSectionCount = dimNBT.getInt("chunkSectionCount")) != 0 ? chunkSectionCount : null);
         }
         getLevelData().putInt("version", VERSION);
@@ -97,10 +98,12 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return isValid;
     }
 
+    @UsedByReflection
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator) throws IOException {
         generate(path, name, seed, generator, new HashMap<>());
     }
 
+    @UsedByReflection
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed resource leak")
     public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
         File regionDir = new File(path + "/region");
@@ -162,7 +165,8 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return null;
     }
 
-    public static void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
+    @PowerNukkitXDifference(info = "Non-static")
+    public final void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
         byte[] blockEntities;
         if (chunk.getBlockEntities().isEmpty()) {
             blockEntities = new byte[0];
@@ -187,8 +191,17 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
 
         int writtenSections = subChunkCount;
 
+        final var tmpSubChunkStreams = new BinaryStream[subChunkCount];
+        for (int i = 0; i < subChunkCount; i++) { // 确保全部在主线程上分配
+            tmpSubChunkStreams[i] = new BinaryStream(new byte[8192]).reset(); // 8KB
+        }
+        if (level != null && level.isAntiXrayEnabled()) {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
+        } else {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
+        }
         for (int i = 0; i < subChunkCount; i++) {
-            sections[i].writeTo(stream);
+            stream.put(tmpSubChunkStreams[i].getBuffer());
         }
 
         stream.put(biomePalettes);
@@ -212,27 +225,28 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     }
 
     private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
-        PalettedBlockStorage palette;
         var stream = ThreadCache.binaryStream.get().reset();
         if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
             var sections = sectionChunk.getSections();
-            for (int i = 0, len = sections.length; i < len && i < sectionCount; i++) {
+            var len = Math.min(sections.length, sectionCount);
+            final var tmpSectionBiomeStream = new BinaryStream[len];
+            for (int i = 0; i < len; i++) { // 确保全部在主线程上分配
+                tmpSectionBiomeStream[i] = new BinaryStream(new byte[4096 + 1024]).reset(); // 5KB
+            }
+            IntStream.range(0, len).parallel().forEach(i -> {
                 if (sections[i] instanceof ChunkSection3DBiome each) {
-                    palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             for (int y = 0; y < 16; y++) {
                                 var tmpBiome = Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z) & 0xFF);
-//                                if (tmpBiome == 0) {
-//                                    System.out.println((chunk.getX() * 16 + x) + ", " + (i * 16 + y) + ", " +(chunk.getZ() * 16 + z) + ": 0");
-//                                }
                                 palette.setBlock(x, y, z, tmpBiome);
                             }
                         }
                     }
-                    palette.writeTo(stream);
+                    palette.writeTo(tmpSectionBiomeStream[i]);
                 } else {
-                    palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z) & 0xFF);
@@ -241,11 +255,14 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                             }
                         }
                     }
-                    palette.writeTo(stream);
+                    palette.writeTo(tmpSectionBiomeStream[i]);
                 }
+            });
+            for (int i = 0; i < len; i++) {
+                stream.put(tmpSectionBiomeStream[i].getBuffer());
             }
         } else {
-            palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+            PalettedBlockStorage palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int biomeId = Biome.getBiomeIdOrCorrect(chunk.getBiomeId(x, z));

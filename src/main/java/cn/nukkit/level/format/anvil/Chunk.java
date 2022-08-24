@@ -149,6 +149,9 @@ public class Chunk extends BaseChunk {
                         final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
                         if (chunkSection.hasBlocks()) {
                             sections[y] = chunkSection;
+                            if (chunkSection.invalidCustomBlockWhenLoad) {
+                                this.setChanged();
+                            }
                         } else {
                             sections[y] = new EmptyChunkSection(y);
                         }
@@ -666,6 +669,14 @@ public class Chunk extends BaseChunk {
             }
         }
         return result;
+    }
+
+    @Since("1.19.21-r1")
+    @Override
+    public void reObfuscateChunk() {
+        for (var section : getSections()) {
+            section.setNeedReObfuscate();
+        }
     }
 
     @PowerNukkitXOnly
