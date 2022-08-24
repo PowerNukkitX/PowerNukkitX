@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator;
+package cn.nukkit.level.generator.populator.impl.structure.oceanmonument;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -32,7 +32,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if (DEEP_OCEAN_BIOMES[chunk.getBiomeId(7, 7)]) {
+        if (DEEP_OCEAN_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ OceanMonumentFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
             int cZ = (chunkZ < 0 ? chunkZ - SPACING + 1 : chunkZ) / SPACING;
@@ -117,7 +117,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                             } else {
                                 biomes = WATER_BIOMES;
                             }
-                            if (!biomes[ck.getBiomeId(cx, cz)]) {
+                            if (!biomes[ck.getBiomeId(cx, ck.getHighestBlockAt(cx, cz), cz)]) {
                                 return;
                             }
                         }
@@ -128,7 +128,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                         if (x >= minX && x <= maxX) {
                             for (int cz = 0; cz < 16; cz++) {
                                 int z = baseZ + cz;
-                                if (z >= minZ && z <= maxZ && !WATER_BIOMES[ck.getBiomeId(cx, cz)]) {
+                                if (z >= minZ && z <= maxZ && !WATER_BIOMES[ck.getBiomeId(cx, ck.getHighestBlockAt(cx, cz), cz)]) {
                                     return;
                                 }
                             }

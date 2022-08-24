@@ -7,16 +7,16 @@ import cn.nukkit.level.generator.populator.impl.structure.fossil.PopulatorFossil
 import cn.nukkit.level.generator.populator.impl.structure.igloo.PopulatorIgloo;
 import cn.nukkit.level.generator.populator.impl.structure.jungletemple.PopulatorJungleTemple;
 import cn.nukkit.level.generator.populator.impl.structure.mineshaft.PopulatorMineshaft;
-import cn.nukkit.level.generator.populator.impl.structure.netherfortress.populator.PopulatorNetherFortress;
-import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.populator.PopulatorOceanMonument;
+import cn.nukkit.level.generator.populator.impl.structure.netherfortress.PopulatorNetherFortress;
+import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.PopulatorOceanMonument;
 import cn.nukkit.level.generator.populator.impl.structure.oceanruin.PopulatorOceanRuin;
 import cn.nukkit.level.generator.populator.impl.structure.pillageroutpost.PopulatorPillagerOutpost;
-import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDesertWell;
-import cn.nukkit.level.generator.populator.impl.structure.quasi.populator.PopulatorDungeon;
+import cn.nukkit.level.generator.populator.impl.structure.desertwell.PopulatorDesertWell;
+import cn.nukkit.level.generator.populator.impl.structure.dungeon.PopulatorDungeon;
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.PopulatorShipwreck;
-import cn.nukkit.level.generator.populator.impl.structure.stronghold.populator.PopulatorStronghold;
+import cn.nukkit.level.generator.populator.impl.structure.stronghold.PopulatorStronghold;
 import cn.nukkit.level.generator.populator.impl.structure.swamphut.PopulatorSwampHut;
-import cn.nukkit.level.generator.populator.impl.structure.village.populator.PopulatorVillage;
+import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 
 import java.util.ArrayList;
 import java.util.List;

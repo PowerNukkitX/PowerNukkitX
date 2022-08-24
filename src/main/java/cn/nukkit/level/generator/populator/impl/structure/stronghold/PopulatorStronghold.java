@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.stronghold.populator;
+package cn.nukkit.level.generator.populator.impl.structure.stronghold;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -36,7 +36,7 @@ public class PopulatorStronghold extends PopulatorStructure {
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         //\\ StrongholdFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
-        if (VALID_BIOMES[chunk.getBiomeId(7, 7)]) {
+        if (VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ StrongholdFeature *v28 = (StrongholdFeature *)((char *)this + 456); // [rsp+60h] [rbp+8h]
             synchronized (this.lock) { //\\ _Mtx_lock((char *)this + 456);
                 if (!this.isSpotSelected) {

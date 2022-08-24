@@ -23,7 +23,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if (chunk.getProvider().isOverWorld() && VALID_BIOMES[chunk.getBiomeId(7, 7)]) {
+        if (chunk.getProvider().isOverWorld() && VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             long seed = level.getSeed();
             random.setSeed(seed);
@@ -162,7 +162,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
         public void generatePieces(ChunkManager level, int chunkX, int chunkZ) {
             BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
             if (chunk != null) {
-                int biome = chunk.getBiomeId(7, 7);
+                int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
                 Type type = biome >= EnumBiome.MESA.id && biome <= EnumBiome.MESA_PLATEAU.id || biome >= EnumBiome.MESA_BRYCE.id && biome <= EnumBiome.MESA_PLATEAU_M.id ? Type.MESA : Type.NORMAL;
 
                 MineshaftPieces.MineshaftRoom start = new MineshaftPieces.MineshaftRoom(0, this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2, type);

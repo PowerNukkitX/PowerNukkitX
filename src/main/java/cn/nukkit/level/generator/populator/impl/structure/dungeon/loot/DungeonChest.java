@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.quasi.loot;
+package cn.nukkit.level.generator.populator.impl.structure.dungeon.loot;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

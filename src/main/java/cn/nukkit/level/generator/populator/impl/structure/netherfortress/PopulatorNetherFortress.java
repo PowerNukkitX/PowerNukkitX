@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.netherfortress.populator;
+package cn.nukkit.level.generator.populator.impl.structure.netherfortress;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -24,7 +24,7 @@ public class PopulatorNetherFortress extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, @NotNull FullChunk chunk) {
-        if (chunk.getProvider().isNether() && chunk.getBiomeId(7, 7) == EnumBiome.HELL.id) {
+        if (chunk.getProvider().isNether() && chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7) == EnumBiome.HELL.id) {
             //\\ NetherFortressFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int gx = chunkX >> 4;
             int gz = chunkZ >> 4;

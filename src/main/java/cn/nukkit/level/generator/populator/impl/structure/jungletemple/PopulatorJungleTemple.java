@@ -15,7 +15,7 @@ public class PopulatorJungleTemple extends PopulatorScatteredStructure {
 
     @Override
     protected boolean canGenerate(int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        int biome = chunk.getBiomeId(7, 7);
+        int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
         return (biome == EnumBiome.JUNGLE.id || biome == EnumBiome.JUNGLE_EDGE.id || biome == EnumBiome.JUNGLE_EDGE_M.id || biome == EnumBiome.JUNGLE_HILLS.id || biome == EnumBiome.JUNGLE_M.id) && super.canGenerate(chunkX, chunkZ, random, chunk);
     }
 

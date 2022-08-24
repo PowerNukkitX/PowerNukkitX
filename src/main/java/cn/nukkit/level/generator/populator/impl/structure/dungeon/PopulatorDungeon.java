@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.quasi.populator;
+package cn.nukkit.level.generator.populator.impl.structure.dungeon;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -10,7 +10,7 @@ import cn.nukkit.entity.mob.EntitySpider;
 import cn.nukkit.entity.mob.EntityZombie;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.quasi.loot.DungeonChest;
+import cn.nukkit.level.generator.populator.impl.structure.dungeon.loot.DungeonChest;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;
 import cn.nukkit.math.NukkitRandom;

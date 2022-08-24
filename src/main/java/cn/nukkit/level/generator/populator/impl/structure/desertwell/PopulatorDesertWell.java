@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.quasi.populator;
+package cn.nukkit.level.generator.populator.impl.structure.desertwell;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -15,7 +15,7 @@ public class PopulatorDesertWell extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        int biome = chunk.getBiomeId(7, 7);
+        int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
         if ((biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id) && random.nextBoundedInt(500) == 0) {
             int x = (chunkX << 4) + random.nextBoundedInt(16);
             int z = (chunkZ << 4) + random.nextBoundedInt(16);

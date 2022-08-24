@@ -19,7 +19,7 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.math.Mth;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageBlacksmithChest;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageTwoRoomHouseChest;
-import cn.nukkit.level.generator.populator.impl.structure.village.populator.PopulatorVillage;
+import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 import cn.nukkit.level.generator.task.ActorSpawnTask;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;
 import cn.nukkit.math.BlockFace;
@@ -520,7 +520,9 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             int biome;
             BaseFullChunk chunk = level.getChunk(x >> 4, z >> 4);
             if (chunk != null) {
-                biome = chunk.getBiomeId(x & 0xf, z & 0xf);
+                int cx = x & 0xf;
+                int cz = z & 0xf;
+                biome = chunk.getBiomeId(cx, chunk.getHighestBlockAt(cx, cz), cz);
             } else {
                 biome = EnumBiome.OCEAN.id;
             }
