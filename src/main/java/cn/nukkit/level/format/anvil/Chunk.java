@@ -668,6 +668,14 @@ public class Chunk extends BaseChunk {
         return result;
     }
 
+    @Since("1.19.20-r6")
+    @Override
+    public void reObfuscateChunk() {
+        for (var section : getSections()) {
+            section.setNeedReObfuscate();
+        }
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     @Override
