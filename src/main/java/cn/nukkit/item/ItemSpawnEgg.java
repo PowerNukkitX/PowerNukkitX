@@ -121,22 +121,18 @@ public class ItemSpawnEgg extends Item {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
+    @Since("1.19.20-r7")
     @Nullable
     public String getEntityName() {
         String saveId = Entity.getSaveId(getEntityNetworkId());
         if (saveId == null) {
             return null;
         }
-        switch (saveId) {
-            case "VillagerV1":
-                return "Villager";
-            case "ZombieVillagerV1":
-                return "Zombie Villager";
-            case "NPC":
-                return "NPC";
-            default:
-                return String.join(" ", saveId.split("(?=\\p{Lu})"));
-        }
+        return switch (saveId) {
+            case "VillagerV1" -> "Villager";
+            case "ZombieVillagerV1" -> "Zombie Villager";
+            case "NPC" -> "NPC";
+            default -> String.join(" ", saveId.split("(?=\\p{Lu})"));
+        };
     }
 }

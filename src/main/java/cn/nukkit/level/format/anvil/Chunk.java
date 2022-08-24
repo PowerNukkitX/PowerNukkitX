@@ -149,6 +149,9 @@ public class Chunk extends BaseChunk {
                         final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
                         if (chunkSection.hasBlocks()) {
                             sections[y] = chunkSection;
+                            if (chunkSection.invalidCustomBlockWhenLoad) {
+                                this.setChanged();
+                            }
                         } else {
                             sections[y] = new EmptyChunkSection(y);
                         }

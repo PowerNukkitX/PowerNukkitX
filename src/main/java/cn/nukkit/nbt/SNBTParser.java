@@ -184,6 +184,9 @@ public class SNBTParser {
         } else if (value.indexOf('f') != -1) {
             float num = Float.parseFloat(value.replace("f", ""));
             return new FloatTag(key, num);
+        } else if (value.indexOf('i') != -1) {
+            int num = Integer.parseInt(value.replace("i", ""));
+            return new IntTag(key, num);
         } else {
             int num = Integer.parseInt(value);
             return new IntTag(key, num);
