@@ -4684,7 +4684,7 @@
     "name": "minecraft:villager_spawn_egg",
     "id": 449,
     "oldId": 383,
-    "oldData": 15
+    "oldData": 115
   },
   {
     "name": "minecraft:squid_spawn_egg",
@@ -4852,7 +4852,7 @@
     "name": "minecraft:zombie_villager_spawn_egg",
     "id": 477,
     "oldId": 383,
-    "oldData": 44
+    "oldData": 116
   },
   {
     "name": "minecraft:parrot_spawn_egg",

@@ -282,7 +282,6 @@
         <item-state namespaced-id="minecraft:pig_spawn_egg" damage="12" name="Pig Spawn Egg"/>
         <item-state namespaced-id="minecraft:sheep_spawn_egg" damage="13" name="Sheep Spawn Egg"/>
         <item-state namespaced-id="minecraft:wolf_spawn_egg" damage="14" name="Wolf Spawn Egg"/>
-        <item-state namespaced-id="minecraft:villager_spawn_egg" damage="15" name="Villager Spawn Egg"/>
         <item-state namespaced-id="minecraft:mooshroom_spawn_egg" damage="16" name="Mooshroom Spawn Egg"/>
         <item-state namespaced-id="minecraft:squid_spawn_egg" damage="17" name="Squid Spawn Egg"/>
         <item-state namespaced-id="minecraft:rabbit_spawn_egg" damage="18" name="Rabbit Spawn Egg"/>
@@ -309,7 +308,6 @@
         <item-state namespaced-id="minecraft:ghast_spawn_egg" damage="41" name="Ghast Spawn Egg"/>
         <item-state namespaced-id="minecraft:magma_cube_spawn_egg" damage="42" name="Magma Cube Spawn Egg"/>
         <item-state namespaced-id="minecraft:blaze_spawn_egg" damage="43" name="Blaze Spawn Egg"/>
-        <item-state namespaced-id="minecraft:zombie_villager_spawn_egg" damage="44" name="Zombie Villager Spawn Egg"/>
         <item-state namespaced-id="minecraft:witch_spawn_egg" damage="45" name="Witch Spawn Egg"/>
         <item-state namespaced-id="minecraft:stray_spawn_egg" damage="46" name="Stray Spawn Egg"/>
         <item-state namespaced-id="minecraft:husk_spawn_egg" damage="47" name="Husk Spawn Egg"/>
@@ -336,7 +334,10 @@
         <item-state namespaced-id="minecraft:cod_spawn_egg" damage="112" name="Cod Spawn Egg"/>
         <item-state namespaced-id="minecraft:panda_spawn_egg" damage="113" name="Panda Spawn Egg"/>
         <item-state namespaced-id="minecraft:pillager_spawn_egg" damage="114" name="Pillager Spawn Egg"/>
-        <item-state namespaced-id="minecraft:wandering_trader_spawn_egg" damage="118" name="Wandering Trader Spawn Egg"/>
+        <item-state namespaced-id="minecraft:villager_spawn_egg" damage="115" name="Villager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:zombie_villager_spawn_egg" damage="116" name="Zombie Villager Spawn Egg"/>
+        <item-state namespaced-id="minecraft:wandering_trader_spawn_egg" damage="118"
+                    name="Wandering Trader Spawn Egg"/>
         <item-state namespaced-id="minecraft:fox_spawn_egg" damage="121" name="Fox Spawn Egg"/>
         <item-state namespaced-id="minecraft:bee_spawn_egg" damage="122" name="Bee Spawn Egg"/>
         <item-state namespaced-id="minecraft:piglin_spawn_egg" damage="123" name="Piglin Spawn Egg"/>

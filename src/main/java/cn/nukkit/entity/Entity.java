@@ -237,10 +237,10 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.2.0.0-PN")
     public static final int DATA_INTERACT_TEXT = dynamic(DATA_INTERACTIVE_TAG); //string
 
-    public static final int DATA_TRADE_TIER = dynamic(101); //int
-    public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int
+    public static final int DATA_TRADE_TIER = dynamic(101); //int 这个没啥用
+    public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int 这个控制村民最大等级
     @Since("1.2.0.0-PN")
-    public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int
+    public static final int DATA_TRADE_EXPERIENCE = dynamic(103); //int这个控制当前经验
     @Since("1.1.1.0-PN")
     public static final int DATA_SKIN_ID = dynamic(104); //int
     @Since("1.2.0.0-PN")

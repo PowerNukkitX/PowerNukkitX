@@ -53,10 +53,11 @@ public class NetworkInventoryAction {
     public static final int SOURCE_TYPE_ENCHANT_MATERIAL = -16;
     public static final int SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
-    public static final int SOURCE_TYPE_TRADING_INPUT_1 = -20;
-    public static final int SOURCE_TYPE_TRADING_INPUT_2 = -21;
-    public static final int SOURCE_TYPE_TRADING_USE_INPUTS = -22;
-    public static final int SOURCE_TYPE_TRADING_OUTPUT = -23;
+    public static final int SOURCE_TYPE_TRADING_OUTPUT = -30;//输出物品
+    public static final int SOURCE_TYPE_TRADING_INPUT_1 = -31;//实际上不管是交易物品A还是交易物品B都是这个window id
+    //下面这两个没啥用
+    public static final int SOURCE_TYPE_TRADING_INPUT_2 = -32;
+    public static final int SOURCE_TYPE_TRADING_USE_INPUTS = -33;
 
     public static final int SOURCE_TYPE_BEACON = -24;
 
@@ -105,6 +106,12 @@ public class NetworkInventoryAction {
                     case SOURCE_TYPE_ANVIL_MATERIAL:
                     case SOURCE_TYPE_ANVIL_RESULT:
                         packet.isRepairItemPart = true;
+                        break;
+                    case SOURCE_TYPE_TRADING_INPUT_1:
+                    case SOURCE_TYPE_TRADING_INPUT_2:
+                    case SOURCE_TYPE_TRADING_USE_INPUTS:
+                    case SOURCE_TYPE_TRADING_OUTPUT:
+                        packet.isTradeItemPart = true;
                         break;
                 }
                 break;
@@ -219,6 +226,22 @@ public class NetworkInventoryAction {
                             this.windowId = Player.GRINDSTONE_WINDOW_ID;
                             this.inventorySlot = 1;
                             break;
+                        case TradeInventory.TRADE_INPUT1_UI_SLOT:
+                            if (player.getWindowById(Player.TRADE_WINDOW_ID) == null) {
+                                log.error("Player {} does not have Trade window open", player.getName());
+                                return null;
+                            }
+                            this.windowId = Player.TRADE_WINDOW_ID;
+                            this.inventorySlot = 0;
+                            break;
+                        case TradeInventory.TRADE_INPUT2_UI_SLOT:
+                            if (player.getWindowById(Player.TRADE_WINDOW_ID) == null) {
+                                log.error("Player {} does not have Trade window open", player.getName());
+                                return null;
+                            }
+                            this.windowId = Player.TRADE_WINDOW_ID;
+                            this.inventorySlot = 1;
+                            break;
                     }
                 }
 
@@ -291,7 +314,7 @@ public class NetworkInventoryAction {
                             case SOURCE_TYPE_ANVIL_MATERIAL:
                             case SOURCE_TYPE_ANVIL_RESULT:
                                 return new GrindstoneItemAction(this.oldItem, this.newItem, this.windowId,
-                                        this.windowId != SOURCE_TYPE_ANVIL_RESULT? 0 : ((GrindstoneInventory) inv).getResultExperience()
+                                        this.windowId != SOURCE_TYPE_ANVIL_RESULT ? 0 : ((GrindstoneInventory) inv).getResultExperience()
                                 );
                             default:
                                 return new SlotChangeAction(inv, this.inventorySlot, this.oldItem, this.newItem);
@@ -343,7 +366,25 @@ public class NetworkInventoryAction {
                     this.inventorySlot = 0;
                     return new SlotChangeAction(beacon, this.inventorySlot, this.oldItem, this.newItem);
                 }
+                /*case SOURCE_TYPE_TRADING_INPUT_1:
+                case SOURCE_TYPE_TRADING_INPUT_2:
+                case SOURCE_TYPE_TRADING_USE_INPUTS:
+                case SOURCE_TYPE_TRADING_OUTPUT:
+                    inventory = Optional.ofNullable(player.getWindowById(this.windowId));
+                    if (inventory.isPresent() && inventory.get() instanceof TradeInventory ) {
+                        return new TradeAction(this.oldItem, this.newItem);
+                    }
+                    break;*/
+                if (this.windowId >= SOURCE_TYPE_TRADING_USE_INPUTS && this.windowId <= SOURCE_TYPE_TRADING_OUTPUT) {
+                    Inventory inv = player.getWindowById(Player.TRADE_WINDOW_ID);
 
+                    if (!(inv instanceof TradeInventory trade)) {
+                        log.debug("Player {} has no open trade inventory", player.getName());
+                        return null;
+                    }
+
+                    return new TradeAction(this.oldItem, this.newItem, this.windowId, trade.getHolder());
+                }
                 //TODO: more stuff
                 log.debug("Player {} has no open container with window ID {}", player.getName(), this.windowId);
                 return null;
