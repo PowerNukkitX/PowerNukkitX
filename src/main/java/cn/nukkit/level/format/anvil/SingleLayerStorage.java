@@ -142,7 +142,7 @@ public final class SingleLayerStorage extends LayerStorage {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     @Override
     public void writeObfuscatedTo(BinaryStream stream, Level level) {
         stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
@@ -158,7 +158,7 @@ public final class SingleLayerStorage extends LayerStorage {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     @Override
     public void setNeedReObfuscate() {
         storage.setNeedReObfuscate();

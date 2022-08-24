@@ -10,7 +10,7 @@ import cn.nukkit.inventory.transaction.action.TradeAction;
 import java.util.List;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r7")
+@Since("1.19.21-r1")
 public class TradingTransaction extends InventoryTransaction {
     public TradingTransaction(Player source, List<InventoryAction> actions) {
         super(source, actions);

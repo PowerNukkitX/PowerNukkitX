@@ -65,7 +65,7 @@ public class BlockStorage {
     @Nullable
     private BitSet denyStates = null;
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private boolean needReObfuscate = true;
 
     public BlockStorage() {
@@ -522,7 +522,7 @@ public class BlockStorage {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void writeObfuscatedTo(BinaryStream stream, Level level) {
         var realOreToFakeMap = level.getRawRealOreToReplacedRuntimeIdMap();
         var fakeBlockMap = level.getRawFakeOreToPutRuntimeIdMap();
@@ -555,7 +555,7 @@ public class BlockStorage {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void setNeedReObfuscate() {
         this.needReObfuscate = true;
     }

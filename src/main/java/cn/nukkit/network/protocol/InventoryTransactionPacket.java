@@ -51,7 +51,7 @@ public class InventoryTransactionPacket extends DataPacket {
     @Since("1.3.1.0-PN") public boolean isEnchantingPart = false;
     @Since("1.4.0.0-PN")
     public boolean isRepairItemPart = false;
-    @Since("1.19.20-r7")
+    @Since("1.19.21-r1")
     public boolean isTradeItemPart = false;
 
     @Override

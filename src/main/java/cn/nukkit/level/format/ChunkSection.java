@@ -144,13 +144,13 @@ public interface ChunkSection {
      * @param level 子区块所在世界，包含混淆所用数据
      */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     default void writeObfuscatedTo(BinaryStream stream, Level level) {
         writeTo(stream);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     default void setNeedReObfuscate() {
 
     }

@@ -671,7 +671,7 @@ public class Chunk extends BaseChunk {
         return result;
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     @Override
     public void reObfuscateChunk() {
         for (var section : getSections()) {

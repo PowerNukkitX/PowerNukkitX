@@ -339,22 +339,22 @@ public class Level implements ChunkManager, Metadatable {
 
     /* Anti-xray related. 反矿透相关 */
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private boolean antiXrayEnabled = false;
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private int fakeOreDenominator = 16;
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private boolean preDeObfuscate = true;
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
 
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
@@ -550,62 +550,62 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public boolean isAntiXrayEnabled() {
         return antiXrayEnabled;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void setAntiXrayEnabled(boolean antiXrayEnabled) {
         this.antiXrayEnabled = antiXrayEnabled;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public int getFakeOreDenominator() {
         return fakeOreDenominator;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void setFakeOreDenominator(int fakeOreDenominator) {
         this.fakeOreDenominator = fakeOreDenominator;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public boolean isPreDeObfuscate() {
         return preDeObfuscate;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void setPreDeObfuscate(boolean preDeObfuscate) {
         this.preDeObfuscate = preDeObfuscate;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void addAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.put(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void removeAntiXrayOreBlock(@NotNull Block oreBlock, @NotNull Block replaceWith) {
         this.realOreToReplacedRuntimeIds.remove(oreBlock.getRuntimeId(), replaceWith.getRuntimeId());
     }
 
     @PowerNukkitXInternal
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public Int2IntMap getRawRealOreToReplacedRuntimeIdMap() {
         return this.realOreToReplacedRuntimeIds;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void addAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
         var rid = originBlock.getRuntimeId();
         var list = this.fakeOreToPutRuntimeIds.get(rid);
@@ -618,7 +618,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void removeAntiXrayFakeBlock(@NotNull Block originBlock, @NotNull Collection<Block> fakeBlocks) {
         var rid = originBlock.getRuntimeId();
         var list = this.fakeOreToPutRuntimeIds.get(rid);
@@ -632,25 +632,25 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXInternal
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public Int2ObjectMap<IntList> getRawFakeOreToPutRuntimeIdMap() {
         return this.fakeOreToPutRuntimeIds;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public static synchronized void addAntiXrayTransparentBlock(@NotNull Block block) {
         transparentBlockRuntimeIds.add(block.getRuntimeId());
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public static IntSet getRawTransparentBlockRuntimeIds() {
         return transparentBlockRuntimeIds;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     public void reinitAntiXray(boolean global) {
         var stone = new BlockStone();
         var netherRack = new BlockNetherrack();
