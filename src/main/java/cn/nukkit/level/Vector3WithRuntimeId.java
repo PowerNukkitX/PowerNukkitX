@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
-@Since("1.19.20-r6")
+@Since("1.19.21-r1")
 public class Vector3WithRuntimeId extends Vector3 {
     private int runtimeIdLayer0;
     private int runtimeIdLayer1;

@@ -286,7 +286,7 @@ public interface FullChunk extends Cloneable {
     boolean isBlockedByBorder(int x, int z);
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     default void reObfuscateChunk() {
 
     }

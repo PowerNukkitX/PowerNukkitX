@@ -715,7 +715,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         layerStorage.writeTo(stream);
     }
 
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     @Override
     public void writeObfuscatedTo(BinaryStream stream, Level level) {
         layerStorage.writeObfuscatedTo(stream, level);
@@ -1034,7 +1034,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.20-r6")
+    @Since("1.19.21-r1")
     @Override
     public void setNeedReObfuscate() {
         layerStorage.setNeedReObfuscate();
