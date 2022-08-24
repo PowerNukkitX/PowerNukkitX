@@ -36,9 +36,11 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
         if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             var chunkManager = getHandle();
-            if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
-                chunkManager.setBlockStateAt(i, i1, i2, 1, pnxBlockState.getHandle());
-            chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+            var oid = chunkManager.getBlockIdAt(i, i1, i2);
+            if (oid == BlockID.WATERLILY || oid == BlockID.STILL_WATER || oid == BlockID.FLOWING_WATER) {
+                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+                chunkManager.setBlockAtLayer(i, i1, i2, 1, oid);
+            } else chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
         }
     }
 

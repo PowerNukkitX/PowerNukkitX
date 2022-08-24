@@ -1,4 +1,4 @@
-package cn.nukkit.level.generator.populator.impl.structure.oceanmonument.util;
+package cn.nukkit.level.generator.populator.impl.structure.utils;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

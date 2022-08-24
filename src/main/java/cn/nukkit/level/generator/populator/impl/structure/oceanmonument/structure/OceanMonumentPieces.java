@@ -9,7 +9,7 @@ import cn.nukkit.block.BlockSponge;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.util.NukkitCollections;
+import cn.nukkit.level.generator.populator.impl.structure.utils.NukkitCollections;
 import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.BlockState;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
