@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
@@ -280,5 +281,11 @@ public class TheEnd extends Generator {
         }
 
         return islandHeight1;
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean shouldGenerateStructures() {
+        return true;
     }
 }

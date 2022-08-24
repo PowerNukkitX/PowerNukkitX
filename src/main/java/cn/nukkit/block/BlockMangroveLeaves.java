@@ -41,30 +41,22 @@ public class BlockMangroveLeaves extends BlockLeaves{
         Enchantment fortuneEnchantment = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
 
         int fortune = fortuneEnchantment != null ? fortuneEnchantment.getLevel() : 0;
-        int appleOdds;
         int stickOdds;
         switch (fortune) {
             case 0 -> {
-                appleOdds = 200;
                 stickOdds = 50;
             }
             case 1 -> {
-                appleOdds = 180;
                 stickOdds = 45;
             }
             case 2 -> {
-                appleOdds = 160;
                 stickOdds = 40;
             }
             default -> {
-                appleOdds = 120;
                 stickOdds = 30;
             }
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (canDropApple() && random.nextInt(appleOdds) == 0) {
-            drops.add(Item.get(ItemID.APPLE));
-        }
         if (random.nextInt(stickOdds) == 0) {
             drops.add(Item.get(ItemID.STICK));
         }

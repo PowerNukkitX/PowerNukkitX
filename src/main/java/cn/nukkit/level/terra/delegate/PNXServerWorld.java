@@ -2,6 +2,7 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
@@ -14,7 +15,7 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 
-public record PNXServerWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ServerWorld {
+public record PNXServerWorld(Level level, ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
