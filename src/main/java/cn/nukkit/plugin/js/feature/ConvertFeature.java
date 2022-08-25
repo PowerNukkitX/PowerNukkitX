@@ -30,6 +30,20 @@ public class ConvertFeature implements JSFeature {
                     throw new IllegalArgumentException("2 arguments are required.");
                 }
             });
+            map.put("convertToSet", (ProxyExecutable) arguments -> {
+                if (arguments.length == 2) {
+                    return arguments[1].as(Set.class);
+                } else {
+                    throw new IllegalArgumentException("1 arguments is required.");
+                }
+            });
+            map.put("convertToList", (ProxyExecutable) arguments -> {
+                if (arguments.length == 2) {
+                    return arguments[1].as(List.class);
+                } else {
+                    throw new IllegalArgumentException("1 arguments is required.");
+                }
+            });
             return map;
         }
         return Collections.emptyMap();
