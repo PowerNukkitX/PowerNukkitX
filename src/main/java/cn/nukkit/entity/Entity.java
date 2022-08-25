@@ -14,6 +14,10 @@ import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.mob.EntityMagmaCube;
 import cn.nukkit.entity.passive.EntityStrider;
+import cn.nukkit.entity.provider.ClassEntityProvider;
+import cn.nukkit.entity.provider.CustomEntityProvider;
+import cn.nukkit.entity.provider.EntityProvider;
+import cn.nukkit.entity.provider.EntityProviderWithClass;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -55,6 +59,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.*;
 import static cn.nukkit.utils.Utils.dynamic;
@@ -448,7 +453,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static long entityCount = 1;
 
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
-    private static final Map<String, Class<? extends Entity>> knownEntities = new HashMap<>();
+    private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
 
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
@@ -1060,56 +1065,11 @@ public abstract class Entity extends Location implements Metadatable {
 
     @Nullable
     public static Entity createEntity(@Nonnull String name, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
-        Entity entity = null;
-
-        Class<? extends Entity> clazz = knownEntities.get(name);
-        if (clazz != null) {
-            List<Exception> exceptions = null;
-
-            for (Constructor constructor : clazz.getConstructors()) {
-                if (entity != null) {
-                    break;
-                }
-
-                if (constructor.getParameterCount() != (args == null ? 2 : args.length + 2)) {
-                    continue;
-                }
-
-                try {
-                    if (args == null || args.length == 0) {
-                        entity = (Entity) constructor.newInstance(chunk, nbt);
-                    } else {
-                        Object[] objects = new Object[args.length + 2];
-
-                        objects[0] = chunk;
-                        objects[1] = nbt;
-                        System.arraycopy(args, 0, objects, 2, args.length);
-                        entity = (Entity) constructor.newInstance(objects);
-
-                    }
-                } catch (Exception e) {
-                    if (exceptions == null) {
-                        exceptions = new ArrayList<>();
-                    }
-                    exceptions.add(e);
-                }
-
-            }
-
-            if (entity == null) {
-                Exception cause = new IllegalArgumentException("Could not create an entity of type " + name, exceptions != null && exceptions.size() > 0 ? exceptions.get(0) : null);
-                if (exceptions != null && exceptions.size() > 1) {
-                    for (int i = 1; i < exceptions.size(); i++) {
-                        cause.addSuppressed(exceptions.get(i));
-                    }
-                }
-                log.debug("Could not create an entity of type {} with {} args", name, args == null ? 0 : args.length, cause);
-            }
-        } else {
-            log.debug("Entity type {} is unknown", name);
+        var provider = knownEntities.get(name);
+        if (provider != null) {
+            return provider.provideEntity(chunk, nbt, args);
         }
-
-        return entity;
+        return null;
     }
 
     @Nullable
@@ -1121,21 +1081,49 @@ public abstract class Entity extends Location implements Metadatable {
         return registerEntity(name, clazz, false);
     }
 
+    @PowerNukkitXDifference(since = "1.19.21-r1", info = "Use internal provider instead.")
     public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
         if (clazz == null) {
             return false;
         }
-        try {
-            int networkId = clazz.getField("NETWORK_ID").getInt(null);
-            knownEntities.put(String.valueOf(networkId), clazz);
-        } catch (Exception e) {
+
+        var provider = new ClassEntityProvider(name, clazz);
+        if (provider.getNetworkId() != -1) {
+            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
+        } else {
             if (!force) {
                 return false;
             }
         }
 
-        knownEntities.put(name, clazz);
+        knownEntities.put(name, provider);
         shortNames.put(clazz.getSimpleName(), name);
+        return true;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
+        return registerEntity(provider, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
+        if (provider == null) {
+            return false;
+        }
+
+        if (provider.getNetworkId() != -1) {
+            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
+        } else {
+            if (!force) {
+                return false;
+            }
+        }
+
+        knownEntities.put(provider.getName(), provider);
+        shortNames.put(provider.getSimpleName(), provider.getName());
         return true;
     }
 
@@ -1145,6 +1133,8 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @PowerNukkitXOnly
+    @Deprecated(since = "1.19.21-r2")
+    @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
     public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
         if (!Server.getInstance().isEnableExperimentMode()) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
@@ -1152,6 +1142,17 @@ public abstract class Entity extends Location implements Metadatable {
         }
         entityDefinitions.add(customEntityDefinition);
         registerEntity(customEntityDefinition.getStringId(), entity, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
+            return;
+        }
+        entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
+        registerEntity(customEntityProvider, true);
     }
 
     @Nonnull
@@ -1164,11 +1165,25 @@ public abstract class Entity extends Location implements Metadatable {
                 .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
     }
 
+    private record OldStringClass(String key, Class<? extends Entity> value) {}
+
     @Nonnull
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
+    @Deprecated
     public static Map<String, Class<? extends Entity>> getKnownEntities() {
-        return new HashMap<>(knownEntities);
+        return knownEntities.entrySet().stream()
+                .filter(e -> e.getValue() instanceof EntityProviderWithClass)
+                .map(e -> new OldStringClass(e.getKey(), ((EntityProviderWithClass) e.getValue()).getEntityClass()))
+                .collect(Collectors.toMap(OldStringClass::key, OldStringClass::value));
+    }
+
+    @Nonnull
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    @Deprecated
+    public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
+        return Collections.unmodifiableMap(knownEntities);
     }
 
     @Nonnull
@@ -1182,12 +1197,12 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static OptionalInt getSaveId(String id) {
-        Class<? extends Entity> entityClass = knownEntities.get(id);
-        if (entityClass == null) {
+        var entityProvider = knownEntities.get(id);
+        if (entityProvider == null) {
             return OptionalInt.empty();
         }
         return knownEntities.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(entityClass))
+                .filter(entry -> entry.getValue().equals(entityProvider))
                 .map(Map.Entry::getKey)
                 .filter(Utils::isInteger)
                 .mapToInt(Integer::parseInt)
@@ -1198,11 +1213,11 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public static String getSaveId(int id) {
-        Class<? extends Entity> entityClass = knownEntities.get(Integer.toString(id));
-        if (entityClass == null) {
+        var entityProvider = knownEntities.get(Integer.toString(id));
+        if (entityProvider == null) {
             return null;
         }
-        return shortNames.get(entityClass.getSimpleName());
+        return shortNames.get(entityProvider.getSimpleName());
     }
 
     @Nonnull
@@ -1518,7 +1533,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public int getAge(){
+    public int getAge() {
         return this.age;
     }
 
@@ -1859,10 +1874,10 @@ public abstract class Entity extends Location implements Metadatable {
         return nearestPortal;
     }
 
-    @PowerNukkitDifference(since = "1.6.0.0-PNX",info = "add support for the new movement packet MoveEntityDeltaPacket")
+    @PowerNukkitDifference(since = "1.6.0.0-PNX", info = "add support for the new movement packet MoveEntityDeltaPacket")
     public void updateMovement() {
         //这样做是为了向后兼容旧插件
-        if (!enableHeadYaw()){
+        if (!enableHeadYaw()) {
             this.headYaw = this.yaw;
         }
         double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
@@ -1897,7 +1912,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public boolean enableHeadYaw(){
+    public boolean enableHeadYaw() {
         return false;
     }
 

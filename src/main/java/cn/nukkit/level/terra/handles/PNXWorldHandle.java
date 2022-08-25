@@ -22,7 +22,6 @@ import java.util.Map;
 public class PNXWorldHandle implements WorldHandle {
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
     public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
-    public static Map<String, Class<? extends Entity>> knownEntities = Entity.getKnownEntities();
     public static int err = 0;
 
     static {
