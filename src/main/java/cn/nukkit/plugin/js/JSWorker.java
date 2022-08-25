@@ -38,7 +38,7 @@ public final class JSWorker implements AutoCloseable {
         this.workerContext = Context.newBuilder("js")
                 .fileSystem(fileSystem)
                 .allowAllAccess(true)
-                .allowHostAccess(HostAccess.ALL)
+                .allowHostAccess(HostAccess.newBuilder(HostAccess.ALL).targetTypeMapping(Double.class, Float.class, null, Double::floatValue).build())
                 .allowHostClassLoading(true)
                 .allowHostClassLookup(className -> true)
                 .allowIO(true)

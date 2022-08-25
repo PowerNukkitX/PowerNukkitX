@@ -12,6 +12,32 @@ public record JType(Type asmType) {
 
     @Nullable
     public static JType ofClassName(String className) {
+        switch (className) {
+            case "int" -> {
+                return of(int.class);
+            }
+            case "long" -> {
+                return of(long.class);
+            }
+            case "short" -> {
+                return of(short.class);
+            }
+            case "boolean" -> {
+                return of(boolean.class);
+            }
+            case "void" -> {
+                return of(void.class);
+            }
+            case "byte" -> {
+                return of(byte.class);
+            }
+            case "float" -> {
+                return of(float.class);
+            }
+            case "double" -> {
+                return of(double.class);
+            }
+        }
         try {
             return new JType(Type.getType(Class.forName(className)));
         } catch (ClassNotFoundException e) {

@@ -1,5 +1,6 @@
 package cn.nukkit.plugin.js;
 
+import cn.nukkit.plugin.js.feature.ConvertFeature;
 import cn.nukkit.plugin.js.feature.TestFeature;
 import cn.nukkit.plugin.js.feature.WsClientFeature;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -54,5 +55,6 @@ public final class JSFeatures {
     public static void initInternalFeatures() {
         registerFeature(new TestFeature());
         registerFeature(new WsClientFeature());
+        registerFeature(new ConvertFeature());
     }
 }
