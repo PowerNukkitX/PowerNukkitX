@@ -332,6 +332,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public void setBlockId(int x, int y, int z, int layer, int id) {
         sectionLock.writeLock().lock();
         try {
+            layerStorage.setNeedReObfuscate();
             if (id != 0) {
                 layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockId(x, y, z, id);
             } else {
@@ -412,6 +413,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public void setBlockData(int x, int y, int z, int layer, int data) {
         sectionLock.writeLock().lock();
         try {
+            layerStorage.setNeedReObfuscate();
             if (data != 0) {
                 layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).setBlockData(x, y, z, data);
             } else {
@@ -480,6 +482,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public Block getAndSetBlock(int x, int y, int z, int layer, Block block) {
         sectionLock.writeLock().lock();
         try {
+            layerStorage.setNeedReObfuscate();
             BlockStorage storage;
             if (block.getId() != 0 || !block.isDefaultState()) {
                 storage = layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer);
@@ -507,6 +510,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     public BlockState getAndSetBlockState(int x, int y, int z, int layer, BlockState state) {
         sectionLock.writeLock().lock();
         try {
+            layerStorage.setNeedReObfuscate();
             if (!BlockState.AIR.equals(state)) {
                 return layerStorage.getOrSetStorage(this::setLayerStorage, this::getContentVersion, layer).getAndSetBlockState(x, y, z, state);
             } else {

@@ -1308,49 +1308,77 @@ public class Level implements ChunkManager, Metadatable {
                                     var z = hash.getFloorZ();
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        tmpV3Rid = new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1));
-                                        vRidList.add(tmpV3Rid);
-                                        if (!transparentBlockRuntimeIds.contains(tmpV3Rid.getRuntimeIdLayer0())) {
-                                            continue;
+                                        try {
+                                            tmpV3Rid = new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1));
+                                            vRidList.add(tmpV3Rid);
+                                            if (!transparentBlockRuntimeIds.contains(tmpV3Rid.getRuntimeIdLayer0())) {
+                                                continue;
+                                            }
+                                        } catch (Exception ignore) {
+
                                         }
                                     }
                                     x++;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                     x -= 2;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                     x++;
                                     y++;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                     y -= 2;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                     y++;
                                     z++;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                     z -= 2;
                                     blockHash = localBlockHash(x, y, z, 0, this);
                                     if (!vectorSet.contains(blockHash)) {
                                         vectorSet.add(blockHash);
-                                        vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        try {
+                                            vRidList.add(new Vector3WithRuntimeId(x, y, z, getBlockRuntimeId(x, y, z, 0), getBlockRuntimeId(x, y, z, 1)));
+                                        } catch (Exception ignore) {
+
+                                        }
                                     }
                                 }
                                 this.sendBlocks(playerArray, vRidList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
