@@ -661,7 +661,9 @@ public class CraftingManager {
     public static int getItemHash(Item item, int meta) {
         int id = item.getId();
         int hash = 31 + (id << 8 | meta & 0xFF);
-        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem? item.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem?
+                item.getNamespaceId().hashCode()
+                : 0);
         return hash;
     }
 
