@@ -343,6 +343,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
 
+    //用于在服务端侧缓存motion（将在处理运动时发送给客户端）
+    //由于当前对于玩家的运动处理极其混乱（以及有很多的bug），我们只能使用这个低劣的hack，事实上需要重构整个玩家运动处理
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    private Vector3 tmpMotion = new Vector3(0,0,0);
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    private Vector3 lastTmpMotion = new Vector3(0,0,0);;
+
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -1930,6 +1940,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public void addTmpMotion(Vector3 addition){
+        this.tmpMotion = this.tmpMotion.add(addition);
+    }
+
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -2002,6 +2019,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.spawned) {
+            var diffMotion = this.tmpMotion.distanceSquared(lastTmpMotion);
+
+            if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { //0.05 ** 2
+                this.lastTmpMotion = tmpMotion.clone();
+
+                this.setMotion(this.lastTmpMotion);
+            }
+
             this.processMovement(tickDiff);
 
             if (!this.isSpectator()) {

@@ -265,7 +265,7 @@ public class Explosion {
                 if (!(entity instanceof EntityItem || entity instanceof EntityXPOrb)) {
                     var multipliedMotion = motion.multiply(impact);
                     if (entity instanceof Player player){
-
+                        player.addTmpMotion(multipliedMotion);
                     } else {
                         entity.motionX += multipliedMotion.x;
                         entity.motionY += multipliedMotion.y;
