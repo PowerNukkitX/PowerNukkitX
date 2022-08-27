@@ -1920,6 +1920,13 @@ public abstract class Entity extends Location implements Metadatable {
         this.level.addEntityMovement(this, x, y, z, yaw, pitch, headYaw);
     }
 
+    /*
+     * 请注意此方法仅向客户端发motion包，并不会真正的将motion数值加到实体的motion(x|y|z)上
+     * 如果你想在实体的motion基础上增加，请直接将要添加的motion数值加到实体的motion(x|y|z)上，像这样：
+     * entity.motionX += vector3.x;
+     * entity.motionY += vector3.y;
+     * entity.motionZ += vector3.z;
+     */
     public void addMotion(double motionX, double motionY, double motionZ) {
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
         pk.eid = this.id;
@@ -1952,12 +1959,15 @@ public abstract class Entity extends Location implements Metadatable {
         if (!this.isAlive()) {
             ++this.deadTicks;
             if (this.deadTicks >= 10) {
-                //death smoke cloud
-                EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.getId();
-                pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
+                //apply death smoke cloud only if it is a creature
+                if (this instanceof EntityCreature) {
+                    //death smoke cloud
+                    EntityEventPacket pk = new EntityEventPacket();
+                    pk.eid = this.getId();
+                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
 
-                Server.broadcastPacket(this.hasSpawned.values(), pk);
+                    Server.broadcastPacket(this.hasSpawned.values(), pk);
+                }
                 this.despawnFromAll();
                 if (!this.isPlayer) {
                     this.close();
