@@ -1952,12 +1952,15 @@ public abstract class Entity extends Location implements Metadatable {
         if (!this.isAlive()) {
             ++this.deadTicks;
             if (this.deadTicks >= 10) {
-                //death smoke cloud
-                EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.getId();
-                pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
+                //apply death smoke cloud only if it is a creature
+                if (this instanceof EntityCreature) {
+                    //death smoke cloud
+                    EntityEventPacket pk = new EntityEventPacket();
+                    pk.eid = this.getId();
+                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
 
-                Server.broadcastPacket(this.hasSpawned.values(), pk);
+                    Server.broadcastPacket(this.hasSpawned.values(), pk);
+                }
                 this.despawnFromAll();
                 if (!this.isPlayer) {
                     this.close();
