@@ -1088,7 +1088,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         var provider = new ClassEntityProvider(name, clazz);
-        if (provider.getNetworkId() != -1) {
+        if (provider.getNetworkId() != Integer.MIN_VALUE) {
             knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
         } else {
             if (!force) {

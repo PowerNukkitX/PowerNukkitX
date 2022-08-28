@@ -27,7 +27,7 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
         try {
             networkId1 = clazz.getField("NETWORK_ID").getInt(null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            networkId1 = -1;
+            networkId1 = Integer.MIN_VALUE;
         }
         this.networkId = networkId1;
     }
