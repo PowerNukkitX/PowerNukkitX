@@ -343,12 +343,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
 
-    //用于在服务端侧缓存motion（将在处理运动时发送给客户端然后清零）
-    //由于当前对于玩家的运动处理极其混乱（以及有很多的bug），我们只能使用这个低劣的hack，事实上需要重构整个玩家运动处理
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    private Vector3 tmpMotion = new Vector3(0,0,0);
-
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -1936,13 +1930,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public void addTmpMotion(Vector3 addition){
-        this.tmpMotion = this.tmpMotion.add(addition);
-    }
-
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -2016,9 +2003,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.spawned) {
 
-            if (this.tmpMotion.x != 0 || this.tmpMotion.y != 0 || this.tmpMotion.z != 0) {
-                this.setMotion(this.tmpMotion);
-                this.tmpMotion.setComponents(0, 0, 0);
+            if (this.motionX != 0 || this.motionY != 0 || this.motionZ != 0) {
+                this.setMotion(new Vector3(motionX, motionY, motionZ));
+                motionX = motionY = motionZ = 0;
             }
 
             this.processMovement(tickDiff);
