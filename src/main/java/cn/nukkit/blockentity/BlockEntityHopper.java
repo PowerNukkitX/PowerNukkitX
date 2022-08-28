@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockComposter;
@@ -12,6 +13,7 @@ import cn.nukkit.blockproperty.CommonBlockProperties;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
@@ -215,7 +217,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter)  {
             changed = pullItems() || changed;
         } else {
-            changed = pickupItems() || changed;
+            changed = pullItemsFromMinecart() || pickupItems() || changed;
         }
 
         if (changed) {
@@ -334,6 +336,54 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return false;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public boolean pullItemsFromMinecart() {
+        if (this.inventory.isFull()) {
+            return false;
+        }
+
+        for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
+            if (entity.isClosed() || !(entity instanceof EntityMinecartAbstract && entity instanceof InventoryHolder invHolder)) {
+                continue;
+            }
+
+            var inv = invHolder.getInventory();
+
+            for (int i = 0; i < inv.getSize(); i++) {
+                Item item = inv.getItem(i);
+
+                if (!item.isNull()) {
+                    Item itemToAdd = item.clone();
+                    itemToAdd.count = 1;
+
+                    if (!this.inventory.canAddItem(itemToAdd)) {
+                        continue;
+                    }
+
+                    InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
+                    this.server.getPluginManager().callEvent(ev);
+
+                    if (ev.isCancelled()) {
+                        continue;
+                    }
+
+                    Item[] items = this.inventory.addItem(itemToAdd);
+
+                    if (items.length >= 1) {
+                        continue;
+                    }
+
+                    item.count--;
+
+                    inv.setItem(i, item);
+                }
+            }
+        }
+
+        return true;
+    }
+
     public boolean pickupItems() {
         if (this.inventory.isFull()) {
             return false;
@@ -380,7 +430,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             }
         }
 
-        //TODO: check for minecart
         return pickedUpItem;
     }
 
