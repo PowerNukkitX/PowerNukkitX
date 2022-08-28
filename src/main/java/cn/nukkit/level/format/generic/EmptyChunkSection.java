@@ -32,6 +32,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY24 = new EmptyChunkSection[24];
     private static final String MODIFICATION_ERROR_MESSAGE = "Tried to modify an empty Chunk";
+    private static final String BIOME_TAG_NAME = "Biomes";
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
@@ -69,9 +70,16 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     private final int y;
+    private final byte[] biomeId;
 
     public EmptyChunkSection(int y) {
         this.y = y;
+        this.biomeId = new byte[4096];
+    }
+
+    public EmptyChunkSection(int y, byte[] biomeId) {
+        this.y = y;
+        this.biomeId = biomeId;
     }
 
     @Override
@@ -279,13 +287,17 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @Nonnull
     @Override
     public CompoundTag toNBT() {
-        return new CompoundTag();
+        var s = new CompoundTag();
+        s.putInt("Y", getY());
+        s.putByteArray(BIOME_TAG_NAME, biomeId);
+        s.putByte("Version", -1);
+        return s;
     }
 
     @Nonnull
     @Override
     public EmptyChunkSection copy() {
-        return this;
+        return new EmptyChunkSection(this.y, this.biomeId);
     }
 
     @PowerNukkitOnly
@@ -317,13 +329,19 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         return Collections.emptyList();
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r5")
+    private static int getAnvilIndex(int x, int y, int z) {
+        return (y << 8) + (z << 4) + x; // YZX
+    }
+
     @Override
     public int getBiomeId(int x, int y, int z) {
-        return 0;
+        return this.biomeId[getAnvilIndex(x, y, z)];
     }
 
     @Override
     public void setBiomeId(int x, int y, int z, byte id) {
-        if (id != 0) throw new ChunkException(MODIFICATION_ERROR_MESSAGE);
+        this.biomeId[getAnvilIndex(x, y, z)] = id;
     }
 }

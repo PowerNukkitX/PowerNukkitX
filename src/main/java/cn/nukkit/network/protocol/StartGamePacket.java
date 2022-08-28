@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.BlockPropertyData;
 import cn.nukkit.item.RuntimeItems;
@@ -14,9 +15,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 15-10-13
@@ -152,8 +150,27 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        this.putLInt(0); // Experiment count
-        this.putBoolean(false); // Were experiments previously toggled
+        if (Server.getInstance().isEnableExperimentMode()) {
+            this.putLInt(3); // Experiment count
+            {
+//                this.putString("spectator_mode");
+//                this.putBoolean(true);
+                this.putString("data_driven_items");
+                this.putBoolean(true);
+//                this.putString("data_driven_biomes");
+//                this.putBoolean(true);
+                this.putString("upcoming_creator_features");
+                this.putBoolean(true);
+//                this.putString("gametest");
+//                this.putBoolean(true);
+                this.putString("experimental_molang_features");
+                this.putBoolean(true);
+            }
+            this.putBoolean(true); // Were experiments previously toggled
+        } else {
+            this.putLInt(0);
+            this.putBoolean(false); // Were experiments previously toggled
+        }
         this.putBoolean(this.bonusChest);
         this.putBoolean(this.hasStartWithMapEnabled);
         this.putVarInt(this.permissionLevel);
@@ -167,13 +184,13 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isOnlySpawningV1Villagers);
         this.putBoolean(this.isDisablingPersonas);
         this.putBoolean(this.isDisablingCustomSkins);
-        this.putString(this.vanillaVersion);
+        this.putString("*"); // vanillaVersion
         this.putLInt(16); // Limited world width
         this.putLInt(16); // Limited world height
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(false); // Experimental Gameplay
+        this.putBoolean(Server.getInstance().isEnableExperimentMode()); // Experimental Gameplay
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */
@@ -202,7 +219,7 @@ public class StartGamePacket extends DataPacket {
         this.put(RuntimeItems.getRuntimeMapping().getItemDataPalette());
         this.putString(this.multiplayerCorrelationId);
         this.putBoolean(this.isInventoryServerAuthoritative);
-        this.putString(""); // Server Engine
+        this.putString(vanillaVersion); // Server Engine
         try {
             this.put(NBTIO.writeNetwork(new CompoundTag(""))); // playerPropertyData
         } catch (IOException e) {

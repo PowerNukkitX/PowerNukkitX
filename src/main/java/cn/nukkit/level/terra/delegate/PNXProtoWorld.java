@@ -1,7 +1,9 @@
 package cn.nukkit.level.terra.delegate;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -13,7 +15,8 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
-public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack, BiomeProvider biomeProvider,int centerChunkX,int centerChunkZ) implements ProtoWorld {
+public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int centerChunkZ) implements ProtoWorld {
+
     @Override
     public int centerChunkX() {
         return centerChunkX;
@@ -26,27 +29,34 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public ServerWorld getWorld() {
-        return new PNXServerWorld(chunkManager, chunkGenerator, configPack, biomeProvider);
+        return serverWorld;
     }
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        if(blockState instanceof PNXBlockStateDelegate pnxBlockState) {
-            if (chunkManager.getBlockIdAt(i, i1, i2) == BlockID.WATERLILY || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.STILL_WATER || chunkManager.getBlockIdAt(i, i1, i2) == BlockID.FLOWING_WATER)
-                chunkManager.setBlockStateAt(i, i1, i2,1, pnxBlockState.getHandle());
-            chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+        if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
+            var chunkManager = getHandle();
+            var ob = chunkManager.getBlockStateAt(i, i1, i2);
+            if (pnxBlockState.getHandle().getBlockId() == BlockID.BLOCK_KELP){
+                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+                chunkManager.setBlockAtLayer(i, i1, i2, 1, BlockID.STILL_WATER);
+            } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
+                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(i, i1, i2, 1, ob);
+            } else chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
         }
     }
 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
-        // TODO: 2022/2/14 暂不支持实体
-        return null;
+        String identifier = (String) entityType.getHandle();
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
+        return new PNXEntity(nukkitEntity, serverWorld);
     }
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return PNXAdapter.adapt(chunkManager.getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(getHandle().getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -56,22 +66,22 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public ChunkGenerator getGenerator() {
-        return chunkGenerator;
+        return serverWorld.getGenerator();
     }
 
     @Override
     public BiomeProvider getBiomeProvider() {
-        return biomeProvider;
+        return serverWorld.getBiomeProvider();
     }
 
     @Override
     public ConfigPack getPack() {
-        return configPack;
+        return serverWorld.getPack();
     }
 
     @Override
     public long getSeed() {
-        return chunkManager.getSeed();
+        return getHandle().getSeed();
     }
 
     @Override
@@ -86,6 +96,6 @@ public record PNXProtoWorld(ChunkManager chunkManager, ChunkGenerator chunkGener
 
     @Override
     public ChunkManager getHandle() {
-        return chunkManager;
+        return (ChunkManager) serverWorld.getHandle();
     }
 }

@@ -286,6 +286,12 @@ public interface FullChunk extends Cloneable {
     boolean isBlockedByBorder(int x, int z);
 
     @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    default void reObfuscateChunk() {
+
+    }
+
+    @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     default int getChunkSectionCount() {
         final LevelProvider provider = getProvider();

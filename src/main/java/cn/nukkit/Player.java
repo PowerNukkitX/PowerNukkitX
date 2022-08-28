@@ -139,7 +139,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public static final int SURVIVAL_SLOTS = 36;
     public static final int CREATIVE_SLOTS = 112;
-
     public static final int CRAFTING_SMALL = 0;
     public static final int CRAFTING_BIG = 1;
     public static final int CRAFTING_ANVIL = 2;
@@ -149,6 +148,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final @PowerNukkitOnly int CRAFTING_STONECUTTER = 1001;
     public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
     public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
+    public static final @PowerNukkitXOnly
+    @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -216,6 +217,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     protected SmithingTransaction smithingTransaction;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    protected TradingTransaction tradingTransaction;
 
     public long creationTime = 0;
 
@@ -341,6 +345,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
+
+    //用于在服务端侧缓存motion（将在处理运动时发送给客户端然后清零）
+    //由于当前对于玩家的运动处理极其混乱（以及有很多的bug），我们只能使用这个低劣的hack，事实上需要重构整个玩家运动处理
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    private Vector3 tmpMotion = new Vector3(0,0,0);
 
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
@@ -1918,6 +1928,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public void addTmpMotion(Vector3 addition){
+        this.tmpMotion = this.tmpMotion.add(addition);
+    }
+
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -2694,30 +2711,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
                             if (this.getServer().isEnableExperimentMode()) {
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("wild_update", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("vanilla_experiments", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("upcoming_creator_features", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
-                                );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("gametest", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );
@@ -4071,6 +4079,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                         }
                         return;
+                    } else if (transactionPacket.isTradeItemPart) {
+                        if (this.tradingTransaction == null) {
+                            this.tradingTransaction = new TradingTransaction(this, actions);
+                        } else {
+                            for (InventoryAction action : actions) {
+                                this.tradingTransaction.addAction(action);
+                            }
+                        }
+                        if (this.tradingTransaction.canExecute()) {
+                            this.tradingTransaction.execute();
+                            this.tradingTransaction = null;
+                        }
+                        return;
                     } else if (this.craftingTransaction != null) {
                         if (craftingTransaction.checkForCraftingPart(actions)) {
                             for (InventoryAction action : actions) {
@@ -4700,6 +4721,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 pk.z = (float) pos.z;
                 pk.data = (int) (65535 / breakTime);
                 this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                // 优化反矿透时玩家的挖掘体验
+                if (this.getLevel().isAntiXrayEnabled() && this.getLevel().isPreDeObfuscate()) {
+                    var vecList = new ArrayList<Vector3WithRuntimeId>(5);
+                    Vector3WithRuntimeId tmpVec;
+                    for (var each : BlockFace.values()) {
+                        if (each == face) continue;
+                        var tmpX = target.getFloorX() + each.getXOffset();
+                        var tmpY = target.getFloorY() + each.getYOffset();
+                        var tmpZ = target.getFloorZ() + each.getZOffset();
+                        try {
+                            tmpVec = new Vector3WithRuntimeId(tmpX, tmpY, tmpZ, getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 0), getLevel().getBlockRuntimeId(tmpX, tmpY, tmpZ, 1));
+                            if (getLevel().getRawFakeOreToPutRuntimeIdMap().containsKey(tmpVec.getRuntimeIdLayer0())) {
+                                vecList.add(tmpVec);
+                            }
+                        } catch (Exception ignore) {
+
+                        }
+                    }
+                    this.getLevel().sendBlocks(new Player[]{this}, vecList.toArray(Vector3[]::new), UpdateBlockPacket.FLAG_ALL);
+                }
             }
         }
 

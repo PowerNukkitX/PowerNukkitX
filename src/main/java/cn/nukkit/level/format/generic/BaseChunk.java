@@ -231,7 +231,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return section;
     }
 
-    private void createChunkSection(int sectionY) {
+    protected void createChunkSection(int sectionY) {
         try {
             this.setInternalSection(sectionY, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, sectionY));
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -351,7 +351,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return true;
     }
 
-    private void setInternalSection(float fY, ChunkSection section) {
+    protected void setInternalSection(float fY, ChunkSection section) {
         if (isPaletteUpdatesDelayed()) {
             section.delayPaletteUpdates();
         }

@@ -24,6 +24,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.zip.Deflater;
@@ -217,7 +218,12 @@ public class CraftingManager {
 
     //<editor-fold desc="constructors and setup" defaultstate="collapsed">
     public CraftingManager() {
-        InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json");
+        InputStream recipesStream = null;
+        try {
+            recipesStream = Server.class.getModule().getResourceAsStream("recipes.json");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (recipesStream == null) {
             throw new AssertionError("Unable to find recipes.json");
         }
@@ -655,7 +661,9 @@ public class CraftingManager {
     public static int getItemHash(Item item, int meta) {
         int id = item.getId();
         int hash = 31 + (id << 8 | meta & 0xFF);
-        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem? item.getNamespaceId().hashCode() : 0);
+        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem?
+                item.getNamespaceId().hashCode()
+                : 0);
         return hash;
     }
 

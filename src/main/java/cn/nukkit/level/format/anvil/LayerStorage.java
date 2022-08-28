@@ -19,7 +19,9 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.ImmutableBlockStorage;
 import cn.nukkit.level.format.updater.ChunkUpdater;
@@ -92,6 +94,18 @@ public class LayerStorage implements Cloneable {
     public void writeTo(BinaryStream stream) {
         stream.putByte((byte) ChunkSection.STREAM_STORAGE_VERSION);
         stream.putByte((byte) 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void writeObfuscatedTo(BinaryStream stream, Level level) {
+        writeTo(stream);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public void setNeedReObfuscate() {
+
     }
 
     @PowerNukkitOnly

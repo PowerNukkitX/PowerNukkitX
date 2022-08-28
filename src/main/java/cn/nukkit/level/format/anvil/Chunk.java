@@ -10,6 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseChunk;
@@ -31,6 +32,7 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -105,8 +107,9 @@ public class Chunk extends BaseChunk {
 
         this.sections = new cn.nukkit.level.format.ChunkSection[getChunkSectionCount()];
         this.sectionLength = getChunkSectionCount();
-        System.arraycopy(getChunkSectionCount() == 24 ? EmptyChunkSection.EMPTY24 : EmptyChunkSection.EMPTY,
-                0, this.sections, 0, getChunkSectionCount());
+        for (int i = 0; i < sectionLength; i++) {
+            sections[i] = new EmptyChunkSection(i);
+        }
         if (nbt == null) {
             this.biomes = new byte[16 * 16];
             this.heightMap = new byte[256];
@@ -131,16 +134,30 @@ public class Chunk extends BaseChunk {
         }
 
         for (Tag section : nbt.getList("Sections").getAll()) {
-            if (section instanceof CompoundTag) {
-                int y = ((CompoundTag) section).getByte("Y");
+            if (section instanceof CompoundTag compoundTag) {
+                int version = compoundTag.getByte("Version");
+                int y = compoundTag.getByte("Y");
                 if (y < getChunkSectionCount()) {
-                    final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
-                    if (chunkSection.hasBlocks()) {
-                        sections[y] = chunkSection;
+                    if (version == -1) {
+                        var biomeId = compoundTag.getByteArray("Biomes");
+                        if (biomeId != null) {
+                            sections[y] = new EmptyChunkSection(y, biomeId);
+                        } else {
+                            sections[y] = new EmptyChunkSection(y);
+                        }
                     } else {
-                        sections[y] = EmptyChunkSection.EMPTY[y];
+                        final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
+                        if (chunkSection.hasBlocks()) {
+                            sections[y] = chunkSection;
+                            if (chunkSection.invalidCustomBlockWhenLoad) {
+                                this.setChanged();
+                            }
+                        } else {
+                            sections[y] = new EmptyChunkSection(y);
+                        }
                     }
                 }
+
             }
         }
 
@@ -220,6 +237,13 @@ public class Chunk extends BaseChunk {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.20-r5")
+    @Override
+    protected void createChunkSection(int sectionY) {
+        setInternalSection(sectionY, new ChunkSection(sectionY));
+    }
+
     @Since("1.19.20-r4")
     @Override
     public int getMaxHeight() {
@@ -288,31 +312,33 @@ public class Chunk extends BaseChunk {
     @Override
     public void setBiomeId(int x, int z, byte biomeId) {
         for (var section : sections) {
-            if (section instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
+            if (section instanceof ChunkSection3DBiome chunkSection3DBiome) {
                 for (int dy = 0; dy < 16; dy++) {
-                    anvilSection.setBiomeId(x, dy, z, biomeId);
+                    chunkSection3DBiome.setBiomeId(x, dy, z, biomeId);
                 }
             }
         }
-        super.setBiomeId(x, z, biomeId);
+        this.biomes[(x << 4) | z] = biomeId;
+        this.setChanged();
     }
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
-            return anvilSection.getBiomeId(x, y & 0xf, z) & 0xFF;
+        if (sections[toSectionY(y)] instanceof ChunkSection3DBiome chunkSection3DBiome) {
+            return chunkSection3DBiome.getBiomeId(x, y & 0xf, z) & 0xFF;
         }
         return super.getBiomeId(x, z);
     }
 
     @Override
     public void setBiomeId(int x, int y, int z, byte biomeId) {
-        if (sections[toSectionY(y)] instanceof cn.nukkit.level.format.anvil.ChunkSection anvilSection) {
-            anvilSection.setBiomeId(x, y & 0xf, z, biomeId);
+        if (sections[toSectionY(y)] instanceof ChunkSection3DBiome chunkSection3DBiome) {
+            chunkSection3DBiome.setBiomeId(x, y & 0xf, z, biomeId);
             this.setChanged();
             return;
         }
-        super.setBiomeId(x, z, biomeId);
+        this.biomes[(x << 4) | z] = biomeId;
+        this.setChanged();
     }
 
     @Override
@@ -389,9 +415,6 @@ public class Chunk extends BaseChunk {
         }
 
         for (cn.nukkit.level.format.ChunkSection section : this.getSections()) {
-            if (section instanceof EmptyChunkSection) {
-                continue;
-            }
             CompoundTag s = section.toNBT();
             nbt.getList("Sections", CompoundTag.class).add(s);
         }
@@ -467,14 +490,7 @@ public class Chunk extends BaseChunk {
 
         ListTag<CompoundTag> sectionList = new ListTag<>("Sections");
         for (cn.nukkit.level.format.ChunkSection section : this.getSections()) {
-            if (section instanceof EmptyChunkSection) {
-                continue;
-            }
-            CompoundTag s = section.toNBT();
-            if (!section.hasBlocks()) {
-                continue;
-            }
-            sectionList.add(s);
+            sectionList.add(section.toNBT());
         }
         nbt.putList(sectionList);
 
@@ -655,13 +671,19 @@ public class Chunk extends BaseChunk {
         return result;
     }
 
+    @Since("1.19.21-r1")
+    @Override
+    public void reObfuscateChunk() {
+        for (var section : getSections()) {
+            section.setNeedReObfuscate();
+        }
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.20-r4")
     @Override
     public int getChunkSectionCount() {
-        if (dimensionData != null) {
-            return dimensionData.getHeight() >> 4 + ((dimensionData.getHeight() & 15) == 0 ? 0 : 1);
-        }
+        if (dimensionData != null) return dimensionData.getChunkSectionCount();
         return super.getChunkSectionCount();
     }
 

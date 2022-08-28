@@ -12,6 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Pub4Game
  * @since 21.06.2016
  */
+@Since("1.19.21-r1")
+@Deprecated
 public class EntityVillagerV1 extends EntityCreature implements EntityNPC, EntityAgeable {
 
     public static final int PROFESSION_FARMER = 0;

@@ -26,13 +26,14 @@ PowerNukkitX的優勢：
 1. 支持1.19.20協議。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
-4. 原生支持香草命令和命令方塊等（完善中）。
-5. 內置[Terra](https://github.com/PolyhedralDev/Terra)
+4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
+5. 原生支持香草命令和命令方塊等（完善中）。
+6. 內置[Terra](https://github.com/PolyhedralDev/Terra)
    地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
-6. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
-7. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
-8. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
-9. Todo...
+7. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
+8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
+9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
+10. Todo...
 
 ---
 
@@ -102,8 +103,7 @@ cn.nukkit.Nukkit
   非Cloudburst的開發人員維護，它依靠的是開源社區的開發者們用愛發電，如果您在使用PowerNukkitX時遇到了發現了任何問題，您首先應該在此存儲庫[創建一條issue](https://github.com/PowerNukkitX/PowerNukkitX/issues)
   （同時請注意閱讀[貢獻幫助指南](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)中的規定）。
 
-* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkit](https://github.com/powernukkit/powernukkit)
-  或[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
+* 同時我們推薦您進行定期備份等操作，並使用為[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)
   製作的插件，並使用[穩定版PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases)進行部署。
 
 * 大多數[Cloudburst Nukkit](https://github.com/cloudburstmc/nukkit)都可在該服務端上兼容使用，但在運行時可能會出一些錯誤等或不支持PowerNukkitX添加的新內容。
@@ -131,7 +131,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r2'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r5'
 }
 ```
 
@@ -142,7 +142,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.20-r2</version>
+        <version>1.19.20-r5</version>
     </dependency>
 </dependencies>
 ```

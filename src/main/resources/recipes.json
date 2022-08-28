@@ -14427,6 +14427,7 @@
       },
       "output": [
         {
+          "damage": 1,
           "legacyId": 155,
           "id": "minecraft:quartz_block"
         }
@@ -14450,6 +14451,7 @@
       },
       "output": [
         {
+          "damage": 3,
           "legacyId": 98,
           "id": "minecraft:stonebrick"
         }
@@ -14729,9 +14731,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 3,
           "legacyId": 85,
-          "id": "minecraft:fence",
-          "count": 3
+          "id": "minecraft:fence"
         }
       ],
       "shape": [
@@ -14900,9 +14903,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -14924,9 +14928,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -15762,9 +15767,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 3,
           "legacyId": 85,
-          "id": "minecraft:fence",
-          "count": 3
+          "id": "minecraft:fence"
         }
       ],
       "shape": [
@@ -15935,9 +15941,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -15959,9 +15966,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -16082,9 +16090,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -16343,9 +16352,10 @@
       },
       "output": [
         {
+          "damage": 15,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -16659,9 +16669,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -16942,9 +16953,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -17618,9 +17630,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -17860,9 +17873,10 @@
       },
       "output": [
         {
+          "damage": 12,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -20940,9 +20954,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -21124,9 +21139,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -21289,9 +21305,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 3,
           "legacyId": 85,
-          "id": "minecraft:fence",
-          "count": 3
+          "id": "minecraft:fence"
         }
       ],
       "shape": [
@@ -21462,9 +21479,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -21486,9 +21504,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -23731,9 +23750,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -23961,9 +23981,10 @@
       },
       "output": [
         {
+          "damage": 7,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -24098,9 +24119,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -24236,9 +24258,10 @@
       },
       "output": [
         {
+          "damage": 13,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -25614,9 +25637,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 3,
           "legacyId": 85,
-          "id": "minecraft:fence",
-          "count": 3
+          "id": "minecraft:fence"
         }
       ],
       "shape": [
@@ -25787,9 +25811,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -25811,9 +25836,10 @@
       },
       "output": [
         {
+          "damage": 11,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -26327,9 +26353,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -26576,9 +26603,10 @@
       },
       "output": [
         {
+          "damage": 3,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -26742,9 +26770,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -27062,9 +27091,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -27274,9 +27304,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -27429,9 +27460,10 @@
       },
       "output": [
         {
+          "damage": 5,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -27737,9 +27769,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -28115,9 +28148,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -29574,9 +29608,10 @@
       },
       "output": [
         {
+          "damage": 8,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -29707,9 +29742,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -29887,9 +29923,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -30041,9 +30078,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 2,
           "legacyId": 155,
-          "id": "minecraft:quartz_block",
-          "count": 2
+          "id": "minecraft:quartz_block"
         }
       ],
       "shape": [
@@ -30118,9 +30156,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -30341,9 +30380,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -30542,9 +30582,10 @@
       },
       "output": [
         {
+          "damage": 6,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -30947,9 +30988,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -30996,9 +31038,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 1,
-          "id": "minecraft:stone",
-          "count": 4
+          "id": "minecraft:stone"
         }
       ],
       "shape": [
@@ -31295,9 +31338,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -31479,9 +31523,10 @@
       },
       "output": [
         {
+          "damage": 10,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -32065,9 +32110,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -32428,9 +32474,10 @@
       },
       "output": [
         {
+          "damage": 14,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -35310,9 +35357,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 3,
           "legacyId": 85,
-          "id": "minecraft:fence",
-          "count": 3
+          "id": "minecraft:fence"
         }
       ],
       "shape": [
@@ -35483,9 +35531,10 @@
       },
       "output": [
         {
+          "damage": 1,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -35507,9 +35556,10 @@
       },
       "output": [
         {
+          "damage": 9,
+          "count": 3,
           "legacyId": -212,
-          "id": "minecraft:wood",
-          "count": 3
+          "id": "minecraft:wood"
         }
       ],
       "shape": [
@@ -38845,9 +38895,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 3,
           "legacyId": 171,
-          "id": "minecraft:carpet",
-          "count": 3
+          "id": "minecraft:carpet"
         }
       ],
       "shape": [
@@ -39020,9 +39071,10 @@
       },
       "output": [
         {
+          "damage": 4,
+          "count": 16,
           "legacyId": 160,
-          "id": "minecraft:stained_glass_pane",
-          "count": 16
+          "id": "minecraft:stained_glass_pane"
         }
       ],
       "shape": [
@@ -58159,6 +58211,7 @@
     {
       "type": 3,
       "input": {
+        "damage": 0,
         "legacyId": 1,
         "id": "minecraft:stone"
       },
@@ -58563,6 +58616,7 @@
         "id": "minecraft:quartz_block"
       },
       "output": {
+        "damage": 3,
         "legacyId": 155,
         "id": "minecraft:quartz_block"
       },

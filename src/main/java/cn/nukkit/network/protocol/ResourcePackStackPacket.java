@@ -16,7 +16,7 @@ public class ResourcePackStackPacket extends DataPacket {
     public ResourcePack[] behaviourPackStack = ResourcePack.EMPTY_ARRAY;
     public ResourcePack[] resourcePackStack = ResourcePack.EMPTY_ARRAY;
     public final List<ExperimentData> experiments = new ObjectArrayList<>();
-    public String gameVersion = ProtocolInfo.MINECRAFT_VERSION_NETWORK;
+    public String gameVersion = "*";
 
     @Override
     public void decode() {
@@ -48,7 +48,7 @@ public class ResourcePackStackPacket extends DataPacket {
             this.putString(experimentData.getName());
             this.putBoolean(experimentData.isEnabled());
         }
-        this.putBoolean(false); // Were experiments previously toggled
+        this.putBoolean(true); // Were experiments previously toggled
     }
 
     @Override

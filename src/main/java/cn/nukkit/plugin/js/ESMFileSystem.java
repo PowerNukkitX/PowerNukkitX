@@ -180,7 +180,7 @@ public final class ESMFileSystem implements FileSystem {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = innerModuleCache.get(moduleName);
                 } else {
-                    try (var ins = Nukkit.class.getClassLoader().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             contents = ins.readAllBytes();
                     }
@@ -221,7 +221,7 @@ public final class ESMFileSystem implements FileSystem {
                 if (innerModuleCache.containsKey(moduleName)) {
                     contents = new String(innerModuleCache.get(moduleName));
                 } else {
-                    try (var ins = Nukkit.class.getClassLoader().getResourceAsStream("inner-module/" + moduleName + ".js")) {
+                    try (var ins = Nukkit.class.getModule().getResourceAsStream("inner-module/" + moduleName + ".js")) {
                         if (ins != null)
                             return new InputStreamReader(ins);
                     }

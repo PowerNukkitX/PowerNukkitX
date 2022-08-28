@@ -10,7 +10,82 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
-## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - Future - (Dev)
+## [1.19.20-r5-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5) - 2022-8-18
+該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
+
+### 新增內容
+
+- [#576] 1.19.20-r5正式發布。
+- [#571] 添加初步能源系統實現。
+- [#574] 添加shaded警告。
+
+### 修改記錄
+
+- [#537] 完善自定義方塊。
+- [#550] 完善配方。
+- [#562] 通過Module獲取資源文件而不是通過ClassLoader。
+- [#564] 優化Terra內存佔用。
+
+### BUG修復
+
+- [#552] 修復進入地獄客戶端崩潰的BUG。
+- [#554] 修復chunkSectionCount無法寫入區塊nbt的BUG。
+- [#556] 修復紅樹樹葉的狀態BUG。
+- [#557] 修復Teera內存溢出的漏洞。
+- [#563] 修復竹子可以被活塞推動的BUG。
+- [#565] 修復3D生物群系讀寫
+- [#568] 修復鐵砧在含水方塊上無限掉落的BUG。
+- [#569] 修復實體y<0時的異常傷害。
+- [#570] 修復杜鵑花掉落概率。
+- [#573] 修復熔爐配方。
+
+
+## [1.19.20-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4) - 2022-8-13 -（Pre Release）
+該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
+
+### 新增內容
+
+- [#542] 1.19.20-r4（Pre Release）版發布。
+- [#536] Chunk中新的getMaxHeight和getMinHeight方法。
+
+### 修改記錄
+
+- [#542] 將terra版本更新至6.2.0-Release。
+
+### BUG修復
+
+- [#536] 修復Chunk中維度相關方法NPE。
+
+## [1.19.20-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r3) - 2022-8-13
+該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
+
+### 新增內容
+
+- [#524] `支持3D生物群系`和自定義維度API（TODO）。
+
+### 修改記錄
+
+- [#524] 更改了Anvil格式的讀寫方法以提高性能。
+
+### BUG修復
+
+- [#427] 修復`"this.skyLight" is null`漏洞（在[#524]中修復）。
+- [#520] 修復在termux中無法啟動PowerNukkitX的問題（在[#532]中修復）。
+
+## [1.19.20-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r2) - 2022-8-12
+該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
+
+### 修改記錄
+
+- [#519] 新/execute命令格式。
+- [#523] 優化JS插件與ava互調用。
+
+### BUG修復
+
+- [#525] 修復杜鵑樹葉不消失的BUG（在[#528]中修復）。
+- [#526] 物品不能著色（在[#527]中修復）。
+
+## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r1) - 2022-8-10 - (Pre Release)
 該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
 
 ### 修改記錄
@@ -998,16 +1073,20 @@ Fixes several anvil issues.
 </details>
 
 <details>
-  <summary>1.19.10-r1-PNX</summary>
+  <summary>1.19.10-PNX</summary>
 
    1. [#1.19.10-r1] PNX-1.19.10-r1 (協議版本534)
 
 </details>
 
 <details>
-  <summary>1.19.20-r1-PNX</summary>
+  <summary>1.19.20-PNX</summary>
 
    1. [#1.19.20-r1] PNX-1.19.20-r1 (協議版本544)
+   2. [#1.19.20-r2] PNX-1.19.20-r2 (協議版本544)
+   3. [#1.19.20-r3] PNX-1.19.20-r3 (協議版本544)
+   4. [#1.19.20-r4] PNX-1.19.20-r4 (協議版本544)
+   5. [#1.19.20-r5] PNX-1.19.20-r5 (協議版本544)
 
 </details>
 
@@ -1321,6 +1400,7 @@ Need to switch languages?
 [#424]: https://github.com/PowerNukkitX/PowerNukkitX/pull/424
 [#425]: https://github.com/PowerNukkitX/PowerNukkitX/pull/425
 [#426]: https://github.com/PowerNukkitX/PowerNukkitX/pull/426
+[#427]: https://github.com/PowerNukkitX/PowerNukkitX/issues/427
 [#428]: https://github.com/PowerNukkitX/PowerNukkitX/pull/428
 [#429]:https://github.com/PowerNukkitX/PowerNukkitX/pull/429
 [#431]: https://github.com/PowerNukkitX/PowerNukkitX/pull/431
@@ -1370,6 +1450,34 @@ Need to switch languages?
 [#512]: https://github.com/PowerNukkitX/PowerNukkitX/pull/512
 [#514]: https://github.com/PowerNukkitX/PowerNukkitX/pull/514
 [#515]: https://github.com/PowerNukkitX/PowerNukkitX/pull/515
+[#519]: https://github.com/PowerNukkitX/PowerNukkitX/pull/519
+[#520]: https://github.com/PowerNukkitX/PowerNukkitX/issues/520
+[#523]: https://github.com/PowerNukkitX/PowerNukkitX/pull/523
+[#524]: https://github.com/PowerNukkitX/PowerNukkitX/pull/524
+[#525]: https://github.com/PowerNukkitX/PowerNukkitX/issues/525
+[#526]: https://github.com/PowerNukkitX/PowerNukkitX/issues/526
+[#527]: https://github.com/PowerNukkitX/PowerNukkitX/pull/527
+[#528]:https://github.com/PowerNukkitX/PowerNukkitX/pull/528
+[#532]: https://github.com/PowerNukkitX/PowerNukkitX/pull/532
+[#536]: https://github.com/PowerNukkitX/PowerNukkitX/pull/536
+[#537]: https://github.com/PowerNukkitX/PowerNukkitX/pull/537
+[#542]: https://github.com/PowerNukkitX/PowerNukkitX/pull/542
+[#550]: https://github.com/PowerNukkitX/PowerNukkitX/pull/550
+[#552]: https://github.com/PowerNukkitX/PowerNukkitX/pull/552
+[#554]: https://github.com/PowerNukkitX/PowerNukkitX/pull/554
+[#556]: https://github.com/PowerNukkitX/PowerNukkitX/pull/556
+[#557]: https://github.com/PowerNukkitX/PowerNukkitX/pull/557
+[#562]: https://github.com/PowerNukkitX/PowerNukkitX/pull/562
+[#563]: https://github.com/PowerNukkitX/PowerNukkitX/pull/563
+[#564]: https://github.com/PowerNukkitX/PowerNukkitX/pull/564
+[#565]: https://github.com/PowerNukkitX/PowerNukkitX/pull/565
+[#568]: https://github.com/PowerNukkitX/PowerNukkitX/pull/568
+[#569]: https://github.com/PowerNukkitX/PowerNukkitX/pull/569
+[#570]: https://github.com/PowerNukkitX/PowerNukkitX/pull/570
+[#571]: https://github.com/PowerNukkitX/PowerNukkitX/pull/571
+[#573]: https://github.com/PowerNukkitX/PowerNukkitX/pull/573
+[#574]: https://github.com/PowerNukkitX/PowerNukkitX/pull/574
+[#576]: https://github.com/PowerNukkitX/PowerNukkitX/pull/576
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1391,7 +1499,15 @@ Need to switch languages?
 [#1.19.10-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1
 
 <!--1.19.20-r1-PNX Protocol Verison 544-->
-[#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+[#1.19.20-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r1
+<!--1.19.20-r2-PNX Protocol Version 544-->
+[#1.19.20-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r2
+<!--1.19.20-r3-PNX Protocol Version 544-->
+[#1.19.20-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r3
+<!--1.19.20-r4-PNX Protocol Version 544-->
+[#1.19.20-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4
+<!--1.19.20-r5-PNX Protocol Version 544-->
+[#1.19.20-r5]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

@@ -34,11 +34,13 @@
   },
   {
     "name": "minecraft:mangrove_fence_gate",
-    "id": -492
+    "id": -492,
+    "oldId": -492
   },
   {
     "name": "minecraft:mangrove_fence",
-    "id": -491
+    "id": -491,
+    "oldId": -491
   },
   {
     "name": "minecraft:mangrove_pressure_plate",
@@ -52,11 +54,13 @@
   },
   {
     "name": "minecraft:mangrove_stairs",
-    "id": -488
+    "id": -488,
+    "oldId": -488
   },
   {
     "name": "minecraft:mangrove_button",
-    "id": -487
+    "id": -487,
+    "oldId": -487
   },
   {
     "name": "minecraft:mangrove_planks",
@@ -4680,7 +4684,7 @@
     "name": "minecraft:villager_spawn_egg",
     "id": 449,
     "oldId": 383,
-    "oldData": 15
+    "oldData": 115
   },
   {
     "name": "minecraft:squid_spawn_egg",
@@ -4848,7 +4852,7 @@
     "name": "minecraft:zombie_villager_spawn_egg",
     "id": 477,
     "oldId": 383,
-    "oldData": 44
+    "oldData": 116
   },
   {
     "name": "minecraft:parrot_spawn_egg",

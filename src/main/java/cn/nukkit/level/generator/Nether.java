@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
@@ -210,5 +211,11 @@ public class Nether extends Generator {
         } else {
             return secondaryValue >= 0 ? EnumBiome.BASALT_DELTAS : EnumBiome.SOUL_SAND_VALLEY;
         }
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean shouldGenerateStructures() {
+        return true;
     }
 }

@@ -34,7 +34,7 @@ public class RuntimeItems {
     static {
         log.debug("Loading runtime items...");
         Collection<Entry> entries;
-        try(InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_item_ids.json")) {
+        try(InputStream stream = Server.class.getModule().getResourceAsStream("runtime_item_ids.json")) {
             if (stream == null) {
                 throw new AssertionError("Unable to load runtime_item_ids.json");
             }
