@@ -1,9 +1,8 @@
-package cn.nukkit.utils;
+package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
-import cn.nukkit.math.Vector3;
 import lombok.Getter;
 
 @PowerNukkitXOnly
