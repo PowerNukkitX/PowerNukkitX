@@ -1087,10 +1087,13 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
-        var provider = new ClassEntityProvider(name, clazz);
-        if (provider.getNetworkId() != Integer.MIN_VALUE) {
-            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
-        } else {
+        EntityProvider<?> provider;
+        try {
+            int networkId = clazz.getField("NETWORK_ID").getInt(null);
+            provider = new ClassEntityProvider(name, clazz, networkId);
+            knownEntities.put(String.valueOf(networkId), provider);
+        } catch (Exception e) {
+            provider = new ClassEntityProvider(name, clazz, Entity.NETWORK_ID);
             if (!force) {
                 return false;
             }
@@ -1114,7 +1117,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
-        if (provider.getNetworkId() != -1) {
+        if (provider.getNetworkId() != Entity.NETWORK_ID) {
             knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
         } else {
             if (!force) {
