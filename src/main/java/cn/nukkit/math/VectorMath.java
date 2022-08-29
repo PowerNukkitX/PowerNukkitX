@@ -36,7 +36,7 @@ public abstract class VectorMath {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+    @Since("1.19.21-r3")
     record FixedVector3(Vector3 from, Vector3 to){
         @Override
         public String toString() {
@@ -45,9 +45,9 @@ public abstract class VectorMath {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+    @Since("1.19.21-r3")
     public static List<Vector3> getPassByVector3(Vector3 from, Vector3 to){
-        if (from.equals(to)) throw new IllegalArgumentException();
+        if (from.equals(to)) throw new IllegalArgumentException("from == to");
 
         var xCuts = new ArrayList<FixedVector3>();
         var lastXCut = from;

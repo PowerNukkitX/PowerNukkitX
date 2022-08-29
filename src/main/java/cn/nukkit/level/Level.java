@@ -40,6 +40,8 @@ import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
+import cn.nukkit.level.vibration.SimpleVibrationManager;
+import cn.nukkit.level.vibration.VibrationManager;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -357,6 +359,10 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    private final VibrationManager vibrationManager = new SimpleVibrationManager();
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
@@ -4972,6 +4978,12 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public VibrationManager getVibrationManager(){
+        return this.vibrationManager;
     }
 
     @PowerNukkitXOnly
