@@ -95,11 +95,4 @@ public abstract class VectorMath {
 
         return passBy;
     }
-
-    public static void main(String[] args) {
-        var from = new Vector3(0, 0, 0);
-        var to = new Vector3(10, 10, 10);
-        var result = getPassByVector3(from, to);
-        System.out.println(result);
-    }
 }
