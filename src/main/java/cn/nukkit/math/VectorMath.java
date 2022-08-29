@@ -49,12 +49,8 @@ public abstract class VectorMath {
     public static List<Vector3> getPassByVector3(Vector3 from, Vector3 to){
         if (from.equals(to)) throw new IllegalArgumentException();
 
-        var line = new FixedVector3(from, to);
-
         var xCuts = new ArrayList<FixedVector3>();
-
-        var lastXCut = line.from;
-
+        var lastXCut = from;
         for (double xCut = Math.ceil(Math.min(from.x, to.x)); xCut <= Math.floor(Math.max(from.x, to.x)); xCut++){
             var ratio = (xCut - from.x) / (to.x - from.x);
             Vector3 currentXCut = new Vector3(xCut, from.y + (to.y - from.y) * ratio, from.z + (to.z - from.z) * ratio);
@@ -65,12 +61,9 @@ public abstract class VectorMath {
         }
 
         var zCuts = new ArrayList<FixedVector3>();
-
         for (var xCut : xCuts){
             var lastZCut = xCut.from;
-
             var oldSize = zCuts.size();
-
             for (double zCut = Math.ceil(Math.min(xCut.from.z, xCut.to.z)); zCut <= Math.floor(Math.max(xCut.from.z, xCut.to.z)); zCut++){
                 var ratio = (zCut - xCut.from.z) / (xCut.to.z - xCut.from.z);
                 Vector3 currentZCut = new Vector3(xCut.from.x + (xCut.to.x - xCut.from.x) * ratio, xCut.from.y + (xCut.to.y - xCut.from.y) * ratio, zCut);
@@ -79,17 +72,13 @@ public abstract class VectorMath {
                 }
                 lastZCut = currentZCut;
             }
-
             if (oldSize == zCuts.size()) zCuts.add(xCut);
         }
 
         var yCuts = new ArrayList<FixedVector3>();
-
         for (var zCut : zCuts){
             var lastYCut = zCut.from;
-
             var oldSize = yCuts.size();
-
             for (double yCut = Math.ceil(Math.min(zCut.from.y, zCut.to.y)); yCut <= Math.floor(Math.max(zCut.from.y, zCut.to.y)); yCut++){
                 var ratio = (yCut - zCut.from.y) / (zCut.to.y - zCut.from.y);
                 Vector3 currentYCut = new Vector3(zCut.from.x + (zCut.to.x - zCut.from.x) * ratio, yCut, zCut.from.z + (zCut.to.z - zCut.from.z) * ratio);
@@ -98,20 +87,19 @@ public abstract class VectorMath {
                 }
                 lastYCut = currentYCut;
             }
-
             if (oldSize == yCuts.size()) yCuts.add(zCut);
         }
 
         var passBy = yCuts.stream().map(yCut -> yCut.from.floor()).collect(Collectors.toList());
-        passBy.add(to.floor());
+        passBy.add(to.floor());//Add the missing end
 
         return passBy;
     }
 
-//    public static void main(String[] args) {
-//        var from = new Vector3(0, 0, 0);
-//        var to = new Vector3(5.3, 10.7, 0);
-//        var result = getPassByVector3(from, to);
-//        System.out.println(result);
-//    }
+    public static void main(String[] args) {
+        var from = new Vector3(0, 0, 0);
+        var to = new Vector3(10, 10, 10);
+        var result = getPassByVector3(from, to);
+        System.out.println(result);
+    }
 }
