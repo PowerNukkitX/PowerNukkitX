@@ -40,23 +40,24 @@ public class SimpleVibrationManager implements VibrationManager{
     }
 
     protected void createVibration(VibrationListener listener, VibrationEvent event){
-        var listenerPos = listener.getListenerPosition();
+        var listenerPos = listener.getListenerPosition().asVector3f().floor().add(0.5f, 0.5f, 0.5f);
+        var sourcePos = event.source().asVector3f().floor().add(0.5f, 0.5f, 0.5f);
         var tag = new CompoundTag()
                 .putCompound("origin", new CompoundTag()
                         .putString("type", "vec3")
-                        .putFloat("x", (float) event.source().x)
-                        .putFloat("y", (float) event.source().y)
-                        .putFloat("z", (float) event.source().z))
+                        .putFloat("x", sourcePos.x)
+                        .putFloat("y", sourcePos.y)
+                        .putFloat("z", sourcePos.z))
                 .putFloat("speed", 20.0f)
                 .putCompound("target", new CompoundTag()
                         .putString("type", "vec3")
-                        .putFloat("x", (float) listenerPos.x)
-                        .putFloat("y", (float) listenerPos.y)
-                        .putFloat("z", (float) listenerPos.z))
-                .putFloat("timeToLive", (float) (listenerPos.distance(event.source()) / 20.0));
+                        .putFloat("x", listenerPos.x)
+                        .putFloat("y", listenerPos.y)
+                        .putFloat("z", listenerPos.z))
+                .putFloat("timeToLive", (float) (listenerPos.distance(event.source().asVector3f()) / 20.0));
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
         packet.tag = tag;
-        Server.broadcastPacket(listenerPos.level.getPlayers().values(), packet);
+        Server.broadcastPacket(listener.getListenerPosition().level.getPlayers().values(), packet);
     }
 }

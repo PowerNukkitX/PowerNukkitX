@@ -1,5 +1,7 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -93,6 +95,18 @@ public abstract class Tag {
         return name;
     }
 
+    /**
+     * Only used for LevelEventGenericPacket
+     * Which do not read tag id and name (It only can be a compound tag)
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static CompoundTag readCompoundValue(NBTInputStream dis) throws IOException {
+        var compoundTag = new CompoundTag();
+        compoundTag.load(dis);
+        return compoundTag;
+    }
+
     public static Tag readNamedTag(NBTInputStream dis) throws IOException {
         byte type = dis.readByte();
         if (type == 0) return new EndTag();
@@ -103,6 +117,18 @@ public abstract class Tag {
 
         tag.load(dis);
         return tag;
+    }
+
+    /**
+     * Only used for LevelEventGenericPacket
+     * Which do not write tag id and name
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static void writeValue(Tag tag, NBTOutputStream dos) throws IOException {
+        if (tag.getId() == Tag.TAG_End) return;
+
+        tag.write(dos);
     }
 
     public static void writeNamedTag(Tag tag, NBTOutputStream dos) throws IOException {
