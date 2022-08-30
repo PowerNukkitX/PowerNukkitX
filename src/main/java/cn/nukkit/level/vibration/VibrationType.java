@@ -49,9 +49,9 @@ public enum VibrationType {
     LIGHTNING_STRIKE(15),
     PISTON_EXTEND(15);
 
-    private final String identifier = "minecraft:" + this.name().toLowerCase();
-    private final int frequency;
-    private VibrationType(int frequency){
+    public final String identifier = "minecraft:" + this.name().toLowerCase();
+    public final int frequency;
+    VibrationType(int frequency){
         if (frequency < 1 || frequency > 15) throw new IllegalArgumentException("frequency must between 1 and 15");
         this.frequency = frequency;
     }

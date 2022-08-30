@@ -8,7 +8,9 @@ import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +21,7 @@ import javax.annotation.Nonnull;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor> {
+public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<BlockEntitySculkSensor>, RedstoneComponent {
 
     public static final BooleanBlockProperty POWERED_BIT = new BooleanBlockProperty("powered_bit", false);
     public static final BlockProperties PROPERTIES = new BlockProperties(POWERED_BIT);
@@ -54,5 +56,56 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     @Override
     public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
         return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return true;
+    }
+
+    @Override
+    public int getStrongPower(BlockFace side) {
+        return super.getStrongPower(side);
+    }
+
+    @Override
+    public int getWeakPower(BlockFace face) {
+        BlockEntitySculkSensor blockEntity = this.getBlockEntity();
+        if ((this.level.getServer().getTick() - blockEntity.getLastActiveTime()) > 40){
+            return 0;
+        }
+        var event = blockEntity.getLastVibrationEvent();
+        if (this.getSide(face.getOpposite()) instanceof BlockRedstoneComparator) {
+            return event.type().frequency;
+        } else {
+            var distance = event.source().distance(this.add(0.5, 0.5, 0.5));
+            return Math.max(1, 15 - (int) Math.floor(distance * 1.875));
+        }
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if (level.getServer().isRedstoneEnabled()){
+                this.setPowered(false);
+                updateAroundRedstone();
+            }
+            return type;
+        }
+        return 0;
+    }
+
+    public void setPowered(boolean powered) {
+        this.setBooleanValue(POWERED_BIT, powered);
+        this.level.setBlock(this, this, true, true);
+    }
+
+    public void onVibrationArrive() {
+        if (level.getServer().isRedstoneEnabled()) {
+            this.setPowered(true);
+            level.cancelSheduledUpdate(this, this);
+            level.scheduleUpdate(this, 40);
+            updateAroundRedstone();
+        }
     }
 }
