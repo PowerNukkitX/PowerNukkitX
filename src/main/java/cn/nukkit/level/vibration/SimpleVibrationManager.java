@@ -27,7 +27,7 @@ public class SimpleVibrationManager implements VibrationManager{
     public void callVibrationEvent(VibrationEvent event) {
         //todo: add plugin event
         for (var listener : listeners) {
-            if (listener.onVibrationOccur(event) && canVibrationArrive(event.source().getLevel(), event.source(), listener.getListenerPosition())) {
+            if (canVibrationArrive(event.source().getLevel(), event.source(), listener.getListenerPosition()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
                     listener.onVibrationArrive(event);

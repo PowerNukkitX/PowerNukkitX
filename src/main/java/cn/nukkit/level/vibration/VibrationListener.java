@@ -21,6 +21,7 @@ public interface VibrationListener {
     /**
      * 是否响应此振动
      * 若响应，将会从声波源发射声波到监听器位置，并在到达时调用 onVibrationArrive() 方法
+     * 请注意，若此方法被调用，则声波必定可到达
      * @param event 振动事件
      * @return boolean
      */
