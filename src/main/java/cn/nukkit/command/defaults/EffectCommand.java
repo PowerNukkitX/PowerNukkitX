@@ -132,7 +132,7 @@ public class EffectCommand extends Command {
                 } else {
                     successExecute = true;
                     effect.setDuration(duration).setAmplifier(amplification);
-                    entity.addEffect(effect);
+                    entity.addEffect(effect.clone());
                     Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), entity.getName(), String.valueOf(effect.getDuration() / 20)));
                 }
             }
