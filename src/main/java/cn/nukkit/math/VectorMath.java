@@ -115,14 +115,4 @@ public abstract class VectorMath {
                 )
                 .collect(Collectors.toList());
     }
-
-    public static void main(String[] args) {
-        //x=45.5, y=67.0, z=140.5
-        var from = new Vector3(45.5,67.0,140.5);
-        //x=42.5,y=67.5,z=144.5
-        var to = new Vector3(42.5,67.5,144.5);
-        //block: 43 y 142
-        var passBy = getPassByVector3(from, to);
-        System.out.println(passBy);
-    }
 }
