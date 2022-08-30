@@ -3,8 +3,13 @@ package cn.nukkit.level.vibration;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.math.VectorMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -22,7 +27,7 @@ public class SimpleVibrationManager implements VibrationManager{
     public void callVibrationEvent(VibrationEvent event) {
         //todo: add plugin event
         for (var listener : listeners) {
-            if (listener.onVibrationOccur(event)) {
+            if (listener.onVibrationOccur(event) && canVibrationArrive(event.source().getLevel(), event.source(), listener.getListenerPosition())) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
                     listener.onVibrationArrive(event);
@@ -68,5 +73,12 @@ public class SimpleVibrationManager implements VibrationManager{
                 .putString("type", "actor")
                 .putLong("uniqueID", entity.getId())
                 .putInt("attachPos", 3);//todo: check the use of this value :)
+    }
+
+    protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
+        return VectorMath.getPassByVector3(from, to)
+                .stream()
+                .map(vec -> level.getBlockIdAt((int) vec.x, (int) vec.y, (int) vec.z))
+                .allMatch(id -> id != BlockID.WOOL);
     }
 }

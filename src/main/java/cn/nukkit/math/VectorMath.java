@@ -50,7 +50,8 @@ public abstract class VectorMath {
         if (from.equals(to)) throw new IllegalArgumentException("from == to");
 
         var xCuts = new ArrayList<FixedVector3>();
-        var lastXCut = from;
+        var lastXCut = from.x < to.x ? from : to;
+        var targetXCut = from.x > to.x ? from : to;
         for (double xCut = Math.ceil(Math.min(from.x, to.x)); xCut <= Math.floor(Math.max(from.x, to.x)); xCut++){
             var ratio = (xCut - from.x) / (to.x - from.x);
             Vector3 currentXCut = new Vector3(xCut, from.y + (to.y - from.y) * ratio, from.z + (to.z - from.z) * ratio);
@@ -58,11 +59,17 @@ public abstract class VectorMath {
                 xCuts.add(new FixedVector3(lastXCut, currentXCut));
             }
             lastXCut = currentXCut;
+            if (xCut + 1 > Math.floor(Math.max(from.x, to.x))){
+                xCuts.add(new FixedVector3(lastXCut, targetXCut));
+            }
         }
+
+        if (xCuts.size() == 0) xCuts.add(new FixedVector3(from, to));
 
         var zCuts = new ArrayList<FixedVector3>();
         for (var xCut : xCuts){
-            var lastZCut = xCut.from;
+            var lastZCut = xCut.from.z < xCut.to.z ? xCut.from : xCut.to;
+            var targetZCut = xCut.from.z > xCut.to.z ? xCut.from : xCut.to;
             var oldSize = zCuts.size();
             for (double zCut = Math.ceil(Math.min(xCut.from.z, xCut.to.z)); zCut <= Math.floor(Math.max(xCut.from.z, xCut.to.z)); zCut++){
                 var ratio = (zCut - xCut.from.z) / (xCut.to.z - xCut.from.z);
@@ -71,13 +78,17 @@ public abstract class VectorMath {
                     zCuts.add(new FixedVector3(lastZCut, currentZCut));
                 }
                 lastZCut = currentZCut;
+                if (zCut + 1 > Math.floor(Math.max(xCut.from.z, xCut.to.z))){
+                    zCuts.add(new FixedVector3(lastZCut, targetZCut));
+                }
             }
             if (oldSize == zCuts.size()) zCuts.add(xCut);
         }
 
         var yCuts = new ArrayList<FixedVector3>();
         for (var zCut : zCuts){
-            var lastYCut = zCut.from;
+            var lastYCut = zCut.from.y < zCut.to.y ? zCut.from : zCut.to;
+            var targetYCut = zCut.from.y > zCut.to.y ? zCut.from : zCut.to;
             var oldSize = yCuts.size();
             for (double yCut = Math.ceil(Math.min(zCut.from.y, zCut.to.y)); yCut <= Math.floor(Math.max(zCut.from.y, zCut.to.y)); yCut++){
                 var ratio = (yCut - zCut.from.y) / (zCut.to.y - zCut.from.y);
@@ -86,13 +97,32 @@ public abstract class VectorMath {
                     yCuts.add(new FixedVector3(lastYCut, currentYCut));
                 }
                 lastYCut = currentYCut;
+                if (yCut + 1 > Math.floor(Math.max(zCut.from.y, zCut.to.y))){
+                    yCuts.add(new FixedVector3(lastYCut, targetYCut));
+                }
             }
             if (oldSize == yCuts.size()) yCuts.add(zCut);
         }
 
-        var passBy = yCuts.stream().map(yCut -> yCut.from.floor()).collect(Collectors.toList());
-        passBy.add(to.floor());//Add the missing end
+        return yCuts
+                .stream()
+                .map(yCut ->
+                    new Vector3(
+                            (yCut.from.x + yCut.to.x) / 2,
+                            (yCut.from.y + yCut.to.y) / 2,
+                            (yCut.from.z + yCut.to.z) / 2
+                    ).floor()
+                )
+                .collect(Collectors.toList());
+    }
 
-        return passBy;
+    public static void main(String[] args) {
+        //x=45.5, y=67.0, z=140.5
+        var from = new Vector3(45.5,67.0,140.5);
+        //x=42.5,y=67.5,z=144.5
+        var to = new Vector3(42.5,67.5,144.5);
+        //block: 43 y 142
+        var passBy = getPassByVector3(from, to);
+        System.out.println(passBy);
     }
 }
