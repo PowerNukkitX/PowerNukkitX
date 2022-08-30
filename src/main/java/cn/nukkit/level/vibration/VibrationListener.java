@@ -3,8 +3,12 @@ package cn.nukkit.level.vibration;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Position;
 
+/**
+ * 振动监听器
+ */
 @PowerNukkitXOnly
 @Since("1.19.21-r3")
 public interface VibrationListener {
@@ -27,4 +31,22 @@ public interface VibrationListener {
      * @param event 振动事件
      */
     void onVibrationArrive(VibrationEvent event);
+
+    /**
+     * 是否是实体
+     * 若为实体，则在发送声波粒子时会使用实体专属的nbt tag
+     * 若不是，则将此监听器作为方块处理（eg: 潜声传感器）
+     * @return boolean
+     */
+    default boolean isEntity() {
+        return this instanceof Entity;
+    }
+
+    /**
+     * 在 isEntity() 为true的前提下,返回此振动监听器对应实体对象
+     * @return Entity
+     */
+    default Entity asEntity() {
+        return (Entity) this;
+    }
 }

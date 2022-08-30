@@ -39,7 +39,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public Position getListenerPosition() {
-        return this.clone().setLevel(this.level);
+        return this.clone().setLevel(this.level).floor().add(0.5f, 0.5f, 0.5f);
     }
 
     @Override
