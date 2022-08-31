@@ -104,7 +104,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         if (powered) this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_ON_SCULK_SENSOR);
         else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setBooleanValue(POWERED_BIT, powered);
-        this.level.setBlock(this, this, true, true);
+        this.level.setBlock(this, this, true, false);
     }
 
     public void onVibrationArrive() {

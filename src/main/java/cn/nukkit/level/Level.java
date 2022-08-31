@@ -41,7 +41,9 @@ import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.level.vibration.SimpleVibrationManager;
+import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationManager;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -2940,6 +2942,8 @@ public class Level implements ChunkManager, Metadatable {
 
         target.onBreak(item);
 
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
+
         item.useOn(target);
         if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
             if (player != null) {
@@ -3208,6 +3212,9 @@ public class Level implements ChunkManager, Metadatable {
         if (item.getCount() <= 0) {
             item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
+
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+
         return item;
     }
 
