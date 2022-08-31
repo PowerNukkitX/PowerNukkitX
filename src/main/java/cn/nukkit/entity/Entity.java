@@ -10,6 +10,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
@@ -1528,6 +1529,11 @@ public abstract class Entity extends Location implements Metadatable {
             sideEffect.doPreHealthChange(this, source, attacker);
         }
         setHealth(newHealth);
+
+        if (!(this instanceof EntityArmorStand)) {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ENTITY_DAMAGE));
+        }
+
         return true;
     }
 

@@ -41,8 +41,8 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public void close() {
-        super.close();
         this.level.getVibrationManager().removeListener(this);
+        super.close();
     }
 
     @Override
@@ -78,5 +78,10 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     protected void updateLastActiveTime() {
         this.lastActiveTime = Server.getInstance().getTick();
+    }
+
+    @Override
+    public double getListenRange() {
+        return 8;
     }
 }

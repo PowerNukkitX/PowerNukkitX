@@ -4281,6 +4281,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     if (playerInteractEntityEvent.isCancelled()) {
                                         break;
                                     }
+                                    if (!(target instanceof EntityArmorStand)) {
+                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.clone(), VibrationType.ENTITY_INTERACT));
+                                    } else {
+                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.clone(), VibrationType.EQUIP));
+                                    }
                                     if (target.onInteract(this, item, useItemOnEntityData.clickPos) && (this.isSurvival() || this.isAdventure())) {
                                         if (item.isTool()) {
                                             if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {

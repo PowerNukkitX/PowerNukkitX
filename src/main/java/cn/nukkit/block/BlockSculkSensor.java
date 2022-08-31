@@ -89,6 +89,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
 
     @Override
     public int onUpdate(int type) {
+        getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (level.getServer().isRedstoneEnabled()){
                 this.setPowered(false);
@@ -110,7 +111,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         if (level.getServer().isRedstoneEnabled()) {
             this.setPowered(true);
             level.cancelSheduledUpdate(this, this);
-            level.scheduleUpdate(this, 40);
+            level.scheduleUpdate(this, 41);
             updateAroundRedstone();
         }
     }

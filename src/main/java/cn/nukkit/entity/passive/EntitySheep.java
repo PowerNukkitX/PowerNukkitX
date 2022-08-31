@@ -21,6 +21,8 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
@@ -167,6 +169,8 @@ public class EntitySheep extends EntityWalkingAnimal {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
 
         this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
+
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SHEAR));
         return true;
     }
 

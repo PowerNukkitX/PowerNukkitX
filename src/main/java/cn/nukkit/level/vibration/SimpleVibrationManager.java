@@ -5,22 +5,27 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.Listener;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.math.VectorMath;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.utils.Utils;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r3")
 public class SimpleVibrationManager implements VibrationManager{
 
-    protected Set<VibrationListener> listeners = new HashSet<>();
+    protected Set<VibrationListener> listeners = new CopyOnWriteArraySet<>();
     protected Level level;
 
     public SimpleVibrationManager(Level level) {
@@ -31,7 +36,7 @@ public class SimpleVibrationManager implements VibrationManager{
     public void callVibrationEvent(VibrationEvent event) {
         //todo: add plugin event
         for (var listener : listeners) {
-            if (canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
+            if (listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
                     listener.onVibrationArrive(event);
@@ -80,9 +85,15 @@ public class SimpleVibrationManager implements VibrationManager{
     }
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
-        return VectorMath.getPassByVector3(from, to)
-                .stream()
-                .map(vec -> level.getBlockIdAt((int) vec.x, (int) vec.y, (int) vec.z))
-                .allMatch(id -> id != BlockID.WOOL);
+        //先粗略的检查两点形成的长方形范围内是否有羊毛方块
+        boolean hasWool = Arrays.stream(level.getCollisionBlocks(new SimpleAxisAlignedBB(from,to))).anyMatch(b -> b.getId() == BlockID.WOOL);
+        if (hasWool) {
+            //若有，则使用高开销算法
+            return !VectorMath.getPassByVector3(from, to)
+                    .stream()
+                    .anyMatch(vec -> level.getBlock(vec).getId() == BlockID.WOOL);
+        } else {
+            return true;
+        }
     }
 }

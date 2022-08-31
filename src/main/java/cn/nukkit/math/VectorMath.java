@@ -111,7 +111,7 @@ public abstract class VectorMath {
                             (yCut.from.x + yCut.to.x) / 2,
                             (yCut.from.y + yCut.to.y) / 2,
                             (yCut.from.z + yCut.to.z) / 2
-                    ).floor()
+                    ).floor()//这里取中点是为了防止浮点数精度丢失影响结果
                 )
                 .collect(Collectors.toList());
     }
