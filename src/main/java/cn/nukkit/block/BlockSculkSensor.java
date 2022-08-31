@@ -9,6 +9,7 @@ import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.BooleanBlockProperty;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.RedstoneComponent;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +76,9 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
             return 0;
         }
         var event = blockEntity.getLastVibrationEvent();
+        if (event == null) {
+            return 0;
+        }
         if (this.getSide(face.getOpposite()) instanceof BlockRedstoneComparator) {
             return event.type().frequency;
         } else {
@@ -96,6 +100,8 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     }
 
     public void setPowered(boolean powered) {
+        if (powered) this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_ON_SCULK_SENSOR);
+        else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setBooleanValue(POWERED_BIT, powered);
         this.level.setBlock(this, this, true, true);
     }

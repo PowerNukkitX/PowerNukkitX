@@ -6,7 +6,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.math.VectorMath;
@@ -22,16 +21,21 @@ import java.util.Set;
 public class SimpleVibrationManager implements VibrationManager{
 
     protected Set<VibrationListener> listeners = new HashSet<>();
+    protected Level level;
+
+    public SimpleVibrationManager(Level level) {
+        this.level = level;
+    }
 
     @Override
     public void callVibrationEvent(VibrationEvent event) {
         //todo: add plugin event
         for (var listener : listeners) {
-            if (canVibrationArrive(event.source().getLevel(), event.source(), listener.getListenerPosition()) && listener.onVibrationOccur(event)) {
+            if (canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
                     listener.onVibrationArrive(event);
-                }, (int) event.source().distance(listener.getListenerPosition()));
+                }, (int) event.source().distance(listener.getListenerVector()));
             }
         }
     }
@@ -47,7 +51,7 @@ public class SimpleVibrationManager implements VibrationManager{
     }
 
     protected void createVibration(VibrationListener listener, VibrationEvent event){
-        var listenerPos = listener.getListenerPosition().asVector3f();
+        var listenerPos = listener.getListenerVector().asVector3f();
         var sourcePos = event.source().asVector3f();
         var tag = new CompoundTag()
                 .putCompound("origin", createVec3fTag(sourcePos))
@@ -57,7 +61,7 @@ public class SimpleVibrationManager implements VibrationManager{
         LevelEventGenericPacket packet = new LevelEventGenericPacket();
         packet.eventId = LevelEventPacket.EVENT_PARTICLE_VIBRATION_SIGNAL;
         packet.tag = tag;
-        Server.broadcastPacket(listener.getListenerPosition().level.getPlayers().values(), packet);
+        Server.broadcastPacket(level.getPlayers().values(), packet);
     }
 
     protected CompoundTag createVec3fTag(Vector3f vec3f){

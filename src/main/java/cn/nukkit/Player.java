@@ -1816,9 +1816,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
+                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
-                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                        if (delta > 0.0001d) {
+                            if (this.isOnGround() && this.isGliding()) {
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ELYTRA_GLIDE));
+                            } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                            } else if (this.isTouchingWater()) {
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SWIM));
+                            }
+                        }
                         this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
                     }
                     //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];

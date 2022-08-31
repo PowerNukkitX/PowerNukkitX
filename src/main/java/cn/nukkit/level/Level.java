@@ -362,7 +362,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
-    private final VibrationManager vibrationManager = new SimpleVibrationManager();
+    private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);

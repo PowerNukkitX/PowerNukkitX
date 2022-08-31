@@ -40,12 +40,18 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
     }
 
     @Override
+    public void close() {
+        super.close();
+        this.level.getVibrationManager().removeListener(this);
+    }
+
+    @Override
     public boolean isBlockEntityValid() {
         return getLevelBlock().getId() == BlockID.SCULK_SENSOR;
     }
 
     @Override
-    public Position getListenerPosition() {
+    public Position getListenerVector() {
         return this.clone().setLevel(this.level).floor().add(0.5f, 0.5f, 0.5f);
     }
 

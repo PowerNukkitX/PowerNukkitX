@@ -4,7 +4,7 @@ package cn.nukkit.level.vibration;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.Position;
+import cn.nukkit.math.Vector3;
 
 /**
  * 振动监听器
@@ -14,10 +14,10 @@ import cn.nukkit.level.Position;
 public interface VibrationListener {
 
     /**
-     * 返回振动监听器的世界位置
-     * @return Position
+     * 返回振动监听器的位置
+     * @return Vector3
      */
-    Position getListenerPosition();
+    Vector3 getListenerVector();
     /**
      * 是否响应此振动
      * 若响应，将会从声波源发射声波到监听器位置，并在到达时调用 onVibrationArrive() 方法
