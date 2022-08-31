@@ -64,7 +64,7 @@ public class BlockEntitySculkSensor extends BlockEntity implements VibrationList
 
     @Override
     public void onVibrationArrive(VibrationEvent event) {
-        if (this.closed) return;
+        if (this.closed || !this.isBlockEntityValid()) return;
         this.lastVibrationEvent = event;
         ((BlockSculkSensor) this.getBlock()).onVibrationArrive();
     }
