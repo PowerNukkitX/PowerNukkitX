@@ -86,12 +86,12 @@ public class SimpleVibrationManager implements VibrationManager{
 
     protected boolean canVibrationArrive(Level level, Vector3 from, Vector3 to) {
         //先粗略的检查两点形成的长方形范围内是否有羊毛方块
-        boolean hasWool = Arrays.stream(level.getCollisionBlocks(new SimpleAxisAlignedBB(from,to))).anyMatch(b -> b.getId() == BlockID.WOOL);
+        boolean hasWool = level.getTickCachedCollisionBlocks(new SimpleAxisAlignedBB(from, to), true, false, block -> block.getId() == BlockID.WOOL).length != 0;
         if (hasWool) {
             //若有，则使用高开销算法
             return !VectorMath.getPassByVector3(from, to)
                     .stream()
-                    .anyMatch(vec -> level.getBlock(vec).getId() == BlockID.WOOL);
+                    .anyMatch(vec -> level.getTickCachedBlock(vec).getId() == BlockID.WOOL);
         } else {
             return true;
         }

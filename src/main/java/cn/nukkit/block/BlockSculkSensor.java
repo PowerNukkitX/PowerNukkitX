@@ -110,7 +110,6 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     public void onVibrationArrive() {
         if (level.getServer().isRedstoneEnabled()) {
             this.setPowered(true);
-            level.cancelSheduledUpdate(this, this);
             level.scheduleUpdate(this, 41);
             updateAroundRedstone();
         }

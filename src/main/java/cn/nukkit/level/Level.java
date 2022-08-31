@@ -1962,6 +1962,63 @@ public class Level implements ChunkManager, Metadatable {
         return bb != null && bb.getAverageEdgeLength() >= 1;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb) {
+        return this.getTickCachedCollisionBlocks(bb, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst) {
+        return getTickCachedCollisionBlocks(bb, targetFirst, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
+        return getTickCachedCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> block.getId() != 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
+        int minX = NukkitMath.floorDouble(bb.getMinX());
+        int minY = NukkitMath.floorDouble(bb.getMinY());
+        int minZ = NukkitMath.floorDouble(bb.getMinZ());
+        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
+        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
+        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+
+        List<Block> collides = new ArrayList<>();
+
+        if (targetFirst) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getTickCachedBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            return new Block[]{block};
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getTickCachedBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            collides.add(block);
+                        }
+                    }
+                }
+            }
+        }
+
+        return collides.toArray(Block.EMPTY_ARRAY);
+    }
+
     public AxisAlignedBB[] getCollisionCubes(Entity entity, AxisAlignedBB bb) {
         return this.getCollisionCubes(entity, bb, true);
     }
