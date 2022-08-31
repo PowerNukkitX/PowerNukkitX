@@ -13,6 +13,8 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -180,6 +182,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.EXPLODE));
     }
 
     public Entity getSource() {
