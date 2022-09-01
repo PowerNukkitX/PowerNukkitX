@@ -71,19 +71,11 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
 
     @Override
     public int getWeakPower(BlockFace face) {
-        BlockEntitySculkSensor blockEntity = this.getBlockEntity();
-        if ((this.level.getServer().getTick() - blockEntity.getLastActiveTime()) > 40){
-            return 0;
-        }
-        var event = blockEntity.getLastVibrationEvent();
-        if (event == null) {
-            return 0;
-        }
+        var blockEntity = this.getBlockEntity();
         if (this.getSide(face.getOpposite()) instanceof BlockRedstoneComparator) {
-            return event.type().frequency;
+            return blockEntity.getComparatorPower();
         } else {
-            var distance = event.source().distance(this.add(0.5, 0.5, 0.5));
-            return Math.max(1, 15 - (int) Math.floor(distance * 1.875));
+            return blockEntity.getPower();
         }
     }
 
@@ -92,6 +84,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         getOrCreateBlockEntity();
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (level.getServer().isRedstoneEnabled()){
+                this.getBlockEntity().calPower();
                 this.setPowered(false);
                 updateAroundRedstone();
             }
@@ -105,13 +98,5 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
         else this.level.addSound(this.add(0.5,0.5,0.5), Sound.POWER_OFF_SCULK_SENSOR);
         this.setBooleanValue(POWERED_BIT, powered);
         this.level.setBlock(this, this, true, false);
-    }
-
-    public void onVibrationArrive() {
-        if (level.getServer().isRedstoneEnabled()) {
-            this.setPowered(true);
-            level.scheduleUpdate(this, 41);
-            updateAroundRedstone();
-        }
     }
 }

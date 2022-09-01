@@ -37,7 +37,7 @@ public class SimpleVibrationManager implements VibrationManager {
             return;
         }
         for (var listener : listeners) {
-            if (listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
+            if (!listener.getListenerVector().equals(event.source()) && listener.getListenerVector().distanceSquared(event.source()) <= Math.pow(listener.getListenRange(), 2) && canVibrationArrive(level, event.source(), listener.getListenerVector()) && listener.onVibrationOccur(event)) {
                 this.createVibration(listener, event);
                 Server.getInstance().getScheduler().scheduleDelayedTask(() -> {
                     VibrationArriveEvent vibrationArrivePluginEvent = new VibrationArriveEvent(event, listener);
