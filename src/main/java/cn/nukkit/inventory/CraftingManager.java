@@ -3,6 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Server;
 import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
@@ -55,6 +56,9 @@ public class CraftingManager {
     private final Int2ObjectMap<Map<UUID, CartographyRecipe>> cartographyRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    private final Map<String, Map<UUID, ModProcessRecipe>> modProcessRecipeMap = new HashMap<>();
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     @Deprecated
@@ -196,6 +200,13 @@ public class CraftingManager {
     @Since("FUTURE")
     public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
         return smithingRecipeMap;
+    }
+
+    // Get Mod-Processing Recipes
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public Map<String, Map<UUID, ModProcessRecipe>> getModProcessRecipeMap() {
+        return modProcessRecipeMap;
     }
     
     @PowerNukkitOnly
@@ -725,6 +736,14 @@ public class CraftingManager {
         Map<UUID, SmithingRecipe> map = getSmithingRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
 
         map.put(hash, recipe);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
+        var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
+        var inputHash = getMultiItemHash(recipe.getIngredients());
+        map.put(inputHash, recipe);
     }
 
     @PowerNukkitOnly
