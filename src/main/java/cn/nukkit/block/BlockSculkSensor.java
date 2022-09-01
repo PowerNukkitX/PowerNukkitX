@@ -55,11 +55,6 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
     }
 
     @Override
-    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        return BlockEntityHolder.setBlockAndCreateEntity(this) != null;
-    }
-
-    @Override
     public boolean isPowerSource() {
         return true;
     }
