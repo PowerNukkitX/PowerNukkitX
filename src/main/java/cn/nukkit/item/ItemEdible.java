@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 
@@ -68,6 +70,8 @@ public abstract class ItemEdible extends Item {
                 player.getLevel().addSound(player, Sound.RANDOM_BURP);
             }
         }
+
+        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player.add(0, player.getEyeHeight()), VibrationType.EAT));
         
         return true;
     }

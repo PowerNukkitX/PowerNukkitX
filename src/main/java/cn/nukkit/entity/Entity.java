@@ -10,6 +10,8 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.item.EntityArmorStand;
+import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.mob.EntityMagmaCube;
@@ -27,11 +29,14 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
@@ -1524,6 +1529,11 @@ public abstract class Entity extends Location implements Metadatable {
             sideEffect.doPreHealthChange(this, source, attacker);
         }
         setHealth(newHealth);
+
+        if (!(this instanceof EntityArmorStand)) {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ENTITY_DAMAGE));
+        }
+
         return true;
     }
 
@@ -1886,6 +1896,14 @@ public abstract class Entity extends Location implements Metadatable {
         double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
 
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+            if (diffPosition > 0.0001) {
+                if (this.isOnGround()) {
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                } else if (this.isTouchingWater()) {
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SWIM));
+                }
+            }
+
             this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
 
             this.lastX = this.x;
@@ -2215,6 +2233,11 @@ public abstract class Entity extends Location implements Metadatable {
             float damage = fallDistance - 3 - jumpBoost;
 
             if (damage > 0) {
+                if (!this.isSneaking()) {
+                    if (!(this instanceof EntityItem item) || item.getItem().getBlockId() != BlockID.WOOL) {
+                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.HIT_GROUND));
+                    }
+                }
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
             }
         }

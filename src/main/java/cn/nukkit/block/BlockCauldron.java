@@ -16,6 +16,8 @@ import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.item.*;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.particle.SmokeParticle;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -120,7 +122,13 @@ public class BlockCauldron extends BlockSolidMeta implements BlockEntityHolder<B
 
     @PowerNukkitOnly
     public void setFillLevel(int fillLevel) {
+        if (fillLevel == getFillLevel()) return;
         setIntValue(FILL_LEVEL, fillLevel);
+        if (fillLevel > getFillLevel()) {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
+        } else {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+        }
     }
 
 

@@ -29,7 +29,7 @@ import cn.nukkit.scoreboard.interfaces.Scorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
-import cn.nukkit.utils.BVector3;
+import cn.nukkit.math.BVector3;
 import cn.nukkit.utils.TextFormat;
 import com.google.common.base.Splitter;
 

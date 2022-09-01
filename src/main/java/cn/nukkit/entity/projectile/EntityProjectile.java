@@ -14,6 +14,8 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -94,6 +96,8 @@ public abstract class EntityProjectile extends Entity {
         if (projectileHitEvent.isCancelled()) {
             return;
         }
+
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_LAND));
 
         float damage = this.getResultDamage(entity);
 
@@ -284,6 +288,7 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_LAND));
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 
@@ -320,5 +325,12 @@ public abstract class EntityProjectile extends Entity {
 
     public boolean getHasAge() {
         return !this.noAge;
+    }
+
+    @Override
+    public void spawnToAll() {
+        super.spawnToAll();
+        //vibration: minecraft:projectile_shoot
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_SHOOT));
     }
 }

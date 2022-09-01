@@ -23,6 +23,8 @@ import cn.nukkit.item.customitem.ItemCustomArmor;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -385,6 +387,8 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
         armorInventory.clearAll();
 
         level.addSound(this, Sound.MOB_ARMOR_STAND_BREAK);
+
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ENTITY_DIE));
     }
 
     @Override
