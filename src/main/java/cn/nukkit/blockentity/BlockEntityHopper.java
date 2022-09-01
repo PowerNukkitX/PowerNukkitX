@@ -343,6 +343,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
+        boolean pickedUpItem = false;
+
         for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
             if (entity.isClosed() || !(entity instanceof EntityMinecartAbstract && entity instanceof InventoryHolder invHolder)) {
                 continue;
@@ -377,11 +379,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                     item.count--;
 
                     inv.setItem(i, item);
+
+                    pickedUpItem = true;
                 }
             }
         }
 
-        return true;
+        return pickedUpItem;
     }
 
     public boolean pickupItems() {
