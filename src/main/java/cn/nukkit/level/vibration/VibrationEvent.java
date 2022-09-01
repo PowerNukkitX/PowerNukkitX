@@ -2,7 +2,6 @@ package cn.nukkit.level.vibration;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
