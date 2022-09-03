@@ -1,6 +1,8 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.PNAlphaItemID;
@@ -335,5 +337,45 @@ public class NBTIO {
         }
         write(tag, tmpFile);
         Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+    }
+
+    /**
+     * The following methods
+     * only used for LevelEventGenericPacket
+     * which do not write/read tag id and name
+     */
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static byte[] writeValue(CompoundTag tag) throws IOException {
+        return writeValue(tag, ByteOrder.BIG_ENDIAN);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static byte[] writeValue(CompoundTag tag, ByteOrder endianness) throws IOException {
+        return writeValue(tag, endianness, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static byte[] writeValue(CompoundTag tag, ByteOrder endianness, boolean network) throws IOException {
+        return writeValue((Tag) tag, endianness, network);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static byte[] writeValue(Tag tag, ByteOrder endianness, boolean network) throws IOException {
+        FastByteArrayOutputStream baos = ThreadCache.fbaos.get().reset();
+        try (NBTOutputStream stream = new NBTOutputStream(baos, endianness, network)) {
+            Tag.writeValue(tag, stream);
+            return baos.toByteArray();
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public static CompoundTag readCompoundValue(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        return Tag.readCompoundValue(new NBTInputStream(inputStream, endianness, network));
     }
 }

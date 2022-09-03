@@ -13,6 +13,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -241,6 +243,10 @@ public class BlockFenceGate extends BlockTransparentMeta implements RedstoneComp
         }
 
         playOpenCloseSound();
+
+        var source = this.clone().add(0.5, 0.5, 0.5);
+        VibrationEvent vibrationEvent = open ? new VibrationEvent(source, VibrationType.BLOCK_OPEN) : new VibrationEvent(source, VibrationType.BLOCK_CLOSE);
+        this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }
 

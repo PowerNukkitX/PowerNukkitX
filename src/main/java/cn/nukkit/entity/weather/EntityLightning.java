@@ -14,6 +14,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ElectricSparkParticle;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -231,5 +233,11 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     @Override
     public String getOriginalName() {
         return "Lightning Bolt";
+    }
+
+    @Override
+    public void spawnToAll() {
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.LIGHTNING_STRIKE));
+        super.spawnToAll();
     }
 }

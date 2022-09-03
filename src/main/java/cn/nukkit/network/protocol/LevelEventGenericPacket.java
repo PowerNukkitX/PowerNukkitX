@@ -27,7 +27,7 @@ public class LevelEventGenericPacket extends DataPacket {
         this.reset();
         this.putVarInt(eventId);
         try {
-            this.put(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, true));
+            this.put(NBTIO.writeValue(tag, ByteOrder.LITTLE_ENDIAN, true));
         } catch (IOException e) {
             throw new EncoderException(e);
         }

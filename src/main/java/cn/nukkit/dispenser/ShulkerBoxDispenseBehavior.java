@@ -5,6 +5,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 
 @PowerNukkitOnly
@@ -36,6 +38,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
         
         if (success = shulkerBox.place(item, target, target.getSide(shulkerBoxFace.getOpposite()), shulkerBoxFace, 0, 0, 0, null)) {
             block.level.updateComparatorOutputLevel(target);
+            block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5 , 0.5), VibrationType.BLOCK_PLACE));
         }
 
         return null;

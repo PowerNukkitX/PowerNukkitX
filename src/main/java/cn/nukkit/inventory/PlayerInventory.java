@@ -10,7 +10,10 @@ import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
@@ -177,6 +180,9 @@ public class PlayerInventory extends BaseInventory {
         if (index >= this.getSize()) {
             this.sendArmorSlot(index, this.getViewers());
             this.sendArmorSlot(index, this.getHolder().getViewers().values());
+            if (this.getItem(index) instanceof ItemArmor) {
+                this.getHolder().level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.getHolder().clone(), VibrationType.EQUIP));
+            }
         } else {
             super.onSlotChange(index, before, send);
         }

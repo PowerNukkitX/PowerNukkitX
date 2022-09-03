@@ -11,6 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -108,6 +110,12 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
     public boolean onActivate(@Nonnull Item item, Player player) {
         this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         toggleBooleanProperty(OPEN);
+        var pos = this.add(0.5, 0.5, 0.5);
+        if (isPowerOn()) {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_ACTIVATE));
+        } else {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_DEACTIVATE));
+        }
 
         this.getLevel().setBlock(this, this, false, true);
         this.getLevel().addSound(this, Sound.RANDOM_CLICK, 0.8f, isPowerOn() ? 0.58f : 0.5f );

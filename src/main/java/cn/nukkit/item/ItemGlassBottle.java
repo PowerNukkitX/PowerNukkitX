@@ -6,6 +6,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBeehive;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 
 public class ItemGlassBottle extends Item {
@@ -50,6 +52,8 @@ public class ItemGlassBottle extends Item {
                     player.getLevel().dropItem(player.add(0, 1.3, 0), filled, player.getDirectionVector().multiply(0.4));
                 }
             }
+            
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
         }
         
         return false;

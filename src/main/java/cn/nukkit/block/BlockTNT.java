@@ -12,6 +12,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -122,6 +124,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
             return;
         }
         tnt.spawnToAll();
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
     }
 
     @Override

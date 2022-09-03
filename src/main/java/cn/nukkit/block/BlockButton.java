@@ -11,6 +11,8 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Faceable;
@@ -152,6 +154,12 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
     @Since("1.4.0.0-PN")
     public void setActivated(boolean activated) {
         setBooleanValue(BUTTON_PRESSED, activated);
+        var pos = this.add(0.5, 0.5, 0.5);
+        if (activated) {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_ACTIVATE));
+        } else {
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_DEACTIVATE));
+        }
     }
 
     @Override

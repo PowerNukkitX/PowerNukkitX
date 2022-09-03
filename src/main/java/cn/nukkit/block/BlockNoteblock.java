@@ -11,6 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -252,6 +254,8 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
 
     public void emitSound() {
         if (this.up().getId() != AIR) return;
+
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
         Instrument instrument = this.getInstrument();
 
