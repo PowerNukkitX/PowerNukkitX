@@ -10,6 +10,57 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
+## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions)- Dev
+該版本現時支持了Minecraft:BE `1.19.21（協定版本545）`.
+
+## 新增內容
+
+- [#610] 實現礦車（InventoryHolder）+漏斗。
+
+## 修改記錄
+
+- [#599] 重構實體注册。
+- [#601]  js-java互操作性增强。
+- [#602] 反礦物透視改進。
+- [#611] 優化玩家移動。
+
+## BUG修復
+
+- [#603] 修復漏斗熔爐刷物品BUG。
+- [#605] 修復錯誤的箭初始速度。
+- [#607] fix entity death smoke + potion effect cloud + explosion。
+- [#615] 修復/effect命令。
+
+## [1.19.21-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2) - 2022-8-24
+該版本目前支持了Minecraft:BE `1.19.21 (協議版本545)`.
+
+### 新增內容
+
+- [#572] 基本結構生成實現。
+
+### BUG修復
+
+- [#591]/[#592] 修復木板->柵欄門，羊毛->羊毛毯，玻璃->玻璃板的配方（在[#596]中修復）。
+
+## [1.19.21-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1) - 2022-8-23
+該版本目前支持了Minecraft:BE `1.19.21 (協議版本545)`.
+
+### 新增內容
+
+- [#594] 1.19.21-r1正式發佈。
+- [#587] 添加村民交易介面。
+- [#586] 內寘反礦物透視。
+
+### 修改記錄
+
+- [#586] 區塊發送優化。
+- [#593] 實現相容1.19.21（協定版本545）。
+
+### BUG修復
+
+- [#575] 修復自定義方塊變成空氣之後不會保存的BUG（在[#585]中修復）。
+- [#584] 修復自定義方塊的一堆BUG。
+
 ## [1.19.20-r5-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5) - 2022-8-18
 該版本目前支持了Minecraft:BE `1.19.20 (協議版本544)`.
 
@@ -1090,6 +1141,15 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.21-PNX</summary>
+
+   1. [#1.19.21-r1] PNX-1.19.21-r1 (協議版本545)
+   2. [#1.19.21-r2] PNX-1.19.21-r2 (協議版本545)
+   3. [#1.19.21-r3] PNX-1.19.21-r3 (協議版本545)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多語言文檔
 
 ---
@@ -1475,9 +1535,29 @@ Need to switch languages?
 [#569]: https://github.com/PowerNukkitX/PowerNukkitX/pull/569
 [#570]: https://github.com/PowerNukkitX/PowerNukkitX/pull/570
 [#571]: https://github.com/PowerNukkitX/PowerNukkitX/pull/571
+[#572]: https://github.com/PowerNukkitX/PowerNukkitX/pull/572
 [#573]: https://github.com/PowerNukkitX/PowerNukkitX/pull/573
 [#574]: https://github.com/PowerNukkitX/PowerNukkitX/pull/574
+[#575]: https://github.com/PowerNukkitX/PowerNukkitX/issues/575
 [#576]: https://github.com/PowerNukkitX/PowerNukkitX/pull/576
+[#584]: https://github.com/PowerNukkitX/PowerNukkitX/pull/584
+[#585]: https://github.com/PowerNukkitX/PowerNukkitX/pull/585
+[#586]: https://github.com/PowerNukkitX/PowerNukkitX/pull/586
+[#587]: https://github.com/PowerNukkitX/PowerNukkitX/pull/587
+[#591]: https://github.com/PowerNukkitX/PowerNukkitX/issues/591
+[#592]: https://github.com/PowerNukkitX/PowerNukkitX/issues/592
+[#593]: https://github.com/PowerNukkitX/PowerNukkitX/pull/593
+[#594]: https://github.com/PowerNukkitX/PowerNukkitX/pull/594
+[#596]: https://github.com/PowerNukkitX/PowerNukkitX/pull/596
+[#599]: https://github.com/PowerNukkitX/PowerNukkitX/pull/599
+[#601]: https://github.com/PowerNukkitX/PowerNukkitX/pull/601
+[#602]: https://github.com/PowerNukkitX/PowerNukkitX/pull/602
+[#603]: https://github.com/PowerNukkitX/PowerNukkitX/pull/603
+[#605]: https://github.com/PowerNukkitX/PowerNukkitX/pull/605
+[#607]: https://github.com/PowerNukkitX/PowerNukkitX/pull/607
+[#610]: https://github.com/PowerNukkitX/PowerNukkitX/pull/610
+[#611]: https://github.com/PowerNukkitX/PowerNukkitX/pull/611
+[#615]: https://github.com/PowerNukkitX/PowerNukkitX/pull/615
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1508,6 +1588,13 @@ Need to switch languages?
 [#1.19.20-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4
 <!--1.19.20-r5-PNX Protocol Version 544-->
 [#1.19.20-r5]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5
+
+<!--1.19.21-r1-PNX Protocol Version 545-->
+[#1.19.21-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1
+<!--1.19.21-r2-PNX Protocol Version 545-->
+[#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
+<!--1.19.21-r2-PNX Protocol Version 545-->
+[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/actions
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
