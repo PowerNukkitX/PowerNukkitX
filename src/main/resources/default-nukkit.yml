@@ -78,5 +78,6 @@ worlds:
 
 anti-xray:
  #world:
-  #level: low
-  #pre-deobfuscate: true
+ # enabled: true
+ # level: low
+ # pre-deobfuscate: true
