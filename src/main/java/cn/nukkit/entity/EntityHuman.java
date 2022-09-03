@@ -213,6 +213,10 @@ public class EntityHuman extends EntityHumanType {
                 this.setSkin(newSkin);
             }
 
+            if (this.getSkin() == null) {
+                this.setSkin(new Skin());
+            }
+
             this.uuid = Utils.dataToUUID(String.valueOf(this.getId()).getBytes(StandardCharsets.UTF_8), this.getSkin()
                     .getSkinData().data, this.getNameTag().getBytes(StandardCharsets.UTF_8));
         }

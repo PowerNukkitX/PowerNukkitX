@@ -27,9 +27,15 @@ public class ClassEntityProvider implements EntityProvider<Entity>, EntityProvid
         try {
             networkId1 = clazz.getField("NETWORK_ID").getInt(null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            networkId1 = -1;
+            networkId1 = Entity.NETWORK_ID;
         }
         this.networkId = networkId1;
+    }
+
+    public ClassEntityProvider(String name, Class<? extends Entity> clazz, int networkId) {
+        this.name = name;
+        this.clazz = clazz;
+        this.networkId = networkId;
     }
 
     @Override
