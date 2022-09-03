@@ -132,7 +132,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.20-r5'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.21-r3'
 }
 ```
 
