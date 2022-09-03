@@ -57,6 +57,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
      *
      * @return 此实体持有的行为组
      */
+    @PowerNukkitXOnly
     public IBehaviorGroup getBehaviorGroup(){
         return EMPTY_BEHAVIOR_GROUP;
     }
