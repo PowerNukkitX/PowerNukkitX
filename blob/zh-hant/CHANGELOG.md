@@ -10,8 +10,26 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
-## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions)- Dev
-該版本現時支持了Minecraft:BE `1.19.21（協定版本545）`.
+## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
+該版本目前支持了Minecraft:BE `1.19.21（協議版本545）`.
+
+## 新增內容
+
+- [#613] 支持Deep Dark“幽暗”群系（階段#1）。
+
+## 修改記錄
+
+- [#620] 移除`StringArrayTag.java`。
+- [#621] 默認配置中添加反礦透配置示例。
+- [#623] 正確的anti-xray配置。
+
+## BUG修復
+
+- [#612] 修復與NPC插件的內容。
+- [#617] 修復漏斗。
+
+## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3) - 2022-9-2
+該版本目前支持了Minecraft:BE `1.19.21（協議版本545）`.
 
 ## 新增內容
 
@@ -20,7 +38,7 @@
 ## 修改記錄
 
 - [#599] 重構實體注册。
-- [#601]  js-java互操作性增强。
+- [#601] js-java互操作性增强。
 - [#602] 反礦物透視改進。
 - [#611] 優化玩家移動。
 
@@ -1557,7 +1575,13 @@ Need to switch languages?
 [#607]: https://github.com/PowerNukkitX/PowerNukkitX/pull/607
 [#610]: https://github.com/PowerNukkitX/PowerNukkitX/pull/610
 [#611]: https://github.com/PowerNukkitX/PowerNukkitX/pull/611
+[#612]: https://github.com/PowerNukkitX/PowerNukkitX/pull/612
+[#613]: https://github.com/PowerNukkitX/PowerNukkitX/pull/613
 [#615]: https://github.com/PowerNukkitX/PowerNukkitX/pull/615
+[#617]: https://github.com/PowerNukkitX/PowerNukkitX/pull/617
+[#620]: https://github.com/PowerNukkitX/PowerNukkitX/pull/620
+[#621]: https://github.com/PowerNukkitX/PowerNukkitX/pull/621
+[#623]: https://github.com/PowerNukkitX/PowerNukkitX/pull/623
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1593,8 +1617,8 @@ Need to switch languages?
 [#1.19.21-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1
 <!--1.19.21-r2-PNX Protocol Version 545-->
 [#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
-<!--1.19.21-r2-PNX Protocol Version 545-->
-[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.19.21-r3-PNX Protocol Version 545-->
+[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
