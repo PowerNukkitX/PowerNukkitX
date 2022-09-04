@@ -143,13 +143,13 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
-            int nextTick;
-            //刷新gt数
-            coreBehaviorPeriodTimer.put(coreBehavior, nextTick = ++tick);
-            //没到周期就不评估
-            if (nextTick < coreBehavior.getPeriod()) return;
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) return;
+            int nextTick = ++tick;
+            //刷新gt数
+            coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
+            //没到周期就不评估
+            if (nextTick < coreBehavior.getPeriod()) return;
             coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
@@ -170,14 +170,14 @@ public class BehaviorGroup implements IBehaviorGroup {
         int highestPriority = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
             IBehavior behavior = entry.getKey();
-            int tick = entry.getValue();
-            int nextTick;
-            //刷新gt数
-            behaviorPeriodTimer.put(behavior, nextTick = ++tick);
-            //没到周期就不评估
-            if (nextTick < behavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
+            int tick = entry.getValue();
+            int nextTick = ++tick;
+            //刷新gt数
+            behaviorPeriodTimer.put(behavior, nextTick);
+            //没到周期就不评估
+            if (nextTick < behavior.getPeriod()) continue;
             behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
                 if (behavior.getPriority() > highestPriority) {
