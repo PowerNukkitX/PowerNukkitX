@@ -10,7 +10,25 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
+## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
+该版本目前支持了Minecraft:BE `1.19.21 (协议版本545)`.
+
+## 新增内容
+
+- [#613] 支持Deep Dark“幽暗”群系（阶段#1）。
+
+## 修改记录
+
+- [#620] 移除`StringArrayTag.java`。
+- [#621] 默认配置中添加反矿透配置示例。
+- [#623] 正确的anti-xray配置。
+
+## BUG修复
+
+- [#612] 修复与NPC插件的内容。
+- [#617] 修复漏斗。
+
+## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3) - 2022-9-2
 该版本目前支持了Minecraft:BE `1.19.21 (协议版本545)`.
 
 ## 新增内容
@@ -1557,7 +1575,13 @@ Need to switch languages?
 [#607]: https://github.com/PowerNukkitX/PowerNukkitX/pull/607
 [#610]: https://github.com/PowerNukkitX/PowerNukkitX/pull/610
 [#611]: https://github.com/PowerNukkitX/PowerNukkitX/pull/611
+[#612]: https://github.com/PowerNukkitX/PowerNukkitX/pull/612
+[#613]: https://github.com/PowerNukkitX/PowerNukkitX/pull/613
 [#615]: https://github.com/PowerNukkitX/PowerNukkitX/pull/615
+[#617]: https://github.com/PowerNukkitX/PowerNukkitX/pull/617
+[#620]: https://github.com/PowerNukkitX/PowerNukkitX/pull/620
+[#621]: https://github.com/PowerNukkitX/PowerNukkitX/pull/621
+[#623]: https://github.com/PowerNukkitX/PowerNukkitX/pull/623
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1593,8 +1617,8 @@ Need to switch languages?
 [#1.19.21-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1
 <!--1.19.21-r2-PNX Protocol Version 545-->
 [#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
-<!--1.19.21-r2-PNX Protocol Version 545-->
-[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/actions
+<!--1.19.21-r3-PNX Protocol Version 545-->
+[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
