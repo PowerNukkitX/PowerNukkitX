@@ -322,8 +322,8 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public void checkDisabled() {
-        if (getLevelBlock() instanceof BlockRailPowered rail) {
-            setDisabled(rail.isGettingPower());
+        if (getLevelBlock() instanceof BlockRailActivator rail) {
+            setDisabled(rail.isActive());
         }
     }
 
