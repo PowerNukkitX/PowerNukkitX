@@ -79,10 +79,10 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = block.getSide(BlockFace.DOWN);
-        if (down instanceof BlockWater || down.getLevelBlockAtLayer(1) instanceof BlockWater) {
-            if (block.getId() == Block.AIR) {
-                this.getLevel().setBlock(block, this, true, true);
+        if (target instanceof BlockWater || target.getLevelBlockAtLayer(1) instanceof BlockWater) {
+            Block up = target.up();
+            if (up.getId() == Block.AIR) {
+                this.getLevel().setBlock(up, this, true, true);
                 return true;
             }
         }
