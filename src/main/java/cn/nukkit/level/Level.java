@@ -3110,7 +3110,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        //@todo 2022/6/11 daoge_cmd
+        //@todo 2022/6/11 daoge_cmd 特判处理青蛙卵
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
