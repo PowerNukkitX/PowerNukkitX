@@ -66,7 +66,7 @@ public class BlockSculkSensor extends BlockSolid implements BlockEntityHolder<Bl
 
     @Override
     public int getWeakPower(BlockFace face) {
-        var blockEntity = this.getBlockEntity();
+        var blockEntity = this.getOrCreateBlockEntity();
         if (this.getSide(face.getOpposite()) instanceof BlockRedstoneComparator) {
             return blockEntity.getComparatorPower();
         } else {
