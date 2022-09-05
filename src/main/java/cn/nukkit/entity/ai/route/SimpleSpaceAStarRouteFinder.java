@@ -67,54 +67,13 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         }
     }
 
-    @Override
-    protected ArrayList<Node> FloydSmooth(ArrayList<Node> array) {
-        return super.FloydSmooth(array);
-    }
-
-//    @Override
-//    protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
-//        var list = new ArrayList<Vector3>();
-//        var rx = pos1.x;
-//        var rz = pos1.z;
-//        var ry = pos1.y;
-//        var dx = pos2.x - rx;
-//        var dz = pos2.z - rz;
-//        var dy = pos2.y - ry;
-//        double px;
-//        double pz;
-//        double py;
-//        int cnt;
-//        if (Math.abs(dx) > Math.abs(dz)) {
-//            px = 1;
-//            cnt = (int) Math.abs(dx);
-//            pz = dz / cnt;
-//        } else {
-//            pz = 1;
-//            cnt = (int) Math.abs(dz);
-//            px = dx / cnt;
+//    protected boolean hasBlocksAround(ArrayList<Vector3> list) {
+//        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
+//        double height = this.entity.getHeight() * this.entity.getScale();
+//        for (Vector3 vector3 : list) {
+//            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
+//            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
 //        }
-//        py = dy / cnt;
-//        rx -= px;
-//        rz -= pz;
-//        ry -= py;
-//        for (int i = 0; i < cnt; i++) {
-//            rx += px;
-//            rz += pz;
-//            ry += py;
-//            list.add(new Vector3(rx, ry, rz));
-//        }
-//        var tmp = hasBlocksAround(list);
-//        return tmp;
+//        return false;
 //    }
-
-    protected boolean hasBlocksAround(ArrayList<Vector3> list) {
-        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
-        double height = this.entity.getHeight() * this.entity.getScale();
-        for (Vector3 vector3 : list) {
-            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
-        }
-        return false;
-    }
 }
