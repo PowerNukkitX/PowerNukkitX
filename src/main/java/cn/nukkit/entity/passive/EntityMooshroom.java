@@ -132,9 +132,11 @@ public class EntityMooshroom extends EntityWalkingAnimal {
         }else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.BUCKET, 1));
+            return true;
         }else if (item.getId() == Item.BOWL && item.getDamage() == 0) {
             item.count--;
             player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
+            return true;
         }
 
         return false;
