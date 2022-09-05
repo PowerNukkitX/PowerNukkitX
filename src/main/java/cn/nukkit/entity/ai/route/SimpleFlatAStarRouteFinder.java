@@ -465,7 +465,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
                 vector3 -> !this.level.getTickCachedBlock(vector3).canPassThrough()
         );
-//        if (pos1.equals(pos2)) return false;
 //        if (pos1.getFloorY() != pos2.getFloorY()) return true;
 //        boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
 //        if (traverseDirection) {
@@ -522,9 +521,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 //        }
 //        return false;
 //    }
-
-    //todo: 实体在水面上时不能正确平滑路径
-    //虽然说水面上也没必要平滑:(
 
     /**
      * 使用Floyd算法平滑A*路径
