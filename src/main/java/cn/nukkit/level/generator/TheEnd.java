@@ -12,6 +12,7 @@ import cn.nukkit.level.generator.noise.vanilla.d.NoiseGeneratorSimplexD;
 import cn.nukkit.level.generator.populator.impl.PopulatorChorusTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndGateway;
 import cn.nukkit.level.generator.populator.impl.PopulatorEndIsland;
+import cn.nukkit.level.generator.populator.impl.PopulatorEndObsidianPillar;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
@@ -20,6 +21,7 @@ import cn.nukkit.math.Vector3;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author GoodLucky777
@@ -139,10 +141,15 @@ public class TheEnd extends Generator {
         this.detailNoiseOctaves = new NoiseGeneratorOctavesD(random, 8);
         this.islandNoise = new NoiseGeneratorSimplexD(random);
 
-        this.populators = ImmutableList.of(
-                new PopulatorEndIsland(this),
-                new PopulatorChorusTree(this),
-                new PopulatorEndGateway(this));
+        this.populators.add(new PopulatorEndIsland(this));
+        this.populators.add(new PopulatorChorusTree(this));
+        this.populators.add(new PopulatorEndGateway(this));
+
+        PopulatorEndObsidianPillar.ObsidianPillar[] obsidianPillars = PopulatorEndObsidianPillar.ObsidianPillar.getObsidianPillars(this.level.getSeed());
+        for (PopulatorEndObsidianPillar.ObsidianPillar obsidianPillar : obsidianPillars) {
+            PopulatorEndObsidianPillar populator = new PopulatorEndObsidianPillar(obsidianPillar);
+            this.populators.add(populator);
+        }
     }
 
     @Override
