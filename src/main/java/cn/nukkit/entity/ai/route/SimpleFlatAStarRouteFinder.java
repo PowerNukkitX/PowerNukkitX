@@ -462,6 +462,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * 指定两个Node之间是否有障碍物
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
+        if (pos1.equals(pos2)) return true;
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
                 vector3 -> !this.level.getTickCachedBlock(vector3).canPassThrough()
         );
