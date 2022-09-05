@@ -129,6 +129,12 @@ public class EntityMooshroom extends EntityWalkingAnimal {
             cow.spawnToAll();
             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SHEAR));
             return true;
+        }else if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
+            item.count--;
+            player.getInventory().addItem(Item.get(Item.BUCKET, 1));
+        }else if (item.getId() == Item.BOWL && item.getDamage() == 0) {
+            item.count--;
+            player.getInventory().addItem(Item.get(Item.MUSHROOM_STEW));
         }
 
         return false;
