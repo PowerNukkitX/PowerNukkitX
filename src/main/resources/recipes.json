@@ -58535,6 +58535,7 @@
         "id": "minecraft:stonebrick"
       },
       "output": {
+        "damage": 2,
         "legacyId": 98,
         "id": "minecraft:stonebrick"
       },
