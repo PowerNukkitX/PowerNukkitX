@@ -1,13 +1,48 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.entity.ai.behavior.Behavior;
+import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
+import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
+import cn.nukkit.entity.ai.controller.LookController;
+import cn.nukkit.entity.ai.controller.SpaceMoveController;
+import cn.nukkit.entity.ai.evaluator.*;
+import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.route.SimpleSpaceAStarRouteFinder;
+import cn.nukkit.entity.ai.route.posevaluator.FlyingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.Set;
 
 public class EntityAllay extends EntityFlyingAnimal {
     public static final int NETWORK_ID = 134;
 
+    private IBehaviorGroup behaviorGroup;
+
     public EntityAllay(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public IBehaviorGroup getBehaviorGroup() {
+        //todo: remove this test and impl it really
+        if (behaviorGroup == null){
+            behaviorGroup = new BehaviorGroup(
+                    this.tickSpread,
+                    Set.of(),
+                    Set.of(
+                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.3f,true), new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class), 4, 1),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
+                    ),
+                    Set.of(new NearestPlayerSensor(50, 0,20)),
+                    Set.of(new SpaceMoveController(), new LookController(true, true)),
+                    new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this)
+            );
+        }
+        return behaviorGroup;
     }
 
     @Override

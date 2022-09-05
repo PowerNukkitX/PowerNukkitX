@@ -96,6 +96,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.searching = true;
         this.interrupt = false;
         this.reachable = true;
+        //若实体未处于active状态，则关闭路径平滑
+        this.setEnableFloydSmooth(this.entity.isActive());
         //清空openList和closeList
         openList.clear();
         closeList.clear();
