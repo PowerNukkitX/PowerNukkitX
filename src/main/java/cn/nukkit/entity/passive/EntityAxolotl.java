@@ -31,8 +31,9 @@ public class EntityAxolotl extends EntitySwimmingAnimal{
         this.setMaxHealth(14);
     }
 
+
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Axolotl";
     }
 }

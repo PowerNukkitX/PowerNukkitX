@@ -32,7 +32,7 @@ public class EntityFrog extends EntityWalkingAnimal{
     }
 
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Frog";
     }
 }

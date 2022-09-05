@@ -33,7 +33,7 @@ public class EntityWarden extends EntityWalkingMob{
     }
 
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Warden";
     }
 }

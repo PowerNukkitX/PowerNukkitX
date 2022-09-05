@@ -33,7 +33,7 @@ public class EntityGlowSquid extends EntitySwimmingAnimal{
     }
 
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "GlowSquid";
     }
 }

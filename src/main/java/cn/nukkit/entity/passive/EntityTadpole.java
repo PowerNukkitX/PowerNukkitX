@@ -32,7 +32,7 @@ public class EntityTadpole extends EntitySwimmingAnimal{
     }
 
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Tadpole";
     }
 }

@@ -32,7 +32,7 @@ public class EntityAllay extends EntityFlyingAnimal {
     }
 
     @Override
-    public String getName() {
+    public String getOriginalName() {
         return "Allay";
     }
 }
