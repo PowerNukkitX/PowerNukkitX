@@ -11,7 +11,7 @@ public class ItemAmethystShard extends Item {
     }
 
     public ItemAmethystShard(int id) {
-        this(id, new Integer(0));
+        this(id, Integer.valueOf(0));
     }
 
     public ItemAmethystShard(Integer meta) {

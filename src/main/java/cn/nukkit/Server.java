@@ -113,6 +113,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * 代表着服务器对象，全局单例.
+ * <p>在{@link Nukkit}中被实例化，后通过{@link cn.nukkit.Server#getInstance}获取实例对象.
+ * {@link cn.nukkit.Server}的构造方法进行了一系列操作，包括但不限于初始化配置文件，创建线程、线程池，开启插件，注册配方、方块、实体、物品等.
+ * <p>
+ * Represents a server object, global singleton.
+ * <p>is instantiated in {@link Nukkit} and later the instance object is obtained via {@link cn.nukkit.Server#getInstance}.
+ * The constructor method of {@link cn.nukkit.Server} performs a number of operations, including but not limited to initializing configuration files, creating threads, thread pools, start plugins, registering recipes, blocks, entities, items, etc.
+ *
  * @author MagicDroidX
  * @author Box
  */
@@ -300,6 +308,7 @@ public class Server {
     private boolean enableExperimentMode;
 
     /**
+     * 最小初始化测试
      * Minimal initializer for testing
      */
     @SuppressWarnings("UnstableApiUsage")
@@ -873,14 +882,31 @@ public class Server {
         this.start();
     }
 
+
+    /**
+     * 广播一条消息给所有玩家<p>Broadcast a message to all players
+     *
+     * @param message 消息
+     * @return int 玩家数量<br>Number of players
+     */
     public int broadcastMessage(String message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
 
+
+    /**
+     * @see #broadcastMessage(String)
+     */
     public int broadcastMessage(TextContainer message) {
         return this.broadcast(message, BROADCAST_CHANNEL_USERS);
     }
 
+    /**
+     * 广播一条消息给指定的{@link CommandSender recipients}<p>Broadcast a message to the specified {@link CommandSender recipients}
+     *
+     * @param message 消息
+     * @return int {@link CommandSender recipients}数量<br>Number of {@link CommandSender recipients}
+     */
     public int broadcastMessage(String message, CommandSender[] recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -889,6 +915,10 @@ public class Server {
         return recipients.length;
     }
 
+
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
     public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -897,6 +927,9 @@ public class Server {
         return recipients.size();
     }
 
+    /**
+     * @see #broadcastMessage(String, CommandSender[])
+     */
     public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
@@ -905,6 +938,17 @@ public class Server {
         return recipients.size();
     }
 
+
+    /**
+     * 从指定的许可名获取发送者们，广播一条消息给他们.可以指定多个许可名，以<b> ; </b>分割.<br>
+     * 一个permission在{@link PluginManager#permSubs}对应一个{@link CommandSender 发送者}Set.<p>
+     * Get the sender to broadcast a message from the specified permission name, multiple permissions can be specified, split by <b> ; </b><br>
+     * The permission corresponds to a {@link CommandSender Sender} set in {@link PluginManager#permSubs}.
+     *
+     * @param message     消息内容<br>Message content
+     * @param permissions 许可名，需要先通过{@link PluginManager#subscribeToPermission subscribeToPermission}注册<br>Permissions name, need to register first through {@link PluginManager#subscribeToPermission subscribeToPermission}
+     * @return int 接受到消息的{@link CommandSender 发送者}数量<br>Number of {@link CommandSender senders} who received the message
+     */
     public int broadcast(String message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
 
@@ -923,6 +967,10 @@ public class Server {
         return recipients.size();
     }
 
+
+    /**
+     * @see #broadcast(String, String)
+     */
     public int broadcast(TextContainer message, String permissions) {
         Set<CommandSender> recipients = new HashSet<>();
 
@@ -941,6 +989,9 @@ public class Server {
         return recipients.size();
     }
 
+    /**
+     * @see #broadcastPacket(Player[], DataPacket)
+     */
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
         packet.tryEncode();
 
@@ -949,6 +1000,12 @@ public class Server {
         }
     }
 
+    /**
+     * 广播一个数据包给指定的玩家们.<p>Broadcast a packet to the specified players.
+     *
+     * @param players 接受数据包的所有玩家<br>All players receiving the data package
+     * @param packet  数据包
+     */
     public static void broadcastPacket(Player[] players, DataPacket packet) {
         packet.tryEncode();
 
@@ -1021,6 +1078,12 @@ public class Server {
         }
     }
 
+    /**
+     * 以指定插件加载顺序启用插件<p>
+     * Enable plugins in the specified plugin loading order
+     *
+     * @param type 插件加载顺序<br>Plugin loading order
+     */
     public void enablePlugins(PluginLoadOrder type) {
         for (Plugin plugin : new ArrayList<>(this.pluginManager.getPlugins().values())) {
             if (!plugin.isEnabled() && type == plugin.getDescription().getOrder()) {
@@ -1034,14 +1097,33 @@ public class Server {
         }
     }
 
+    /**
+     * 启用一个指定插件<p>
+     * Enable a specified plugin
+     *
+     * @param plugin 插件实例<br>Plugin instance
+     */
     public void enablePlugin(Plugin plugin) {
         this.pluginManager.enablePlugin(plugin);
     }
 
+    /**
+     * 禁用全部插件<p>Disable all plugins
+     */
     public void disablePlugins() {
         this.pluginManager.disablePlugins();
     }
 
+    /**
+     * 以sender身份执行一行命令
+     * <p>
+     * Execute one line of command as sender
+     *
+     * @param sender      命令执行者
+     * @param commandLine 一行命令
+     * @return boolean 执行是否成功
+     * @throws ServerException 服务器异常
+     */
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
@@ -1067,11 +1149,21 @@ public class Server {
         return false;
     }
 
+    /**
+     * 得到控制台发送者
+     *
+     * @return {@link ConsoleCommandSender}
+     */
     //todo: use ticker to check console
     public ConsoleCommandSender getConsoleSender() {
         return consoleSender;
     }
 
+    /**
+     * 重载服务器
+     * <p>
+     * Reload Server
+     */
     public void reload() {
         log.info("Reloading...");
 
@@ -1120,10 +1212,21 @@ public class Server {
         getPluginManager().callEvent(serverStartedEvent);
     }
 
+
+    /**
+     * 关闭服务器
+     * <p>
+     * Shut down the server
+     */
     public void shutdown() {
         isRunning.compareAndSet(true, false);
     }
 
+    /**
+     * 强制关闭服务器
+     * <p>
+     * Force Shut down the server
+     */
     public void forceShutdown() {
         if (this.hasStopped) {
             return;
@@ -1587,6 +1690,10 @@ public class Server {
         return this.queryRegenerateEvent;
     }
 
+
+    /**
+     * @return 服务器名称<br>The name of server
+     */
     public String getName() {
         return "Nukkit";
     }
@@ -1663,26 +1770,48 @@ public class Server {
         return this.busyingTime.getLong(this.busyingTime.size() - 1);
     }
 
+    /**
+     * @return 服务器端口<br>server port
+     */
     public int getPort() {
         return this.getPropertyInt("server-port", 19132);
     }
 
+    /**
+     * @return 可视距离<br>server view distance
+     */
     public int getViewDistance() {
         return this.getPropertyInt("view-distance", 10);
     }
 
+    /**
+     * @return 服务器网络地址<br>server ip
+     */
     public String getIp() {
         return this.getPropertyString("server-ip", "0.0.0.0");
     }
 
+    /**
+     * @return 服务器UUID<br>server UUID
+     */
     public UUID getServerUniqueId() {
         return this.serverID;
     }
 
+    /**
+     * @return 服务器是否会自动保存<br>Does the server automatically save
+     */
     public boolean getAutoSave() {
         return this.autoSave;
     }
 
+    /**
+     * 设置服务器自动保存
+     * <p>
+     * Set server autosave
+     *
+     * @param autoSave 是否自动保存<br>Whether to save automatically
+     */
     public void setAutoSave(boolean autoSave) {
         this.autoSave = autoSave;
         for (Level level : this.levelArray) {
@@ -1694,10 +1823,20 @@ public class Server {
         return this.getPropertyString("level-type", "DEFAULT");
     }
 
+    /**
+     * @return 服务器是否生成结构<br>Whether the server generate the structure.
+     */
     public boolean getGenerateStructures() {
         return this.getPropertyBoolean("generate-structures", true);
     }
 
+    /**
+     * 得到服务器的gamemode
+     * <p>
+     * Get the gamemode of the server
+     *
+     * @return gamemode id
+     */
     public int getGamemode() {
         try {
             return this.getPropertyInt("gamemode", 0) & 0b11;
@@ -1710,10 +1849,25 @@ public class Server {
         return this.getPropertyBoolean("force-gamemode", false);
     }
 
+
+    /**
+     * 默认{@code direct=false}
+     *
+     * @see #getGamemodeString(int, boolean)
+     */
     public static String getGamemodeString(int mode) {
         return getGamemodeString(mode, false);
     }
 
+    /**
+     * 从gamemode id获取游戏模式字符串.
+     * <p>
+     * Get game mode string from gamemode id.
+     *
+     * @param mode   gamemode id
+     * @param direct 如果为true就直接返回字符串,为false返回代表游戏模式的硬编码字符串.<br>If true, the string is returned directly, and if false, the hard-coded string representing the game mode is returned.
+     * @return 游戏模式字符串<br>Game Mode String
+     */
     public static String getGamemodeString(int mode, boolean direct) {
         switch (mode) {
             case Player.SURVIVAL:
@@ -1728,6 +1882,14 @@ public class Server {
         return "UNKNOWN";
     }
 
+    /**
+     * 从字符串获取gamemode
+     * <p>
+     * Get gamemode from string
+     *
+     * @param str 代表游戏模式的字符串，例如0,survival...<br>A string representing the game mode, e.g. 0,survival...
+     * @return 游戏模式id<br>gamemode id
+     */
     public static int getGamemodeFromString(String str) {
         switch (str.trim().toLowerCase()) {
             case "0":
@@ -1755,6 +1917,14 @@ public class Server {
         return -1;
     }
 
+    /**
+     * 从字符串获取游戏难度
+     * <p>
+     * Get game difficulty from string
+     *
+     * @param str 代表游戏难度的字符串，例如0,peaceful...<br>A string representing the game difficulty, e.g. 0,peaceful...
+     * @return 游戏难度id<br>game difficulty id
+     */
     public static int getDifficultyFromString(String str) {
         switch (str.trim().toLowerCase()) {
             case "0":
@@ -1780,6 +1950,13 @@ public class Server {
         return -1;
     }
 
+    /**
+     * 获得服务器游戏难度
+     * <p>
+     * Get server game difficulty
+     *
+     * @return 游戏难度id<br>game difficulty id
+     */
     public int getDifficulty() {
         if (this.difficulty == Integer.MAX_VALUE) {
             this.difficulty = getDifficultyFromString(this.getPropertyString("difficulty", "1"));
@@ -1787,6 +1964,13 @@ public class Server {
         return this.difficulty;
     }
 
+    /**
+     * 设置服务器游戏难度
+     * <p>
+     * set server game difficulty
+     *
+     * @param difficulty 游戏难度id<br>game difficulty id
+     */
     public void setDifficulty(int difficulty) {
         int value = difficulty;
         if (value < 0) value = 0;
