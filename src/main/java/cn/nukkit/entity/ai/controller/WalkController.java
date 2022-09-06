@@ -46,13 +46,9 @@ public class WalkController implements IController {
                     Block[] collisionBlocks = entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
-                    //如果不跳就上不去，则跳跃
-                    if (maxY - entity.getY() > entity.getFootHeight()) {
-                        //TODO: 2022/7/15 按理说不需要这么做，但是不这么做就会出现实体上台阶跳的很高的问题
-                        //有时我们并不需要跳那么高，所以说只跳需要跳的高度
-                        dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
-                        currentJumpCoolDown = 0;
-                    }
+                    //有时我们并不需要跳那么高，所以说只跳需要跳的高度
+                    dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
+                    currentJumpCoolDown = 0;
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
