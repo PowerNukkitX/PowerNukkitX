@@ -159,9 +159,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug only
-//        findingPath.forEach(node -> {
-//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-//        });
+        findingPath.forEach(node -> {
+            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+        });
 
         this.finished = true;
         this.searching = false;
@@ -487,7 +487,12 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return hasBlocksAround(list);
     }
 
+    // 保持向前兼容
     protected boolean hasBlocksAround(ArrayList<Vector3> list) {
+        return hasBlocksAround((List<Vector3>) list);
+    }
+
+    protected boolean hasBlocksAround(List<Vector3> list) {
         double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
         double height = this.entity.getHeight() * this.entity.getScale();
         for (Vector3 vector3 : list) {
