@@ -463,8 +463,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        // 允许在水中进行路径平滑
-//        if (pos1.getFloorY() != pos2.getFloorY()) return true;
+        if (pos1.getFloorY() != pos2.getFloorY()) return true;
         boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
         ArrayList<Vector3> list = new ArrayList<>();
         if (traverseDirection) {
