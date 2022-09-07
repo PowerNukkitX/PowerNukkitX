@@ -16,6 +16,7 @@ import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.mob.EntityMagmaCube;
 import cn.nukkit.entity.passive.EntityStrider;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
@@ -1534,7 +1535,7 @@ public abstract class Entity extends Location implements Metadatable {
         setHealth(newHealth);
 
         if (!(this instanceof EntityArmorStand)) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ENTITY_DAMAGE));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(attacker, this.clone(), VibrationType.ENTITY_DAMAGE));
         }
 
         return true;
@@ -1901,9 +1902,9 @@ public abstract class Entity extends Location implements Metadatable {
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.STEP));
                 } else if (this.isTouchingWater()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SWIM));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.SWIM));
                 }
             }
 
@@ -2238,7 +2239,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (damage > 0) {
                 if (!this.isSneaking()) {
                     if (!(this instanceof EntityItem item) || item.getItem().getBlockId() != BlockID.WOOL) {
-                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.HIT_GROUND));
+                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.HIT_GROUND));
                     }
                 }
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));

@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMusic;
@@ -90,7 +91,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     @Override
     public int onTouch(@Nullable Player player, Action action) {
         if (action == Action.LEFT_CLICK_BLOCK && (player == null || (!player.isCreative() && !player.isSpectator()))) {
-            emitSound();
+            this.emitSound(player);
         }
         return super.onTouch(player, action);
     }
@@ -253,9 +254,15 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     }
 
     public void emitSound() {
+        emitSound(null);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void emitSound(@Nullable Player player) {
         if (this.up().getId() != AIR) return;
 
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, this.add(0.5, 0.5, 0.5).clone(), VibrationType.BLOCK_CHANGE));
 
         Instrument instrument = this.getInstrument();
 
@@ -273,7 +280,7 @@ public class BlockNoteblock extends BlockSolid implements RedstoneComponent, Blo
     @Override
     public boolean onActivate(@Nonnull Item item, @Nullable Player player) {
         this.increaseStrength();
-        this.emitSound();
+        this.emitSound(player);
         return true;
     }
 

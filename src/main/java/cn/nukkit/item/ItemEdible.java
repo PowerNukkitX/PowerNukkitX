@@ -71,7 +71,7 @@ public abstract class ItemEdible extends Item {
             }
         }
 
-        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player.add(0, player.getEyeHeight()), VibrationType.EAT));
+        player.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, player.add(0, player.getEyeHeight()), VibrationType.EAT));
         
         return true;
     }

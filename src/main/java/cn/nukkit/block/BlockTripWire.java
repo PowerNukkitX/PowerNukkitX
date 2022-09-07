@@ -235,7 +235,8 @@ public class BlockTripWire extends BlockTransparentMeta {
             this.level.setBlock(this, this, true, false);
             this.updateHook(false);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
+            //todo: initiator should be a entity
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
         } else {
             this.setPowered(true);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);

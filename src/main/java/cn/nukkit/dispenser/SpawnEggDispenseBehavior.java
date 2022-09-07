@@ -36,7 +36,7 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
             entity.spawnToAll();
 
-            block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos.clone(), VibrationType.ENTITY_PLACE));
+            block.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos.clone(), VibrationType.ENTITY_PLACE));
             return null;
         }
 

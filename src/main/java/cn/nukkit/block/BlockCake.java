@@ -153,7 +153,7 @@ public class BlockCake extends BlockTransparentMeta {
                 Food.getByRelative(this).eatenBy(player);
                 getLevel().setBlock(this, this, true);
             }
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.EAT));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, this.add(0.5, 0.5, 0.5), VibrationType.EAT));
             return true;
         }
         return false;

@@ -12,16 +12,14 @@ import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.entity.data.StringEntityData;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.Set;
 
@@ -76,12 +74,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(500);
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 20));
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, 376));
-//        this.setDataProperty(new FloatEntityData(Entity.DATA_MOVEMENT_SOUND_DISTANCE_OFFSET, 1));
-//        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE, 16));
-//        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, 8));
-//        this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, "ambient"));
+        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
+        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
         this.level.getVibrationManager().addListener(this);
     }
 

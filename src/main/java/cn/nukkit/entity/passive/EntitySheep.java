@@ -170,7 +170,7 @@ public class EntitySheep extends EntityWalkingAnimal {
 
         this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
 
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SHEAR));
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SHEAR));
         return true;
     }
 

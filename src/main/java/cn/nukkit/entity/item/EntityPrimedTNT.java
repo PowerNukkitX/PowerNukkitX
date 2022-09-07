@@ -182,7 +182,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.EXPLODE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
     }
 
     public Entity getSource() {

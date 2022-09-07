@@ -237,7 +237,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public void spawnToAll() {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.LIGHTNING_STRIKE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.LIGHTNING_STRIKE));
         super.spawnToAll();
     }
 }
