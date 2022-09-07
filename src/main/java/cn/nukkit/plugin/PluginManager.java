@@ -87,9 +87,9 @@ public class PluginManager {
         PluginLoader pluginLoader = fileAssociations.get(JavaPluginLoader.class.getName());
         PowerNukkitPlugin plugin = PowerNukkitPlugin.getInstance();
         Map<String, Object> info = new HashMap<>();
-        info.put("name", "PowerNukkit");
+        info.put("name", "PowerNukkitX");
         info.put("version", server.getNukkitVersion());
-        info.put("website", "https://github.com/PowerNukkit/PowerNukkit");
+        info.put("website", "https://github.com/PowerNukkitX/PowerNukkitX");
         info.put("main", PowerNukkitPlugin.class.getName());
         File file;
         try {
@@ -98,7 +98,7 @@ public class PluginManager {
             file = new File(".");
         }
         PluginDescription description = new PluginDescription(info);
-        plugin.init(pluginLoader, server, description, new File("PowerNukkit"), file);
+        plugin.init(pluginLoader, server, description, new File("PowerNukkitX"), file);
         plugins.put(description.getName(), plugin);
         enablePlugin(plugin);
     }

@@ -159,9 +159,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug only
-//        findingPath.forEach(node -> {
-//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-//        });
+        findingPath.forEach(node -> {
+            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+        });
 
         this.finished = true;
         this.searching = false;
@@ -462,6 +462,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      * 指定两个Node之间是否有障碍物
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
+//        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
+//                pos -> !this.level.getTickCachedBlock(pos).canPassThrough()
+//        );
         if (pos1.equals(pos2)) return false;
         // 允许在水中进行路径平滑
 //        if (pos1.getFloorY() != pos2.getFloorY()) return true;
