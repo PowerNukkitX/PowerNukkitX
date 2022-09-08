@@ -193,6 +193,10 @@ public class Server {
 
     private boolean redstoneEnabled = true;
 
+
+    /**
+     * 配置项是否检查登录时间.<P>Does the configuration item check the login time.
+     */
     public boolean checkLoginTime = true;
 
     private RCON rcon;
@@ -206,6 +210,9 @@ public class Server {
     private Network network;
 
     private boolean networkCompressionAsync = true;
+    /**
+     * 网络压缩级别<P>Network compression level
+     */
     public int networkCompressionLevel = 7;
     private int networkZlibProvider = 0;
 
@@ -1445,6 +1452,12 @@ public class Server {
         this.removePlayerListData(uuid, this.playerList.values());
     }
 
+    /**
+     * 移除玩家数组中所有玩家的玩家列表数据.<p>
+     * Remove player list data for all players in the array.
+     *
+     * @param players 玩家数组
+     */
     public void removePlayerListData(UUID uuid, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_REMOVE;
@@ -1452,6 +1465,12 @@ public class Server {
         Server.broadcastPacket(players, pk);
     }
 
+    /**
+     * 移除这个玩家的玩家列表数据.<p>
+     * Remove this player's player list data.
+     *
+     * @param player 玩家
+     */
     @Since("1.4.0.0-PN")
     public void removePlayerListData(UUID uuid, Player player) {
         PlayerListPacket pk = new PlayerListPacket();
@@ -1464,6 +1483,12 @@ public class Server {
         this.removePlayerListData(uuid, players.toArray(Player.EMPTY_ARRAY));
     }
 
+    /**
+     * 发送玩家列表数据包给一个玩家.<p>
+     * Send a player list packet to a player.
+     *
+     * @param player 玩家
+     */
     public void sendFullPlayerListData(Player player) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
@@ -1479,6 +1504,12 @@ public class Server {
         player.dataPacket(pk);
     }
 
+    /**
+     * 发送配方列表数据包给一个玩家.<p>
+     * Send a recipe list packet to a player.
+     *
+     * @param player 玩家
+     */
     public void sendRecipeList(Player player) {
         player.dataPacket(CraftingManager.getCraftingPacket());
     }
@@ -1979,14 +2010,23 @@ public class Server {
         this.setPropertyInt("difficulty", value);
     }
 
+    /**
+     * @return 是否开启白名单<br>Whether to start server whitelist
+     */
     public boolean hasWhitelist() {
         return this.getPropertyBoolean("white-list", false);
     }
 
+    /**
+     * @return 得到服务器出生点保护半径<br>Get server birth point protection radius
+     */
     public int getSpawnRadius() {
         return this.getPropertyInt("spawn-protection", 16);
     }
 
+    /**
+     * @return 服务器是否允许飞行<br>Whether the server allows flying
+     */
     public boolean getAllowFlight() {
         if (getAllowFlight == null) {
             getAllowFlight = this.getPropertyBoolean("allow-flight", false);
@@ -1994,10 +2034,16 @@ public class Server {
         return getAllowFlight;
     }
 
+    /**
+     * @return 服务器是否为硬核模式<br>Whether the server is in hardcore mode
+     */
     public boolean isHardcore() {
         return this.getPropertyBoolean("hardcore", false);
     }
 
+    /**
+     * @return 获取默认gamemode<br>Get default gamemode
+     */
     public int getDefaultGamemode() {
         if (this.defaultGamemode == Integer.MAX_VALUE) {
             this.defaultGamemode = this.getGamemode();
@@ -2005,10 +2051,16 @@ public class Server {
         return this.defaultGamemode;
     }
 
+    /**
+     * @return 得到服务器标题<br>Get server motd
+     */
     public String getMotd() {
         return this.getPropertyString("motd", "PowerNukkitX Server");
     }
 
+    /**
+     * @return 得到服务器子标题<br>Get the server subheading
+     */
     public String getSubMotd() {
         String subMotd = this.getPropertyString("sub-motd", "https://powernukkitx.cn");
         if (subMotd.isEmpty()) {
@@ -2017,6 +2069,9 @@ public class Server {
         return subMotd;
     }
 
+    /**
+     * @return 是否强制使用服务器整合包<br>Whether to force the use of server resources
+     */
     public boolean getForceResources() {
         return this.getPropertyBoolean("force-resources", false);
     }
@@ -2104,19 +2159,51 @@ public class Server {
         return commandMap;
     }
 
+    /**
+     * 获得所有在线的玩家Map.
+     * <p>
+     * Get all online players Map.
+     *
+     * @return 所有的在线玩家Map
+     */
     public Map<UUID, Player> getOnlinePlayers() {
         return ImmutableMap.copyOf(playerList);
     }
 
+
+    /**
+     * 注册配方到配方管理器
+     * <p>
+     * Register Recipe to Recipe Manager
+     *
+     * @param recipe 配方
+     */
     public void addRecipe(Recipe recipe) {
         this.craftingManager.registerRecipe(recipe);
     }
 
+
+    /**
+     * 从指定的UUID得到玩家实例.
+     * <p>
+     * Get the player instance from the specified UUID.
+     *
+     * @param uuid uuid
+     * @return 玩家实例，可为空<br>Player example, can be empty
+     */
     public Optional<Player> getPlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
         return Optional.ofNullable(playerList.get(uuid));
     }
 
+    /**
+     * 从数据库中查找指定玩家名对应的UUID.
+     * <p>
+     * Find the UUID corresponding to the specified player name from the database.
+     *
+     * @param name 玩家名<br>player name
+     * @return 玩家的UUID，可为空.<br>The player's UUID, which can be empty.
+     */
     public Optional<UUID> lookupName(String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
         byte[] uuidBytes = nameLookup.get(nameBytes);
@@ -2134,6 +2221,15 @@ public class Server {
         return Optional.of(new UUID(buffer.getLong(), buffer.getLong()));
     }
 
+
+    /**
+     * 更新数据库中指定玩家名的UUID，若不存在则添加.
+     * <p>
+     * Update the UUID of the specified player name in the database, or add it if it does not exist.
+     *
+     * @param uuid uuid
+     * @param name 名字
+     */
     void updateName(UUID uuid, String name) {
         byte[] nameBytes = name.toLowerCase().getBytes(StandardCharsets.UTF_8);
 
@@ -2155,6 +2251,14 @@ public class Server {
                 .orElse(new OfflinePlayer(this, name));
     }
 
+    /**
+     * 从指定的UUID得到一个玩家实例,可以是在线玩家也可以是离线玩家.
+     * <p>
+     * Get a player instance from the specified UUID, either online or offline.
+     *
+     * @param uuid uuid
+     * @return 玩家<br>player
+     */
     public IPlayer getOfflinePlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
         Optional<Player> onlinePlayer = getPlayer(uuid);
@@ -2165,10 +2269,24 @@ public class Server {
         return new OfflinePlayer(this, uuid);
     }
 
+    /**
+     * create为false
+     * <p>
+     * create is false
+     *
+     * @see #getOfflinePlayerData(UUID, boolean)
+     */
     public CompoundTag getOfflinePlayerData(UUID uuid) {
         return getOfflinePlayerData(uuid, false);
     }
 
+    /**
+     * 获得UUID指定的玩家的NBT数据
+     *
+     * @param uuid   要获取数据的玩家UUID<br>UUID of the player to get data from
+     * @param create 如果玩家数据不存在是否创建<br>If player data does not exist whether to create.
+     * @return {@link CompoundTag}
+     */
     public CompoundTag getOfflinePlayerData(UUID uuid, boolean create) {
         return getOfflinePlayerDataInternal(uuid.toString(), true, create);
     }
@@ -2244,18 +2362,38 @@ public class Server {
         return nbt;
     }
 
+
+    /**
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     */
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag) {
         this.saveOfflinePlayerData(uuid, tag, false);
     }
 
+    /**
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     */
     public void saveOfflinePlayerData(String name, CompoundTag tag) {
         this.saveOfflinePlayerData(name, tag, false);
     }
 
+    /**
+     * @see #saveOfflinePlayerData(String, CompoundTag, boolean)
+     */
     public void saveOfflinePlayerData(UUID uuid, CompoundTag tag, boolean async) {
         this.saveOfflinePlayerData(uuid.toString(), tag, async);
     }
 
+
+    /**
+     * 保存玩家数据，玩家在线离线都行.
+     * <p>
+     * Save player data, players can be offline.
+     *
+     * @param name  玩家名<br>player name
+     * @param tag   NBT数据<br>nbt data
+     * @param async 是否异步保存<br>Whether to save asynchronously
+     */
     public void saveOfflinePlayerData(String name, CompoundTag tag, boolean async) {
         Optional<UUID> uuid = lookupName(name);
         saveOfflinePlayerData(uuid.map(UUID::toString).orElse(name), tag, async, true);
@@ -2346,6 +2484,15 @@ public class Server {
         }
     }
 
+
+    /**
+     * 从玩家名获得一个在线玩家，这个方法是模糊匹配，只要玩家名带有name前缀就会被返回.
+     * <p>
+     * Get an online player from the player name, this method is a fuzzy match and will be returned as long as the player name has the name prefix.
+     *
+     * @param name 玩家名<br>player name
+     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     */
     public Player getPlayer(String name) {
         Player found = null;
         name = name.toLowerCase();
@@ -2366,6 +2513,14 @@ public class Server {
         return found;
     }
 
+    /**
+     * 从玩家名获得一个在线玩家，这个方法是精确匹配，当玩家名字符串完全相同时返回.
+     * <p>
+     * Get an online player from a player name, this method is an exact match and returns when the player name string is identical.
+     *
+     * @param name 玩家名<br>player name
+     * @return 玩家实例对象，获取失败为null<br>Player instance object,failed to get null
+     */
     public Player getPlayerExact(String name) {
         name = name.toLowerCase();
         for (Player player : this.getOnlinePlayers().values()) {
@@ -2377,6 +2532,14 @@ public class Server {
         return null;
     }
 
+    /**
+     * 指定一个部分玩家名，返回所有包含或者等于该名称的玩家.
+     * <p>
+     * Specify a partial player name and return all players with or equal to that name.
+     *
+     * @param partialName 部分玩家名<br>partial name
+     * @return 匹配到的所有玩家, 若匹配不到则为一个空数组<br>All players matched, if not matched then an empty array
+     */
     public Player[] matchPlayer(String partialName) {
         partialName = partialName.toLowerCase();
         List<Player> matchedPlayer = new ArrayList<>();
@@ -2391,6 +2554,14 @@ public class Server {
         return matchedPlayer.toArray(Player.EMPTY_ARRAY);
     }
 
+
+    /**
+     * 删除一个玩家，可以让一个玩家离线.
+     * <p>
+     * Delete a player to take a player offline.
+     *
+     * @param player 需要删除的玩家<br>Players who need to be deleted
+     */
     public void removePlayer(Player player) {
         Player toRemove = this.players.remove(player.getSocketAddress());
         if (toRemove != null) {
@@ -2406,24 +2577,52 @@ public class Server {
         }
     }
 
+
+    /**
+     * @return 获得所有游戏世界<br>Get all the game world
+     */
     public Map<Integer, Level> getLevels() {
         return levels;
     }
 
+    /**
+     * @return 获得默认游戏世界<br>Get the default world
+     */
     public Level getDefaultLevel() {
         return defaultLevel;
     }
 
+
+    /**
+     * 设置默认游戏世界
+     * <p>
+     * Set default game world
+     *
+     * @param defaultLevel 默认游戏世界<br>default game world
+     */
     public void setDefaultLevel(Level defaultLevel) {
         if (defaultLevel == null || (this.isLevelLoaded(defaultLevel.getFolderName()) && defaultLevel != this.defaultLevel)) {
             this.defaultLevel = defaultLevel;
         }
     }
 
+    /**
+     * @param name 世界名字
+     * @return 世界是否已经加载<br>Is the world already loaded
+     */
     public boolean isLevelLoaded(String name) {
         return this.getLevelByName(name) != null;
     }
 
+
+    /**
+     * 从世界id得到世界,0主世界 1 地狱 2 末地
+     * <p>
+     * Get world from world id,0 OVERWORLD 1 NETHER 2 THE_END
+     *
+     * @param levelId 世界id<br>world id
+     * @return level实例<br>level instance
+     */
     public Level getLevel(int levelId) {
         if (this.levels.containsKey(levelId)) {
             return this.levels.get(levelId);
@@ -2431,6 +2630,14 @@ public class Server {
         return null;
     }
 
+    /**
+     * 从世界名得到世界,overworld 主世界 nether 地狱 the_end 末地
+     * <p>
+     * Get world from world name,{@code overworld nether the_end}
+     *
+     * @param name 世界名<br>world name
+     * @return level实例<br>level instance
+     */
     public Level getLevelByName(String name) {
         for (Level level : this.levelArray) {
             if (level.getFolderName().equalsIgnoreCase(name)) {
@@ -2445,6 +2652,15 @@ public class Server {
         return this.unloadLevel(level, false);
     }
 
+    /**
+     * 卸载世界
+     * <p>
+     * unload level
+     *
+     * @param level       世界
+     * @param forceUnload 是否强制卸载<br>whether to force uninstallation.
+     * @return 卸载是否成功
+     */
     public boolean unloadLevel(Level level, boolean forceUnload) {
         if (level == this.getDefaultLevel() && !forceUnload) {
             throw new IllegalStateException("The default level cannot be unloaded while running, please switch levels.");
