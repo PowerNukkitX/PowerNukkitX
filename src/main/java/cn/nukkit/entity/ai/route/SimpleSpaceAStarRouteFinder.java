@@ -69,20 +69,20 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         }
     }
 
-    @Override
-    protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
-        return hasBlocksAround(VectorMath.getPassByVector3(pos1, pos2));
-    }
-
-    @Override
-    protected boolean hasBlocksAround(List<Vector3> list) {
-        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
-        double height = this.entity.getHeight() * this.entity.getScale();
-        for (Vector3 vector3 : list) {
-            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
-
-        }
-        return false;
-    }
+//    @Override
+//    protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
+//        return hasBlocksAround(VectorMath.getPassByVector3(pos1, pos2));
+//    }
+//
+//    @Override
+//    protected boolean hasBlocksAround(List<Vector3> list) {
+//        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
+//        double height = this.entity.getHeight() * this.entity.getScale();
+//        for (Vector3 vector3 : list) {
+//            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
+//            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
+//
+//        }
+//        return false;
+//    }
 }

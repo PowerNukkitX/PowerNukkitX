@@ -1,18 +1,16 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.EntityMemory;
+import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
+import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.inventory.EntityInventoryHolder;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
@@ -21,43 +19,29 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor implements IBehaviorExecutor{
-
-    protected Class<? extends EntityMemory<?>> memoryClazz;
-    protected float speed;
-    protected int maxSenseRangeSquared;
-    protected boolean clearDataWhenLose;
-    protected int coolDown;
+@Since("1.19.21-r4")
+public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
 
     protected int attackTick;
-
+    protected Class<? extends EntityMemory<?>> memoryClazz;
+    protected float damage;
+    protected float speed;
+    protected int coolDown;
     protected Vector3 oldTarget;
-    public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+
+    public WardenMeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float damage, float speed) {
         this.memoryClazz = memoryClazz;
+        this.damage = damage;
         this.speed = speed;
-        this.maxSenseRangeSquared = maxSenseRange * maxSenseRange;
-        this.clearDataWhenLose = clearDataWhenLose;
-        this.coolDown = coolDown;
     }
 
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
-        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
-
         //获取目标位置（这个clone很重要）
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
-
-        if (target instanceof Player player && !player.isSurvival()) return false;
-
-        //检查距离
-        if (entity.distanceSquared(target) > maxSenseRangeSquared) return false;
-
-        if (entity.getMovementSpeed() != speed)
-            entity.setMovementSpeed(speed);
+        this.coolDown = calCoolDown(entity, target);
         Vector3 clonedTarget = target.clone();
         //更新寻路target
         setRouteTarget(entity, clonedTarget);
@@ -72,28 +56,12 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         oldTarget = floor;
 
         if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
-            Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.fromString(MinecraftItemID.AIR.getNamespacedId());
-            float itemDamage = item.getAttackDamage();
-            Enchantment[] enchantments = item.getEnchantments();
-            if (item.applyEnchantments()) {
-                for (Enchantment enchantment : enchantments) {
-                    itemDamage += enchantment.getDamageBonus(target);
-                }
-            }
+            Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
+            damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
 
-            Map<EntityDamageEvent.DamageModifier, Float> damage = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
-            damage.put(EntityDamageEvent.DamageModifier.BASE, itemDamage);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.0f, null);
 
-            float knockBack = 0.3f;
-            if (item.applyEnchantments()) {
-                Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
-                if (knockBackEnchantment != null) {
-                    knockBack += knockBackEnchantment.getLevel() * 0.1f;
-                }
-            }
-
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
-
+            //todo: should break shield
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
@@ -103,15 +71,28 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         return true;
     }
 
+    protected int calCoolDown(EntityIntelligent entity, Entity target) {
+        if (entity instanceof EntityWarden warden) {
+            var anger = warden.getMemoryStorage().get(WardenAngerValueMemory.class).getData().get(target);
+            return anger >= 145 ? 18 : 36;
+        } else {
+            return 20;
+        }
+    }
+
+    @Override
+    public void onStart(EntityIntelligent entity) {
+        if (!entity.isEnablePitch()) entity.setEnablePitch(true);
+        if (entity.getMovementSpeed() != speed)
+            entity.setMovementSpeed(speed);
+    }
+
     @Override
     public void onStop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
         //重置速度
         entity.setMovementSpeed(0.1f);
-        if (clearDataWhenLose) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
-        }
         entity.setEnablePitch(false);
     }
 
@@ -121,9 +102,6 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         removeLookTarget(entity);
         //重置速度
         entity.setMovementSpeed(0.1f);
-        if (clearDataWhenLose) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
-        }
         entity.setEnablePitch(false);
     }
 

@@ -214,11 +214,17 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
+        Vector3 target = entity.getMoveTarget();
+         if (target == null) {
+            //没有路径目标，则清除路径信息
+            entity.setMoveDirectionStart(null);
+            entity.setMoveDirectionEnd(null);
+            return;
+        }
         //到达更新周期时，开始重新计算新路径
         if (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) || isForceUpdateRoute()) {
-            Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
-            if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
+            if ((routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
@@ -228,10 +234,6 @@ public class BehaviorGroup implements IBehaviorGroup {
                 })
                         .setStart(entity.clone())
                         .setTarget(target));
-            } else {
-                //没有路径目标，则清除路径信息
-                entity.setMoveDirectionStart(null);
-                entity.setMoveDirectionEnd(null);
             }
         }
         //若不能再移动了，则清除路径信息
