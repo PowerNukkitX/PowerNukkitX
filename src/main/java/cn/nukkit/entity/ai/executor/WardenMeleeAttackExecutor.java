@@ -39,6 +39,8 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
         if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
+        if (entity.getMovementSpeed() != speed)
+            entity.setMovementSpeed(speed);
         //获取目标位置（这个clone很重要）
         Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
         this.coolDown = calCoolDown(entity, target);
@@ -73,7 +75,7 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
 
     protected int calCoolDown(EntityIntelligent entity, Entity target) {
         if (entity instanceof EntityWarden warden) {
-            var anger = warden.getMemoryStorage().get(WardenAngerValueMemory.class).getData().get(target);
+            var anger = warden.getMemoryStorage().get(WardenAngerValueMemory.class).getData().getOrDefault(target, 0);
             return anger >= 145 ? 18 : 36;
         } else {
             return 20;
@@ -83,8 +85,6 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
     @Override
     public void onStart(EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-        if (entity.getMovementSpeed() != speed)
-            entity.setMovementSpeed(speed);
     }
 
     @Override

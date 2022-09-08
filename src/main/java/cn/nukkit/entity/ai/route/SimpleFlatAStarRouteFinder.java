@@ -95,7 +95,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.finished = false;
         this.searching = true;
         this.interrupt = false;
-        this.reachable = true;
+        var currentReachable = true;
         //若实体未处于active状态，则关闭路径平滑
         this.setEnableFloydSmooth(this.entity.isActive());
         //清空openList和closeList
@@ -119,6 +119,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 currentSearchDepth = 0;
                 this.searching = false;
                 this.finished = true;
+                this.reachable = false;
                 return false;
             }
             //将当前节点周围的有效节点放入openList中
@@ -130,7 +131,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             } else {
                 this.searching = false;
                 this.finished = true;
-                this.reachable = false;
+                currentReachable = false;
                 break;
             }
         }
@@ -144,8 +145,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         //如果无法到达，则取最接近终点的一个Node作为尾节点
         Node reachableNode = null;
-        reachableTarget = this.reachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
-        ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
+        reachableTarget = currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
+        ArrayList<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
         //使用floyd平滑路径
         if (enableFloydSmooth)
             findingPath = FloydSmooth(findingPath);
@@ -163,9 +164,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
         });
 
+        this.reachable = currentReachable;
         this.finished = true;
         this.searching = false;
-        this.reachable = true;
 
         return true;
     }

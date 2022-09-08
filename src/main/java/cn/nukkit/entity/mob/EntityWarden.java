@@ -13,10 +13,7 @@ import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.AttackTargetChangedMemory;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
-import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.WardenMeleeAttackExecutor;
-import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
-import cn.nukkit.entity.ai.executor.WardenViolentAnimationExecutor;
+import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
@@ -28,6 +25,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
+import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -35,6 +33,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 
+import java.math.MathContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,19 +56,21 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
 
     @Override
     public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null){
+        if (behaviorGroup == null) {
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
-                    Set.of(new Behavior((entity) -> {
+                    Set.of(
+                            new Behavior((entity) -> {
                                 //刷新anger数值
                                 var angerValueMap = this.getMemoryStorage().get(WardenAngerValueMemory.class).getData();
                                 var iterator = angerValueMap.entrySet().iterator();
                                 while (iterator.hasNext()) {
-                                    Map.Entry<Entity, Integer> next =  iterator.next();
+                                    Map.Entry<Entity, Integer> next = iterator.next();
                                     if (!isValidAngerEntity(next.getKey())) {
                                         iterator.remove();
                                         var attackTargetMemory = this.getMemoryStorage().get(AttackTargetMemory.class);
-                                        if (attackTargetMemory.hasData() && attackTargetMemory.getData().equals(next.getKey())) attackTargetMemory.setData(null);
+                                        if (attackTargetMemory.hasData() && attackTargetMemory.getData().equals(next.getKey()))
+                                            attackTargetMemory.setData(null);
                                         continue;
                                     }
                                     var newAnger = next.getValue() - 1;
@@ -78,7 +79,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                 }
                                 return false;
                             },
-                            (entity) -> true, 1, 1, 20),
+                                    (entity) -> true, 1, 1, 20),
                             new Behavior((entity) -> {
                                 //为玩家附加黑暗效果
                                 for (var player : entity.level.getPlayers().values()) {
@@ -102,11 +103,22 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                 return false;
                             }, (entity) -> true, 1, 1, 20)),
                     Set.of(
-                            new Behavior(new WardenViolentAnimationExecutor((int) (4.2 * 20)),
+                            new Behavior(
+                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)),
                                     new AllMatchEvaluator(
                                             (entity) -> entity.getMemoryStorage().checkData(AttackTargetChangedMemory.class, true),
                                             new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
-                                    ), 4),
+                                    ), 5),
+                            new Behavior(
+                                    new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20), switch (this.getServer().getDifficulty()) {
+                                        case 1 -> 6;
+                                        case 2 -> 10;
+                                        case 3 -> 15;
+                                        default -> 0;
+                                    }),
+                                    //                                                                                                                   加这行判断是为了防止过于频繁的发射远程攻击
+                                    (entity) -> !this.getBehaviorGroup().getRouteFinder().isReachable() && (!(this.getMoveTarget() instanceof Entity) || ((Entity)this.getMoveTarget()).isOnGround()) && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
+                            ),
                             new Behavior(
                                     new WardenMeleeAttackExecutor(AttackTargetMemory.class, switch (this.getServer().getDifficulty()) {
                                         case 1 -> 16;
@@ -115,10 +127,10 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         default -> 0;
                                     }, 0.5f),
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
-                                    ,3,1
+                                    , 3, 1
                             ),
-                            new Behavior(new WardenSniffExecutor((int) (4.2*20), 35), new RandomTimeRangeEvaluator(5*20, 10*20), 2),
-                            new Behavior(new RandomRoamExecutor(0.1f, 12, 100, true,-1,true,10), (entity -> true), 1)
+                            new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
+                            new Behavior(new RandomRoamExecutor(0.1f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
                     Set.of(),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -223,7 +235,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     @Override
     public boolean attack(EntityDamageEvent source) {
         var cause = source.getCause();
-        if (cause == EntityDamageEvent.DamageCause.LAVA || cause == EntityDamageEvent.DamageCause.HOT_FLOOR) return false;
+        if (cause == EntityDamageEvent.DamageCause.LAVA || cause == EntityDamageEvent.DamageCause.HOT_FLOOR)
+            return false;
         if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager())) {
             addEntityAngerValue(damageByEntity.getDamager(), 100);
         }
@@ -294,7 +307,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     public int calHeartBeatDelay() {
         var target = this.getMemoryStorage().getData(AttackTargetMemory.class);
         if (target == null) return 40;
-        var anger = this.getMemoryStorage().getData(WardenAngerValueMemory.class).get(target);
+        var anger = this.getMemoryStorage().getData(WardenAngerValueMemory.class).getOrDefault(target, 0);
         return (int) (40 - NukkitMath.clamp((anger / 80f), 0, 1) * 30f);
     }
 }

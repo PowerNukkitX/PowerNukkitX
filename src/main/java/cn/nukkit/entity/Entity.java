@@ -455,6 +455,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_SNIFFING = dynamic(104);
     @Since("1.6.0.0-PNX")
     public static final int DATA_FLAG_DIGGING = dynamic(105);
+    @Since("1.19.21-r4")
+    public static final int DATA_FLAG_SONIC_BOOM = dynamic(106);
 
     public static long entityCount = 1;
 
