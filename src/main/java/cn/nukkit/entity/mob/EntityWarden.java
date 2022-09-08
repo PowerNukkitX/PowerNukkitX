@@ -284,6 +284,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
 
     public boolean isValidAngerEntity(Entity entity, boolean sniff) {
         if (entity.isClosed()) return false;
+        if (!entity.isUndead()) return false;
         if (!(sniff ? isInSniffRange(entity) : isInAngerRange(entity))) return false;
         if (!(entity instanceof EntityCreature)) return false;
         if (entity instanceof Player player && (!player.isSurvival() && !player.isAdventure())) return false;
