@@ -67,7 +67,7 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
-            if (target.getHealth() == 0)
+            if (!target.isUndead())
                 return false;
         }
         return true;
