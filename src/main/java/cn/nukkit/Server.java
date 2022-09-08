@@ -993,7 +993,7 @@ public class Server {
         List<InetSocketAddress> targets = new ArrayList<>();
         for (Player p : players) {
             if (p.isConnected()) {
-                targets.add(p.getSocketAddress());
+                targets.add(p.getRawSocketAddress());
             }
         }
 
@@ -2208,7 +2208,7 @@ public class Server {
     }
 
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getSocketAddress());
+        Player toRemove = this.players.remove(player.getRawSocketAddress());
         if (toRemove != null) {
             return;
         }
@@ -2863,6 +2863,12 @@ public class Server {
     @Since("1.6.0.0-PNX")
     public boolean isEnableExperimentMode() {
         return this.enableExperimentMode;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.6.1.0-PN")
+    public boolean isWaterdogCapable() {
+        return this.getConfig("settings.waterdogpe", false);
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
