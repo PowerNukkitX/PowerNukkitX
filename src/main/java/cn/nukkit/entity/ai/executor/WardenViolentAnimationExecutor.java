@@ -25,10 +25,11 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor{
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        if (currentTick > duration || entity.getMemoryStorage().isEmpty(AttackTargetMemory.class)) return false;
+        if (currentTick > duration) return false;
         else {
             //更新视线target
-            entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData().clone());
+            if (entity.getMemoryStorage().notEmpty(AttackTargetMemory.class))
+                entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData().clone());
             return true;
         }
     }
