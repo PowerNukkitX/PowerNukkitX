@@ -2125,6 +2125,9 @@ public class Server {
         return scheduler;
     }
 
+    /**
+     * @return 返回服务器经历过的tick数<br>Returns the number of ticks recorded by the server
+     */
     public int getTick() {
         return tickCounter;
     }

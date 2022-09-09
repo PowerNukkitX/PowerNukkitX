@@ -121,10 +121,19 @@ import java.util.stream.Collectors;
 import static cn.nukkit.utils.Utils.dynamic;
 
 /**
+ * 游戏玩家对象，代表操控的角色
+ * <p>
+ * Game player object, representing the controlled character
+ *
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Log4j2
 public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
+    /**
+     * 一个承载玩家的临时数组静态常量
+     * <p>
+     * A temporary array of static constants that host the player
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
@@ -148,8 +157,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final @PowerNukkitOnly int CRAFTING_STONECUTTER = 1001;
     public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
     public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
-    public static final @PowerNukkitXOnly
-    @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
+
+    /**
+     * 村民交易window id
+     * <p>
+     * Villager trading window id
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public static final int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -163,8 +179,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
     public static final @PowerNukkitOnly int GRINDSTONE_WINDOW_ID = dynamic(5);
-    public static final @Since("1.4.0.0-PN")
-    @PowerNukkitOnly int SMITHING_WINDOW_ID = dynamic(6);
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static final int SMITHING_WINDOW_ID = dynamic(6);
 
     @Since("FUTURE")
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
@@ -196,6 +213,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private String clientSecret;
 
+    /**
+     * 每tick 当前位置与移动目标位置向量之差
+     * <p>
+     * The difference between the current position and the moving target position vector per tick
+     */
     public Vector3 speed = null;
 
     public final HashSet<String> achievements = new HashSet<>();
@@ -235,6 +257,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String iusername;
     protected String displayName;
 
+    /**
+     * 这个值代表玩家是否正在使用物品(长按右键)，-1时玩家未使用物品，当玩家使用物品时该值为{@link Server#getTick() getTick()}的值.
+     * <p>
+     * This value represents whether the player is using the item or not (long right click), -1 means the player is not using the item, when the player is using the item this value is the value of {@link Server#getTick() getTick()}.
+     */
     protected int startAction = -1;
 
     protected Vector3 sleeping = null;
@@ -293,6 +320,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private BlockEnderChest viewingEnderChest = null;
 
+    /**
+     * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
+     * <p>
+     * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
+     */
     protected int lastEnderPearl = 20;
     protected int lastChorusFruitTeleport = 20;
 
@@ -349,22 +381,53 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.soulSpeedMultiplier;
     }
 
+
+    /**
+     * 返回{@link Player#startAction}的值
+     * <p>
+     * Returns the value of {@link Player#startAction}
+     *
+     * @return int
+     */
     public int getStartActionTick() {
         return startAction;
     }
 
+    /**
+     * 设置{@link Player#startAction}值为{@link Server#getTick() getTick()}
+     * <p>
+     * Set the {@link Player#startAction} value to {@link Server#getTick() getTick()}
+     */
     public void startAction() {
         this.startAction = this.server.getTick();
     }
 
+
+    /**
+     * 设置{@link Player#startAction}值为-1
+     * <p>
+     * Set the {@link Player#startAction} value to -1
+     */
     public void stopAction() {
         this.startAction = -1;
     }
 
+    /**
+     * 返回{@link Player#lastEnderPearl}的值
+     * <p>
+     * Returns the value of {@link Player#lastEnderPearl}
+     *
+     * @return int
+     */
     public int getLastEnderPearlThrowingTick() {
         return lastEnderPearl;
     }
 
+    /**
+     * 设置{@link Player#lastEnderPearl}值为{@link Server#getTick() getTick()}
+     * <p>
+     * Set {@link Player#lastEnderPearl} value to {@link Server#getTick() getTick()}
+     */
     public void onThrowEnderPearl() {
         this.lastEnderPearl = this.server.getTick();
     }
@@ -822,6 +885,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 返回玩家当前是否正在使用某项物品（右击并按住）。
+     * <p>
      * Returns whether the player is currently using an item (right-click and hold).
      *
      * @return bool
@@ -1816,7 +1881,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(ev.getTo().clone(), VibrationType.TELEPORT));
+                        if (delta > 0.0001d)
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
                         if (delta > 0.0001d) {
