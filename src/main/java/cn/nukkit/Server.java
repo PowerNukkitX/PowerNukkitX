@@ -299,10 +299,6 @@ public class Server {
     @Since("1.6.0.0-PNX")
     private boolean enableExperimentMode;
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    private boolean behindProxy;
-
     /**
      * Minimal initializer for testing
      */
@@ -609,7 +605,6 @@ public class Server {
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
-                put("behind-proxy", false);
             }
         });
 
@@ -624,8 +619,7 @@ public class Server {
 
         this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
 
-        this.behindProxy = this.properties.getBoolean("behind-proxy", false);
-        if (behindProxy) {
+        if (this.isWaterdogCapable()) {
             this.checkLoginTime = false;
         }
 
@@ -2879,12 +2873,6 @@ public class Server {
     @Since("1.19.21-r4")
     public boolean isWaterdogCapable() {
         return this.getConfig("settings.waterdogpe", false);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
-    public boolean isBehindProxy() {
-        return behindProxy;
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
