@@ -126,7 +126,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 10;
                                         case 3 -> 15;
                                         default -> 0;
-                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20
+                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 30 //1.5s
                                                     && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
                                                     && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
                                     , 4, 1, 20
