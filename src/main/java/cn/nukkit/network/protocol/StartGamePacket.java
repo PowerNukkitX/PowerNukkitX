@@ -150,7 +150,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        if (Server.getInstance().isEnableExperimentMode()) {
+        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().getConfig("settings.waterdogpe", false)) {
             this.putLInt(3); // Experiment count
             {
 //                this.putString("spectator_mode");
@@ -191,7 +191,7 @@ public class StartGamePacket extends DataPacket {
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
         if (Server.getInstance().isEnableExperimentMode()) { // Experimental Gameplay
-            this.putBoolean(!Server.getInstance().isBehindProxy()); // Why WaterDogPE require an extra optional boolean if this is set to true? I don't know.
+            this.putBoolean(!Server.getInstance().getConfig("settings.waterdogpe", false)); // Why WaterDogPE require an extra optional boolean if this is set to true? I don't know.
         } else {
             this.putBoolean(false);
         }
@@ -213,11 +213,8 @@ public class StartGamePacket extends DataPacket {
         this.putUnsignedVarInt(this.blockProperties.size());
         try {
             for (BlockPropertyData blockPropertyData : this.blockProperties) {
-                System.out.println(blockPropertyData);
                 this.putString(blockPropertyData.namespace());
-                var tmpData = NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true);
-                System.out.println(NBTIO.read(tmpData, ByteOrder.LITTLE_ENDIAN, true));
-                this.put(tmpData);
+                this.put(NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
             log.error("Error while encoding NBT data of BlockPropertyData", e);

@@ -2738,7 +2738,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
-                            if (this.getServer().isEnableExperimentMode()) {
+                            if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
 //                                stackPacket.experiments.add(
 //                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
 //                                );
