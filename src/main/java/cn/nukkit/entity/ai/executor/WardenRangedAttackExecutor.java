@@ -9,14 +9,11 @@ import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
-import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventGenericPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -45,7 +42,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor{
             var target = entity.getMemoryStorage().getData(AttackTargetMemory.class);
 
             //particle
-            sendAttackParticle(entity, entity.add(0, 1.5), target);
+            sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
 
             //sound
             entity.level.addSound(entity, Sound.MOB_WARDEN_SONIC_BOOM);

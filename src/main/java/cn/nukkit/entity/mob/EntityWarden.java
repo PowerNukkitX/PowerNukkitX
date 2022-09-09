@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
-import cn.nukkit.entity.ai.evaluator.AttackTargetChangedMemory;
+import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.*;
@@ -25,7 +25,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
-import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -33,7 +32,6 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 
-import java.math.MathContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -106,7 +104,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             new Behavior(
                                     new WardenViolentAnimationExecutor((int) (4.2 * 20)),
                                     new AllMatchEvaluator(
-                                            (entity) -> entity.getMemoryStorage().checkData(AttackTargetChangedMemory.class, true),
+                                            (entity) -> entity.getMemoryStorage().checkData(NewAttackTargetMemory.class, true),
                                             new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
                                     ), 5),
                             new Behavior(
@@ -116,7 +114,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 3 -> 15;
                                         default -> 0;
                                     }),
-                                    //                                                                                                                   加这行判断是为了防止过于频繁的发射远程攻击
+                                    //                                                                                                                   加这行判断是为了防止过于频繁地发射远程攻击
                                     (entity) -> !this.getBehaviorGroup().getRouteFinder().isReachable() && (!(this.getMoveTarget() instanceof Entity) || ((Entity)this.getMoveTarget()).isOnGround()) && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
                             ),
                             new Behavior(
@@ -266,7 +264,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                 changed = true;
             }*/
             if (changed) {
-                this.getMemoryStorage().setData(AttackTargetChangedMemory.class, true);
+                this.getMemoryStorage().setData(NewAttackTargetMemory.class, true);
             }
         } else angerValueMap.put(entity, added);
     }

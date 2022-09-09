@@ -6,13 +6,13 @@ import cn.nukkit.entity.ai.memory.BooleanMemory;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class AttackTargetChangedMemory extends BooleanMemory {
+public class NewAttackTargetMemory extends BooleanMemory {
 
-    public AttackTargetChangedMemory() {
+    public NewAttackTargetMemory() {
         super(null);
     }
 
-    public AttackTargetChangedMemory(Boolean data) {
+    public NewAttackTargetMemory(Boolean data) {
         super(data);
     }
 }

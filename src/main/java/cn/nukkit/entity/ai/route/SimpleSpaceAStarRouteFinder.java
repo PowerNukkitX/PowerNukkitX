@@ -6,15 +6,8 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.VectorMath;
-import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 务必注意，三维标准A*寻路的代价十分高昂(比原版的洪水填充低得多)，切忌将最大寻路深度设置得太大！

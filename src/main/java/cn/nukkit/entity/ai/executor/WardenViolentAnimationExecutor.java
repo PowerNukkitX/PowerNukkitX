@@ -1,15 +1,11 @@
 package cn.nukkit.entity.ai.executor;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.evaluator.AttackTargetChangedMemory;
+import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
-import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacketV2;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
@@ -29,7 +25,7 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor{
         else {
             //更新视线target
             if (entity.getMemoryStorage().notEmpty(AttackTargetMemory.class))
-                entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData().clone());
+                entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData());
             return true;
         }
     }
@@ -43,7 +39,7 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor{
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        entity.getMemoryStorage().setData(AttackTargetChangedMemory.class, false);
+        entity.getMemoryStorage().setData(NewAttackTargetMemory.class, false);
         entity.setMoveTarget(null);
 
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ROARING, true);

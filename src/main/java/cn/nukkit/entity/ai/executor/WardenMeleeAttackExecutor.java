@@ -7,7 +7,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.EntityMemory;
 import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
