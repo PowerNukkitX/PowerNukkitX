@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -15,16 +16,21 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
+import cn.nukkit.entity.ai.memory.RouteUnreachableTimeMemory;
 import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.ISensor;
+import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -76,8 +82,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                     else next.setValue(newAnger);
                                 }
                                 return false;
-                            },
-                                    (entity) -> true, 1, 1, 20),
+                            }, (entity) -> true, 1, 1, 20),
                             new Behavior((entity) -> {
                                 //为玩家附加黑暗效果
                                 for (var player : entity.level.getPlayers().values()) {
@@ -113,9 +118,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 10;
                                         case 3 -> 15;
                                         default -> 0;
-                                    }),
-                                    //                                                                                                                   加这行判断是为了防止过于频繁地发射远程攻击
-                                    (entity) -> !this.getBehaviorGroup().getRouteFinder().isReachable() && (!(this.getMoveTarget() instanceof Entity) || ((Entity)this.getMoveTarget()).isOnGround()) && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
+                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
                             ),
                             new Behavior(
                                     new WardenMeleeAttackExecutor(AttackTargetMemory.class, switch (this.getServer().getDifficulty()) {
@@ -128,9 +131,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                     , 3, 1
                             ),
                             new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
-                            new Behavior(new RandomRoamExecutor(0.1f, 12, 100, true, -1, true, 10), (entity -> true), 1)
+                            new Behavior(new RandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
-                    Set.of(),
+                    Set.of(new RouteUnreachableTimeSensor(RouteUnreachableTimeMemory.class, 5)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
