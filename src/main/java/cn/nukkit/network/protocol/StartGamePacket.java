@@ -190,7 +190,11 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(Server.getInstance().isEnableExperimentMode()); // Experimental Gameplay
+        if (Server.getInstance().isEnableExperimentMode()) { // Experimental Gameplay
+            this.putBoolean(!Server.getInstance().isBehindProxy()); // Why WaterDogPE require an extra optional boolean if this is set to true? I don't know.
+        } else {
+            this.putBoolean(false);
+        }
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */
@@ -199,7 +203,7 @@ public class StartGamePacket extends DataPacket {
         this.putString(this.worldName);
         this.putString(this.premiumWorldTemplateId);
         this.putBoolean(this.isTrial);
-        this.putUnsignedVarInt(this.isMovementServerAuthoritative ? 1 : 0); // 2 - rewind
+        this.putVarInt(this.isMovementServerAuthoritative ? 1 : 0); // 2 - rewind
         this.putVarInt(0); // RewindHistorySize
         this.putBoolean(false); // isServerAuthoritativeBlockBreaking
         this.putLLong(this.currentTick);
@@ -209,8 +213,11 @@ public class StartGamePacket extends DataPacket {
         this.putUnsignedVarInt(this.blockProperties.size());
         try {
             for (BlockPropertyData blockPropertyData : this.blockProperties) {
+                System.out.println(blockPropertyData);
                 this.putString(blockPropertyData.namespace());
-                this.put(NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true));
+                var tmpData = NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true);
+                System.out.println(NBTIO.read(tmpData, ByteOrder.LITTLE_ENDIAN, true));
+                this.put(tmpData);
             }
         } catch (IOException e) {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
