@@ -157,9 +157,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug only
-        findingPath.forEach(node -> {
-            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-        });
+//        findingPath.forEach(node -> {
+//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+//        });
 
         this.reachable = currentReachable;
         this.finished = true;
