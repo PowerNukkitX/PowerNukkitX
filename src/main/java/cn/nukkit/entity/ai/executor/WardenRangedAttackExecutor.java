@@ -20,7 +20,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenRangedAttackExecutor implements IBehaviorExecutor{
+public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
     protected int chargingTime;
     protected int totalRunningTime;

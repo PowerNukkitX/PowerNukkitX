@@ -36,6 +36,11 @@ public class EntityHuman extends EntityHumanType {
 
     protected UUID uuid;
     protected byte[] rawUUID;
+    protected Skin skin;
+
+    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
 
     @Override
     public float getWidth() {
@@ -61,7 +66,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getEyeHeight() {
-        return (float)(boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
+        return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
 
     @Override
@@ -69,19 +74,17 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    protected Skin skin;
-
     @Override
     public int getNetworkId() {
         return -1;
     }
 
-    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-
     public Skin getSkin() {
         return skin;
+    }
+
+    public void setSkin(Skin skin) {
+        this.skin = skin;
     }
 
     @Override
@@ -91,10 +94,6 @@ public class EntityHuman extends EntityHumanType {
 
     public byte[] getRawUniqueId() {
         return rawUUID;
-    }
-
-    public void setSkin(Skin skin) {
-        this.skin = skin;
     }
 
     @Override
@@ -230,7 +229,7 @@ public class EntityHuman extends EntityHumanType {
     public String getOriginalName() {
         return "Human";
     }
-    
+
     @Override
     public String getName() {
         return this.getNameTag();

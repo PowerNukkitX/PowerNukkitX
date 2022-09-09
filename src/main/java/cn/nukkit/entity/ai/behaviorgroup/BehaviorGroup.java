@@ -217,7 +217,7 @@ public class BehaviorGroup implements IBehaviorGroup {
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
         Vector3 target = entity.getMoveTarget();
-         if (target == null) {
+        if (target == null) {
             //没有路径目标，则清除路径信息
             entity.setMoveDirectionStart(null);
             entity.setMoveDirectionEnd(null);

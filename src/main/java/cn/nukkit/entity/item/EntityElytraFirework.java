@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class EntityElytraFirework extends EntityFirework {
-    private Player followingPlayer;
     private static final Random RANDOM = new Random();
+    private Player followingPlayer;
     private int fireworkAge = 0;
     private int lifetime;
 
@@ -67,11 +67,11 @@ public class EntityElytraFirework extends EntityFirework {
         }
     }
 
-    public void setFollowingPlayer(Player followingPlayer) {
-        this.followingPlayer = followingPlayer;
-    }
-
     public Player getFollowingPlayer() {
         return followingPlayer;
+    }
+
+    public void setFollowingPlayer(Player followingPlayer) {
+        this.followingPlayer = followingPlayer;
     }
 }

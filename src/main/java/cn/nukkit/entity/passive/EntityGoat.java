@@ -3,7 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityGoat extends EntityWalkingAnimal{
+public class EntityGoat extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 128;
 

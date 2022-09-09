@@ -7,7 +7,7 @@ import cn.nukkit.entity.ai.memory.IntegerMemory;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class RouteUnreachableTimeSensor implements ISensor{
+public class RouteUnreachableTimeSensor implements ISensor {
 
     protected Class<? extends IntegerMemory> clazz;
 

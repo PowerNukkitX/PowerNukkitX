@@ -170,7 +170,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
         double epf = 0;
 
-        if(item.applyEnchantments()) {
+        if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
                 epf += ench.getProtectionFactor(source);
             }
@@ -184,7 +184,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
-                if(armor.applyEnchantments()) {
+                if (armor.applyEnchantments()) {
                     for (Enchantment enchantment : armor.getEnchantments()) {
                         enchantment.doPostAttack(damager, this);
                     }

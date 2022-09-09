@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class RouteUnreachableTimeMemory extends IntegerMemory{
+public class RouteUnreachableTimeMemory extends IntegerMemory {
     public RouteUnreachableTimeMemory() {
         super(null);
     }

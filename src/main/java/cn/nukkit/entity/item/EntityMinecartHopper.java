@@ -62,7 +62,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
 
             boolean changed;
 
-            if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter)  {
+            if (blockEntity instanceof InventoryHolder || blockSide instanceof BlockComposter) {
                 changed = pullItems();
             } else {
                 changed = pickupItems();
@@ -156,7 +156,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
                 }
             }
         } else if (blockSide instanceof BlockComposter) {
-            BlockComposter blockComposter = (BlockComposter)blockSide;
+            BlockComposter blockComposter = (BlockComposter) blockSide;
             if (blockComposter.isFull()) {
                 Item item = blockComposter.empty();
 
@@ -255,7 +255,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     }
 
     @Override
-    public boolean isRideable(){
+    public boolean isRideable() {
         return false;
     }
 

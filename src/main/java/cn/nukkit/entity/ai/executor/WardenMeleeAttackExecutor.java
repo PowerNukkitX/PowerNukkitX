@@ -20,7 +20,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
+public class WardenMeleeAttackExecutor implements IBehaviorExecutor {
 
     protected int attackTick;
     protected Class<? extends EntityMemory<?>> memoryClazz;

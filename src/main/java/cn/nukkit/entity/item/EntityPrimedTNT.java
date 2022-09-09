@@ -23,6 +23,17 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class EntityPrimedTNT extends Entity implements EntityExplosive {
 
     public static final int NETWORK_ID = 65;
+    protected int fuse;
+    protected Entity source;
+
+    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
+
+    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt, Entity source) {
+        super(chunk, nbt);
+        this.source = source;
+    }
 
     @Override
     public float getWidth() {
@@ -57,19 +68,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     @Override
     public boolean canCollide() {
         return false;
-    }
-
-    protected int fuse;
-
-    protected Entity source;
-
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt) {
-        this(chunk, nbt, null);
-    }
-
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt, Entity source) {
-        super(chunk, nbt);
-        this.source = source;
     }
 
     @Override

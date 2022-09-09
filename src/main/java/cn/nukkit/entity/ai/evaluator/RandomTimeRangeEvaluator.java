@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
 @Getter
-public class RandomTimeRangeEvaluator implements IBehaviorEvaluator{
+public class RandomTimeRangeEvaluator implements IBehaviorEvaluator {
 
     protected int minTime;//gt
     protected int maxTime;

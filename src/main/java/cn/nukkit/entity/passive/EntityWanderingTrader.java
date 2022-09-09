@@ -23,7 +23,7 @@ public class EntityWanderingTrader extends EntityCreature implements EntityNPC {
     public float getHeight() {
         return 1.9f;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override

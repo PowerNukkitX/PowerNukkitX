@@ -19,6 +19,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public abstract class EntityVehicle extends Entity implements EntityRideable, EntityInteractable {
 
+    protected boolean rollingDirection = true;
+
     public EntityVehicle(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -76,8 +78,6 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         updateMovement();
         return true;
     }
-
-    protected boolean rollingDirection = true;
 
     protected boolean performHurtAnimation() {
         setRollingAmplitude(9);

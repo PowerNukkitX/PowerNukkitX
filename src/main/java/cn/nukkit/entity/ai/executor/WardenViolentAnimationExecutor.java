@@ -9,7 +9,7 @@ import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenViolentAnimationExecutor implements IBehaviorExecutor{
+public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
 
     protected int duration;
     protected int currentTick;

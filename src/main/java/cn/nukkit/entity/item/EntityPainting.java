@@ -153,6 +153,14 @@ public class EntityPainting extends EntityHanging {
         return Motive.BY_NAME.get(namedTag.getString("Motive"));
     }
 
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    @Override
+    public String getOriginalName() {
+        return "Painting";
+    }
+
+
     public enum Motive {
         KEBAB("Kebab", 1, 1),
         AZTEC("Aztec", 1, 1),
@@ -181,10 +189,6 @@ public class EntityPainting extends EntityHanging {
         PIG_SCENE("Pigscene", 4, 4),
         BURNING_SKULL("BurningSkull", 4, 4);
 
-        public final String title;
-        public final int width;
-        public final int height;
-
         private static final Map<String, Motive> BY_NAME = new HashMap<>();
 
         static {
@@ -193,18 +197,14 @@ public class EntityPainting extends EntityHanging {
             }
         }
 
+        public final String title;
+        public final int width;
+        public final int height;
+
         Motive(String title, int width, int height) {
             this.title = title;
             this.width = width;
             this.height = height;
         }
-    }
-
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Override
-    public String getOriginalName() {
-        return "Painting";
     }
 }

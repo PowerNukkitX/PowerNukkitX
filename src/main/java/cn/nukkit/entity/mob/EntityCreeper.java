@@ -49,6 +49,10 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
 
     private IBehaviorGroup behaviorGroup;
 
+    public EntityCreeper(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public IBehaviorGroup getBehaviorGroup() {
         if (behaviorGroup == null) {
@@ -62,7 +66,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                             new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
                                     entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
-                            ),3,1),
+                            ), 3, 1),
                             new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
                                     entity -> {
@@ -78,12 +82,12 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                         Entity attacker = memoryStorage.get(AttackTargetMemory.class).getData();
                         if (attacker == null)
                             attacker = memoryStorage.get(NearestPlayerMemory.class).getData();
-                        if (attacker != null && (attacker instanceof Player player ? player.isSurvival() : true) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))){
-                            memoryStorage.setData(EntityExplodeMemory.class,true);
+                        if (attacker != null && (attacker instanceof Player player ? player.isSurvival() : true) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))) {
+                            memoryStorage.setData(EntityExplodeMemory.class, true);
                             return;
                         }
-                        if ((attacker == null || (attacker instanceof Player player ? !player.isSurvival() : false) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()){
-                            memoryStorage.setData(EntityExplodeMemory.class,false);
+                        if ((attacker == null || (attacker instanceof Player player ? !player.isSurvival() : false) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()) {
+                            memoryStorage.setData(EntityExplodeMemory.class, false);
                             return;
                         }
                     }),
@@ -107,10 +111,6 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
     @Override
     public float getHeight() {
         return 1.8f;
-    }
-
-    public EntityCreeper(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     public boolean isPowered() {

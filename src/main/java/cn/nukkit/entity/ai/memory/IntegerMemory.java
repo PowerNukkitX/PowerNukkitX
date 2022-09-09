@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public abstract class IntegerMemory implements IMemory<Integer>{
+public abstract class IntegerMemory implements IMemory<Integer> {
 
     private Integer data;
 

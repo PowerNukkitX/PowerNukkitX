@@ -31,16 +31,16 @@ public class EntityAllay extends EntityFlyingAnimal {
     @Override
     public IBehaviorGroup getBehaviorGroup() {
         //todo: remove this test and impl it really
-        if (behaviorGroup == null){
+        if (behaviorGroup == null) {
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(),
                     Set.of(
-                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.3f,true), new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class), 4, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
+                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.3f, true), new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class), 4, 1),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
-                    Set.of(new NearestPlayerSensor(50, 0,20)),
+                    Set.of(new NearestPlayerSensor(50, 0, 20)),
                     Set.of(new SpaceMoveController(), new LookController(true, true)),
                     new SimpleSpaceAStarRouteFinder(new FlyingPosEvaluator(), this)
             );

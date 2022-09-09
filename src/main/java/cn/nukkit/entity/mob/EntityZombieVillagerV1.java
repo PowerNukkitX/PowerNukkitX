@@ -17,13 +17,13 @@ public class EntityZombieVillagerV1 extends EntityWalkingMob implements EntitySm
 
     public static final int NETWORK_ID = 44;
 
+    public EntityZombieVillagerV1(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityZombieVillagerV1(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -54,6 +54,7 @@ public class EntityZombieVillagerV1 extends EntityWalkingMob implements EntitySm
     public boolean isUndead() {
         return true;
     }
+
     @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {

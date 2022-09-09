@@ -4,15 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCreature;
-import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
-import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
@@ -43,14 +42,10 @@ import java.util.Set;
 public class EntityWarden extends EntityWalkingMob implements VibrationListener {
 
     public static final int NETWORK_ID = 131;
-
-    private IBehaviorGroup behaviorGroup;
-
     protected int lastDetectTime = Server.getInstance().getTick();
-
     protected int lastCollideTime = Server.getInstance().getTick();
-
     protected boolean waitForVibration = false;
+    private IBehaviorGroup behaviorGroup;
 
     public EntityWarden(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -127,8 +122,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 3 -> 15;
                                         default -> 0;
                                     }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 //1s
-                                                    && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
-                                                    && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
+                                    && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
+                                    && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
                                     , 4, 1, 20
                             ),
                             new Behavior(
@@ -219,7 +214,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
             }
         }
 
-        if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class)) this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
+        if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class))
+            this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
         else this.level.addSound(this, Sound.MOB_WARDEN_LISTENING);
     }
 
@@ -260,7 +256,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                 || cause == EntityDamageEvent.DamageCause.FIRE_TICK
                 || cause == EntityDamageEvent.DamageCause.DROWNING)
             return false;
-        if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager()) ) {
+        if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager())) {
             var damager = damageByEntity.getDamager();
             var realDamager = damager instanceof EntityProjectile projectile ? projectile.shootingEntity : damager;
             addEntityAngerValue(realDamager, 100);

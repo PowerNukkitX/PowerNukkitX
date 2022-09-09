@@ -10,7 +10,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenAngerValueMemory implements IMemory<Map<Entity, Integer>>{
+public class WardenAngerValueMemory implements IMemory<Map<Entity, Integer>> {
 
     protected Map<Entity, Integer> angerValue;
 

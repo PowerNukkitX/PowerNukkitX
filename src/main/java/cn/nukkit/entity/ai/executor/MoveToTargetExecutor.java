@@ -23,14 +23,14 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     protected int minFollowRangeSquared;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
-        this(memoryClazz,speed,false);
+        this(memoryClazz, speed, false);
     }
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
         this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
     }
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange){
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;

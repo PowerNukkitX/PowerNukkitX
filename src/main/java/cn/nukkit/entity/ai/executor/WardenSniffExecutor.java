@@ -10,7 +10,7 @@ import cn.nukkit.level.Sound;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenSniffExecutor implements IBehaviorExecutor{
+public class WardenSniffExecutor implements IBehaviorExecutor {
     protected int angerAddition;
     protected int duration;//gt
     protected int endTime;

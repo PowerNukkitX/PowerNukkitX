@@ -9,10 +9,7 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.BurnTimeMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
-import cn.nukkit.entity.data.FloatEntityData;
-import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -46,11 +43,6 @@ public abstract class EntityIntelligent extends EntityPhysical {
     //若为true,则实体在看向目标的同时还会调整视线垂直角度
     protected boolean enablePitch;
 
-    @Override
-    protected void initEntity() {
-        super.initEntity();
-    }
-
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         var memoryStorage = getMemoryStorage();
@@ -59,13 +51,18 @@ public abstract class EntityIntelligent extends EntityPhysical {
         }
     }
 
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+    }
+
     /**
      * 返回此实体持有的行为组{@link IBehaviorGroup} <br/>
      * 默认实现只会返回一个空行为{@link EmptyBehaviorGroup}常量，若你想让实体具有AI，你需要覆写此方法
      *
      * @return 此实体持有的行为组
      */
-    public IBehaviorGroup getBehaviorGroup(){
+    public IBehaviorGroup getBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
 
@@ -108,21 +105,21 @@ public abstract class EntityIntelligent extends EntityPhysical {
     }
 
     @Nullable
-    public IMemoryStorage getMemoryStorage(){
+    public IMemoryStorage getMemoryStorage() {
         return getBehaviorGroup().getMemoryStorage();
     }
 
     /**
      * 返回实体最大的跳跃高度，返回值会用在移动处理上
-     * @see WalkController
      *
      * @return 实体最大跳跃高度
+     * @see WalkController
      */
     public float getJumpingHeight() {
         return 1.0f;
     }
 
-    public boolean hasMoveDirection(){
+    public boolean hasMoveDirection() {
         return moveDirectionStart != null && moveDirectionEnd != null;
     }
 

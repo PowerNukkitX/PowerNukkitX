@@ -1,7 +1,6 @@
 package cn.nukkit.entity.ai.route;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
@@ -464,7 +463,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
                 (pos) -> {
                     var offsetX = pos.x - this.entity.x;
-                    var offsetY= pos.y - this.entity.y;
+                    var offsetY = pos.y - this.entity.y;
                     var offsetZ = pos.z - this.entity.z;
                     var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
                     return this.level.getTickCachedCollisionBlocks(offsetBox, true).length > 0;

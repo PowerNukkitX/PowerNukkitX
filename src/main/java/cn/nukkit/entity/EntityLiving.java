@@ -40,6 +40,13 @@ import java.util.Map;
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
 
+    protected int attackTime = 0;
+    protected boolean invisible = false;
+    protected float movementSpeed = 0.1f;
+    protected int turtleTicks = 0;
+    private boolean attackTimeByShieldKb;
+    private int attackTimeBefore;
+
     public EntityLiving(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -53,16 +60,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected float getDrag() {
         return 0.02f;
     }
-
-    protected int attackTime = 0;
-    private boolean attackTimeByShieldKb;
-    private int attackTimeBefore;
-
-    protected boolean invisible = false;
-
-    protected float movementSpeed = 0.1f;
-
-    protected int turtleTicks = 0;
 
     @Override
     protected void initEntity() {
@@ -233,7 +230,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 isBreathing = true;
             }
         }
-        
+
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, isBreathing);
 
         boolean hasUpdate = super.entityBaseTick(tickDiff);
@@ -394,12 +391,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return null;
     }
 
-    public void setMovementSpeed(float speed) {
-        this.movementSpeed = speed;
-    }
-
     public float getMovementSpeed() {
         return this.movementSpeed;
+    }
+
+    public void setMovementSpeed(float speed) {
+        this.movementSpeed = speed;
     }
 
     public int getAirTicks() {
@@ -466,7 +463,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void setBlocking(boolean value) {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isPersistent() {

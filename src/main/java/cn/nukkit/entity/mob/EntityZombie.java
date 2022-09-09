@@ -44,26 +44,26 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
 
     @Override
     public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null){
+        if (behaviorGroup == null) {
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(),
                     Set.of(
-                            new Behavior(new MeleeAttackExecutor(AttackTargetMemory.class, 0.15f,40,true, 10), new AllMatchEvaluator(
+                            new Behavior(new MeleeAttackExecutor(AttackTargetMemory.class, 0.15f, 40, true, 10), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
                                     entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
-                            ),3,1),
-                            new Behavior(new MeleeAttackExecutor(NearestPlayerMemory.class, 0.15f,40,false, 10), new AllMatchEvaluator(
+                            ), 3, 1),
+                            new Behavior(new MeleeAttackExecutor(NearestPlayerMemory.class, 0.15f, 40, false, 10), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
                                     entity -> {
                                         if (entity.getMemoryStorage().isEmpty(NearestPlayerMemory.class)) return true;
                                         Player player = entity.getMemoryStorage().get(NearestPlayerMemory.class).getData();
                                         return player.isSurvival();
                                     }
-                            ),2,1),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
+                            ), 2, 1),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
-                    Set.of(new NearestPlayerSensor(40, 0,20)),
+                    Set.of(new NearestPlayerSensor(40, 0, 20)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
@@ -127,7 +127,7 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
     @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent){
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
             //更新仇恨目标
             getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
         }

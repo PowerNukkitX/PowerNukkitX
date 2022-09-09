@@ -13,13 +13,13 @@ public class EntityGuardian extends EntitySwimmingMob {
 
     public static final int NETWORK_ID = 49;
 
+    public EntityGuardian(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityGuardian(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

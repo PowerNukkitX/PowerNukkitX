@@ -20,7 +20,9 @@ public interface EntityProvider<T extends Entity> {
 
     int getNetworkId();
 
-    @NotNull String getName();
+    @NotNull
+    String getName();
 
-    @NotNull String getSimpleName();
+    @NotNull
+    String getSimpleName();
 }

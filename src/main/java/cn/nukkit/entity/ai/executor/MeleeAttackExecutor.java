@@ -22,7 +22,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor implements IBehaviorExecutor{
+public class MeleeAttackExecutor implements IBehaviorExecutor {
 
     protected Class<? extends EntityMemory<?>> memoryClazz;
     protected float speed;
@@ -33,6 +33,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
     protected int attackTick;
 
     protected Vector3 oldTarget;
+
     public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
