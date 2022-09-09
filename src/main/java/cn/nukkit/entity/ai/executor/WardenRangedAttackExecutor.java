@@ -59,7 +59,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor{
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.5f, null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
 
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             target.attack(ev);

@@ -176,7 +176,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
     @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
             //更新仇恨目标
             getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
         }

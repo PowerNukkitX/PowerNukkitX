@@ -20,7 +20,6 @@ import cn.nukkit.entity.ai.memory.RouteUnreachableTimeMemory;
 import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -127,7 +126,10 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 10;
                                         case 3 -> 15;
                                         default -> 0;
-                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 50 && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
+                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20
+                                                    && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
+                                                    && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
+                                    , 4, 1, 20
                             ),
                             new Behavior(
                                     new WardenMeleeAttackExecutor(AttackTargetMemory.class, switch (this.getServer().getDifficulty()) {
@@ -135,7 +137,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 30;
                                         case 3 -> 45;
                                         default -> 0;
-                                    }, 0.4f),
+                                    }, 0.5f),
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
                                     , 3, 1
                             ),
@@ -253,7 +255,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     @Override
     public boolean attack(EntityDamageEvent source) {
         var cause = source.getCause();
-        if (cause == EntityDamageEvent.DamageCause.LAVA || cause == EntityDamageEvent.DamageCause.HOT_FLOOR || cause == EntityDamageEvent.DamageCause.DROWNING)
+        if (cause == EntityDamageEvent.DamageCause.LAVA
+                || cause == EntityDamageEvent.DamageCause.HOT_FLOOR
+                || cause == EntityDamageEvent.DamageCause.DROWNING)
             return false;
         if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager()) ) {
             var damager = damageByEntity.getDamager();
@@ -310,6 +314,15 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
         var deltaY = Math.abs(this.y - entity.y);
         return distanceXZSqrt <= 36
+                && deltaY <= 400;
+    }
+
+    public boolean isInRangedAttackRange(Entity entity) {
+        double deltaX = this.x - entity.x;
+        double deltaZ = this.z - entity.z;
+        var distanceXZSqrt = deltaX * deltaX + deltaZ * deltaZ;
+        var deltaY = Math.abs(this.y - entity.y);
+        return distanceXZSqrt <= 225
                 && deltaY <= 400;
     }
 
