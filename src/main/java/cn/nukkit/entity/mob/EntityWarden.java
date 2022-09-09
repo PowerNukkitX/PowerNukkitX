@@ -257,6 +257,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         var cause = source.getCause();
         if (cause == EntityDamageEvent.DamageCause.LAVA
                 || cause == EntityDamageEvent.DamageCause.HOT_FLOOR
+                || cause == EntityDamageEvent.DamageCause.FIRE
+                || cause == EntityDamageEvent.DamageCause.FIRE_TICK
                 || cause == EntityDamageEvent.DamageCause.DROWNING)
             return false;
         if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager()) ) {
