@@ -172,7 +172,6 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         super.initEntity();
         this.setMaxHealth(500);
         this.setHealth(500);
-        this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_FIRE_IMMUNE, true);
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
         //空闲声音
@@ -338,5 +337,10 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         if (target == null) return 40;
         var anger = this.getMemoryStorage().getData(WardenAngerValueMemory.class).getOrDefault(target, 0);
         return (int) (40 - NukkitMath.clamp((anger / 80f), 0, 1) * 30f);
+    }
+
+    @Override
+    public void setOnFire(int seconds) {
+        //against fire
     }
 }
