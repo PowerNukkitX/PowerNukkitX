@@ -183,6 +183,8 @@ public class BehaviorGroup implements IBehaviorGroup {
                 if (behavior.getPriority() > highestPriority) {
                     evalSucceed.clear();
                     highestPriority = behavior.getPriority();
+                } else if (behavior.getPriority() < highestPriority) {
+                    continue;
                 }
                 evalSucceed.add(behavior);
             }

@@ -3367,4 +3367,28 @@ public abstract class Entity extends Location implements Metadatable {
         this.freezingTicks += increments;
         setFreezingEffectStrength(this.freezingTicks / 140f);
     }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundInterval(float interval) {
+        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, interval));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundIntervalRange(float range) {
+        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE, range));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundEvent(Sound sound) {
+        this.setAmbientSoundEventName(sound.getSound());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundEventName(String eventName) {
+        this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
+    }
 }

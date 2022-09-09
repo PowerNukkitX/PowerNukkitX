@@ -61,6 +61,7 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor{
 
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.5f, null);
 
+            entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             target.attack(ev);
         }
         if (currentTick > this.totalRunningTime) {

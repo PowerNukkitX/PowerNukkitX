@@ -30,7 +30,6 @@ import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationListener;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -64,6 +63,16 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(
+                            new Behavior((entity) -> {
+                                //刷新随机播放音效
+                                if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class))
+                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
+                                else if (this.getMemoryStorage().notEmpty(WardenAngerValueMemory.class))
+                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
+                                else
+                                    this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
+                                return false;
+                            }, (entity) -> true, 1, 1, 20),
                             new Behavior((entity) -> {
                                 //刷新anger数值
                                 var angerValueMap = this.getMemoryStorage().get(WardenAngerValueMemory.class).getData();
@@ -111,8 +120,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                     new WardenViolentAnimationExecutor((int) (4.2 * 20)),
                                     new AllMatchEvaluator(
                                             (entity) -> entity.getMemoryStorage().checkData(NewAttackTargetMemory.class, true),
-                                            new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
-                                    ), 5),
+                                            new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)), 5),
                             new Behavior(
                                     new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20), switch (this.getServer().getDifficulty()) {
                                         case 1 -> 6;
@@ -165,6 +173,10 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_FIRE_IMMUNE, true);
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
+        //空闲声音
+        this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
+        this.setAmbientSoundInterval(8.0f);
+        this.setAmbientSoundIntervalRange(16.0f);
         this.level.getVibrationManager().addListener(this);
     }
 
@@ -262,18 +274,11 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
             added = NukkitMath.clamp(added, 0, 150);
             angerValueMap.put(entity, added);
             boolean changed = false;
-            if (!attackTargetMemory.hasData()) {
-                attackTargetMemory.setData(entity);
-                changed = true;
-            } else if (entity instanceof Player && !(attackTargetMemory.getData() instanceof Player)) {
-                attackTargetMemory.setData(entity);
-                changed = true;
-            } /*else if (added > angerValueMap.get(attackTargetMemory.getData())) {
-                attackTargetMemory.setData(entity);
-                changed = true;
-            }*/
+            if (!attackTargetMemory.hasData() ||
+                    (entity instanceof Player && !(attackTargetMemory.getData() instanceof Player))) changed = true;
             if (changed) {
                 this.getMemoryStorage().setData(NewAttackTargetMemory.class, true);
+                attackTargetMemory.setData(entity);
             }
         } else angerValueMap.put(entity, added);
     }

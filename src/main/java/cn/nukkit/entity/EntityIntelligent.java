@@ -9,7 +9,10 @@ import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.BurnTimeMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
+import cn.nukkit.entity.data.FloatEntityData;
+import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -42,6 +45,11 @@ public abstract class EntityIntelligent extends EntityPhysical {
     //控制是否启用pitch
     //若为true,则实体在看向目标的同时还会调整视线垂直角度
     protected boolean enablePitch;
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+    }
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

@@ -10,6 +10,7 @@ import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import org.jetbrains.annotations.NotNull;
@@ -65,6 +66,7 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
             //todo: should break shield
             target.attack(ev);
             playAttackAnimation(entity);
+            entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             attackTick = 0;
             if (!target.isUndead())
                 return false;
