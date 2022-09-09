@@ -27,13 +27,13 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
      */
     protected boolean detonated = false;
 
+    public EntityEndCrystal(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityEndCrystal(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         if (isClosed()) {
             return false;
         }
-        
+
         if (source.getCause() == EntityDamageEvent.DamageCause.FIRE || source.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK || source.getCause() == EntityDamageEvent.DamageCause.LAVA) {
             return false;
         }
@@ -78,7 +78,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         if (!super.attack(source)) {
             return false;
         }
-        
+
         if (source instanceof EntityDamageByEntityEvent) {
             if (((EntityDamageByEntityEvent) source).getDamager() instanceof EntityEnderDragon) {
                 return false;
@@ -102,7 +102,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
             if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
                 explode.explodeA();
                 explode.explodeB();
-            }else {
+            } else {
                 explode.explodeB();
             }
         }
@@ -120,19 +120,19 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
     public void setShowBase(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public Vector3 getBeamTarget() {
         return this.getDataPropertyPos(DATA_BLOCK_TARGET);
     }
-    
+
     @PowerNukkitOnly
     @Since("FUTURE")
     public void setBeamTarget(Vector3 beamTarget) {
         this.setDataProperty(new IntPositionEntityData(DATA_BLOCK_TARGET, beamTarget));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override

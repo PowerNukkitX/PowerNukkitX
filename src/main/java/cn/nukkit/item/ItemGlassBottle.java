@@ -53,7 +53,7 @@ public class ItemGlassBottle extends Item {
                 }
             }
             
-            level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
         }
         
         return false;

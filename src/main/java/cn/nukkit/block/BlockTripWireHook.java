@@ -235,9 +235,9 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x08);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_ACTIVATE));
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ACTIVATE));
             } else {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_DEACTIVATE));
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DEACTIVATE));
             }
         }
     }
@@ -247,9 +247,9 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
             this.setDamage(this.getDamage() ^ 0x04);
             var pos = this.add(0.5, 0.5, 0.5);
             if (value) {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_ATTACH));
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ATTACH));
             } else {
-                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_DETACH));
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DETACH));
             }
         }
     }

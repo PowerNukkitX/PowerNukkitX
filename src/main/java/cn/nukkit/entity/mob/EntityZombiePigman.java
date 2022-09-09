@@ -14,13 +14,13 @@ public class EntityZombiePigman extends EntityWalkingMob implements EntitySmite 
 
     public static final int NETWORK_ID = 36;
 
+    public EntityZombiePigman(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityZombiePigman(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

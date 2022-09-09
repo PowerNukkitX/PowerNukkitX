@@ -1,6 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.ToString;
 
@@ -87,9 +89,14 @@ public class EntityEventPacket extends DataPacket {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int ENTITY_GROW_UP = 76;
+    @Deprecated
+    @DeprecationDetails(reason = "wrong key name", since = "1.19.21-r4")
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int VIBRATION_DETECTE = 77;
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public static final int VIBRATION_DETECTED = VIBRATION_DETECTE;
 
     public static final int DRINK_MILK = 78;
 

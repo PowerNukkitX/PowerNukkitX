@@ -309,7 +309,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements RedstoneCompo
         playOpenCloseSound();
 
         var source = this.clone().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(source, VibrationType.BLOCK_OPEN) : new VibrationEvent(source, VibrationType.BLOCK_CLOSE);
+        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }

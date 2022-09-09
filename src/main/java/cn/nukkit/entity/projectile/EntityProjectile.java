@@ -31,34 +31,25 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
-    @Since("FUTURE") public static final int PICKUP_NONE = 0;
-    @Since("FUTURE") public static final int PICKUP_ANY = 1;
-    @Since("FUTURE") public static final int PICKUP_CREATIVE = 2;
+    @Since("FUTURE")
+    public static final int PICKUP_NONE = 0;
+    @Since("FUTURE")
+    public static final int PICKUP_ANY = 1;
+    @Since("FUTURE")
+    public static final int PICKUP_CREATIVE = 2;
 
     public Entity shootingEntity;
-
+    public boolean hadCollision;
+    public boolean closeOnCollide;
+    @Deprecated
+    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Redundant and unused", replaceWith = "getDamage()")
+    protected double damage;
     /**
      * It's inverted from {@link #getHasAge()} because of the poor architecture chosen by the original devs
      * on the entity construction and initialization. It's impossible to set it to true before
      * the initialization of the child classes.
      */
     private boolean noAge;
-
-    protected double getDamage() {
-        return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
-    }
-
-    protected double getBaseDamage() {
-        return 0;
-    }
-
-    public boolean hadCollision;
-
-    public boolean closeOnCollide;
-
-    @Deprecated
-    @DeprecationDetails(since = "FUTURE", by = "PowerNukkit", reason = "Redundant and unused", replaceWith = "getDamage()")
-    protected double damage;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -71,8 +62,14 @@ public abstract class EntityProjectile extends Entity {
             this.setDataProperty(new LongEntityData(DATA_SHOOTER_ID, shootingEntity.getId()));
         }
     }
-    
-    
+
+    protected double getDamage() {
+        return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
+    }
+
+    protected double getBaseDamage() {
+        return 0;
+    }
 
     @PowerNukkitOnly("Allows to modify the damage based on the entity being damaged")
     @Since("1.4.0.0-PN")
@@ -97,7 +94,7 @@ public abstract class EntityProjectile extends Entity {
             return;
         }
 
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
 
         float damage = this.getResultDamage(entity);
 
@@ -288,7 +285,7 @@ public abstract class EntityProjectile extends Entity {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected boolean onCollideWithBlock(Position position, Vector3 motion, Block collisionBlock) {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_LAND));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.PROJECTILE_LAND));
         return collisionBlock.onProjectileHit(this, position, motion);
     }
 
@@ -317,20 +314,20 @@ public abstract class EntityProjectile extends Entity {
         setHasAge(hasAge);
     }
 
+    public boolean getHasAge() {
+        return !this.noAge;
+    }
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setHasAge(boolean hasAge) {
         this.noAge = !hasAge;
     }
 
-    public boolean getHasAge() {
-        return !this.noAge;
-    }
-
     @Override
     public void spawnToAll() {
         super.spawnToAll();
         //vibration: minecraft:projectile_shoot
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.PROJECTILE_SHOOT));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.shootingEntity, this.clone(), VibrationType.PROJECTILE_SHOOT));
     }
 }

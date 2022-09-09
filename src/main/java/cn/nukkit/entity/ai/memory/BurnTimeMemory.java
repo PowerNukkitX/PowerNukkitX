@@ -5,12 +5,12 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class BurnTimeMemory extends UniversalTimedMemory{
-    public BurnTimeMemory(){
+public class BurnTimeMemory extends UniversalTimedMemory {
+    public BurnTimeMemory() {
         super();
     }
 
-    public BurnTimeMemory(int time){
+    public BurnTimeMemory(int time) {
         this.time = time;
     }
 }

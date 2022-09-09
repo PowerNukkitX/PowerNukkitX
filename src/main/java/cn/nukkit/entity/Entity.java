@@ -16,6 +16,7 @@ import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
 import cn.nukkit.entity.mob.EntityMagmaCube;
 import cn.nukkit.entity.passive.EntityStrider;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
 import cn.nukkit.entity.provider.EntityProvider;
@@ -29,7 +30,6 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
@@ -59,7 +59,6 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -83,9 +82,6 @@ public abstract class Entity extends Location implements Metadatable {
     public static final Entity[] EMPTY_ARRAY = new Entity[0];
 
     public static final int NETWORK_ID = -1;
-
-    public abstract int getNetworkId();
-
     public static final int DATA_TYPE_BYTE = 0;
     public static final int DATA_TYPE_SHORT = 1;
     public static final int DATA_TYPE_INT = 2;
@@ -95,7 +91,6 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_TYPE_POS = 6;
     public static final int DATA_TYPE_LONG = 7;
     public static final int DATA_TYPE_VECTOR3F = 8;
-
     public static final int DATA_FLAGS = dynamic(0);
     public static final int DATA_HEALTH = dynamic(1); //int (minecart/boat)
     public static final int DATA_VARIANT = dynamic(2); //int
@@ -128,12 +123,10 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DATA_CLIENT_EVENT = dynamic(24); //byte
-
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Apparently this the ID 24 was reused to represent CLIENT_EVENT but Cloudburst Nukkit is still mapping it as age")
     public static final int DATA_ENTITY_AGE = dynamic(DATA_CLIENT_EVENT); //short
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final int DATA_USING_ITEM = dynamic(25); //byte
@@ -240,13 +233,11 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_PICKUP_COUNT = dynamic(99); //int
     @Since("1.4.0.0-PN")
     public static final int DATA_INTERACTIVE_TAG = dynamic(100); //string (button text)
-
     @PowerNukkitOnly("Removed from Cloudburst Nukkit")
     @Deprecated
     @DeprecationDetails(by = "Cloudburst Nukkit", reason = "Duplicated and removed", replaceWith = "DATA_INTERACTIVE_TAG", since = "FUTURE")
     @Since("1.2.0.0-PN")
     public static final int DATA_INTERACT_TEXT = dynamic(DATA_INTERACTIVE_TAG); //string
-
     public static final int DATA_TRADE_TIER = dynamic(101); //int 这个没啥用
     public static final int DATA_MAX_TRADE_TIER = dynamic(102); //int 这个控制村民最大等级
     @Since("1.2.0.0-PN")
@@ -296,7 +287,6 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(125); // ???
     public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(126); // ???
     public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(127); // ???
-
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
@@ -365,7 +355,6 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitOnly
     @Since("1.2.0.0-PN")
     public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(61); // PowerNukkit but without typo
-
     /**
      * @see #DATA_FLAG_TRANSITION_SITTING
      * @deprecated This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.
@@ -377,7 +366,6 @@ public abstract class Entity extends Location implements Metadatable {
             replaceWith = "DATA_FLAG_TRANSITION_SITTING")
     @Since("1.2.0.0-PN")
     public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
-
     public static final int DATA_FLAG_EATING = dynamic(62);
     public static final int DATA_FLAG_LAYING_DOWN = dynamic(63);
     public static final int DATA_FLAG_SNEEZING = dynamic(64);
@@ -454,26 +442,16 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_SNIFFING = dynamic(104);
     @Since("1.6.0.0-PNX")
     public static final int DATA_FLAG_DIGGING = dynamic(105);
-
-    public static long entityCount = 1;
-
+    @Since("1.19.21-r4")
+    public static final int DATA_FLAG_SONIC_BOOM = dynamic(106);
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
-
+    public static long entityCount = 1;
+    public final List<Entity> passengers = new ArrayList<>();
+    public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     protected final Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
-
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    //spawned by server
-    //player's UUID is sent by client,so this value cannot be used in Player
-    protected UUID entityUniqueId;
-
-    //runtime id (changed after you restart the server)
-    protected long id;
-
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
             .putByte(DATA_COLOR, 0)
@@ -482,109 +460,293 @@ public abstract class Entity extends Location implements Metadatable {
             .putString(DATA_NAMETAG, "")
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
-
-    public final List<Entity> passengers = new ArrayList<>();
-
     public Entity riding = null;
-
     public FullChunk chunk;
-
-    protected EntityDamageEvent lastDamageCause = null;
-
     public List<Block> blocksAround = new ArrayList<>();
     public List<Block> collisionBlocks = new ArrayList<>();
-
     public double lastX;
     public double lastY;
     public double lastZ;
-
     public boolean firstMove = true;
-
     public double motionX;
     public double motionY;
     public double motionZ;
-
     public Vector3 temporalVector;
     public double lastMotionX;
     public double lastMotionY;
     public double lastMotionZ;
-
     public double lastPitch;
     @Since("FUTURE")
     public double lastYaw;
     @Since("FUTURE")
     public double lastHeadYaw;
-
     public double pitchDelta;
     @Since("FUTURE")
     public double yawDelta;
     @Since("FUTURE")
     public double headYawDelta;
-
     public double entityCollisionReduction = 0; // Higher than 0.9 will result a fast collisions
     public AxisAlignedBB boundingBox;
-    public final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
     public boolean onGround;
     public boolean inBlock = false;
     public boolean positionChanged;
     public boolean motionChanged;
     public int deadTicks = 0;
-    protected int age = 0;
-
-    protected float health = 20;
-    private int maxHealth = 20;
-
-    protected float absorption = 0;
-
-    protected float ySize = 0;
     public boolean keepMovement = false;
-
     public float fallDistance = 0;
     public int ticksLived = 0;
     public int lastUpdate;
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public int freezingTicks = 0;//0 - 140
-
-    @PowerNukkitOnly
-    @Since("1.2.1.0-PN")
-    protected boolean inEndPortal;
-
     public float scale = 1;
-
     public CompoundTag namedTag;
-
-    protected boolean isStatic = false;
-
     public boolean isCollided = false;
     public boolean isCollidedHorizontally = false;
     public boolean isCollidedVertically = false;
-
     public int noDamageTicks;
     public boolean justCreated;
     public boolean fireProof;
     public boolean invulnerable;
-
-    protected Server server;
-
     public double highestPosition;
-
     public boolean closed = false;
-
-    protected Timing timing;
-
-    protected boolean isPlayer = false;
-
-    private volatile boolean initialized;
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean noClip = false;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    //spawned by server
+    //player's UUID is sent by client,so this value cannot be used in Player
+    protected UUID entityUniqueId;
+    //runtime id (changed after you restart the server)
+    protected long id;
+    protected EntityDamageEvent lastDamageCause = null;
+    protected int age = 0;
+    protected float health = 20;
+    protected float absorption = 0;
+    protected float ySize = 0;
+    @PowerNukkitOnly
+    @Since("1.2.1.0-PN")
+    protected boolean inEndPortal;
+    protected boolean isStatic = false;
+    protected Server server;
+    protected Timing timing;
+    protected boolean isPlayer = false;
+    private int maxHealth = 20;
+    private volatile boolean initialized;
 
+    public Entity(FullChunk chunk, CompoundTag nbt) {
+        if (this instanceof Player) {
+            return;
+        }
+
+        this.init(chunk, nbt);
+    }
+
+    @Nullable
+    public static Entity createEntity(@Nonnull String name, @Nonnull Position pos, @Nullable Object... args) {
+        return createEntity(name, pos.getChunk(), getDefaultNBT(pos), args);
+    }
+
+    @Nullable
+    public static Entity createEntity(int type, @Nonnull Position pos, @Nullable Object... args) {
+        return createEntity(String.valueOf(type), pos.getChunk(), getDefaultNBT(pos), args);
+    }
+
+    @Nullable
+    public static Entity createEntity(@Nonnull String name, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
+        var provider = knownEntities.get(name);
+        if (provider != null) {
+            return provider.provideEntity(chunk, nbt, args);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Entity createEntity(int type, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
+        return createEntity(String.valueOf(type), chunk, nbt, args);
+    }
+
+    public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
+        return registerEntity(name, clazz, false);
+    }
+
+    @PowerNukkitXDifference(since = "1.19.21-r1", info = "Use internal provider instead.")
+    public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
+        if (clazz == null) {
+            return false;
+        }
+
+        EntityProvider<?> provider;
+        try {
+            int networkId = clazz.getField("NETWORK_ID").getInt(null);
+            provider = new ClassEntityProvider(name, clazz, networkId);
+            knownEntities.put(String.valueOf(networkId), provider);
+        } catch (Exception e) {
+            provider = new ClassEntityProvider(name, clazz, Entity.NETWORK_ID);
+            if (!force) {
+                return false;
+            }
+        }
+
+        knownEntities.put(name, provider);
+        shortNames.put(clazz.getSimpleName(), name);
+        return true;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
+        return registerEntity(provider, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
+        if (provider == null) {
+            return false;
+        }
+
+        if (provider.getNetworkId() != Entity.NETWORK_ID) {
+            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
+        } else {
+            if (!force) {
+                return false;
+            }
+        }
+
+        knownEntities.put(provider.getName(), provider);
+        shortNames.put(provider.getSimpleName(), provider.getName());
+        return true;
+    }
+
+    @PowerNukkitXOnly
+    public static Set<CustomEntityDefinition> getEntityDefinitions() {
+        return new HashSet<>(entityDefinitions);
+    }
+
+    @PowerNukkitXOnly
+    @Deprecated(since = "1.19.21-r2")
+    @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
+    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
+            return;
+        }
+        entityDefinitions.add(customEntityDefinition);
+        registerEntity(customEntityDefinition.getStringId(), entity, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
+    public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
+        if (!Server.getInstance().isEnableExperimentMode()) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
+            return;
+        }
+        entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
+        registerEntity(customEntityProvider, true);
+    }
+
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static IntCollection getKnownEntityIds() {
+        return knownEntities.keySet().stream()
+                .filter(Utils::isInteger)
+                .mapToInt(Integer::parseInt)
+                .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
+    }
+
+    @Nonnull
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    @Deprecated
+    public static Map<String, Class<? extends Entity>> getKnownEntities() {
+        return knownEntities.entrySet().stream()
+                .filter(e -> e.getValue() instanceof EntityProviderWithClass)
+                .map(e -> new OldStringClass(e.getKey(), ((EntityProviderWithClass) e.getValue()).getEntityClass()))
+                .collect(Collectors.toMap(OldStringClass::key, OldStringClass::value));
+    }
+
+    @Nonnull
+    @PowerNukkitXOnly
+    @Since("1.19.20-r4")
+    @Deprecated
+    public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
+        return Collections.unmodifiableMap(knownEntities);
+    }
+
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static List<String> getSaveIds() {
+        return new ArrayList<>(shortNames.values());
+    }
+
+    @Nonnull
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static OptionalInt getSaveId(String id) {
+        var entityProvider = knownEntities.get(id);
+        if (entityProvider == null) {
+            return OptionalInt.empty();
+        }
+        return knownEntities.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(entityProvider))
+                .map(Map.Entry::getKey)
+                .filter(Utils::isInteger)
+                .mapToInt(Integer::parseInt)
+                .findFirst();
+    }
+
+    @Nullable
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public static String getSaveId(int id) {
+        var entityProvider = knownEntities.get(Integer.toString(id));
+        if (entityProvider == null) {
+            return null;
+        }
+        return shortNames.get(entityProvider.getSimpleName());
+    }
+
+    @Nonnull
+    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos) {
+        return getDefaultNBT(pos, null);
+    }
+
+    @Nonnull
+    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion) {
+        Location loc = pos instanceof Location ? (Location) pos : null;
+
+        if (loc != null) {
+            return getDefaultNBT(pos, motion, (float) loc.getYaw(), (float) loc.getPitch());
+        }
+
+        return getDefaultNBT(pos, motion, 0, 0);
+    }
+
+    @Nonnull
+    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+        return new CompoundTag()
+                .putList(new ListTag<DoubleTag>("Pos")
+                        .add(new DoubleTag("", pos.x))
+                        .add(new DoubleTag("", pos.y))
+                        .add(new DoubleTag("", pos.z)))
+                .putList(new ListTag<DoubleTag>("Motion")
+                        .add(new DoubleTag("", motion != null ? motion.x : 0))
+                        .add(new DoubleTag("", motion != null ? motion.y : 0))
+                        .add(new DoubleTag("", motion != null ? motion.z : 0)))
+                .putList(new ListTag<FloatTag>("Rotation")
+                        .add(new FloatTag("", yaw))
+                        .add(new FloatTag("", pitch)));
+    }
+
+    public abstract int getNetworkId();
 
     public float getHeight() {
         return 0;
@@ -630,14 +792,6 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected float getBaseOffset() {
         return 0;
-    }
-
-    public Entity(FullChunk chunk, CompoundTag nbt) {
-        if (this instanceof Player) {
-            return;
-        }
-
-        this.init(chunk, nbt);
     }
 
     protected void initEntity() {
@@ -790,66 +944,56 @@ public abstract class Entity extends Location implements Metadatable {
         return this.getDataPropertyString(DATA_NAMETAG);
     }
 
-    public boolean isNameTagVisible() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG);
-    }
-
-    public boolean isNameTagAlwaysVisible() {
-        return this.getDataPropertyByte(DATA_ALWAYS_SHOW_NAMETAG) == 1;
-    }
-
     public void setNameTag(String name) {
         this.setDataProperty(new StringEntityData(DATA_NAMETAG, name));
     }
 
-    public void setNameTagVisible() {
-        this.setNameTagVisible(true);
+    public boolean isNameTagVisible() {
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG);
     }
 
     public void setNameTagVisible(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG, value);
     }
 
-    public void setNameTagAlwaysVisible() {
-        this.setNameTagAlwaysVisible(true);
+    public boolean isNameTagAlwaysVisible() {
+        return this.getDataPropertyByte(DATA_ALWAYS_SHOW_NAMETAG) == 1;
     }
 
     public void setNameTagAlwaysVisible(boolean value) {
         this.setDataProperty(new ByteEntityData(DATA_ALWAYS_SHOW_NAMETAG, value ? 1 : 0));
     }
 
-    public void setScoreTag(String score) {
-        this.setDataProperty(new StringEntityData(DATA_SCORE_TAG, score));
+    public void setNameTagVisible() {
+        this.setNameTagVisible(true);
+    }
+
+    public void setNameTagAlwaysVisible() {
+        this.setNameTagAlwaysVisible(true);
     }
 
     public String getScoreTag() {
         return this.getDataPropertyString(DATA_SCORE_TAG);
     }
 
-    public boolean isSneaking() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING);
+    public void setScoreTag(String score) {
+        this.setDataProperty(new StringEntityData(DATA_SCORE_TAG, score));
     }
 
-    public void setSneaking() {
-        this.setSneaking(true);
+    public boolean isSneaking() {
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING);
     }
 
     public void setSneaking(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING, value);
     }
 
+    public void setSneaking() {
+        this.setSneaking(true);
+    }
+
     public boolean isSwimming() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public float getSwimmingHeight() {
-        return getHeight();
-    }
-
-    public void setSwimming() {
-        this.setSwimming(true);
     }
 
     public void setSwimming(boolean value) {
@@ -862,40 +1006,50 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
-    public boolean isSprinting() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING);
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    public float getSwimmingHeight() {
+        return getHeight();
     }
 
-    public void setSprinting() {
-        this.setSprinting(true);
+    public void setSwimming() {
+        this.setSwimming(true);
+    }
+
+    public boolean isSprinting() {
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING);
     }
 
     public void setSprinting(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING, value);
     }
 
-    public boolean isGliding() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING);
+    public void setSprinting() {
+        this.setSprinting(true);
     }
 
-    public void setGliding() {
-        this.setGliding(true);
+    public boolean isGliding() {
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING);
     }
 
     public void setGliding(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING, value);
     }
 
+    public void setGliding() {
+        this.setGliding(true);
+    }
+
     public boolean isImmobile() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE);
     }
 
-    public void setImmobile() {
-        this.setImmobile(true);
-    }
-
     public void setImmobile(boolean value) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, value);
+    }
+
+    public void setImmobile() {
+        this.setImmobile(true);
     }
 
     public boolean canClimb() {
@@ -922,14 +1076,14 @@ public abstract class Entity extends Location implements Metadatable {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_WALLCLIMBING, value);
     }
 
+    public float getScale() {
+        return this.scale;
+    }
+
     public void setScale(float scale) {
         this.scale = scale;
         this.setDataProperty(new FloatEntityData(DATA_SCALE, this.scale));
         this.recalculateBoundingBox();
-    }
-
-    public float getScale() {
-        return this.scale;
     }
 
     public List<Entity> getPassengers() {
@@ -1056,208 +1210,6 @@ public abstract class Entity extends Location implements Metadatable {
             this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, 0));
             this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, 0));
         }
-    }
-
-    @Nullable
-    public static Entity createEntity(@Nonnull String name, @Nonnull Position pos, @Nullable Object... args) {
-        return createEntity(name, pos.getChunk(), getDefaultNBT(pos), args);
-    }
-
-    @Nullable
-    public static Entity createEntity(int type, @Nonnull Position pos, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), pos.getChunk(), getDefaultNBT(pos), args);
-    }
-
-    @Nullable
-    public static Entity createEntity(@Nonnull String name, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
-        var provider = knownEntities.get(name);
-        if (provider != null) {
-            return provider.provideEntity(chunk, nbt, args);
-        }
-        return null;
-    }
-
-    @Nullable
-    public static Entity createEntity(int type, @Nonnull FullChunk chunk, @Nonnull CompoundTag nbt, @Nullable Object... args) {
-        return createEntity(String.valueOf(type), chunk, nbt, args);
-    }
-
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
-        return registerEntity(name, clazz, false);
-    }
-
-    @PowerNukkitXDifference(since = "1.19.21-r1", info = "Use internal provider instead.")
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
-        if (clazz == null) {
-            return false;
-        }
-
-        EntityProvider<?> provider;
-        try {
-            int networkId = clazz.getField("NETWORK_ID").getInt(null);
-            provider = new ClassEntityProvider(name, clazz, networkId);
-            knownEntities.put(String.valueOf(networkId), provider);
-        } catch (Exception e) {
-            provider = new ClassEntityProvider(name, clazz, Entity.NETWORK_ID);
-            if (!force) {
-                return false;
-            }
-        }
-
-        knownEntities.put(name, provider);
-        shortNames.put(clazz.getSimpleName(), name);
-        return true;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public static boolean registerEntity(EntityProvider<? extends Entity> provider) {
-        return registerEntity(provider, false);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public static boolean registerEntity(EntityProvider<? extends Entity> provider, boolean force) {
-        if (provider == null) {
-            return false;
-        }
-
-        if (provider.getNetworkId() != Entity.NETWORK_ID) {
-            knownEntities.put(String.valueOf(provider.getNetworkId()), provider);
-        } else {
-            if (!force) {
-                return false;
-            }
-        }
-
-        knownEntities.put(provider.getName(), provider);
-        shortNames.put(provider.getSimpleName(), provider.getName());
-        return true;
-    }
-
-    @PowerNukkitXOnly
-    public static Set<CustomEntityDefinition> getEntityDefinitions() {
-        return new HashSet<>(entityDefinitions);
-    }
-
-    @PowerNukkitXOnly
-    @Deprecated(since = "1.19.21-r2")
-    @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
-    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-            return;
-        }
-        entityDefinitions.add(customEntityDefinition);
-        registerEntity(customEntityDefinition.getStringId(), entity, true);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-            return;
-        }
-        entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        registerEntity(customEntityProvider, true);
-    }
-
-    @Nonnull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public static IntCollection getKnownEntityIds() {
-        return knownEntities.keySet().stream()
-                .filter(Utils::isInteger)
-                .mapToInt(Integer::parseInt)
-                .collect(IntArrayList::new, IntArrayList::add, IntArrayList::addAll);
-    }
-
-    private record OldStringClass(String key, Class<? extends Entity> value) {}
-
-    @Nonnull
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
-    @Deprecated
-    public static Map<String, Class<? extends Entity>> getKnownEntities() {
-        return knownEntities.entrySet().stream()
-                .filter(e -> e.getValue() instanceof EntityProviderWithClass)
-                .map(e -> new OldStringClass(e.getKey(), ((EntityProviderWithClass) e.getValue()).getEntityClass()))
-                .collect(Collectors.toMap(OldStringClass::key, OldStringClass::value));
-    }
-
-    @Nonnull
-    @PowerNukkitXOnly
-    @Since("1.19.20-r4")
-    @Deprecated
-    public static Map<String, EntityProvider<? extends Entity>> getKnownEntityProviders() {
-        return Collections.unmodifiableMap(knownEntities);
-    }
-
-    @Nonnull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public static List<String> getSaveIds() {
-        return new ArrayList<>(shortNames.values());
-    }
-
-    @Nonnull
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public static OptionalInt getSaveId(String id) {
-        var entityProvider = knownEntities.get(id);
-        if (entityProvider == null) {
-            return OptionalInt.empty();
-        }
-        return knownEntities.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(entityProvider))
-                .map(Map.Entry::getKey)
-                .filter(Utils::isInteger)
-                .mapToInt(Integer::parseInt)
-                .findFirst();
-    }
-
-    @Nullable
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    public static String getSaveId(int id) {
-        var entityProvider = knownEntities.get(Integer.toString(id));
-        if (entityProvider == null) {
-            return null;
-        }
-        return shortNames.get(entityProvider.getSimpleName());
-    }
-
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos) {
-        return getDefaultNBT(pos, null);
-    }
-
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion) {
-        Location loc = pos instanceof Location ? (Location) pos : null;
-
-        if (loc != null) {
-            return getDefaultNBT(pos, motion, (float) loc.getYaw(), (float) loc.getPitch());
-        }
-
-        return getDefaultNBT(pos, motion, 0, 0);
-    }
-
-    @Nonnull
-    public static CompoundTag getDefaultNBT(@Nonnull Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
-        return new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x))
-                        .add(new DoubleTag("", pos.y))
-                        .add(new DoubleTag("", pos.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", motion != null ? motion.x : 0))
-                        .add(new DoubleTag("", motion != null ? motion.y : 0))
-                        .add(new DoubleTag("", motion != null ? motion.z : 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", yaw))
-                        .add(new FloatTag("", pitch)));
     }
 
     public void saveNBT() {
@@ -1534,7 +1486,7 @@ public abstract class Entity extends Location implements Metadatable {
         setHealth(newHealth);
 
         if (!(this instanceof EntityArmorStand)) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ENTITY_DAMAGE));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(attacker, this.clone(), VibrationType.ENTITY_DAMAGE));
         }
 
         return true;
@@ -1566,14 +1518,6 @@ public abstract class Entity extends Location implements Metadatable {
         return health;
     }
 
-    public boolean isAlive() {
-        return this.health > 0;
-    }
-
-    public boolean isClosed() {
-        return closed;
-    }
-
     public void setHealth(float health) {
         if (this.health == health) {
             return;
@@ -1592,12 +1536,20 @@ public abstract class Entity extends Location implements Metadatable {
         setDataProperty(new IntEntityData(DATA_HEALTH, (int) this.health));
     }
 
-    public void setLastDamageCause(EntityDamageEvent type) {
-        this.lastDamageCause = type;
+    public boolean isAlive() {
+        return this.health > 0;
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 
     public EntityDamageEvent getLastDamageCause() {
         return lastDamageCause;
+    }
+
+    public void setLastDamageCause(EntityDamageEvent type) {
+        this.lastDamageCause = type;
     }
 
     public int getMaxHealth() {
@@ -1901,9 +1853,9 @@ public abstract class Entity extends Location implements Metadatable {
         if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
             if (diffPosition > 0.0001) {
                 if (this.isOnGround()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.STEP));
                 } else if (this.isTouchingWater()) {
-                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SWIM));
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this instanceof EntityProjectile projectile ? projectile.shootingEntity : this, this.clone(), VibrationType.SWIM));
                 }
             }
 
@@ -2115,12 +2067,12 @@ public abstract class Entity extends Location implements Metadatable {
         passenger.setPosition(this.add(passenger.getSeatPosition().asVector3()));
     }
 
-    public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION, pos));
-    }
-
     public Vector3f getSeatPosition() {
         return this.getDataPropertyVector3f(DATA_RIDER_SEAT_POSITION);
+    }
+
+    public void setSeatPosition(Vector3f pos) {
+        this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION, pos));
     }
 
     public Vector3f getMountedOffset(Entity entity) {
@@ -2238,7 +2190,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (damage > 0) {
                 if (!this.isSneaking()) {
                     if (!(this instanceof EntityItem item) || item.getItem().getBlockId() != BlockID.WOOL) {
-                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.HIT_GROUND));
+                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.HIT_GROUND));
                     }
                 }
                 this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
@@ -3274,14 +3226,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setSpinAttacking() {
-        this.setSpinAttacking(true);
+    public void setSpinAttacking(boolean value) {
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK, value);
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public void setSpinAttacking(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPIN_ATTACK, value);
+    public void setSpinAttacking() {
+        this.setSpinAttacking(true);
     }
 
     @PowerNukkitOnly
@@ -3331,6 +3283,12 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
+    public float getFreezingEffectStrength() {
+        return ((FloatEntityData) this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
     public void setFreezingEffectStrength(float strength) {
         if (strength < 0 || strength > 1)
             throw new IllegalArgumentException("Freezing Effect Strength must be between 0 and 1");
@@ -3339,8 +3297,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public float getFreezingEffectStrength() {
-        return ((FloatEntityData) this.getDataProperty(DATA_FREEZING_EFFECT_STRENGTH)).getData();
+    public int getFreezingTicks() {
+        return this.freezingTicks;
     }
 
     @PowerNukkitXOnly
@@ -3354,16 +3312,37 @@ public abstract class Entity extends Location implements Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public int getFreezingTicks() {
-        return this.freezingTicks;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
     public void addFreezingTicks(int increments) {
         if (freezingTicks + increments < 0 || freezingTicks + increments > 140)
             throw new IllegalArgumentException("Freezing ticks must be between 0 and 140");
         this.freezingTicks += increments;
         setFreezingEffectStrength(this.freezingTicks / 140f);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundInterval(float interval) {
+        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL, interval));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundIntervalRange(float range) {
+        this.setDataProperty(new FloatEntityData(Entity.DATA_AMBIENT_SOUND_INTERVAL_RANGE, range));
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundEvent(Sound sound) {
+        this.setAmbientSoundEventName(sound.getSound());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setAmbientSoundEventName(String eventName) {
+        this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
+    }
+
+    private record OldStringClass(String key, Class<? extends Entity> value) {
     }
 }

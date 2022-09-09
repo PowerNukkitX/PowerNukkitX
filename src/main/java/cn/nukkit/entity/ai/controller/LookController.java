@@ -3,8 +3,8 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.math.BVector3;
+import cn.nukkit.math.Vector3;
 
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")

@@ -8,7 +8,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -44,7 +43,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
     }
 
     @Override
-    public boolean isRideable(){
+    public boolean isRideable() {
         return false;
     }
 

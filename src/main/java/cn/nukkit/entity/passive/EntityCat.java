@@ -5,8 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-import java.util.Set;
-
 public class EntityCat extends EntityWalkingAnimal {
 
     public static final int NETWORK_ID = 75;

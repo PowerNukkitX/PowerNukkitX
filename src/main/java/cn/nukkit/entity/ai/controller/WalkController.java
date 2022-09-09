@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.EntityPhysical;
 import cn.nukkit.math.Vector3;
@@ -27,12 +28,14 @@ public class WalkController implements IController {
             Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
+                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
                 return false;
             }
             var relativeVector = direction.clone().setComponents(direction.x - entity.x,
                     direction.y - entity.y, direction.z - entity.z);
             var xzLengthSquared = relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z;
             if (Math.abs(xzLengthSquared) < EntityPhysical.PRECISION) {
+                entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
                 return false;
             }
             var xzLength = Math.sqrt(relativeVector.x * relativeVector.x + relativeVector.z * relativeVector.z);
@@ -46,22 +49,20 @@ public class WalkController implements IController {
                     Block[] collisionBlocks = entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
-                    //如果不跳就上不去，则跳跃
-                    if (maxY - entity.getY() > entity.getFootHeight()) {
-                        //TODO: 2022/7/15 按理说不需要这么做，但是不这么做就会出现实体上台阶跳的很高的问题
-                        //有时我们并不需要跳那么高，所以说只跳需要跳的高度
-                        dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
-                        currentJumpCoolDown = 0;
-                    }
+                    //有时我们并不需要跳那么高，所以说只跳需要跳的高度
+                    dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
+                    currentJumpCoolDown = 0;
                 }
             }
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xzLength < speed) {
                 needNewDirection(entity);
                 return false;
             }
             return true;
         } else {
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
             return false;
         }
     }

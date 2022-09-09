@@ -12,13 +12,13 @@ public class EntityGhast extends EntityFlyingMob {
 
     public static final int NETWORK_ID = 41;
 
+    public EntityGhast(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityGhast(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

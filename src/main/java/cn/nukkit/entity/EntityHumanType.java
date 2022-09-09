@@ -118,7 +118,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     inventoryTag.add(NBTIO.putItemHelper(item, slot));
                 }
             }
-            
+
             this.namedTag.putInt("SelectedInventorySlot", this.inventory.getHeldItemIndex());
         }
 
@@ -206,7 +206,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
         double epf = 0;
 
-        if(item.applyEnchantments()) {
+        if (item.applyEnchantments()) {
             for (Enchantment ench : item.getEnchantments()) {
                 epf += ench.getProtectionFactor(source);
             }
@@ -249,7 +249,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     protected Item damageArmor(Item armor, Entity damager) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
-                if(armor.applyEnchantments()) {
+                if (armor.applyEnchantments()) {
                     for (Enchantment enchantment : armor.getEnchantments()) {
                         enchantment.doPostAttack(damager, this);
                     }
