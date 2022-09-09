@@ -60,7 +60,7 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor{
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
             damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
 
-            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.65f, null);
+            EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.6f, null);
 
             //todo: should break shield
             target.attack(ev);

@@ -96,6 +96,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                             continue;
                                         }
                                         effect.setDuration(effect.getDuration() + 260);
+                                        player.addEffect(effect);
                                     }
                                 }
                                 return false;
@@ -118,7 +119,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 10;
                                         case 3 -> 15;
                                         default -> 0;
-                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
+                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 50 && this.getMemoryStorage().notEmpty(AttackTargetMemory.class), 4, 1, 20
                             ),
                             new Behavior(
                                     new WardenMeleeAttackExecutor(AttackTargetMemory.class, switch (this.getServer().getDifficulty()) {
@@ -126,14 +127,14 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         case 2 -> 30;
                                         case 3 -> 45;
                                         default -> 0;
-                                    }, 0.5f),
+                                    }, 0.4f),
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
                                     , 3, 1
                             ),
                             new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
                             new Behavior(new RandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
-                    Set.of(new RouteUnreachableTimeSensor(RouteUnreachableTimeMemory.class, 5)),
+                    Set.of(new RouteUnreachableTimeSensor(RouteUnreachableTimeMemory.class)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
@@ -204,6 +205,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                 addEntityAngerValue((Entity) initiator, addition);
             }
         }
+
+        if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class)) this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
+        else this.level.addSound(this, Sound.MOB_WARDEN_LISTENING);
     }
 
     @Override
@@ -239,8 +243,10 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         var cause = source.getCause();
         if (cause == EntityDamageEvent.DamageCause.LAVA || cause == EntityDamageEvent.DamageCause.HOT_FLOOR || cause == EntityDamageEvent.DamageCause.DROWNING)
             return false;
-        if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager())) {
-            addEntityAngerValue(damageByEntity.getDamager(), 100);
+        if (source instanceof EntityDamageByEntityEvent damageByEntity && isValidAngerEntity(damageByEntity.getDamager()) ) {
+            var damager = damageByEntity.getDamager();
+            var realDamager = damager instanceof EntityProjectile projectile ? projectile.shootingEntity : damager;
+            addEntityAngerValue(realDamager, 100);
         }
         return super.attack(source);
     }
@@ -285,7 +291,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
 
     public boolean isValidAngerEntity(Entity entity, boolean sniff) {
         if (entity.isClosed()) return false;
-        if (!entity.isUndead()) return false;
+        if (entity.getHealth() <= 0) return false;
         if (!(sniff ? isInSniffRange(entity) : isInAngerRange(entity))) return false;
         if (!(entity instanceof EntityCreature)) return false;
         if (entity instanceof Player player && (!player.isSurvival() && !player.isAdventure())) return false;
