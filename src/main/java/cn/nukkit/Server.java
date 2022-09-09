@@ -1003,7 +1003,7 @@ public class Server {
         List<InetSocketAddress> targets = new ArrayList<>();
         for (Player p : players) {
             if (p.isConnected()) {
-                targets.add(p.getSocketAddress());
+                targets.add(p.getRawSocketAddress());
             }
         }
 
@@ -2218,7 +2218,7 @@ public class Server {
     }
 
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getSocketAddress());
+        Player toRemove = this.players.remove(player.getRawSocketAddress());
         if (toRemove != null) {
             return;
         }
@@ -2876,7 +2876,13 @@ public class Server {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r2")
+    @Since("1.19.21-r4")
+    public boolean isWaterdogCapable() {
+        return this.getConfig("settings.waterdogpe", false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
     public boolean isBehindProxy() {
         return behindProxy;
     }
