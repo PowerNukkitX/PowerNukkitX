@@ -5270,7 +5270,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.timeSinceRest = 0;
 
             DeathInfoPacket deathInfo = new DeathInfoPacket();
-            deathInfo.translation = (TranslationContainer) ev.getDeathMessage();
+            deathInfo.translation = ev.getTranslationDeathMessage();
             this.dataPacket(deathInfo);
 
             if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {

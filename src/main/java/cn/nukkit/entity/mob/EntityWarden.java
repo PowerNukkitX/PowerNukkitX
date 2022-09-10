@@ -73,7 +73,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                 var iterator = angerValueMap.entrySet().iterator();
                                 while (iterator.hasNext()) {
                                     Map.Entry<Entity, Integer> next = iterator.next();
-                                    if (!isValidAngerEntity(next.getKey())) {
+                                    if (!entity.level.getName().equals(this.level.getName()) || !isValidAngerEntity(next.getKey())) {
                                         iterator.remove();
                                         var attackTargetMemory = this.getMemoryStorage().get(AttackTargetMemory.class);
                                         if (attackTargetMemory.hasData() && attackTargetMemory.getData().equals(next.getKey()))

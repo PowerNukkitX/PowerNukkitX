@@ -57,6 +57,9 @@ public class MeleeAttackExecutor implements IBehaviorExecutor {
         //检查距离
         if (entity.distanceSquared(target) > maxSenseRangeSquared) return false;
 
+        //检查是否在同一维度
+        if (!entity.level.getName().equals(target.level.getName())) return false;
+
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);
         Vector3 clonedTarget = target.clone();
