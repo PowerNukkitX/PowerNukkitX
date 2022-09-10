@@ -95,11 +95,11 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                         if (effect == null) {
                                             effect = Effect.getEffect(Effect.DARKNESS);
                                             effect.setDuration(260);
-//                                            player.addEffect(effect);
+                                            player.addEffect(effect);
                                             continue;
                                         }
                                         effect.setDuration(effect.getDuration() + 260);
-//                                        player.addEffect(effect);
+                                        player.addEffect(effect);
                                     }
                                 }
                                 return false;
