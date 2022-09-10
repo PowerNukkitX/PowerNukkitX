@@ -50,7 +50,7 @@ public class WalkController implements IController {
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //有时我们并不需要跳那么高，所以说只跳需要跳的高度
-                    dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.43;
+                    dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.50;
                     currentJumpCoolDown = 0;
                 }
             }
