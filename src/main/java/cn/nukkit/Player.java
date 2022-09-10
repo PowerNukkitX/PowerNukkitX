@@ -6628,8 +6628,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Override
-    protected void onBlock(Entity entity, boolean animate) {
-        super.onBlock(entity, animate);
+    protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
+        super.onBlock(entity, e, animate);
         if (animate) {
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, true);
             this.getServer().getScheduler().scheduleTask(null, () -> {

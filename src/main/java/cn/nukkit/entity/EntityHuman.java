@@ -2,9 +2,11 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
@@ -387,15 +389,15 @@ public class EntityHuman extends EntityHumanType {
 
     @PowerNukkitOnly
     @Override
-    protected void onBlock(Entity entity, boolean animate) {
-        super.onBlock(entity, animate);
+    protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
+        super.onBlock(entity, event, animate);
         Item shield = getInventory().getItemInHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield.getId() == ItemID.SHIELD) {
-            shield = damageArmor(shield, entity);
+            shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);
         } else if (shieldOffhand.getId() == ItemID.SHIELD) {
-            shieldOffhand = damageArmor(shieldOffhand, entity);
+            shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
     }

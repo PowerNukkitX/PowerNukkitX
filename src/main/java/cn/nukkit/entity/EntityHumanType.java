@@ -2,6 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -13,6 +14,7 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
@@ -189,7 +191,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             }
 
             for (int slot = 0; slot < 4; slot++) {
-                Item armor = damageArmor(this.inventory.getArmorItem(slot), damager);
+                Item armor = damageArmor(this.inventory.getArmorItem(slot), damager, source);
                 inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
             }
 
@@ -246,7 +248,8 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected Item damageArmor(Item armor, Entity damager) {
+    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
+    protected Item damageArmor(Item armor, Entity damager, EntityDamageEvent event) {
         if (armor.hasEnchantments()) {
             if (damager != null) {
                 if (armor.applyEnchantments()) {
@@ -268,7 +271,10 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             return armor;
         }
 
-        armor.setDamage(armor.getDamage() + 1);
+        if (armor.getId() == ItemID.SHIELD)
+            armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+        else
+            armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
 
         if (armor.getDamage() >= armor.getMaxDurability()) {
             getLevel().addSound(this, Sound.RANDOM_BREAK);
