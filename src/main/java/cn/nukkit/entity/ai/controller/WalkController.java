@@ -46,11 +46,11 @@ public class WalkController implements IController {
             if (direction.y > entity.y && collidesBlocks(entity, dx, 0, dz) && currentJumpCoolDown > JUMP_COOL_DOWN) {
                 if (entity.isOnGround() || entity.isTouchingWater()) {
                     //note: 从对BDS的抓包信息来看，台阶的碰撞箱在服务端和半砖一样，高度都为0.5
-                    Block[] collisionBlocks = entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
+                    Block[] collisionBlocks = entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), false, false, Block::isSolid);
                     //计算出需要向上移动的高度
                     double maxY = Arrays.stream(collisionBlocks).map(b -> b.getCollisionBoundingBox().getMaxY()).max(Double::compareTo).orElse(0.0d);
                     //有时我们并不需要跳那么高，所以说只跳需要跳的高度
-                    dy += Math.min(maxY - entity.getY(), entity.getJumpingHeight()) * 0.50;
+                    dy += Math.min(maxY - entity.getY() + 0.1, entity.getJumpingHeight()) * 0.43;
                     currentJumpCoolDown = 0;
                 }
             }
@@ -73,7 +73,7 @@ public class WalkController implements IController {
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {
-        return entity.level.getCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
+        return entity.level.getTickCachedCollisionBlocks(entity.getOffsetBoundingBox().getOffsetBoundingBox(dx, dy, dz), true,
                 false, Block::isSolid).length > 0;
     }
 }
