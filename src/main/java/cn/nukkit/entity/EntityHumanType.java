@@ -14,6 +14,7 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
@@ -191,8 +192,11 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             }
 
             for (int slot = 0; slot < 4; slot++) {
-                Item armor = damageArmor(this.inventory.getArmorItem(slot), damager, source);
-                inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
+                Item armorOld = this.inventory.getArmorItem(slot);
+                if (armorOld.isArmor()) {
+                    Item armor = damageArmor(armorOld, damager, source);
+                    inventory.setArmorItem(slot, armor, armor.getId() != BlockID.AIR);
+                }
             }
 
             return true;
