@@ -34,20 +34,22 @@ import java.util.function.Supplier;
 public class EntityLightning extends Entity implements EntityLightningStrike {
 
     public static final int NETWORK_ID = 93;
-
-    protected boolean isEffect = true;
-
     public int state;
     public int liveTime;
+    protected boolean isEffect = true;
 
+
+    public EntityLightning(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    private static boolean isVulnerableOxidizable(@Nonnull Block block) {
+        return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
+    }
 
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityLightning(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -100,10 +102,6 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         return super.attack(source);
     }
 
-    private static boolean isVulnerableOxidizable(@Nonnull Block block) {
-        return block instanceof Oxidizable && (!(block instanceof Waxable) || !((Waxable) block).isWaxed());
-    }
-
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
     @Override
     public boolean onUpdate(int currentTick) {
@@ -144,7 +142,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                         if (isVulnerableOxidizable(possibility)) {
                             Position nextPos = randomPos.clone();
                             changes.compute(nextPos, (k, v) -> {
-                                int nextLevel = v == null?
+                                int nextLevel = v == null ?
                                         ((Oxidizable) possibility).getOxidizationLevel().ordinal() - 1 :
                                         v.ordinal() - 1;
                                 return OxidizationLevel.values()[Math.max(0, nextLevel)];
@@ -157,7 +155,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
                 IntConsumer cleanOxidizationAroundLoop = count -> {
                     directionPos.setComponents(down);
-                    for(int i = 0; i < count; ++i) {
+                    for (int i = 0; i < count; ++i) {
                         Vector3 next = cleanOxidizationAround.get();
                         if (next != null) {
                             directionPos.setComponents(next);
@@ -167,7 +165,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                     }
                 };
 
-                for(int scan = 0; scan < scans; ++scan) {
+                for (int scan = 0; scan < scans; ++scan) {
                     int count = random.nextInt(8) + 1;
                     cleanOxidizationAroundLoop.accept(count);
                 }
@@ -237,7 +235,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public void spawnToAll() {
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.LIGHTNING_STRIKE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.LIGHTNING_STRIKE));
         super.spawnToAll();
     }
 }

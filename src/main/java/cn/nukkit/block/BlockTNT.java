@@ -124,7 +124,7 @@ public class BlockTNT extends BlockSolid implements RedstoneComponent {
             return;
         }
         tnt.spawnToAll();
-        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(source != null ? source : this, this.add(0.5, 0.5, 0.5), VibrationType.PRIME_FUSE));
     }
 
     @Override

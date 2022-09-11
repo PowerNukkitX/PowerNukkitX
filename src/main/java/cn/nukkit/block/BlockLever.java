@@ -112,9 +112,9 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);
         if (isPowerOn()) {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_ACTIVATE));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_ACTIVATE));
         } else {
-            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(pos, VibrationType.BLOCK_DEACTIVATE));
+            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(player != null ? player : this, pos, VibrationType.BLOCK_DEACTIVATE));
         }
 
         this.getLevel().setBlock(this, this, false, true);

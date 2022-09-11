@@ -74,6 +74,12 @@ public class EntityBee extends EntityFlyingAnimal {
 
     }
 
+    @PowerNukkitOnly
+    @Since("1.1.1.0-PN")
+    public void setAngry(Player player) {
+
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         super.onUpdate(currentTick);
@@ -123,13 +129,6 @@ public class EntityBee extends EntityFlyingAnimal {
     public void leftBeehive(BlockEntityBeehive blockEntityBeehive) {
 
     }
-
-    @PowerNukkitOnly
-    @Since("1.1.1.0-PN")
-    public void setAngry(Player player) {
-
-    }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")

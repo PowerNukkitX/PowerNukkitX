@@ -18,13 +18,13 @@ public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 34;
 
+    public EntitySkeleton(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntitySkeleton(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -66,6 +66,7 @@ public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
     @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {
@@ -73,8 +74,8 @@ public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
             if (this.getLevel().getTime() > 0 && this.getLevel().getTime() <= 12000)
                 if (!this.hasEffect(Effect.FIRE_RESISTANCE))
                     if (!this.isInsideOfWater())
-                     if (!this.isUnderBlock())
-                        if (!this.isOnFire())
+                        if (!this.isUnderBlock())
+                            if (!this.isOnFire())
                                 this.setOnFire(1);
         return super.onUpdate(currentTick);
     }

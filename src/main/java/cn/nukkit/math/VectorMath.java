@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public abstract class VectorMath {
     public static List<Vector3> getPassByVector3(Vector3 from, Vector3 to) {
         if (from.equals(to)) throw new IllegalArgumentException("from == to");
 
-        var xCuts = new ArrayList<FixedVector3>();
+        var xCuts = new LinkedList<FixedVector3>();
         var lastXCut = from.x < to.x ? from : to;
         var targetXCut = from.x > to.x ? from : to;
         for (int xCut = NukkitMath.ceilDouble(Math.min(from.x, to.x)); xCut < NukkitMath.floorDouble(Math.max(from.x, to.x)) + 1; xCut++) {
@@ -65,7 +66,7 @@ public abstract class VectorMath {
 
         if (xCuts.size() == 0) xCuts.add(new FixedVector3(from, to));
 
-        var zCuts = new ArrayList<FixedVector3>();
+        var zCuts = new LinkedList<FixedVector3>();
         for (var xCut : xCuts) {
             var lastZCut = xCut.from.z < xCut.to.z ? xCut.from : xCut.to;
             var targetZCut = xCut.from.z > xCut.to.z ? xCut.from : xCut.to;
@@ -84,7 +85,7 @@ public abstract class VectorMath {
             if (oldSize == zCuts.size()) zCuts.add(xCut);
         }
 
-        var yCuts = new ArrayList<FixedVector3>();
+        var yCuts = new LinkedList<FixedVector3>();
         for (var zCut : zCuts) {
             var lastYCut = zCut.from.y < zCut.to.y ? zCut.from : zCut.to;
             var targetYCut = zCut.from.y > zCut.to.y ? zCut.from : zCut.to;

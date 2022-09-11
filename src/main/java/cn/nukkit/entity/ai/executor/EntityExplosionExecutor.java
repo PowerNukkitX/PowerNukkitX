@@ -20,7 +20,7 @@ import static cn.nukkit.entity.Entity.DATA_FLAG_IGNITED;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class EntityExplosionExecutor implements IBehaviorExecutor{
+public class EntityExplosionExecutor implements IBehaviorExecutor {
 
     protected int explodeTime;
     protected int explodeForce;
@@ -31,7 +31,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor{
         this(explodeTime, explodeForce, null);
     }
 
-    public EntityExplosionExecutor(int explodeTime, int explodeForce, @Nullable Class<? extends BooleanMemory> flagMemoryClazz){
+    public EntityExplosionExecutor(int explodeTime, int explodeForce, @Nullable Class<? extends BooleanMemory> flagMemoryClazz) {
         this.explodeTime = explodeTime;
         this.explodeForce = explodeForce;
         this.flagMemoryClazz = flagMemoryClazz;
@@ -40,17 +40,17 @@ public class EntityExplosionExecutor implements IBehaviorExecutor{
     @Override
     public boolean execute(EntityIntelligent entity) {
         //check flag
-        if(flagMemoryClazz != null && entity.getMemoryStorage().checkData(flagMemoryClazz,false)){
+        if (flagMemoryClazz != null && entity.getMemoryStorage().checkData(flagMemoryClazz, false)) {
             return false;
         }
 
         currentTick++;
-        if (explodeTime > currentTick){
+        if (explodeTime > currentTick) {
             entity.level.addSound(entity, Sound.RANDOM_FUSE);
             entity.setDataProperty(new IntEntityData(Entity.DATA_FUSE_LENGTH, currentTick));
             entity.setDataFlag(DATA_FLAGS, DATA_FLAG_IGNITED, true);
             return true;
-        }else{
+        } else {
             explode(entity);
             return false;
         }
@@ -68,7 +68,7 @@ public class EntityExplosionExecutor implements IBehaviorExecutor{
         currentTick = 0;
     }
 
-    protected void explode(EntityIntelligent entity){
+    protected void explode(EntityIntelligent entity) {
         EntityExplosionPrimeEvent ev = new EntityExplosionPrimeEvent(entity, entity instanceof EntityCreeper creeper ? creeper.isPowered() ? explodeForce * 2 : explodeForce : explodeForce);
 
         if (!entity.level.gameRules.getBoolean(GameRule.MOB_GRIEFING)) {

@@ -18,15 +18,15 @@ public class EntityPiglinBrute extends EntityWalkingMob {
     @PowerNukkitOnly
     public final static int NETWORK_ID = 127;
 
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     public EntityPiglinBrute(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
     }
 
     @Override

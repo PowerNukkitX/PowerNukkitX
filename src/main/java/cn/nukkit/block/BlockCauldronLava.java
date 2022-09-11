@@ -106,7 +106,7 @@ public class BlockCauldronLava extends BlockCauldron {
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         replaceBucket(bucket, player, ev.getItem());
-                        this.setFillLevel(FILL_LEVEL.getMinValue());//empty
+                        this.setFillLevel(FILL_LEVEL.getMinValue(), player);//empty
                         this.level.setBlock(this, new BlockCauldron(0), true);
                         cauldron.clearCustomColor();
                         this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_FILL_LAVA);
@@ -124,7 +124,7 @@ public class BlockCauldronLava extends BlockCauldron {
                         if (cauldron.hasPotion()) {//if has potion
                             clearWithFizz(cauldron);
                         } else if (bucket.isLava()) { //lava bucket
-                            this.setFillLevel(FILL_LEVEL.getMaxValue());//fill
+                            this.setFillLevel(FILL_LEVEL.getMaxValue(), player);//fill
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
                             this.getLevel().addSound(this.add(0.5, 1, 0.5), Sound.BUCKET_EMPTY_LAVA);

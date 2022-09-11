@@ -7,11 +7,11 @@ import cn.nukkit.entity.passive.EntityAnimal;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class AnimalGrowExecutor implements IBehaviorExecutor{
+public class AnimalGrowExecutor implements IBehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
-        if (entity instanceof EntityAnimal animal){
+        if (entity instanceof EntityAnimal animal) {
             animal.setBaby(false);
         }
         return false;

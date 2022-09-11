@@ -24,14 +24,20 @@ import java.util.List;
 @PowerNukkitOnly
 public class EntityAreaEffectCloud extends Entity {
 
-    @PowerNukkitOnly public static final int NETWORK_ID = 95;
-    
-    @PowerNukkitOnly protected int reapplicationDelay;
-    @PowerNukkitOnly protected int durationOnUse;
-    @PowerNukkitOnly protected float initialRadius;
-    @PowerNukkitOnly protected float radiusOnUse;
-    @PowerNukkitOnly protected int nextApply;
-    @PowerNukkitOnly public List<Effect> cloudEffects;
+    @PowerNukkitOnly
+    public static final int NETWORK_ID = 95;
+    @PowerNukkitOnly
+    public List<Effect> cloudEffects;
+    @PowerNukkitOnly
+    protected int reapplicationDelay;
+    @PowerNukkitOnly
+    protected int durationOnUse;
+    @PowerNukkitOnly
+    protected float initialRadius;
+    @PowerNukkitOnly
+    protected float radiusOnUse;
+    @PowerNukkitOnly
+    protected int nextApply;
     private int lastAge;
 
     @PowerNukkitOnly
@@ -80,7 +86,7 @@ public class EntityAreaEffectCloud extends Entity {
         int r;
         int g;
         int b;
-    
+
         int color;
         if (namedTag.contains("ParticleColor")) {
             color = namedTag.getInt("ParticleColor");
@@ -102,7 +108,7 @@ public class EntityAreaEffectCloud extends Entity {
                 b = colors[2];
             }
         }
-    
+
         setPotionColor(a, r, g, b, send);
     }
 
@@ -112,13 +118,13 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     @PowerNukkitOnly
-    public void setPotionColor(int alpha, int red, int green, int blue, boolean send) {
-        setPotionColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff), send);
+    public void setPotionColor(int argp) {
+        setPotionColor(argp, true);
     }
 
     @PowerNukkitOnly
-    public void setPotionColor(int argp) {
-        setPotionColor(argp, true);
+    public void setPotionColor(int alpha, int red, int green, int blue, boolean send) {
+        setPotionColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff), send);
     }
 
     @PowerNukkitOnly
@@ -230,7 +236,7 @@ public class EntityAreaEffectCloud extends Entity {
     public void setParticleId(int particleId, boolean send) {
         this.setDataProperty(new IntEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, particleId), send);
     }
-    
+
     @Override
     protected void initEntity() {
         super.initEntity();
@@ -240,7 +246,7 @@ public class EntityAreaEffectCloud extends Entity {
         this.setDataProperty(new ShortEntityData(DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, 32), false);
         this.setDataProperty(new LongEntityData(DATA_SPAWN_TIME, this.level.getCurrentTick()), false);
         this.setDataProperty(new IntEntityData(DATA_PICKUP_COUNT, 0), false);
-        
+
         cloudEffects = new ArrayList<>(1);
         for (CompoundTag effectTag : namedTag.getList("mobEffects", CompoundTag.class).getAll()) {
             Effect effect = Effect.getEffect(effectTag.getByte("Id"))
@@ -253,7 +259,7 @@ public class EntityAreaEffectCloud extends Entity {
         int displayedPotionId = namedTag.getShort("PotionId");
         setPotionId(displayedPotionId, false);
         recalculatePotionColor();
-        
+
         if (namedTag.contains("Duration")) {
             setDuration(namedTag.getInt("Duration"), false);
         } else {
@@ -299,16 +305,16 @@ public class EntityAreaEffectCloud extends Entity {
         } else {
             setWaitTime(10, false);
         }
-    
+
         setMaxHealth(1);
         setHealth(1);
     }
-    
+
     @Override
     public boolean attack(EntityDamageEvent source) {
         return false;
     }
-    
+
     @Override
     public void saveNBT() {
         super.saveNBT();
@@ -335,19 +341,19 @@ public class EntityAreaEffectCloud extends Entity {
         namedTag.putInt("WaitTime", getWaitTime());
         namedTag.putFloat("InitialRadius", initialRadius);
     }
-    
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
         }
-    
+
         this.timing.startTiming();
-        
+
         super.onUpdate(currentTick);
-        
+
         boolean sendRadius = age % 10 == 0;
-    
+
         int age = this.age;
         float radius = getRadius();
         int waitTime = getWaitTime();
@@ -391,23 +397,23 @@ public class EntityAreaEffectCloud extends Entity {
                 }
             }
         }
-        
+
         this.lastAge = age;
-        
+
         if (radius <= 1.5 && age >= waitTime) {
             setRadius(radius, false);
             kill();
         } else {
             setRadius(radius, sendRadius);
         }
-        
+
         float height = getHeight();
         boundingBox.setBounds(x - radius, y - height, z - radius, x + radius, y + height, z + radius);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, height), false);
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, radius), false);
-        
+
         this.timing.stopTiming();
-        
+
         return true;
     }
 
@@ -420,27 +426,27 @@ public class EntityAreaEffectCloud extends Entity {
     public float getHeight() {
         return 0.3F + (getRadius() / 2F);
     }
-    
+
     @Override
     public float getWidth() {
         return getRadius();
     }
-    
+
     @Override
     public float getLength() {
         return getRadius();
     }
-    
+
     @Override
     protected float getGravity() {
         return 0;
     }
-    
+
     @Override
     protected float getDrag() {
         return 0;
     }
-    
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;

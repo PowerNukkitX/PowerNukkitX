@@ -22,7 +22,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor implements IBehaviorExecutor{
+public class MeleeAttackExecutor implements IBehaviorExecutor {
 
     protected Class<? extends EntityMemory<?>> memoryClazz;
     protected float speed;
@@ -33,6 +33,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
     protected int attackTick;
 
     protected Vector3 oldTarget;
+
     public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
@@ -56,6 +57,9 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
         //检查距离
         if (entity.distanceSquared(target) > maxSenseRangeSquared) return false;
 
+        //检查是否在同一维度
+        if (!entity.level.getName().equals(target.level.getName())) return false;
+
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);
         Vector3 clonedTarget = target.clone();
@@ -66,7 +70,7 @@ public class MeleeAttackExecutor implements IBehaviorExecutor{
 
         var floor = clonedTarget.floor();
 
-        if (oldTarget == null || oldTarget.equals(floor))
+        if (oldTarget == null || !oldTarget.equals(floor))
             entity.getBehaviorGroup().setForceUpdateRoute(true);
 
         oldTarget = floor;

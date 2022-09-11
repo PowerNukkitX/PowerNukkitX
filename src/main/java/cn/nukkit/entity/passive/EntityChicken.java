@@ -39,36 +39,36 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     @Override
     public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null){
-             behaviorGroup = new BehaviorGroup(
+        if (behaviorGroup == null) {
+            behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class,0,400),
-                                            new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
+                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class, 0, 400),
+                                            new PassByTimeEvaluator<>(InLoveMemory.class, 6000, Integer.MAX_VALUE, true)
                                     ),
-                                    1,1
+                                    1, 1
                             ),
                             //生长
                             new Behavior(
                                     new AnimalGrowExecutor(),
                                     //todo：Growth rate
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(BurnTimeMemory.class,20 * 60 * 20,Integer.MAX_VALUE),
+                                            new PassByTimeEvaluator<>(BurnTimeMemory.class, 20 * 60 * 20, Integer.MAX_VALUE),
                                             entity -> entity instanceof EntityAnimal animal && animal.isBaby()
                                     )
-                                    ,1,1,1200
+                                    , 1, 1, 1200
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true,100,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntityChicken.class,16,100,0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(),5,1),
-                            new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f,true), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1),
+                            new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator<>(AttackMemory.class, 0, 100), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntityChicken.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 5, 1),
+                            new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f, true), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 4, 1),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
                             new Behavior(entity -> {
                                 entity.getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
                                 entity.getLevel().dropItem(entity, Item.get(Item.EGG));
@@ -77,12 +77,12 @@ public class EntityChicken extends EntityWalkingAnimal {
                             }, new AnyMatchEvaluator(
                                     new AllMatchEvaluator(
                                             new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 6000, 12000),
-                                            new ProbabilityEvaluator(20,100)
+                                            new ProbabilityEvaluator(20, 100)
                                     ),
                                     new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 12000, Integer.MAX_VALUE)
-                            ), 1, 1,20)
+                            ), 1, 1, 20)
                     ),
-                    Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
+                    Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );

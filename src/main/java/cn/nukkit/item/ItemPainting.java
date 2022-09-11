@@ -129,7 +129,7 @@ public class ItemPainting extends Item {
 
         entity.spawnToAll();
 
-        level.getVibrationManager().callVibrationEvent(new VibrationEvent(position.clone(), VibrationType.ENTITY_PLACE));
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, position.clone(), VibrationType.ENTITY_PLACE));
 
         return true;
     }

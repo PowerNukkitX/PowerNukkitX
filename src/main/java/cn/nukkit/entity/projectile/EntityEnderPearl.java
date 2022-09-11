@@ -18,6 +18,14 @@ public class EntityEnderPearl extends EntityProjectile {
 
     public static final int NETWORK_ID = 87;
 
+    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
+
+    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+        super(chunk, nbt, shootingEntity);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -46,14 +54,6 @@ public class EntityEnderPearl extends EntityProjectile {
     @Override
     protected float getDrag() {
         return 0.01f;
-    }
-
-    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt) {
-        this(chunk, nbt, null);
-    }
-
-    public EntityEnderPearl(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
-        super(chunk, nbt, shootingEntity);
     }
 
     @Override

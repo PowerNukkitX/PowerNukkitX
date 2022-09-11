@@ -57,7 +57,7 @@ public abstract class ContainerInventory extends BaseInventory {
         this.sendContents(who);
 
         if (canCauseVibration() && holder instanceof Vector3 vector3) {
-            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_OPEN));
+            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_OPEN));
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class ContainerInventory extends BaseInventory {
         who.dataPacket(pk);
 
         if (canCauseVibration() && getHolder() instanceof Vector3 vector3) {
-            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));
+            who.level.getVibrationManager().callVibrationEvent(new VibrationEvent(who, vector3.add(0.5, 0.5, 0.5), VibrationType.CONTAINER_CLOSE));
         }
 
         super.onClose(who);

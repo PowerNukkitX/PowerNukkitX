@@ -14,13 +14,13 @@ public class EntityHusk extends EntityWalkingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 47;
 
+    public EntityHusk(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityHusk(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

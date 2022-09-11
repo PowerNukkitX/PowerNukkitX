@@ -15,13 +15,13 @@ public class EntitySpider extends EntityWalkingMob implements EntityArthropod {
 
     public static final int NETWORK_ID = 35;
 
+    public EntitySpider(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntitySpider(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

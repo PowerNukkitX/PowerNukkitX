@@ -20,7 +20,7 @@ public abstract class EntitySwimmingAnimal extends EntityAnimal {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING){
+        if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             source.setCancelled(true);
             return false;
         }

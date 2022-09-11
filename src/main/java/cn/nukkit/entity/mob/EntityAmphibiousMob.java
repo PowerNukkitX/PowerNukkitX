@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 @PowerNukkitOnly
 @Since("1.6.0.0-PNX")
-public abstract class EntityAmphibiousMob extends EntityMob{
+public abstract class EntityAmphibiousMob extends EntityMob {
     public EntityAmphibiousMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

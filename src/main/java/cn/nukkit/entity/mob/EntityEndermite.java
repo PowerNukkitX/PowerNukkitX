@@ -14,13 +14,13 @@ public class EntityEndermite extends EntityWalkingMob implements EntityArthropod
 
     public static final int NETWORK_ID = 55;
 
+    public EntityEndermite(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityEndermite(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

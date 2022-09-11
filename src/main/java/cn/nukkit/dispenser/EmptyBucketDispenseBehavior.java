@@ -23,11 +23,11 @@ public class EmptyBucketDispenseBehavior extends DefaultDispenseBehavior {
 
         if (target instanceof BlockWater && target.getDamage() == 0) {
             target.level.setBlock(target, new BlockAir());
-            target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+            target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
             return MinecraftItemID.WATER_BUCKET.get(1, item.getCompoundTag());
         } else if (target instanceof BlockLava && target.getDamage() == 0) {
             target.level.setBlock(target, new BlockAir());
-            target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+            target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(this, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
             return MinecraftItemID.LAVA_BUCKET.get(1, item.getCompoundTag());
         }
 

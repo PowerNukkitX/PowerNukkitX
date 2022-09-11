@@ -182,7 +182,7 @@ public class ItemBucket extends Item {
                 if (!ev.isCancelled()) {
                     player.getLevel().setBlock(target, target.layer, Block.get(BlockID.AIR), true, true);
 
-                    level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
+                    level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PICKUP));
 
                     // When water is removed ensure any adjacent still water is
                     // replaced with water that can flow.
@@ -258,7 +258,7 @@ public class ItemBucket extends Item {
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(placementBlock, placementBlock.layer, targetBlock, true, true);
-                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
+                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.FLUID_PLACE));
                 if (player.isSurvival()) {
                     if (this.getCount() - 1 <= 0) {
                         player.getInventory().setItemInHand(ev.getItem());
@@ -316,7 +316,7 @@ public class ItemBucket extends Item {
                     }
                 }
 
-                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+                target.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
             }
         }
 

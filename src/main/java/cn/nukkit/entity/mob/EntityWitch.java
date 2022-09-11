@@ -13,13 +13,13 @@ public class EntityWitch extends EntityWalkingMob {
 
     public static final int NETWORK_ID = 45;
 
+    public EntityWitch(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityWitch(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
