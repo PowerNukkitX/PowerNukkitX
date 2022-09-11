@@ -4362,6 +4362,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+
+                                    entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
+
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -6630,6 +6633,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
+        if (e.isBreakShield()) {
+            this.setNoShieldTicks(e.getShieldBreakCoolDown());
+            this.setItemCoolDown(e.getShieldBreakCoolDown(), "shield");
+        }
         if (animate) {
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, true);
             this.getServer().getScheduler().scheduleTask(null, () -> {
@@ -6865,6 +6872,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.shakeType = shakeType;
         packet.shakeAction = shakeAction;
         this.dataPacket(packet);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setItemCoolDown(int coolDown, String itemCategory) {
+        var pk = new PlayerStartItemCoolDownPacket();
+        pk.setCoolDownDuration(coolDown);
+        pk.setItemCategory(itemCategory);
+        this.dataPacket(pk);
     }
 
     public void sendToast(String title, String content) {
