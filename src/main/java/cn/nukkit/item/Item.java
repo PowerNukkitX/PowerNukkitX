@@ -1622,6 +1622,12 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public boolean canBreakShield() {
+        return false;
+    }
+
     public boolean onUse(Player player, int ticksUsed) {
         return false;
     }
