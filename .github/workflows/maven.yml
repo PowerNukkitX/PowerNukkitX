@@ -58,6 +58,7 @@ jobs:
       - name: Calculate hashes
         run: |
           cd target
+          mkdir -p hash/sha256 hash/md5
           sha256sum powernukkitx-full.jar > hash/sha256/powernukkitx-full.jar.sha256
           sha256sum powernukkitx.jar > hash/sha256/powernukkitx.jar.sha256
           sha256sum libs.tar.gz > hash/sha256/libs.tar.gz.sha256
