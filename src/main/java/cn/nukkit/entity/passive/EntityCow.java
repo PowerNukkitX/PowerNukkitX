@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -19,6 +20,7 @@ import cn.nukkit.entity.ai.sensor.NearestBeggingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Set;
@@ -105,4 +107,20 @@ public class EntityCow extends EntityWalkingAnimal {
         super.initEntity();
         this.setMaxHealth(10);
     }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (super.onInteract(player, item, clickedPos)) {
+            return true;
+        }
+
+        if (item.getId() == Item.BUCKET && item.getDamage() == 0) {
+            item.count--;
+            player.getInventory().addItem(Item.get(Item.BUCKET, 1));
+            return true;
+        }
+
+        return false;
+    }
+
 }
