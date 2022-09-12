@@ -48,7 +48,7 @@ import java.util.Set;
  * 投喂肉可以繁殖
  * 攻击会红眼反击你
  */
-public class EntityWolf extends EntityAnimal implements EntityTamable {
+public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
     public static final int NETWORK_ID = 14;
     private Player owner = null;
     private String ownerName = "";

@@ -68,6 +68,14 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
             this.setScale(1f);
     }
 
+    /**
+     * 可以导致繁殖的喂养物品
+     * <p>
+     * Feeding items that can lead to reproduction.
+     *
+     * @param item 物品
+     * @return boolean 是否可以导致繁殖<br>Whether it can lead to reproduction
+     */
     public boolean isBreedingItem(Item item) {
         return item.getId() == Item.WHEAT; //default
     }
