@@ -369,7 +369,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     @PowerNukkitDifference(info = "Using direct values, instead of toggling (fixes a redstone bug, that the door won't open). " +
             "Also adding possibility to detect, whether a player or redstone recently opened/closed the door.", since = "1.4.0.0-PN")
     @PowerNukkitOnly
-    public boolean setOpen(Player player, boolean open) {
+    public boolean setOpen(@Nullable Player player, boolean open) {
         if (open == this.isOpen()) {
             return false;
         }
@@ -406,7 +406,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
         playOpenCloseSound();
 
         var source = this.clone().add(0.5, 0.5, 0.5);
-        VibrationEvent vibrationEvent = open ? new VibrationEvent(source, VibrationType.BLOCK_OPEN) : new VibrationEvent(source, VibrationType.BLOCK_CLOSE);
+        VibrationEvent vibrationEvent = open ? new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_OPEN) : new VibrationEvent(player != null ? player : this, source, VibrationType.BLOCK_CLOSE);
         this.level.getVibrationManager().callVibrationEvent(vibrationEvent);
         return true;
     }

@@ -57,6 +57,7 @@ public class EntityZombieVillager extends EntityWalkingMob implements EntitySmit
     public boolean isPreventingSleep(Player player) {
         return true;
     }
+
     @PowerNukkitXOnly
     @Override
     public boolean onUpdate(int currentTick) {

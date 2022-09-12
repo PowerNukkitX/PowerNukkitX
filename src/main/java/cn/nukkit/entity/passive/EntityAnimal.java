@@ -10,10 +10,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.PlayerBreedingMemory;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
-import cn.nukkit.event.entity.EntityEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.MinecraftItemID;
-import cn.nukkit.item.RuntimeItemMapping;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -34,7 +31,7 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
     @Override
     protected void initEntity() {
         super.initEntity();
-        if (this instanceof EntityTamable){
+        if (this instanceof EntityTamable) {
             if (getDataProperty(DATA_TAMED_FLAG) == null) {
                 setDataProperty(new ByteEntityData(DATA_TAMED_FLAG, (byte) 0));
             }
@@ -63,7 +60,7 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
     @Override
     public void saveNBT() {
         super.saveNBT();
-        if (this instanceof EntityTamable){
+        if (this instanceof EntityTamable) {
             if (this.getOwnerName() == null) {
                 namedTag.putString("Owner", "");
             } else {
@@ -77,7 +74,7 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean superResult = super.onInteract(player, item, clickedPos);
-        if (isBreedingItem(item)){
+        if (isBreedingItem(item)) {
             getMemoryStorage().get(PlayerBreedingMemory.class).setData(player);
             sendBreedingAnimation(item);
             item.count--;
@@ -86,11 +83,11 @@ public abstract class EntityAnimal extends EntityIntelligent implements EntityAg
         return superResult;
     }
 
-    protected void sendBreedingAnimation(Item item){
+    protected void sendBreedingAnimation(Item item) {
         EntityEventPacket pk = new EntityEventPacket();
         pk.event = EntityEventPacket.EATING_ITEM;
         pk.eid = this.getId();
-        pk.data = RuntimeItems.getFullId(item.getNetworkId(),item.getDamage());
+        pk.data = RuntimeItems.getFullId(item.getNetworkId(), item.getDamage());
         Server.broadcastPacket(this.getViewers().values(), pk);
     }
 

@@ -13,13 +13,13 @@ public class EntityStrider extends EntityWalkingAnimal {
 
     public final static int NETWORK_ID = 125;
 
+    public EntityStrider(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityStrider(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

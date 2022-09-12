@@ -228,7 +228,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 teleportPosition = null;
 
     protected boolean connected = true;
-    protected final InetSocketAddress socketAddress;
+    protected final InetSocketAddress rawSocketAddress;
+    protected InetSocketAddress socketAddress;
     protected boolean removeFormat = true;
 
     protected String username;
@@ -719,6 +720,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
+        this.rawSocketAddress = socketAddress;
         this.socketAddress = socketAddress;
         this.clientID = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
@@ -795,6 +797,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawned) {
             this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID());
         }
+    }
+
+    public String getRawAddress() {
+        return this.rawSocketAddress.getAddress().getHostAddress();
+    }
+
+    public int getRawPort() {
+        return this.rawSocketAddress.getPort();
+    }
+
+    public InetSocketAddress getRawSocketAddress() {
+        return this.rawSocketAddress;
     }
 
     public String getAddress() {
@@ -1816,16 +1830,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(ev.getTo().clone(), VibrationType.TELEPORT));
+                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
                         if (delta > 0.0001d) {
                             if (this.isOnGround() && this.isGliding()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.ELYTRA_GLIDE));
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
                             } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.STEP));
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
                             } else if (this.isTouchingWater()) {
-                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this.clone(), VibrationType.SWIM));
+                                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                             }
                         }
                         this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
@@ -2608,6 +2622,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
+                    if (this.server.isWaterdogCapable() && loginChainData.getWaterdogIP() != null) {
+                        this.socketAddress = new InetSocketAddress(this.loginChainData.getWaterdogIP(), this.getRawPort());
+                    }
+
                     this.randomClientId = loginPacket.clientId;
 
                     this.uuid = loginPacket.clientUUID;
@@ -2720,7 +2738,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             stackPacket.mustAccept = this.server.getForceResources();
                             stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
 
-                            if (this.getServer().isEnableExperimentMode()) {
+                            if (this.getServer().isEnableExperimentMode() && !this.getServer().getConfig("settings.waterdogpe", false)) {
 //                                stackPacket.experiments.add(
 //                                        new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
 //                                );
@@ -4282,9 +4300,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         break;
                                     }
                                     if (!(target instanceof EntityArmorStand)) {
-                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.clone(), VibrationType.ENTITY_INTERACT));
+                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target, target.clone(), VibrationType.ENTITY_INTERACT));
                                     } else {
-                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target.clone(), VibrationType.EQUIP));
+                                        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(target, target.clone(), VibrationType.EQUIP));
                                     }
                                     if (target.onInteract(this, item, useItemOnEntityData.clickPos) && (this.isSurvival() || this.isAdventure())) {
                                         if (item.isTool()) {
@@ -4344,6 +4362,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+
+                                    entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
+
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -5252,7 +5273,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.timeSinceRest = 0;
 
             DeathInfoPacket deathInfo = new DeathInfoPacket();
-            deathInfo.translation = (TranslationContainer) ev.getDeathMessage();
+            deathInfo.translation = ev.getTranslationDeathMessage();
             this.dataPacket(deathInfo);
 
             if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
@@ -6610,8 +6631,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Override
-    protected void onBlock(Entity entity, boolean animate) {
-        super.onBlock(entity, animate);
+    protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
+        super.onBlock(entity, e, animate);
+        if (e.isBreakShield()) {
+            this.setNoShieldTicks(e.getShieldBreakCoolDown());
+            this.setItemCoolDown(e.getShieldBreakCoolDown(), "shield");
+        }
         if (animate) {
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, true);
             this.getServer().getScheduler().scheduleTask(null, () -> {
@@ -6847,6 +6872,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.shakeType = shakeType;
         packet.shakeAction = shakeAction;
         this.dataPacket(packet);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setItemCoolDown(int coolDown, String itemCategory) {
+        var pk = new PlayerStartItemCoolDownPacket();
+        pk.setCoolDownDuration(coolDown);
+        pk.setItemCategory(itemCategory);
+        this.dataPacket(pk);
     }
 
     public void sendToast(String title, String content) {

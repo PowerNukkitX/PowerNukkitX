@@ -8,12 +8,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 @Since("1.4.0.0-PN")
 public class EntitySnowGolem extends EntityWalkingMob {
     @Since("1.4.0.0-PN")
+    public static final int NETWORK_ID = 21;
+
+    @Since("1.4.0.0-PN")
     public EntitySnowGolem(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
-
-    @Since("1.4.0.0-PN")
-    public static final int NETWORK_ID = 21;
 
     @Override
     public int getNetworkId() {

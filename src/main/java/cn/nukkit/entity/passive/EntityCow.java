@@ -40,7 +40,7 @@ public class EntityCow extends EntityWalkingAnimal {
 
     @Override
     public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null){
+        if (behaviorGroup == null) {
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(
@@ -48,20 +48,20 @@ public class EntityCow extends EntityWalkingAnimal {
                             new Behavior(
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class,0,400),
-                                            new PassByTimeEvaluator<>(InLoveMemory.class,6000,Integer.MAX_VALUE,true)
+                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class, 0, 400),
+                                            new PassByTimeEvaluator<>(InLoveMemory.class, 6000, Integer.MAX_VALUE, true)
                                     ),
-                                    1,1
+                                    1, 1
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true,100,true,10), new PassByTimeEvaluator<>(AttackMemory.class,0,100), 4, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntityCow.class,16,100,0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(),3,1),
-                            new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f,true), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 2, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class,100), new ProbabilityEvaluator(4,10), 1, 1,100),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false,-1,true,10), (entity -> true), 1, 1)
+                            new Behavior(new RandomRoamExecutor(0.5f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator<>(AttackMemory.class, 0, 100), 4, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntityCow.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 3, 1),
+                            new Behavior(new MoveToTargetExecutor(NearestBeggingPlayerMemory.class, 0.3f, true), new MemoryCheckNotEmptyEvaluator(NearestBeggingPlayerMemory.class), 2, 1),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
-                    Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0,20)),
+                    Set.of(new NearestBeggingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );

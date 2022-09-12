@@ -9,11 +9,11 @@ import lombok.Setter;
 @Since("1.6.0.0-PNX")
 @Getter
 @Setter
-public class EntityExplodeMemory extends BooleanMemory{
+public class EntityExplodeMemory extends BooleanMemory {
 
     protected boolean cancellable = true;
 
-    public EntityExplodeMemory(){
+    public EntityExplodeMemory() {
         super(null);
     }
 

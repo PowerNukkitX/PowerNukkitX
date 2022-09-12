@@ -97,7 +97,8 @@ public class ItemFlintSteel extends ItemTool {
 
     @Override
     public boolean useOn(Block block) {
-        block.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+        //todo: initiator should be an entity who use it but not null
+        block.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(null, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
         return super.useOn(block);
     }
 }

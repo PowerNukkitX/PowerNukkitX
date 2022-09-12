@@ -6,9 +6,9 @@ import cn.nukkit.entity.Entity;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class AttackTargetMemory extends EntityMemory<Entity>{
+public class AttackTargetMemory extends EntityMemory<Entity> {
 
-    public AttackTargetMemory(){
+    public AttackTargetMemory() {
         super(null);
     }
 

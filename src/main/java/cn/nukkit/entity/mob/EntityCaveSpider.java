@@ -14,13 +14,13 @@ public class EntityCaveSpider extends EntityWalkingMob implements EntityArthropo
 
     public static final int NETWORK_ID = 40;
 
+    public EntityCaveSpider(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityCaveSpider(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override

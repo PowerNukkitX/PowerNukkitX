@@ -2942,7 +2942,7 @@ public class Level implements ChunkManager, Metadatable {
 
         target.onBreak(item);
 
-        this.getVibrationManager().callVibrationEvent(new VibrationEvent(target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
 
         item.useOn(target);
         if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
@@ -3213,7 +3213,7 @@ public class Level implements ChunkManager, Metadatable {
             item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
 
-        this.getVibrationManager().callVibrationEvent(new VibrationEvent(block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
 
         return item;
     }
@@ -4512,7 +4512,9 @@ public class Level implements ChunkManager, Metadatable {
             pk.headYaw = (float) headYaw;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
         }
-
+        if (entity.onGround) {
+            pk.flags |= MoveEntityDeltaPacket.FLAG_ON_GROUND;
+        }
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 

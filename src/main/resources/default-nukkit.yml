@@ -6,6 +6,7 @@ settings:
  deprecated-verbose: true
  async-workers: auto
  safe-spawn: true
+ waterdogpe: false
 
 network:
  batch-threshold: 256

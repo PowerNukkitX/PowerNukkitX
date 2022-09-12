@@ -16,14 +16,15 @@ import java.util.TreeSet;
 public abstract class EntityData<T> {
     private static final Int2ObjectMap<String> KNOWN_ENTITY_DATA = new Int2ObjectOpenHashMap<>();
     private static final Int2ObjectMap<String> KNOWN_ENTITY_FLAGS = new Int2ObjectOpenHashMap<>();
+
     static {
         Arrays.stream(Entity.class.getDeclaredFields())
-                .filter(it-> it.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
-                .filter(it-> it.getType().equals(int.class))
-                .filter(it-> it.getName().startsWith("DATA_"))
-                .filter(it-> !it.getName().startsWith("DATA_FLAG_"))
-                .filter(it-> !it.getName().startsWith("DATA_TYPE_"))
-                .forEachOrdered(it-> {
+                .filter(it -> it.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
+                .filter(it -> it.getType().equals(int.class))
+                .filter(it -> it.getName().startsWith("DATA_"))
+                .filter(it -> !it.getName().startsWith("DATA_FLAG_"))
+                .filter(it -> !it.getName().startsWith("DATA_TYPE_"))
+                .forEachOrdered(it -> {
                     try {
                         KNOWN_ENTITY_DATA.put(it.getInt(null), it.getName().substring(5));
                     } catch (IllegalAccessException e) {
@@ -32,10 +33,10 @@ public abstract class EntityData<T> {
                 });
 
         Arrays.stream(Entity.class.getDeclaredFields())
-                .filter(it-> it.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
-                .filter(it-> it.getType().equals(int.class))
-                .filter(it-> it.getName().startsWith("DATA_FLAG_"))
-                .forEachOrdered(it-> {
+                .filter(it -> it.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL))
+                .filter(it -> it.getType().equals(int.class))
+                .filter(it -> it.getName().startsWith("DATA_FLAG_"))
+                .forEachOrdered(it -> {
                     try {
                         KNOWN_ENTITY_FLAGS.put(it.getInt(null), it.getName().substring(10));
                     } catch (IllegalAccessException e) {
@@ -93,7 +94,7 @@ public abstract class EntityData<T> {
         } else if (id == Entity.DATA_FLAGS_EXTENDED) {
             data = readFlags(64, (long) data);
         }
-        return getClass().getSimpleName()+"{" +
+        return getClass().getSimpleName() + "{" +
                 "id=" + idStr + "," +
                 "data=" + data +
                 '}';

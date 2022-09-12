@@ -26,7 +26,7 @@ public class EntityWolf extends EntityWalkingAnimal {
     public float getHeight() {
         return 0.8f;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     @Override

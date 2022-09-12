@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.Server;
 import cn.nukkit.network.protocol.LoginPacket;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -108,7 +109,11 @@ public final class ClientChainData implements LoginChainData {
 
     @Override
     public String getXUID() {
-        return xuid;
+        if (this.isWaterdog()) {
+            return waterdogXUID;
+        } else {
+            return xuid;
+        }
     }
 
     private boolean xboxAuthed;
@@ -137,8 +142,26 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    public String getWaterdogXUID() {
+        return waterdogXUID;
+    }
+
+    @Override
+    public String getWaterdogIP() {
+        return waterdogIP;
+    }
+
+    @Override
     public JsonObject getRawData() {
         return rawData;
+    }
+
+    private boolean isWaterdog() {
+        if (waterdogXUID == null || Server.getInstance() == null) {
+            return false;
+        }
+
+        return Server.getInstance().isWaterdogCapable();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -179,6 +202,8 @@ public final class ClientChainData implements LoginChainData {
     private String languageCode;
     private int currentInputMode;
     private int defaultInputMode;
+    private String waterdogIP;
+    private String waterdogXUID;
 
     private int UIProfile;
 
@@ -214,6 +239,12 @@ public final class ClientChainData implements LoginChainData {
         if (skinToken.has("DefaultInputMode")) this.defaultInputMode = skinToken.get("DefaultInputMode").getAsInt();
         if (skinToken.has("UIProfile")) this.UIProfile = skinToken.get("UIProfile").getAsInt();
         if (skinToken.has("CapeData")) this.capeData = skinToken.get("CapeData").getAsString();
+        if (skinToken.has("Waterdog_IP")) this.waterdogIP = skinToken.get("Waterdog_IP").getAsString();
+        if (skinToken.has("Waterdog_XUID")) this.waterdogXUID = skinToken.get("Waterdog_XUID").getAsString();
+
+        if (this.isWaterdog()) {
+            xboxAuthed = true;
+        }
 
         this.rawData = skinToken;
     }
