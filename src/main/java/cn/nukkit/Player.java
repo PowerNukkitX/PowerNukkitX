@@ -252,6 +252,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean connected = true;
     protected final InetSocketAddress rawSocketAddress;
     protected InetSocketAddress socketAddress;
+    /**
+     * 是否移除格式化字符如 §c §1
+     * <p>
+     * Whether to remove formatting characters such as §c §1
+     */
     protected boolean removeFormat = true;
 
     protected String username;
@@ -318,16 +323,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private String buttonText = "Button";
 
     protected boolean enableClientCommand = true;
-
-    private BlockEnderChest viewingEnderChest = null;
-
     /**
      * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
      * <p>
      * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
      */
     protected int lastEnderPearl = 20;
+    /**
+     * 返回上次吃紫颂果时的{@link Server#getTick() getTick()}，这个值用于控制吃紫颂果的冷却时间.
+     * <p>
+     * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
+     */
     protected int lastChorusFruitTeleport = 20;
+    /**
+     * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
+     * <p>
+     * This is used to temporarily store the player's open EnderChest instance object, when the player opens the EnderChest the value is specified as that EnderChest, when the player closes the EnderChest reset back to null.
+     */
+    private BlockEnderChest viewingEnderChest = null;
 
     private LoginChainData loginChainData;
     public Block breakingBlock = null;
@@ -433,18 +446,43 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastEnderPearl = this.server.getTick();
     }
 
+    /**
+     * 返回{@link Player#lastChorusFruitTeleport}的值
+     * <p>
+     * Returns the value of {@link Player#lastChorusFruitTeleport}
+     *
+     * @return int
+     */
     public int getLastChorusFruitTeleport() {
         return lastChorusFruitTeleport;
     }
 
+    /**
+     * 设置{@link Player#lastChorusFruitTeleport}值为{@link Server#getTick() getTick()}
+     * <p>
+     * Set {@link Player#lastChorusFruitTeleport} value to {@link Server#getTick() getTick()}
+     */
     public void onChorusFruitTeleport() {
         this.lastChorusFruitTeleport = this.server.getTick();
     }
 
+    /**
+     * 返回{@link Player#viewingEnderChest}的值，只在玩家打开末影箱时有效.
+     * <p>
+     * Returns the value of {@link Player#viewingEnderChest}, which is only valid when the player opens the Ender Chest.
+     */
     public BlockEnderChest getViewingEnderChest() {
         return viewingEnderChest;
     }
 
+
+    /**
+     * 设置{@link Player#lastChorusFruitTeleport}值为chest
+     * <p>
+     * Set the {@link Player#lastChorusFruitTeleport} value to chest
+     *
+     * @param chest BlockEnderChest
+     */
     public void setViewingEnderChest(BlockEnderChest chest) {
         if (chest == null && this.viewingEnderChest != null) {
             this.viewingEnderChest.getViewers().remove(this);
@@ -473,11 +511,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return randomClientId;
     }
 
+    /**
+     * 玩家是否被封禁.
+     * <p>
+     * Whether the player is blocked.
+     */
     @Override
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
     }
 
+    /**
+     * 设置该玩家是否被封禁.
+     * <p>
+     * Set whether the player is banned or not.
+     *
+     * @param value 是否被封禁<br>whether the player is banned or not
+     */
     @Override
     public void setBanned(boolean value) {
         if (value) {
@@ -488,11 +538,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 玩家是否在白名单内
+     * <p>
+     * Whether the player is in the whitelist.
+     */
     @Override
     public boolean isWhitelisted() {
         return this.server.isWhitelisted(this.getName().toLowerCase());
     }
 
+    /**
+     * 设置该玩家是否在白名单内.
+     * <p>
+     * Set whether the player is in the whitelist.
+     *
+     * @param value 是否在白名单内<br>whether the player is in the whitelist
+     */
     @Override
     public void setWhitelisted(boolean value) {
         if (value) {
@@ -502,6 +564,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 得到该玩家实例.
+     * <p>
+     * Get the player instance.
+     *
+     * @return {@link Player}
+     */
     @Override
     public Player getPlayer() {
         return this;
@@ -522,10 +591,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.playedBefore;
     }
 
+    /**
+     * 获得玩家权限设置.
+     * <p>
+     * Get player permission settings.
+     */
     public AdventureSettings getAdventureSettings() {
         return adventureSettings;
     }
 
+    /**
+     * 用于设置玩家权限，对应游戏中的玩家权限设置.
+     * <p>
+     * Used to set player permissions, corresponding to the game's player permissions settings.
+     *
+     * @param adventureSettings 玩家权限设置<br>player permissions settings
+     */
     public void setAdventureSettings(AdventureSettings adventureSettings) {
         this.adventureSettings = adventureSettings.clone(this);
         this.adventureSettings.update();
@@ -587,18 +668,39 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.server;
     }
 
+    /**
+     * 得到{@link #removeFormat}
+     * <p>
+     * get {@link #removeFormat}
+     *
+     * @return boolean
+     */
     public boolean getRemoveFormat() {
         return removeFormat;
     }
 
+    /**
+     * {@code setRemoveFormat(true)}
+     *
+     * @see #setRemoveFormat(boolean)
+     */
     public void setRemoveFormat() {
         this.setRemoveFormat(true);
     }
 
+    /**
+     * 设置{@link #removeFormat}为指定值
+     *
+     * @param remove 是否清楚格式化字符<br>Whether remove the formatting character
+     */
     public void setRemoveFormat(boolean remove) {
         this.removeFormat = remove;
     }
 
+    /**
+     * @param player 玩家
+     * @return 是否可以看到该玩家<br>Whether the player can be seen
+     */
     public boolean canSee(Player player) {
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
@@ -1895,7 +1997,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
+                        if (delta > 0.0001d)
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
                         if (delta > 0.0001d) {
