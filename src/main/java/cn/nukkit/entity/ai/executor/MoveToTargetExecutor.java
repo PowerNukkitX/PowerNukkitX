@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MoveToTargetExecutor implements IBehaviorExecutor {
+public class MoveToTargetExecutor extends AboutControlExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory<?>> memoryClazz;
@@ -109,21 +109,5 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         entity.setEnablePitch(false);
         if (clearDataWhenLose)
             entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
-    }
-
-    protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setMoveTarget(vector3);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
-    }
-
-    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.setMoveTarget(null);
-    }
-
-    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
-        entity.setLookTarget(null);
     }
 }

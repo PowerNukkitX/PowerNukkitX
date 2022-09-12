@@ -15,14 +15,13 @@ import cn.nukkit.item.MinecraftItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor implements IBehaviorExecutor {
+public class MeleeAttackExecutor extends AboutControlExecutor {
 
     protected Class<? extends EntityMemory<?>> memoryClazz;
     protected float speed;
@@ -137,21 +136,4 @@ public class MeleeAttackExecutor implements IBehaviorExecutor {
         pk.event = EntityEventPacket.ARM_SWING;
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
-
-    protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setMoveTarget(vector3);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
-    }
-
-    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.setMoveTarget(null);
-    }
-
-    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
-        entity.setLookTarget(null);
-    }
-
 }
