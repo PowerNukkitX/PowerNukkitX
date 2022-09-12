@@ -63,7 +63,7 @@ public class WardenMeleeAttackExecutor extends AboutControlExecutor {
 
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.ENTITY_ATTACK, damages, 0.6f, null);
 
-            //todo: should break shield
+            ev.setBreakShield(true);
             target.attack(ev);
             playAttackAnimation(entity);
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
