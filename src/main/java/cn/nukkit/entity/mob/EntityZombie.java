@@ -80,6 +80,9 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        if (this.diffHandDamage == null) {
+            this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
+        }
     }
 
     @Override

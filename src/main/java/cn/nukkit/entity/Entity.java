@@ -1417,7 +1417,16 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    /**
+     * 当一个实体被攻击时(即接受一个实体伤害事件 这个事件可以是由其他实体攻击导致，也可能是自然伤害)调用.
+     * <p>
+     * Called when an entity is attacked (i.e. receives an entity damage event. This event can be caused by an attack by another entity, or it can be a natural damage).
+     *
+     * @param source 记录伤害源的事件<br>Record the event of the source of the attack
+     * @return 是否攻击成功<br>Whether the attack was successful
+     */
     public boolean attack(EntityDamageEvent source) {
+        //火焰保护附魔实现
         if (hasEffect(Effect.FIRE_RESISTANCE)
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
@@ -1425,6 +1434,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        //事件回调函数
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return false;
@@ -1440,11 +1450,15 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
+        //吸收伤害实现
         if (this.absorption > 0) {  // Damage Absorption
             this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
         }
+
+        //修改最后一次伤害
         setLastDamageCause(source);
 
+        //计算血量
         float newHealth = getHealth() - source.getFinalDamage();
         if (newHealth < 1 && this instanceof Player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
@@ -1457,6 +1471,7 @@ public abstract class Entity extends Location implements Metadatable {
                     p.getInventory().clear(p.getInventory().getHeldItemIndex());
                     totem = true;
                 }
+                //复活图腾实现
                 if (totem) {
                     this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
@@ -1479,7 +1494,10 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
         }
+
         Entity attacker = source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null;
+
+        //计算一些反伤之类的附魔
         for (SideEffect sideEffect : source.getSideEffects()) {
             sideEffect.doPreHealthChange(this, source, attacker);
         }

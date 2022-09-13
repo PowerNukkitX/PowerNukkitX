@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.CanAttack;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -17,15 +19,22 @@ import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.entity.WolfAttackExecutor;
 import cn.nukkit.entity.ai.executor.entity.WolfLookPlayerExecutor;
 import cn.nukkit.entity.ai.executor.entity.WolfMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.memory.*;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.mob.EntitySkeleton;
+import cn.nukkit.entity.mob.EntityStray;
+import cn.nukkit.entity.mob.EntityWitherSkeleton;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
@@ -34,6 +43,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
@@ -41,14 +52,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
+import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
+
 /**
  * @author BeYkeRYkt (Nukkit Project)
- * <br>
  * @author Cool_Loong (PowerNukkitX Project)
- * 投喂肉可以繁殖
- * 攻击会红眼反击你
+ * todo 投喂肉可以繁殖  攻击会红眼反击你  野生狼不会被刷新
  */
-public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
+public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, CanAttack {
     public static final int NETWORK_ID = 14;
     private Player owner = null;
     private String ownerName = "";
@@ -56,6 +67,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
     private boolean angry = false;
     private DyeColor collarColor = DyeColor.RED;//项圈颜色
     private IBehaviorGroup behaviorGroup;
+    private float[] diffHandDamage = new float[]{3, 4, 6};
 
     @Override
     public int getNetworkId() {
@@ -79,33 +91,38 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(this.movementSpeed, 12, 40, true, 100, true, 10), new AllMatchEvaluator(
-                                    new PassByTimeEvaluator<>(AttackMemory.class, 0, 100),
-                                    entity -> {
-                                        if (entity instanceof EntityWolf entityWolf) {
-                                            return !entityWolf.hasOwner(false);
-                                        } else return true;
-                                    }
-                            ), 6, 1),
-                            new Behavior(new WolfLookPlayerExecutor(NearestFeedingPlayerMemory.class), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 6, 1),
-                            new Behavior(new WolfMoveToOwnerExecutor(0.5f, true, 15), entity -> {
+//                            new Behavior(new RandomRoamExecutor(this.movementSpeed, 12, 40, true, 100, true, 10), new AllMatchEvaluator(
+//                                    new PassByTimeEvaluator<>(AttackMemory.class, 0, 100),
+//                                        entity -> entityHasOwner(entity,false,true)
+//                                    ), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 6, 1),
+                            new Behavior(new WolfAttackExecutor(AttackTargetMemory.class, 0.3f, 33, true, 15), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
+                                    entity -> !entityHasOwner(entity, false, false)
+                            ), 5, 1),
+                            new Behavior(new WolfMoveToOwnerExecutor(0.3f, true, 15), entity -> {
                                 if (entity instanceof EntityWolf entityWolf && entityWolf.hasOwner()) {
                                     var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
                                     if (player == null) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;
-                            }, 5, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 4, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                            new Behavior(new RandomRoamExecutor(this.movementSpeed, 12, 250, false, -1, true, 10),
+                            }, 4, 1),
+                            new Behavior(new WolfAttackExecutor(NearestEntityMemory.class, 0.3f, 14, true, 15), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(NearestEntityMemory.class),
+                                    entity -> !entityHasOwner(entity, false, false),
                                     entity -> {
-                                        if (entity instanceof EntityWolf entityWolf) {
-                                            return !entityWolf.hasOwner(false);
-                                        } else return true;
-                                    }, 1, 1)
+                                        var tmp = (Entity) entity.getMemoryData(NearestEntityMemory.class);
+                                        if (tmp == null) return false;
+                                        return attackTarget(tmp);
+                                    }
+                            ), 4, 1),
+                            new Behavior(new WolfLookPlayerExecutor(NearestFeedingPlayerMemory.class), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 3, 1),
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new RandomRoamExecutor(0.1f, 12, 250, false, -1, true, 10),
+                                    entity -> !entityHasOwner(entity, false, false), 1, 1)
                     ),
-                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20)),
+                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20), new NearestTargetEntitySensor<>(0, 16, 5, this::attackTarget)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
@@ -169,6 +186,13 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
         }
+
+        if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
+            var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
+            this.diffHandDamage[0] = damageList.get(0).getData();
+            this.diffHandDamage[1] = damageList.get(1).getData();
+            this.diffHandDamage[2] = damageList.get(2).getData();
+        }
     }
 
     @PowerNukkitXOnly
@@ -180,6 +204,9 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putBoolean("Sitting", this.sitting);
         this.namedTag.putString("OwnerName", this.ownerName);
+
+        if (diffHandDamage != null)
+            this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
@@ -253,6 +280,17 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        var result = super.attack(source);
+        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            if (entityDamageByEntityEvent.getDamager() instanceof Player player && player.isCreative()) return result;
+            //更新仇恨目标
+            getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
+        }
+        return result;
     }
 
     @Override
@@ -354,5 +392,44 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable {
             case ItemID.RABBIT_STEW -> 10;
             default -> 0;
         };
+    }
+
+    //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public boolean attackTarget(Entity entity) {
+        return switch (entity.getNetworkId()) {
+            case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlama.NETWORK_ID,
+                    EntitySheep.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+            default -> false;
+        };
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    private boolean entityHasOwner(Entity entity, boolean checkOnline, boolean defaultValue) {
+        if (entity instanceof EntityWolf entityWolf) {
+            return entityWolf.hasOwner(checkOnline);
+        } else return defaultValue;
+    }
+
+    @Override
+    public float[] getDiffHandDamage() {
+        return this.diffHandDamage;
+    }
+
+    @Override
+    public float getDiffHandDamage(int difficulty) {
+        return diffHandDamage[difficulty - 1];
+    }
+
+    @Override
+    public void setDiffHandDamage(float[] damages) {
+        this.diffHandDamage = damages;
+    }
+
+    @Override
+    public void setDiffHandDamage(int difficulty, float damage) {
+        diffHandDamage[difficulty - 1] = damage;
     }
 }

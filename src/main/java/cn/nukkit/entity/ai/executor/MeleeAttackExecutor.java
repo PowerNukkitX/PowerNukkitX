@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.CanAttack;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.EntityMemory;
@@ -33,6 +34,15 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
 
     protected Vector3 oldTarget;
 
+    /**
+     * 近战攻击执行器
+     *
+     * @param memoryClazz       记忆
+     * @param speed             移动向攻击目标的速度
+     * @param maxSenseRange     最大获取攻击目标范围
+     * @param clearDataWhenLose 失去目标时清空memoryClazz对应的记忆
+     * @param coolDown          攻击冷却时间(单位tick)
+     */
     public MeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
@@ -76,7 +86,13 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
 
         if (entity.distanceSquared(target) <= 4 && attackTick > coolDown) {
             Item item = entity instanceof EntityInventoryHolder holder ? holder.getItemInHand() : Item.fromString(MinecraftItemID.AIR.getNamespacedId());
-            float itemDamage = item.getAttackDamage();
+
+            float defaultDamage = 0;
+            if (entity instanceof CanAttack canAttack) {
+                defaultDamage = canAttack.getDiffHandDamage(entity.getServer().getDifficulty());
+            }
+            float itemDamage = item.getAttackDamage() + defaultDamage;
+
             Enchantment[] enchantments = item.getEnchantments();
             if (item.applyEnchantments()) {
                 for (Enchantment enchantment : enchantments) {

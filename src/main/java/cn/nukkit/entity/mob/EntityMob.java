@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.CanAttack;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -19,6 +20,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Utils;
 import lombok.Getter;
@@ -30,17 +32,25 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 
-public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder {
+public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, CanAttack {
 
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
+    public static final String DIFFICULTY_HAND_DAMAGE = "diffHandDamage";
 
     @Getter
     private EntityEquipmentInventory equipmentInventory;
 
     @Getter
     private EntityArmorInventory armorInventory;
+
+    /**
+     * 不同难度下实体空手能造成的伤害.
+     * <p>
+     * The damage that can be caused by the entity's empty hand at different difficulties.
+     */
+    protected float[] diffHandDamage = null;
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -66,6 +76,13 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             for (CompoundTag armorTag : armorList.getAll()) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
+        }
+        if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
+            var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
+            this.diffHandDamage = new float[3];
+            this.diffHandDamage[0] = damageList.get(0).getData();
+            this.diffHandDamage[1] = damageList.get(1).getData();
+            this.diffHandDamage[2] = damageList.get(2).getData();
         }
     }
 
@@ -98,6 +115,8 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
             this.namedTag.putList(armorTag);
         }
+        if (diffHandDamage != null)
+            this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
@@ -223,4 +242,23 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
         return true;
     }
 
+    @Override
+    public float[] getDiffHandDamage() {
+        return this.diffHandDamage;
+    }
+
+    @Override
+    public float getDiffHandDamage(int difficulty) {
+        return diffHandDamage[difficulty - 1];
+    }
+
+    @Override
+    public void setDiffHandDamage(float[] damages) {
+        this.diffHandDamage = damages;
+    }
+
+    @Override
+    public void setDiffHandDamage(int difficulty, float damage) {
+        diffHandDamage[difficulty - 1] = damage;
+    }
 }

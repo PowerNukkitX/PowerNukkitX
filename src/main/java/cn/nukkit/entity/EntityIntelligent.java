@@ -8,6 +8,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.BurnTimeMemory;
+import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -64,7 +65,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
 
     @PowerNukkitXOnly
-    public IBehaviorGroup getBehaviorGroup(){
+    public IBehaviorGroup getBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
 
@@ -109,6 +110,15 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Nullable
     public IMemoryStorage getMemoryStorage() {
         return getBehaviorGroup().getMemoryStorage();
+    }
+
+    @Nullable
+    public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
+        var memoryStorage = this.getMemoryStorage();
+        if (memoryStorage == null) return null;
+        if (memoryStorage.notEmpty(memoryClazz)) {
+            return memoryStorage.get(memoryClazz).getData();
+        } else return null;
     }
 
     /**
