@@ -812,6 +812,19 @@ public class CraftingManager {
         return null;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    @Nullable
+    public ModProcessRecipe matchModProcessRecipe(@Nonnull String category, @Nonnull List<Item> inputList) {
+        var recipeMap = getModProcessRecipeMap();
+        var subMap = recipeMap.get(category);
+        if (subMap != null) {
+            var uuid = getMultiItemHash(inputList);
+            return subMap.get(uuid);
+        }
+        return null;
+    }
+
     @PowerNukkitOnly("Public only in PowerNukkit")
     @Since("FUTURE")
     public static int getPotionHash(Item ingredient, Item potion) {
