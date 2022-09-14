@@ -10,6 +10,8 @@ import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.EventException;
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -32,6 +34,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     private final Map<DamageModifier, Float> originals;
 
     private SideEffect[] sideEffects = SideEffect.EMPTY_ARRAY;
+
+    private boolean breakShield = false;
+
+    private int ShieldBreakCoolDown = 100;
 
     private static Map<DamageModifier, Float> createDamageModifierMap(float baseDamage) {
         Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
@@ -169,6 +175,30 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             case FIRE_TICK, SUFFOCATION, DROWNING, HUNGER, FALL, VOID, MAGIC, SUICIDE -> false;
             default -> true;
         };
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public boolean isBreakShield() {
+        return breakShield;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setBreakShield(boolean breakShield) {
+        this.breakShield = breakShield;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public int getShieldBreakCoolDown() {
+        return ShieldBreakCoolDown;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setShieldBreakCoolDown(int shieldBreakCoolDown) {
+        ShieldBreakCoolDown = shieldBreakCoolDown;
     }
 
     public enum DamageModifier {

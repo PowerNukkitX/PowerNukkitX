@@ -47,7 +47,7 @@ public interface CommandSender extends Permissible {
      */
     void sendMessage(TextContainer message);
 
-    /**EntitySelector
+    /**
      * 返回命令发送者所在的服务器。<br>
      * Returns the server of the command sender.
      *

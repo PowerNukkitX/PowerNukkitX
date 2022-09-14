@@ -12,7 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author BeYkeRYkt (Nukkit Project)
  */
 @Deprecated
-@DeprecationDetails(since = "1.6.0.0-PNX",reason = "EntityTameable is moved to interface,which is better to use",replaceWith = "interface EntityTamable")
+@DeprecationDetails(since = "1.6.0.0-PNX", reason = "EntityTameable is moved to interface,which is better to use", replaceWith = "interface EntityTamable")
 public abstract class EntityTameable extends EntityAnimal implements EntityOwnable {
 
     public static final int DATA_TAMED_FLAG = 16;

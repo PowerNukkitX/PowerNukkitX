@@ -78,4 +78,9 @@ public class ShulkerBoxInventory extends ContainerInventory {
     public void sendSlot(int index, Player... players) {
         super.sendSlot(index, players);
     }
+
+    @Override
+    public boolean canCauseVibration() {
+        return true;
+    }
 }

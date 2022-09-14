@@ -24,10 +24,19 @@ public class EntitySnowball extends EntityProjectile {
     public static final int NETWORK_ID = 81;
     private static final byte[] particleCounts = new byte[24];
     private static int particleIndex = 0;
+
     static {
         for (int i = 0; i < particleCounts.length; i++) {
-            particleCounts[i] = (byte)(ThreadLocalRandom.current().nextInt(10) + 5);
+            particleCounts[i] = (byte) (ThreadLocalRandom.current().nextInt(10) + 5);
         }
+    }
+
+    public EntitySnowball(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
+
+    public EntitySnowball(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+        super(chunk, nbt, shootingEntity);
     }
 
     private static int nextParticleCount() {
@@ -66,14 +75,6 @@ public class EntitySnowball extends EntityProjectile {
     @Override
     protected float getDrag() {
         return 0.01f;
-    }
-
-    public EntitySnowball(FullChunk chunk, CompoundTag nbt) {
-        this(chunk, nbt, null);
-    }
-
-    public EntitySnowball(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
-        super(chunk, nbt, shootingEntity);
     }
 
     @Override

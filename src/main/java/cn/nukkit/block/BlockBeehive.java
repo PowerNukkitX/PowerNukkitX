@@ -11,6 +11,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -136,6 +138,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable, BlockEntit
             for(int i = 0; i < 3; ++i) {
                 level.dropItem(this, Item.get(ItemID.HONEYCOMB));
             }
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
             return true;
         }
         return false;

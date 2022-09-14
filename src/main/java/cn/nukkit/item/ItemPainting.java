@@ -6,6 +6,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -126,6 +128,9 @@ public class ItemPainting extends Item {
         }
 
         entity.spawnToAll();
+
+        level.getVibrationManager().callVibrationEvent(new VibrationEvent(player, position.clone(), VibrationType.ENTITY_PLACE));
+
         return true;
     }
 

@@ -2,10 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXOnly;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCactus;
 import cn.nukkit.block.BlockMagma;
@@ -40,6 +37,13 @@ import java.util.Map;
  */
 public abstract class EntityLiving extends Entity implements EntityDamageable {
 
+    protected int attackTime = 0;
+    protected boolean invisible = false;
+    protected float movementSpeed = 0.1f;
+    protected int turtleTicks = 0;
+    private boolean attackTimeByShieldKb;
+    private int attackTimeBefore;
+
     public EntityLiving(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -53,16 +57,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected float getDrag() {
         return 0.02f;
     }
-
-    protected int attackTime = 0;
-    private boolean attackTimeByShieldKb;
-    private int attackTimeBefore;
-
-    protected boolean invisible = false;
-
-    protected float movementSpeed = 0.1f;
-
-    protected int turtleTicks = 0;
 
     @Override
     protected void initEntity() {
@@ -233,7 +227,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 isBreathing = true;
             }
         }
-        
+
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, isBreathing);
 
         boolean hasUpdate = super.entityBaseTick(tickDiff);
@@ -394,12 +388,12 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return null;
     }
 
-    public void setMovementSpeed(float speed) {
-        this.movementSpeed = speed;
-    }
-
     public float getMovementSpeed() {
         return this.movementSpeed;
+    }
+
+    public void setMovementSpeed(float speed) {
+        this.movementSpeed = speed;
     }
 
     public int getAirTicks() {
@@ -446,12 +440,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             attacker.attackTimeByShieldKb = true;
         }
 
-        onBlock(damager, event.getAnimation());
+        onBlock(damager, source, event.getAnimation());
         return true;
     }
 
     @PowerNukkitOnly
-    protected void onBlock(Entity entity, boolean animate) {
+    @PowerNukkitXDifference(since = "1.19.21-r4", info = "add EntityDamageEvent param to help cal the armor damage")
+    protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
         if (animate) {
             getLevel().addSound(this, Sound.ITEM_SHIELD_BLOCK);
         }
@@ -466,7 +461,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public void setBlocking(boolean value) {
         this.setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_BLOCKING, value);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isPersistent() {

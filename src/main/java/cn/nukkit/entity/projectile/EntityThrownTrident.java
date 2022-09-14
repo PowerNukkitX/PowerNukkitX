@@ -46,39 +46,40 @@ public class EntityThrownTrident extends EntityProjectile {
     private static final String TAG_CREATIVE = "isCreative";
     private static final String TAG_PLAYER = "player";
     private static final String NAME_TRIDENT = "Trident";
-
+    private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
+    private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
+    @Since("FUTURE")
+    public boolean alreadyCollided;
     protected Item trident;
-
-    private Vector3 collisionPos;
-
-    private BlockVector3 stuckToBlockPos;
-
-    private int favoredSlot;
-
-    private boolean player;
-
-    // Enchantment
-    private int loyaltyLevel;
-
-    private boolean hasChanneling;
-
-    private int riptideLevel;
-
-    private int impalingLevel;
-
     // Default Values
     @PowerNukkitOnly
     protected float gravity = 0.04f;
-
     @PowerNukkitOnly
     protected float drag = 0.01f;
+    @Since("FUTURE")
+    protected int pickupMode;
+    private Vector3 collisionPos;
+    private BlockVector3 stuckToBlockPos;
+    private int favoredSlot;
+    private boolean player;
+    // Enchantment
+    private int loyaltyLevel;
+    private boolean hasChanneling;
+    private int riptideLevel;
+    private int impalingLevel;
 
-    private static final Vector3 defaultCollisionPos = new Vector3(0, 0, 0);
+    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
 
-    private static final BlockVector3 defaultStuckToBlockPos = new BlockVector3(0, 0, 0);
+    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
+        super(chunk, nbt, shootingEntity);
+    }
 
-    @Since("FUTURE") protected int pickupMode;
-    @Since("FUTURE") public boolean alreadyCollided;
+    @Deprecated
+    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
+        this(chunk, nbt, shootingEntity);
+    }
 
     @Override
     public int getNetworkId() {
@@ -108,19 +109,6 @@ public class EntityThrownTrident extends EntityProjectile {
     @Override
     public float getDrag() {
         return 0.01f;
-    }
-
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt) {
-        this(chunk, nbt, null);
-    }
-
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
-        super(chunk, nbt, shootingEntity);
-    }
-
-    @Deprecated
-    public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
-        this(chunk, nbt, shootingEntity);
     }
 
     @PowerNukkitOnly
@@ -185,14 +173,14 @@ public class EntityThrownTrident extends EntityProjectile {
         this.namedTag.put(TAG_TRIDENT, NBTIO.putItemHelper(this.trident));
         this.namedTag.putByte(TAG_PICKUP, this.pickupMode);
         this.namedTag.putList(new ListTag<DoubleTag>("CollisionPos")
-            .add(new DoubleTag("0", this.collisionPos.x))
-            .add(new DoubleTag("1", this.collisionPos.y))
-            .add(new DoubleTag("2", this.collisionPos.z))
+                .add(new DoubleTag("0", this.collisionPos.x))
+                .add(new DoubleTag("1", this.collisionPos.y))
+                .add(new DoubleTag("2", this.collisionPos.z))
         );
         this.namedTag.putList(new ListTag<IntTag>("StuckToBlockPos")
-            .add(new IntTag("0", this.stuckToBlockPos.x))
-            .add(new IntTag("1", this.stuckToBlockPos.y))
-            .add(new IntTag("2", this.stuckToBlockPos.z))
+                .add(new IntTag("0", this.stuckToBlockPos.x))
+                .add(new IntTag("1", this.stuckToBlockPos.y))
+                .add(new IntTag("2", this.stuckToBlockPos.z))
         );
         this.namedTag.putInt(TAG_FAVORED_SLOT, this.favoredSlot);
         this.namedTag.putBoolean(TAG_PLAYER, this.player);
@@ -216,13 +204,13 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @PowerNukkitOnly
-    public void setCritical(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
+    public boolean isCritical() {
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
     }
 
     @PowerNukkitOnly
-    public boolean isCritical() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
+    public void setCritical(boolean value) {
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
     }
 
     @Override

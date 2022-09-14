@@ -44,6 +44,10 @@ public interface LoginChainData {
 
     int getUIProfile();
 
+    String getWaterdogXUID();
+
+    String getWaterdogIP();
+
     @Since("1.2.1.0-PN")
     JsonObject getRawData();
 }

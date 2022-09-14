@@ -150,7 +150,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
-        if (Server.getInstance().isEnableExperimentMode()) {
+        if (Server.getInstance().isEnableExperimentMode() && !Server.getInstance().getConfig("settings.waterdogpe", false)) {
             this.putLInt(3); // Experiment count
             {
 //                this.putString("spectator_mode");
@@ -190,7 +190,11 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(Server.getInstance().isEnableExperimentMode()); // Experimental Gameplay
+        if (Server.getInstance().isEnableExperimentMode()) { // Experimental Gameplay
+            this.putBoolean(!Server.getInstance().getConfig("settings.waterdogpe", false)); // Why WaterDogPE require an extra optional boolean if this is set to true? I don't know.
+        } else {
+            this.putBoolean(false);
+        }
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */
@@ -199,7 +203,7 @@ public class StartGamePacket extends DataPacket {
         this.putString(this.worldName);
         this.putString(this.premiumWorldTemplateId);
         this.putBoolean(this.isTrial);
-        this.putUnsignedVarInt(this.isMovementServerAuthoritative ? 1 : 0); // 2 - rewind
+        this.putVarInt(this.isMovementServerAuthoritative ? 1 : 0); // 2 - rewind
         this.putVarInt(0); // RewindHistorySize
         this.putBoolean(false); // isServerAuthoritativeBlockBreaking
         this.putLLong(this.currentTick);

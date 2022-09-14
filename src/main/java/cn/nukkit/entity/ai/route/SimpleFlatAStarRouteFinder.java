@@ -8,11 +8,9 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.VectorMath;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
-import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +91,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.finished = false;
         this.searching = true;
         this.interrupt = false;
-        this.reachable = true;
+        var currentReachable = true;
+        //若实体未处于active状态，则关闭路径平滑
+        this.setEnableFloydSmooth(this.entity.isActive());
         //清空openList和closeList
         openList.clear();
         closeList.clear();
@@ -115,6 +115,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 currentSearchDepth = 0;
                 this.searching = false;
                 this.finished = true;
+                this.reachable = false;
                 return false;
             }
             //将当前节点周围的有效节点放入openList中
@@ -126,7 +127,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
             } else {
                 this.searching = false;
                 this.finished = true;
-                this.reachable = false;
+                currentReachable = false;
                 break;
             }
         }
@@ -140,8 +141,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
         //如果无法到达，则取最接近终点的一个Node作为尾节点
         Node reachableNode = null;
-        reachableTarget = this.reachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
-        ArrayList<Node> findingPath = this.reachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
+        reachableTarget = currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
+        ArrayList<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
         //使用floyd平滑路径
         if (enableFloydSmooth)
             findingPath = FloydSmooth(findingPath);
@@ -159,9 +160,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 //            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
 //        });
 
+        this.reachable = currentReachable;
         this.finished = true;
         this.searching = false;
-        this.reachable = true;
 
         return true;
     }
@@ -459,66 +460,74 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      */
     protected boolean hasBarrier(Vector3 pos1, Vector3 pos2) {
         if (pos1.equals(pos2)) return false;
-        if (pos1.getFloorY() != pos2.getFloorY()) return true;
-        boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
-        if (traverseDirection) {
-            double loopStart = Math.min(pos1.getX(), pos2.getX());
-            double loopEnd = Math.max(pos1.getX(), pos2.getX());
-            ArrayList<Vector3> list = new ArrayList<>();
-            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
-                double result;
-                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_X_OBTAIN_Y)) != Double.MAX_VALUE)
-                    list.add(new Vector3(i, pos1.getY(), result));
-            }
-            return hasBlocksAround(list);
-        } else {
-            double loopStart = Math.min(pos1.getZ(), pos2.getZ());
-            double loopEnd = Math.max(pos1.getZ(), pos2.getZ());
-            ArrayList<Vector3> list = new ArrayList<>();
-            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
-                double result;
-                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_Y_OBTAIN_X)) != Double.MAX_VALUE)
-                    list.add(new Vector3(result, pos1.getY(), i));
-            }
-
-            return hasBlocksAround(list);
-        }
-
+        return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
+                (pos) -> {
+                    var offsetX = pos.x - this.entity.x;
+                    var offsetY = pos.y - this.entity.y;
+                    var offsetZ = pos.z - this.entity.z;
+                    var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
+                    return this.level.getTickCachedCollisionBlocks(offsetBox, true).length > 0;
+                }
+        );
+//        if (pos1.equals(pos2)) return false;
+//        if (pos1.getFloorY() != pos2.getFloorY()) return true;
+//        boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
+//        ArrayList<Vector3> list = new ArrayList<>();
+//        if (traverseDirection) {
+//            double loopStart = Math.min(pos1.getX(), pos2.getX());
+//            double loopEnd = Math.max(pos1.getX(), pos2.getX());
+//            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
+//                double result;
+//                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_X_OBTAIN_Y)) != Double.MAX_VALUE)
+//                    list.add(new Vector3(i, pos1.getY(), result));
+//            }
+//        } else {
+//            double loopStart = Math.min(pos1.getZ(), pos2.getZ());
+//            double loopEnd = Math.max(pos1.getZ(), pos2.getZ());
+//            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
+//                double result;
+//                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_Y_OBTAIN_X)) != Double.MAX_VALUE)
+//                    list.add(new Vector3(result, pos1.getY(), i));
+//            }
+//        }
+//        return hasBlocksAround(list);
     }
 
-    protected boolean hasBlocksAround(ArrayList<Vector3> list) {
-        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
-        double height = this.entity.getHeight() * this.entity.getScale();
-        for (Vector3 vector3 : list) {
-            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
-
-            boolean xIsInt = vector3.getX() % 1 == 0;
-            boolean zIsInt = vector3.getZ() % 1 == 0;
-            if (xIsInt && zIsInt) {
-                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
-                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-                    return true;
-            } else if (xIsInt) {
-                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-                    return true;
-            } else if (zIsInt) {
-                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-                    return true;
-            } else {
-                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    //todo: 实体在水面上时不能正确平滑路径
-    //虽然说水面上也没必要平滑:(
+    // 保持向前兼容
+//    protected boolean hasBlocksAround(ArrayList<Vector3> list) {
+//        return hasBlocksAround((List<Vector3>) list);
+//    }
+//
+//    protected boolean hasBlocksAround(List<Vector3> list) {
+//        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
+//        double height = this.entity.getHeight() * this.entity.getScale();
+//        for (Vector3 vector3 : list) {
+//            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
+//            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
+//
+//            boolean xIsInt = vector3.getX() % 1 == 0;
+//            boolean zIsInt = vector3.getZ() % 1 == 0;
+//            if (xIsInt && zIsInt) {
+//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
+//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+//                    return true;
+//            } else if (xIsInt) {
+//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+//                    return true;
+//            } else if (zIsInt) {
+//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
+//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
+//                    return true;
+//            } else {
+//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
+//                    return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * 使用Floyd算法平滑A*路径

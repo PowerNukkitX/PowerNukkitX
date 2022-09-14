@@ -1,11 +1,13 @@
-package cn.nukkit.utils;
+package cn.nukkit.math;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.Location;
-import cn.nukkit.math.Vector3;
 import lombok.Getter;
 
+import java.util.Vector;
+
+//todo: 怀疑有bug且性能低下，考虑重写
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter

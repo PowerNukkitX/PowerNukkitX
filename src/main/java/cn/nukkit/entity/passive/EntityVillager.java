@@ -24,11 +24,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityVillager extends EntityCreature implements InventoryHolder, EntityNPC, EntityAgeable {
 
     public static final int NETWORK_ID = 115;
-
-    public EntityVillager(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-
+    /**
+     * 代表交易配方
+     */
+    public final ListTag<Tag> recipes = new ListTag<>("Recipes");
+    /**
+     * 用于控制村民的等级成长所需要的经验
+     * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
+     */
+    public int[] tierExpRequirement;
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected TradeInventory inventory;
@@ -53,15 +57,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      */
     protected int tradeExp;
     /**
-     * 用于控制村民的等级成长所需要的经验
-     * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
-     */
-    public int[] tierExpRequirement;
-    /**
-     * 代表交易配方
-     */
-    public final ListTag<Tag> recipes = new ListTag<>("Recipes");
-    /**
      * 代表村民的职业<br>
      * 0 generic 普通<br>
      * 1 farmer 农民<br>
@@ -80,34 +75,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      * 14 nitwit 傻子<br>
      */
     protected int profession;
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
-    @Override
-    public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
-        return 0.6f;
-    }
-
-    @Override
-    public float getHeight() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
-        return 1.9f;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Override
-    public String getOriginalName() {
-        return "Villager";
-    }
 
     {
         var input1 = Item.fromString("minecraft:string");
@@ -157,6 +124,38 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
                         .setTraderExp(2)
                         .build());
         this.tierExpRequirement = new int[]{0, 10, 70, 150, 250};
+    }
+
+    public EntityVillager(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
+    }
+
+    @Override
+    public float getWidth() {
+        if (this.isBaby()) {
+            return 0.3f;
+        }
+        return 0.6f;
+    }
+
+    @Override
+    public float getHeight() {
+        if (this.isBaby()) {
+            return 0.95f;
+        }
+        return 1.9f;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    @Override
+    public String getOriginalName() {
+        return "Villager";
     }
 
     @PowerNukkitXOnly
@@ -269,6 +268,15 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
+     * @return 该村民是否可以交易
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public boolean getCanTrade() {
+        return canTrade;
+    }
+
+    /**
      * 设置村民是否可以交易
      *
      * @param canTrade true 可以交易
@@ -281,12 +289,12 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
-     * @return 该村民是否可以交易
+     * @return 交易UI的显示名称
      */
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public boolean getCanTrade() {
-        return canTrade;
+    public String getDisplayName() {
+        return displayName;
     }
 
     /**
@@ -297,15 +305,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         this.namedTag.putString("displayName", displayName);
-    }
-
-    /**
-     * @return 交易UI的显示名称
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
-    public String getDisplayName() {
-        return displayName;
     }
 
     /**
@@ -328,6 +327,13 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
+     * @return 村民所允许的最大交易等级
+     */
+    public int getMaxTradeTier() {
+        return maxTradeTier;
+    }
+
+    /**
      * @param maxTradeTier 设置村民所允许的最大交易等级
      */
     public void setMaxTradeTier(int maxTradeTier) {
@@ -337,10 +343,10 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
-     * @return 村民所允许的最大交易等级
+     * @return 村民当前的经验值
      */
-    public int getMaxTradeTier() {
-        return maxTradeTier;
+    public int getTradeExp() {
+        return tradeExp;
     }
 
     /**
@@ -350,13 +356,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         this.tradeExp = tradeExp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, 10));
         this.namedTag.putByte("tradeExp", this.tradeTier);
-    }
-
-    /**
-     * @return 村民当前的经验值
-     */
-    public int getTradeExp() {
-        return tradeExp;
     }
 
     @Override

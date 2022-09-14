@@ -10,6 +10,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -231,12 +233,24 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
     public void setPowered(boolean value) {
         if (value ^ this.isPowered()) {
             this.setDamage(this.getDamage() ^ 0x08);
+            var pos = this.add(0.5, 0.5, 0.5);
+            if (value) {
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ACTIVATE));
+            } else {
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DEACTIVATE));
+            }
         }
     }
 
     public void setAttached(boolean value) {
         if (value ^ this.isAttached()) {
             this.setDamage(this.getDamage() ^ 0x04);
+            var pos = this.add(0.5, 0.5, 0.5);
+            if (value) {
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_ATTACH));
+            } else {
+                this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, pos, VibrationType.BLOCK_DETACH));
+            }
         }
     }
 

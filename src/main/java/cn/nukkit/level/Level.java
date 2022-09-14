@@ -40,6 +40,10 @@ import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
+import cn.nukkit.level.vibration.SimpleVibrationManager;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationManager;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.metadata.BlockMetadataStore;
@@ -357,6 +361,10 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private final Int2ObjectOpenHashMap<IntList> fakeOreToPutRuntimeIds = new Int2ObjectOpenHashMap<>(4);
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    private final VibrationManager vibrationManager = new SimpleVibrationManager(this);
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private static final IntSet transparentBlockRuntimeIds = new IntOpenHashSet(256);
@@ -1956,6 +1964,63 @@ public class Level implements ChunkManager, Metadatable {
         return bb != null && bb.getAverageEdgeLength() >= 1;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb) {
+        return this.getTickCachedCollisionBlocks(bb, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst) {
+        return getTickCachedCollisionBlocks(bb, targetFirst, false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck) {
+        return getTickCachedCollisionBlocks(bb, targetFirst, ignoreCollidesCheck, block -> block.getId() != 0);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public Block[] getTickCachedCollisionBlocks(AxisAlignedBB bb, boolean targetFirst, boolean ignoreCollidesCheck, Predicate<Block> condition) {
+        int minX = NukkitMath.floorDouble(bb.getMinX());
+        int minY = NukkitMath.floorDouble(bb.getMinY());
+        int minZ = NukkitMath.floorDouble(bb.getMinZ());
+        int maxX = NukkitMath.ceilDouble(bb.getMaxX());
+        int maxY = NukkitMath.ceilDouble(bb.getMaxY());
+        int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+
+        List<Block> collides = new ArrayList<>();
+
+        if (targetFirst) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getTickCachedBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            return new Block[]{block};
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        Block block = this.getTickCachedBlock(this.temporalVector.setComponents(x, y, z), false);
+                        if (block != null && condition.test(block) && (ignoreCollidesCheck || block.collidesWithBB(bb))) {
+                            collides.add(block);
+                        }
+                    }
+                }
+            }
+        }
+
+        return collides.toArray(Block.EMPTY_ARRAY);
+    }
+
     public AxisAlignedBB[] getCollisionCubes(Entity entity, AxisAlignedBB bb) {
         return this.getCollisionCubes(entity, bb, true);
     }
@@ -2877,6 +2942,8 @@ public class Level implements ChunkManager, Metadatable {
 
         target.onBreak(item);
 
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, target.add(0.5, 0.5, 0.5), VibrationType.BLOCK_DESTROY));
+
         item.useOn(target);
         if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
             if (player != null) {
@@ -3043,7 +3110,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         //cause bug (eg: frog_spawn) (and I don't know what this is for)
-        //@todo 2022/6/11 daoge_cmd
+        //@todo 2022/6/11 daoge_cmd 特判处理青蛙卵
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
@@ -3145,6 +3212,9 @@ public class Level implements ChunkManager, Metadatable {
         if (item.getCount() <= 0) {
             item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
+
+        this.getVibrationManager().callVibrationEvent(new VibrationEvent(player, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+
         return item;
     }
 
@@ -4442,7 +4512,9 @@ public class Level implements ChunkManager, Metadatable {
             pk.headYaw = (float) headYaw;
             pk.flags |= MoveEntityDeltaPacket.FLAG_HAS_HEAD_YAW;
         }
-
+        if (entity.onGround) {
+            pk.flags |= MoveEntityDeltaPacket.FLAG_ON_GROUND;
+        }
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
 
@@ -4972,6 +5044,12 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r3")
+    public VibrationManager getVibrationManager(){
+        return this.vibrationManager;
     }
 
     @PowerNukkitXOnly

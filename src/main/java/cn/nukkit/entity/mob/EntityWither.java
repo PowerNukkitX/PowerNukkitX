@@ -14,13 +14,13 @@ public class EntityWither extends EntityFlyingMob implements EntitySmite {
 
     public static final int NETWORK_ID = 52;
 
+    public EntityWither(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
-    }
-
-    public EntityWither(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class EntityWither extends EntityFlyingMob implements EntitySmite {
     public boolean isPreventingSleep(Player player) {
         return true;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Override

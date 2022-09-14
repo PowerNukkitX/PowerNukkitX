@@ -90,13 +90,13 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
         this.setNameTagVisible(true);
         this.setNameTagAlwaysVisible(true);
         this.setVariant(this.namedTag.getInt("Variant"));
-        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT),this);
+        this.dialog = new FormWindowDialog(this.namedTag.getString(KEY_DIALOG_TITLE).isEmpty() ? "NPC" : this.namedTag.getString(KEY_DIALOG_TITLE), this.namedTag.getString(KEY_DIALOG_CONTENT), this);
         this.setNameTag(this.dialog.getTitle());
         if (!this.namedTag.getString(KEY_DIALOG_SKINDATA).isEmpty())
             this.dialog.setSkinData(this.namedTag.getString(KEY_DIALOG_SKINDATA));
         if (!this.namedTag.getString(KEY_DIALOG_BUTTONS).isEmpty())
             this.dialog.setButtonJSONData(this.namedTag.getString(KEY_DIALOG_BUTTONS));
-        this.dialog.addHandler((player,response) -> {
+        this.dialog.addHandler((player, response) -> {
             if (response.getRequestType() == NPCRequestPacket.RequestType.SET_ACTIONS) {
                 if (!response.getData().isEmpty()) {
                     this.dialog.setButtonJSONData(response.getData());
@@ -107,7 +107,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
                 this.dialog.setContent(response.getData());
                 this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, response.getData()));
             }
-            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME){
+            if (response.getRequestType() == NPCRequestPacket.RequestType.SET_NAME) {
                 this.dialog.setTitle(response.getData());
                 this.setNameTag(response.getData());
             }
@@ -116,24 +116,24 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                 ElementDialogButton clickedButton = response.getClickedButton();
-                for(ElementDialogButton.CmdLine line : clickedButton.getData()){
-                    Server.getInstance().dispatchCommand(new NPCCommandSender(this,player),line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                for (ElementDialogButton.CmdLine line : clickedButton.getData()) {
+                    Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                 }
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_OPENING_COMMANDS) {
-                for(ElementDialogButton button : this.dialog.getButtons()){
+                for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_ENTER) {
-                        for(ElementDialogButton.CmdLine line : button.getData()) {
-                            Server.getInstance().dispatchCommand(new NPCCommandSender(this,player),line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                        for (ElementDialogButton.CmdLine line : button.getData()) {
+                            Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                         }
                     }
                 }
             }
             if (response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
-                for(ElementDialogButton button : this.dialog.getButtons()){
+                for (ElementDialogButton button : this.dialog.getButtons()) {
                     if (button.getMode() == ElementDialogButton.Mode.ON_EXIT) {
-                        for(ElementDialogButton.CmdLine line : button.getData()) {
-                            Server.getInstance().dispatchCommand(new NPCCommandSender(this,player),line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
+                        for (ElementDialogButton.CmdLine line : button.getData()) {
+                            Server.getInstance().dispatchCommand(new NPCCommandSender(this, player), line.cmd_line.startsWith("/") ? line.cmd_line.substring(1) : line.cmd_line);
                         }
                     }
                 }
@@ -160,7 +160,7 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         //对于创造模式玩家，NPC发送过去的dialog的sceneName必须为空，否则客户端会不允许修改对话框内容
         //另外的，我们不需要记录发送给创造模式玩家的对话框，首先因为我们无法清除，其次没有必要
-        player.showDialogWindow(this.dialog,!player.isCreative());
+        player.showDialogWindow(this.dialog, !player.isCreative());
         return true;
     }
 
@@ -176,15 +176,15 @@ public class EntityNPCEntity extends EntityLiving implements EntityNPC, EntityIn
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void setVariant(int variant){
-        this.variant = variant;
-        this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
+    public int getVariant() {
+        return this.variant;
     }
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public int getVariant(){
-        return this.variant;
+    public void setVariant(int variant) {
+        this.variant = variant;
+        this.setDataProperty(new IntEntityData(DATA_VARIANT, variant));
     }
 
     @PowerNukkitXOnly

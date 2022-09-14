@@ -20,7 +20,7 @@ public abstract class EntitySwimmingMob extends EntityMob {
     @Override
     public boolean attack(EntityDamageEvent source) {
         super.attack(source);
-        if(source.getCause() == EntityDamageEvent.DamageCause.DROWNING){
+        if (source.getCause() == EntityDamageEvent.DamageCause.DROWNING) {
             source.setCancelled(true);
             return false;
         }

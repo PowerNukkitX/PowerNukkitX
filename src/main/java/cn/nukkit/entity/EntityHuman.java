@@ -2,9 +2,11 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.IntPositionEntityData;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
@@ -36,6 +38,11 @@ public class EntityHuman extends EntityHumanType {
 
     protected UUID uuid;
     protected byte[] rawUUID;
+    protected Skin skin;
+
+    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
 
     @Override
     public float getWidth() {
@@ -61,7 +68,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getEyeHeight() {
-        return (float)(boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
+        return (float) (boundingBox.getMaxY() - boundingBox.getMinY() - 0.18);
     }
 
     @Override
@@ -69,19 +76,17 @@ public class EntityHuman extends EntityHumanType {
         return 1.62f;
     }
 
-    protected Skin skin;
-
     @Override
     public int getNetworkId() {
         return -1;
     }
 
-    public EntityHuman(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-
     public Skin getSkin() {
         return skin;
+    }
+
+    public void setSkin(Skin skin) {
+        this.skin = skin;
     }
 
     @Override
@@ -91,10 +96,6 @@ public class EntityHuman extends EntityHumanType {
 
     public byte[] getRawUniqueId() {
         return rawUUID;
-    }
-
-    public void setSkin(Skin skin) {
-        this.skin = skin;
     }
 
     @Override
@@ -213,6 +214,10 @@ public class EntityHuman extends EntityHumanType {
                 this.setSkin(newSkin);
             }
 
+            if (this.getSkin() == null) {
+                this.setSkin(new Skin());
+            }
+
             this.uuid = Utils.dataToUUID(String.valueOf(this.getId()).getBytes(StandardCharsets.UTF_8), this.getSkin()
                     .getSkinData().data, this.getNameTag().getBytes(StandardCharsets.UTF_8));
         }
@@ -226,7 +231,7 @@ public class EntityHuman extends EntityHumanType {
     public String getOriginalName() {
         return "Human";
     }
-    
+
     @Override
     public String getName() {
         return this.getNameTag();
@@ -384,15 +389,15 @@ public class EntityHuman extends EntityHumanType {
 
     @PowerNukkitOnly
     @Override
-    protected void onBlock(Entity entity, boolean animate) {
-        super.onBlock(entity, animate);
+    protected void onBlock(Entity entity, EntityDamageEvent event, boolean animate) {
+        super.onBlock(entity, event, animate);
         Item shield = getInventory().getItemInHand();
         Item shieldOffhand = getOffhandInventory().getItem(0);
         if (shield.getId() == ItemID.SHIELD) {
-            shield = damageArmor(shield, entity);
+            shield = damageArmor(shield, entity, event);
             getInventory().setItemInHand(shield);
         } else if (shieldOffhand.getId() == ItemID.SHIELD) {
-            shieldOffhand = damageArmor(shieldOffhand, entity);
+            shieldOffhand = damageArmor(shieldOffhand, entity, event);
             getOffhandInventory().setItem(0, shieldOffhand);
         }
     }
