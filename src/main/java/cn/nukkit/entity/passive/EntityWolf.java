@@ -4,17 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.CanAttack;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
-import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.*;
 import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
@@ -23,6 +20,7 @@ import cn.nukkit.entity.ai.executor.entity.WolfAttackExecutor;
 import cn.nukkit.entity.ai.executor.entity.WolfLookPlayerExecutor;
 import cn.nukkit.entity.ai.executor.entity.WolfMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.memory.*;
+import cn.nukkit.entity.ai.memory.entity.WolfNearestSkeletonMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
@@ -59,7 +57,7 @@ import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 投喂肉可以繁殖  攻击会红眼反击你  野生狼不会被刷新
  */
-public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, CanAttack {
+public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack {
     public static final int NETWORK_ID = 14;
     private Player owner = null;
     private String ownerName = "";
@@ -67,7 +65,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
     private boolean angry = false;
     private DyeColor collarColor = DyeColor.RED;//项圈颜色
     private IBehaviorGroup behaviorGroup;
-    private float[] diffHandDamage = new float[]{3, 4, 6};
+    private float[] diffHandDamage;
 
     @Override
     public int getNetworkId() {
@@ -91,24 +89,27 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
                             )
                     ),
                     Set.of(
-//                            new Behavior(new RandomRoamExecutor(this.movementSpeed, 12, 40, true, 100, true, 10), new AllMatchEvaluator(
-//                                    new PassByTimeEvaluator<>(AttackMemory.class, 0, 100),
-//                                        entity -> entityHasOwner(entity,false,true)
-//                                    ), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 6, 1),
-                            new Behavior(new WolfAttackExecutor(AttackTargetMemory.class, 0.3f, 33, true, 15), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
-                                    entity -> !entityHasOwner(entity, false, false)
-                            ), 5, 1),
-                            new Behavior(new WolfMoveToOwnerExecutor(0.3f, true, 15), entity -> {
+                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 6, 1),
+                            new Behavior(new WolfMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityWolf entityWolf && entityWolf.hasOwner()) {
                                     var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
                                     if (player == null) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;
-                            }, 4, 1),
-                            new Behavior(new WolfAttackExecutor(NearestEntityMemory.class, 0.3f, 14, true, 15), new AllMatchEvaluator(
+                            }, 6, 1),
+                            new Behavior(new WolfAttackExecutor(AttackTargetMemory.class, null, 0.35f, 33, true, 15), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
+                                    entity -> !entityHasOwner(entity, false, false)
+                            ), 5, 1),
+                            new Behavior(new WolfAttackExecutor(PlayerAttackEntityMemory.class, WolfNearestSkeletonMemory.class, 0.35f, 33, true, 15), new AllMatchEvaluator(
+                                    new AnyMatchEvaluator(
+                                            new MemoryCheckNotEmptyEvaluator(PlayerAttackEntityMemory.class),
+                                            new MemoryCheckNotEmptyEvaluator(WolfNearestSkeletonMemory.class)
+                                    ),
+                                    entity -> entityHasOwner(entity, true, false)
+                            ), 5, 1),
+                            new Behavior(new WolfAttackExecutor(NearestEntityMemory.class, null, 0.35f, 14, true, 15), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(NearestEntityMemory.class),
                                     entity -> !entityHasOwner(entity, false, false),
                                     entity -> {
@@ -122,7 +123,14 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 250, false, -1, true, 10),
                                     entity -> !entityHasOwner(entity, false, false), 1, 1)
                     ),
-                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20), new NearestTargetEntitySensor<>(0, 16, 5, this::attackTarget)),
+                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20),
+                            new NearestTargetEntitySensor<>(0, 16, 5, NearestEntityMemory.class, this::attackTarget),
+                            new NearestTargetEntitySensor<>(0, 16, 10, WolfNearestSkeletonMemory.class, entity -> switch (entity.getNetworkId()) {
+                                case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
+                                        true;
+                                default -> false;
+                            })
+                    ),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
@@ -161,6 +169,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(8);
+        this.setHealth(8);
 
         if (this.namedTag.contains("Sitting")) {
             if (this.namedTag.getBoolean("Sitting")) {
@@ -193,6 +202,10 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
             this.diffHandDamage[1] = damageList.get(1).getData();
             this.diffHandDamage[2] = damageList.get(2).getData();
         }
+
+        if (this.diffHandDamage == null) {
+            this.setDiffHandDamage(new float[]{3, 4, 6});
+        }
     }
 
     @PowerNukkitXOnly
@@ -204,7 +217,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putBoolean("Sitting", this.sitting);
         this.namedTag.putString("OwnerName", this.ownerName);
-
         if (diffHandDamage != null)
             this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
@@ -240,6 +252,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
                     packet.eid = this.getId();
                     packet.event = EntityEventPacket.TAME_SUCCESS;
                     player.dataPacket(packet);
+                    player.getPets().add(this.getId());
 
                     this.setMaxHealth(20);
                     this.setHealth(20);
@@ -302,6 +315,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
     public void setOwnerName(String playerName) {
         var player = getServer().getPlayerExact(playerName);
         if (player == null) return;
+        player.getPets().add(this.getId());
         this.owner = player;
         this.ownerName = playerName;
         this.setDataProperty(new LongEntityData(DATA_OWNER_EID, player.getId()));
@@ -426,10 +440,12 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, Ca
     @Override
     public void setDiffHandDamage(float[] damages) {
         this.diffHandDamage = damages;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
     public void setDiffHandDamage(int difficulty, float damage) {
-        diffHandDamage[difficulty - 1] = damage;
+        this.diffHandDamage[difficulty - 1] = damage;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 }

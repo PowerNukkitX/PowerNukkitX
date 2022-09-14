@@ -12,10 +12,12 @@ import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
+import cn.nukkit.entity.ai.memory.PlayerAttackEntityMemory;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.passive.EntityNPCEntity;
+import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -345,6 +347,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
+
+    //only runtime
+    protected final Set<Long> pets = new HashSet<>();
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public Set<Long> getPets() {
+        return this.pets;
+    }
 
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
@@ -1830,7 +1841,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
+                        if (delta > 0.0001d)
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
                         if (delta > 0.0001d) {
@@ -4365,6 +4377,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
 
+                                    //设置PlayerAttackMemory，这里用于宠物狼的实现
+                                    if (!this.pets.isEmpty()) {
+                                        for (var i : pets) {
+                                            if (this.getLevel().getEntity(i) instanceof EntityWolf entityWolf) {
+                                                entityWolf.getMemoryStorage().get(PlayerAttackEntityMemory.class).setData(target);
+                                            }
+                                        }
+                                    }
+
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -5575,10 +5596,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (super.attack(source)) { //!source.isCancelled()
             if (this.getLastDamageCause() == source && this.spawned) {
-                if (source instanceof EntityDamageByEntityEvent) {
-                    Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+                if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+                    Entity damager = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
+                    }
+
+                    if (!getPets().isEmpty()) {
+                        for (var i : getPets()) {
+                            if (this.getLevel().getEntity(i) instanceof EntityWolf entityWolf) {
+                                //更新wolf AttackTargetMemory记忆
+                                entityWolf.getMemoryStorage().setData(PlayerAttackEntityMemory.class, entityDamageByEntityEvent.getDamager());
+                            }
+                        }
                     }
                 }
                 EntityEventPacket pk = new EntityEventPacket();

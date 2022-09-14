@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public interface CanAttack {
+public interface EntityCanAttack {
     float[] getDiffHandDamage();
 
     float getDiffHandDamage(int difficulty);

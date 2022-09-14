@@ -3,8 +3,8 @@ package cn.nukkit.entity.ai.executor.entity;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.CanAttack;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
@@ -59,8 +59,8 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
 
             float damage = 0;
-            if (entity instanceof CanAttack canAttack) {
-                damage = canAttack.getDiffHandDamage(entity.getServer().getDifficulty());
+            if (entity instanceof EntityCanAttack entityCanAttack) {
+                damage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
             }
             damages.put(EntityDamageEvent.DamageModifier.BASE, damage);
 

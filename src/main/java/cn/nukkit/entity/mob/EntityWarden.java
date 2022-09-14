@@ -20,7 +20,7 @@ import cn.nukkit.entity.ai.executor.entity.WardenSniffExecutor;
 import cn.nukkit.entity.ai.executor.entity.WardenViolentAnimationExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 import cn.nukkit.entity.ai.memory.RouteUnreachableTimeMemory;
-import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
+import cn.nukkit.entity.ai.memory.entity.WardenAngerValueMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
@@ -175,7 +175,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         this.setAmbientSoundIntervalRange(16.0f);
         this.level.getVibrationManager().addListener(this);
         if (this.diffHandDamage == null) {
-            this.diffHandDamage = new float[]{16, 30, 45};
+            this.setDiffHandDamage(new float[]{16, 30, 45});
         }
     }
 

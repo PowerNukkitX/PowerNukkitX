@@ -35,6 +35,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
@@ -1949,15 +1950,24 @@ public abstract class Entity extends Location implements Metadatable {
 
         if (!this.isAlive()) {
             ++this.deadTicks;
-            if (this.deadTicks >= 10) {
+            if (this.deadTicks >= 15) {
                 //apply death smoke cloud only if it is a creature
                 if (this instanceof EntityCreature) {
-                    //death smoke cloud
-                    EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
-
-                    Server.broadcastPacket(this.hasSpawned.values(), pk);
+                    //通过碰撞箱大小动态添加 death smoke cloud
+                    var aabb = this.getBoundingBox();
+                    for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
+                        for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
+                            for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
+                                this.getLevel().addParticle(new ExplodeParticle(new Vector3(x, y, z)));
+                            }
+                        }
+                    }
+                    //使用DEATH_SMOKE_CLOUD会导致两次死亡音效
+//                    EntityEventPacket pk = new EntityEventPacket();
+//                    pk.eid = this.getId();
+//                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
+//
+//                    Server.broadcastPacket(this.hasSpawned.values(), pk);
                 }
                 this.despawnFromAll();
                 if (!this.isPlayer) {

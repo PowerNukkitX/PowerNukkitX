@@ -14,7 +14,7 @@ public interface IMemoryStorage {
     /**
      * 写入记忆
      *
-     * @param memory 内存
+     * @param memory 记忆
      */
     void put(IMemory<?> memory);
 
@@ -36,13 +36,13 @@ public interface IMemoryStorage {
 
     /**
      * @param memoryClazz 记忆类型
-     * @return boolean 该记忆类型是否为空
+     * @return boolean 该记忆类型对应的数据是否为null
      */
     <T extends IMemory<?>> boolean isEmpty(Class<T> memoryClazz);
 
     /**
      * @param memoryClazz 记忆类型
-     * @return boolean 该记忆类型非空
+     * @return boolean 该记忆类型对应的数据非null
      */
     <T extends IMemory<?>> boolean notEmpty(Class<T> memoryClazz);
 

@@ -2,7 +2,7 @@ package cn.nukkit.entity.ai.sensor;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.NearestEntityMemory;
+import cn.nukkit.entity.ai.memory.EntityMemory;
 import cn.nukkit.utils.SortedList;
 
 import java.util.Collections;
@@ -21,21 +21,24 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
     protected Function<T, Boolean> target;
 
-    public NearestTargetEntitySensor(double minRange, double maxRange) {
-        this(minRange, maxRange, 1, null);
+    protected Class<? extends EntityMemory<Entity>> memoryClazz;
+
+    public NearestTargetEntitySensor(double minRange, double maxRange, Class<? extends EntityMemory<Entity>> targetMemory) {
+        this(minRange, maxRange, 1, targetMemory, null);
     }
 
-    public NearestTargetEntitySensor(double minRange, double maxRange, int period, Function<T, Boolean> target) {
+    public NearestTargetEntitySensor(double minRange, double maxRange, int period, Class<? extends EntityMemory<Entity>> targetMemory, Function<T, Boolean> target) {
         this.minRange = minRange;
         this.maxRange = maxRange;
         this.period = period;
+        this.memoryClazz = targetMemory;
         this.target = target;
     }
 
     @Override
     public void sense(EntityIntelligent entity) {
-        var currentMemory = Objects.requireNonNull(entity.getMemoryStorage()).get(NearestEntityMemory.class);
-        if (currentMemory.getData() != null) return;
+        var currentMemory = Objects.requireNonNull(entity.getMemoryStorage()).get(memoryClazz);
+        if (currentMemory.getData() != null && currentMemory.getData().isAlive()) return;
         double minRangeSquared = this.minRange * this.minRange;
         double maxRangeSquared = this.maxRange * this.maxRange;
         //寻找范围内最近的实体
@@ -43,8 +46,7 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
 
         for (Entity p : entity.getLevel().getEntities()) {
             if (entity.distanceSquared(p) <= maxRangeSquared && entity.distanceSquared(p) >= minRangeSquared) {
-                if (target == null) return;
-                if (target.apply((T) p)) {
+                if (target == null || target.apply((T) p)) {
                     sortEntities.add(p);
                 }
             }

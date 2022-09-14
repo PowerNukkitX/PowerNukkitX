@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.entity.CanAttack;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 
-public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, CanAttack {
+public abstract class EntityMob extends EntityIntelligent implements EntityInventoryHolder, EntityCanAttack {
 
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
@@ -50,7 +50,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
      * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
-    protected float[] diffHandDamage = null;
+    protected float[] diffHandDamage;
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -249,16 +249,18 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public float getDiffHandDamage(int difficulty) {
-        return diffHandDamage[difficulty - 1];
+        return this.diffHandDamage[difficulty - 1];
     }
 
     @Override
     public void setDiffHandDamage(float[] damages) {
         this.diffHandDamage = damages;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
     public void setDiffHandDamage(int difficulty, float damage) {
-        diffHandDamage[difficulty - 1] = damage;
+        this.diffHandDamage[difficulty - 1] = damage;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 }

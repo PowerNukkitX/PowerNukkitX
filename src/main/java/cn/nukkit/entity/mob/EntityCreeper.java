@@ -63,11 +63,11 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                                     new EntityExplosionExecutor(30, 3, EntityExplodeMemory.class),
                                     entity -> entity.getMemoryStorage().checkData(EntityExplodeMemory.class, true), 4, 1
                             ),
-                            new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16, 3, true), new AllMatchEvaluator(
+                            new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16f, 3f, true), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
                                     entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
                             ), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16, 3), new AllMatchEvaluator(
+                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16f, 3f), new AllMatchEvaluator(
                                     new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
                                     entity -> {
                                         if (entity.getMemoryStorage().isEmpty(NearestPlayerMemory.class)) return true;

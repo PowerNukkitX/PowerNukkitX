@@ -20,8 +20,8 @@ public class MoveToTargetExecutor extends AboutControlExecutor {
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
     protected boolean enableRangeTest = false;
-    protected int maxFollowRangeSquared;
-    protected int minFollowRangeSquared;
+    protected float maxFollowRangeSquared;
+    protected float minFollowRangeSquared;
     protected boolean clearDataWhenLose;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
@@ -32,11 +32,11 @@ public class MoveToTargetExecutor extends AboutControlExecutor {
         this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
     }
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange) {
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange) {
         this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, maxFollowRange, minFollowRange, false);
     }
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange, boolean clearDataWhenLose) {
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange, boolean clearDataWhenLose) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;

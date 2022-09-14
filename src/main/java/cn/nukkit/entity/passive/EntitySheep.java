@@ -63,7 +63,7 @@ public class EntitySheep extends EntityWalkingAnimal {
                     Set.of(
                             new Behavior(new RandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator<>(AttackMemory.class, 0, 100), 6, 1),
                             new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 5, 1),
-                            new Behavior(new MoveToTargetExecutor(NearestFeedingPlayerMemory.class, 0.3f, true), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 4, 1),
+                            new Behavior(new MoveToTargetExecutor(NearestFeedingPlayerMemory.class, 0.25f, true, 8, 1.5f), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 4, 1),
                             new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
                                     new AnyMatchEvaluator(
                                             new AllMatchEvaluator(
@@ -122,6 +122,7 @@ public class EntitySheep extends EntityWalkingAnimal {
     @Override
     public void initEntity() {
         this.setMaxHealth(8);
+        this.setHealth(8);
 
         if (!this.namedTag.contains("Color")) {
             this.setColor(randomColor());
