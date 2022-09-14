@@ -8,6 +8,8 @@ import java.util.Set;
 
 /**
  * 一个抽象类代表着这个评估器会评估多个行为;
+ * <p>
+ * An abstract class represents multiple behaviors that this evaluator will evaluate.
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

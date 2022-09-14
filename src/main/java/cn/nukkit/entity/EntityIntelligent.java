@@ -112,6 +112,13 @@ public abstract class EntityIntelligent extends EntityPhysical {
         return getBehaviorGroup().getMemoryStorage();
     }
 
+    /**
+     * 获得指定记忆类型的记忆数据，这个方法会自动判空，如果数据不存在或无法获取则返回null.
+     * <p>
+     * Get the memory data of the specified memory type, this method will automatically return null if the data does not exist or cannot be obtained.
+     *
+     * @param memoryClazz 记忆类型<br>Memory class
+     */
     @Nullable
     public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
         var memoryStorage = this.getMemoryStorage();
