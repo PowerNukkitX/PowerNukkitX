@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
  * @author BeYkeRYkt (Nukkit Project)
  */
 @Deprecated
-@DeprecationDetails(since = "1.19.21-r4", reason = "统一接口定义", replaceWith = "replace to EntityTamable")
+@DeprecationDetails(since = "1.19.21-r5", reason = "统一接口定义", replaceWith = "replace to EntityTamable")
 public interface EntityOwnable {
     /**
      * @return 这个实体主人的名字

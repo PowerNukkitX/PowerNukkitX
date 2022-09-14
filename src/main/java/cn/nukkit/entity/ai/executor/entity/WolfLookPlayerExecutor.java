@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor.entity;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.AboutControlExecutor;
@@ -10,6 +12,8 @@ import cn.nukkit.entity.ai.memory.Vector3Memory;
  * <p>
  * Wolf looks at the player carrying the food.
  */
+@PowerNukkitXOnly
+@Since("1.19.21-r5")
 public class WolfLookPlayerExecutor extends AboutControlExecutor {
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory<?>> memoryClazz;

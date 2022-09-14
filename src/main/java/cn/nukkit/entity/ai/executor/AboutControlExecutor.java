@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Involving some methods about controller.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r4")
+@Since("1.19.21-r5")
 public abstract class AboutControlExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {

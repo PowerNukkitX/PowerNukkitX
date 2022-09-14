@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor.entity;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
@@ -8,6 +10,13 @@ import cn.nukkit.entity.ai.memory.NearestFeedingPlayerMemory;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
 import cn.nukkit.entity.passive.EntityWolf;
 
+/**
+ * 狼执行攻击，会带有狼的动画，以及攻击过程中狼还会看向携带食物的玩家.
+ * <p>
+ * The wolf performs an attack with a wolf animation, as well as during the attack the wolf will also look at the player carrying food.
+ */
+@PowerNukkitXOnly
+@Since("1.19.21-r5")
 public class WolfAttackExecutor extends MeleeAttackExecutor {
     protected Class<? extends EntityMemory<?>> minorMemoryTarget;
 

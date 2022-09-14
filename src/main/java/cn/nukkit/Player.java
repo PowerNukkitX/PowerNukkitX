@@ -352,7 +352,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final Set<Long> pets = new HashSet<>();
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     public Set<Long> getPets() {
         return this.pets;
     }

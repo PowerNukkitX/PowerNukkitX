@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor.entity;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
@@ -16,6 +18,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * <p>
  * The wolf moves to the master's side.
  */
+@PowerNukkitXOnly
+@Since("1.19.21-r5")
 public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;

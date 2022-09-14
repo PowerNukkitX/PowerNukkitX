@@ -20,6 +20,11 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * 通用近战攻击执行器.
+ * <p>
+ * Universal melee attack actuator.
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class MeleeAttackExecutor extends AboutControlExecutor {
@@ -38,14 +43,14 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
      * <p>
      * Used to specify a specific attack target.
      */
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     protected Entity target;
     /**
      * 用来指定特定的视线目标
      * <p>
      * Used to specify a specific look target.
      */
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     protected Vector3 lookTarget;
 
     /**

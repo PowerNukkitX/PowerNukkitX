@@ -55,7 +55,7 @@ import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  * @author Cool_Loong (PowerNukkitX Project)
- * todo 投喂肉可以繁殖  攻击会红眼反击你  野生狼不会被刷新
+ * todo 野生狼不会被刷新
  */
 public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack {
     public static final int NETWORK_ID = 14;
@@ -208,8 +208,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
     @Override
     public void saveNBT() {
         super.saveNBT();
@@ -235,8 +233,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         return result;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.21-r4")
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
@@ -393,7 +389,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
      * 获得可以治疗狼的物品的治疗量
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     public int getHealableItem(Item item) {
         return switch (item.getId()) {
             case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;
@@ -410,7 +406,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
 
     //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
     @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     public boolean attackTarget(Entity entity) {
         return switch (entity.getNetworkId()) {
             case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlama.NETWORK_ID,
@@ -420,7 +416,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r4")
+    @Since("1.19.21-r5")
     private boolean entityHasOwner(Entity entity, boolean checkOnline, boolean defaultValue) {
         if (entity instanceof EntityWolf entityWolf) {
             return entityWolf.hasOwner(checkOnline);
