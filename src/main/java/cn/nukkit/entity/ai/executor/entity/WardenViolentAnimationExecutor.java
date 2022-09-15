@@ -1,10 +1,11 @@
-package cn.nukkit.entity.ai.executor;
+package cn.nukkit.entity.ai.executor.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
+import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 
 @PowerNukkitXOnly

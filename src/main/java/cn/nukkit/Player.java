@@ -346,6 +346,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
 
+    /**
+     * 玩家最后攻击的实体.
+     * <p>
+     * The entity that the player attacked last.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    protected Entity lastAttackEntity = null;
+    /**
+     * 最后攻击玩家的实体.
+     * <p>
+     * The entity that the player is attacked last.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    protected Entity lastBeAttackEntity = null;
+
+    /**
+     * @return {@link #lastAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    public Entity getLastAttackEntity() {
+        return lastAttackEntity;
+    }
+
+    /**
+     * @return {@link #lastBeAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    public Entity getLastBeAttackEntity() {
+        return lastBeAttackEntity;
+    }
+
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -1830,7 +1865,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d) this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
+                        if (delta > 0.0001d)
+                            this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
                         if (delta > 0.0001d) {
@@ -4365,9 +4401,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
 
+
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
+                                    }
+
+                                    //保存攻击的目标在lastAttackEntity
+                                    if (!entityDamageByEntityEvent.isCancelled()) {
+                                        this.lastAttackEntity = entityDamageByEntityEvent.getEntity();
                                     }
 
 
@@ -5575,11 +5617,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (super.attack(source)) { //!source.isCancelled()
             if (this.getLastDamageCause() == source && this.spawned) {
-                if (source instanceof EntityDamageByEntityEvent) {
-                    Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+                if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+                    Entity damager = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
                     }
+                    //保存攻击玩家的实体在lastBeAttackEntity
+                    this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;

@@ -144,6 +144,9 @@ public class Server {
 
     private ServerScheduler scheduler;
 
+    /**
+     * 一个tick计数器,记录服务器已经经过的tick数
+     */
     private int tickCounter;
 
     private long nextTick;

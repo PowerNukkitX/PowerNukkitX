@@ -1,8 +1,9 @@
-package cn.nukkit.entity.ai.memory;
+package cn.nukkit.entity.ai.memory.entity;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.ai.memory.IMemory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

@@ -1,26 +1,26 @@
-package cn.nukkit.entity.ai.executor;
+package cn.nukkit.entity.ai.executor.entity;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.executor.AboutControlExecutor;
 import cn.nukkit.entity.ai.memory.EntityMemory;
-import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
+import cn.nukkit.entity.ai.memory.entity.WardenAngerValueMemory;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenMeleeAttackExecutor implements IBehaviorExecutor {
+public class WardenMeleeAttackExecutor extends AboutControlExecutor {
 
     protected int attackTick;
     protected Class<? extends EntityMemory<?>> memoryClazz;
@@ -112,21 +112,4 @@ public class WardenMeleeAttackExecutor implements IBehaviorExecutor {
         pk.event = EntityEventPacket.ARM_SWING;
         Server.broadcastPacket(entity.getViewers().values(), pk);
     }
-
-    protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setMoveTarget(vector3);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
-    }
-
-    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.setMoveTarget(null);
-    }
-
-    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
-        entity.setLookTarget(null);
-    }
-
 }

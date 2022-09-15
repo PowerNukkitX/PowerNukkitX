@@ -24,15 +24,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityVillager extends EntityCreature implements InventoryHolder, EntityNPC, EntityAgeable {
 
     public static final int NETWORK_ID = 115;
-    /**
-     * 代表交易配方
-     */
-    public final ListTag<Tag> recipes = new ListTag<>("Recipes");
-    /**
-     * 用于控制村民的等级成长所需要的经验
-     * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
-     */
-    public int[] tierExpRequirement;
+
+    public EntityVillager(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected TradeInventory inventory;
@@ -57,6 +53,15 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      */
     protected int tradeExp;
     /**
+     * 用于控制村民的等级成长所需要的经验
+     * 例如[0,10,20,30,40] 村民达到1级所需经验0,2级为10,这里的经验是{@link EntityVillager#tradeExp}.
+     */
+    public int[] tierExpRequirement;
+    /**
+     * 代表交易配方
+     */
+    public final ListTag<Tag> recipes = new ListTag<>("Recipes");
+    /**
      * 代表村民的职业<br>
      * 0 generic 普通<br>
      * 1 farmer 农民<br>
@@ -76,7 +81,36 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      */
     protected int profession;
 
-    {
+    //todo 实现不同群系的村民
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
+    }
+
+    @Override
+    public float getWidth() {
+        if (this.isBaby()) {
+            return 0.3f;
+        }
+        return 0.6f;
+    }
+
+    @Override
+    public float getHeight() {
+        if (this.isBaby()) {
+            return 0.95f;
+        }
+        return 1.9f;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    @Override
+    public String getOriginalName() {
+        return "Villager";
+    }
+
+    {//todo 移除这些，实现原版随机村民
         var input1 = Item.fromString("minecraft:string");
         var input12 = Item.fromString("minecraft:emerald");
         input1.setCount(20);
@@ -126,38 +160,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         this.tierExpRequirement = new int[]{0, 10, 70, 150, 250};
     }
 
-    public EntityVillager(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
-    }
-
-    @Override
-    public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
-        return 0.6f;
-    }
-
-    @Override
-    public float getHeight() {
-        if (this.isBaby()) {
-            return 0.95f;
-        }
-        return 1.9f;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Override
-    public String getOriginalName() {
-        return "Villager";
-    }
-
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     @Override
@@ -169,32 +171,38 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         if (!this.namedTag.contains("profession")) {
             this.setProfession(ran);
         } else {
-            this.setProfession(this.namedTag.getByte("profession"));
+            var profession = this.namedTag.getInt("profession");//todo 移除这些，实现原版随机村民
+            this.profession = profession;
+            this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
         }
         if (!this.namedTag.contains("canTrade")) {
             this.setCanTrade(!(ran == 0 || ran == 14));
         } else {
-            this.setCanTrade(this.namedTag.getBoolean("canTrade"));
+            this.canTrade = this.namedTag.getBoolean("canTrade");
         }
         if (!this.namedTag.contains("displayName")) {
             this.setDisplayName(getProfessionName(ran));
         } else {
-            this.setDisplayName(this.namedTag.getString("displayName"));
+            this.displayName = this.namedTag.getString("displayName");
         }
         if (!this.namedTag.contains("tradeTier")) {
             this.setTradeTier(2);
         } else {
-            this.setTradeTier(this.namedTag.getInt("tradeTier"));
+            this.tradeTier = this.namedTag.getInt("tradeTier");
         }
         if (!this.namedTag.contains("maxTradeTier")) {
             this.setMaxTradeTier(2);
         } else {
-            this.setMaxTradeTier(this.namedTag.getInt("maxTradeTier"));
+            var maxTradeTier = this.namedTag.getInt("maxTradeTier");
+            this.maxTradeTier = maxTradeTier;
+            this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, maxTradeTier));
         }
         if (!this.namedTag.contains("tradeExp")) {
             this.setTradeExp(2);
         } else {
-            this.setTradeExp(this.namedTag.getInt("tradeExp"));
+            var tradeExp = this.namedTag.getInt("tradeExp");
+            this.tradeExp = tradeExp;
+            this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, tradeExp));
         }
     }
 
@@ -204,10 +212,13 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         this.namedTag.putByte("Profession", this.getProfession());
         this.namedTag.putBoolean("isTrade", this.getCanTrade());
         this.namedTag.putString("displayName", this.getDisplayName());
+        this.namedTag.putInt("tradeTier", this.getTradeTier());
+        this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
+        this.namedTag.putInt("tradeExp", this.getTradeExp());
     }
 
     /**
-     * 获取村民职业对应的displayName硬编码
+     * 获取村民职业id对应的displayName硬编码
      */
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
@@ -248,7 +259,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setProfession(int profession) {
         this.profession = profession;
         this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
-        this.namedTag.putByte("profession", this.profession);
+        this.namedTag.putInt("profession", this.profession);
     }
 
     @PowerNukkitXOnly
@@ -268,15 +279,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
-     * @return 该村民是否可以交易
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.21-r1")
-    public boolean getCanTrade() {
-        return canTrade;
-    }
-
-    /**
      * 设置村民是否可以交易
      *
      * @param canTrade true 可以交易
@@ -284,17 +286,17 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     public void setCanTrade(boolean canTrade) {
-        this.namedTag.putBoolean("canTrade", canTrade);
         this.canTrade = canTrade;
+        this.namedTag.putBoolean("canTrade", canTrade);
     }
 
     /**
-     * @return 交易UI的显示名称
+     * @return 该村民是否可以交易
      */
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
-    public String getDisplayName() {
-        return displayName;
+    public boolean getCanTrade() {
+        return canTrade;
     }
 
     /**
@@ -305,6 +307,15 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         this.namedTag.putString("displayName", displayName);
+    }
+
+    /**
+     * @return 交易UI的显示名称
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r1")
+    public String getDisplayName() {
+        return displayName;
     }
 
     /**
@@ -323,7 +334,16 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @Since("1.19.21-r1")
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
-        this.namedTag.putByte("tradeTier", this.tradeTier);
+        this.namedTag.putInt("tradeTier", this.tradeTier);
+    }
+
+    /**
+     * @param maxTradeTier 设置村民所允许的最大交易等级
+     */
+    public void setMaxTradeTier(int maxTradeTier) {
+        this.maxTradeTier = maxTradeTier;
+        this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, 5));
+        this.namedTag.putInt("maxTradeTier", this.tradeTier);
     }
 
     /**
@@ -334,12 +354,12 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     }
 
     /**
-     * @param maxTradeTier 设置村民所允许的最大交易等级
+     * @param tradeExp 设置村民当前的经验值
      */
-    public void setMaxTradeTier(int maxTradeTier) {
-        this.maxTradeTier = maxTradeTier;
-        this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, 5));
-        this.namedTag.putByte("maxTradeTier", this.tradeTier);
+    public void setTradeExp(int tradeExp) {
+        this.tradeExp = tradeExp;
+        this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, 10));
+        this.namedTag.putInt("tradeExp", this.tradeTier);
     }
 
     /**
@@ -347,15 +367,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      */
     public int getTradeExp() {
         return tradeExp;
-    }
-
-    /**
-     * @param tradeExp 设置村民当前的经验值
-     */
-    public void setTradeExp(int tradeExp) {
-        this.tradeExp = tradeExp;
-        this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, 10));
-        this.namedTag.putByte("tradeExp", this.tradeTier);
     }
 
     @Override
