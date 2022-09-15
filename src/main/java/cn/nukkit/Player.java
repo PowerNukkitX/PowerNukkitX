@@ -12,12 +12,10 @@ import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.dialog.window.FormWindowDialog;
 import cn.nukkit.entity.*;
-import cn.nukkit.entity.ai.memory.PlayerAttackEntityMemory;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.passive.EntityNPCEntity;
-import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -348,13 +346,39 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
 
-    //only runtime
-    protected final Set<Long> pets = new HashSet<>();
-
+    /**
+     * 玩家最后攻击的实体.
+     * <p>
+     * The entity that the player attacked last.
+     */
     @PowerNukkitXOnly
     @Since("1.19.21-r5")
-    public Set<Long> getPets() {
-        return this.pets;
+    protected Entity lastAttackEntity = null;
+    /**
+     * 最后攻击玩家的实体.
+     * <p>
+     * The entity that the player is attacked last.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    protected Entity lastBeAttackEntity = null;
+
+    /**
+     * @return {@link #lastAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    public Entity getLastAttackEntity() {
+        return lastAttackEntity;
+    }
+
+    /**
+     * @return {@link #lastBeAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
+    public Entity getLastBeAttackEntity() {
+        return lastBeAttackEntity;
     }
 
     public float getSoulSpeedMultiplier() {
@@ -4377,18 +4401,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
 
-                                    //设置PlayerAttackMemory，这里用于宠物狼的实现
-                                    if (!this.pets.isEmpty()) {
-                                        for (var i : pets) {
-                                            if (this.getLevel().getEntity(i) instanceof EntityWolf entityWolf) {
-                                                entityWolf.getMemoryStorage().get(PlayerAttackEntityMemory.class).setData(target);
-                                            }
-                                        }
-                                    }
 
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
+                                    }
+
+                                    //保存攻击的目标在lastAttackEntity
+                                    if (!entityDamageByEntityEvent.isCancelled()) {
+                                        this.lastAttackEntity = entityDamageByEntityEvent.getEntity();
                                     }
 
 
@@ -5601,15 +5622,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
                     }
-
-                    if (!getPets().isEmpty()) {
-                        for (var i : getPets()) {
-                            if (this.getLevel().getEntity(i) instanceof EntityWolf entityWolf) {
-                                //更新wolf AttackTargetMemory记忆
-                                entityWolf.getMemoryStorage().setData(PlayerAttackEntityMemory.class, entityDamageByEntityEvent.getDamager());
-                            }
-                        }
-                    }
+                    //保存攻击玩家的实体在lastBeAttackEntity
+                    this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;

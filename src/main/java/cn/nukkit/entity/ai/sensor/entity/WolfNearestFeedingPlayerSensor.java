@@ -1,10 +1,11 @@
-package cn.nukkit.entity.ai.sensor;
+package cn.nukkit.entity.ai.sensor.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.NearestFeedingPlayerMemory;
+import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.passive.EntityAnimal;
 import cn.nukkit.item.Item;
 

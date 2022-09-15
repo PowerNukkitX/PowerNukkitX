@@ -30,7 +30,7 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
         var wolf = (EntityWolf) entity;
 
         target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
-        if (target != null && !target.isAlive()) return false;
+        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
 
         wolf.setAngry(true);
 
@@ -53,23 +53,26 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
 
     @Override
     public void onStop(EntityIntelligent entity) {
-        var wolf = (EntityWolf) entity;
-        entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 10);
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
-        if (clearDataWhenLose && minorMemoryTarget != null) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(minorMemoryTarget);
-        }
+        stop(entity);
         super.onStop(entity);
     }
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        stop(entity);
+        super.onInterrupt(entity);
+    }
+
+    private void stop(EntityIntelligent entity) {
         var wolf = (EntityWolf) entity;
-        entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 10);
-        entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
+        entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 5);
+
+        if (entity.getMemoryStorage().isEmpty(NearestFeedingPlayerMemory.class)) {
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
+        }
+
         if (clearDataWhenLose && minorMemoryTarget != null) {
             entity.getBehaviorGroup().getMemoryStorage().clear(minorMemoryTarget);
         }
-        super.onInterrupt(entity);
     }
 }
