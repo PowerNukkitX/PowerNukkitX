@@ -124,9 +124,10 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                 } else return false;
                             }, 4, 1),
                             new Behavior(new WolfLookPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 3, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
-                            new Behavior(new RandomRoamExecutor(0.1f, 12, 250, false, -1, true, 10),
-                                    entity -> !entityHasOwner(entity, false, false), 1, 1)
+                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 150), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10),
+                                    1, 1, 25),
+                            new Behavior(new RandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),
+                                    new ProbabilityEvaluator(5, 10), 1, 1, 50)
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20),
                             new NearestTargetEntitySensor<>(0, 20, 5, List.of(NearestEntityMemory.class, WolfNearestSkeletonMemory.class), this::attackTarget, entity -> switch (entity.getNetworkId()) {
@@ -305,11 +306,15 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         return result;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     @Override
     public String getOwnerName() {
         return this.ownerName;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     @Override
     public void setOwnerName(String playerName) {
         var player = getServer().getPlayerExact(playerName);
@@ -321,17 +326,23 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         this.namedTag.putString("OwnerName", this.ownerName);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     @Nullable
     @Override
     public Player getOwner() {
         return this.owner;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     @Override
     public boolean hasOwner() {
         return hasOwner(true);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             if (this.ownerName == null || this.ownerName.isEmpty()) return false;
@@ -342,36 +353,50 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public boolean isSitting() {
         return this.sitting;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public void setSitting(boolean sit) {
         this.sitting = sit;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
         this.namedTag.putBoolean("Sitting", sit);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     private void setTamed(boolean tamed) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public boolean isAngry() {
         return this.angry;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public void setAngry(boolean angry) {
         this.angry = angry;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, angry);
         this.namedTag.putBoolean("Angry", angry);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     public void setCollarColor(DyeColor color) {
         this.collarColor = color;
         this.setDataProperty(new ByteEntityData(DATA_COLOUR, color.getWoolData()));
         this.namedTag.putByte("CollarColor", color.getDyeData());
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r5")
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.RAW_CHICKEN ||
