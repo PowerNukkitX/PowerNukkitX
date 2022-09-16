@@ -20,8 +20,7 @@ import java.util.*;
 
 public class JSONTickingAreaStorage implements TickingAreaStorage {
 
-    private static final Type type = new TypeToken<HashSet<TickingArea>>() {
-    }.getType();
+    private static final Type type = new TypeToken<HashSet<TickingArea>>() {}.getType();
 
     protected static Gson gson = new Gson();
 
