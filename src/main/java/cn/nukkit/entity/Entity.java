@@ -535,7 +535,7 @@ public abstract class Entity extends Location implements Metadatable {
     protected boolean isStatic = false;
     protected Server server;
     protected Timing timing;
-    protected boolean isPlayer = false;
+    protected boolean isPlayer = this instanceof Player;
     private int maxHealth = 20;
     private volatile boolean initialized;
 
@@ -1878,7 +1878,7 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
 
-            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
+            this.addMovement(this.x, this.isPlayer ? this.y : this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
 
             this.lastX = this.x;
             this.lastY = this.y;
