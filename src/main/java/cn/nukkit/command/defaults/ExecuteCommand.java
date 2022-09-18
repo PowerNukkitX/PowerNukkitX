@@ -23,9 +23,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.ScoreboardManager;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.manager.ScoreboardManager;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
@@ -498,10 +498,10 @@ public class ExecuteCommand extends VanillaCommand {
                         }
                         case "score" -> {
                             boolean matched = false;
-                            ScoreboardManager manager = Server.getInstance().getScoreboardManager();
+                            var manager = Server.getInstance().getScoreboardManager();
                             String target_str = parser.parseString(false);
 
-                            Set<Scorer> targetScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                            Set<IScorer> targetScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                             if (targetScorers.size() > 1) {
                                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                                 return false;
@@ -509,21 +509,21 @@ public class ExecuteCommand extends VanillaCommand {
                             if (targetScorers.size() == 0) {
                                 targetScorers.add(new FakeScorer(target_str));
                             }
-                            Scorer targetScorer = targetScorers.iterator().next();
+                            IScorer targetScorer = targetScorers.iterator().next();
 
                             String targetObjectiveName = parser.parseString();
 
-                            if (!manager.hasScoreboard(targetObjectiveName)) {
+                            if (!manager.containScoreboard(targetObjectiveName)) {
                                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", targetObjectiveName));
                                 return false;
                             }
-                            Scoreboard targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                            var targetScoreboard = manager.getScoreboards().get(targetObjectiveName);
                             if (!parser.parseString(false).equals("matches")) {
 
                                 String operation = parser.parseString();
 
                                 String sourceScorer_str = parser.parseString(false);
-                                Set<Scorer> selectorScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+                                Set<IScorer> selectorScorers = parser.parseTargets().stream().filter(t -> t != null).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
                                 if (selectorScorers.size() > 1) {
                                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.tooManyTargets"));
                                     return false;
@@ -531,14 +531,14 @@ public class ExecuteCommand extends VanillaCommand {
                                 if (selectorScorers.size() == 0) {
                                     selectorScorers.add(new FakeScorer(sourceScorer_str));
                                 }
-                                Scorer sourceScorer = selectorScorers.iterator().next();
+                                IScorer sourceScorer = selectorScorers.iterator().next();
 
                                 String sourceObjectiveName = parser.parseString();
-                                if (!manager.hasScoreboard(sourceObjectiveName)) {
+                                if (!manager.containScoreboard(sourceObjectiveName)) {
                                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.objectiveNotFound", sourceObjectiveName));
                                     return false;
                                 }
-                                Scoreboard sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
+                                var sourceScoreboard = manager.getScoreboards().get(targetObjectiveName);
 
                                 if (!sourceScoreboard.getLines().containsKey(sourceScorer)) {
                                     sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.scoreboard.players.operation.notFound", sourceObjectiveName, sourceScorer.getName()));
