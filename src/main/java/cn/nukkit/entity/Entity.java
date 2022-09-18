@@ -3033,21 +3033,27 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void close() {
+        close(true);
+    }
+
+    private void close(boolean despawn) {
         if (!this.closed) {
             this.closed = true;
 
-            try {
-                EntityDespawnEvent event = new EntityDespawnEvent(this);
+            if (despawn) {
+                try {
+                    EntityDespawnEvent event = new EntityDespawnEvent(this);
 
-                this.server.getPluginManager().callEvent(event);
+                    this.server.getPluginManager().callEvent(event);
 
-                if (event.isCancelled()) {
+                    if (event.isCancelled()) {
+                        this.closed = false;
+                        return;
+                    }
+                } catch (Throwable e) {
                     this.closed = false;
-                    return;
+                    throw e;
                 }
-            } catch (Throwable e) {
-                this.closed = false;
-                throw e;
             }
 
             try {
@@ -3062,30 +3068,6 @@ public abstract class Entity extends Location implements Metadatable {
                         this.level.removeEntity(this);
                     }
                 }
-            }
-        }
-    }
-
-    private void close(Boolean despawn) {
-        if (!this.closed) {
-            this.closed = true;
-
-            if (despawn) {
-                EntityDespawnEvent event = new EntityDespawnEvent(this);
-
-                this.server.getPluginManager().callEvent(event);
-
-                if (event.isCancelled()) return;
-            }
-
-            this.despawnFromAll();
-
-            if (this.chunk != null) {
-                this.chunk.removeEntity(this);
-            }
-
-            if (this.level != null) {
-                this.level.removeEntity(this);
             }
         }
     }
