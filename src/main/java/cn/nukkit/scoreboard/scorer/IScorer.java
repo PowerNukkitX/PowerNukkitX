@@ -8,9 +8,8 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 
 /**
- * the class which can be used as a key in a scoreboard
+ * 计分板追踪对象
  */
-
 @PowerNukkitXOnly
 @Since("1.19.21-r5")
 public interface IScorer {

@@ -6930,7 +6930,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.21-r5")
     @Override
-    public void updateLine(IScoreboardLine line) {
+    public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
         packet.action = SetScorePacket.Action.SET;
         var networkInfo = line.toNetworkInfo();
@@ -6984,5 +6984,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (slot == DisplaySlot.BELOW_NAME) {
             this.setScoreTag("");
         }
+    }
+
+    @Override
+    public void removeScoreboard(IScoreboard scoreboard) {
+        RemoveObjectivePacket pk = new RemoveObjectivePacket();
+        pk.objectiveName = scoreboard.getObjectiveName();
+
+        this.dataPacket(pk);
     }
 }

@@ -1,5 +1,10 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
+@PowerNukkitXOnly
+@Since("1.19.21-r5")
 public class RemoveObjectivePacket extends DataPacket {
 
     public String objectiveName;

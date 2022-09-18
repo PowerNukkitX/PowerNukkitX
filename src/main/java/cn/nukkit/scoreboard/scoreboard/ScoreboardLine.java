@@ -12,10 +12,10 @@ public class ScoreboardLine implements IScoreboardLine{
 
     protected static long staticLineId = 0;
 
-    protected IScoreboard scoreboard;
-    protected IScorer scorer;
+    protected final IScoreboard scoreboard;
+    protected final IScorer scorer;
+    protected final long lineId;
     protected int score;
-    protected long lineId;
 
     public ScoreboardLine(IScoreboard scoreboard, IScorer scorer) {
         this(scoreboard, scorer, 0);
@@ -31,6 +31,6 @@ public class ScoreboardLine implements IScoreboardLine{
     @Override
     public void setScore(int score) {
         this.score = score;
-        scoreboard.updateLine(this);
+        updateScore();
     }
 }

@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 管理，储存一批计分板
- * 此接口的目标是/scoreboard命令，若只是想要显示信息，请直接操作scoreboard对象
+ * 管理，储存一批计分板 <br>
+ * 此接口面向/scoreboard命令，若只是想要显示信息，请直接操作scoreboard对象
  */
 @PowerNukkitXOnly
 @Since("1.19.21-r5")

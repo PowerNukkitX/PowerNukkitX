@@ -4,7 +4,6 @@ package cn.nukkit.scoreboard.manager;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
@@ -47,10 +46,11 @@ public class ScoreboardManager implements IScoreboardManager{
     @Override
     public boolean removeScoreboard(String objectiveName) {
        var removed =  scoreboards.remove(objectiveName);
+       viewers.forEach(viewer -> viewer.removeScoreboard(removed));
        if (removed == null) return false;
        display.forEach((slot, scoreboard) -> {
-           if (scoreboard.getObjectiveName().equals(objectiveName)) {
-                setDisplay(slot, null);
+           if (scoreboard != null && scoreboard.getObjectiveName().equals(objectiveName)) {
+                display.put(slot, null);
            }
        });
        return true;
@@ -114,7 +114,7 @@ public class ScoreboardManager implements IScoreboardManager{
         var scorer = new PlayerScorer(player);
         this.scoreboards.values().forEach(scoreboard -> {
             if (scoreboard.containLine(scorer)) {
-                this.viewers.forEach(viewer -> viewer.updateLine(scoreboard.getLine(scorer)));
+                this.viewers.forEach(viewer -> viewer.updateScore(scoreboard.getLine(scorer)));
             }
         });
     }
