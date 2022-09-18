@@ -46,7 +46,7 @@ public class EntityScorer implements IScorer {
 
     @Override
     public String getName() {
-        return String.valueOf(entityUuid.getMostSignificantBits());
+        return entityUuid.toString();
     }
 
     @Override

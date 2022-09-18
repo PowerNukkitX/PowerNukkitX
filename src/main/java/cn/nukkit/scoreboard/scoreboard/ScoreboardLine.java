@@ -28,7 +28,6 @@ public class ScoreboardLine implements IScoreboardLine{
         this.lineId = ++staticLineId;
     }
 
-
     @Override
     public void setScore(int score) {
         this.score = score;

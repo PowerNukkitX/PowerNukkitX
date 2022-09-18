@@ -150,23 +150,4 @@ public class ScoreboardManager implements IScoreboardManager{
             }
         });
     }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r5")
-    private void hideOfflinePlayerScore(Player player) {
-        if (player.getUniqueId() == null)
-            return;
-        PlayerScorer scorer = new PlayerScorer(player);
-        SetScorePacket pk = new SetScorePacket();
-        pk.action = SetScorePacket.Action.REMOVE;
-        for (var scoreboard : getScoreboards().values()) {
-            if (scoreboard.getLines().containsKey(scorer)) {
-                pk.infos.add(scoreboard.getLines().get(scorer).toNetworkInfo());
-            }
-        }
-
-        for (Player onlinePlayer : player.getServer().getOnlinePlayers().values()) {
-            onlinePlayer.dataPacket(pk);
-        }
-    }
 }
