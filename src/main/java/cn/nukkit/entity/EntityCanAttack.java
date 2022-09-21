@@ -9,7 +9,7 @@ import cn.nukkit.api.Since;
  * Represents an entity that can attack other entities.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface EntityCanAttack {
     /**
      * 得到所有难度下不携带物品能造成的伤害.

@@ -355,7 +355,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player attacked last.
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Entity lastAttackEntity = null;
     /**
      * 最后攻击玩家的实体.
@@ -363,14 +363,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player is attacked last.
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Entity lastBeAttackEntity = null;
 
     /**
      * @return {@link #lastAttackEntity}
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public Entity getLastAttackEntity() {
         return lastAttackEntity;
     }
@@ -379,7 +379,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return {@link #lastBeAttackEntity}
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public Entity getLastBeAttackEntity() {
         return lastBeAttackEntity;
     }
@@ -6911,7 +6911,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void removeLine(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -6928,7 +6928,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -6945,7 +6945,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6970,7 +6970,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();

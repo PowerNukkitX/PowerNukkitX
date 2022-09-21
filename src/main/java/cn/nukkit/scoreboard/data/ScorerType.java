@@ -9,7 +9,7 @@ import cn.nukkit.api.Since;
  * 对于插件来说，使用FAKE类型即可
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public enum ScorerType {
     INVALID,
     PLAYER,

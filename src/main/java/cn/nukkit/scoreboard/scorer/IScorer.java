@@ -11,7 +11,7 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
  * 计分板追踪对象
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface IScorer {
     ScorerType getScorerType();
 

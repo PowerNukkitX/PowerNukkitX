@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 @Getter
 public class Scoreboard implements IScoreboard{
     protected String objectiveName;

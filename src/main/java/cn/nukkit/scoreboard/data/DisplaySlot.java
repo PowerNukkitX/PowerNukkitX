@@ -8,7 +8,7 @@ import lombok.Getter;
  * 计分板显示槽位枚举
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public enum DisplaySlot {
 
     SIDEBAR("sidebar"),

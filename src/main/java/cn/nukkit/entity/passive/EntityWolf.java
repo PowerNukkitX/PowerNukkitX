@@ -307,14 +307,14 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public String getOwnerName() {
         return this.ownerName;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void setOwnerName(String playerName) {
         var player = getServer().getPlayerExact(playerName);
@@ -327,7 +327,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Nullable
     @Override
     public Player getOwner() {
@@ -335,14 +335,14 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public boolean hasOwner() {
         return hasOwner(true);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             if (this.ownerName == null || this.ownerName.isEmpty()) return false;
@@ -354,13 +354,13 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public boolean isSitting() {
         return this.sitting;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public void setSitting(boolean sit) {
         this.sitting = sit;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
@@ -368,19 +368,19 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     private void setTamed(boolean tamed) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public boolean isAngry() {
         return this.angry;
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public void setAngry(boolean angry) {
         this.angry = angry;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, angry);
@@ -388,7 +388,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public void setCollarColor(DyeColor color) {
         this.collarColor = color;
         this.setDataProperty(new ByteEntityData(DATA_COLOUR, color.getWoolData()));
@@ -396,7 +396,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.RAW_CHICKEN ||
@@ -416,7 +416,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
      * 获得可以治疗狼的物品的治疗量
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public int getHealableItem(Item item) {
         return switch (item.getId()) {
             case ItemID.RAW_PORKCHOP, ItemID.RAW_BEEF, ItemID.RAW_RABBIT -> 3;
@@ -433,7 +433,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
 
     //兔子、狐狸、骷髅及其变种、羊驼、绵羊和小海龟。然而它们被羊驼啐唾沫时会逃跑。
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public boolean attackTarget(Entity entity) {
         return switch (entity.getNetworkId()) {
             case EntityRabbit.NETWORK_ID, EntityFox.NETWORK_ID, EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID, EntityLlama.NETWORK_ID,
@@ -443,7 +443,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     private boolean entityHasOwner(Entity entity, boolean checkOnline, boolean defaultValue) {
         if (entity instanceof EntityWolf entityWolf) {
             return entityWolf.hasOwner(checkOnline);

@@ -15,7 +15,7 @@ import cn.nukkit.item.Item;
  * Search for wolves carrying food to the nearest player, compared to {@link NearestFeedingPlayerSensor}, which is specially awarded to Bone.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
 
     public WolfNearestFeedingPlayerSensor(double range, double minRange) {

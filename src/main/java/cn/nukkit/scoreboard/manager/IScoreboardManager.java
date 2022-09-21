@@ -17,7 +17,7 @@ import java.util.Set;
  * 此接口面向/scoreboard命令，若只是想要显示信息，请直接操作scoreboard对象
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface IScoreboardManager {
     boolean addScoreboard(IScoreboard scoreboard);
     boolean removeScoreboard(IScoreboard scoreboard);

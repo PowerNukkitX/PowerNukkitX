@@ -18,7 +18,7 @@ import java.util.Set;
  * 可被发送到任何实现了{@link IScoreboardViewer}接口的对象上
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface IScoreboard {
     /**
      * @return 此计分板的标识名称

@@ -16,7 +16,7 @@ import cn.nukkit.entity.passive.EntityWolf;
  * The wolf performs an attack with a wolf animation, as well as during the attack the wolf will also look at the player carrying food.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public class WolfAttackExecutor extends MeleeAttackExecutor {
     protected Class<? extends EntityMemory<?>> minorMemoryTarget;
 

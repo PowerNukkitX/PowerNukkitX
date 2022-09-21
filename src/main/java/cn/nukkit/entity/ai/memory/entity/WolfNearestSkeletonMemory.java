@@ -11,7 +11,7 @@ import cn.nukkit.entity.ai.memory.NearestEntityMemory;
  * Save the wolf nearest skeleton-like monster.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public class WolfNearestSkeletonMemory extends NearestEntityMemory {
     public WolfNearestSkeletonMemory() {
         super(null);
