@@ -74,7 +74,9 @@ public class ListTag<T extends Tag> extends Tag {
     public String toSnbt(int space) {
         StringBuilder addSpace = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
-        if (list.get(0) instanceof StringTag || list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
+        if (list.isEmpty()) {
+            return "\"" + this.getName() + "\": []";
+        } else if (list.get(0) instanceof StringTag || list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
             StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
             list.forEach(tag -> {
                 var str = tag.toSnbt(space);
