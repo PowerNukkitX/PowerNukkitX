@@ -1301,8 +1301,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-
-            this.networkSession.sendPacket(packet);
+            //适配单元Test
+            if (networkSession == null) this.interfaz.putPacket(this, packet, false, false);
+            else this.networkSession.sendPacket(packet);
         }
         return true;
     }
