@@ -115,7 +115,6 @@ public class RakNetPlayerSession implements NetworkPlayerSession, RakNetSessionL
             return;
         }
 
-
         this.sendPacket(packet);
         this.session.getEventLoop().execute(() -> {
             this.networkTick();

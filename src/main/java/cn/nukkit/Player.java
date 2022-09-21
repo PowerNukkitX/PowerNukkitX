@@ -4997,7 +4997,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
+                //适配单元测试
+                if (networkSession == null) this.dataPacketImmediately(pk);
+                else
+                    this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
             }
 
             this.connected = false;
