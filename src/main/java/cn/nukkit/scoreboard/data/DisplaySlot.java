@@ -4,8 +4,11 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.Getter;
 
+/**
+ * 计分板显示槽位枚举
+ */
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+@Since("1.19.21-r5")
 public enum DisplaySlot {
 
     SIDEBAR("sidebar"),

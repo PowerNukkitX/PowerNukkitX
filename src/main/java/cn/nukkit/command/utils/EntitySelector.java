@@ -11,8 +11,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import com.google.common.base.Predicate;
@@ -409,7 +409,7 @@ public final class EntitySelector {
                 for(String score_entry : SCORE_SEPARATOR.splitToList(score_part)){
                     Iterator<String> score_entry_split = SCORE_JOINER.split(score_entry).iterator();
                     String objective = score_entry_split.next();
-                    Scoreboard scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
+                    var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(objective);
                     if(scoreboard == null){
                         predicates.add(entity -> false);
                         return List.of(e -> predicates.stream().allMatch(predicate -> predicate.apply(e)));
@@ -434,7 +434,7 @@ public final class EntitySelector {
                         final int finalMin = min;
                         final int finalMax = max;
                         predicates.add(entity -> {
-                            Scorer scorer;
+                            IScorer scorer;
                             if (entity instanceof Player) {
                                 scorer = new PlayerScorer((Player) entity);
                             }else{
@@ -450,7 +450,7 @@ public final class EntitySelector {
                     }else{
                         final int finalScore = Integer.parseInt(score);
                         predicates.add(entity -> {
-                            Scorer scorer;
+                            IScorer scorer;
                             if (entity instanceof Player) {
                                 scorer = new PlayerScorer((Player) entity);
                             }else{

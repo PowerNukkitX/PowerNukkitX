@@ -6,8 +6,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
@@ -74,11 +74,11 @@ public class RawText {
     }
 
     private static Component preParseScore(Component component,CommandSender sender){
-        Scoreboard scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
+        var scoreboard = Server.getInstance().getScoreboardManager().getScoreboard(component.component_score.objective);
         if (scoreboard == null)
             return null;
         String name_str = component.component_score.name;
-        Scorer scorer = null;
+        IScorer scorer = null;
         Integer value = component.component_score.value;
 
         if (name_str.equals("*")) {
@@ -86,7 +86,7 @@ public class RawText {
                 return null;
             scorer = sender.isPlayer() ? new PlayerScorer(sender.asPlayer()) : new EntityScorer(sender.asEntity());
         } else if (EntitySelector.hasArguments(name_str)) {
-            List<Scorer> scorers = EntitySelector.matchEntities(sender, name_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).toList();
+            List<IScorer> scorers = EntitySelector.matchEntities(sender, name_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).toList();
             if (scorers.isEmpty())
                 return null;
             scorer = scorers.get(0);
