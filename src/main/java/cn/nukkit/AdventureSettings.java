@@ -83,8 +83,8 @@ public class AdventureSettings implements Cloneable {
         }
 
 
-        layer.setWalkSpeed(0.05f);
-        layer.setFlySpeed(0.1f);
+        layer.setWalkSpeed(Player.DEFAULT_SPEED);
+        layer.setFlySpeed(0.05f);
         packet.abilityLayers.add(layer);
 
         UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
