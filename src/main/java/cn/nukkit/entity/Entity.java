@@ -633,7 +633,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Deprecated(since = "1.19.21-r2")
     @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
     public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }
@@ -644,7 +644,7 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }

@@ -1234,7 +1234,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitXOnly
     public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
