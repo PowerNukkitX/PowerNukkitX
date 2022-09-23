@@ -5632,11 +5632,15 @@
   },
   {
     "name": "minecraft:frog_spawn_egg",
-    "id": 628
+    "id": 628,
+    "oldId": 383,
+    "oldData": 132
   },
   {
     "name": "minecraft:tadpole_spawn_egg",
-    "id": 629
+    "id": 629,
+    "oldId": 383,
+    "oldData": 133
   },
   {
     "name": "minecraft:tadpole_bucket",
@@ -5644,11 +5648,9 @@
   },
   {
     "name": "minecraft:allay_spawn_egg",
-    "id": 631
-  },
-  {
-    "name": "minecraft:firefly_spawn_egg",
-    "id": 632
+    "id": 631,
+    "oldId": 383,
+    "oldData": 134
   },
   {
     "name": "minecraft:mangrove_door",
@@ -5761,6 +5763,8 @@
   },
   {
     "name": "minecraft:warden_spawn_egg",
-    "id": 632
+    "id": 632,
+    "oldId": 383,
+    "oldData": 131
   }
 ]
