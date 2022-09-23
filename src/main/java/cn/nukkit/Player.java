@@ -58,11 +58,15 @@ import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -173,6 +177,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     protected final SourceInterface interfaz;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    protected final NetworkPlayerSession networkSession;
 
     public boolean playedBefore;
     public boolean spawned = false;
@@ -355,7 +362,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player attacked last.
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Entity lastAttackEntity = null;
     /**
      * 最后攻击玩家的实体.
@@ -363,14 +370,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * The entity that the player is attacked last.
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Entity lastBeAttackEntity = null;
 
     /**
      * @return {@link #lastAttackEntity}
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public Entity getLastAttackEntity() {
         return lastAttackEntity;
     }
@@ -379,7 +386,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return {@link #lastBeAttackEntity}
      */
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     public Entity getLastBeAttackEntity() {
         return lastBeAttackEntity;
     }
@@ -755,6 +762,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;
+        this.networkSession = interfaz.getSession(socketAddress);
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
@@ -1293,8 +1301,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-
-            this.interfaz.putPacket(this, packet, false, false);
+            //适配单元Test
+            if (networkSession == null) this.interfaz.putPacket(this, packet, false, false);
+            else this.networkSession.sendPacket(packet);
         }
         return true;
     }
@@ -1332,6 +1341,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Deprecated
     public int directDataPacket(DataPacket packet, boolean needACK) {
         return this.dataPacket(packet) ? 0 : -1;
+    }
+
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    public void forceDataPacket(DataPacket packet, Runnable callback) {
+        this.networkSession.sendImmediatePacket(packet, (callback == null ? () -> {
+        } : callback));
     }
 
     public int getPing() {
@@ -2572,7 +2588,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @SneakyThrows
     private List<DataPacket> unpackBatchedPackets(BatchPacket packet) {
-        return this.server.getNetwork().unpackBatchedPackets(packet);
+        return this.server.getNetwork().unpackBatchedPackets(packet, CompressionProvider.ZLIB);
     }
 
     public void handleDataPacket(DataPacket packet) {
@@ -2580,7 +2596,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET) {
+        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
             log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
@@ -2607,16 +2623,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.LOGIN_PACKET:
+                case ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET:
                     if (this.loggedIn) {
                         break;
                     }
 
-                    LoginPacket loginPacket = (LoginPacket) packet;
+                    int protocolVersion = ((RequestNetworkSettingsPacket) packet).protocolVersion;
 
                     String message;
-                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(loginPacket.getProtocol())) {
-                        if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
+                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
+                        if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                             message = "disconnectionScreen.outdatedClient";
 
                             this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
@@ -2625,19 +2641,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         }
-                        if (((LoginPacket) packet).protocol < 137) {
-                            DisconnectPacket disconnectPacket = new DisconnectPacket();
-                            disconnectPacket.message = message;
-                            disconnectPacket.encode();
-                            BatchPacket batch = new BatchPacket();
-                            batch.payload = disconnectPacket.getBuffer();
-                            this.dataPacketImmediately(batch);
-                            // Still want to run close() to allow the player to be removed properly
-                        }
                         this.close("", message, false);
                         break;
                     }
+                    NetworkSettingsPacket settingsPacket = new NetworkSettingsPacket();
+                    settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
+                    settingsPacket.compressionThreshold = 1; // compress everything
+                    this.forceDataPacket(settingsPacket, () -> {
+                        this.networkSession.setCompression(CompressionProvider.ZLIB);
+                    });
+                    break;
+                case ProtocolInfo.LOGIN_PACKET:
+                    if (this.loggedIn) {
+                        break;
+                    }
 
+                    LoginPacket loginPacket = (LoginPacket) packet;
 
                     if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
                         message = "disconnectionScreen.noReason";
@@ -2971,14 +2990,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     break;
                 }
-                case ProtocolInfo.ADVENTURE_SETTINGS_PACKET:
-                    //TODO: player abilities, check for other changes
-                    AdventureSettingsPacket adventureSettingsPacket = (AdventureSettingsPacket) packet;
-                    if (!server.getAllowFlight() && adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING) && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
+                case ProtocolInfo.REQUEST_ABILITY_PACKET:
+                    RequestAbilityPacket abilityPacket = (RequestAbilityPacket) packet;
+
+                    PlayerAbility ability = abilityPacket.ability;
+                    if (ability != PlayerAbility.FLYING) {
+                        this.server.getLogger().info("[" + this.getName() + "] has tried to trigger " + ability + " ability " + (abilityPacket.boolValue ? "on" : "off"));
+                        return;
+                    }
+
+                    if (!server.getAllowFlight() && abilityPacket.boolValue && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
                         this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                         break;
                     }
-                    PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(this, adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING));
+
+                    PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(this, abilityPacket.boolValue);
                     this.server.getPluginManager().callEvent(playerToggleFlightEvent);
                     if (playerToggleFlightEvent.isCancelled()) {
                         this.getAdventureSettings().update();
@@ -4971,7 +4997,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                this.dataPacketImmediately(pk); // Send DisconnectPacket before the connection is closed, so its reason will show properly
+                //适配单元测试
+                if (networkSession == null) this.dataPacketImmediately(pk);
+                else
+                    this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
             }
 
             this.connected = false;
@@ -6739,6 +6768,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.timeSinceRest = timeSinceRest;
     }
 
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    public NetworkPlayerSession getNetworkSession() {
+        return this.networkSession;
+    }
+
     // TODO: Support Translation Parameters
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -6911,7 +6946,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void removeLine(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -6928,7 +6963,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void updateScore(IScoreboardLine line) {
         SetScorePacket packet = new SetScorePacket();
@@ -6945,7 +6980,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void display(IScoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
@@ -6970,7 +7005,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     @Override
     public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();

@@ -10,7 +10,7 @@ import cn.nukkit.scoreboard.scorer.IScorer;
  * 由{@link IScorer}和分数组成
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface IScoreboardLine {
     IScorer getScorer();
     long getLineId();

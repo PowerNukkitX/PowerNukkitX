@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * The wolf moves to the master's side.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;

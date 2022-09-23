@@ -11,7 +11,6 @@ import cn.nukkit.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -193,14 +192,12 @@ public interface CustomBlock {
     default BlockPropertyData getBlockPropertyData() {
         //内部处理components组件
         var compoundTag = new CompoundTag()
-                .putCompound("minecraft:creative_category", new CompoundTag()
-                        .putString("category", this.getCreativeCategory()))
                 .putCompound("minecraft:friction", new CompoundTag()
                         .putFloat("value", (float) this.getFrictionFactor()))
                 .putCompound("minecraft:explosion_resistance", new CompoundTag()
                         .putInt("value", (int) this.getResistance()))
                 .putCompound("minecraft:block_light_filter", new CompoundTag()
-                        .putFloat("lightLevel", (byte) this.getLightFilter()))
+                        .putByte("lightLevel", (byte) this.getLightFilter()))
                 .putCompound("minecraft:light_emission", new CompoundTag()
                         .putByte("emission", (byte) this.getLightLevel()))
                 .putCompound("minecraft:rotation", new CompoundTag()
@@ -214,9 +211,6 @@ public interface CustomBlock {
                     .putCompound("mappings", new CompoundTag())
                     .putCompound("materials", this.getMaterials()));
         }
-        if (!this.getCreativeCategoryGroup().isEmpty()) {
-            compoundTag.getCompound("minecraft:creative_category").putString("group", this.getCreativeCategoryGroup());
-        }
         //设置方块对应的几何模型，需要在资源包定义
         if (!this.getGeometry().isEmpty()) {
             compoundTag.putCompound("minecraft:geometry", new CompoundTag()
@@ -229,6 +223,15 @@ public interface CustomBlock {
         //方块components
         var nbt = new CompoundTag()
                 .putCompound("components", compoundTag);
+
+        //设置方块在创造栏的分类 分组
+        nbt.putCompound("menu_category", new CompoundTag()
+                .putString("category", this.getCreativeCategory()));
+        if (!this.getCreativeCategoryGroup().isEmpty()) {
+            compoundTag.getCompound("menu_category").putString("group", this.getCreativeCategoryGroup());
+        }
+        //molang版本
+        nbt.putInt("molangVersion", 6);
         //方块BlockTags
         if (getBlockTags() != null) nbt.putList(getBlockTags());
         //设置方块的permutations
@@ -243,8 +246,6 @@ public interface CustomBlock {
             propertiesNBT.setName("properties");
             nbt.putList(propertiesNBT);
         }
-        //molang版本
-        nbt.putInt("molangVersion", 6);
         return new BlockPropertyData(this.getNamespace(), nbt);
     }
 }

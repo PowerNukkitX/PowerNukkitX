@@ -11,7 +11,7 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
  * 此接口用于抽象服务端到客户端的协议层方法
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public interface IScoreboardViewer {
     void display(IScoreboard scoreboard, DisplaySlot slot);
     void hide(DisplaySlot slot);

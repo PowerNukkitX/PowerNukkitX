@@ -43,14 +43,14 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
      * <p>
      * Used to specify a specific attack target.
      */
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Entity target;
     /**
      * 用来指定特定的视线目标
      * <p>
      * Used to specify a specific look target.
      */
-    @Since("1.19.21-r5")
+    @Since("1.19.30-r1")
     protected Vector3 lookTarget;
 
     /**

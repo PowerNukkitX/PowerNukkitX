@@ -14,7 +14,7 @@ import cn.nukkit.entity.ai.memory.Vector3Memory;
  * Wolf looks at the player carrying the food.
  */
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 public class WolfLookPlayerExecutor extends AboutControlExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {

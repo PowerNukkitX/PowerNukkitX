@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @PowerNukkitXOnly
-@Since("1.19.21-r5")
+@Since("1.19.30-r1")
 @Getter
 public class JSONScoreboardStorage implements IScoreboardStorage {
 
