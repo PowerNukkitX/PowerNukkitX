@@ -3,6 +3,7 @@ package cn.nukkit.scoreboard.manager;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
@@ -37,6 +38,7 @@ public interface IScoreboardManager {
 
     void onPlayerJoin(Player player);
     void beforePlayerQuit(Player player);
+    void onEntityDead(EntityLiving entity);
 
     IScoreboardStorage getStorage();
     void save();

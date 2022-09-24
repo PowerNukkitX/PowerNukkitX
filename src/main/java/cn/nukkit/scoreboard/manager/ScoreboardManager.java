@@ -5,10 +5,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.event.command.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.scoreboard.storage.IScoreboardStorage;
 import lombok.Getter;
@@ -141,6 +143,15 @@ public class ScoreboardManager implements IScoreboardManager{
             }
         });
         removeViewer(player);
+    }
+
+    @Override
+    public void onEntityDead(EntityLiving entity) {
+        var scorer = new EntityScorer(entity);
+        this.scoreboards.forEach((s, scoreboard) -> {
+            if (scoreboard.getLines().isEmpty()) return;
+            scoreboard.removeLine(scorer);
+        });
     }
 
     @Override

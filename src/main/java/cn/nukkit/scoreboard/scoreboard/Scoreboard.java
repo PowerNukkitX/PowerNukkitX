@@ -181,6 +181,7 @@ public class Scoreboard implements IScoreboard{
 
     @Override
     public boolean shouldCallEvent() {
-        return Server.getInstance().getScoreboardManager().containScoreboard(this);
+        var manager = Server.getInstance().getScoreboardManager();
+        return manager != null && manager.containScoreboard(this);
     }
 }
