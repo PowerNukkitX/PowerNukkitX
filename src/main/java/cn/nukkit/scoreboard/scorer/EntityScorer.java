@@ -3,16 +3,18 @@ package cn.nukkit.scoreboard.scorer;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+@Since("1.19.30-r1")
 @Getter
-public class EntityScorer implements Scorer {
+public class EntityScorer implements IScorer {
 
     private UUID entityUuid;
 
@@ -44,6 +46,13 @@ public class EntityScorer implements Scorer {
 
     @Override
     public String getName() {
-        return String.valueOf(entityUuid.getMostSignificantBits());
+        return entityUuid.toString();
+    }
+
+    @Override
+    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        UUID uuid = getEntityUuid();
+        long id = uuid.getMostSignificantBits();
+        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, id);
     }
 }

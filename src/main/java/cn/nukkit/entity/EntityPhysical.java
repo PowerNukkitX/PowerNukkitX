@@ -31,19 +31,17 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
      */
     public final int tickSpread;
     /**
-     * 实体自由落体运动的时间
-     */
-    protected int fallingTick = 0;
-    /**
      * 提供实时最新碰撞箱位置
      */
     protected final AxisAlignedBB offsetBoundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
-
-    private boolean needsCollisionDamage = false;
-
-    protected boolean needsRecalcMovement = true;
     protected final Vector3 previousCollideMotion = new Vector3();
     protected final Vector3 previousCurrentMotion = new Vector3();
+    /**
+     * 实体自由落体运动的时间
+     */
+    protected int fallingTick = 0;
+    protected boolean needsRecalcMovement = true;
+    private boolean needsCollisionDamage = false;
 
     public EntityPhysical(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

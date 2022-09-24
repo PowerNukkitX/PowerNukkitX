@@ -52,7 +52,7 @@ public class TagCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
-            ;
+
             List<Entity> entities = parser.parseTargets();
             if (entities.isEmpty()) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));

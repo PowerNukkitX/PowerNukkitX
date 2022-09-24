@@ -1,0 +1,10 @@
+package cn.nukkit.network.protocol.types;
+
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
+@Since("1.19.30-r1")
+@PowerNukkitXOnly
+public record EduSharedUriResource(String buttonName, String linkUri) {
+    public static final EduSharedUriResource EMPTY = new EduSharedUriResource("", "");
+}

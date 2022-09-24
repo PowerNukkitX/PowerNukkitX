@@ -8,6 +8,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.BlockFace;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -91,5 +93,12 @@ public class ItemFlintSteel extends ItemTool {
     @Override
     public int getMaxDurability() {
         return ItemTool.DURABILITY_FLINT_STEEL;
+    }
+
+    @Override
+    public boolean useOn(Block block) {
+        //todo: initiator should be an entity who use it but not null
+        block.getLevel().getVibrationManager().callVibrationEvent(new VibrationEvent(null, block.add(0.5, 0.5, 0.5), VibrationType.BLOCK_PLACE));
+        return super.useOn(block);
     }
 }

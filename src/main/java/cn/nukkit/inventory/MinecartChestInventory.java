@@ -12,4 +12,9 @@ public class MinecartChestInventory extends ContainerInventory {
     public EntityMinecartChest getHolder() {
         return (EntityMinecartChest) this.holder;
     }
+
+    @Override
+    public boolean canCauseVibration() {
+        return true;
+    }
 }

@@ -2116,13 +2116,6 @@
             "blockRuntimeId" : 70
         },
         {
-            "id" : "minecraft:kelp"
-        },
-        {
-            "id" : "minecraft:seagrass",
-            "blockRuntimeId" : 246
-        },
-        {
             "id" : "minecraft:crimson_roots",
             "blockRuntimeId" : 7575
         },
@@ -2270,24 +2263,31 @@
             "blockRuntimeId" : 5481
         },
         {
-            "id" : "minecraft:twisting_vines",
-            "blockRuntimeId" : 5693
+            "id": "minecraft:twisting_vines",
+            "blockRuntimeId": 5693
         },
         {
-            "id" : "minecraft:waterlily",
-            "blockRuntimeId" : 1160
+            "id": "minecraft:waterlily",
+            "blockRuntimeId": 1160
         },
         {
-            "id" : "minecraft:deadbush",
-            "blockRuntimeId" : 4679
+            "id": "minecraft:seagrass",
+            "blockRuntimeId": 246
         },
         {
-            "id" : "minecraft:bamboo",
-            "blockRuntimeId" : 3686
+            "id": "minecraft:kelp"
         },
         {
-            "id" : "minecraft:snow",
-            "blockRuntimeId" : 4196
+            "id": "minecraft:deadbush",
+            "blockRuntimeId": 4679
+        },
+        {
+            "id": "minecraft:bamboo",
+            "blockRuntimeId": 3686
+        },
+        {
+            "id": "minecraft:snow",
+            "blockRuntimeId": 4196
         },
         {
             "id" : "minecraft:ice",

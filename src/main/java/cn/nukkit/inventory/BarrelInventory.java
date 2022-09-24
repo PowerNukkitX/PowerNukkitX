@@ -62,4 +62,9 @@ public class BarrelInventory extends ContainerInventory {
             }
         }
     }
+
+    @Override
+    public boolean canCauseVibration() {
+        return true;
+    }
 }

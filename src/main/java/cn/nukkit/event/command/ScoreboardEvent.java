@@ -3,7 +3,7 @@ package cn.nukkit.event.command;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
 
 public abstract class ScoreboardEvent extends Event implements Cancellable {
 

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.Since;
+
 /**
  * @author MagicDroidX (Nukkit Project)
  */
@@ -35,5 +37,11 @@ public class ItemAxeIron extends ItemTool {
     @Override
     public int getAttackDamage() {
         return 5;
+    }
+
+    @Since("1.19.21-r4")
+    @Override
+    public boolean canBreakShield() {
+        return true;
     }
 }

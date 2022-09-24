@@ -254,7 +254,7 @@ public class Network {
 
     public void processBatch(BatchPacket packet, Player player) {
         try {
-            unpackBatchedPackets(packet);
+            unpackBatchedPackets(packet, player.getNetworkSession().getCompression());
         } catch (ProtocolException e) {
             player.close("", e.getMessage());
             log.error("Unable to process player packets ", e);
@@ -263,17 +263,17 @@ public class Network {
 
     @PowerNukkitOnly
     @Since("FUTURE")
-    public List<DataPacket> unpackBatchedPackets(BatchPacket packet) throws ProtocolException {
+    public List<DataPacket> unpackBatchedPackets(BatchPacket packet,CompressionProvider compression) throws ProtocolException {
         List<DataPacket> packets = new ObjectArrayList<>();
-        processBatch(packet.payload, packets);
+        processBatch(packet.payload, packets,compression);
         return packets;
     }
 
     @Since("1.4.0.0-PN")
-    public void processBatch(byte[] payload, Collection<DataPacket> packets) throws ProtocolException {
+    public void processBatch(byte[] payload, Collection<DataPacket> packets,CompressionProvider compression) throws ProtocolException {
         byte[] data;
         try {
-            data = Network.inflateRaw(payload);
+            data = compression.decompress(payload);
         } catch (Exception e) {
             log.debug("Exception while inflating batch packet", e);
             return;
@@ -329,7 +329,7 @@ public class Network {
     @PowerNukkitDifference(info = "Handles exception if on of the packets in the list fails")
     public void processPackets(Player player, List<DataPacket> packets) {
         if (packets.isEmpty()) return;
-        packets.forEach(p-> {
+        packets.forEach(p -> {
             try {
                 player.handleDataPacket(p);
             } catch (Exception e) {
@@ -345,14 +345,14 @@ public class Network {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit", 
-            reason = "Changed the id to int without backward compatibility", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "Cloudburst Nukkit",
+            reason = "Changed the id to int without backward compatibility",
             replaceWith = "getPacket(int id)")
     @PowerNukkitOnly
     public DataPacket getPacket(byte id) {
         return getPacket((int) id);
     }
-    
+
     @Since("1.4.0.0-PN")
     public DataPacket getPacket(int id) {
         Class<? extends DataPacket> clazz = this.packetPool[id];
@@ -529,11 +529,19 @@ public class Network {
         this.registerPacket(ProtocolInfo.SET_SCOREBOARD_IDENTITY_PACKET, SetScoreboardIdentityPacket.class);
         this.registerPacket(ProtocolInfo.CAMERA_SHAKE_PACKET, CameraShakePacket.class);
         this.registerPacket(ProtocolInfo.DEATH_INFO_PACKET, DeathInfoPacket.class);
-        //powernukkitx only
-
         this.registerPacket(ProtocolInfo.AGENT_ACTION_EVENT_PACKET, AgentActionEventPacket.class);
         this.registerPacket(ProtocolInfo.CHANGE_MOB_PROPERTY_PACKET, ChangeMobPropertyPacket.class);
         this.registerPacket(ProtocolInfo.DIMENSION_DATA_PACKET, DimensionDataPacket.class);
         this.registerPacket(ProtocolInfo.TICKING_AREAS_LOAD_STATUS_PACKET, TickingAreasLoadStatusPacket.class);
+        this.registerPacket(ProtocolInfo.LAB_TABLE_PACKET, LabTablePacket.class);
+        this.registerPacket(ProtocolInfo.UPDATE_BLOCK_SYNCED_PACKET, UpdateBlockSyncedPacket.class);
+        this.registerPacket(ProtocolInfo.EDU_URI_RESOURCE_PACKET, EduUriResourcePacket.class);
+        this.registerPacket(ProtocolInfo.CREATE_PHOTO_PACKET, CreatePhotoPacket.class);
+        this.registerPacket(ProtocolInfo.PHOTO_INFO_REQUEST_PACKET, PhotoInfoRequestPacket.class);
+        this.registerPacket(ProtocolInfo.LESSON_PROGRESS_PACKET, LessonProgressPacket.class);
+        this.registerPacket(ProtocolInfo.REQUEST_ABILITY_PACKET, RequestAbilityPacket.class);
+        this.registerPacket(ProtocolInfo.UPDATE_ABILITIES_PACKET, UpdateAbilitiesPacket.class);
+        this.registerPacket(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET, RequestNetworkSettingsPacket.class);
+        this.registerPacket(ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET, UpdateAdventureSettingsPacket.class);
     }
 }

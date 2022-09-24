@@ -17,13 +17,14 @@ public class PlayerStartItemCoolDownPacket extends DataPacket {
     @Override
     public void decode() {
         this.itemCategory = getString();
-        this.coolDownDuration = getInt();
+        this.coolDownDuration = getVarInt();
     }
 
     @Override
     public void encode() {
+        this.reset();
         putString(itemCategory);
-        putInt(coolDownDuration);
+        putVarInt(coolDownDuration);
     }
 
     public String getItemCategory() {

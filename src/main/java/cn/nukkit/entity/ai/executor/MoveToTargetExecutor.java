@@ -4,6 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MoveToTargetExecutor implements IBehaviorExecutor {
+public class MoveToTargetExecutor extends AboutControlExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory<?>> memoryClazz;
@@ -19,18 +20,23 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
     protected boolean enableRangeTest = false;
-    protected int maxFollowRangeSquared;
-    protected int minFollowRangeSquared;
+    protected float maxFollowRangeSquared;
+    protected float minFollowRangeSquared;
+    protected boolean clearDataWhenLose;
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed) {
-        this(memoryClazz,speed,false);
+        this(memoryClazz, speed, false);
     }
 
     public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange) {
         this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, -1, -1);
     }
 
-    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange, int minFollowRange){
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange) {
+        this(memoryClazz, speed, updateRouteImmediatelyWhenTargetChange, maxFollowRange, minFollowRange, false);
+    }
+
+    public MoveToTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, float speed, boolean updateRouteImmediatelyWhenTargetChange, float maxFollowRange, float minFollowRange, boolean clearDataWhenLose) {
         this.memoryClazz = memoryClazz;
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
@@ -39,6 +45,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
             this.minFollowRangeSquared = minFollowRange * minFollowRange;
             enableRangeTest = true;
         }
+        this.clearDataWhenLose = clearDataWhenLose;
     }
 
     @Override
@@ -49,6 +56,9 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         }
         //获取目标位置（这个clone很重要）
         Vector3 target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData().clone();
+
+        if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
+            return false;
 
         if (enableRangeTest) {
             var distanceSquared = target.distanceSquared(entity);
@@ -85,6 +95,8 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         //重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
+        if (clearDataWhenLose)
+            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
     }
 
     @Override
@@ -95,21 +107,7 @@ public class MoveToTargetExecutor implements IBehaviorExecutor {
         //重置速度
         entity.setMovementSpeed(0.1f);
         entity.setEnablePitch(false);
-    }
-
-    protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setMoveTarget(vector3);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
-    }
-
-    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.setMoveTarget(null);
-    }
-
-    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
-        entity.setLookTarget(null);
+        if (clearDataWhenLose)
+            entity.getBehaviorGroup().getMemoryStorage().clear(memoryClazz);
     }
 }

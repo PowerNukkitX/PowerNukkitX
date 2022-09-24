@@ -33,9 +33,9 @@ public class EntityCrossbowFirework extends EntityFirework {
                     this.motionZ *= 1.15D;
                     this.move(this.motionX, this.motionY, this.motionZ);
                     this.updateMovement();
-                    float f = (float)Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                    this.yaw = (double)((float)(Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D));
-                    this.pitch = (double)((float)(Math.atan2(this.motionY, (double)f) * 57.29577951308232D));
+                    float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                    this.yaw = (double) ((float) (Math.atan2(this.motionX, this.motionZ) * 57.29577951308232D));
+                    this.pitch = (double) ((float) (Math.atan2(this.motionY, (double) f) * 57.29577951308232D));
                     if (this.fireworkAge == 0) {
                         this.getLevel().addLevelSoundEvent(this, 56);
                     }

@@ -10,6 +10,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
@@ -233,6 +235,8 @@ public class BlockTripWire extends BlockTransparentMeta {
             this.level.setBlock(this, this, true, false);
             this.updateHook(false);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
+            //todo: initiator should be a entity
+            level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.add(0.5, 0.5, 0.5), VibrationType.SHEAR));
         } else {
             this.setPowered(true);
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);

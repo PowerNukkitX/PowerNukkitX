@@ -143,13 +143,13 @@ public class BehaviorGroup implements IBehaviorGroup {
 
     public void evaluateCoreBehaviors(EntityIntelligent entity) {
         coreBehaviorPeriodTimer.forEach((coreBehavior, tick) -> {
-            int nextTick;
-            //刷新gt数
-            coreBehaviorPeriodTimer.put(coreBehavior, nextTick = ++tick);
-            //没到周期就不评估
-            if (nextTick < coreBehavior.getPeriod()) return;
             //若已经在运行了，就不需要评估了
             if (runningCoreBehaviors.contains(coreBehavior)) return;
+            int nextTick = ++tick;
+            //刷新gt数
+            coreBehaviorPeriodTimer.put(coreBehavior, nextTick);
+            //没到周期就不评估
+            if (nextTick < coreBehavior.getPeriod()) return;
             coreBehaviorPeriodTimer.put(coreBehavior, 0);
             if (coreBehavior.evaluate(entity)) {
                 coreBehavior.onStart(entity);
@@ -170,19 +170,21 @@ public class BehaviorGroup implements IBehaviorGroup {
         int highestPriority = Integer.MIN_VALUE;
         for (Map.Entry<IBehavior, Integer> entry : behaviorPeriodTimer.entrySet()) {
             IBehavior behavior = entry.getKey();
-            int tick = entry.getValue();
-            int nextTick;
-            //刷新gt数
-            behaviorPeriodTimer.put(behavior, nextTick = ++tick);
-            //没到周期就不评估
-            if (nextTick < behavior.getPeriod()) continue;
             //若已经在运行了，就不需要评估了
             if (runningBehaviors.contains(behavior)) continue;
+            int tick = entry.getValue();
+            int nextTick = ++tick;
+            //刷新gt数
+            behaviorPeriodTimer.put(behavior, nextTick);
+            //没到周期就不评估
+            if (nextTick < behavior.getPeriod()) continue;
             behaviorPeriodTimer.put(behavior, 0);
             if (behavior.evaluate(entity)) {
                 if (behavior.getPriority() > highestPriority) {
                     evalSucceed.clear();
                     highestPriority = behavior.getPriority();
+                } else if (behavior.getPriority() < highestPriority) {
+                    continue;
                 }
                 evalSucceed.add(behavior);
             }
@@ -214,11 +216,17 @@ public class BehaviorGroup implements IBehaviorGroup {
     @Override
     public void updateRoute(EntityIntelligent entity) {
         currentRouteUpdateTick++;
+        Vector3 target = entity.getMoveTarget();
+        if (target == null) {
+            //没有路径目标，则清除路径信息
+            entity.setMoveDirectionStart(null);
+            entity.setMoveDirectionEnd(null);
+            return;
+        }
         //到达更新周期时，开始重新计算新路径
         if (currentRouteUpdateTick >= calcActiveDelay(entity, ROUTE_UPDATE_CYCLE + (entity.level.tickRateOptDelay << 1)) || isForceUpdateRoute()) {
-            Vector3 target = entity.getMoveTarget();
             //若有路径目标，则计算新路径
-            if (target != null && (routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
+            if ((routeFindingTask == null || routeFindingTask.getFinished() || Server.getInstance().getNextTick() - routeFindingTask.getStartTime() > 8)) {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
@@ -228,10 +236,6 @@ public class BehaviorGroup implements IBehaviorGroup {
                 })
                         .setStart(entity.clone())
                         .setTarget(target));
-            } else {
-                //没有路径目标，则清除路径信息
-                entity.setMoveDirectionStart(null);
-                entity.setMoveDirectionEnd(null);
             }
         }
         //若不能再移动了，则清除路径信息

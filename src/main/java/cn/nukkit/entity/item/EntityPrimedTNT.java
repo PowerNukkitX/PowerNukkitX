@@ -13,6 +13,8 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -21,6 +23,17 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class EntityPrimedTNT extends Entity implements EntityExplosive {
 
     public static final int NETWORK_ID = 65;
+    protected int fuse;
+    protected Entity source;
+
+    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
+
+    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt, Entity source) {
+        super(chunk, nbt);
+        this.source = source;
+    }
 
     @Override
     public float getWidth() {
@@ -55,19 +68,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     @Override
     public boolean canCollide() {
         return false;
-    }
-
-    protected int fuse;
-
-    protected Entity source;
-
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt) {
-        this(chunk, nbt, null);
-    }
-
-    public EntityPrimedTNT(FullChunk chunk, CompoundTag nbt, Entity source) {
-        super(chunk, nbt);
-        this.source = source;
     }
 
     @Override
@@ -180,6 +180,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             explosion.explodeA();
         }
         explosion.explodeB();
+        this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.EXPLODE));
     }
 
     public Entity getSource() {

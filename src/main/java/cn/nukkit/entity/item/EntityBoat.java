@@ -56,15 +56,14 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_DEPTH = 0.07;
     public static final double SINKING_SPEED = 0.0005;
     public static final double SINKING_MAX_SPEED = 0.005;
-
-    protected boolean sinking = true;
-    private int ticksInWater;
     private final Set<Entity> ignoreCollision = new HashSet<>(2);
-
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit",
             reason = "Unreliable direct field access", replaceWith = "getVariant(), setVariant(int)")
-    @Since("1.4.0.0-PN") public int woodID;
+    @Since("1.4.0.0-PN")
+    public int woodID;
+    protected boolean sinking = true;
+    private int ticksInWater;
 
     public EntityBoat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -326,18 +325,18 @@ public class EntityBoat extends EntityVehicle {
 
     private boolean computeBuoyancy(double waterDiff) {
         boolean hasUpdated = false;
-        waterDiff -= getBaseOffset()/4;
+        waterDiff -= getBaseOffset() / 4;
         if (waterDiff > SINKING_DEPTH && !sinking) {
             sinking = true;
         } else if (waterDiff < -SINKING_DEPTH && sinking) {
             sinking = false;
         }
 
-        if (waterDiff < -SINKING_DEPTH/1.7) {
-            this.motionY = Math.min(0.05/10, this.motionY + 0.005);
+        if (waterDiff < -SINKING_DEPTH / 1.7) {
+            this.motionY = Math.min(0.05 / 10, this.motionY + 0.005);
             hasUpdated = true;
         } else if (waterDiff < 0 || !sinking) {
-            this.motionY = this.motionY > (SINKING_MAX_SPEED/2) ? Math.max(this.motionY - 0.02, (SINKING_MAX_SPEED/2)) : this.motionY + SINKING_SPEED;
+            this.motionY = this.motionY > (SINKING_MAX_SPEED / 2) ? Math.max(this.motionY - 0.02, (SINKING_MAX_SPEED / 2)) : this.motionY + SINKING_SPEED;
             hasUpdated = true;
         }
         return hasUpdated;
@@ -562,7 +561,7 @@ public class EntityBoat extends EntityVehicle {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    protected void dropItem(){
+    protected void dropItem() {
         this.level.dropItem(this, Item.get(ItemID.BOAT, this.woodID));
     }
 

@@ -29,6 +29,14 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 public class EntityFallingBlock extends Entity {
 
     public static final int NETWORK_ID = 66;
+    protected int blockId;
+    protected int damage;
+    protected @PowerNukkitOnly boolean breakOnLava;
+    protected @PowerNukkitOnly boolean breakOnGround;
+
+    public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
 
     @Override
     public float getWidth() {
@@ -63,15 +71,6 @@ public class EntityFallingBlock extends Entity {
     @Override
     public boolean canCollide() {
         return blockId == BlockID.ANVIL;
-    }
-
-    protected int blockId;
-    protected int damage;
-    protected @PowerNukkitOnly boolean breakOnLava;
-    protected @PowerNukkitOnly boolean breakOnGround;
-
-    public EntityFallingBlock(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -196,7 +195,7 @@ public class EntityFallingBlock extends Entity {
                     if (!event.isCancelled()) {
                         if (!breakOnGround)
                             getLevel().setBlock(pos, event.getTo(), true);
-                        else{
+                        else {
                             if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
                                 getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
                             }
@@ -216,7 +215,7 @@ public class EntityFallingBlock extends Entity {
                         if (event.getTo().getId() == Item.POINTED_DRIPSTONE) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
 
-                            Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos,pos.add(1,1,1)));
+                            Entity[] e = level.getCollidingEntities(new SimpleAxisAlignedBB(pos, pos.add(1, 1, 1)));
                             for (Entity entity : e) {
                                 if (entity instanceof EntityLiving && fallDistance > 0) {
                                     entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.FALLING_BLOCK, Math.min(40f, Math.max(0f, fallDistance * 2f))));

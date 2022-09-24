@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import lombok.extern.log4j.Log4j2;
@@ -51,10 +52,10 @@ public class ItemMap extends Item {
 
     private void updateName() {
         switch (meta) {
-            case 3: this.name = "Ocean Explorer Map"; break;
-            case 4: this.name = "Woodland Explorer Map"; break;
-            case 5: this.name = "Treasure Map"; break;
-            default: this.name = "Map"; break;
+            case 3 -> this.name = "Ocean Explorer Map";
+            case 4 -> this.name = "Woodland Explorer Map";
+            case 5 -> this.name = "Treasure Map";
+            default -> this.name = "Map";
         }
     }
 
@@ -113,6 +114,7 @@ public class ItemMap extends Item {
         pk.image = image;
 
         p.dataPacket(pk);
+        Server.getInstance().getScheduler().scheduleDelayedTask(null, () -> p.dataPacket(pk), 20);
     }
 
     public boolean trySendImage(Player p) {

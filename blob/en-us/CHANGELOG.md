@@ -10,8 +10,76 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [1.19.20-r5-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5) - 2022-8-18
+## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
+This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
 
+## Added
+
+- [#613] Support for Deep Dark biomes (stage #1).
+
+## Changed
+
+- [#620] Remove `StringArrayTag.java`.
+- [#621] Example anti-xray configuration added to the default configuration.
+- [#623] Correct anti-xray configuration.
+
+## Fixes
+
+- [#612] Fix content with NPC plugin.
+- [#617] Fix hopper.
+
+## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3) - 2022-9-2
+This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
+
+## Added
+
+- [#610] Implement mine cart (InventoryHolder) + funnel.
+
+## Changed
+
+- [#599] Refactor entity registration.
+- [#601] js-java interoperability enhancements.
+- [#602] Anti-Mineral Perspective improvements.
+- [#611] Optimized player movement.
+
+## Fixes
+
+- [#603] Fix funnel furnace item swiping bug.
+- [#605] Fix wrong arrow initial speed.
+- [#607] fix entity death smoke + potion effect cloud + explosion.
+- [#615] fix /effect command.
+
+## [1.19.21-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2) - 2022-8-24
+This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
+
+### Added
+
+- [#572] Add many structure generation.
+
+### Fixes
+
+- [#591]/[#592] Fix recipe for repairing fence,wool->wool carpet,glass->glass plate (fixed in [#596]).
+
+## [1.19.21-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1) - 2022-8-23
+This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
+
+### Added
+
+- [#594] 1.19.21-r1 Release.
+- [#587] Add villagers trading api.
+- [#586] Add anti-xray.
+
+### Changed
+
+- [#586] Parallelized Chunk Sending.
+- [#593] Implemented compatibility with 1.19.21 (protocol version 545).
+
+### Fixes
+
+- [#575] Fix the bug that custom blocks are not saved after they turn into air (fixed in [#585]).
+- [#584] Fix some bugs in custom blocks.
+
+## [1.19.20-r5-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5) - 2022-8-18
 This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
 
 ### Added
@@ -41,7 +109,6 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 - [#573] Fix furnace recipe.
 
 ## [1.19.20-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4) - 2022-8-13 -（Pre Release）
-
 This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
 
 ### Added
@@ -58,7 +125,6 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 - [#536] Fix the dimension-related method NPE in Chunk.
 
 ## [1.19.20-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r3) - 2022-8-13
-
 This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
 
 ### Added
@@ -75,7 +141,6 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 - [#520] Fixed the issue that PowerNukkitX could not be started in termux (fixed in[#532]).
 
 ## [1.19.20-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r2) - 2022-8-12
-
 This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
 
 ### Changed
@@ -90,7 +155,6 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 
 
 ## [1.19.20-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r1) - 2022-8-10 - (Pre Release)
-
 This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 544)`.
 
 ### Changed
@@ -104,7 +168,6 @@ This work in progress version supports Minecraft:BE `1.19.20 (Protocol Version 5
 - [#514] Fix the issue that when the player is too fast while riding, it will be mistakenly checked as instantaneous.
 
 ## [1.19.10-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.10-r1) - 2022-8-7
-
 This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
 
 ### Added
@@ -116,7 +179,6 @@ This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 5
 - [#506] 1.19.10-r1 Version Updates。
 
 ## [1.6.0.0-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions/runs/2808051758) - EOL - (Dev)
-
 This work in progress version supports Minecraft:BE `1.19.10 (Protocol Version 534)`.
 
 ### Added
@@ -1095,6 +1157,15 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.21-PNX</summary>
+
+   1. [#1.19.21-r1] PNX-1.19.21-r1 (Protocol Verison 545)
+   2. [#1.19.21-r2] PNX-1.19.21-r2 (Protocol Verison 545)
+   3. [#1.19.21-r3] PNX-1.19.21-r3 (Protocol Verison 545)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1481,9 +1552,35 @@ Need to switch languages?
 [#569]: https://github.com/PowerNukkitX/PowerNukkitX/pull/569
 [#570]: https://github.com/PowerNukkitX/PowerNukkitX/pull/570
 [#571]: https://github.com/PowerNukkitX/PowerNukkitX/pull/571
+[#572]: https://github.com/PowerNukkitX/PowerNukkitX/pull/572
 [#573]: https://github.com/PowerNukkitX/PowerNukkitX/pull/573
 [#574]: https://github.com/PowerNukkitX/PowerNukkitX/pull/574
+[#575]: https://github.com/PowerNukkitX/PowerNukkitX/issues/575
 [#576]: https://github.com/PowerNukkitX/PowerNukkitX/pull/576
+[#584]: https://github.com/PowerNukkitX/PowerNukkitX/pull/584
+[#585]: https://github.com/PowerNukkitX/PowerNukkitX/pull/585
+[#586]: https://github.com/PowerNukkitX/PowerNukkitX/pull/586
+[#587]: https://github.com/PowerNukkitX/PowerNukkitX/pull/587
+[#591]: https://github.com/PowerNukkitX/PowerNukkitX/issues/591
+[#592]: https://github.com/PowerNukkitX/PowerNukkitX/issues/592
+[#593]: https://github.com/PowerNukkitX/PowerNukkitX/pull/593
+[#594]: https://github.com/PowerNukkitX/PowerNukkitX/pull/594
+[#596]: https://github.com/PowerNukkitX/PowerNukkitX/pull/596
+[#599]: https://github.com/PowerNukkitX/PowerNukkitX/pull/599
+[#601]: https://github.com/PowerNukkitX/PowerNukkitX/pull/601
+[#602]: https://github.com/PowerNukkitX/PowerNukkitX/pull/602
+[#603]: https://github.com/PowerNukkitX/PowerNukkitX/pull/603
+[#605]: https://github.com/PowerNukkitX/PowerNukkitX/pull/605
+[#607]: https://github.com/PowerNukkitX/PowerNukkitX/pull/607
+[#610]: https://github.com/PowerNukkitX/PowerNukkitX/pull/610
+[#611]: https://github.com/PowerNukkitX/PowerNukkitX/pull/611
+[#612]: https://github.com/PowerNukkitX/PowerNukkitX/pull/612
+[#613]: https://github.com/PowerNukkitX/PowerNukkitX/pull/613
+[#615]: https://github.com/PowerNukkitX/PowerNukkitX/pull/615
+[#617]: https://github.com/PowerNukkitX/PowerNukkitX/pull/617
+[#620]: https://github.com/PowerNukkitX/PowerNukkitX/pull/620
+[#621]: https://github.com/PowerNukkitX/PowerNukkitX/pull/621
+[#623]: https://github.com/PowerNukkitX/PowerNukkitX/pull/623
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1514,6 +1611,13 @@ Need to switch languages?
 [#1.19.20-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r4
 <!--1.19.20-r5-PNX Protocol Version 544-->
 [#1.19.20-r5]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.20-r5
+
+<!--1.19.21-r1-PNX Protocol Version 545-->
+[#1.19.21-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r1
+<!--1.19.21-r2-PNX Protocol Version 545-->
+[#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
+<!--1.19.21-r3-PNX Protocol Version 545-->
+[#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->

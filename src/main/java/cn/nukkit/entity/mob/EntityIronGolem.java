@@ -86,9 +86,9 @@ public class EntityIronGolem extends EntityWalkingMob {
         } else {
             drops = new Item[1];
         }
-        
+
         drops[0] = Item.get(ItemID.IRON_INGOT, 0, random.nextInt(3, 6));
-        
+
         return drops;
     }
 }

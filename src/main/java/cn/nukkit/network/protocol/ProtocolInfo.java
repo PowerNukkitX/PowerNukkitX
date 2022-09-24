@@ -18,11 +18,11 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = dynamic(545);
+    int CURRENT_PROTOCOL = dynamic(554);
 
     List<Integer> SUPPORTED_PROTOCOLS = Ints.asList(CURRENT_PROTOCOL);
 
-    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.21");
+    String MINECRAFT_VERSION_NETWORK = dynamic("1.19.30");
 
     String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 
@@ -79,6 +79,7 @@ public interface ProtocolInfo {
     byte CRAFTING_DATA_PACKET = 0x34;
     byte CRAFTING_EVENT_PACKET = 0x35;
     byte GUI_DATA_PICK_ITEM_PACKET = 0x36;
+    @Deprecated
     byte ADVENTURE_SETTINGS_PACKET = 0x37;
     byte BLOCK_ENTITY_DATA_PACKET = 0x38;
     byte PLAYER_INPUT_PACKET = 0x39;
@@ -139,6 +140,12 @@ public interface ProtocolInfo {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     byte SET_SCORE_PACKET = 0x6c;
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    byte LAB_TABLE_PACKET = 0x6d;
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    byte UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
     byte MOVE_ENTITY_DELTA_PACKET = 0x6f;
     byte SET_SCOREBOARD_IDENTITY_PACKET = 0x70;
     byte SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = 0x71;
@@ -173,18 +180,30 @@ public interface ProtocolInfo {
     byte COMPLETED_USING_ITEM_PACKET = (byte) 0x8e;
     byte NETWORK_SETTINGS_PACKET = (byte) 0x8f;
     byte PLAYER_AUTH_INPUT_PACKET = (byte) 0x90;
-    @Since("1.3.0.0-PN") byte CREATIVE_CONTENT_PACKET = (byte) 0x91;
-    @Since("1.3.0.0-PN") byte PLAYER_ENCHANT_OPTIONS_PACKET = (byte) 0x92;
-    @Since("1.3.0.0-PN") byte ITEM_STACK_REQUEST_PACKET = (byte) 0x93;
-    @Since("1.3.0.0-PN") byte ITEM_STACK_RESPONSE_PACKET = (byte) 0x94;
-    @Since("1.3.0.0-PN") byte PLAYER_ARMOR_DAMAGE_PACKET = (byte) 0x95;
-    @Since("1.3.0.0-PN") byte CODE_BUILDER_PACKET = (byte) 0x96;
-    @Since("1.3.0.0-PN") byte UPDATE_PLAYER_GAME_TYPE_PACKET = (byte) 0x97;
-    @Since("1.3.0.0-PN") byte EMOTE_LIST_PACKET = (byte) 0x98;
-    @Since("1.3.0.0-PN") byte POS_TRACKING_SERVER_BROADCAST_PACKET = (byte) 0x99;
-    @Since("1.3.0.0-PN") byte POS_TRACKING_CLIENT_REQUEST_PACKET = (byte) 0x9a;
-    @Since("1.3.0.0-PN") byte DEBUG_INFO_PACKET = (byte) 0x9b;
-    @Since("1.3.0.0-PN") byte PACKET_VIOLATION_WARNING_PACKET = (byte) 0x9c;
+    @Since("1.3.0.0-PN")
+    byte CREATIVE_CONTENT_PACKET = (byte) 0x91;
+    @Since("1.3.0.0-PN")
+    byte PLAYER_ENCHANT_OPTIONS_PACKET = (byte) 0x92;
+    @Since("1.3.0.0-PN")
+    byte ITEM_STACK_REQUEST_PACKET = (byte) 0x93;
+    @Since("1.3.0.0-PN")
+    byte ITEM_STACK_RESPONSE_PACKET = (byte) 0x94;
+    @Since("1.3.0.0-PN")
+    byte PLAYER_ARMOR_DAMAGE_PACKET = (byte) 0x95;
+    @Since("1.3.0.0-PN")
+    byte CODE_BUILDER_PACKET = (byte) 0x96;
+    @Since("1.3.0.0-PN")
+    byte UPDATE_PLAYER_GAME_TYPE_PACKET = (byte) 0x97;
+    @Since("1.3.0.0-PN")
+    byte EMOTE_LIST_PACKET = (byte) 0x98;
+    @Since("1.3.0.0-PN")
+    byte POS_TRACKING_SERVER_BROADCAST_PACKET = (byte) 0x99;
+    @Since("1.3.0.0-PN")
+    byte POS_TRACKING_CLIENT_REQUEST_PACKET = (byte) 0x9a;
+    @Since("1.3.0.0-PN")
+    byte DEBUG_INFO_PACKET = (byte) 0x9b;
+    @Since("1.3.0.0-PN")
+    byte PACKET_VIOLATION_WARNING_PACKET = (byte) 0x9c;
     @Since("1.4.0.0-PN")
     byte MOTION_PREDICTION_HINTS_PACKET = (byte) 0x9d;
     @Since("1.4.0.0-PN")
@@ -201,7 +220,6 @@ public interface ProtocolInfo {
     byte FILTER_TEXT_PACKET = (byte) 0xa3;
     @Since("1.4.0.0-PN")
     byte CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
-    byte TOAST_REQUEST_PACKET = (byte) 0xba;
     @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     byte SYNC_ENTITY_PROPERTY_PACKET = (byte) 0xa5;
@@ -232,9 +250,24 @@ public interface ProtocolInfo {
     @Since("1.5.2.0-PN")
     @PowerNukkitOnly
     byte NPC_DIALOGUE_PACKET = (byte) 0xa9;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte EDU_URI_RESOURCE_PACKET = (byte) 0xaa;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte CREATE_PHOTO_PACKET = (byte) 0xab;
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     byte UPDATE_SUB_CHUNK_BLOCKS_PACKET = (byte) 0xac;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte PHOTO_INFO_REQUEST_PACKET = (byte) 0xad;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte SUB_CHUNK_PACKET = (byte) 0xae;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte SUB_CHUNK_REQUEST_PACKET = (byte) 0xaf;
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     byte PLAYER_START_ITEM_COOL_DOWN_PACKET = (byte) 0xb0;
@@ -256,6 +289,16 @@ public interface ProtocolInfo {
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     byte TICKING_AREAS_LOAD_STATUS_PACKET = (byte) 0xb6;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte LESSON_PROGRESS_PACKET = (byte) 0xb7;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte REQUEST_ABILITY_PACKET = (byte) 0xb8;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte REQUEST_PERMISSIONS_PACKET = (byte) 0xb9;
+    byte TOAST_REQUEST_PACKET = (byte) 0xba;
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     byte UPDATE_ABILITIES_PACKET = (byte) 0xbb;
@@ -268,5 +311,20 @@ public interface ProtocolInfo {
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     byte EDITOR_NETWORK_PACKET = (byte) 0xbe;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte FEATURE_REGISTRY_PACKET = (byte) 0xbf;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte SERVER_STATS_PACKET = (byte) 0xc0;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte REQUEST_NETWORK_SETTINGS_PACKET = (byte) 0xc1;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte GAME_TEST_REQUEST_PACKET = (byte) 0xc2;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    byte GAME_TEST_RESULTS_PACKET = (byte) 0xc3;
     byte BATCH_PACKET = (byte) 0xff;
 }

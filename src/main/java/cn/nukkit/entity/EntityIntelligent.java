@@ -8,6 +8,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.BurnTimeMemory;
+import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -51,13 +52,20 @@ public abstract class EntityIntelligent extends EntityPhysical {
         }
     }
 
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+    }
+
     /**
      * 返回此实体持有的行为组{@link IBehaviorGroup} <br/>
      * 默认实现只会返回一个空行为{@link EmptyBehaviorGroup}常量，若你想让实体具有AI，你需要覆写此方法
      *
      * @return 此实体持有的行为组
      */
-    public IBehaviorGroup getBehaviorGroup(){
+
+    @PowerNukkitXOnly
+    public IBehaviorGroup getBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
 
@@ -100,21 +108,37 @@ public abstract class EntityIntelligent extends EntityPhysical {
     }
 
     @Nullable
-    public IMemoryStorage getMemoryStorage(){
+    public IMemoryStorage getMemoryStorage() {
         return getBehaviorGroup().getMemoryStorage();
     }
 
     /**
+     * 获得指定记忆类型的记忆数据，这个方法会自动判空，如果数据不存在或无法获取则返回null.
+     * <p>
+     * Get the memory data of the specified memory type, this method will automatically return null if the data does not exist or cannot be obtained.
+     *
+     * @param memoryClazz 记忆类型<br>Memory class
+     */
+    @Nullable
+    public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
+        var memoryStorage = this.getMemoryStorage();
+        if (memoryStorage == null) return null;
+        if (memoryStorage.notEmpty(memoryClazz)) {
+            return memoryStorage.get(memoryClazz).getData();
+        } else return null;
+    }
+
+    /**
      * 返回实体最大的跳跃高度，返回值会用在移动处理上
-     * @see WalkController
      *
      * @return 实体最大跳跃高度
+     * @see WalkController
      */
     public float getJumpingHeight() {
         return 1.0f;
     }
 
-    public boolean hasMoveDirection(){
+    public boolean hasMoveDirection() {
         return moveDirectionStart != null && moveDirectionEnd != null;
     }
 

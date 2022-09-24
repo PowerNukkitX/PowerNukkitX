@@ -39,7 +39,7 @@ class RakNetInterfaceTest {
     @Test
     void noSession() {
         InetSocketAddress socketAddress = new InetSocketAddress("127.0.0.1", 3222);
-        when(player.getSocketAddress()).thenReturn(socketAddress);
+        when(player.getRawSocketAddress()).thenReturn(socketAddress);
         DataPacket packet = new ResourcePackChunkRequestPacket();
         rakNetInterface.putResourcePacket(player, packet);
         assertFalse(packet.isEncoded);

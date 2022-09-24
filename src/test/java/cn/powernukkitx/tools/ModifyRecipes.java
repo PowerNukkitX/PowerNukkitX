@@ -261,6 +261,12 @@ public class ModifyRecipes {
                             input2.put("damage", 0);
                             map.put("input", input2);
                         }
+                        if (input2.get("id").equals("minecraft:stonebrick")) {
+                            if (output != null && output.get("id").equals("minecraft:stonebrick")) {
+                                output.put("damage", 2);
+                                map.put("output", output);
+                            }
+                        }
                     }
                 }
                 for (var id : modify.keySet()) {

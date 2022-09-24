@@ -11,7 +11,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BVector3;
+import cn.nukkit.math.BVector3;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -166,6 +166,10 @@ public class TeleportCommand extends VanillaCommand {
                 case "Entity->Pos" -> {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
+                    if (victims.isEmpty()) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     Position pos = p.parsePosition();
                     double yRot = sender.getLocation().pitch;
                     if (p.hasNext()) {
@@ -205,6 +209,10 @@ public class TeleportCommand extends VanillaCommand {
                 case "Entity->Pos(FacingPos)" -> {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
+                    if (victims.isEmpty()) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     Position pos = p.parsePosition();
                     p.parseString();//avoid "facing"
                     Position lookAtPosition = p.parsePosition();
@@ -239,6 +247,10 @@ public class TeleportCommand extends VanillaCommand {
                 case "Entity->Pos(FacingEntity)" -> {
                     CommandParser p = new CommandParser(parser);
                     List<Entity> victims = p.parseTargets();
+                    if (victims.isEmpty()) {
+                        sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.noTargetMatch"));
+                        return false;
+                    }
                     Position pos = p.parsePosition();
                     p.parseString();//avoid "facing"
                     List<Entity> lookAtEntity = p.parseTargets();

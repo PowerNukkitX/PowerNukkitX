@@ -76,7 +76,8 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.scheduler.Task;
-import cn.nukkit.scoreboard.ScoreboardManager;
+import cn.nukkit.scoreboard.manager.IScoreboardManager;
+import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
@@ -144,6 +145,9 @@ public class Server {
 
     private ServerScheduler scheduler;
 
+    /**
+     * 一个tick计数器,记录服务器已经经过的tick数
+     */
     private int tickCounter;
 
     private long nextTick;
@@ -173,7 +177,7 @@ public class Server {
 
     private ConsoleCommandSender consoleSender;
 
-    private ScoreboardManager scoreboardManager;
+    private IScoreboardManager scoreboardManager;
 
     private FunctionManager functionManager;
 
@@ -619,6 +623,10 @@ public class Server {
 
         this.checkLoginTime = this.properties.getBoolean("check-login-time", true);
 
+        if (this.isWaterdogCapable()) {
+            this.checkLoginTime = false;
+        }
+
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
 
@@ -993,7 +1001,7 @@ public class Server {
         List<InetSocketAddress> targets = new ArrayList<>();
         for (Player p : players) {
             if (p.isConnected()) {
-                targets.add(p.getSocketAddress());
+                targets.add(p.getRawSocketAddress());
             }
         }
 
@@ -1081,6 +1089,8 @@ public class Server {
             level.save();
         }
 
+        this.scoreboardManager.save();
+
         this.pluginManager.disablePlugins();
         this.pluginManager.clearPlugins();
         this.commandMap.clearCommands();
@@ -1110,6 +1120,7 @@ public class Server {
         JSIInitiator.reset();
         JSFeatures.clearFeatures();
         JSFeatures.initInternalFeatures();
+        this.scoreboardManager.read();
         this.pluginManager.registerInterface(JSPluginLoader.class);
         this.pluginManager.loadPlugins(this.pluginPath);
         this.functionManager.reload();
@@ -1150,6 +1161,9 @@ public class Server {
 
             log.debug("Removing event handlers");
             HandlerList.unregisterAll();
+
+            log.debug("Saving scoreboards data");
+            this.scoreboardManager.save();
 
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
@@ -1443,6 +1457,7 @@ public class Server {
                 level.save();
             }
             Timings.levelSaveTimer.stopTiming();
+            this.getScoreboardManager().save();
         }
     }
 
@@ -1870,7 +1885,7 @@ public class Server {
         return resourcePackManager;
     }
 
-    public ScoreboardManager getScoreboardManager() {
+    public IScoreboardManager getScoreboardManager() {
         return scoreboardManager;
     }
 
@@ -2208,7 +2223,7 @@ public class Server {
     }
 
     public void removePlayer(Player player) {
-        Player toRemove = this.players.remove(player.getSocketAddress());
+        Player toRemove = this.players.remove(player.getRawSocketAddress());
         if (toRemove != null) {
             return;
         }
@@ -2673,6 +2688,7 @@ public class Server {
         Entity.registerEntity("Endermite", EntityEndermite.class);
         Entity.registerEntity("Evoker", EntityEvoker.class);
         Entity.registerEntity("Ghast", EntityGhast.class);
+        Entity.registerEntity("GlowSquid", EntityGlowSquid.class);
         Entity.registerEntity("Guardian", EntityGuardian.class);
         Entity.registerEntity("Hoglin", EntityHoglin.class);
         Entity.registerEntity("Husk", EntityHusk.class);
@@ -2692,6 +2708,7 @@ public class Server {
         Entity.registerEntity("Stray", EntityStray.class);
         Entity.registerEntity("Vex", EntityVex.class);
         Entity.registerEntity("Vindicator", EntityVindicator.class);
+        Entity.registerEntity("Warden", EntityWarden.class);
         Entity.registerEntity("Witch", EntityWitch.class);
         Entity.registerEntity("Wither", EntityWither.class);
         Entity.registerEntity("WitherSkeleton", EntityWitherSkeleton.class);
@@ -2701,6 +2718,8 @@ public class Server {
         Entity.registerEntity("ZombieVillager", EntityZombieVillager.class);
 //        Entity.registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
         //Passive
+        Entity.registerEntity("Allay", EntityAllay.class);
+        Entity.registerEntity("Axolotl", EntityAxolotl.class);
         Entity.registerEntity("Bat", EntityBat.class);
         Entity.registerEntity("Bee", EntityBee.class);
         Entity.registerEntity("Cat", EntityCat.class);
@@ -2710,6 +2729,8 @@ public class Server {
         Entity.registerEntity("Dolphin", EntityDolphin.class);
         Entity.registerEntity("Donkey", EntityDonkey.class);
         Entity.registerEntity("Fox", EntityFox.class);
+        Entity.registerEntity("Frog", EntityFrog.class);
+        Entity.registerEntity("Goat", EntityGoat.class);
         Entity.registerEntity("Horse", EntityHorse.class);
         Entity.registerEntity("Llama", EntityLlama.class);
         Entity.registerEntity("Mooshroom", EntityMooshroom.class);
@@ -2726,6 +2747,7 @@ public class Server {
         Entity.registerEntity("SkeletonHorse", EntitySkeletonHorse.class);
         Entity.registerEntity("Squid", EntitySquid.class);
         Entity.registerEntity("Strider", EntityStrider.class);
+        Entity.registerEntity("Tadpole", EntityTadpole.class);
         Entity.registerEntity("TropicalFish", EntityTropicalFish.class);
         Entity.registerEntity("Turtle", EntityTurtle.class);
         Entity.registerEntity("Villager", EntityVillager.class);
@@ -2863,6 +2885,12 @@ public class Server {
     @Since("1.6.0.0-PNX")
     public boolean isEnableExperimentMode() {
         return this.enableExperimentMode;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public boolean isWaterdogCapable() {
+        return this.getConfig("settings.waterdogpe", false);
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {

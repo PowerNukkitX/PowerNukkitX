@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public record CustomEntityDefinition(CompoundTag nbt) {
     public static AtomicInteger RUNTIME_ID = new AtomicInteger(10000);
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public int getRuntimeId() {
         return this.nbt.getInt("rid");
@@ -15,10 +18,6 @@ public record CustomEntityDefinition(CompoundTag nbt) {
 
     public String getStringId() {
         return this.nbt.getString("id");
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {

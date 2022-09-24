@@ -81,6 +81,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
      */
     protected int profession;
 
+    //todo 实现不同群系的村民
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -109,7 +110,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         return "Villager";
     }
 
-    {
+    {//todo 移除这些，实现原版随机村民
         var input1 = Item.fromString("minecraft:string");
         var input12 = Item.fromString("minecraft:emerald");
         input1.setCount(20);
@@ -170,32 +171,38 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         if (!this.namedTag.contains("profession")) {
             this.setProfession(ran);
         } else {
-            this.setProfession(this.namedTag.getByte("profession"));
+            var profession = this.namedTag.getInt("profession");//todo 移除这些，实现原版随机村民
+            this.profession = profession;
+            this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
         }
         if (!this.namedTag.contains("canTrade")) {
             this.setCanTrade(!(ran == 0 || ran == 14));
         } else {
-            this.setCanTrade(this.namedTag.getBoolean("canTrade"));
+            this.canTrade = this.namedTag.getBoolean("canTrade");
         }
         if (!this.namedTag.contains("displayName")) {
             this.setDisplayName(getProfessionName(ran));
         } else {
-            this.setDisplayName(this.namedTag.getString("displayName"));
+            this.displayName = this.namedTag.getString("displayName");
         }
         if (!this.namedTag.contains("tradeTier")) {
             this.setTradeTier(2);
         } else {
-            this.setTradeTier(this.namedTag.getInt("tradeTier"));
+            this.tradeTier = this.namedTag.getInt("tradeTier");
         }
         if (!this.namedTag.contains("maxTradeTier")) {
             this.setMaxTradeTier(2);
         } else {
-            this.setMaxTradeTier(this.namedTag.getInt("maxTradeTier"));
+            var maxTradeTier = this.namedTag.getInt("maxTradeTier");
+            this.maxTradeTier = maxTradeTier;
+            this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, maxTradeTier));
         }
         if (!this.namedTag.contains("tradeExp")) {
             this.setTradeExp(2);
         } else {
-            this.setTradeExp(this.namedTag.getInt("tradeExp"));
+            var tradeExp = this.namedTag.getInt("tradeExp");
+            this.tradeExp = tradeExp;
+            this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, tradeExp));
         }
     }
 
@@ -205,10 +212,13 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         this.namedTag.putByte("Profession", this.getProfession());
         this.namedTag.putBoolean("isTrade", this.getCanTrade());
         this.namedTag.putString("displayName", this.getDisplayName());
+        this.namedTag.putInt("tradeTier", this.getTradeTier());
+        this.namedTag.putInt("maxTradeTier", this.getMaxTradeTier());
+        this.namedTag.putInt("tradeExp", this.getTradeExp());
     }
 
     /**
-     * 获取村民职业对应的displayName硬编码
+     * 获取村民职业id对应的displayName硬编码
      */
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
@@ -249,7 +259,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setProfession(int profession) {
         this.profession = profession;
         this.setDataProperty(new IntEntityData(DATA_VARIANT, profession));
-        this.namedTag.putByte("profession", this.profession);
+        this.namedTag.putInt("profession", this.profession);
     }
 
     @PowerNukkitXOnly
@@ -276,8 +286,8 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     public void setCanTrade(boolean canTrade) {
-        this.namedTag.putBoolean("canTrade", canTrade);
         this.canTrade = canTrade;
+        this.namedTag.putBoolean("canTrade", canTrade);
     }
 
     /**
@@ -324,7 +334,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @Since("1.19.21-r1")
     public void setTradeTier(int tradeTier) {
         this.tradeTier = --tradeTier;
-        this.namedTag.putByte("tradeTier", this.tradeTier);
+        this.namedTag.putInt("tradeTier", this.tradeTier);
     }
 
     /**
@@ -333,7 +343,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setMaxTradeTier(int maxTradeTier) {
         this.maxTradeTier = maxTradeTier;
         this.setDataProperty(new IntEntityData(DATA_MAX_TRADE_TIER, 5));
-        this.namedTag.putByte("maxTradeTier", this.tradeTier);
+        this.namedTag.putInt("maxTradeTier", this.tradeTier);
     }
 
     /**
@@ -349,7 +359,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     public void setTradeExp(int tradeExp) {
         this.tradeExp = tradeExp;
         this.setDataProperty(new IntEntityData(DATA_TRADE_EXPERIENCE, 10));
-        this.namedTag.putByte("tradeExp", this.tradeTier);
+        this.namedTag.putInt("tradeExp", this.tradeTier);
     }
 
     /**
