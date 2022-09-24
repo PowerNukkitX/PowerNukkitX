@@ -3,7 +3,7 @@ package cn.nukkit.scoreboard.scoreboard;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.event.command.ScoreboardLineChangeEvent;
+import cn.nukkit.event.scoreboard.ScoreboardLineChangeEvent;
 import cn.nukkit.scoreboard.scorer.IScorer;
 import lombok.Getter;
 

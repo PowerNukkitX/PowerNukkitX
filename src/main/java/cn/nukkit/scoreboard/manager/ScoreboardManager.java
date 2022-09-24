@@ -6,7 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.event.command.ScoreboardObjectiveChangeEvent;
+import cn.nukkit.event.scoreboard.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;

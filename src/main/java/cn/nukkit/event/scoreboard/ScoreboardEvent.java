@@ -1,4 +1,4 @@
-package cn.nukkit.event.command;
+package cn.nukkit.event.scoreboard;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
