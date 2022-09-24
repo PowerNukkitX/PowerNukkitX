@@ -47,7 +47,7 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return uuid != null ? uuid.hashCode() : 0;
     }
 
     @Override
