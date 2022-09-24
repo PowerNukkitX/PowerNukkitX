@@ -198,7 +198,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         EntityDeathEvent ev = new EntityDeathEvent(this, this.getDrops());
         this.server.getPluginManager().callEvent(ev);
 
-        this.server.getScoreboardManager().onEntityDead(this);
+        var manager = this.server.getScoreboardManager();
+        //测试环境中此项会null，所以说需要判空下
+        if (manager != null) manager.onEntityDead(this);
 
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (cn.nukkit.item.Item item : ev.getDrops()) {
