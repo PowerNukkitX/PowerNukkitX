@@ -1878,7 +1878,7 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
 
-            this.addMovement(this.x, this.isPlayer ? this.y : this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
+            this.addMovement(this.x, this.isPlayer ? this.y : this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
 
             this.lastX = this.x;
             this.lastY = this.y;
