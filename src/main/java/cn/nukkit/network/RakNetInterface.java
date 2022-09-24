@@ -189,7 +189,12 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         RakNetPlayerSession session = this.sessions.get(player.getRawSocketAddress());
 
         if (session != null) {
-            session.sendPacket(packet);
+            if (!immediate) {
+                session.sendPacket(packet);
+            } else {
+                packet.tryEncode();
+                session.sendPacketImmediately(packet);
+            }
         }
 
         return null;
