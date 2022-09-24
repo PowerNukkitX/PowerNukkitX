@@ -62,10 +62,7 @@ import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.ContainerIds;
-import cn.nukkit.network.protocol.types.NetworkInventoryAction;
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
@@ -1860,15 +1857,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 List<Block> blocksAround = new ObjectArrayList<>(this.blocksAround);
                 List<Block> collidingBlocks = new ObjectArrayList<>(this.collisionBlocks);
 
-                PlayerMoveEvent event = new PlayerMoveEvent(this, source, target);
+                PlayerMoveEvent ev = new PlayerMoveEvent(this, source, target);
                 this.blocksAround.clear();
                 this.collisionBlocks.clear();
-                this.server.getPluginManager().callEvent(event);
-
                 this.server.getPluginManager().callEvent(ev);
 
-                if (!(revert = ev.isCancelled())) { //Yes, this is intended
-                    if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
+                if (!(invalidMotion = ev.isCancelled())) { //Yes, this is intended
+                    if (!target.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
                         if (delta > 0.0001d)
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
