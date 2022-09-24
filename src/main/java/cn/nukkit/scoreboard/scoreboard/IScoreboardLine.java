@@ -16,10 +16,10 @@ public interface IScoreboardLine {
     long getLineId();
     IScoreboard getScoreboard();
     int getScore();
-    void setScore(int score);
-    default void addScore(int addition) {setScore(getScore() + addition);}
+    boolean setScore(int score);
+    default boolean addScore(int addition) {return setScore(getScore() + addition);}
 
-    default void removeScore(int reduction) {setScore(getScore() - reduction);}
+    default boolean removeScore(int reduction) {return setScore(getScore() - reduction);}
     default SetScorePacket.ScoreInfo toNetworkInfo() {
         return getScorer().toNetworkInfo(getScoreboard(), this);
     }

@@ -2,8 +2,10 @@ package cn.nukkit.scoreboard.manager;
 
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.event.command.ScoreboardObjectiveChangeEvent;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
 import cn.nukkit.scoreboard.scoreboard.IScoreboard;
@@ -34,6 +36,11 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public boolean addScoreboard(IScoreboard scoreboard) {
+        var event = new ScoreboardObjectiveChangeEvent(scoreboard, ScoreboardObjectiveChangeEvent.ActionType.ADD);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
         scoreboards.put(scoreboard.getObjectiveName(), scoreboard);
         return true;
     }
@@ -45,9 +52,15 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public boolean removeScoreboard(String objectiveName) {
-       var removed =  scoreboards.remove(objectiveName);
+        var removed = scoreboards.get(objectiveName);
+        if (removed == null) return false;
+        var event = new ScoreboardObjectiveChangeEvent(removed, ScoreboardObjectiveChangeEvent.ActionType.REMOVE);
+        Server.getInstance().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+       scoreboards.remove(objectiveName);
        viewers.forEach(viewer -> viewer.removeScoreboard(removed));
-       if (removed == null) return false;
        display.forEach((slot, scoreboard) -> {
            if (scoreboard != null && scoreboard.getObjectiveName().equals(objectiveName)) {
                 display.put(slot, null);
