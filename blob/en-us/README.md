@@ -23,7 +23,7 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.21 protocol.
+1. Support for 1.19.30 protocol.
 2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
 3. Native support for The Nether world, no need to install additional plug-in patches, etc.
 4. Support 3D biomes (improving) .<!--Custom dimension interface TODO-->
