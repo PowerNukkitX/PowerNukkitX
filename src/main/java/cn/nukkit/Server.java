@@ -1439,18 +1439,40 @@ public class Server {
         }
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
         this.updatePlayerListData(uuid, entityId, name, skin, "", players);
     }
 
+
+    /**
+     * 更新指定玩家们(players)的{@link PlayerListPacket}数据包(即玩家列表数据)
+     * <p>
+     * Update {@link PlayerListPacket} data packets (i.e. player list data) for specified players
+     *
+     * @param uuid       uuid
+     * @param entityId   实体id
+     * @param name       名字
+     * @param skin       皮肤
+     * @param xboxUserId xbox用户id
+     * @param players    指定接受数据包的玩家
+     */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
         PlayerListPacket pk = new PlayerListPacket();
         pk.type = PlayerListPacket.TYPE_ADD;
@@ -1458,6 +1480,9 @@ public class Server {
         Server.broadcastPacket(players, pk);
     }
 
+    /**
+     * @see #updatePlayerListData(UUID, long, String, Skin, String, Player[])
+     */
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
         this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, players.toArray(Player.EMPTY_ARRAY));
     }

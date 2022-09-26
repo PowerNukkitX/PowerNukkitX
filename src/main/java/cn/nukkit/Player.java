@@ -308,6 +308,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     protected Vector3 spawnBlockPosition;
 
+    /**
+     * 代表玩家悬浮空中所经过的tick数.
+     * <p>
+     * Represents the number of ticks the player has passed through the air.
+     */
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
 
@@ -333,18 +338,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private String buttonText = "Button";
 
     protected boolean enableClientCommand = true;
+
     /**
      * 返回上次投掷末影珍珠时的{@link Server#getTick() getTick()}，这个值用于控制末影珍珠的冷却时间.
      * <p>
      * Returns the {@link Server#getTick() getTick()} from the last time the pearl was cast, which is used to control the cooldown time of the pearl.
      */
     protected int lastEnderPearl = 20;
+
     /**
      * 返回上次吃紫颂果时的{@link Server#getTick() getTick()}，这个值用于控制吃紫颂果的冷却时间.
      * <p>
      * Returns the {@link Server#getTick() getTick()} of the last time you ate a chorus fruit, which is used to control the cooldown time for eating chorus fruit.
      */
     protected int lastChorusFruitTeleport = 20;
+
     /**
      * 用来暂存放玩家打开的末影箱实例对象，当玩家打开末影箱时该值为指定为那个末影箱，当玩家关闭末影箱后重新设置回null.
      * <p>
@@ -409,6 +417,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     protected Entity lastAttackEntity = null;
+
     /**
      * 最后攻击玩家的实体.
      * <p>
@@ -436,6 +445,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return lastBeAttackEntity;
     }
 
+    /**
+     * 返回灵魂急行带来的速度增加倍速
+     * <p>
+     * Return to the speed increase multiplier brought by SOUL_SPEED Enchantment
+     */
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
     }
@@ -522,9 +536,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
 
     /**
-     * 设置{@link Player#lastChorusFruitTeleport}值为chest
+     * 设置{@link Player#viewingEnderChest}值为chest
      * <p>
-     * Set the {@link Player#lastChorusFruitTeleport} value to chest
+     * Set the {@link Player#viewingEnderChest} value to chest
      *
      * @param chest BlockEnderChest
      */
@@ -537,6 +551,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.viewingEnderChest = chest;
     }
 
+    /**
+     * 获取玩家离开的消息
+     *
+     * @return {@link TranslationContainer}
+     */
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
     }
@@ -556,23 +575,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return randomClientId;
     }
 
-    /**
-     * 玩家是否被封禁.
-     * <p>
-     * Whether the player is blocked.
-     */
     @Override
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
     }
 
-    /**
-     * 设置该玩家是否被封禁.
-     * <p>
-     * Set whether the player is banned or not.
-     *
-     * @param value 是否被封禁<br>whether the player is banned or not
-     */
     @Override
     public void setBanned(boolean value) {
         if (value) {
@@ -583,23 +590,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    /**
-     * 玩家是否在白名单内
-     * <p>
-     * Whether the player is in the whitelist.
-     */
     @Override
     public boolean isWhitelisted() {
         return this.server.isWhitelisted(this.getName().toLowerCase());
     }
 
-    /**
-     * 设置该玩家是否在白名单内.
-     * <p>
-     * Set whether the player is in the whitelist.
-     *
-     * @param value 是否在白名单内<br>whether the player is in the whitelist
-     */
     @Override
     public void setWhitelisted(boolean value) {
         if (value) {
@@ -609,13 +604,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    /**
-     * 得到该玩家实例.
-     * <p>
-     * Get the player instance.
-     *
-     * @return {@link Player}
-     */
     @Override
     public Player getPlayer() {
         return this;
@@ -657,6 +645,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.adventureSettings.update();
     }
 
+
+    /**
+     * 设置{@link #inAirTicks}为0
+     * <p>
+     * Set {@link #inAirTicks} to 0
+     */
     public void resetInAirTicks() {
         this.inAirTicks = 0;
     }
@@ -672,6 +666,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
 
+
+    /**
+     * 设置允许修改世界(未知原因设置完成之后，玩家不允许挖掘方块，但是可以放置方块)
+     * <p>
+     * Set allow to modify the world (after the unknown reason setting is completed, the player is not allowed to dig the blocks, but can place them)
+     *
+     * @param value 是否允许修改世界<br>Whether to allow modification of the world
+     */
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
         this.getAdventureSettings().set(Type.BUILD, value);
@@ -683,6 +685,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         setAllowInteract(value, value);
     }
 
+    /**
+     * 设置允许交互世界/容器
+     *
+     * @param value      是否允许交互世界
+     * @param containers 是否允许交互容器
+     */
     public void setAllowInteract(boolean value, boolean containers) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
         this.getAdventureSettings().set(Type.DOORS_AND_SWITCHED, value);
@@ -750,6 +758,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return !this.hiddenPlayers.containsKey(player.getUniqueId());
     }
 
+    /**
+     * 从当前玩家实例的视角中隐藏指定玩家player
+     * <p>
+     * Hide the specified player from the view of the current player instance
+     *
+     * @param player 要隐藏的玩家<br>Players who want to hide
+     */
     public void hidePlayer(Player player) {
         if (this == player) {
             return;
@@ -758,6 +773,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         player.despawnFrom(this);
     }
 
+    /**
+     * 从当前玩家实例的视角中显示指定玩家player
+     * <p>
+     * Show the specified player from the view of the current player instance
+     *
+     * @param player 要显示的玩家<br>Players who want to show
+     */
     public void showPlayer(Player player) {
         if (this == player) {
             return;
@@ -919,6 +941,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
+    /**
+     * 单元测试用的构造函数
+     * <p>
+     * Constructor for unit testing
+     *
+     * @param interfaz interfaz
+     * @param clientID clientID
+     * @param ip       IP地址
+     * @param port     端口
+     */
     @PowerNukkitOnly
     public Player(SourceInterface interfaz, Long clientID, String ip, int port) {
         this(interfaz, clientID, uncheckedNewInetSocketAddress(ip, port));
@@ -991,10 +1024,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return connected;
     }
 
+    /**
+     * 得到该玩家的显示名称
+     * <p>
+     * Get the display name of the player
+     *
+     * @return {@link #displayName}
+     */
     public String getDisplayName() {
         return this.displayName;
     }
 
+    /**
+     * 只是改变玩家聊天时和在服务器玩家列表中的显示名(不影响命令的玩家参数名,也不影响玩家头顶显示名称)
+     * <p>
+     * Just change the name displayed during player chat and in the server player list  (Does not affect the player parameter name of the command, nor does it affect the player header display name)
+     *
+     * @param displayName 显示名称
+     */
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
         if (this.spawned) {
@@ -1010,26 +1057,58 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 得到原始地址
+     *
+     * @return {@link String}
+     */
     public String getRawAddress() {
         return this.rawSocketAddress.getAddress().getHostAddress();
     }
 
+    /**
+     * 得到原始端口
+     *
+     * @return int
+     */
     public int getRawPort() {
         return this.rawSocketAddress.getPort();
     }
 
+    /**
+     * 得到原始套接字地址
+     *
+     * @return {@link InetSocketAddress}
+     */
     public InetSocketAddress getRawSocketAddress() {
         return this.rawSocketAddress;
     }
 
+    /**
+     * 得到地址,如果开启waterdogpe兼容，该地址是被修改为兼容waterdogpe型的，反之则与{@link #rawSocketAddress} 一样
+     * <p>
+     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
+     *
+     * @return {@link String}
+     */
     public String getAddress() {
         return this.socketAddress.getAddress().getHostAddress();
     }
 
+    /**
+     * @see #getRawPort
+     */
     public int getPort() {
         return this.socketAddress.getPort();
     }
 
+    /**
+     * 得到套接字地址,如果开启waterdogpe兼容，该套接字地址是被修改为兼容waterdogpe型的，反正则与{@link #rawSocketAddress} 一样
+     * <p>
+     * If waterdogpe compatibility is enabled, the address is modified to be waterdogpe compatible, otherwise it is the same as {@link #rawSocketAddress}
+     *
+     * @return {@link InetSocketAddress}
+     */
     public InetSocketAddress getSocketAddress() {
         return this.socketAddress;
     }
@@ -1038,10 +1117,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.newPosition != null ? new Position(this.newPosition.x, this.newPosition.y, this.newPosition.z, this.level) : this.getPosition();
     }
 
+    /**
+     * 玩家是否在睡觉
+     * <p>
+     * Whether the player is sleeping
+     *
+     * @return boolean
+     */
     public boolean isSleeping() {
         return this.sleeping != null;
     }
 
+
+    /**
+     * @return {@link #inAirTicks}
+     */
     public int getInAirTicks() {
         return this.inAirTicks;
     }
