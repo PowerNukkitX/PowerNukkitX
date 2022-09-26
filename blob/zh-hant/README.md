@@ -3,8 +3,8 @@
 <h2>🌐Need to switch languages?&ensp;/&ensp;多語言文檔</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-ch/README.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
 [![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
@@ -53,8 +53,8 @@ _**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變�
 
 ### 使用步驟:
 
-1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
-2. 将libs.tar.gz中的libs文件夾解壓到和powernukkitx.jar同一路徑下
+1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载`libs.tar.gz`和`powernukkitx.jar`
+2. 将`libs.tar.gz`中的libs文件夾解壓到和`powernukkitx.jar`同一路徑下
 3. 運行以下命令
 
 ##### Windows版本
@@ -183,4 +183,4 @@ dependencies {
 [![Pull-pr](https://img.shields.io/github/issues-pr/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls)
 [![Pull-pr-closed](https://img.shields.io/github/issues-pr-closed/PowerNukkitX/PowerNukkitX?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/pulls?q=is%3Apr+is%3Aclosed)
 
-2019 - 2022 © [BlocklyNukkit](https://wiki.blocklynukkit.com) | [PowerNukkitX](https://www.powernukkitx.com)
+2019 - 2022 © [PowerNukkitX](https://www.powernukkitx.com) | [BlocklyNukkit](https://wiki.blocklynukkit.com)

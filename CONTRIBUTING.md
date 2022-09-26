@@ -1,124 +1,186 @@
-# 贡献帮助指南
- 👋 Hi，我们很高兴见到您对[PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX)项目所表现出的热情，我们 的目标是为所有参与开发的参与者们提供一个良好的协作环境，因此我们决定列出一些在此过程中需要您牢记的事情，以下指南是根据过往经验总结而成的。
+# Contributing Guidelines
 
- 但您需注意，这些规则本身不是"**官方规则**"，但您若遵循它们将帮助参与者们提高处理效率。
+👋 Hi, we are glad to see your enthusiasm for the [PowerNukkitX](https://github.com/PowerNukkitX/PowerNukkitX) project,
+our goal is to provide a good collaborative environment for all participants involved in the development, so we The
+following guidelines are based on past experience and are a list of things you should keep in mind during the process.
 
-## 目录
+You should note, however, that these rules are not "**official rules**" per se, but that following them will help
+participants to be more efficient in their processes.
 
-1. <a href="#Catalogs-Faq#1">🧾 我想提交一个问题!</a>
-2. <a href="#Catalogs-Faq#2">💡 我想提交拉取申请!</a>
-3. <a href="#Catalogs-Swlang">🌐 切换语言 / Switch Languages</a>
+## CataLogs
 
-## <a id="Catalogs-Faq#1"></a>🧾 我想提交一个问题!
+1. <a href="#Catalogs-Faq#1">🧾 I would like to submit an issue!</a>
+2. <a href="#Catalogs-Faq#2">💡 I would like to submit a pull request!</a>
+3. <a href="#Catalogs-Swlang">🌐 Switch Languages / 切换语言</a>
 
- 我们随时欢迎您提出任何问题，错误报告和功能建议，但请记住，如果该问题在可预期的时间点内被认定为不重要，无法解决等，我们也会将其忽略，因此Issues页面可能会出现长时间未解决或彻底关闭的问题反馈将会是正常情况。
+## <a id="Catalogs-Faq#1"></a>🧾 I would like to submit an issue!
 
-* **在提交问题报告前，请您先搜索现有问题列表。**
+Issues, bug reports and feature suggestions are welcomed, though please keep in mind that at any point in time, hundreds
+of issues are open, which vary in severity and the amount of time needed to address them. As such it's not uncommon for
+issues to remain unresolved for a long time or even closed outright if they are deemed not important enough to fix in
+the foreseeable future.
 
-  出于管理目的，我们会关闭与先前就存在的问题反馈，避免产生重复，推荐您先通过自行搜索的方式查询是否存在类似问题。
+* **Before submitting an issue, try searching existing issues first.**
 
-* **在提交问题报告时请尽可能的尝试提供更多详细信息。**
+  For housekeeping purposes, we close issues that overlap with or duplicate other pre-existing issues - you can help us
+  not to have to do that by searching existing issues yourself first. The issue search box, as well as the issue tag
+  system, are tools you can use to check if an issue has been reported before.
 
- 由于产生的错误信息各不相同，其中一部分错误在几乎所有设备上都能遇到，而有一部分是因为某些特定情况甚至是硬件本身导致，所以我们推荐您在提交问题时提供尽可能多且详细的信息，以下为示例模板：
+* **When submitting a bug report, please try to include as much detail as possible.**
 
-  * 服务器的日志文件（若服务器可用时），您则可用通过以下方式获取日志文件：
+  Bugs are not equal - some of them will be reproducible every time on pretty much all hardware, while others will be
+  hard to track down due to being specific to particular hardware or even somewhat random in nature. As such, providing
+  as much detail as possible when reporting a bug is hugely appreciated. A good starting set of information consists of:
+
+  * the server logs (when avaliable), which can be obtained with:
     * `/debugpaste upload`
-    * `[您的服务端所在文件夹]/logs/latest.log`
-  * 你的设备规格参数 (包括您客户端的类型，操作系统平台，服务器硬件参数等),
-  * 重现步骤 (您在遇到BUG之前进行了什么操作等),
-  * 如果可以的话，请提供视频或截图加以辅助。
+    * `[Server path]/logs/latest.log`
+  * your system specifications (including the operating system and platform you are playing on),
+  * a reproduction scenario (list of steps you have performed leading up to the occurrence of the bug),
+  * a video or picture of the bug, if at all possible.
 
-* **当被要求提供更多有关信息时。**
+* **Provide more information when asked to do so.**
 
-  在某些情况下，某个错误可能会难以复现等，当上面反馈的信息都不能很好的帮助我们追踪问题时，在这种情况下，我们可能会要求您提供额外的信息以便更好的帮助追踪问题，并且我们一旦知道问题所在时，就会着手开始修复并与您取得联系。
+  Sometimes when a bug is more elusive or complicated, none of the information listed above will pinpoint a concrete
+  cause of the problem. In this case we will most likely ask you for additional info. Providing that information is
+  beneficial to both parties - we can track down the problem better, and hopefully fix it for you at some point once we
+  know where it is!
 
-* **提交改进意见时，请以简单易懂的方式描述它。**
+* **When submitting a feature proposal, please describe it in the most understandable way you can.**
 
-  有时传达您对某个功能的想法通常很困难，我们希望避免产生任何误解，因此，您在提交改进建议时，尽量使用简洁易懂的话语或方式描述您的想法。
+  Communicating your idea for a feature can often be hard, and we would like to avoid any misunderstandings. As such,
+  please try to explain your idea in a short, but understandable manner.
 
-* **避免发布"+1"重复问题。**
+* **Refrain from posting "+1" comments.**
 
-  如果问题已经产生，并且你也遇到过但无法提供任何对我们有帮助的问题细节的话，那您可在相关问题下评论留言。
+  If an issue has already been created, saying that you also experience it without providing any additional details
+  doesn't really help us in any way. To express support for a proposal or indicate that you are also affected by a
+  particular bug, you can use comment reactions instead.
 
+## <a id="Catalogs-Faq#2"></a>💡 I would like to submit a pull request!
 
-## <a id="Catalogs-Faq#2"></a>我想提交拉取申请!
+<!--修改链接-->
+We also welcome pull requests from unaffiliated contributors.
+The [issue tracker](https://github.com/powernukkitx/powernukkitx/issues) should provide plenty of issues that you can
+work on; we also mark issues that we think would be good for newcomers with
+the [`good first issue`](https://github.com/powernukkitx/powernukkitx/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)
+label.
 
-同时我们也欢迎各位开发者们对该项目作出您的贡献，您可在[问题追踪器](https://github.com/PowerNukkitX/PowerNukkitX/issues)页面发表您可以解决的问题等，同时我们也会使用[`Good First issue`](https://github.com/PowerNukkitX/PowerNukkitX/issues?q=is%3Aissue+is%3Aopen+label%3Agood%20first%20issue)标签标记出我们认为对新人有帮助的问题解答等。
+Here are some key things to note before jumping in:
 
-⚠ 若您想参与该项目，则您需要注意一些事项：
+* **Make sure you are comfortable with Java and your development environment.**<!--无需修改-->
 
-* **确保您对Java编程有一定的基础的同时，还需熟悉对IDE工具的使用等。**
+  While we are accepting of all kinds of contributions, we also have a certain quality standard we'd like to uphold and
+  limited time to review your code. Therefore, we would like to avoid providing entry-level advice, and as such if
+  you're not very familiar with Java as a programming language, we'd recommend that you start off with a few personal
+  projects to get acquainted with the language's syntax, toolchain and principles of object-oriented programming first.
 
-  虽然我们接受各种类型的贡献，但我们也有一定的代码质量要求，但我们审查您提交的代码时间是有限的，因此，我们希望避免提供入门建议等，如果您对Java编程不是很熟悉，我们建议您从一些个人项目开始，并熟悉语法，工具链等。
+* **Make sure you are familiar with git and the pull request workflow.**<!--修改最后一句-->
 
-* **您需熟悉Git和Pull Request工作流程**
+  [git](https://git-scm.com/) is a distributed version control system that might not be very intuitive at the beginning
+  if you're not familiar with version control. In particular, projects using git have a particular workflow for
+  submitting code changes, which is called the pull request workflow.
 
-  [git](https://git-scm.com/) 是一个分布式版本控制系统，如果你不熟悉版本控制，一开始可能不是很直观。特别是，使用git的项目有一个特定的工作流程来提交代码修改，这被称为拉动请求工作(Pull Requests)流程。
+  To make things run more smoothly, we recommend that you look up some online resources to familiarise yourself with the
+  git vocabulary and commands, and practice working with forks and submitting pull requests at your own pace. A
+  high-level overview of the process can be found
+  in [this article by GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests)
+  .
 
-  为了让事情进行得更顺利，我们建议你在网上查找一些资源，熟悉git的词汇和命令，并按照自己的节奏练习处理分叉和提交拉动请求。关于这个过程的高层次概述可以在[该文章](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests)中找到。
+  We also provide a [handy link](https://github.com/powernukkitx/powernukkitx/pulls) for making pull requests to
+  PowerNukkitX.
 
-  我们还提供了一个[快捷链接](https://github.com/powernukkitx/powernukkitx/pulls)，用于向PowerNukkitX提出拉动请求。
+* **Make sure to submit pull requests off of a topic branch.**<!--无需修改-->
 
-* **确保提交的拉动请求是在相关分支上。**
+  As described in the article linked in the previous point, topic branches help you parallelise your work and separate
+  it from the main `bleeding` branch, and additionally are easier for maintainers to work with. Working with
+  multiple `bleeding` branches across many remotes is difficult to keep track of, and it's easy to make a mistake and
+  push to the wrong `bleeding` branch by accident.
 
-  如前文所述，特性分支可以帮助你将工作平行化，并将其与主要的 `Bleeding` 分支分开，另外也便于维护者的工作。在许多远程站点上使用多个 `Bleeding` 分支是很难跟踪的，而且很容易犯错，不小心推送到错误的 `Bleeding` 分支。
+* **Add tests for your code whenever possible.**<!--无需修改-->
 
-* **尽可能地为你添加的代码做测试。**
+  Automated tests are an essential part of a quality and reliable codebase. They help to make the code more maintainable
+  by ensuring it is safe to reorganise (or refactor) the code in various ways, and also prevent regressions - bugs that
+  resurface after having been fixed at some point in the past. If it is viable, please put in the time to add tests, so
+  that the changes you make can last for a (hopefully) very long time.
 
-  自动测试是高质量和可靠的代码库的一个重要组成部分。它们通过确保以各种方式重组（或重构）代码是安全的，来帮助使代码更具可维护性，同时也防止回归--在过去的某个时间点被修复后重新出现的错误。如果可行的话，请花时间添加测试，这样你所做的修改可以持续很长时间（希望如此）。
+* **Run tests before opening a pull request.**<!--无需修改-->
 
-* **在打开拉动请求之前，先运行测试。**
+  Tying into the previous point, sometimes changes in one part of the codebase can result in unpredictable changes in
+  behaviour in other pieces of the code. This is why it is best to always try to run tests before opening a PR.
 
-  与上一点相联系的是，有时代码库的一部分的变化会导致代码的其他部分的行为发生不可预测的变化。这就是为什么最好是在开启PR之前先运行测试。
+  Continuous integration will always run the tests for you (and us), too, but it is best not to rely on it, as there
+  might be many builds queued at any time. Running tests on your own will help you be more certain that at the point of
+  clicking the "Create pull request" button, your changes are as ready as can be.
 
-  持续集成也会为你（和我们）运行测试，但最好不要依赖它，因为任何时候都可能有许多构建在排队。自己运行测试将帮助你更确定在点击 "创建拉动请求" 按钮时，你的修改已经准备就绪。
+* **Make sure that the pull request is complete before opening it.**<!--无需修改-->
 
-* **在打开拉动请求之前，请确保该请求是完整的。**
+  Whether it's fixing a bug or implementing new functionality, it's best that you make sure that the change you want to
+  submit as a pull request is as complete as it can be before clicking the *Create pull request* button. Having to track
+  if a pull request is ready for review or not places additional burden on reviewers.
 
-  无论是修复错误还是实现新功能，你最好在点击*创建拉动请求*按钮之前，确保你要提交的修改尽可能完整。要跟踪一个拉动请求是否准备好接受审查，会给审查者带来额外的负担。
+  Draft pull requests are an option, but use them sparingly and within reason. They are best suited to discuss code
+  changes that cannot be easily described in natural language or have a potential large impact on the future direction
+  of the project. When in doubt, don't open drafts unless a maintainer asks you to do so.
 
-  草稿拉动请求是一种选择，但要在合理的范围内少用它们。它们最适合用来讨论那些不容易用自然语言描述的代码修改，或者对项目的未来方向有潜在的巨大影响。如果有疑问，不要打开草案，除非维护者要求你这么做。
+* **Only push code when it's ready.**<!--无需修改-->
 
-* **只有当代码准备好了才推送。**
+  As an extension of the above, when making changes to an already-open PR, please try to only push changes you are
+  reasonably certain of. Pushing after every commit causes the continuous integration build queue to grow in size,
+  slowing down work and taking up time that could be spent verifying other changes.
 
-  作为上述内容的延伸，当对一个已经开放的PR进行修改时，请尽量只推送你有合理把握的修改。每次提交后的推送都会导致持续自动构建队列的规模扩大，减缓工作速度，并占用可以用来验证其他修改的时间。
+* **Make sure to keep the *Allow edits from maintainers* check box checked.**<!--无需修改-->
 
-* **请确保选中*允许来自维护者的编辑*复选框。**
+  To speed up the merging process, collaborators and team members will sometimes want to push changes to your branch
+  themselves, to make minor code style adjustments or to otherwise refactor the code without having to describe how
+  they'd like the code to look like in painstaking detail. Having the *Allow edits from maintainers* check box checked
+  lets them do that; without it they are forced to report issues back to you and wait for you to address them.
 
-  为了加快合并过程，合作者和团队成员有时会想自己向你的分支推送修改，对代码风格进行细微的调整，或者以其他方式重构代码，而不必煞费苦心地描述他们希望代码是什么样子。勾选 "允许维护者编辑 "复选框可以让他们这样做；如果没有这个复选框，他们就不得不向你报告问题并等待你来处理。
+* **Refrain from continually merging the master branch back to the PR.**<!--无需修改-->
 
-* **不要不断地将PR合并到主分支上。**
+  Unless there are merge conflicts that need resolution, there is no need to keep merging `bleeding` back to a branch
+  over and over again. One of the maintainers will merge `bleeding` themselves before merging the PR itself anyway, and
+  continual merge commits can cause CI to get overwhelmed due to queueing up too many builds.
 
-  除非有合并冲突需要解决，否则没有必要一次又一次地把 `Bleeding` 合并到一个分支。反正在合并PR之前，其中一个维护者会自己合并 `bleeding`，而且持续的合并提交会使CI因排队等待过多的构建而不堪重负。
+* **Refrain from force-pushing to the PR branch.**<!--无需修改-->
 
-* **避免强行推送到PR分支。**
+  Force-pushing should be avoided, as it can lead to accidentally overwriting a maintainer's changes or CI building
+  wrong commits. We value all history in the project, so there is no need to squash or amend commits in most cases.
 
-  应该避免强行推送，因为这可能会导致意外地覆盖维护者的修改或CI构建错误的提交。我们重视项目中的所有历史，所以在大多数情况下没有必要压制或修改提交。
+  The cases in which force-pushing is warranted are very rare (such as accidentally leaking sensitive info in one of the
+  files committed, adding unrelated files, or mis-merging a dependent PR).
 
-  需要强行推送的情况非常少见（比如不小心泄露了提交文件中的敏感信息，添加了不相关的文件，或者错误地合并了一个依赖的PR）。
+* **Be patient when waiting for the code to be reviewed and merged.**<!--完成-->
 
-* **在等待代码被审查和合并的过程中要有耐心。**
+  While we want to review all contributions as quickly as possible, our time is limited because team members must handle
+  their own tasks in addition to reviewing code. Therefore, work needs to be prioritized and unfortunately, your PR may
+  take days or weeks to be merged, depending on how important it is considered to be.
 
-  尽管我们希望尽可能快地审查所有的贡献，但我们的时间是有限的，因为团队成员除了审查代码外，还必须处理自己的任务。因此，工作需要被优先考虑，不幸的是，你的PR可能需要数天或数周才能被合并，这取决于它被认为是多么重要。
+* **Don't mistake criticism of code for criticism of your person.**<!--无需修改-->
 
-* **不要把对代码的批评误认为是对你个人的批评。**
+  As mentioned before, we are highly committed to quality when it comes to the project. This means that contributions
+  from less experienced community members can take multiple rounds of review to get to a mergeable state. We try our
+  utmost best to never conflate a person with the code they authored, and to keep the discussion focused on the code at
+  all times. Please consider our comments and requests a learning experience, and don't treat it as a personal attack.
 
-  如前所述，当涉及到项目时，我们对质量有高度的承诺。这意味着，来自经验不足的社区成员的贡献可能需要多轮审查才能达到可合并的状态。我们尽最大努力不把一个人和他所写的代码混为一谈，并且在任何时候都把讨论集中在代码上。请把我们的评论和要求看作是一种学习经验，不要把它当作是一种人身攻击。
+* **Feel free to reach out for help.**<!--完成-->
 
-* **我们随时欢迎您联系我们或寻求帮助。**
+  If you're uncertain about some part of the codebase or some inner workings of the game and framework, please reach out
+  either by leaving a comment in the relevant issue or PR thread, or by posting a message in
+  the [Discord server](https://discord.gg/BcPhZCVJHJ). We will try to help you as much as we can.
 
-  如果你对代码库的某些部分或游戏和框架的某些内部运作不确定，请通过在相关问题或PR中留言，或在[Discord](https://discord.gg/BcPhZCVJHJ)&[QQ群](https://jq.qq.com/?_wv=1027&k=6rm3gbUI)发文来联系我们。我们会尽可能地帮助你。
+  When it comes to which form of communication is best, GitHub generally lends better to longer-form discussions, while
+  Discord is better for snappy call-and-response answers. Use your best discretion when deciding, and try to keep a
+  single discussion in one place instead of moving back and forth.
 
-  说到哪种沟通方式最好，GitHub通常更适合长篇大论，而Discord和QQ群则更适合快速的呼唤和回应。在决定的时候，请尽力斟酌，并尽量将一个讨论放在一个地方，而不是来回移动。
-
-## <a id="Catalogs-Swlang"></a>🌐 多语言文档
+## <a id="Catalogs-Swlang"></a>🌐 Multilingual documentation
 
 ---
-Need to switch languages? 
+Need to switch languages?
 
 [![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CONTRIBUTING.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CONTRIBUTING.md)
 [![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CONTRIBUTING.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/CHANGELOG.md)
-[![PNX-DOC](https://img.shields.io/badge/PNX-DOC文档库-blue?style=flat-square)](https://doc.powernukkitx.cn)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/CHANGELOG.md)
+[![PNX-DOC](https://img.shields.io/badge/PNX-Doc-blue?style=flat-square)](https://doc.powernukkitx.cn)
