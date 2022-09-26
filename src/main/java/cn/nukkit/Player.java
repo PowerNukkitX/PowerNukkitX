@@ -58,11 +58,15 @@ import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
+import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
@@ -75,9 +79,12 @@ import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
-import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
+import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
@@ -128,7 +135,7 @@ import static cn.nukkit.utils.Utils.dynamic;
  * @author MagicDroidX &amp; Box (Nukkit Project)
  */
 @Log4j2
-public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
+public class Player extends EntityHuman implements CommandSender, InventoryHolder, ChunkLoader, IPlayer, IScoreboardViewer {
     /**
      * 一个承载玩家的临时数组静态常量
      * <p>
@@ -187,6 +194,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     protected final SourceInterface interfaz;
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    protected final NetworkPlayerSession networkSession;
 
     public boolean playedBefore;
     public boolean spawned = false;
@@ -390,6 +400,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     private boolean hasSeenCredits;
+
+    /**
+     * 玩家最后攻击的实体.
+     * <p>
+     * The entity that the player attacked last.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    protected Entity lastAttackEntity = null;
+    /**
+     * 最后攻击玩家的实体.
+     * <p>
+     * The entity that the player is attacked last.
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    protected Entity lastBeAttackEntity = null;
+
+    /**
+     * @return {@link #lastAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public Entity getLastAttackEntity() {
+        return lastAttackEntity;
+    }
+
+    /**
+     * @return {@link #lastBeAttackEntity}
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public Entity getLastBeAttackEntity() {
+        return lastBeAttackEntity;
+    }
 
     public float getSoulSpeedMultiplier() {
         return this.soulSpeedMultiplier;
@@ -882,6 +927,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Player(SourceInterface interfaz, Long clientID, InetSocketAddress socketAddress) {
         super(null, new CompoundTag());
         this.interfaz = interfaz;
+        this.networkSession = interfaz.getSession(socketAddress);
         this.perm = new PermissibleBase(this);
         this.server = Server.getInstance();
         this.lastBreak = -1;
@@ -1277,8 +1323,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             updateTrackingPositions(false);
         }
 
-        if (Server.getInstance().getScoreboardManager() != null) {//in test environment sometimes the scoreboard manager is null
-            Server.getInstance().getScoreboardManager().onPlayerJoin(this);
+        var scoreboardManager = this.getServer().getScoreboardManager();
+        if (scoreboardManager != null) {//in test environment sometimes the scoreboard manager is null
+            scoreboardManager.onPlayerJoin(this);
         }
     }
 
@@ -1421,8 +1468,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-
-            this.interfaz.putPacket(this, packet, false, false);
+            //适配单元Test
+            if (networkSession == null) this.interfaz.putPacket(this, packet, false, false);
+            else this.networkSession.sendPacket(packet);
         }
         return true;
     }
@@ -1460,6 +1508,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Deprecated
     public int directDataPacket(DataPacket packet, boolean needACK) {
         return this.dataPacket(packet) ? 0 : -1;
+    }
+
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    public void forceDataPacket(DataPacket packet, Runnable callback) {
+        this.networkSession.sendImmediatePacket(packet, (callback == null ? () -> {
+        } : callback));
     }
 
     public int getPing() {
@@ -2700,7 +2755,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @SneakyThrows
     private List<DataPacket> unpackBatchedPackets(BatchPacket packet) {
-        return this.server.getNetwork().unpackBatchedPackets(packet);
+        return this.server.getNetwork().unpackBatchedPackets(packet, CompressionProvider.ZLIB);
     }
 
     public void handleDataPacket(DataPacket packet) {
@@ -2708,7 +2763,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET) {
+        if (!verified && packet.pid() != ProtocolInfo.LOGIN_PACKET && packet.pid() != ProtocolInfo.BATCH_PACKET && packet.pid() != ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET) {
             log.warn("Ignoring {} from {} due to player not verified yet", packet.getClass().getSimpleName(), getAddress());
             if (unverifiedPackets++ > 100) {
                 this.close("", "Too many failed login attempts");
@@ -2735,16 +2790,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             packetswitch:
             switch (packet.pid()) {
-                case ProtocolInfo.LOGIN_PACKET:
+                case ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET:
                     if (this.loggedIn) {
                         break;
                     }
 
-                    LoginPacket loginPacket = (LoginPacket) packet;
+                    int protocolVersion = ((RequestNetworkSettingsPacket) packet).protocolVersion;
 
                     String message;
-                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(loginPacket.getProtocol())) {
-                        if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
+                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(protocolVersion)) {
+                        if (protocolVersion < ProtocolInfo.CURRENT_PROTOCOL) {
                             message = "disconnectionScreen.outdatedClient";
 
                             this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_CLIENT, true);
@@ -2753,19 +2808,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER, true);
                         }
-                        if (((LoginPacket) packet).protocol < 137) {
-                            DisconnectPacket disconnectPacket = new DisconnectPacket();
-                            disconnectPacket.message = message;
-                            disconnectPacket.encode();
-                            BatchPacket batch = new BatchPacket();
-                            batch.payload = disconnectPacket.getBuffer();
-                            this.dataPacketImmediately(batch);
-                            // Still want to run close() to allow the player to be removed properly
-                        }
                         this.close("", message, false);
                         break;
                     }
+                    NetworkSettingsPacket settingsPacket = new NetworkSettingsPacket();
+                    settingsPacket.compressionAlgorithm = PacketCompressionAlgorithm.ZLIB;
+                    settingsPacket.compressionThreshold = 1; // compress everything
+                    this.forceDataPacket(settingsPacket, () -> {
+                        this.networkSession.setCompression(CompressionProvider.ZLIB);
+                    });
+                    break;
+                case ProtocolInfo.LOGIN_PACKET:
+                    if (this.loggedIn) {
+                        break;
+                    }
 
+                    LoginPacket loginPacket = (LoginPacket) packet;
 
                     if (loginPacket.issueUnixTime != -1 && Server.getInstance().checkLoginTime && System.currentTimeMillis() - loginPacket.issueUnixTime > 20000) {
                         message = "disconnectionScreen.noReason";
@@ -3099,14 +3157,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     break;
                 }
-                case ProtocolInfo.ADVENTURE_SETTINGS_PACKET:
-                    //TODO: player abilities, check for other changes
-                    AdventureSettingsPacket adventureSettingsPacket = (AdventureSettingsPacket) packet;
-                    if (!server.getAllowFlight() && adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING) && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
+                case ProtocolInfo.REQUEST_ABILITY_PACKET:
+                    RequestAbilityPacket abilityPacket = (RequestAbilityPacket) packet;
+
+                    PlayerAbility ability = abilityPacket.ability;
+                    if (ability != PlayerAbility.FLYING) {
+                        this.server.getLogger().info("[" + this.getName() + "] has tried to trigger " + ability + " ability " + (abilityPacket.boolValue ? "on" : "off"));
+                        return;
+                    }
+
+                    if (!server.getAllowFlight() && abilityPacket.boolValue && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
                         this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                         break;
                     }
-                    PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(this, adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING));
+
+                    PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(this, abilityPacket.boolValue);
                     this.server.getPluginManager().callEvent(playerToggleFlightEvent);
                     if (playerToggleFlightEvent.isCancelled()) {
                         this.getAdventureSettings().update();
@@ -4530,9 +4595,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, item.applyEnchantments() ? enchantments : null);
+
+                                    entityDamageByEntityEvent.setBreakShield(item.canBreakShield());
+
+
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
+                                    }
+
+                                    //保存攻击的目标在lastAttackEntity
+                                    if (!entityDamageByEntityEvent.isCancelled()) {
+                                        this.lastAttackEntity = entityDamageByEntityEvent.getEntity();
                                     }
 
 
@@ -5080,10 +5154,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void close(TextContainer message, String reason, boolean notify) {
         if (this.connected && !this.closed) {
+            //这里必须在玩家离线之前调用，否则无法将包发过去
+            var scoreboardManager = this.getServer().getScoreboardManager();
+            //in test environment sometimes the scoreboard manager is null
+            if (scoreboardManager != null) {
+                scoreboardManager.beforePlayerQuit(this);
+            }
+
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                this.dataPacketImmediately(pk); // Send DisconnectPacket before the connection is closed, so its reason will show properly
+                //适配单元测试
+                if (networkSession == null) this.dataPacketImmediately(pk);
+                else
+                    this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
             }
 
             this.connected = false;
@@ -5172,11 +5256,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.chunk = null;
 
         this.server.removePlayer(this);
-
-        //in test environment sometimes the scoreboard manager is null
-        if (Server.getInstance().getScoreboardManager() != null) {
-            Server.getInstance().getScoreboardManager().onPlayerQuit(this);
-        }
     }
 
     public void save() {
@@ -5740,11 +5819,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (super.attack(source)) { //!source.isCancelled()
             if (this.getLastDamageCause() == source && this.spawned) {
-                if (source instanceof EntityDamageByEntityEvent) {
-                    Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
+                if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+                    Entity damager = entityDamageByEntityEvent.getDamager();
                     if (damager instanceof Player) {
                         ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
                     }
+                    //保存攻击玩家的实体在lastBeAttackEntity
+                    this.lastBeAttackEntity = entityDamageByEntityEvent.getDamager();
                 }
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;
@@ -6798,6 +6879,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     protected void onBlock(Entity entity, EntityDamageEvent e, boolean animate) {
         super.onBlock(entity, e, animate);
+        if (e.isBreakShield()) {
+            this.setNoShieldTicks(e.getShieldBreakCoolDown());
+            this.setItemCoolDown(e.getShieldBreakCoolDown(), "shield");
+        }
         if (animate) {
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD, true);
             this.getServer().getScheduler().scheduleTask(null, () -> {
@@ -6848,6 +6933,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     public void setTimeSinceRest(int timeSinceRest) {
         this.timeSinceRest = timeSinceRest;
+    }
+
+    @Since("1.19.30-r1")
+    @PowerNukkitXOnly
+    public NetworkPlayerSession getNetworkSession() {
+        return this.networkSession;
     }
 
     // TODO: Support Translation Parameters
@@ -6996,7 +7087,69 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public void sendScoreboard(Scoreboard scoreboard, DisplaySlot slot) {
+    public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
+        CameraShakePacket packet = new CameraShakePacket();
+        packet.intensity = intensity;
+        packet.duration = duration;
+        packet.shakeType = shakeType;
+        packet.shakeAction = shakeAction;
+        this.dataPacket(packet);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public void setItemCoolDown(int coolDown, String itemCategory) {
+        var pk = new PlayerStartItemCoolDownPacket();
+        pk.setCoolDownDuration(coolDown);
+        pk.setItemCategory(itemCategory);
+        this.dataPacket(pk);
+    }
+
+    public void sendToast(String title, String content) {
+        ToastRequestPacket pk = new ToastRequestPacket();
+        pk.title = title;
+        pk.content = content;
+        this.dataPacket(pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    @Override
+    public void removeLine(IScoreboardLine line) {
+        SetScorePacket packet = new SetScorePacket();
+        packet.action = SetScorePacket.Action.REMOVE;
+        var networkInfo = line.toNetworkInfo();
+        if (networkInfo != null)
+            packet.infos.add(networkInfo);
+        this.dataPacket(packet);
+
+        var scorer = new PlayerScorer(this);
+        if (line.getScorer().equals(scorer) && line.getScoreboard().getViewers(DisplaySlot.BELOW_NAME).contains(this)) {
+            this.setScoreTag("");
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    @Override
+    public void updateScore(IScoreboardLine line) {
+        SetScorePacket packet = new SetScorePacket();
+        packet.action = SetScorePacket.Action.SET;
+        var networkInfo = line.toNetworkInfo();
+        if (networkInfo != null)
+            packet.infos.add(networkInfo);
+        this.dataPacket(packet);
+
+        var scorer = new PlayerScorer(this);
+        if (line.getScorer().equals(scorer) && line.getScoreboard().getViewers(DisplaySlot.BELOW_NAME).contains(this)) {
+            this.setScoreTag(line.getScore() + " " + line.getScoreboard().getDisplayName());
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    @Override
+    public void display(IScoreboard scoreboard, DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
         pk.objectiveName = scoreboard.getObjectiveName();
@@ -7007,14 +7160,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //client won't storage the score of a scoreboard,so we should send the score to client
         SetScorePacket pk2 = new SetScorePacket();
-        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toScoreInfo()).filter(line -> line != null).collect(Collectors.toList());
+        pk2.infos = scoreboard.getLines().values().stream().map(line -> line.toNetworkInfo()).filter(line -> line != null).collect(Collectors.toList());
         pk2.action = SetScorePacket.Action.SET;
         this.dataPacket(pk2);
+
+        var scorer = new PlayerScorer(this);
+        var line = scoreboard.getLine(scorer);
+        if (slot == DisplaySlot.BELOW_NAME && line != null) {
+            this.setScoreTag(line.getScore() + " " + scoreboard.getDisplayName());
+        }
     }
 
     @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public void clearScoreboardSlot(DisplaySlot slot) {
+    @Since("1.19.30-r1")
+    @Override
+    public void hide(DisplaySlot slot) {
         SetDisplayObjectivePacket pk = new SetDisplayObjectivePacket();
         pk.displaySlot = slot;
         pk.objectiveName = "";
@@ -7022,23 +7182,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.criteriaName = "";
         pk.sortOrder = SortOrder.ASCENDING;
         this.dataPacket(pk);
+
+        if (slot == DisplaySlot.BELOW_NAME) {
+            this.setScoreTag("");
+        }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public void shakeCamera(float intensity, float duration, CameraShakePacket.CameraShakeType shakeType, CameraShakePacket.CameraShakeAction shakeAction) {
-        CameraShakePacket packet = new CameraShakePacket();
-        packet.intensity = intensity;
-        packet.duration = duration;
-        packet.shakeType = shakeType;
-        packet.shakeAction = shakeAction;
-        this.dataPacket(packet);
-    }
+    @Override
+    public void removeScoreboard(IScoreboard scoreboard) {
+        RemoveObjectivePacket pk = new RemoveObjectivePacket();
+        pk.objectiveName = scoreboard.getObjectiveName();
 
-    public void sendToast(String title, String content) {
-        ToastRequestPacket pk = new ToastRequestPacket();
-        pk.title = title;
-        pk.content = content;
         this.dataPacket(pk);
     }
 }

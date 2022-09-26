@@ -2,14 +2,15 @@ package cn.nukkit.scoreboard.storage;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.interfaces.AbstractScoreboardManager;
-import cn.nukkit.scoreboard.interfaces.ScoreboardStorage;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.scoreboard.ScoreboardLine;
 import cn.nukkit.scoreboard.scorer.EntityScorer;
 import cn.nukkit.scoreboard.scorer.FakeScorer;
+import cn.nukkit.scoreboard.scorer.IScorer;
 import cn.nukkit.scoreboard.scorer.PlayerScorer;
 import cn.nukkit.utils.Config;
 import lombok.Getter;
@@ -21,9 +22,9 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+@Since("1.19.30-r1")
 @Getter
-public class JSONScoreboardStorage implements ScoreboardStorage {
+public class JSONScoreboardStorage implements IScoreboardStorage {
 
     protected Path filePath;
     protected Config json;
@@ -41,40 +42,36 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
     }
 
     @Override
-    public void saveScoreboard(Scoreboard scoreboard) {
+    public void saveScoreboard(IScoreboard scoreboard) {
         json.set("scoreboard." + scoreboard.getObjectiveName(), serializeToMap(scoreboard));
         json.save();
     }
 
     @Override
-    public void saveScoreboard(Scoreboard[] scoreboards) {
-        for (Scoreboard scoreboard : scoreboards) {
-            saveScoreboard(scoreboard);
-        }
+    public void saveScoreboard(Collection<IScoreboard> scoreboards) {
+        for (var scoreboard : scoreboards) saveScoreboard(scoreboard);
     }
 
     @Override
-    public void saveDisplay(Map<DisplaySlot, String> display) {
-        for (Map.Entry<DisplaySlot, String> entry : display.entrySet()) {
-            json.set("display." + entry.getKey().name(), entry.getValue());
-        }
+    public void saveDisplay(Map<DisplaySlot, IScoreboard> display) {
+        for (Map.Entry<DisplaySlot, IScoreboard> entry : display.entrySet())
+            json.set("display." + entry.getKey().name(), entry.getValue().getObjectiveName());
         json.save();
     }
 
     @Override
-    public Map<String, Scoreboard> readScoreboard(AbstractScoreboardManager manager) {
+    public Map<String, IScoreboard> readScoreboard() {
         Map<String, Object> scoreboards = (Map<String, Object>) json.get("scoreboard");
-        Map<String, Scoreboard> result = new HashMap<>();
+        Map<String, IScoreboard> result = new HashMap<>();
         if (scoreboards == null) return result;
-        for (Map.Entry<String, Object> entry : scoreboards.entrySet()) {
-            result.put(entry.getKey(), deserializeFromMap((Map<String, Object>) entry.getValue(), manager));
-        }
+        for (Map.Entry<String, Object> entry : scoreboards.entrySet())
+            result.put(entry.getKey(), deserializeFromMap((Map<String, Object>) entry.getValue()));
         return result;
     }
 
     @Override
-    public Scoreboard readScoreboard(String name, AbstractScoreboardManager manager) {
-        return json.get("scoreboard." + name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name), manager);
+    public IScoreboard readScoreboard(String name) {
+        return json.get("scoreboard." + name) == null ? null : deserializeFromMap((Map<String, Object>) json.get("scoreboard." + name));
     }
 
     @Override
@@ -95,18 +92,24 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
     }
 
     @Override
+    public void removeAllScoreboard() {
+        json.remove("scoreboard");
+        json.save();
+    }
+
+    @Override
     public boolean containScoreboard(String name) {
         return json.exists("scoreboard." + name);
     }
 
-    private Map<String, Object> serializeToMap(Scoreboard scoreboard) {
+    private Map<String, Object> serializeToMap(IScoreboard scoreboard) {
         Map<String, Object> map = new HashMap<>();
         map.put("objectiveName", scoreboard.getObjectiveName());
         map.put("displayName", scoreboard.getDisplayName());
         map.put("criteriaName", scoreboard.getCriteriaName());
         map.put("sortOrder", scoreboard.getSortOrder().name());
         List<Map<String, Object>> lines = new ArrayList<>();
-        for (Scoreboard.ScoreboardLine e : scoreboard.getLines().values()) {
+        for (IScoreboardLine e : scoreboard.getLines().values()) {
             Map<String, Object> line = new HashMap<>();
             line.put("score", e.getScore());
             line.put("scorerType", e.getScorer().getScorerType().name());
@@ -122,15 +125,15 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
         return map;
     }
 
-    private Scoreboard deserializeFromMap(Map<String, Object> map, AbstractScoreboardManager manager) {
+    private IScoreboard deserializeFromMap(Map<String, Object> map) {
         String objectiveName = map.get("objectiveName").toString();
         String displayName = map.get("displayName").toString();
         String criteriaName = map.get("criteriaName").toString();
         SortOrder sortOrder = SortOrder.valueOf(map.get("sortOrder").toString());
-        Scoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder, manager);
+        IScoreboard scoreboard = new Scoreboard(objectiveName, displayName, criteriaName, sortOrder);
         for (Map<String, Object> line : (List<Map<String, Object>>) map.get("lines")) {
             int score = ((Double) line.get("score")).intValue();
-            Scorer scorer = null;
+            IScorer scorer = null;
             switch (line.get("scorerType").toString()) {
                 case "PLAYER":
                     scorer = new PlayerScorer(UUID.fromString((String) line.get("name")));
@@ -142,7 +145,7 @@ public class JSONScoreboardStorage implements ScoreboardStorage {
                     scorer = new FakeScorer((String) line.get("name"));
                     break;
             }
-            scoreboard.addLine(scorer, score);
+            scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
         }
         return scoreboard;
     }

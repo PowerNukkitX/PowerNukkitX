@@ -13,10 +13,14 @@ import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
-import cn.nukkit.entity.ai.executor.*;
+import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.entity.WardenMeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.entity.WardenRangedAttackExecutor;
+import cn.nukkit.entity.ai.executor.entity.WardenSniffExecutor;
+import cn.nukkit.entity.ai.executor.entity.WardenViolentAnimationExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 import cn.nukkit.entity.ai.memory.RouteUnreachableTimeMemory;
-import cn.nukkit.entity.ai.memory.WardenAngerValueMemory;
+import cn.nukkit.entity.ai.memory.entity.WardenAngerValueMemory;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
@@ -111,30 +115,26 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             }, (entity) -> true, 1, 1, 20)),
                     Set.of(
                             new Behavior(
-                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)),
-                                    new AllMatchEvaluator(
-                                            (entity) -> entity.getMemoryStorage().checkData(NewAttackTargetMemory.class, true),
-                                            new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)), 5),
+                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)), new AllMatchEvaluator(
+                                    (entity) -> entity.getMemoryStorage().checkData(NewAttackTargetMemory.class, true),
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)), 5
+                            ),
                             new Behavior(
-                                    new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20), switch (this.getServer().getDifficulty()) {
-                                        case 1 -> 6;
-                                        case 2 -> 10;
-                                        case 3 -> 15;
-                                        default -> 0;
-                                    }), (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 //1s
-                                    && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
-                                    && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
+                                    new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20)),
+                                    (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 //1s
+                                            && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
+                                            && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
                                     , 4, 1, 20
                             ),
                             new Behavior(
-                                    new WardenMeleeAttackExecutor(AttackTargetMemory.class, switch (this.getServer().getDifficulty()) {
-                                        case 1 -> 16;
-                                        case 2 -> 30;
-                                        case 3 -> 45;
-                                        default -> 0;
-                                    }, 0.5f),
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)
-                                    , 3, 1
+                                    new WardenMeleeAttackExecutor(AttackTargetMemory.class,
+                                            switch (this.getServer().getDifficulty()) {
+                                                case 1 -> 16;
+                                                case 2 -> 30;
+                                                case 3 -> 45;
+                                                default -> 0;
+                                            }, 0.4f),
+                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class), 3, 1
                             ),
                             new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
                             new Behavior(new RandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
@@ -174,6 +174,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         this.setAmbientSoundInterval(8.0f);
         this.setAmbientSoundIntervalRange(16.0f);
         this.level.getVibrationManager().addListener(this);
+        if (this.diffHandDamage == null) {
+            this.setDiffHandDamage(new float[]{16, 30, 45});
+        }
     }
 
     @Override

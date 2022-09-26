@@ -4,12 +4,10 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.Vector3Memory;
-import cn.nukkit.math.Vector3;
-import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class LookAtTargetExecutor implements IBehaviorExecutor {
+public class LookAtTargetExecutor extends AboutControlExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected Class<? extends Vector3Memory<?>> memoryClazz;
@@ -46,9 +44,5 @@ public class LookAtTargetExecutor implements IBehaviorExecutor {
     public void onStop(EntityIntelligent entity) {
         currentTick = 0;
         entity.setEnablePitch(false);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
     }
 }

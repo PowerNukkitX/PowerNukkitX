@@ -35,6 +35,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.level.vibration.VibrationEvent;
 import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.*;
@@ -534,7 +535,7 @@ public abstract class Entity extends Location implements Metadatable {
     protected boolean isStatic = false;
     protected Server server;
     protected Timing timing;
-    protected boolean isPlayer = false;
+    protected boolean isPlayer = this instanceof Player;
     private int maxHealth = 20;
     private volatile boolean initialized;
 
@@ -632,7 +633,7 @@ public abstract class Entity extends Location implements Metadatable {
     @Deprecated(since = "1.19.21-r2")
     @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
     public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }
@@ -643,7 +644,7 @@ public abstract class Entity extends Location implements Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
             return;
         }
@@ -1417,7 +1418,16 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    /**
+     * 当一个实体被攻击时(即接受一个实体伤害事件 这个事件可以是由其他实体攻击导致，也可能是自然伤害)调用.
+     * <p>
+     * Called when an entity is attacked (i.e. receives an entity damage event. This event can be caused by an attack by another entity, or it can be a natural damage).
+     *
+     * @param source 记录伤害源的事件<br>Record the event of the source of the attack
+     * @return 是否攻击成功<br>Whether the attack was successful
+     */
     public boolean attack(EntityDamageEvent source) {
+        //火焰保护附魔实现
         if (hasEffect(Effect.FIRE_RESISTANCE)
                 && (source.getCause() == DamageCause.FIRE
                 || source.getCause() == DamageCause.FIRE_TICK
@@ -1425,6 +1435,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
+        //事件回调函数
         getServer().getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return false;
@@ -1440,11 +1451,15 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
+        //吸收伤害实现
         if (this.absorption > 0) {  // Damage Absorption
             this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
         }
+
+        //修改最后一次伤害
         setLastDamageCause(source);
 
+        //计算血量
         float newHealth = getHealth() - source.getFinalDamage();
         if (newHealth < 1 && this instanceof Player) {
             if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE) {
@@ -1457,6 +1472,7 @@ public abstract class Entity extends Location implements Metadatable {
                     p.getInventory().clear(p.getInventory().getHeldItemIndex());
                     totem = true;
                 }
+                //复活图腾实现
                 if (totem) {
                     this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM);
                     this.getLevel().addParticleEffect(this, ParticleEffect.TOTEM);
@@ -1479,7 +1495,10 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
         }
+
         Entity attacker = source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null;
+
+        //计算一些反伤之类的附魔
         for (SideEffect sideEffect : source.getSideEffects()) {
             sideEffect.doPreHealthChange(this, source, attacker);
         }
@@ -1859,7 +1878,7 @@ public abstract class Entity extends Location implements Metadatable {
                 }
             }
 
-            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
+            this.addMovement(this.x, this.isPlayer ? this.y : this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.headYaw);
 
             this.lastX = this.x;
             this.lastY = this.y;
@@ -1931,15 +1950,24 @@ public abstract class Entity extends Location implements Metadatable {
 
         if (!this.isAlive()) {
             ++this.deadTicks;
-            if (this.deadTicks >= 10) {
+            if (this.deadTicks >= 15) {
                 //apply death smoke cloud only if it is a creature
                 if (this instanceof EntityCreature) {
-                    //death smoke cloud
-                    EntityEventPacket pk = new EntityEventPacket();
-                    pk.eid = this.getId();
-                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
-
-                    Server.broadcastPacket(this.hasSpawned.values(), pk);
+                    //通过碰撞箱大小动态添加 death smoke cloud
+                    var aabb = this.getBoundingBox();
+                    for (double x = aabb.getMinX(); x <= aabb.getMaxX(); x += 0.5) {
+                        for (double z = aabb.getMinZ(); z <= aabb.getMaxZ(); z += 0.5) {
+                            for (double y = aabb.getMinY(); y <= aabb.getMaxY(); y += 0.5) {
+                                this.getLevel().addParticle(new ExplodeParticle(new Vector3(x, y, z)));
+                            }
+                        }
+                    }
+                    //使用DEATH_SMOKE_CLOUD会导致两次死亡音效
+//                    EntityEventPacket pk = new EntityEventPacket();
+//                    pk.eid = this.getId();
+//                    pk.event = EntityEventPacket.DEATH_SMOKE_CLOUD;
+//
+//                    Server.broadcastPacket(this.hasSpawned.values(), pk);
                 }
                 this.despawnFromAll();
                 if (!this.isPlayer) {
@@ -3005,21 +3033,27 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void close() {
+        close(true);
+    }
+
+    private void close(boolean despawn) {
         if (!this.closed) {
             this.closed = true;
 
-            try {
-                EntityDespawnEvent event = new EntityDespawnEvent(this);
+            if (despawn) {
+                try {
+                    EntityDespawnEvent event = new EntityDespawnEvent(this);
 
-                this.server.getPluginManager().callEvent(event);
+                    this.server.getPluginManager().callEvent(event);
 
-                if (event.isCancelled()) {
+                    if (event.isCancelled()) {
+                        this.closed = false;
+                        return;
+                    }
+                } catch (Throwable e) {
                     this.closed = false;
-                    return;
+                    throw e;
                 }
-            } catch (Throwable e) {
-                this.closed = false;
-                throw e;
             }
 
             try {
@@ -3034,30 +3068,6 @@ public abstract class Entity extends Location implements Metadatable {
                         this.level.removeEntity(this);
                     }
                 }
-            }
-        }
-    }
-
-    private void close(Boolean despawn) {
-        if (!this.closed) {
-            this.closed = true;
-
-            if (despawn) {
-                EntityDespawnEvent event = new EntityDespawnEvent(this);
-
-                this.server.getPluginManager().callEvent(event);
-
-                if (event.isCancelled()) return;
-            }
-
-            this.despawnFromAll();
-
-            if (this.chunk != null) {
-                this.chunk.removeEntity(this);
-            }
-
-            if (this.level != null) {
-                this.level.removeEntity(this);
             }
         }
     }

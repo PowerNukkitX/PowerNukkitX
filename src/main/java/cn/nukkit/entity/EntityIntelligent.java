@@ -8,6 +8,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.AttackMemory;
 import cn.nukkit.entity.ai.memory.BurnTimeMemory;
+import cn.nukkit.entity.ai.memory.IMemory;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -62,6 +63,8 @@ public abstract class EntityIntelligent extends EntityPhysical {
      *
      * @return 此实体持有的行为组
      */
+
+    @PowerNukkitXOnly
     public IBehaviorGroup getBehaviorGroup() {
         return EMPTY_BEHAVIOR_GROUP;
     }
@@ -107,6 +110,22 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Nullable
     public IMemoryStorage getMemoryStorage() {
         return getBehaviorGroup().getMemoryStorage();
+    }
+
+    /**
+     * 获得指定记忆类型的记忆数据，这个方法会自动判空，如果数据不存在或无法获取则返回null.
+     * <p>
+     * Get the memory data of the specified memory type, this method will automatically return null if the data does not exist or cannot be obtained.
+     *
+     * @param memoryClazz 记忆类型<br>Memory class
+     */
+    @Nullable
+    public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
+        var memoryStorage = this.getMemoryStorage();
+        if (memoryStorage == null) return null;
+        if (memoryStorage.notEmpty(memoryClazz)) {
+            return memoryStorage.get(memoryClazz).getData();
+        } else return null;
     }
 
     /**

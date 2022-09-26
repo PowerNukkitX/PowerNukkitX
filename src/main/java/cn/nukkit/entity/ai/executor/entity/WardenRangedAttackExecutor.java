@@ -1,10 +1,12 @@
-package cn.nukkit.entity.ai.executor;
+package cn.nukkit.entity.ai.executor.entity;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 import cn.nukkit.entity.ai.memory.AttackTargetMemory;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -25,12 +27,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     protected int chargingTime;
     protected int totalRunningTime;
     protected int currentTick;
-    protected float damage;
 
-    public WardenRangedAttackExecutor(int chargingTime, int totalRunningTime, float damage) {
+    public WardenRangedAttackExecutor(int chargingTime, int totalRunningTime) {
         this.chargingTime = chargingTime;
         this.totalRunningTime = totalRunningTime;
-        this.damage = damage;
     }
 
     @Override
@@ -57,7 +57,12 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
 
             //attack
             Map<EntityDamageEvent.DamageModifier, Float> damages = new EnumMap<>(EntityDamageEvent.DamageModifier.class);
-            damages.put(EntityDamageEvent.DamageModifier.BASE, this.damage);
+
+            float damage = 0;
+            if (entity instanceof EntityCanAttack entityCanAttack) {
+                damage = entityCanAttack.getDiffHandDamage(entity.getServer().getDifficulty());
+            }
+            damages.put(EntityDamageEvent.DamageModifier.BASE, damage);
 
             EntityDamageByEntityEvent ev = new EntityDamageByEntityEvent(entity, target, EntityDamageEvent.DamageCause.MAGIC, damages, 0.6f, null);
 

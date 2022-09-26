@@ -1234,7 +1234,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     @PowerNukkitXOnly
     public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
@@ -1258,8 +1258,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
             BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
-            RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册创造栏物品
-            blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));
+            RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
+            blocks.forEach((block) -> Item.addCreativeItem(block.toItem()));//注册创造栏物品
         }
     }
 

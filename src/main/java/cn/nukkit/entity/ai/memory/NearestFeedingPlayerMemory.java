@@ -6,13 +6,13 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class NearestBeggingPlayerMemory extends PlayerMemory<Player> {
+public class NearestFeedingPlayerMemory extends PlayerMemory<Player> {
 
-    public NearestBeggingPlayerMemory() {
+    public NearestFeedingPlayerMemory() {
         super(null);
     }
 
-    public NearestBeggingPlayerMemory(Player player) {
+    public NearestFeedingPlayerMemory(Player player) {
         super(player);
     }
 }

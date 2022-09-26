@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomRoamExecutor implements IBehaviorExecutor {
+public class RandomRoamExecutor extends AboutControlExecutor {
 
     protected float speed;
     protected int maxRoamRange;
@@ -89,21 +89,5 @@ public class RandomRoamExecutor implements IBehaviorExecutor {
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
         double y = entity.getLevel().getHighestBlockAt(x, z) + 1;
         return new Vector3(x, y, z);
-    }
-
-    protected void setRouteTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setMoveTarget(vector3);
-    }
-
-    protected void setLookTarget(@NotNull EntityIntelligent entity, Vector3 vector3) {
-        entity.setLookTarget(vector3);
-    }
-
-    protected void removeRouteTarget(@NotNull EntityIntelligent entity) {
-        entity.setMoveTarget(null);
-    }
-
-    protected void removeLookTarget(@NotNull EntityIntelligent entity) {
-        entity.setLookTarget(null);
     }
 }

@@ -46,4 +46,10 @@ public class ItemAxeNetherite extends ItemTool {
     public boolean isLavaResistant() {
         return true;
     }
+
+    @Since("1.19.21-r4")
+    @Override
+    public boolean canBreakShield() {
+        return true;
+    }
 }

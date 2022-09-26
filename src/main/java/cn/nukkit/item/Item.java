@@ -601,7 +601,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled. " + c.getName() + "Unable to register!");
             return;
         }
@@ -619,7 +619,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode()) {
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
             return;
         }
@@ -1619,6 +1619,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isLavaResistant() {
+        return false;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.21-r4")
+    public boolean canBreakShield() {
         return false;
     }
 

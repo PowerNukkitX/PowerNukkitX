@@ -1,5 +1,5 @@
 {
-  "version": 534,
+  "version": 554,
   "recipes": [
     {
       "id": "minecraft:smithingtable_diamond_axe_to_netherite_axe",
@@ -14497,27 +14497,6 @@
       "uuid": "d392b075-4ba1-40ae-8789-af868d56f6ce"
     },
     {
-      "id": "glass_pane:white",
-      "type": 1,
-      "input": {
-        "A": {
-          "legacyId": 160,
-          "id": "minecraft:stained_glass_pane"
-        }
-      },
-      "output": [
-        {
-          "legacyId": -745,
-          "id": "glass_pane:white"
-        }
-      ],
-      "shape": [
-        "A"
-      ],
-      "block": "crafting_table",
-      "priority": 0
-    },
-    {
       "id": "heiroglyphs_redsandstone_recipeId",
       "type": 1,
       "input": {
@@ -18144,6 +18123,74 @@
       "priority": 0
     },
     {
+      "id": "minecraft:campfire_from_charcoal_mangrove_log",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 303,
+          "id": "minecraft:charcoal",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -484,
+          "id": "minecraft:mangrove_log",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
+      "id": "minecraft:campfire_from_charcoal_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 303,
+          "id": "minecraft:charcoal",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -497,
+          "id": "minecraft:mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
+    },
+    {
       "id": "minecraft:campfire_from_charcoal_stripped_acacia_log",
       "type": 1,
       "input": {
@@ -18312,6 +18359,40 @@
       ],
       "block": "crafting_table",
       "priority": 0
+    },
+    {
+      "id": "minecraft:campfire_from_charcoal_stripped_mangrove_wood",
+      "type": 1,
+      "input": {
+        "A": {
+          "legacyId": 320,
+          "id": "minecraft:stick",
+          "damage": 32767
+        },
+        "B": {
+          "legacyId": 303,
+          "id": "minecraft:charcoal",
+          "damage": 32767
+        },
+        "C": {
+          "legacyId": -498,
+          "id": "minecraft:stripped_mangrove_wood",
+          "damage": 32767
+        }
+      },
+      "output": [
+        {
+          "legacyId": 589,
+          "id": "minecraft:campfire"
+        }
+      ],
+      "shape": [
+        " A ",
+        "ABA",
+        "CCC"
+      ],
+      "block": "crafting_table",
+      "priority": 2
     },
     {
       "id": "minecraft:campfire_from_charcoal_stripped_oak_log",

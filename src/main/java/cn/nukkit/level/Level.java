@@ -1571,7 +1571,7 @@ public class Level implements ChunkManager, Metadatable {
             if (block != null) size++;
         }
         int packetIndex = 0;
-        UpdateBlockPacket[] packets = new UpdateBlockPacket[size];
+        var packets = new ArrayList<UpdateBlockPacket>(size);
         LongSet chunks = null;
         if (optimizeRebuilds) {
             chunks = new LongOpenHashSet();
@@ -1607,6 +1607,9 @@ public class Level implements ChunkManager, Metadatable {
                 }
             } else {
                 runtimeId = getBlockRuntimeId((int) b.x, (int) b.y, (int) b.z, dataLayer);
+                if (runtimeId == Integer.MIN_VALUE) {
+                    continue;
+                }
             }
             try {
                 updateBlockPacket.blockRuntimeId = runtimeId;
@@ -1614,9 +1617,9 @@ public class Level implements ChunkManager, Metadatable {
                 throw new IllegalStateException("Unable to create BlockUpdatePacket at (" +
                         b.x + ", " + b.y + ", " + b.z + ") in " + getName(), e);
             }
-            packets[packetIndex++] = updateBlockPacket;
+            packets.add(updateBlockPacket);
         }
-        this.server.batchPackets(target, packets);
+        this.server.batchPackets(target, packets.toArray(DataPacket.EMPTY_ARRAY));
     }
 
     private void tickChunks() {
@@ -2217,7 +2220,11 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitOnly
     @Since("1.3.0.0-PN")
     public int getBlockRuntimeId(int x, int y, int z, int layer) {
-        return this.getChunk(x >> 4, z >> 4, false).getBlockRuntimeId(x & 0x0f, ensureY(y), z & 0x0f, layer);
+        final var tmp = this.getChunk(x >> 4, z >> 4, false);
+        if (tmp == null) {
+            return Integer.MIN_VALUE;
+        }
+        return tmp.getBlockRuntimeId(x & 0x0f, ensureY(y), z & 0x0f, layer);
     }
 
     @PowerNukkitXDifference(since = "1.19.20-r3", info = "Allow parallel gets.")

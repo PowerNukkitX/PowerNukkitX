@@ -4,16 +4,18 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.scoreboard.data.ScorerType;
-import cn.nukkit.scoreboard.interfaces.Scorer;
+import cn.nukkit.scoreboard.scoreboard.IScoreboard;
+import cn.nukkit.scoreboard.scoreboard.IScoreboardLine;
 import lombok.Getter;
 
 import java.util.UUID;
 
 @PowerNukkitXOnly
-@Since("1.6.0.0-PNX")
+@Since("1.19.30-r1")
 @Getter
-public class PlayerScorer implements Scorer {
+public class PlayerScorer implements IScorer {
 
     private UUID uuid;
 
@@ -58,5 +60,11 @@ public class PlayerScorer implements Scorer {
     @Override
     public String getName() {
         return Server.getInstance().getOnlinePlayers().get(uuid) == null ? String.valueOf(uuid.getMostSignificantBits()) : Server.getInstance().getOnlinePlayers().get(uuid).getName();
+    }
+
+    @Override
+    public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
+        UUID uuid = getUuid();
+        return Server.getInstance().getPlayer(uuid).isPresent() ? new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.PLAYER, Server.getInstance().getPlayer(uuid).get().getId()) : null;
     }
 }

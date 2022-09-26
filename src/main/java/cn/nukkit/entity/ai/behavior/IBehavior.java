@@ -7,7 +7,9 @@ import cn.nukkit.entity.ai.evaluator.IBehaviorEvaluator;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
 
 /**
- * 此接口抽象了一个行为对象，作为行为组{@link IBehaviorGroup}的组成部分
+ * 此接口抽象了一个行为对象，作为行为组{@link IBehaviorGroup}的组成部分.
+ * <p>
+ * This interface abstracts a behavior object as part of the behavior group {@link IBehaviorGroup}.
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
