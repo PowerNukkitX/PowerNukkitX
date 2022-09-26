@@ -10,23 +10,65 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
+## [1.19.30-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.30-r1) - 2022-9-21
+This work in progress version supports Minecraft:BE `1.19.30 (Protocol Version 554)`.
+
+## Added
+
+[#676] Implemented compatibility with 1.19.30 (protocol version 554).
+
+## Changed
+
+[#679] Update resource files.
+
+## Fixes
+
+[#682] Fix Entity HeadYaw.
+
+## CRITICAL SECURITY FIX
+
+[#680] Updated [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml) to 1.3.2, fixing `CVE-2022-38752`.
+
 ## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
 This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
 
 ## Added
 
 - [#613] Support for Deep Dark biomes (stage #1).
+- [#622] Preliminary implementation of moo mushrooms.
+- [#638] Add obsidian pillars.
+- [#647] Add support for WaterdogPE login add-on (associated issue [#646]).
+- [#653] Add hash for checksum at build and publish time.
+- [#657] Implement shield breaking.
+- [#658] Patch the missing `oldld`.
+- [#661] Add wolf creature AI.
 
 ## Changed
 
 - [#620] Remove `StringArrayTag.java`.
 - [#621] Example anti-xray configuration added to the default configuration.
 - [#623] Correct anti-xray configuration.
+- [#642] Refine Deep Dark "Dark Cluster System".
+- [#648] Unified configuration.
+- [#673] `Refactor Scoreboard API`.
 
 ## Fixes
 
 - [#612] Fix content with NPC plugin.
 - [#617] Fix hopper.
+- [#629]/[#632] Fix bugs that prevent water lilies from being placed on water and that burning stone stairs in a furnace will get you stone stairs (fixed in [#634]).
+- [#631] Fix item copy bug (fixed in [#633]).
+- [#635] Improve and fix exploits.
+- [#637] Fix wrong structure generation.
+- [#639] Fix map unrealistic.
+- [#644] Try to fix compatibility issues with WaterdogPE.
+- [#650] Some bug fixes.
+- [#652] Fix armor durability value calculation.
+- [#660] Fix hell portal.
+- [#664] Fix merge bug.
+- [#666] Fix TP command output error.
+- [#668] Fix the problem that entity teleport is inexplicably two frames higher.
+- [#675] Fix cross-block operation problem in pre-deobfuscate.
 
 ## [1.19.21-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3) - 2022-9-2
 This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
@@ -1166,6 +1208,13 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.30-PNX</summary>
+
+   1. [#1.19.30-r1] PNX-1.19.30-r1 (Protocol Verison 554)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1580,7 +1629,38 @@ Need to switch languages?
 [#617]: https://github.com/PowerNukkitX/PowerNukkitX/pull/617
 [#620]: https://github.com/PowerNukkitX/PowerNukkitX/pull/620
 [#621]: https://github.com/PowerNukkitX/PowerNukkitX/pull/621
+[#622]: https://github.com/PowerNukkitX/PowerNukkitX/pull/622
 [#623]: https://github.com/PowerNukkitX/PowerNukkitX/pull/623
+[#629]: https://github.com/PowerNukkitX/PowerNukkitX/issues/629
+[#631]: https://github.com/PowerNukkitX/PowerNukkitX/issues/631
+[#632]: https://github.com/PowerNukkitX/PowerNukkitX/issues/632
+[#633]: https://github.com/PowerNukkitX/PowerNukkitX/pull/633
+[#634]: https://github.com/PowerNukkitX/PowerNukkitX/pull/634
+[#635]: https://github.com/PowerNukkitX/PowerNukkitX/pull/635
+[#637]: https://github.com/PowerNukkitX/PowerNukkitX/pull/637
+[#638]: https://github.com/PowerNukkitX/PowerNukkitX/pull/638
+[#639]: https://github.com/PowerNukkitX/PowerNukkitX/pull/639
+[#642]: https://github.com/PowerNukkitX/PowerNukkitX/pull/642
+[#644]: https://github.com/PowerNukkitX/PowerNukkitX/pull/644
+[#646]: https://github.com/PowerNukkitX/PowerNukkitX/issues/646
+[#647]: https://github.com/PowerNukkitX/PowerNukkitX/pull/647
+[#648]: https://github.com/PowerNukkitX/PowerNukkitX/pull/648
+[#650]: https://github.com/PowerNukkitX/PowerNukkitX/pull/650
+[#652]: https://github.com/PowerNukkitX/PowerNukkitX/pull/652
+[#653]: https://github.com/PowerNukkitX/PowerNukkitX/pull/653
+[#657]: https://github.com/PowerNukkitX/PowerNukkitX/pull/657
+[#658]: https://github.com/PowerNukkitX/PowerNukkitX/pull/658
+[#660]: https://github.com/PowerNukkitX/PowerNukkitX/pull/660
+[#661]: https://github.com/PowerNukkitX/PowerNukkitX/pull/661
+[#664]: https://github.com/PowerNukkitX/PowerNukkitX/pull/664
+[#666]: https://github.com/PowerNukkitX/PowerNukkitX/pull/666
+[#668]: https://github.com/PowerNukkitX/PowerNukkitX/pull/668
+[#673]: https://github.com/PowerNukkitX/PowerNukkitX/pull/673
+[#675]: https://github.com/PowerNukkitX/PowerNukkitX/pull/675
+[#676]: https://github.com/PowerNukkitX/PowerNukkitX/pull/676
+[#679]: https://github.com/PowerNukkitX/PowerNukkitX/pull/679
+[#680]: https://github.com/PowerNukkitX/PowerNukkitX/pull/680
+[#682]: https://github.com/PowerNukkitX/PowerNukkitX/pull/682
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1618,6 +1698,11 @@ Need to switch languages?
 [#1.19.21-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r2
 <!--1.19.21-r3-PNX Protocol Version 545-->
 [#1.19.21-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r3
+<!--1.19.21-r4-PNX Protocol Version 545-->
+[#1.19.21-r4]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r4
+
+<!--1.19.30-r1-PNX Protocol Version 554-->
+[#1.19.30-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.30-r1
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
