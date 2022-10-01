@@ -1141,21 +1141,38 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * <p>
      * Returns whether the player is currently using an item (right-click and hold).
      *
-     * @return bool
+     * @return {@link #startAction}
      */
     public boolean isUsingItem() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION) && this.startAction > -1;
     }
 
+    /**
+     * 设置玩家当前是否正在使用某项物品 {@link #startAction}（右击并按住）。
+     * <p>
+     * Set whether the player is currently using an item {@link #startAction} (right-click and hold).
+     *
+     * @param value 玩家当前是否正在使用某项物品<br>whether the player is currently using an item.
+     */
     public void setUsingItem(boolean value) {
         this.startAction = value ? this.server.getTick() : -1;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, value);
     }
 
+    /**
+     * 获得移动设备玩家面对载具时出现的交互按钮的语言硬编码。
+     * <p>
+     * Get the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     */
     public String getButtonText() {
         return this.buttonText;
     }
 
+    /**
+     * 设置移动设备玩家面对载具时出现的交互按钮的语言硬编码。
+     * <p>
+     * Set the language hardcoded for the interaction buttons that appear when mobile device players face the carrier.
+     */
     public void setButtonText(String text) {
         this.buttonText = text;
         this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, this.buttonText));
@@ -1181,10 +1198,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.loadQueue.remove(index);
     }
 
+    /**
+     * @return 玩家是否在主世界(维度为0)<br>Is the player in the world(Dimension equal 0)
+     */
     public boolean isInOverWorld() {
         return this.getLevel().getDimension() == 0;
     }
 
+    /**
+     * 获取该玩家出生点
+     * <p>
+     * Get the player's Spawn point
+     *
+     * @return {@link Position}
+     */
     public Position getSpawn() {
         if (this.spawnPosition != null && this.spawnPosition.getLevel() != null) {
             return this.spawnPosition;
@@ -1194,9 +1221,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 保存玩家重生位置的方块的位置。当未知时可能为空。
+     * <p>
      * The block that holds the player respawn position. May be null when unknown.
      *
-     * @return The position of a bed, respawn anchor, or null when unknown.
+     * @return 床、重生锚的位置，或在未知时为空。<br>The position of a bed, respawn anchor, or null when unknown.
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1206,9 +1235,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 设置保存玩家重生位置的方块的位置。当未知时可能为空。
+     * <p>
      * Sets the position of the block that holds the player respawn position. May be null when unknown.
      *
-     * @param spawnBlock The position of a bed or respawn anchor
+     * @param spawnBlock 床位或重生锚的位置<br>The position of a bed or respawn anchor
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1540,8 +1571,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * -1 is false
      * other is identifer
      *
-     * @param packet packet to send
-     * @return packet successfully sent
+     * @param packet 发送的数据包<br>packet to send
+     * @return 数据包是否成功发送<br>packet successfully sent
      */
     public boolean dataPacket(DataPacket packet) {
         if (!this.connected) {
@@ -1607,6 +1638,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } : callback));
     }
 
+    /**
+     * 得到该玩家的网络延迟。
+     * <p>
+     * Get the network latency of the player.
+     *
+     * @return int
+     */
     public int getPing() {
         return this.interfaz.getNetworkLatency(this);
     }
@@ -1645,6 +1683,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * 设置玩家的出生点/复活点。
+     * <p>
+     * Set the player's birth point.
+     *
+     * @param pos 出生点位置
+     */
     @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
     public void setSpawn(@Nullable Vector3 pos) {
         if (pos != null) {
@@ -1713,6 +1758,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * 得到gamemode。
+     * <p>
+     * Get gamemode.
+     *
+     * @return int
+     */
     public int getGamemode() {
         return gamemode;
     }
@@ -1731,14 +1783,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return gamemode;
     }
 
+    /**
+     * clientSide=false<br>
+     * AdventureSettings=null
+     *
+     * @see #setGamemode(int, boolean, AdventureSettings)
+     */
     public boolean setGamemode(int gamemode) {
         return this.setGamemode(gamemode, false, null);
     }
 
+    /**
+     * AdventureSettings=null
+     *
+     * @see #setGamemode(int, boolean, AdventureSettings)
+     */
     public boolean setGamemode(int gamemode, boolean clientSide) {
         return this.setGamemode(gamemode, clientSide, null);
     }
 
+    /**
+     * 设置gamemode
+     *
+     * @param gamemode    gamemode
+     * @param clientSide  是否仅客户端侧生效<br>Whether client-side only
+     * @param newSettings AdventureSetting
+     * @return boolean
+     */
     public boolean setGamemode(int gamemode, boolean clientSide, AdventureSettings newSettings) {
         if (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode) {
             return false;
@@ -1819,18 +1890,46 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getAdventureSettings().update();
     }
 
+    /**
+     * 该玩家是否为生存模式。
+     * <p>
+     * Whether the player is in survival mode?
+     *
+     * @return boolean
+     */
     public boolean isSurvival() {
         return this.gamemode == SURVIVAL;
     }
 
+    /**
+     * 该玩家是否为创造模式。
+     * <p>
+     * Whether the player is in creative mode?
+     *
+     * @return boolean
+     */
     public boolean isCreative() {
         return this.gamemode == CREATIVE;
     }
 
+    /**
+     * 该玩家是否为观察者模式。
+     * <p>
+     * Whether the player is in spectator mode?
+     *
+     * @return boolean
+     */
     public boolean isSpectator() {
         return this.gamemode == SPECTATOR;
     }
 
+    /**
+     * 该玩家是否为冒险模式。
+     * <p>
+     * Whether the player is in adventure mode?
+     *
+     * @return boolean
+     */
     public boolean isAdventure() {
         return this.gamemode == ADVENTURE;
     }
@@ -2264,11 +2363,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.newPosition = null;
     }
 
+    /**
+     * 增加运动 (仅发送{@link MovePlayerPacket}数据包无法使玩家真正移动，如果需要请使用{@link #setMotion})
+     * <p>
+     * Add motion (just sending {@link MovePlayerPacket} will not make the player actually move, use {@link #setMotion} if needed)
+     *
+     * @param x       x
+     * @param y       y
+     * @param z       z
+     * @param yaw     左右旋转
+     * @param pitch   上下旋转
+     * @param headYaw headYaw
+     */
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
+    /**
+     * 设置一个运动向量(会使得玩家移动这个向量的距离，非精准移动)
+     * <p>
+     * Set a motion vector (will make the player move the distance of this vector, not move precisely)
+     *
+     * @param motion 运动向量<br>a motion vector
+     * @return boolean
+     */
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -2471,6 +2590,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return super.entityBaseTick(tickDiff) || hasUpdated;
     }
 
+    /**
+     * 检查附近可交互的实体(插件一般不使用)
+     * <p>
+     * Check for nearby interactable entities (not generally used by plugins)
+     */
     public void checkInteractNearby() {
         int interactDistance = isCreative() ? 5 : 3;
         if (canInteract(this, interactDistance)) {
@@ -2486,10 +2610,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 返回玩家目前正在看的实体。
+     * <p>
      * Returns the Entity the player is looking at currently
      *
-     * @param maxDistance the maximum distance to check for entities
-     * @return Entity|null    either NULL if no entity is found or an instance of the entity
+     * @param maxDistance 检查实体的最大距离<br>the maximum distance to check for entities
+     * @return Entity|null    如果没有找到实体，则为NULL，或者是实体的一个实例。<br>either NULL if no entity is found or an instance of the entity
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
         timing.startTiming();
@@ -4938,10 +5064,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 以该玩家的身份发送一条聊天信息。如果消息以/（正斜杠）开头，它将被视为一个命令。
+     * <p>
      * Sends a chat message as this player. If the message begins with a / (forward-slash) it will be treated
      * as a command.
      *
-     * @param message message to send
+     * @param message 发送的信息<br>message to send
      * @return successful
      */
     public boolean chat(String message) {
@@ -4969,30 +5097,64 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * reason=empty string
+     *
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick() {
         return this.kick("");
     }
 
+    /**
+     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     *
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick(String reason, boolean isAdmin) {
         return this.kick(PlayerKickEvent.Reason.UNKNOWN, reason, isAdmin);
     }
 
+    /**
+     * {@link PlayerKickEvent.Reason} = {@link PlayerKickEvent.Reason#UNKNOWN}
+     *
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick(String reason) {
         return kick(PlayerKickEvent.Reason.UNKNOWN, reason);
     }
 
+    /**
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick(PlayerKickEvent.Reason reason) {
         return this.kick(reason, true);
     }
 
+    /**
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString) {
         return this.kick(reason, reasonString, true);
     }
 
+    /**
+     * @see #kick(PlayerKickEvent.Reason, String, boolean)
+     */
     public boolean kick(PlayerKickEvent.Reason reason, boolean isAdmin) {
         return this.kick(reason, reason.toString(), isAdmin);
     }
 
+    /**
+     * 踢出该玩家
+     * <p>
+     * Kick out the player
+     *
+     * @param reason       原因枚举<br>Cause Enumeration
+     * @param reasonString 原因字符串<br>Reason String
+     * @param isAdmin      是否来自管理员踢出<br>Whether from the administrator kicked out
+     * @return boolean
+     */
     public boolean kick(PlayerKickEvent.Reason reason, String reasonString, boolean isAdmin) {
         PlayerKickEvent ev;
         this.server.getPluginManager().callEvent(ev = new PlayerKickEvent(this, reason, this.getLeaveMessage()));
@@ -5020,6 +5182,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    /**
+     * 设置玩家的可视距离(范围 0--{@link Server#getViewDistance})
+     * <p>
+     * Set the player's viewing distance (range 0--{@link Server#getViewDistance})
+     *
+     * @param distance 可视距离
+     */
     public void setViewDistance(int distance) {
         this.chunkRadius = distance;
 
@@ -5029,6 +5198,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 得到玩家的可视距离
+     * <p>
+     * Get the player's viewing distance
+     *
+     * @return int
+     */
     public int getViewDistance() {
         return this.chunkRadius;
     }
@@ -5050,6 +5226,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendMessage(message.getText());
     }
 
+    /**
+     * 在玩家聊天栏发送一个JSON文本
+     * <p>
+     * Send a JSON text in the player chat bar
+     *
+     * @param text JSON文本<br>Json text
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void sendRawTextMessage(RawText text) {
@@ -5059,10 +5242,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * @see #sendTranslation(String, String[])
+     */
     public void sendTranslation(String message) {
         this.sendTranslation(message, EmptyArrays.EMPTY_STRINGS);
     }
 
+    /**
+     * 在玩家聊天栏发送一个多语言翻译文本，示例:<br>{@code message="Test Message {%0} {%1}" parameters=["Hello","World"]}<br>
+     * 实际消息内容{@code "Test Message Hello World"}
+     * <p>
+     * Send a multilingual translated text in the player chat bar, example:<br> {@code message="Test Message {%0} {%1}" parameters=["Hello", "World"]}<br>
+     * actual message content {@code "Test Message Hello World"}
+     *
+     * @param message    消息
+     * @param parameters 参数
+     */
     public void sendTranslation(String message, String[] parameters) {
         TextPacket pk = new TextPacket();
         if (!this.server.isLanguageForced()) {
@@ -5080,10 +5276,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * @see #sendChat(String, String)
+     */
     public void sendChat(String message) {
         this.sendChat("", message);
     }
 
+    /**
+     * 在玩家聊天栏发送一个文本
+     * <p>
+     * Send a text in the player chat bar
+     *
+     * @param message 消息
+     */
     public void sendChat(String source, String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_CHAT;
@@ -5092,10 +5298,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * @see #sendPopup(String, String)
+     */
     public void sendPopup(String message) {
         this.sendPopup(message, "");
     }
 
+    /**
+     * 在玩家物品栏上方发送一个弹出式的文本
+     * <p>
+     * Send a pop-up text above the player's item bar
+     *
+     * @param message 消息
+     */
     // TODO: Support Translation Parameters
     public void sendPopup(String message, String subtitle) {
         TextPacket pk = new TextPacket();
@@ -5104,6 +5320,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 在玩家物品栏上方发送一个提示文本
+     * <p>
+     * Send a tip text above the player's item bar
+     *
+     * @param message 消息
+     */
     public void sendTip(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_TIP;
