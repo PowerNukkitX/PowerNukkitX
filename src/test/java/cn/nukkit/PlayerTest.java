@@ -279,7 +279,7 @@ class PlayerTest {
         });
         for (int i = 0; i < 100; i++) {
             player.setHealth(20);
-            player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.FALL, 1));
+            player.attack(new EntityDamageEvent(player, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 1));
             player.entityBaseTick(20);
         }
         assertEquals(Arrays.asList(
