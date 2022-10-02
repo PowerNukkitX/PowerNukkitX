@@ -8,6 +8,9 @@ import cn.nukkit.scoreboard.scoreboard.IScoreboard;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * 计分板存储器接口
+ */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public interface IScoreboardStorage {

@@ -32,6 +32,7 @@ public class PlayerScorer implements IScorer {
     }
 
     public Player getPlayer() {
+        if (uuid == null) return null;
         return Server.getInstance().getPlayer(uuid).isPresent() ? Server.getInstance().getPlayer(uuid).get() : null;
     }
 
@@ -46,7 +47,7 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return uuid != null ? uuid.hashCode() : 0;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class PlayerScorer implements IScorer {
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        UUID uuid = getUuid();
+        if (uuid == null) return null;
         return Server.getInstance().getPlayer(uuid).isPresent() ? new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.PLAYER, Server.getInstance().getPlayer(uuid).get().getId()) : null;
     }
 }
