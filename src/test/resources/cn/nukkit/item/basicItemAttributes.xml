@@ -514,7 +514,7 @@
     <item namespaced-id="minecraft:sparkler" numeric-id="442" name="Sparkler"/>
     <item namespaced-id="minecraft:command_block_minecart" numeric-id="443" name="Command Block Minecart" stack-size="1"/>
     -->
-    <item namespaced-id="minecraft:elytra" numeric-id="444" name="Elytra" stack-size="1" durability="433" armor="true" chestplate="true"/>
+    <item namespaced-id="minecraft:elytra" numeric-id="444" name="Elytra" stack-size="1" durability="433" armor="false" chestplate="true"/>
     <item namespaced-id="minecraft:shulker_shell" numeric-id="445" name="Shulker Shell"/>
     <item namespaced-id="minecraft:banner" numeric-id="446" name="Banner" stack-size="16" fuel-time="300">
         <item-state damage="0" name="Black Banner" />

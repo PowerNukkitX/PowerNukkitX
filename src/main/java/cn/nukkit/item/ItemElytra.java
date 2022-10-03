@@ -24,7 +24,7 @@ public class ItemElytra extends ItemArmor {
 
     @Override
     public boolean isArmor() {
-        return true;
+        return false;
     }
 
     @Override

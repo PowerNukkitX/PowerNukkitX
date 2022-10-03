@@ -9,7 +9,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCommandBlock;
 import cn.nukkit.block.BlockCommandBlockChain;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.command.ListenDefiner;
 import cn.nukkit.event.command.CommandBlockExecuteEvent;
 import cn.nukkit.inventory.CommandBlockInventory;
 import cn.nukkit.inventory.Inventory;
@@ -32,7 +31,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -41,10 +39,6 @@ import java.util.Set;
 @Since("1.6.0.0-PNX")
 @Getter
 public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICommandBlock, BlockEntityNameable {
-
-    @Getter
-    protected static Map<BlockEntityCommandBlock, Map<String, String>> listenMap = new HashMap<>();
-
     protected boolean conditionalMode;
     protected boolean auto;
     protected String command;
@@ -317,7 +311,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         if (this.getLastExecution() != this.getServer().getTick()) {
             this.setConditionMet();
             if (this.isConditionMet() && (this.isAuto() || this.isPowered())) {
-                String cmd = ListenDefiner.clearDefinition(this.getCommand());
+                String cmd = this.getCommand();
                 if (!Strings.isNullOrEmpty(cmd)) {
                     if (cmd.equalsIgnoreCase("Searge")) {
                         this.lastOutput = "#itzlipofutzli";
@@ -383,10 +377,6 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
     @Override
     public void setCommand(String command) {
         this.command = command;
-        if (ListenDefiner.existDefinition(command)) {
-            Map<String, String> arguments = ListenDefiner.getDefinedEvents(command);
-            listenMap.put(this, arguments);
-        }
         this.successCount = 0;
     }
 
@@ -661,14 +651,12 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable implements ICo
         for (Player player : new HashSet<>(this.getInventory().getViewers())) {
             player.removeWindow(this.getInventory());
         }
-        listenMap.remove(this);
         super.onBreak();
     }
 
     @Override
     public void close() {
         if (!closed) {
-            listenMap.remove(this);
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
                 player.removeWindow(this.getInventory());
             }

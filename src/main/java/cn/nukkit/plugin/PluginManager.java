@@ -572,13 +572,6 @@ public class PluginManager {
     public void callEvent(Event event) {
         //Used for event listeners inside command blocks
         String eventName = event.getClass().getSimpleName();
-        for (BlockEntityCommandBlock cb : BlockEntityCommandBlock.getListenMap().keySet()) {
-            BlockEntityCommandBlock.getListenMap().get(cb).forEach((k, v) -> {
-                if (eventName.equals(k)) {
-                    cb.execute();
-                }
-            });
-        }
         try {
             for (RegisteredListener registration : getEventListeners(event.getClass()).getRegisteredListeners()) {
                 if (!registration.getPlugin().isEnabled()) {
