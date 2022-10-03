@@ -5334,6 +5334,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 清除掉玩家身上正在显示的标题信息。
+     * <p>
+     * Clears away the title info being displayed on the player.
+     */
     public void clearTitle() {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_CLEAR;
@@ -5341,7 +5346,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * Resets both title animation times and subtitle for the next shown title
+     * 为下一个显示的标题重新设置标题动画时间和副标题。
+     * <p>
+     * Resets both title animation times and subtitle for the next shown title.
      */
     public void resetTitleSettings() {
         SetTitlePacket pk = new SetTitlePacket();
@@ -5349,6 +5356,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 设置副标题，在主标题下方显示。
+     * <p>
+     * Set subtitle to be displayed below the main title.
+     *
+     * @param subtitle 副标题
+     */
     public void setSubtitle(String subtitle) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_SUBTITLE;
@@ -5356,6 +5370,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 设置一个JSON文本副标题。
+     * <p>
+     * Set a JSON text subtitle.
+     *
+     * @param text JSON文本<br>JSON text
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setRawTextSubTitle(RawText text) {
@@ -5365,6 +5386,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 设置标题动画时间
+     * <p>
+     * Set title animation time
+     *
+     * @param fadein   淡入时间
+     * @param duration 持续时间
+     * @param fadeout  淡出时间
+     */
     public void setTitleAnimationTimes(int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ANIMATION_TIMES;
@@ -5382,6 +5412,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(packet);
     }
 
+    /**
+     * 设置一个JSON文本标题。
+     * <p>
+     * Set a JSON text title.
+     *
+     * @param text JSON文本<br>JSON text
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setRawTextTitle(RawText text) {
@@ -5391,14 +5428,36 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
+    /**
+     * {@code subtitle=null,fadeIn=20,stay=20,fadeOut=5}
+     *
+     * @see #sendTitle(String, String, int, int, int)
+     */
     public void sendTitle(String title) {
         this.sendTitle(title, null, 20, 20, 5);
     }
 
+    /**
+     * {@code fadeIn=20,stay=20,fadeOut=5}
+     *
+     * @see #sendTitle(String, String, int, int, int)
+     */
     public void sendTitle(String title, String subtitle) {
         this.sendTitle(title, subtitle, 20, 20, 5);
     }
 
+    /**
+     * 在玩家视角正中央发送一个标题文本。
+     * <p>
+     * Send a title text in the center of the player's view.
+     *
+     * @param title    标题
+     * @param subtitle 副标题
+     * @param fadeIn   淡入时间<br>fadeIn time(tick)
+     * @param stay     持续时间<br>stay time
+     * @param fadeOut  淡出时间<br>fadeOut time
+     */
     public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
         this.setTitleAnimationTimes(fadeIn, stay, fadeOut);
         if (!Strings.isNullOrEmpty(subtitle)) {
@@ -5408,10 +5467,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setTitle(Strings.isNullOrEmpty(title) ? " " : title);
     }
 
+
+    /**
+     * fadein=1,duration=0,fadeout=1
+     *
+     * @see #sendActionBar(String, int, int, int)
+     */
     public void sendActionBar(String title) {
         this.sendActionBar(title, 1, 0, 1);
     }
 
+    /**
+     * 在玩家物品栏上方发送一个ActionBar消息。
+     * <p>
+     * Send a ActionBar text above the player's item bar.
+     *
+     * @param title    消息
+     * @param fadein   淡入时间
+     * @param duration 持续时间
+     * @param fadeout  淡出时间
+     */
     public void sendActionBar(String title, int fadein, int duration, int fadeout) {
         SetTitlePacket pk = new SetTitlePacket();
         pk.type = SetTitlePacket.TYPE_ACTION_BAR;
@@ -5422,12 +5497,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * fadein=1,duration=0,fadeout=1
+     *
+     * @see #setRawTextActionBar(RawText, int, int, int)
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setRawTextActionBar(RawText text) {
         this.setRawTextActionBar(text, 1, 0, 1);
     }
 
+    /**
+     * 设置一个JSON ActionBar消息。
+     * <p>
+     * Set a JSON ActionBar text.
+     *
+     * @param text     JSON文本<br>JSON text
+     * @param fadein   淡入时间
+     * @param duration 持续时间
+     * @param fadeout  淡出时间
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void setRawTextActionBar(RawText text, int fadein, int duration, int fadeout) {
@@ -5440,31 +5530,64 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+
     @Override
     public void close() {
         this.close("");
     }
 
+    /**
+     * {@code notify=true}
+     *
+     * @see #close(TextContainer, String, boolean)
+     */
     public void close(String message) {
         this.close(message, "generic");
     }
 
+    /**
+     * {@code notify=true}
+     *
+     * @see #close(TextContainer, String, boolean)
+     */
     public void close(String message, String reason) {
         this.close(message, reason, true);
     }
 
+    /**
+     * @see #close(TextContainer, String, boolean)
+     */
     public void close(String message, String reason, boolean notify) {
         this.close(new TextContainer(message), reason, notify);
     }
 
+    /**
+     * {@code reason="generic",notify=true}
+     *
+     * @see #close(TextContainer, String, boolean)
+     */
     public void close(TextContainer message) {
         this.close(message, "generic");
     }
 
+    /**
+     * notify=true
+     *
+     * @see #close(TextContainer, String, boolean)
+     */
     public void close(TextContainer message, String reason) {
         this.close(message, reason, true);
     }
 
+    /**
+     * 关闭该玩家的连接及其一切活动，和{@link #kick}差不多效果，区别在于{@link #kick}是基于{@code close}实现的。
+     * <p>
+     * Closing the player's connection and all its activities is almost as function as {@link #kick}, the difference is that {@link #kick} is implemented based on {@code close}.
+     *
+     * @param message PlayerQuitEvent事件消息<br>PlayerQuitEvent message
+     * @param reason  登出原因<br>Reason for logout
+     * @param notify  是否显示登出画面通知<br>Whether to display the logout screen notification
+     */
     public void close(TextContainer message, String reason, boolean notify) {
         if (this.connected && !this.closed) {
             //这里必须在玩家离线之前调用，否则无法将包发过去
@@ -5991,18 +6114,46 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 得到该玩家的经验值(并不会显示玩家从的经验值总数，而仅仅显示当前等级所在的经验值，即经验条)。
+     * <p>
+     * Get the experience value of the player (it does not show the total experience value of the player from, but only the experience value where the current level is, i.e. the experience bar).
+     *
+     * @return int
+     */
     public int getExperience() {
         return this.exp;
     }
 
+    /**
+     * 得到该玩家的等级。
+     * <p>
+     * Get the level of the player.
+     *
+     * @return int
+     */
     public int getExperienceLevel() {
         return this.expLevel;
     }
 
+
+    /**
+     * playLevelUpSound=false
+     *
+     * @see #addExperience(int, boolean)
+     */
     public void addExperience(int add) {
         addExperience(add, false);
     }
 
+    /**
+     * 增加该玩家的经验值
+     * <p>
+     * Increase the experience value of the player
+     *
+     * @param add              经验值的数量
+     * @param playLevelUpSound 有无升级声音
+     */
     @PowerNukkitOnly
     public void addExperience(int add, boolean playLevelUpSound) {
         if (add == 0) return;
@@ -6018,6 +6169,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setExperience(added, level, playLevelUpSound);
     }
 
+    /**
+     * 计算玩家到达某等级所需要的经验值
+     * <p>
+     * Calculates the amount of experience a player needs to reach a certain level
+     *
+     * @param level 等级
+     * @return int
+     */
     public static int calculateRequireExperience(int level) {
         if (level >= 30) {
             return 112 + (level - 30) * 9;
@@ -6028,14 +6187,35 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
+    /**
+     * {@code level = this.getExperienceLevel(),playLevelUpSound=false}
+     *
+     * @see #setExperience(int, int, boolean)
+     */
     public void setExperience(int exp) {
         setExperience(exp, this.getExperienceLevel());
     }
 
+
+    /**
+     * playLevelUpSound=false
+     *
+     * @see #setExperience(int, int, boolean)
+     */
     public void setExperience(int exp, int level) {
         setExperience(exp, level, false);
     }
 
+    /**
+     * 设置该玩家的经验值和等级
+     * <p>
+     * set the experience value and level of the player
+     *
+     * @param playLevelUpSound 有无升级声音
+     * @param exp              经验值
+     * @param level            等级
+     */
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
     @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
@@ -6057,10 +6237,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * @see #sendExperience(int)
+     */
     public void sendExperience() {
         sendExperience(this.getExperience());
     }
 
+    /**
+     * setExperience的实现部分，用来设置当前等级所对应的经验值，即经验条
+     * <p>
+     * The implementation of setExperience is used to set the experience value corresponding to the current level, i.e. the experience bar
+     *
+     * @param exp 经验值
+     */
     public void sendExperience(int exp) {
         if (this.spawned) {
             float percent = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
@@ -6069,10 +6259,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
+    /**
+     * @see #sendExperienceLevel(int)
+     */
     public void sendExperienceLevel() {
         sendExperienceLevel(this.getExperienceLevel());
     }
 
+    /**
+     * setExperience的实现部分，用来设置当前等级
+     * <p>
+     * The implementation of setExperience is used to set the level
+     *
+     * @param level 等级
+     */
     public void sendExperienceLevel(int level) {
         if (this.spawned) {
             this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE_LEVEL).setValue(level));
