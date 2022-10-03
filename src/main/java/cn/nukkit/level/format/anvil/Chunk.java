@@ -141,13 +141,13 @@ public class Chunk extends BaseChunk {
                     if (version == -1) {
                         var biomeId = compoundTag.getByteArray("Biomes");
                         if (biomeId != null) {
-                            sections[y] = new EmptyChunkSection(y, biomeId);
+                            sections[y] = new ChunkSection(compoundTag, biomeId);
                         } else {
                             sections[y] = new EmptyChunkSection(y);
                         }
                     } else {
-                        final ChunkSection chunkSection = new ChunkSection((CompoundTag) section, this.biomes);
-                        if (chunkSection.hasBlocks()) {
+                        final ChunkSection chunkSection = new ChunkSection(compoundTag, this.biomes);
+                        if (!chunkSection.isEmpty()) {
                             sections[y] = chunkSection;
                             if (chunkSection.invalidCustomBlockWhenLoad) {
                                 this.setChanged();

@@ -705,7 +705,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return this.hasBlocks() || !Arrays.equals(this.biomeId, EmptyChunkSection.EMPTY_BIOME_ARRAY);
     }
 
     private byte[] toXZY(char[] raw) {
