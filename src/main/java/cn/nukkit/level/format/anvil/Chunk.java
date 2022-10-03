@@ -318,13 +318,12 @@ public class Chunk extends BaseChunk {
                 }
             }
         }
-        this.biomes[(x << 4) | z] = biomeId;
-        this.setChanged();
+        super.setBiomeId(x, z, biomeId);
     }
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        if (sections[toSectionY(y)] instanceof ChunkSection3DBiome chunkSection3DBiome) {
+        if (getOrCreateMutableSection(toSectionY(y)) instanceof ChunkSection3DBiome chunkSection3DBiome) {
             return chunkSection3DBiome.getBiomeId(x, y & 0xf, z) & 0xFF;
         }
         return super.getBiomeId(x, z);
@@ -332,13 +331,12 @@ public class Chunk extends BaseChunk {
 
     @Override
     public void setBiomeId(int x, int y, int z, byte biomeId) {
-        if (sections[toSectionY(y)] instanceof ChunkSection3DBiome chunkSection3DBiome) {
+        if (getOrCreateMutableSection(toSectionY(y)) instanceof ChunkSection3DBiome chunkSection3DBiome) {
             chunkSection3DBiome.setBiomeId(x, y & 0xf, z, biomeId);
             this.setChanged();
             return;
         }
-        this.biomes[(x << 4) | z] = biomeId;
-        this.setChanged();
+        super.setBiomeId(x, z, biomeId);
     }
 
     @Override

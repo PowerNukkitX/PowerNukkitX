@@ -221,7 +221,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         }
     }
 
-    private ChunkSection getOrCreateMutableSection(int sectionY) {
+    protected ChunkSection getOrCreateMutableSection(int sectionY) {
         ChunkSection section = sections[sectionY];
         if (section.isEmpty()) {
             createChunkSection(sectionY);
