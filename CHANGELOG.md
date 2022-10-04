@@ -15,19 +15,22 @@ This work in progress version supports Minecraft:BE `1.19.30 (Protocol Version 5
 
 ## Added
 
-[#676] Implemented compatibility with 1.19.30 (protocol version 554).
+- [#676] Implemented compatibility with 1.19.30 (protocol version 554).
 
 ## Changed
 
-[#679] Update resource files.
+- [#679] Update resource files.
+- [#681] Scoreboard API Completions.
+- [#690] Sync Nukkit.
 
 ## Fixes
 
-[#682] Fix Entity HeadYaw.
+- [#682] Fix Entity HeadYaw.
+- [#692] Fix Crafting Bug (fixed in [#693]).
 
 ## CRITICAL SECURITY FIX
 
-[#680] Updated [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml) to 1.3.2, fixing `CVE-2022-38752`.
+- [#680] Updated [SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml) to 1.3.2, fixing `CVE-2022-38752`.
 
 ## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Dev
 This work in progress version supports Minecraft:BE `1.19.21 (Protocol Version 545)`.
@@ -1660,7 +1663,11 @@ Need to switch languages?
 [#676]: https://github.com/PowerNukkitX/PowerNukkitX/pull/676
 [#679]: https://github.com/PowerNukkitX/PowerNukkitX/pull/679
 [#680]: https://github.com/PowerNukkitX/PowerNukkitX/pull/680
+[#681]: https://github.com/PowerNukkitX/PowerNukkitX/pull/681
 [#682]: https://github.com/PowerNukkitX/PowerNukkitX/pull/682
+[#690]: https://github.com/PowerNukkitX/PowerNukkitX/pull/690
+[#692]: https://github.com/PowerNukkitX/PowerNukkitX/issues/692
+[#693]: https://github.com/PowerNukkitX/PowerNukkitX/pull/693
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->

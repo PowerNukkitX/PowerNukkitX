@@ -15,19 +15,22 @@
 
 ## 新增內容
 
-[#676] 实现兼容1.19.30（协议版本554）。
+- [#676] 实现兼容1.19.30（协议版本554）。
 
 ## 修改记录
 
-[#679] 更新资源文件。
+- [#679] 更新资源文件。
+- [#681] Scoreboard API补全。
+- [#690] 同步Nukkit的修改更新。
 
 ## BUG修复
 
-[#682] 修复实体头部Y轴旋转。
+- [#682] 修复实体头部Y轴旋转。
+- [#692] 修复合成BUG（在[#693]中修复）
 
 ## 安全漏洞修复
 
-[#680] 将[SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml)更新至1.3.2，修复`CVE-2022-38752`。
+- [#680] 将[SnakeYAML](https://bitbucket.org/snakeyaml/snakeyaml)更新至1.3.2，修复`CVE-2022-38752`。
 
 ## [1.19.21-r4-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.21-r4) - 2022-9-10
 该版本目前支持了Minecraft:BE `1.19.21 (协议版本545)`.
@@ -1662,7 +1665,11 @@ Need to switch languages?
 [#676]: https://github.com/PowerNukkitX/PowerNukkitX/pull/676
 [#679]: https://github.com/PowerNukkitX/PowerNukkitX/pull/679
 [#680]: https://github.com/PowerNukkitX/PowerNukkitX/pull/680
+[#681]: https://github.com/PowerNukkitX/PowerNukkitX/pull/681
 [#682]: https://github.com/PowerNukkitX/PowerNukkitX/pull/682
+[#690]: https://github.com/PowerNukkitX/PowerNukkitX/pull/690
+[#692]: https://github.com/PowerNukkitX/PowerNukkitX/issues/692
+[#693]: https://github.com/PowerNukkitX/PowerNukkitX/pull/693
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
