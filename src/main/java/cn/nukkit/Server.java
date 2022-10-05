@@ -204,6 +204,9 @@ public class Server {
     private boolean networkCompressionAsync = true;
     public int networkCompressionLevel = 7;
     private int networkZlibProvider = 0;
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
     private int maximumStaleDatagrams = 512;
 
     private boolean autoTickRate = true;
@@ -2894,6 +2897,13 @@ public class Server {
     public boolean isWaterdogCapable() {
         return this.getConfig("settings.waterdogpe", false);
     }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
+    public int getMaximumStaleDatagrams() {
+        return this.maximumStaleDatagrams;
+    }
+
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
 
