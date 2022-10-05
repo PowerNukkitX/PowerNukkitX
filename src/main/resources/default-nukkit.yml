@@ -9,6 +9,7 @@ settings:
  waterdogpe: false
 
 network:
+ maximum-stale-datagrams: 512
  batch-threshold: 256
  compression-level: 7
  async-compression: false

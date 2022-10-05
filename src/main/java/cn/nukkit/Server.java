@@ -204,6 +204,7 @@ public class Server {
     private boolean networkCompressionAsync = true;
     public int networkCompressionLevel = 7;
     private int networkZlibProvider = 0;
+    private int maximumStaleDatagrams = 512;
 
     private boolean autoTickRate = true;
     private int autoTickRateLimit = 20;
@@ -661,6 +662,7 @@ public class Server {
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
 
+        this.maximumStaleDatagrams = this.getConfig("network.maximum-stale-datagrams", 512);
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
