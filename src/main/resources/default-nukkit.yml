@@ -37,6 +37,9 @@ level-settings:
  always-tick-players: false
  tick-redstone: true
 
+chunk-saving:
+ maximum-size-per-chunk: 1048576
+
 chunk-sending:
  per-tick: 4
  max-chunks: 192
