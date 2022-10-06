@@ -214,6 +214,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     public void onSessionCreation(RakNetServerSession session) {
         // We need to make sure this gets put into the correct thread local hashmap
         // for ticking or race conditions will occur.
+        session.setMaximumStaleDatagrams(server.getMaximumStaleDatagrams());
         if (session.getEventLoop().inEventLoop()) {
             this.onSessionCreation0(session);
         } else {
