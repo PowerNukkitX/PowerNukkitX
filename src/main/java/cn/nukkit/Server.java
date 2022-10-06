@@ -178,6 +178,15 @@ public class Server {
     private Network network;
     private boolean networkCompressionAsync = true;
     private int networkZlibProvider = 0;
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
+    private int maximumStaleDatagrams = 512;
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
+    private int maximumSizePerChunk = 1048576;
+
     private boolean autoTickRate = true;
     private int autoTickRateLimit = 20;
     private boolean alwaysTickPlayers = false;
@@ -596,6 +605,7 @@ public class Server {
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
 
+        this.maximumStaleDatagrams = this.getConfig("network.maximum-stale-datagrams", 512);
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
@@ -607,6 +617,10 @@ public class Server {
         this.safeSpawn = this.getConfig().getBoolean("settings.safe-spawn", true);
         this.forceSkinTrusted = this.getConfig().getBoolean("player.force-skin-trusted", false);
         this.checkMovement = this.getConfig().getBoolean("player.check-movement", true);
+
+        this.maximumSizePerChunk = this.getConfig("chunk-saving.maximum-size-per-chunk", 1048576);
+        //unlimited if value == -1
+        if (this.maximumSizePerChunk < 0) this.maximumSizePerChunk = Integer.MAX_VALUE;
 
         this.scheduler = new ServerScheduler();
 
@@ -2824,6 +2838,18 @@ public class Server {
     @Since("1.19.21-r4")
     public boolean isWaterdogCapable() {
         return this.getConfig("settings.waterdogpe", false);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
+    public int getMaximumStaleDatagrams() {
+        return this.maximumStaleDatagrams;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r2")
+    public int getMaximumSizePerChunk() {
+        return maximumSizePerChunk;
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {

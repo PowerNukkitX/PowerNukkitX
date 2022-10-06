@@ -67,8 +67,8 @@ public class RegionLoader extends BaseRegionLoader {
             raf.seek((long) table[0] << 12L);
             int length = raf.readInt();
             byte compression = raf.readByte();
-            if (length <= 0 || length >= MAX_SECTOR_LENGTH) {
-                if (length >= MAX_SECTOR_LENGTH) {
+            if (length <= 0 || length >= Server.getInstance().getMaximumSizePerChunk()) {
+                if (length >= Server.getInstance().getMaximumSizePerChunk()) {
                     table[0] = ++this.lastSector;
                     table[1] = 1;
                     this.primitiveLocationTable.put(index, table);
@@ -140,8 +140,8 @@ public class RegionLoader extends BaseRegionLoader {
     @Override
     protected void saveChunk(int x, int z, byte[] chunkData) throws IOException {
         int length = chunkData.length + 1;
-        if (length + 4 > MAX_SECTOR_LENGTH) {
-            throw new ChunkException("Chunk is too big! " + (length + 4) + " > " + MAX_SECTOR_LENGTH);
+        if (length + 4 > Server.getInstance().getMaximumSizePerChunk()) {
+            throw new ChunkException("Chunk is too big! " + (length + 4) + " > " + Server.getInstance().getMaximumSizePerChunk());
         }
         int sectors = (int) Math.ceil((length + 4) / 4096d);
         int index = getChunkOffset(x, z);
