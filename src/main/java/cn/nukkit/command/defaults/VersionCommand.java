@@ -59,7 +59,7 @@ public class VersionCommand extends VanillaCommand {
                             query.sender.sendMessage(TextFormat.YELLOW + "You are using an outdated version of PowerNukkitX!, " + versionMissed + " versions behind!");
                             query.sender.sendMessage(TextFormat.YELLOW + "The latest version is " + cores.get(0).getAsJsonObject().get("name").getAsString());
                         } else {
-                            query.sender.sendMessage(TextFormat.RED + "Failed to check the version of PowerNukkitX!");
+                            query.sender.sendMessage(TextFormat.RED + "Note that you may be using a custom build!");
                         }
                         queryQueue.remove(query);
                     }

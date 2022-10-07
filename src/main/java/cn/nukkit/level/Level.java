@@ -4280,6 +4280,25 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.30-r3")
+    public AsyncTask generateChunkTask(int x, int z, boolean force) {
+        if (this.chunkGenerationQueue.size() >= this.chunkGenerationQueueSize && !force) {
+            return null;
+        }
+
+        long index = Level.chunkHash(x, z);
+        if (!this.chunkGenerationQueue.containsKey(index)) {
+            Timings.generationTimer.startTiming();
+            this.chunkGenerationQueue.put(index, Boolean.TRUE);
+            GenerationTask task = new GenerationTask(this, this.getChunk(x, z, true));
+            this.server.getScheduler().scheduleAsyncTask(task);
+            Timings.generationTimer.stopTiming();
+            return task;
+        }
+        return null;
+    }
+
     public void regenerateChunk(int x, int z) {
         this.unloadChunk(x, z, false);
 
@@ -5055,7 +5074,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
-    public VibrationManager getVibrationManager(){
+    public VibrationManager getVibrationManager() {
         return this.vibrationManager;
     }
 
