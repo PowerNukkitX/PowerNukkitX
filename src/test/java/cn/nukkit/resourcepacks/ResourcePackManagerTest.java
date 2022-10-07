@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ResourcePackManagerTest {
@@ -32,11 +32,11 @@ class ResourcePackManagerTest {
 
     @Test
     void maxChunkSize() {
-        assertEquals(1024*100, resourcePackManager.getMaxChunkSize());
+        assertEquals(1024 * 128, resourcePackManager.getMaxChunkSize());
         resourcePackManager.setMaxChunkSize(1024);
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
         ResourcePackManager other = new ResourcePackManager(temp.toFile());
-        assertEquals(1024*100, other.getMaxChunkSize());
+        assertEquals(1024 * 128, other.getMaxChunkSize());
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
     }
 }
