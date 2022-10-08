@@ -1908,6 +1908,18 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
+    /**
+     * 增加运动 (仅发送数据包，如果需要请使用{@link #setMotion})
+     * <p>
+     * Add motion (just sending packet will not make the entity actually move, use {@link #setMotion} if needed)
+     *
+     * @param x       x
+     * @param y       y
+     * @param z       z
+     * @param yaw     左右旋转
+     * @param pitch   上下旋转
+     * @param headYaw headYaw
+     */
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.level.addEntityMovement(this, x, y, z, yaw, pitch, headYaw);
     }
@@ -2905,6 +2917,14 @@ public abstract class Entity extends Location implements Metadatable {
         return new Vector3(this.motionX, this.motionY, this.motionZ);
     }
 
+    /**
+     * 设置一个运动向量(会使得实体移动这个向量的距离，非精准移动)
+     * <p>
+     * Set a motion vector (will make the entity move the distance of this vector, not move precisely)
+     *
+     * @param motion 运动向量<br>a motion vector
+     * @return boolean
+     */
     public boolean setMotion(Vector3 motion) {
         if (!this.justCreated) {
             EntityMotionEvent ev = new EntityMotionEvent(this, motion);

@@ -2363,31 +2363,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.newPosition = null;
     }
 
-    /**
-     * 增加运动 (仅发送{@link MovePlayerPacket}数据包无法使玩家真正移动，如果需要请使用{@link #setMotion})
-     * <p>
-     * Add motion (just sending {@link MovePlayerPacket} will not make the player actually move, use {@link #setMotion} if needed)
-     *
-     * @param x       x
-     * @param y       y
-     * @param z       z
-     * @param yaw     左右旋转
-     * @param pitch   上下旋转
-     * @param headYaw headYaw
-     */
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         this.sendPosition(new Vector3(x, y, z), yaw, pitch, MovePlayerPacket.MODE_NORMAL, this.getViewers().values().toArray(EMPTY_ARRAY));
     }
 
-    /**
-     * 设置一个运动向量(会使得玩家移动这个向量的距离，非精准移动)
-     * <p>
-     * Set a motion vector (will make the player move the distance of this vector, not move precisely)
-     *
-     * @param motion 运动向量<br>a motion vector
-     * @return boolean
-     */
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
@@ -3168,7 +3148,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                                 dataInfoPacket.packId = resourcePack.getPackId();
                                 dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
-                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 102400 is default
+                                dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 131,072 is default
                                 dataInfoPacket.chunkCount = (int) Math.ceil(resourcePack.getPackSize() / (double) dataInfoPacket.maxChunkSize);
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
@@ -6280,6 +6260,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 以指定{@link Attribute}发送UpdateAttributesPacket数据包到该玩家。
+     * <p>
+     * Send UpdateAttributesPacket packets to this player with the specified {@link Attribute}.
+     *
+     * @param attribute the attribute
+     */
     public void setAttribute(Attribute attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entries = new Attribute[]{attribute};
@@ -6287,11 +6274,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * send=true
+     *
+     * @see #setMovementSpeed(float, boolean)
+     */
     @Override
     public void setMovementSpeed(float speed) {
         setMovementSpeed(speed, true);
     }
 
+    /**
+     * 设置该玩家的移动速度
+     * <p>
+     * Set the movement speed of this player.
+     *
+     * @param speed 速度大小，注意默认移动速度为{@link #DEFAULT_SPEED}<br>Speed value, note that the default movement speed is {@link #DEFAULT_SPEED}
+     * @param send  是否发送数据包{@link UpdateAttributesPacket}到客户端<br>Whether to send {@link UpdateAttributesPacket} to the client
+     */
     public void setMovementSpeed(float speed, boolean send) {
         super.setMovementSpeed(speed);
         if (this.spawned && send) {
@@ -6299,12 +6299,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
+    /**
+     * 发送{@link Attribute#MOVEMENT_SPEED}属性到客户端
+     * <p>
+     * Send {@link Attribute#MOVEMENT_SPEED} Attribute to Client.
+     *
+     * @param speed 属性值<br>the speed value
+     */
     @Since("1.4.0.0-PN")
     public void sendMovementSpeed(float speed) {
         Attribute attribute = Attribute.getAttribute(Attribute.MOVEMENT_SPEED).setValue(speed);
         this.setAttribute(attribute);
     }
 
+    /**
+     * 获取击杀该玩家的实体
+     * <p>
+     * Get the entity that killed this player
+     *
+     * @return Entity | null
+     */
     public Entity getKiller() {
         return killer;
     }
@@ -6353,10 +6368,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 在玩家面前的地面上掉落一个物品。如果物品投放成功，则返回。
+     * <p>
      * Drops an item on the ground in front of the player. Returns if the item drop was successful.
      *
-     * @param item to drop
-     * @return bool if the item was dropped or if the item was null
+     * @param item 掉落的物品<br>to drop
+     * @return 一个bool值，丢弃物品成功或该物品为空<br>bool if the item was dropped or if the item was null
      */
     public boolean dropItem(Item item) {
         if (!this.spawned || !this.isAlive()) {
@@ -6377,10 +6394,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 在玩家面前的地面上扔下一个物品。返回值为该掉落的物品。
+     * <p>
      * Drops an item on the ground in front of the player. Returns the dropped item.
      *
-     * @param item to drop
-     * @return EntityItem if the item was dropped or null if the item was null
+     * @param item 掉落的物品<br>to drop
+     * @return 如果物品被丢弃成功，则返回EntityItem；如果物品为空，则为null<br>EntityItem if the item was dropped or null if the item was null
      */
     @Since("1.4.0.0-PN")
     @Nullable
@@ -6401,22 +6420,43 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.level.dropAndGetItem(this.add(0, 1.3, 0), item, motion, 40);
     }
 
+    /**
+     * @see #sendPosition(Vector3, double, double, int, Player[])
+     */
     public void sendPosition(Vector3 pos) {
         this.sendPosition(pos, this.yaw);
     }
 
+    /**
+     * @see #sendPosition(Vector3, double, double, int, Player[])
+     */
     public void sendPosition(Vector3 pos, double yaw) {
         this.sendPosition(pos, yaw, this.pitch);
     }
 
+    /**
+     * @see #sendPosition(Vector3, double, double, int, Player[])
+     */
     public void sendPosition(Vector3 pos, double yaw, double pitch) {
         this.sendPosition(pos, yaw, pitch, MovePlayerPacket.MODE_NORMAL);
     }
 
+    /**
+     * @see #sendPosition(Vector3, double, double, int, Player[])
+     */
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode) {
         this.sendPosition(pos, yaw, pitch, mode, null);
     }
 
+    /**
+     * {@link Player#addMovement}的实现,仅发送{@link MovePlayerPacket}数据包到客户端
+     *
+     * @param pos     the pos of MovePlayerPacket
+     * @param yaw     the yaw of MovePlayerPacket
+     * @param pitch   the pitch of MovePlayerPacket
+     * @param mode    the mode of MovePlayerPacket
+     * @param targets 接受数据包的玩家们<br>players of receive the packet
+     */
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
@@ -6570,10 +6610,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+
     public void teleportImmediate(Location location) {
         this.teleportImmediate(location, TeleportCause.PLUGIN);
     }
 
+    /**
+     * 立即令该玩家传送到指定的位置
+     * <p>
+     * Immediately cause the player to teleport to the specified location.
+     *
+     * @param location 传送位置<br>the location of teleport
+     * @param cause    传送原因<br>the cause of teleport
+     */
     public void teleportImmediate(Location location, TeleportCause cause) {
         Location from = this.getLocation();
         if (super.teleport(location, cause)) {
@@ -6613,17 +6662,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * Shows a new FormWindow to the player
-     * You can find out FormWindow result by listening to PlayerFormRespondedEvent
+     * Automatic id assignment
      *
-     * @param window to show
-     * @return form id to use in {@link PlayerFormRespondedEvent}
+     * @see #showFormWindow(FormWindow, int)
      */
     public int showFormWindow(FormWindow window) {
         return showFormWindow(window, this.formWindowCount++);
     }
 
     /**
+     * 向玩家显示一个新的FormWindow。
+     * 你可以通过监听PlayerFormRespondedEvent来了解FormWindow的结果。
+     * <p>
      * Shows a new FormWindow to the player
      * You can find out FormWindow result by listening to PlayerFormRespondedEvent
      *
@@ -6645,10 +6695,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return id;
     }
 
+
+    /**
+     * book=true
+     *
+     * @see #showDialogWindow(FormWindowDialog, boolean)
+     */
     public void showDialogWindow(FormWindowDialog dialog) {
         showDialogWindow(dialog, true);
     }
 
+    /**
+     * 向玩家展示一个NPC对话框.
+     * <p>
+     * Show dialog window to the player.
+     *
+     * @param dialog NPC对话框<br>the dialog
+     * @param book   如果为true,将会立即更新该{@link FormWindowDialog#sceneName}<br>If true, the {@link FormWindowDialog#sceneName} will be updated immediately.
+     */
     public void showDialogWindow(FormWindowDialog dialog, boolean book) {
         String actionJson = dialog.getButtonJSONData();
 
@@ -6670,7 +6734,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * Shows a new setting page in game settings
+     * 在游戏设置中显示一个新的设置页面。
+     * 你可以通过监听PlayerFormRespondedEvent来了解设置结果。
+     * <p>
+     * Shows a new setting page in game settings.
      * You can find out settings result by listening to PlayerFormRespondedEvent
      *
      * @param window to show on settings page
@@ -6684,11 +6751,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 创建并发送一个BossBar给玩家。
+     * <p>
      * Creates and sends a BossBar to the player
      *
-     * @param text   The BossBar message
-     * @param length The BossBar percentage
-     * @return bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
+     * @param text   BossBar信息<br>The BossBar message
+     * @param length BossBar百分比<br>The BossBar percentage
+     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该存储它。<br>bossBarId The BossBar ID, you should store it if you want to remove or update the BossBar later
      */
     @Deprecated
     public long createBossBar(String text, int length) {
@@ -6697,10 +6766,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 创建并发送一个BossBar给玩家。
+     * <p>
      * Creates and sends a BossBar to the player
      *
-     * @param dummyBossBar DummyBossBar Object (Instantiate it by the Class Builder)
-     * @return bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
+     * @param dummyBossBar DummyBossBar对象（通过{@link DummyBossBar.Builder}实例化）。<br>DummyBossBar Object (Instantiate it by the Class Builder)
+     * @return bossBarId BossBar的ID，如果你想以后删除或更新BossBar，你应该储存它。<br>bossBarId  The BossBar ID, you should store it if you want to remove or update the BossBar later
      * @see DummyBossBar.Builder
      */
     public long createBossBar(DummyBossBar dummyBossBar) {
@@ -6710,10 +6781,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 获取一个DummyBossBar对象
+     * <p>
      * Get a DummyBossBar object
      *
-     * @param bossBarId The BossBar ID
-     * @return DummyBossBar object
+     * @param bossBarId 要查找的BossBar ID<br>The BossBar ID
+     * @return DummyBossBar对象<br>DummyBossBar object
      * @see DummyBossBar#setText(String) Set BossBar text
      * @see DummyBossBar#setLength(float) Set BossBar length
      * @see DummyBossBar#setColor(BossBarColor) Set BossBar color
@@ -6723,6 +6796,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 获取所有DummyBossBar对象
+     * <p>
      * Get all DummyBossBar objects
      *
      * @return DummyBossBars Map
@@ -6732,6 +6807,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 更新一个BossBar
+     * <p>
      * Updates a BossBar
      *
      * @param text      The new BossBar message
@@ -6748,6 +6825,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 移除一个BossBar
+     * <p>
      * Removes a BossBar
      *
      * @param bossBarId The BossBar ID
@@ -6759,6 +6838,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 获取id从指定{@link Inventory}
+     * <p>
+     * Get id from the specified {@link Inventory}
+     *
+     * @param inventory the inventory
+     * @return the window id
+     */
     public int getWindowId(Inventory inventory) {
         if (this.windows.containsKey(inventory)) {
             return this.windows.get(inventory);
@@ -6767,22 +6854,53 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return -1;
     }
 
+    /**
+     * 获取{@link Inventory}从指定id
+     * <p>
+     * Get {@link Inventory} from the specified id
+     *
+     * @param id 窗口id<br>the window id
+     */
     public Inventory getWindowById(int id) {
         return this.windowIndex.get(id);
     }
 
+    /**
+     * {@code forceId=null isPermanent=false alwaysOpen = false}
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
     public int addWindow(Inventory inventory) {
         return this.addWindow(inventory, null);
     }
 
+    /**
+     * {@code isPermanent=false alwaysOpen = false}
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
     public int addWindow(Inventory inventory, Integer forceId) {
         return addWindow(inventory, forceId, false);
     }
 
+    /**
+     * alwaysOpen = false
+     *
+     * @see #addWindow(Inventory, Integer, boolean, boolean)
+     */
     public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent) {
         return addWindow(inventory, forceId, isPermanent, false);
     }
 
+    /**
+     * 添加一个{@link Inventory}窗口显示到该玩家
+     *
+     * @param inventory   这个库存窗口<br>the inventory
+     * @param forceId     强制指定window id,若和现有window重复将会删除它并替换,为null则自动分配<br>Force the window id to be specified, if it is duplicated with an existing window, it will be deleted and replaced,if is null is automatically assigned.
+     * @param isPermanent 如果为true将会把Inventory存放到{@link #permanentWindows}<br>If true it will store the Inventory in {@link #permanentWindows}
+     * @param alwaysOpen  如果为true即使玩家未{@link #spawned}也会添加改玩家为指定inventory的viewer<br>If true, even if the player is not {@link #spawned}, it will add the player as viewer to the specified inventory.
+     * @return 返回窗口id，可以利用id通过{@link #windowIndex}重新获取该Inventory<br>Return the window id, you can use the id to retrieve the Inventory via {@link #windowIndex}
+     */
     @Since("1.4.0.0-PN")
     public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
         if (this.windows.containsKey(inventory)) {
@@ -6829,6 +6947,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return Optional.empty();
     }
 
+    /**
+     * 移除该玩家身上的指定Inventory
+     * <p>
+     * Remove the specified Inventory from the player
+     *
+     * @param inventory the inventory
+     */
     public void removeWindow(Inventory inventory) {
         this.removeWindow(inventory, false);
     }
@@ -6842,6 +6967,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 常用于刷新。
+     * <p>
+     * Commonly used for refreshing.
+     */
     public void sendAllInventories() {
         getCursorInventory().sendContents(this);
         for (Inventory inv : this.windows.keySet()) {
@@ -6866,23 +6996,48 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //TODO: more windows
     }
 
+    /**
+     * 获取该玩家的{@link PlayerUIInventory}
+     * <p>
+     * Gets ui inventory of the player.
+     */
     public PlayerUIInventory getUIInventory() {
         return playerUIInventory;
     }
 
+    /**
+     * 获取该玩家的{@link PlayerCursorInventory}
+     * <p>
+     * Gets cursor inventory of the player.
+     */
     public PlayerCursorInventory getCursorInventory() {
         return this.playerUIInventory.getCursorInventory();
     }
 
+    /**
+     * 获取该玩家的{@link CraftingGrid}
+     * <p>
+     * Gets crafting grid of the player.
+     */
     public CraftingGrid getCraftingGrid() {
         return this.craftingGrid;
     }
 
+    /**
+     * 设置该玩家的{@link CraftingGrid}
+     * <p>
+     * Sets crafting grid.
+     *
+     * @param grid {@link CraftingGrid}
+     */
     public void setCraftingGrid(CraftingGrid grid) {
         this.craftingGrid = grid;
         this.addWindow(grid, ContainerIds.NONE);
     }
 
+    /**
+     * Reset crafting grid type.
+     */
     public void resetCraftingGridType() {
         if (this.craftingGrid != null) {
             Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(Item.EMPTY_ARRAY));
@@ -6915,10 +7070,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * permanent=false
+     *
+     * @see #removeAllWindows(boolean)
+     */
     public void removeAllWindows() {
         removeAllWindows(false);
     }
 
+    /**
+     * 清空{@link #windows}
+     * <p>
+     * Remove all windows.
+     *
+     * @param permanent 如果为true则会跳过删除{@link #permanentWindows}里面对应的window<br>If true, it will skip deleting the corresponding window in {@link #permanentWindows}
+     */
     public void removeAllWindows(boolean permanent) {
         for (Entry<Integer, Inventory> entry : new ArrayList<>(this.windowIndex.entrySet())) {
             if (!permanent && this.permanentWindows.contains(entry.getKey())) {
@@ -6928,6 +7095,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * 获取上一个关闭窗口对应的id
+     * <p>
+     * Get the id corresponding to the last closed window
+     */
     @Since("1.4.0.0-PN")
     public int getClosingWindowId() {
         return this.closingWindowId;
@@ -7013,14 +7185,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private boolean foodEnabled = true;
 
+    /**
+     * @return 该玩家是否开启饮食系统<br>Whether the player is on the food system
+     */
     public boolean isFoodEnabled() {
         return !(this.isCreative() || this.isSpectator()) && this.foodEnabled;
     }
 
+    /**
+     * 设置该玩家是否开启饮食系统
+     * <p>
+     * Set whether the player is on the food system
+     *
+     * @param foodEnabled 如果为false,则关闭玩家的饮食系统<br>If false, turn off the player's food system
+     */
     public void setFoodEnabled(boolean foodEnabled) {
         this.foodEnabled = foodEnabled;
     }
 
+    /**
+     * 获取玩家的{@link PlayerFood}
+     * <p>
+     * Get the player's {@link PlayerFood}
+     *
+     * @return the food data
+     */
     public PlayerFood getFoodData() {
         return this.foodData;
     }
