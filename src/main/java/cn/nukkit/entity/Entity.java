@@ -1987,7 +1987,9 @@ public abstract class Entity extends Location implements Metadatable {
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        this.updateMovement();
+        if (!this.isImmobile()) {
+            this.updateMovement();
+        }
 
         if (this.getLevelBlock() instanceof BlockBigDripleaf) {
             BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
@@ -2918,7 +2920,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.motionY = motion.y;
         this.motionZ = motion.z;
 
-        if (!this.justCreated) {
+        if (!this.justCreated && !this.isImmobile()) {
             this.updateMovement();
         }
 
