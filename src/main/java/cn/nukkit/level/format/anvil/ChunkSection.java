@@ -1042,6 +1042,19 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         this.biomeId[getAnvilIndex(x, y, z)] = id;
     }
 
+    @Override
+    public byte[] get3DBiomeDataArray() {
+        return this.biomeId;
+    }
+
+    @Override
+    public void set3DBiomeDataArray(byte[] data) {
+        if (data.length != 4096) {
+            throw new ChunkException("Invalid biome data length, expected 4096, got " + data.length);
+        }
+        System.arraycopy(data, 0, this.biomeId, 0, 4096);
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     @Override
