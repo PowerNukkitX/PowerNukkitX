@@ -50,7 +50,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public void asyncPrepare(int currentTick) {
-        if (this.isImmobile()) return;
         // 计算是否需要重新计算高开销实体运动
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
