@@ -23,4 +23,14 @@ public interface ChunkSection3DBiome {
      * @param id 生物群系id
      */
     void setBiomeId(int x, int y, int z, byte id);
+
+    /**
+     * @return 3D生物群系字节数据
+     */
+    byte[] get3DBiomeDataArray();
+
+    /**
+     * 设置3D生物群系字节数据
+     */
+    void set3DBiomeDataArray(byte[] data);
 }
