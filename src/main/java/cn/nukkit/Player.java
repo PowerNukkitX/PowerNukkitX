@@ -5559,6 +5559,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
     @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
+        var expEvent = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
+        this.server.getPluginManager().callEvent(expEvent);
+        if (expEvent.isCancelled()) {
+            return;
+        }
+
         int levelBefore = this.expLevel;
         this.exp = exp;
         this.expLevel = level;
@@ -6306,7 +6312,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean isLoaderActive() {
         return this.isConnected();
     }
-
 
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
         LevelChunkPacket pk = new LevelChunkPacket();
