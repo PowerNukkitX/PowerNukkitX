@@ -34,7 +34,7 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Deprecated
     @DeprecationDetails(since = "1.5.0.0-PN", replaceWith = "getSandstoneBlockType()", reason = "Use the BlockProperty API instead")
-    public static final int SMOOTH = 2;
+    public static final int SMOOTH = 3;
 
     public BlockSandstone() {
         this(0);

@@ -3992,6 +3992,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         actions.add(a);
                     }
 
+
                     if (transactionPacket.isCraftingPart) {
                         if (this.craftingTransaction == null) {
                             this.craftingTransaction = new CraftingTransaction(this, actions);
@@ -5564,6 +5565,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (expEvent.isCancelled()) {
             return;
         }
+        exp = expEvent.getNewExperience();
+        level = expEvent.getNewExperienceLevel();
 
         int levelBefore = this.expLevel;
         this.exp = exp;
