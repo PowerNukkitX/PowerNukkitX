@@ -3992,7 +3992,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         actions.add(a);
                     }
 
-
                     if (transactionPacket.isCraftingPart) {
                         if (this.craftingTransaction == null) {
                             this.craftingTransaction = new CraftingTransaction(this, actions);
