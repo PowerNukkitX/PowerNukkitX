@@ -91,7 +91,7 @@ jobs:
           path: target/hash/
       - name: Get Short SHA
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT && echo "${{ steps.vars.outputs.sha_short }}"
       - uses: ncipollo/release-action@v1
         name: Release new version
         if: success() && contains(github.event.commits[0].message, '+u')
@@ -171,7 +171,7 @@ jobs:
           path: Bootstrap/target/bootstrap.jar
       - name: Get Short SHA
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT && echo "${{ steps.vars.outputs.sha_short }}"
       - name: Upload to OSS
         uses: tvrcgo/upload-to-oss@v0.1.1
         if: github.event_name == 'push' && github.repository == 'PowerNukkitX/PowerNukkitX' && (!contains(github.ref_name, 'patch')) && (!contains(github.ref_name, 'feature'))
