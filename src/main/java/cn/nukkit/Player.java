@@ -6673,7 +6673,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
         fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f, -Math.sin(Math.toRadians(pitch)) * f * f,
                 Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f));
-        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook);
+        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook, this);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             fishingHook.close();
