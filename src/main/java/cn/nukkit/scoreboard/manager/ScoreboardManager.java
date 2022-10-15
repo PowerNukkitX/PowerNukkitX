@@ -16,10 +16,7 @@ import cn.nukkit.scoreboard.storage.IScoreboardStorage;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
@@ -163,7 +160,8 @@ public class ScoreboardManager implements IScoreboardManager{
 
     @Override
     public void read() {
-        this.scoreboards.values().forEach(this::removeScoreboard);
+        //新建一个列表避免迭代冲突
+        new ArrayList<>(this.scoreboards.values()).forEach(this::removeScoreboard);
         this.display.forEach((slot, scoreboard) -> setDisplay(slot, null));
 
         scoreboards = storage.readScoreboard();

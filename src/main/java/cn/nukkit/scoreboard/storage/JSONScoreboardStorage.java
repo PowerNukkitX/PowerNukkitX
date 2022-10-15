@@ -54,8 +54,9 @@ public class JSONScoreboardStorage implements IScoreboardStorage {
 
     @Override
     public void saveDisplay(Map<DisplaySlot, IScoreboard> display) {
-        for (Map.Entry<DisplaySlot, IScoreboard> entry : display.entrySet())
-            json.set("display." + entry.getKey().name(), entry.getValue().getObjectiveName());
+        for (Map.Entry<DisplaySlot, IScoreboard> entry : display.entrySet()) {
+            json.set("display." + entry.getKey().name(), entry.getValue() != null ? entry.getValue().getObjectiveName() : null);
+        }
         json.save();
     }
 
