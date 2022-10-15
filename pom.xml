@@ -761,12 +761,12 @@
                     <includeOnlyProperties>
                     </includeOnlyProperties>
                     <useNativeGit>false</useNativeGit>
-                    <abbrevLength>7</abbrevLength>
+                    <abbrevLength>9</abbrevLength>
                     <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
                         <skip>false</skip>
                         <always>false</always>
-                        <abbrev>7</abbrev>
+                        <abbrev>9</abbrev>
                         <dirty>-dirty</dirty>
                         <match>*</match>
                         <tags>false</tags>
