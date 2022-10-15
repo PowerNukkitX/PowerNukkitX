@@ -74,18 +74,19 @@ public class GrindstoneTransaction extends InventoryTransaction {
             return false;
         }
         GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;
-        if (outputItem == null || outputItem.isNull() || 
+        if (outputItem == null || outputItem.isNull() ||
                 ((firstItem == null || firstItem.isNull()) && (secondItem == null || secondItem.isNull()))) {
             return false;
         }
-        
+
         Item air = Item.get(0);
-        Item first = firstItem != null? firstItem : air;
-        Item second = secondItem != null? secondItem : air;
-        
+        Item first = firstItem != null ? firstItem : air;
+        Item second = secondItem != null ? secondItem : air;
+
+        // GrindstoneTransaction从数据包接受到的物品竟然和RepairItemTransaction接受到的物品在NBT "RepairCost"上存在区别,实际上也没必要检测这个,这里放宽检查
         return first.equals(grindstoneInventory.getFirstItem(), true, true)
                 && second.equals(grindstoneInventory.getSecondItem(), true, true)
-                && outputItem.equals(grindstoneInventory.getResult(), true, true);
+                && outputItem.equals(grindstoneInventory.getResult(), true, false);
     }
 
     @Override
