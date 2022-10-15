@@ -152,6 +152,10 @@ public class ModifyRecipes {
         modify.put("minecraft:polished_andesite", 6);
         modify.put("minecraft:polished_granite", 2);
         modify.put("minecraft:polished_diorite", 4);
+        //fix recipes for sandstone to cut sandstone
+        modify.put("minecraft:smooth_red_sandstone", 2);
+        //todo 未知原因不生效 断点检测注册配方数据值正常 但接受合成数据包时数据值又变为0
+        modify.put("minecraft:smooth_sandstone", 2);
         Config config = new Config(Config.JSON);
         try (InputStream recipesStream = new FileInputStream("src/main/resources/recipes.json")) {
             if (recipesStream == null) {
@@ -264,6 +268,13 @@ public class ModifyRecipes {
                         if (input2.get("id").equals("minecraft:stonebrick")) {
                             if (output != null && output.get("id").equals("minecraft:stonebrick")) {
                                 output.put("damage", 2);
+                                map.put("output", output);
+                            }
+                        }
+                        //沙石 红沙石 -> 平滑沙石
+                        if (input2.get("id").equals("minecraft:red_sandstone") || input2.get("id").equals("minecraft:sandstone")) {
+                            if (output != null && output.get("id").equals("minecraft:red_sandstone") || output.get("id").equals("minecraft:sandstone")) {
+                                output.put("damage", 3);
                                 map.put("output", output);
                             }
                         }

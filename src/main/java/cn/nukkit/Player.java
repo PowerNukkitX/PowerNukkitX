@@ -5564,6 +5564,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (expEvent.isCancelled()) {
             return;
         }
+        exp = expEvent.getNewExperience();
+        level = expEvent.getNewExperienceLevel();
 
         int levelBefore = this.expLevel;
         this.exp = exp;
