@@ -140,7 +140,7 @@ public class ItemBow extends ItemTool {
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile());
+                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();
