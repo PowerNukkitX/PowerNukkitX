@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -133,13 +134,13 @@ public class BlockFire extends BlockFlowable {
                 level.scheduleUpdate(this, tickRate());
             }
 
+            //在第一次放置时就检查下雨
+            checkRain();
+
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
             Block down = down();
             int downId = down.getId();
-
-            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
-                    || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
 
@@ -153,19 +154,10 @@ public class BlockFire extends BlockFlowable {
                 }
             }
 
-            if (!forever && this.getLevel().isRaining() &&
-                    (this.getLevel().canBlockSeeSky(this) ||
-                            this.getLevel().canBlockSeeSky(this.east()) ||
-                            this.getLevel().canBlockSeeSky(this.west()) ||
-                            this.getLevel().canBlockSeeSky(this.south()) ||
-                            this.getLevel().canBlockSeeSky(this.north()))
-            ) {
-                BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
-                level.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled()) {
-                    level.setBlock(this, event.getNewState(), true);
-                }
-            } else {
+            boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
+                    || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
+
+            if (!checkRain()) {
                 int meta = this.getDamage();
 
                 if (meta < 15) {
@@ -347,5 +339,34 @@ public class BlockFire extends BlockFlowable {
     @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
+    }
+
+    /**
+     * 检查火焰是否应被雨水浇灭
+     * @return 是否应被雨水浇灭
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    protected boolean checkRain() {
+        var down = down();
+        int downId = down.getId();
+        boolean forever = downId == BlockID.NETHERRACK || downId == BlockID.MAGMA
+                || downId == BlockID.BEDROCK && ((BlockBedrock) down).getBurnIndefinitely();
+
+        if (!forever && this.getLevel().isRaining() &&
+                (this.getLevel().canBlockSeeSky(this) ||
+                        this.getLevel().canBlockSeeSky(this.east()) ||
+                        this.getLevel().canBlockSeeSky(this.west()) ||
+                        this.getLevel().canBlockSeeSky(this.south()) ||
+                        this.getLevel().canBlockSeeSky(this.north()))
+        ) {
+            BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
+            level.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                level.setBlock(this, event.getNewState(), true);
+            }
+            return true;
+        }
+        return false;
     }
 }
