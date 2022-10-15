@@ -19,8 +19,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -54,9 +59,9 @@ public class VersionCommand extends VanillaCommand {
 
                             var infoBuilder = new StringBuilder();
                             infoBuilder.append("[").append(i + 1).append("] ");
-                            if (i == 0) infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(entry.get("lastModified")).append(" §e(LATEST)");
-                            else if (matched) infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(entry.get("lastModified")).append(" §b(CURRENT)");
-                            else infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(entry.get("lastModified").getAsString());
+                            if (i == 0) infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)");
+                            else if (matched) infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
+                            else infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
                             //打印相关信息
                             query.sender.sendMessage(infoBuilder.toString());
 
@@ -122,7 +127,7 @@ public class VersionCommand extends VanillaCommand {
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
             if (sender.isOp()) {
-                sender.sendMessage(TextFormat.ITALIC + "Checking version, please wait...");
+                sender.sendMessage(TextFormat.ITALIC + "Retrieving version information from remote server...");
                 queryQueue.add(new Query(sender, listVersion()));
             }
         } else {
@@ -196,6 +201,18 @@ public class VersionCommand extends VanillaCommand {
         });
     }
 
-    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) {
+    protected String utcToLocal(String utcTime){
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date utcDate = null;
+        try {
+            utcDate = sdf.parse(utcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return df.format(utcDate);
     }
+
+    private record Query(CommandSender sender, CompletableFuture<JsonArray> jsonArrayFuture) { }
 }
