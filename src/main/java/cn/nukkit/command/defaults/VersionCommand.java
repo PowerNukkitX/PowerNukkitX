@@ -59,7 +59,7 @@ public class VersionCommand extends VanillaCommand {
 
                             var infoBuilder = new StringBuilder();
                             infoBuilder.append("[").append(i + 1).append("] ");
-                            if (i == 0) infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)");
+                            if (i == 0) infoBuilder.append("Name: §e").append(entry.get("name").getAsString()).append("§f, Time: §e").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §e(LATEST)").append(matched ? " (CURRENT)" : "");
                             else if (matched) infoBuilder.append("Name: §b").append(entry.get("name").getAsString()).append("§f, Time: §b").append(utcToLocal(entry.get("lastModified").getAsString())).append(" §b(CURRENT)");
                             else infoBuilder.append("Name: §a").append(entry.get("name").getAsString()).append("§f, Time: §a").append(utcToLocal(entry.get("lastModified").getAsString()));
                             //打印相关信息
