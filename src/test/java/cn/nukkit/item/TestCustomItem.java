@@ -1,9 +1,7 @@
+
 package cn.nukkit.item;
 
-import cn.nukkit.item.customitem.ItemCustom;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-
+/*
 public class TestCustomItem extends ItemCustom {
     public static Context context;
     public static Value delegate;
@@ -66,3 +64,4 @@ public class TestCustomItem extends ItemCustom {
         this.meta = meta;
     }
 }
+*/

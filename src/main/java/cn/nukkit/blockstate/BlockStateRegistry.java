@@ -39,7 +39,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @PowerNukkitOnly
 @Since("1.4.0.0-PN")
@@ -118,7 +117,7 @@ public class BlockStateRegistry {
                 while (bis.available() > 0) {
                     CompoundTag tag = NBTIO.read(bis, ByteOrder.BIG_ENDIAN, true);
                     tag.putInt("runtimeId", runtimeId++);
-                    tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(), -1));
+                    tag.putInt("blockId", persistenceNameToBlockId.getOrDefault(tag.getString("name").toLowerCase(Locale.ENGLISH), -1));
                     tags.add(tag);
                     loadingKnownStateIds.add(getStateId(tag));
                 }
@@ -482,7 +481,7 @@ public class BlockStateRegistry {
         var version = -1;
         //处理自定义方块
         for (var blockCustom : blockCustoms) {
-            var namespace = blockCustom.getNamespace();
+            var namespace = blockCustom.getNamespaceId();
             blockIdToPersistenceName.put(blockCustom.getId(), namespace);
             persistenceNameToBlockId.put(namespace, blockCustom.getId());
             if (!knownStateIds.contains(namespace)) knownStateIds.add(namespace);
@@ -560,10 +559,10 @@ public class BlockStateRegistry {
                 } else {
                     nbtList.add(nbt.clone());
                 }
-                namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+                namespace2Nbt.put(blockCustom.getNamespaceId(), nbtList);
             } else {
                 nbtList.add(nbt.clone());
-                namespace2Nbt.put(blockCustom.getNamespace(), nbtList);
+                namespace2Nbt.put(blockCustom.getNamespaceId(), nbtList);
             }
         }
         List<CompoundTag> tags = new ArrayList<>();

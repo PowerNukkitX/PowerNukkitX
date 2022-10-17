@@ -6,7 +6,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockUnknown;
 import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
@@ -38,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 
@@ -878,7 +876,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                     var customBlocksIdMap = new CompoundTag();
                     for (IntIterator iterator = usedCustomIds.intIterator(); iterator.hasNext(); ) {
                         int each = iterator.nextInt();
-                        var namespaceId = Block.ID_TO_CUSTOM_BLOCK.get(each).getNamespace();
+                        var namespaceId = Block.ID_TO_CUSTOM_BLOCK.get(each).getNamespaceId();
                         if (namespaceId == null) {
                             log.warn(Server.getInstance().getLanguage().translateString("nukkit.anvil.save.unknown-custom-block", each));
                         } else {

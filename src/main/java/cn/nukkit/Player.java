@@ -2513,7 +2513,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
+        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         this.dataPacketImmediately(startGamePacket);
 
         //写入自定义物品数据
@@ -2527,7 +2527,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 try {
                     Item item = Item.fromString(id);
                     if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = itemCustom.getComponentsData();
+                        CompoundTag data = Item.getCustomItemDefinition().get(itemCustom.getNamespaceId()).nbt();
                         data.putShort("minecraft:identifier", i);
 
                         entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));

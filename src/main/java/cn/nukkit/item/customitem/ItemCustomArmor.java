@@ -8,7 +8,6 @@ import cn.nukkit.item.ItemDurable;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 
 import javax.annotation.Nonnull;
@@ -35,51 +34,6 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
 
     public ItemCustomArmor(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
         super(id, name, textureName);
-    }
-
-    @Override
-    public int getCreativeCategory() {
-        return super.getCreativeCategory();
-    }
-
-    @Override
-    public CompoundTag getComponentsData() {
-        CompoundTag data = super.getComponentsData();
-
-        data.getCompound("components")
-                .putCompound("minecraft:armor", new CompoundTag()
-                        .putInt("protection", this.getArmorPoints()))
-                .putCompound("minecraft:durability", new CompoundTag()
-                        .putInt("max_durability", this.getMaxDurability()))
-                .getCompound("item_properties")
-                        .putInt("enchantable_value", this.getEnchantableValue());
-
-        if (this.isHelmet()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "armor_head");
-            data.getCompound("components")
-                    .putCompound("minecraft:wearable", new CompoundTag()
-                            .putString("slot", "slot.armor.head"));
-        } else if (this.isChestplate()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "armor_torso");
-            data.getCompound("components")
-                    .putCompound("minecraft:wearable", new CompoundTag()
-                            .putString("slot", "slot.armor.chest"));
-        } else if (this.isLeggings()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "armor_legs");
-            data.getCompound("components")
-                    .putCompound("minecraft:wearable", new CompoundTag()
-                            .putString("slot", "slot.armor.legs"));
-        } else if (this.isBoots()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "armor_feet");
-            data.getCompound("components")
-                    .putCompound("minecraft:wearable", new CompoundTag()
-                            .putString("slot", "slot.armor.feet"));
-        }
-        return data;
     }
 
     @Override
@@ -181,5 +135,4 @@ public abstract class ItemCustomArmor extends ItemCustom implements ItemDurable 
         Tag tag = this.getNamedTagEntry("Unbreakable");
         return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
     }
-
 }

@@ -2,7 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.customblock.BlockPropertyData;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.nbt.NBTIO;
@@ -97,7 +97,7 @@ public class StartGamePacket extends DataPacket {
 
     public int enchantmentSeed;
 
-    public final List<BlockPropertyData> blockProperties = new ArrayList<>();
+    public final List<CustomBlockDefinition> blockProperties = new ArrayList<>();
 
     public String multiplayerCorrelationId = "";
 
@@ -212,9 +212,9 @@ public class StartGamePacket extends DataPacket {
         // Custom blocks
         this.putUnsignedVarInt(this.blockProperties.size());
         try {
-            for (BlockPropertyData blockPropertyData : this.blockProperties) {
-                this.putString(blockPropertyData.namespace());
-                this.put(NBTIO.write(blockPropertyData.blockProperty(), ByteOrder.LITTLE_ENDIAN, true));
+            for (CustomBlockDefinition customBlockDefinition : this.blockProperties) {
+                this.putString(customBlockDefinition.identifier());
+                this.put(NBTIO.write(customBlockDefinition.nbt(), ByteOrder.LITTLE_ENDIAN, true));
             }
         } catch (IOException e) {
             log.error("Error while encoding NBT data of BlockPropertyData", e);
