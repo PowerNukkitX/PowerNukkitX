@@ -3463,6 +3463,24 @@ public class Level implements ChunkManager, Metadatable {
         return chunk != null ? chunk.getEntities() : Collections.emptyMap();
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public Map<Long, Entity> tryChunkEntities(@Nullable FullChunk tryChunk, int X, int Z) {
+        return tryChunkEntities(tryChunk, X, Z, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public Map<Long, Entity> tryChunkEntities(@Nullable FullChunk tryChunk, int X, int Z, boolean loadChunks) {
+        FullChunk chunk;
+        if (tryChunk != null && tryChunk.getX() == X && tryChunk.getZ() == Z) {
+            chunk = tryChunk;
+        } else {
+            chunk = loadChunks ? this.getChunk(X, Z) : this.getChunkIfLoaded(X, Z);
+        }
+        return chunk != null ? chunk.getEntities() : Collections.emptyMap();
+    }
+
     public Map<Long, BlockEntity> getChunkBlockEntities(int X, int Z) {
         FullChunk chunk;
         return (chunk = this.getChunk(X, Z)) != null ? chunk.getBlockEntities() : Collections.emptyMap();
