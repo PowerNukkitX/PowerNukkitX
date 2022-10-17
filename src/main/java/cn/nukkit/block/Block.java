@@ -1224,26 +1224,25 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
         }
-        SortedMap<String, Class<? extends CustomBlock>> sortedCustomBlockClasses = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
+        SortedMap<String, CustomBlock> sortedCustomBlock = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
 
         for (var each : blockClassList) {
             CustomBlock block = each.getDeclaredConstructor().newInstance();
-
             if (!CUSTOM_BLOCK_ID_MAP.containsKey(block.getNamespaceId())) {
-                sortedCustomBlockClasses.put(block.getNamespaceId(), each);
+                sortedCustomBlock.put(block.getNamespaceId(), block);
             }
-            if (!sortedCustomBlockClasses.isEmpty()) {
-                for (var entry : sortedCustomBlockClasses.entrySet()) {
-                    CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
-                    ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
-                    CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
-                    ++nextBlockId;
-                }
-                var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
-                BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
-                RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
-                blocks.forEach((b) -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
+        }
+        if (!sortedCustomBlock.isEmpty()) {
+            for (var entry : sortedCustomBlock.entrySet()) {
+                CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
+                ID_TO_CUSTOM_BLOCK.put(nextBlockId, entry.getValue());//自定义方块id->自定义方块
+                CUSTOM_BLOCK_DEFINITIONS.add(entry.getValue().getDefinition());//行为包数据
+                ++nextBlockId;
             }
+            var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
+            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
+            blocks.forEach(b -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
         }
     }
 

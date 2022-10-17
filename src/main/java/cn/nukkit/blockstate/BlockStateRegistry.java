@@ -681,7 +681,7 @@ public class BlockStateRegistry {
     @Nonnull
     public BlockProperties getProperties(int blockId) {
         int fullId = blockId << Block.DATA_BITS;
-        if (Block.ID_TO_CUSTOM_BLOCK.get(blockId) instanceof Block block1) {
+        if (blockId > Block.MAX_BLOCK_ID && Block.ID_TO_CUSTOM_BLOCK.get(blockId) instanceof Block block1) {
             return block1.getProperties();
         }
         Block block;
