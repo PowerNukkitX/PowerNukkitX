@@ -17,13 +17,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition#Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
+ * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition#SimpleBuilder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
  * <p>
- * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
+ * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
+
+    /**
+     * 简单物品的定义构造器
+     * <p>
+     * Definition builder for custom simple item
+     *
+     * @param item             the item
+     * @param creativeCategory the creative category
+     */
+    public static CustomItemDefinition.SimpleBuilder simpleBuilder(ItemCustom item, ItemCreativeCategory creativeCategory) {
+        return new CustomItemDefinition.SimpleBuilder(item, creativeCategory);
+    }
 
     /**
      * 自定义工具的定义构造器
@@ -77,7 +89,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         return CustomItemDefinition.INTERNAL_ALLOCATION_ID_MAP.get(identifier);
     }
 
-    public static abstract class Builder {
+    public static class SimpleBuilder {
         protected final String identifier;
         protected final CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag()
@@ -86,7 +98,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                                 .putCompound("minecraft:icon", new CompoundTag())));
 
 
-        protected Builder(ItemCustom item, ItemCreativeCategory creativeCategory) {
+        protected SimpleBuilder(ItemCustom item, ItemCreativeCategory creativeCategory) {
             this.identifier = item.getNamespaceId();
             //定义材质
             this.nbt.getCompound("components")
@@ -110,7 +122,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Whether to allow the offHand to have
          */
-        public Builder allowOffHand(boolean allowOffHand) {
+        public SimpleBuilder allowOffHand(boolean allowOffHand) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putBoolean("allow_off_hand", allowOffHand);
@@ -122,14 +134,17 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control how third-person handheld items are displayed
          */
-        public Builder handEquipped(boolean handEquipped) {
+        public SimpleBuilder handEquipped(boolean handEquipped) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putBoolean("hand_equipped", handEquipped);
             return this;
         }
 
-        public Builder foil(boolean foil) {
+        /**
+         * @param foil 自定义物品是否带有附魔光辉效果<br>whether or not the item has an enchanted light effect
+         */
+        public SimpleBuilder foil(boolean foil) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putBoolean("foil", foil);
@@ -143,7 +158,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          *
          * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
-        public Builder creativeGroup(String creativeGroup) {
+        public SimpleBuilder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
                 System.out.println("displayName has an invalid value!");
                 return this;
@@ -159,7 +174,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          * <p>
          * Control rendering offsets of custom items at different viewpoints
          */
-        public Builder renderOffsets(@NonNull RenderOffsets renderOffsets) {
+        public SimpleBuilder renderOffsets(@NonNull RenderOffsets renderOffsets) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
@@ -176,7 +191,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             return def;
         }
 
-        public abstract CustomItemDefinition build();
+        public CustomItemDefinition build() {
+            return calculateID();
+        }
 
         protected CustomItemDefinition calculateID() {
             var result = new CustomItemDefinition(identifier, nbt);
@@ -189,7 +206,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
     }
 
-    public static class ToolBuilder extends Builder {
+    public static class ToolBuilder extends SimpleBuilder {
         private final ItemCustomTool item;
         private Integer speed = null;
         private final Map<String, Integer> blockTags = new HashMap<>();
@@ -219,27 +236,46 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 System.out.println("speed has an invalid value!");
                 return this;
             }
-            this.speed = speed;
+            if (item.isPickaxe() || item.isShovel() || item.isHoe() || item.isAxe() || item.isShears()) {
+                this.speed = speed;
+            }
             return this;
         }
 
+        /**
+         * 给采集类工具添加额外的方块tag,即可挖掘的方块
+         *
+         * @param block the block
+         * @param speed 挖掘速度
+         * @return the tool builder
+         */
         public ToolBuilder addExtraBlockTag(@NonNull Block block, int speed) {
             if (speed < 0) {
                 System.out.println("speed has an invalid value!");
                 return this;
             }
-            blockTags.put(block.getPersistenceName(), speed);
+            if (item.isPickaxe() || item.isShovel() || item.isHoe() || item.isAxe() || item.isShears()) {
+                blockTags.put(block.getPersistenceName(), speed);
+            }
             return this;
         }
 
+        /**
+         * 给采集类工具添加额外的方块tag,即可挖掘的方块
+         *
+         * @param blockTags 挖掘速度
+         * @return the tool builder
+         */
         public ToolBuilder addExtraBlockTags(@NonNull Map<Block, Integer> blockTags) {
-            blockTags.forEach((block, speed) -> {
-                if (speed < 0) {
-                    System.out.println("speed has an invalid value!");
-                    return;
-                }
-                this.blockTags.put(block.getPersistenceName(), speed);
-            });
+            if (item.isPickaxe() || item.isShovel() || item.isHoe() || item.isAxe() || item.isShears()) {
+                blockTags.forEach((block, speed) -> {
+                    if (speed < 0) {
+                        System.out.println("speed has an invalid value!");
+                        return;
+                    }
+                    this.blockTags.put(block.getPersistenceName(), speed);
+                });
+            }
             return this;
         }
 
@@ -342,7 +378,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
     }
 
-    public static class ArmorBuilder extends Builder {
+    public static class ArmorBuilder extends SimpleBuilder {
         private final ItemCustomArmor item;
 
         private ArmorBuilder(ItemCustomArmor item, ItemCreativeCategory creativeCategory) {
@@ -390,7 +426,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
     }
 
-    public static class EdibleBuilder extends Builder {
+    public static class EdibleBuilder extends SimpleBuilder {
         private EdibleBuilder(ItemCustomEdible item, ItemCreativeCategory creativeCategory) {
             super(item, creativeCategory);
             if (this.nbt.getCompound("components").contains("minecraft:food")) {

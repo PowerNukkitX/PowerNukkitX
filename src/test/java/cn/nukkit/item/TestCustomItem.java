@@ -1,7 +1,11 @@
 
 package cn.nukkit.item;
 
-/*
+import cn.nukkit.item.customitem.CustomItemDefinition;
+import cn.nukkit.item.customitem.ItemCustom;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
+
 public class TestCustomItem extends ItemCustom {
     public static Context context;
     public static Value delegate;
@@ -47,13 +51,9 @@ public class TestCustomItem extends ItemCustom {
         }
     }
 
-    public boolean __super__allowOffHand() {
-        return super.allowOffHand();
-    }
-
     @Override
-    public boolean allowOffHand() {
-        return __callJS__("allowOffHand", new Object[]{}).as(Boolean.class);
+    public CustomItemDefinition getDefinition() {
+        return __callJS__("getDefinition", new Object[]{}).as(CustomItemDefinition.class);
     }
 
     public int getMeta() {
@@ -64,4 +64,3 @@ public class TestCustomItem extends ItemCustom {
         this.meta = meta;
     }
 }
-*/

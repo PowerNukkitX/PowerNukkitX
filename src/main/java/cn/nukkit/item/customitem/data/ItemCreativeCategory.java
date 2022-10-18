@@ -8,8 +8,17 @@ package cn.nukkit.item.customitem.data;
  * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-tabs">bedrock wiki</a>
  */
 public enum ItemCreativeCategory {
-    NONE,//Unknown Category
+    CONSTRUCTOR,
     NATURE,
     EQUIPMENT,
-    ITEMS
+    ITEMS;
+
+    public static ItemCreativeCategory fromID(int num) {
+        return switch (num) {
+            case 1 -> CONSTRUCTOR;
+            case 3 -> EQUIPMENT;
+            case 4 -> ITEMS;
+            default -> NATURE;
+        };
+    }
 }
