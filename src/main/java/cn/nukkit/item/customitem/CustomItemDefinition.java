@@ -16,18 +16,47 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+/**
+ * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition#Builder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
+ * <p>
+ * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
+ */
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
 
+    /**
+     * 自定义工具的定义构造器
+     * <p>
+     * Definition builder for custom tools
+     *
+     * @param item             the item
+     * @param creativeCategory the creative category
+     */
     public static CustomItemDefinition.ToolBuilder toolBuilder(ItemCustomTool item, ItemCreativeCategory creativeCategory) {
         return new CustomItemDefinition.ToolBuilder(item, creativeCategory);
     }
 
+    /**
+     * 自定义盔甲的定义构造器
+     * <p>
+     * Definition builder for custom armor
+     *
+     * @param item             the item
+     * @param creativeCategory the creative category
+     */
     public static CustomItemDefinition.ArmorBuilder armorBuilder(ItemCustomArmor item, ItemCreativeCategory creativeCategory) {
         return new CustomItemDefinition.ArmorBuilder(item, creativeCategory);
     }
 
+    /**
+     * 自定义食物(药水)的定义构造器
+     * <p>
+     * Definition builder for custom food or potion
+     *
+     * @param item             the item
+     * @param creativeCategory the creative category
+     */
     public static CustomItemDefinition.EdibleBuilder edibleBuilder(ItemCustomEdible item, ItemCreativeCategory creativeCategory) {
         return new CustomItemDefinition.EdibleBuilder(item, creativeCategory);
     }
@@ -78,9 +107,8 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
 
         /**
          * 是否允许副手持有
-         *
-         * @param allowOffHand the allow off hand
-         * @return the builder
+         * <p>
+         * Whether to allow the offHand to have
          */
         public Builder allowOffHand(boolean allowOffHand) {
             this.nbt.getCompound("components")
@@ -90,10 +118,9 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         }
 
         /**
-         * 是否为手持
-         *
-         * @param handEquipped the hand equipped
-         * @return the builder
+         * 控制第三人称手持物品的显示方式
+         * <p>
+         * Control how third-person handheld items are displayed
          */
         public Builder handEquipped(boolean handEquipped) {
             this.nbt.getCompound("components")
@@ -111,9 +138,10 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
 
         /**
          * 控制自定义物品在创造栏的分组,例如所有的附魔书是一组
-         * <p>关于填写的字符串请参阅 <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
+         * <p>
+         * Control the grouping of custom items in the creation inventory, e.g. all enchantment books are grouped together
          *
-         * @return 自定义物品的分组
+         * @see <a href="https://wiki.bedrock.dev/documentation/creative-categories.html#list-of-creative-categories">bedrock wiki</a>
          */
         public Builder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
@@ -126,12 +154,22 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        /**
+         * 控制自定义物品在不同视角下的渲染偏移
+         * <p>
+         * Control rendering offsets of custom items at different viewpoints
+         */
         public Builder renderOffsets(@NonNull RenderOffsets renderOffsets) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:render_offsets", renderOffsets.nbt);
             return this;
         }
 
+        /**
+         * 对要发送给客户端的物品ComponentNBT进行自定义处理，这里包含了所有对自定义物品的定义。在符合条件的情况下，你可以任意修改。
+         * <p>
+         * Custom processing of the item to be sent to the client ComponentNBT, which contains all definitions for custom item. You can modify them as much as you want, under the right conditions.
+         */
         public CustomItemDefinition customBuild(Consumer<CompoundTag> nbt) {
             var def = this.build();
             nbt.accept(def.nbt);

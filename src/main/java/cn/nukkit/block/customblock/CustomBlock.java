@@ -3,49 +3,114 @@ package cn.nukkit.block.customblock;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
-import cn.nukkit.blockproperty.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.*;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
 /**
- * 继承这个类实现自定义方块
- * 重写Block中的方法控制方块属性
+ * 继承这个类实现自定义方块,重写{@link Block}中的方法控制方块属性
+ * <p>
+ * Inherit this class to implement a custom block, override the methods in the {@link Block} to control the feature of the block.
  */
 public interface CustomBlock {
+    /**
+     * 覆写该方法设置自定义方块的摩擦因数
+     * <p>
+     * {@code @Override} this method to set the friction factor of the custom block
+     */
     double getFrictionFactor();
 
+    /**
+     * 覆写该方法设置自定义方块的爆炸抗性
+     * <p>
+     * {@code @Override} this method to set the Explosive resistance of the custom block
+     */
     double getResistance();
 
+    /**
+     * 覆写该方法设置自定义方块的吸收光的等级
+     * <p>
+     * {@code @Override} this method to set the level of light absorption of the custom block
+     */
     int getLightFilter();
 
+    /**
+     * 覆写该方法设置自定义方块的发出光的等级
+     * <p>
+     * {@code @Override} this method to set the level of light emitted by the custom block
+     */
     int getLightLevel();
 
+    /**
+     * 覆写该方法设置自定义方块的被挖掘所需要的时间(单位秒)
+     * <p>
+     * {@code @Override} this method to set the amount of time (in seconds) it takes for a custom block to be dug
+     */
     double calculateBreakTime();
 
+    /**
+     * 覆写该方法设置自定义方块的命名空间ID
+     * <p>
+     * {@code @Override} this method to set the namespace ID of the custom block
+     */
     String getNamespaceId();
 
+    /**
+     * 一般不需要被覆写,继承父类会提供
+     * <p>
+     * Generally, it does not need to be {@code @Override}, extend from the parent class will provide
+     */
     Item toItem();
 
+    /**
+     * 该方法设置自定义方块的定义
+     * <p>
+     * This method sets the definition of custom block
+     */
     CustomBlockDefinition getDefinition();
 
     /* 下面两个方法需要被手动覆写,请使用接口的定义 */
+
+    /**
+     * 该方法必须被覆写为使用接口的定义，请使用
+     * <p>
+     * The method must be {@code @Override} to use the definition of the interface, please use the
+     * <br>
+     * {@code @Override}<br>{@code public int getId() {
+     * return CustomBlock.super.getId();
+     * } }
+     */
     default int getId() {
         return Block.CUSTOM_BLOCK_ID_MAP.get(getNamespaceId().toLowerCase(Locale.ENGLISH));
     }
 
+    /**
+     * 该方法必须被覆写为使用接口的定义，请使用
+     * <p>
+     * The method must be {@code @Override} to use the definition of the interface, please use the
+     * <br>
+     * {@code @Override}<br>{@code public String getName() {
+     * return CustomBlock.super.getName();
+     * } }
+     */
     default String getName() {
         return this.getNamespaceId().split(":")[1].toLowerCase(Locale.ENGLISH);
     }
 
+    /**
+     * Plugins do not need {@code @Override}
+     *
+     * @return the block
+     */
     default Block toCustomBlock() {
         return ((Block) this).clone();
     }
 
+    /**
+     * Plugins do not need {@code @Override}
+     *
+     * @return the block
+     */
     default Block toCustomBlock(int meta) {
         var block = toCustomBlock();
         if (block instanceof BlockMeta || block instanceof BlockFallableMeta) {
@@ -54,64 +119,10 @@ public interface CustomBlock {
         return block;
     }
 
+    /**
+     * @return 是否反转自定义方块属性解析的顺序<br>Whether to reverse the order of properties parsing
+     */
     default boolean reverseSending() {
         return true;
-    }
-
-    /**
-     * 获取方块属性NBT定义
-     *
-     * @return BlockProperties in NBT Tag format
-     */
-    @Nullable
-    default ListTag<CompoundTag> getPropertiesNBT() {
-        if (this instanceof Block block) {
-            var properties = block.getProperties();
-            if (properties == CommonBlockProperties.EMPTY_PROPERTIES || properties.getAllProperties().size() == 0) {
-                return null;
-            }
-            var nbtList = new ListTag<CompoundTag>("properties");
-            var tmpList = new ArrayList<>(properties.getAllProperties());
-            if (reverseSending()) {
-                Collections.reverse(tmpList);
-            }
-            for (var each : tmpList) {
-                if (each.getProperty() instanceof BooleanBlockProperty booleanBlockProperty) {
-                    nbtList.add(new CompoundTag().putString("name", booleanBlockProperty.getName())
-                            .putList(new ListTag<>("enum")
-                                    .add(new IntTag("", 0))
-                                    .add(new IntTag("", 1))));
-                } else if (each.getProperty() instanceof IntBlockProperty intBlockProperty) {
-                    var enumList = new ListTag<IntTag>("enum");
-                    for (int i = intBlockProperty.getMinValue(); i <= intBlockProperty.getMaxValue(); i++) {
-                        enumList.add(new IntTag("", i));
-                    }
-                    nbtList.add(new CompoundTag().putString("name", intBlockProperty.getName()).putList(enumList));
-                } else if (each.getProperty() instanceof UnsignedIntBlockProperty unsignedIntBlockProperty) {
-                    var enumList = new ListTag<LongTag>("enum");
-                    for (long i = unsignedIntBlockProperty.getMinValue(); i <= unsignedIntBlockProperty.getMaxValue(); i++) {
-                        enumList.add(new LongTag("", i));
-                    }
-                    nbtList.add(new CompoundTag().putString("name", unsignedIntBlockProperty.getName()).putList(enumList));
-                } else if (each.getProperty() instanceof ArrayBlockProperty<?> arrayBlockProperty) {
-                    if (arrayBlockProperty.isOrdinal()) {
-                        var enumList = new ListTag<IntTag>("enum");
-                        var universe = arrayBlockProperty.getUniverse();
-                        for (int i = 0, universeLength = universe.length; i < universeLength; i++) {
-                            enumList.add(new IntTag("", i));
-                        }
-                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                    } else {
-                        var enumList = new ListTag<StringTag>("enum");
-                        for (var e : arrayBlockProperty.getUniverse()) {
-                            enumList.add(new StringTag("", e.toString()));
-                        }
-                        nbtList.add(new CompoundTag().putString("name", arrayBlockProperty.getName()).putList(enumList));
-                    }
-                }
-            }
-            return nbtList;
-        }
-        return null;
     }
 }

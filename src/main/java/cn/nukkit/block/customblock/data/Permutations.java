@@ -7,6 +7,13 @@ import cn.nukkit.nbt.tag.ListTag;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 用于控制自定义方块的变化特征，可用于实现条件渲染，部分渲染等功能。一个方块可以有多个变化特征。
+ * <p>
+ * Used to control the {@link Permutation} of custom blocks, which can be used to implement conditional rendering, partial rendering and other functions.
+ *
+ * @see <a href="https://wiki.bedrock.dev/blocks/blocks-16.html#block-permutations">wiki.bedrock.dev</a>
+ */
 public class Permutations {
     private final ListTag<CompoundTag> permutations;
 
