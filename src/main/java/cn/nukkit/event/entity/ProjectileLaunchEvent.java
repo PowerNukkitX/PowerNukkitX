@@ -15,7 +15,12 @@ public class ProjectileLaunchEvent extends EntityEvent implements Cancellable {
     public static HandlerList getHandlers() {
         return handlers;
     }
-    
+
+    @Deprecated //保留这个方法，兼容nk插件
+    public ProjectileLaunchEvent(EntityProjectile entity) {
+        this(entity, entity.shootingEntity);
+    }
+
     @PowerNukkitXDifference(info = "事件增强 | ProjectileLaunchEvent improve")
     public ProjectileLaunchEvent(EntityProjectile entity, Entity shooter) {
         this.shooter = shooter;
