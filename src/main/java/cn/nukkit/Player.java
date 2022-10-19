@@ -5768,6 +5768,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
     protected void broadcastMovement(Boolean teleport) {
         if (teleport) {
             //TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
