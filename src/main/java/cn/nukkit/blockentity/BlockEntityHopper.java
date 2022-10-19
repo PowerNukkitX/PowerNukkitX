@@ -19,7 +19,8 @@ import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.util.CachedFullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -50,7 +51,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     
     private final BlockVector3 temporalVector = new BlockVector3();
 
-    public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {
+    private CachedFullChunk<BaseFullChunk> cachedFullChunk = new CachedFullChunk<>(null);
+
+    public BlockEntityHopper(BaseFullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
@@ -82,6 +85,15 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block block = getBlock();
         if (block instanceof BlockHopper) {
             disabled = !((BlockHopper)block).isEnabled();
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public void validAndFixCachedChunk() {
+        var oldChunk = cachedFullChunk.validAndGet(getChunkX(), getChunkZ());
+        if (oldChunk == null) {
+            cachedFullChunk = new CachedFullChunk<>(getLevel().getChunk(getChunkX(), getChunkZ()));
         }
     }
 
@@ -214,6 +226,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         if (disabled) {
         	return false;
         }
+
+        validAndFixCachedChunk();
 
         Block blockSide = this.getBlock().getSide(BlockFace.UP);
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));

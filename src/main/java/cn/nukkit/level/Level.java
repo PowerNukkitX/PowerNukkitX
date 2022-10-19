@@ -38,6 +38,7 @@ import cn.nukkit.level.generator.task.PopulationTask;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.tickingarea.TickingArea;
+import cn.nukkit.level.util.CachedFullChunk;
 import cn.nukkit.level.util.SimpleTickCachedBlockStore;
 import cn.nukkit.level.util.TickCachedBlockStore;
 import cn.nukkit.level.vibration.SimpleVibrationManager;
@@ -3465,17 +3466,33 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    public Map<Long, Entity> tryChunkEntities(@Nullable FullChunk tryChunk, int X, int Z) {
-        return tryChunkEntities(tryChunk, X, Z, true);
+    public Map<Long, Entity> getChunkEntities(@NotNull CachedFullChunk<?> tryChunk, int X, int Z) {
+        return getChunkEntities(tryChunk, X, Z, true);
     }
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    public Map<Long, Entity> tryChunkEntities(@Nullable FullChunk tryChunk, int X, int Z, boolean loadChunks) {
-        FullChunk chunk;
-        if (tryChunk != null && tryChunk.getX() == X && tryChunk.getZ() == Z) {
-            chunk = tryChunk;
+    public Map<Long, Entity> getChunkEntities(@NotNull FullChunk tryChunk) {
+        return getChunkEntities(tryChunk, true);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public Map<Long, Entity> getChunkEntities(@NotNull FullChunk tryChunk, boolean loadChunks) {
+        if (tryChunk.isLoaded()) {
+            return tryChunk.getEntities();
+        } else if (loadChunks) {
+            return getChunkEntities(tryChunk.getX(), tryChunk.getZ());
         } else {
+            return Collections.emptyMap();
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public Map<Long, Entity> getChunkEntities(@NotNull CachedFullChunk<?> tryChunk, int X, int Z, boolean loadChunks) {
+        var chunk = tryChunk.validAndGet(X, Z);
+        if (chunk == null) {
             chunk = loadChunks ? this.getChunk(X, Z) : this.getChunkIfLoaded(X, Z);
         }
         return chunk != null ? chunk.getEntities() : Collections.emptyMap();
