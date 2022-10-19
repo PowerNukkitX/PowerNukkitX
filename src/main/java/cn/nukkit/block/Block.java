@@ -1298,7 +1298,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitXOnly
     public static List<CustomBlockDefinition> getCustomBlockDefinitionList() {
-        return CUSTOM_BLOCK_DEFINITIONS;
+        return new ArrayList<>(CUSTOM_BLOCK_DEFINITIONS);
     }
 
     @PowerNukkitXOnly
