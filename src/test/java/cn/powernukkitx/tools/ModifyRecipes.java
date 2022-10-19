@@ -300,7 +300,7 @@ public class ModifyRecipes {
         }
     }
 
-    private static <T> List<T> castList(Object obj, Class<T> clazz) {
+    public static <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> result = new ArrayList<>();
         if (obj instanceof List<?> list) {
             for (Object o : list) {
@@ -311,7 +311,7 @@ public class ModifyRecipes {
         return null;
     }
 
-    private static <K, V> List<Map<K, V>> castListMap(List<?> list, Class<K> kClass, Class<V> vClass) {
+    public static <K, V> List<Map<K, V>> castListMap(List<?> list, Class<K> kClass, Class<V> vClass) {
         List<Map<K, V>> result = new ArrayList<>();
         for (Object o : list) {
             var map = castMap(o, kClass, vClass);
@@ -321,7 +321,7 @@ public class ModifyRecipes {
         return result;
     }
 
-    private static <K, V> Map<K, V> castMap(Object obj, Class<K> kClass, Class<V> vClass) {
+    public static <K, V> Map<K, V> castMap(Object obj, Class<K> kClass, Class<V> vClass) {
         Map<K, V> result = new HashMap<>();
         if (obj instanceof Map<?, ?> map) {
             for (Object o : map.keySet()) {

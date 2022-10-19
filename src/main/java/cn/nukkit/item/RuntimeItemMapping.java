@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
@@ -149,9 +150,10 @@ public class RuntimeItemMapping {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public synchronized void registerCustomItem(ItemCustom itemCustom) {
+        var runtimeId = CustomItemDefinition.getRuntimeId(itemCustom.getNamespaceId());
         RuntimeItems.Entry entry = new RuntimeItems.Entry(
                 itemCustom.getNamespaceId(),
-                itemCustom.getRuntimeId(),
+                runtimeId,
                 null,
                 null,
                 false,
@@ -160,8 +162,8 @@ public class RuntimeItemMapping {
         this.customItemEntries.put(itemCustom.getNamespaceId(), entry);
         this.entries.add(entry);
         this.registerNamespacedIdItem(itemCustom);
-        this.namespaceNetworkMap.put(itemCustom.getNamespaceId(), OptionalInt.of(itemCustom.getRuntimeId()));
-        this.networkNamespaceMap.put(itemCustom.getRuntimeId(), itemCustom.getNamespaceId());
+        this.namespaceNetworkMap.put(itemCustom.getNamespaceId(), OptionalInt.of(runtimeId));
+        this.networkNamespaceMap.put(runtimeId, itemCustom.getNamespaceId());
         this.generatePalette();
     }
 
@@ -172,7 +174,7 @@ public class RuntimeItemMapping {
         if (entry != null) {
             this.entries.remove(entry);
             this.namespaceNetworkMap.remove(itemCustom.getNamespaceId());
-            this.networkNamespaceMap.remove(itemCustom.getRuntimeId());
+            this.networkNamespaceMap.remove(CustomItemDefinition.getRuntimeId(itemCustom.getNamespaceId()));
             this.generatePalette();
         }
     }
@@ -183,18 +185,18 @@ public class RuntimeItemMapping {
         for (var block : blocks) {
             int id = 255 - block.getId();//方块物品id等于 255-方块id(即-750开始递减)
             RuntimeItems.Entry entry = new RuntimeItems.Entry(
-                    block.getNamespace(),//方块命名空间也是方块物品命名空间
+                    block.getNamespaceId(),//方块命名空间也是方块物品命名空间
                     id,
                     id,
                     null,
                     null,
                     false
             );
-            this.customBlockEntries.put(block.getNamespace(),entry);
+            this.customBlockEntries.put(block.getNamespaceId(), entry);
             this.entries.add(entry);
-            this.namespacedIdItem.put(block.getNamespace(), block::toItem);
-            this.namespaceNetworkMap.put(block.getNamespace(), OptionalInt.of(id));
-            this.networkNamespaceMap.put(id, block.getNamespace());
+            this.namespacedIdItem.put(block.getNamespaceId(), block::toItem);
+            this.namespaceNetworkMap.put(block.getNamespaceId(), OptionalInt.of(id));
+            this.networkNamespaceMap.put(id, block.getNamespaceId());
             int fullId = RuntimeItems.getFullId(id, 0);
             legacyNetworkMap.put(fullId, id << 1);//todo 实现多状态方块需要在这里加入数据值判断
             networkLegacyMap.put(id, fullId);
@@ -206,10 +208,10 @@ public class RuntimeItemMapping {
     @Since("1.6.0.0-PNX")
     public synchronized void deleteCustomBlock(List<CustomBlock> blocks) {
         for (var block : blocks) {
-            RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespace());
+            RuntimeItems.Entry entry = this.customBlockEntries.remove(block.getNamespaceId());
             if (entry != null) {
                 this.entries.remove(entry);
-                this.namespaceNetworkMap.remove(block.getNamespace());
+                this.namespaceNetworkMap.remove(block.getNamespaceId());
                 this.networkNamespaceMap.remove(255 - block.getId());
                 this.generatePalette();
             }

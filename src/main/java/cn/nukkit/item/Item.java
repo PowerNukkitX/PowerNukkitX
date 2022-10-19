@@ -14,6 +14,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
+import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
@@ -111,6 +112,10 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     private static final HashMap<String, Class<? extends Item>> CUSTOM_ITEMS = new HashMap<>();
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    private static final HashMap<String, CustomItemDefinition> CUSTOM_ITEM_DEFINITIONS = new HashMap<>();
 
     protected Block block = null;
     protected final int id;
@@ -608,6 +613,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
         if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
         CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
+        CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
         RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
         addCreativeItem(itemCustom);
     }
@@ -628,6 +634,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
             if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
             CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
+            CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
             RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
             addCreativeItem(itemCustom);
         }
@@ -645,6 +652,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = (ItemCustom) fromString(namespaceId);
             removeCreativeItem(itemCustom);
             CUSTOM_ITEMS.remove(namespaceId);
+            CUSTOM_ITEM_DEFINITIONS.remove(namespaceId);
             RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
     }
@@ -659,6 +667,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = (ItemCustom) fromString(name);
             removeCreativeItem(itemCustom);
             CUSTOM_ITEMS.remove(name);
+            CUSTOM_ITEM_DEFINITIONS.remove(name);
             RuntimeItems.getRuntimeMapping().deleteCustomItem(itemCustom);
         }
     }
@@ -667,6 +676,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     @Since("1.6.0.0-PNX")
     public static HashMap<String, Class<? extends Item>> getCustomItems() {
         return new HashMap<>(CUSTOM_ITEMS);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    public static HashMap<String, CustomItemDefinition> getCustomItemDefinition() {
+        return new HashMap<>(CUSTOM_ITEM_DEFINITIONS);
     }
 
     public static void clearCreativeItems() {
@@ -846,9 +861,6 @@ public class Item implements Cloneable, BlockID, ItemID {
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
                 ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                if (itemCustom == null) {
-                    return get(AIR);
-                }
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
                     if (damage < 0) {
@@ -860,9 +872,6 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return itemCustom;
             } else if (Block.CUSTOM_BLOCK_ID_MAP.containsKey(namespacedId)) {
                 ItemBlock customItemBlock = (ItemBlock) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
-                if (customItemBlock == null) {
-                    return get(AIR);
-                }
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
                     if (damage < 0) {

@@ -169,6 +169,6 @@ export class JavaClassBuilder {
      * @param path {string} 保存路径
      */
     compileToFile(path) {
-        this._classBuilder.compileToClass(path);
+        this._classBuilder.compileToFile(path);
     }
 }
