@@ -148,10 +148,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
             Random rand = new Random();
             double nextDouble = rand.nextDouble();
             if (nextDouble <= 0.011377778){
-                Block target = this.getSide(this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP);
-                if (target.getId() == Block.AIR) {
-                    this.grow();
-                }
+                this.grow();
             }
 
             drippingLiquid();
@@ -383,7 +380,11 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void grow() {
-        this.place(null, this.getSide(this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP), null, this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP, 0, 0, 0, null);
+        BlockFace face = this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP;
+        Block target = this.getSide(face);
+        if (target.getId() == Block.AIR) {
+            this.place(null, target, null, face, 0, 0, 0, null);
+        }
     }
 
     @PowerNukkitXOnly
