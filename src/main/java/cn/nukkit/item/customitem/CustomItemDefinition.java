@@ -1,5 +1,7 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
@@ -21,6 +23,8 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
+@PowerNukkitXOnly
+@Since("1.19.31-r1")
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);
@@ -93,7 +97,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         protected final String identifier;
         protected final CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag()
-                        .putCompound("minecraft:display_name", new CompoundTag())
                         .putCompound("item_properties", new CompoundTag()
                                 .putCompound("minecraft:icon", new CompoundTag())));
 
@@ -106,7 +109,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .getCompound("minecraft:icon")
                     .putString("texture", item.getTextureName());
             //定义显示名
-            this.nbt.getCompound("components").getCompound("minecraft:display_name").putString("value", item.getName());
+            if (item.getName() != null) {
+                this.nbt.getCompound("components")
+                        .putCompound("minecraft:display_name", new CompoundTag().putString("value", item.getName()));
+            }
+
             //定义最大堆叠数量
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
