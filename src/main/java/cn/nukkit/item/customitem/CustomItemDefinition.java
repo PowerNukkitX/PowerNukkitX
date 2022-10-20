@@ -97,7 +97,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         protected final String identifier;
         protected final CompoundTag nbt = new CompoundTag()
                 .putCompound("components", new CompoundTag()
-                        .putCompound("minecraft:display_name", new CompoundTag())
                         .putCompound("item_properties", new CompoundTag()
                                 .putCompound("minecraft:icon", new CompoundTag())));
 
@@ -110,7 +109,11 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .getCompound("minecraft:icon")
                     .putString("texture", item.getTextureName());
             //定义显示名
-            this.nbt.getCompound("components").getCompound("minecraft:display_name").putString("value", item.getName());
+            if (item.getName() != null) {
+                this.nbt.getCompound("components")
+                        .putCompound("minecraft:display_name", new CompoundTag().putString("value", item.getName()));
+            }
+
             //定义最大堆叠数量
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
