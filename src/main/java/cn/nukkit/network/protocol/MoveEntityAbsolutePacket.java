@@ -10,6 +10,9 @@ import lombok.ToString;
 @ToString
 public class MoveEntityAbsolutePacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET;
+    public static final byte FLAG_GROUND = 0x01;
+    public static final byte FLAG_TELEPORT = 0x02;
+    public static final byte FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x04;
 
     public long eid;
     public double x;

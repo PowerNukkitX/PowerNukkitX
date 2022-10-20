@@ -1898,7 +1898,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                             }
                         }
-                        this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
+//                        this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
+                        this.broadcastMovement(false);
                     }
                     //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];
                     //sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
@@ -2513,7 +2514,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
+        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         this.dataPacketImmediately(startGamePacket);
 
         //写入自定义物品数据
@@ -2527,7 +2528,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 try {
                     Item item = Item.fromString(id);
                     if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = itemCustom.getComponentsData();
+                        CompoundTag data = Item.getCustomItemDefinition().get(itemCustom.getNamespaceId()).nbt();
                         data.putShort("minecraft:identifier", i);
 
                         entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
@@ -5767,6 +5768,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    protected void broadcastMovement(Boolean teleport) {
+        if (teleport) {
+            //TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
+            //this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
+            //snaps to the teleport position, but then lerps back to the original position if a normal movement for the
+            //entity was recently broadcasted. This can be seen with players throwing ender pearls.
+            //TODO: remove this if the bug ever gets fixed (lol)
+            for (var player : hasSpawned.values()) {
+                despawnFrom(player);
+                spawnTo(player);
+            }
+        } else {
+            var pk = new MoveEntityAbsolutePacket();
+            pk.eid = this.getId();
+            pk.x = this.x;
+            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+            pk.z = this.z;
+            pk.headYaw = yaw;
+            pk.pitch = pitch;
+            pk.yaw = yaw;
+            pk.onGround = this.onGround;
+            Server.broadcastPacket(hasSpawned.values(), pk);
+        }
+    }
+
     @Override
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
@@ -5863,6 +5891,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.yaw = to.yaw;
             this.pitch = to.pitch;
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
+            this.broadcastMovement(true);
 
             this.checkTeleportPosition();
 

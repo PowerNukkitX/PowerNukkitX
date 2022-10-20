@@ -4,12 +4,12 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Utils;
 
@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
-
     public static final int TIER_WOODEN = ItemTool.TIER_WOODEN;
     public static final int TIER_GOLD = ItemTool.TIER_GOLD;
     public static final int TIER_STONE = ItemTool.TIER_STONE;
@@ -59,48 +58,6 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
 
     public ItemCustomTool(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
         super(id, name, textureName);
-    }
-
-    @Override
-    public int getCreativeCategory() {
-        return 3;
-    }
-
-    @Override
-    public CompoundTag getComponentsData() {
-        CompoundTag data = super.getComponentsData();
-
-        data.getCompound("components")
-                .putCompound("minecraft:durability",
-                        new CompoundTag().putInt("max_durability", this.getMaxDurability())
-                )
-                .getCompound("item_properties")
-                .putInt("damage", this.getAttackDamage())
-                .putInt("enchantable_value", this.getEnchantableValue());
-
-        if (this.isPickaxe()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "pickaxe");
-            data.getCompound("components")
-                    .putCompound("minecraft:digger", getPickaxeDiggerNBT());
-        } else if (this.isAxe()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "axe");
-            data.getCompound("components")
-                    .putCompound("minecraft:digger", getAxeDiggerNBT());
-        } else if (this.isShovel()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "shovel");
-            data.getCompound("components")
-                    .putCompound("minecraft:digger", getShovelDiggerNBT());
-        } else if (this.isHoe()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "hoe");
-        } else if (this.isSword()) {
-            data.getCompound("components").getCompound("item_properties")
-                    .putString("enchantable_slot", "sword");
-        }
-        return data;
     }
 
     @Override
@@ -222,89 +179,11 @@ public abstract class ItemCustomTool extends ItemCustom implements ItemDurable {
         return false;
     }
 
-    /**
-     * 控制工具的挖掘速度(默认0 使用工具等级计算挖掘速度)
-     *
-     * @return 挖掘速度
-     */
-    public int getDestroySpeeds() {
-        return 0;
+    public final Integer getSpeed() {
+        var nbt = Item.getCustomItemDefinition().get(getNamespaceId()).nbt();
+        if (!nbt.getCompound("components").contains("minecraft:digger")) return null;
+        return nbt.getCompound("components")
+                .getCompound("minecraft:digger")
+                .getList("destroy_speeds", CompoundTag.class).get(0).getInt("speed");
     }
-
-    public CompoundTag getPickaxeDiggerNBT() {
-        if (this.getTier() == 0) {
-            return new CompoundTag().putBoolean("use_efficiency", true);
-        }
-        var speed = switch (this.getTier()) {
-            case 6 -> 7;
-            case 5 -> 6;
-            case 4 -> 5;
-            case 3 -> 4;
-            case 2 -> 3;
-            case 1 -> 2;
-            default -> 1;
-        };
-        int customSpeed = getDestroySpeeds();
-        if (customSpeed > 0) speed = customSpeed;
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
-        ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
-        destroy_speeds.add(new CompoundTag()
-                .putCompound("block",
-                        new CompoundTag()
-                                .putString("tags", "q.any_tag('stone', 'metal', 'diamond_pick_diggable', 'mob_spawner', 'rail')")
-                )
-                .putInt("speed", speed));
-        return diggerRoot.putList(destroy_speeds);
-    }
-
-    public CompoundTag getAxeDiggerNBT() {
-        if (this.getTier() == 0) {
-            return new CompoundTag().putBoolean("use_efficiency", true);
-        }
-        var speed = switch (this.getTier()) {
-            case 6 -> 7;
-            case 5 -> 6;
-            case 4 -> 5;
-            case 3 -> 4;
-            case 2 -> 3;
-            case 1 -> 2;
-            default -> 1;
-        };
-        int customSpeed = getDestroySpeeds();
-        if (customSpeed > 0) speed = customSpeed;
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
-        ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
-        destroy_speeds.add(new CompoundTag()
-                .putCompound("block",
-                        new CompoundTag()
-                                .putString("tags", "q.any_tag('wood', 'pumpkin', 'plant')"))
-                .putInt("speed", speed));
-        return diggerRoot.putList(destroy_speeds);
-    }
-
-    public CompoundTag getShovelDiggerNBT() {
-        if (this.getTier() == 0) {
-            return new CompoundTag().putBoolean("use_efficiency", true);
-        }
-        var speed = switch (this.getTier()) {
-            case 6 -> 7;
-            case 5 -> 6;
-            case 4 -> 5;
-            case 3 -> 4;
-            case 2 -> 3;
-            case 1 -> 2;
-            default -> 1;
-        };
-        int customSpeed = getDestroySpeeds();
-        if (customSpeed > 0) speed = customSpeed;
-        CompoundTag diggerRoot = new CompoundTag().putBoolean("use_efficiency", true);
-        ListTag<Tag> destroy_speeds = new ListTag<>("destroy_speeds");
-        destroy_speeds.add(new CompoundTag()
-                .putCompound("block",
-                        new CompoundTag()
-                                .putString("tags", "q.any_tag('sand', 'dirt', 'gravel', 'snow')"))
-                .putInt("speed", speed));
-        return diggerRoot.putList(destroy_speeds);
-    }
-
 }
