@@ -1,5 +1,7 @@
 package cn.nukkit.block.customblock.data;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.NonNull;
 
@@ -10,6 +12,8 @@ import java.util.Locale;
  * <p>
  * Used to map the face of a block to a material instance, and set the rendering method and parameters.
  */
+@PowerNukkitXOnly
+@Since("1.19.31-r1")
 public class Materials {
     private final CompoundTag tag;
 

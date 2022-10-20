@@ -1,5 +1,7 @@
 package cn.nukkit.block.customblock;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.customblock.data.BlockCreativeCategory;
 import cn.nukkit.block.customblock.data.Materials;
@@ -20,6 +22,8 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the block behavior_pack sent to the client. The methods provided in {@link CustomBlockDefinition#Builder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.block.Block Block}.
  */
+@PowerNukkitXOnly
+@Since("1.19.31-r1")
 public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
 
 

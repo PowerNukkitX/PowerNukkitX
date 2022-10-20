@@ -1,5 +1,7 @@
 package cn.nukkit.block.customblock.data;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -14,6 +16,8 @@ import java.util.List;
  *
  * @see <a href="https://wiki.bedrock.dev/blocks/blocks-16.html#block-permutations">wiki.bedrock.dev</a>
  */
+@PowerNukkitXOnly
+@Since("1.19.31-r1")
 public class Permutations {
     private final ListTag<CompoundTag> permutations;
 

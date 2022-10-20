@@ -1,5 +1,7 @@
 package cn.nukkit.item.customitem;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
@@ -21,6 +23,8 @@ import java.util.function.Consumer;
  * <p>
  * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
+@PowerNukkitXOnly
+@Since("1.19.31-r1")
 public record CustomItemDefinition(String identifier, CompoundTag nbt) {
     private static final ConcurrentHashMap<String, Integer> INTERNAL_ALLOCATION_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger nextRuntimeId = new AtomicInteger(10000);

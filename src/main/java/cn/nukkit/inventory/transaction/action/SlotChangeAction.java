@@ -60,7 +60,7 @@ public class SlotChangeAction extends InventoryAction {
      */
     @Override
     public boolean execute(Player source) {
-        return this.inventory.setItem(this.inventorySlot, this.targetItem, true);
+        return this.inventory.setItem(this.inventorySlot, this.targetItem, false);
     }
 
     /**
@@ -71,9 +71,12 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
-        viewers.remove(source);
-
-        this.inventory.sendSlot(this.inventorySlot, viewers);
+        if (source.getLoginChainData().getDeviceOS() == 7) {
+            this.inventory.sendSlot(this.inventorySlot, viewers);
+        } else {
+            viewers.remove(source);
+            this.inventory.sendSlot(this.inventorySlot, viewers);
+        }
     }
 
     /**
