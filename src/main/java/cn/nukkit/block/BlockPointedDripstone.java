@@ -147,7 +147,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         if (type == Level.BLOCK_UPDATE_RANDOM && this.getThickness().equals("tip")){
             Random rand = new Random();
             double nextDouble = rand.nextDouble();
-            if (0 <= nextDouble && nextDouble <= 0.011377778){
+            if (nextDouble <= 0.011377778){
                 this.grow();
             }
 
@@ -380,7 +380,11 @@ public class BlockPointedDripstone extends BlockFallableMeta {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void grow() {
-        this.place(null, this.getSide(this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP), null, this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP, 0, 0, 0, null);
+        BlockFace face = this.isHanging() == 1 ? BlockFace.DOWN : BlockFace.UP;
+        Block target = this.getSide(face);
+        if (target.getId() == Block.AIR) {
+            this.place(null, target, null, face, 0, 0, 0, null);
+        }
     }
 
     @PowerNukkitXOnly
@@ -409,7 +413,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         }
 
         Block tmp = this;
-        BlockCauldron cauldron = null;
+        BlockCauldron cauldron;
         while(tmp.getSide(BlockFace.DOWN) instanceof BlockAir){
             tmp = tmp.getSide(BlockFace.DOWN);
         }
@@ -425,7 +429,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
         switch (filledWith.getId()){
             case FLOWING_LAVA:
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 15.0/256.0) {
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.LAVA || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 15.0 / 256.0) {
                     CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.LAVA,1);
                     Server.getInstance().getPluginManager().callEvent(event);
                     if(event.isCancelled())
@@ -438,7 +442,7 @@ public class BlockPointedDripstone extends BlockFallableMeta {
                 break;
             case FLOWING_WATER:
                 nextDouble = rand.nextDouble();
-                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble >= 0 && nextDouble <= 45.0/256.0) {
+                if ((cauldron.getCauldronLiquid() == CauldronLiquid.WATER || cauldron.isEmpty()) && cauldron.getFillLevel() < 6 && nextDouble <= 45.0 / 256.0) {
                     CauldronFilledByDrippingLiquidEvent event = new CauldronFilledByDrippingLiquidEvent(cauldron, CauldronLiquid.WATER,1);
                     Server.getInstance().getPluginManager().callEvent(event);
                     if(event.isCancelled())

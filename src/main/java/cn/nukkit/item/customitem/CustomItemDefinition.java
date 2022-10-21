@@ -427,7 +427,6 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                 this.nbt.getCompound("components")
                         .putCompound("minecraft:wearable", new CompoundTag()
                                 .putString("slot", "slot.armor.feet"));
-                return null;
             }
             return calculateID();
         }
