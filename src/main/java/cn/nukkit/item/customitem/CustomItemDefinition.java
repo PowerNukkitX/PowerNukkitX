@@ -213,6 +213,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             return result;
         }
 
+        @Since("1.19.31-r2")
         protected SimpleBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
             if (molang.isBlank()) {
                 System.out.println("repairAmount has an invalid value!");
@@ -274,11 +275,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putFloat("mining_speed", 1f);
         }
 
+        @Since("1.19.31-r2")
         public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
             super.addRepairItems(repairItems, molang);
             return this;
         }
 
+        @Since("1.19.31-r2")
         public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
             super.addRepairItems(repairItems, String.valueOf(repairAmount));
             return this;
@@ -447,11 +450,13 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
                     .putInt("enchantable_value", item.getEnchantAbility());
         }
 
+        @Since("1.19.31-r2")
         public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
             super.addRepairItems(repairItems, molang);
             return this;
         }
 
+        @Since("1.19.31-r2")
         public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
             super.addRepairItems(repairItems, String.valueOf(repairAmount));
             return this;
