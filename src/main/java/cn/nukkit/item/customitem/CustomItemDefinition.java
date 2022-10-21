@@ -3,6 +3,7 @@ package cn.nukkit.item.customitem;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.customitem.data.RenderOffsets;
@@ -167,7 +168,7 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          */
         public SimpleBuilder creativeGroup(String creativeGroup) {
             if (creativeGroup.isBlank()) {
-                System.out.println("displayName has an invalid value!");
+                System.out.println("creativeGroup has an invalid value!");
                 return this;
             }
             this.nbt.getCompound("components")
@@ -211,6 +212,46 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             }
             return result;
         }
+
+        protected SimpleBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+            if (molang.isBlank()) {
+                System.out.println("repairAmount has an invalid value!");
+                return this;
+            }
+
+            if (this.nbt.getCompound("components").contains("minecraft:repairable")) {
+                var repair_items = this.nbt
+                        .getCompound("components")
+                        .getCompound("minecraft:repairable")
+                        .getList("repair_items", CompoundTag.class);
+
+                var items = new ListTag<CompoundTag>("items");
+                for (var item : repairItems) {
+                    items.add(new CompoundTag().putString("name", item.getNamespaceId()));
+                }
+
+                repair_items.add(new CompoundTag()
+                        .putList(items)
+                        .putCompound("repair_amount", new CompoundTag()
+                                .putString("expression", molang)
+                                .putInt("version", 1)));
+            } else {
+                var repair_items = new ListTag<CompoundTag>("repair_items");
+                var items = new ListTag<CompoundTag>("items");
+                for (var item : repairItems) {
+                    items.add(new CompoundTag().putString("name", item.getNamespaceId()));
+                }
+                repair_items.add(new CompoundTag()
+                        .putList(items)
+                        .putCompound("repair_amount", new CompoundTag()
+                                .putString("expression", molang)
+                                .putInt("version", 1)));
+                this.nbt.getCompound("components")
+                        .putCompound("minecraft:repairable", new CompoundTag()
+                                .putList(repair_items));
+            }
+            return this;
+        }
     }
 
     public static class ToolBuilder extends SimpleBuilder {
@@ -231,6 +272,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putFloat("mining_speed", 1f);
+        }
+
+        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+            super.addRepairItems(repairItems, molang);
+            return this;
+        }
+
+        public ToolBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+            super.addRepairItems(repairItems, String.valueOf(repairAmount));
+            return this;
         }
 
         /**
@@ -394,6 +445,16 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
             this.nbt.getCompound("components")
                     .getCompound("item_properties")
                     .putInt("enchantable_value", item.getEnchantAbility());
+        }
+
+        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, String molang) {
+            super.addRepairItems(repairItems, molang);
+            return this;
+        }
+
+        public ArmorBuilder addRepairItems(@NonNull List<Item> repairItems, int repairAmount) {
+            super.addRepairItems(repairItems, String.valueOf(repairAmount));
+            return this;
         }
 
         @Override
