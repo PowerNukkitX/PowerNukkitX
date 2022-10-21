@@ -1917,10 +1917,11 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @PowerNukkitXDifference(info = "changing to clone(), because the result is prone to change in an asynchronous environment.")
     @Override
     public Vector3 getDirectionVector() {
         Vector3 vector = super.getDirectionVector();
-        return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
+        return this.temporalVector.setComponents(vector.x, vector.y, vector.z).clone();
     }
 
     public Vector2 getDirectionPlane() {
