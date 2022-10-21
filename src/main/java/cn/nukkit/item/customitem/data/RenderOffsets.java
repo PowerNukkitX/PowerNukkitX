@@ -24,10 +24,10 @@ public class RenderOffsets {
      * <p>
      * Set rendering offsets for custom items at different viewpoints
      *
-     * @param mainHandFirstPerson 设置第一人称主手物品的偏移<br>Set the offset of the first person main hand item
-     * @param mainHandThirdPerson 设置第三人称主手物品的偏移<br>Set the offset of the third person main hand item
-     * @param offHandFirstPerson  设置第一人称副手物品的偏移<br>Set the offset of the first person offhand item
-     * @param offHandThirdPerson  设置第三人称副手物品的偏移<br>Set the offset of the third person offhand item
+     * @param mainHandFirstPerson 设置第一人称主手物品的偏移量<br>Set the offset of the first person main hand item
+     * @param mainHandThirdPerson 设置第三人称主手物品的偏移量<br>Set the offset of the third person main hand item
+     * @param offHandFirstPerson  设置第一人称副手物品的偏移量<br>Set the offset of the first person offhand item
+     * @param offHandThirdPerson  设置第三人称副手物品的偏移量<br>Set the offset of the third person offhand item
      */
     public RenderOffsets(@Nullable Offset mainHandFirstPerson, @Nullable Offset mainHandThirdPerson, @Nullable Offset offHandFirstPerson, @Nullable Offset offHandThirdPerson) {
         if (mainHandFirstPerson != null || mainHandThirdPerson != null) {

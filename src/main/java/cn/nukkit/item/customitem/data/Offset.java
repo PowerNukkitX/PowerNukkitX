@@ -2,14 +2,21 @@ package cn.nukkit.item.customitem.data;
 
 import cn.nukkit.math.Vector3f;
 
+
+/**
+ * Offset代表RenderOffsets中的偏移量对象
+ * <p>
+ * This represents the offset object in RenderOffsets
+ */
 public class Offset {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
 
-    private Offset(){}
+    private Offset() {
+    }
 
-    public static Offset builder(){
+    public static Offset builder() {
         return new Offset();
     }
 
