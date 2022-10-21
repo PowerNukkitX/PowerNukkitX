@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import lombok.NoArgsConstructor;
 
@@ -22,16 +23,20 @@ public class AnimateEntityPacket extends DataPacket {
     private String animation;
     private String nextState;
     private String stopExpression;
+    @PowerNukkitXOnly
+    @Since("1.19.31-r2")
+    private int stopExpressionVersion;
     private String controller;
     private float blendOutTime;
     private List<Long> entityRuntimeIds = new ArrayList<>();
 
     @Override
     public void decode() {
-    	this.animation = this.getString();
-		this.nextState = this.getString();
-		this.stopExpression = this.getString();
-		this.controller = this.getString();
+        this.animation = this.getString();
+        this.nextState = this.getString();
+        this.stopExpression = this.getString();
+        this.stopExpressionVersion = this.getVarInt();
+        this.controller = this.getString();
 		this.blendOutTime = this.getLFloat();
 		for (int i = 0, len = (int) this.getUnsignedVarInt(); i < len; i++) {
 			this.entityRuntimeIds.add(this.getEntityRuntimeId());
@@ -43,8 +48,9 @@ public class AnimateEntityPacket extends DataPacket {
         this.reset();
         this.putString(this.animation);
 		this.putString(this.nextState);
-		this.putString(this.stopExpression);
-		this.putString(this.controller);
+        this.putString(this.stopExpression);
+        this.putVarInt(this.stopExpressionVersion);
+        this.putString(this.controller);
 		this.putLFloat(this.blendOutTime);
 		this.putUnsignedVarInt(this.entityRuntimeIds.size());
 		for (long entityRuntimeId : this.entityRuntimeIds){
@@ -122,10 +128,22 @@ public class AnimateEntityPacket extends DataPacket {
     public void setEntityRuntimeIds(List<Long> entityRuntimeIds) {
         this.entityRuntimeIds = entityRuntimeIds;
     }
-    
+
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
     public List<Long> getEntityRuntimeIds() {
         return this.entityRuntimeIds;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r2")
+    public void setStopExpressionVersion(int stopExpressionVersion) {
+        this.stopExpressionVersion = stopExpressionVersion;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r2")
+    public int getStopExpressionVersion() {
+        return stopExpressionVersion;
     }
 }
