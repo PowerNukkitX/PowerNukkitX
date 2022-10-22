@@ -112,16 +112,16 @@ public class NukkitMetrics {
         metrics.addCustomChart(new Metrics.SimplePie("pnx_version", server::getBStatsNukkitVersion));
         metrics.addCustomChart(new Metrics.SimplePie("xbox_auth", () -> server.getPropertyBoolean("xbox-auth") ? "Required" : "Not required"));
 
-        metrics.addCustomChart(new Metrics.AdvancedPie("player_platform", () -> server.getOnlinePlayers().values().stream()
+        metrics.addCustomChart(new Metrics.AdvancedPie("player_platform_pie", () -> server.getOnlinePlayers().values().stream()
                 .map(Player::getLoginChainData)
                 .map(LoginChainData::getDeviceOS)
                 .collect(groupingBy(nukkitMetrics::mapDeviceOSToString, countingInt()))));
 
-        metrics.addCustomChart(new Metrics.AdvancedPie("player_game_version", () -> server.getOnlinePlayers().values().stream()
+        metrics.addCustomChart(new Metrics.AdvancedPie("player_game_version_pie", () -> server.getOnlinePlayers().values().stream()
                 .map(Player::getLoginChainData)
                 .collect(groupingBy(LoginChainData::getGameVersion, countingInt()))));
 
-        metrics.addCustomChart(new Metrics.DrilldownPie("java_version", new JavaVersionRetriever()));
+        metrics.addCustomChart(new Metrics.DrilldownPie("java_version_pie", new JavaVersionRetriever()));
         return nukkitMetrics;
     }
     
@@ -201,22 +201,21 @@ public class NukkitMetrics {
     }
 
     private String mapDeviceOSToString(int os) {
-        switch (os) {
-            case 1: return "Android";
-            case 2: return "iOS";
-            case 3: return "macOS";
-            case 4: return "FireOS";
-            case 5: return "Gear VR";
-            case 6: return "Hololens";
-            case 7: return "Windows 10";
-            case 8: return "Windows";
-            case 9: return "Dedicated";
-            case 10: return "PS4";
-            case 11:
-            case 12: return "Switch";
-            case 13: return "Xbox One";
-            case 14: return "Windows Phone";
-            default: return "Unknown"; 
-        }
+        return switch (os) {
+            case 1 -> "Android";
+            case 2 -> "iOS";
+            case 3 -> "macOS";
+            case 4 -> "FireOS";
+            case 5 -> "Gear VR";
+            case 6 -> "Hololens";
+            case 7 -> "Windows 10";
+            case 8 -> "Windows";
+            case 9 -> "Dedicated";
+            case 10 -> "PS4";
+            case 11, 12 -> "Switch";
+            case 13 -> "Xbox One";
+            case 14 -> "Windows Phone";
+            default -> "Unknown";
+        };
     }
 }
