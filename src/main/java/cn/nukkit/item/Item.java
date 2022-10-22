@@ -860,7 +860,22 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return get(AIR);
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
-                ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                ItemCustom itemCustom;
+
+                /*
+                 * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,所以留一个反射构造。
+                 * 主要用于getDefinition中addRepairItems
+                 */
+                if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
+                    try {
+                        itemCustom = (ItemCustom) CUSTOM_ITEMS.get(namespacedId).getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else itemCustom = (ItemCustom) item;
+
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
                     if (damage < 0) {

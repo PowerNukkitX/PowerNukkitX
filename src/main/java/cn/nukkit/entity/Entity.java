@@ -1917,10 +1917,10 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
     @Override
     public Vector3 getDirectionVector() {
-        Vector3 vector = super.getDirectionVector();
-        return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
+        return super.getDirectionVector();
     }
 
     public Vector2 getDirectionPlane() {
