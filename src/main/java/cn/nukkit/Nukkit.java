@@ -153,8 +153,6 @@ public class Nukkit {
             JS_DEBUG_LIST = Arrays.stream(options.valueOf(jsDebugPortSpec).split(",")).toList();
         }
 
-        Libdeflate.ensureAvailable();
-
         try {
             if (TITLE) {
                 System.out.print((char) 0x1b + "]0;Nukkit is starting up..." + (char) 0x07);
