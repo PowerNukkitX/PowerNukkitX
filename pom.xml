@@ -488,6 +488,11 @@
             <artifactId>oshi-core</artifactId>
             <version>5.8.7</version>
         </dependency>
+        <dependency>
+            <groupId>cn.powernukkitx</groupId>
+            <artifactId>libdeflate-java</artifactId>
+            <version>0.0.1-PNX</version>
+        </dependency>
     </dependencies>
 
     <build>
