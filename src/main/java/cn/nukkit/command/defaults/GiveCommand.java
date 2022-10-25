@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.BlockUnknown;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -17,7 +16,6 @@ import cn.nukkit.utils.TextFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author xtypr
@@ -147,16 +145,7 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.give.success", new String[]{item.getName(), " " + count, sender.getName()}, true, sendCommandFeedback));
-            else {
-                Command.broadcastCommandMessage(sender, new TranslationContainer(
-                        "%commands.give.success",
-                        item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
-                        String.valueOf(item.getCount()),
-                        players.stream().map(Player::getName).collect(Collectors.joining(" "))));
-            }
+            sender.sendMessage(new CommandOutputContainer("commands.give.success", new String[]{item.getName(), " " + count, sender.getName()}, true, sendCommandFeedback));
         }
         return true;
     }

@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CapturingCommandSender;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.Plugin;

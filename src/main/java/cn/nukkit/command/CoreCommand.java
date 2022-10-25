@@ -1,8 +1,7 @@
-package cn.nukkit.command.defaults;
+package cn.nukkit.command;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.Command;
 
 @PowerNukkitXOnly
 @Since("1.19.31-r2")

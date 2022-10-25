@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;

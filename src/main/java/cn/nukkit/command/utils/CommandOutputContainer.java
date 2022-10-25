@@ -7,6 +7,9 @@ public class CommandOutputContainer extends TextContainer implements Cloneable {
     protected Boolean successed;
     protected Boolean sendCommandFeedback;
 
+    public CommandOutputContainer(String message, Boolean successed, Boolean sendCommandFeedback) {
+        this(message, new String[]{}, successed, sendCommandFeedback);
+    }
 
     public CommandOutputContainer(String messageId, String[] parameters, Boolean successed, Boolean sendCommandFeedback) {
         super(messageId);
