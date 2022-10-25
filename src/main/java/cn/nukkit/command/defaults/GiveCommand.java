@@ -7,8 +7,8 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandOutputContainer;
 import cn.nukkit.command.utils.EntitySelector;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.lang.TranslationContainer;
@@ -38,65 +38,63 @@ public class GiveCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
         if (!this.testPermission(sender)) {
             return false;
         }
-
         if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
-            return true;
-        }
-
-        List<Entity> entities = List.of();
-        if (EntitySelector.hasArguments(args[0])) {
-            entities = EntitySelector.matchEntities(sender, args[0]);
-        } else if (sender.getServer().getPlayer(args[0]) != null) {
-            entities = List.of(sender.getServer().getPlayer(args[0]));
-        }
-
-        List<Player> players = entities.stream().filter(entity -> entity instanceof Player).map(p -> (Player) p).toList();
-        Item item;
-
-        try {
-            item = Item.fromString(args[1]);
-        } catch (Exception e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-            return true;
-        }
-
-//        if (item.getName().equals("Air")){
-//            Command.broadcastCommandMessage(sender, new TranslationContainer(
-//                    "%commands.give.success",
-//                    item.getName() + " (minecraft:air)",
-//                    String.valueOf(item.getCount()),
-//                    players.stream().map(p -> p.getName()).collect(Collectors.joining(" "))));
-//            return true;
-//        }
-
-        if (item.isNull() && item.getId() != 0) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, args.length == 0 ? -1 : 0), false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
 
-        if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
-            sender.sendMessage(new TranslationContainer("commands.give.block.notFound", args[1]));
-            return true;
+        final List<Player> players = new ArrayList<>();
+        if (EntitySelector.hasArguments(args[0])) {
+            EntitySelector.matchEntities(sender, args[0]).stream().filter(entity -> entity instanceof Player).map(e -> (Player) e).forEach(players::add);
+        } else if (sender.getServer().getPlayer(args[0]) != null) {
+            players.add(sender.getServer().getPlayer(args[0]));
         }
 
-        int count;
+        Item item;
         try {
-            if (args.length <= 2) {
-                count = 1;
-            } else {
-                count = Integer.parseInt(args[2]);
-            }
-        } catch (NumberFormatException e) {
-            count = 1;
+            item = Item.fromString(args[1]);
+        } catch (Exception e) {
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            return false;
         }
+
+        if (item.isNull()) {
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
+            return false;
+        } else if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer("commands.give.block.notFound", args[1]));
+            return false;
+        }
+
+        int count = 1;
+
+        if (args.length > 2) {
+            try {
+                count = Integer.parseInt(args[2]);
+            } catch (NumberFormatException ignored) {}
+        }
+
         if (count <= 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.num.tooSmall", new String[]{args[2], " 1"}, false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;
         }
         item.setCount(count);
@@ -106,17 +104,22 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (item.getDamage() < 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.give.item.invalid", new String[]{item.getNamespaceId().split(":")[1]}, false, sendCommandFeedback));
+            else
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return true;
         }
 
         if (args.length >= 5) {
-            Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(Arrays.stream(Arrays.copyOfRange(args, 4, args.length)).collect(Collectors.joining("")));
+            Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(String.join("", Arrays.copyOfRange(args, 4, args.length)));
             item.readItemJsonComponents(components);
         }
 
         if (players.size() == 0) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.generic.noTargetMatch", new String[]{}, false, sendCommandFeedback));
+            else sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return false;
         }
 
@@ -145,11 +148,15 @@ public class GiveCommand extends VanillaCommand {
                 player.dropItem(drop);
             }
 
-            Command.broadcastCommandMessage(sender, new TranslationContainer(
-                    "%commands.give.success",
-                    item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
-                    String.valueOf(item.getCount()),
-                    players.stream().map(p -> p.getName()).collect(Collectors.joining(" "))));
+            if (sender.isPlayer())
+                sender.sendMessage(new CommandOutputContainer("commands.give.success", new String[]{item.getName(), " " + count, sender.getName()}, true, sendCommandFeedback));
+            else {
+                Command.broadcastCommandMessage(sender, new TranslationContainer(
+                        "%commands.give.success",
+                        item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")",
+                        String.valueOf(item.getCount()),
+                        players.stream().map(Player::getName).collect(Collectors.joining(" "))));
+            }
         }
         return true;
     }

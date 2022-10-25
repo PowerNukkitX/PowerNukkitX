@@ -45,7 +45,7 @@ public class TitleCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
         if (!this.testPermission(sender)) {
             return true;
         }

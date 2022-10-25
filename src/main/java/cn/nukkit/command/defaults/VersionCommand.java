@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
  * @author xtypr
  * @since 2015/11/12
  */
-public class VersionCommand extends VanillaCommand {
+public class VersionCommand extends CoreCommand {
 
     private List<Query> queryQueue = new LinkedList<>();
     private int lastUpdateTick = 0;

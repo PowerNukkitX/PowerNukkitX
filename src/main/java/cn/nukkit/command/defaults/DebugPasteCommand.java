@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Log4j2
-public class DebugPasteCommand extends VanillaCommand {
+public class DebugPasteCommand extends CoreCommand {
 
     private static final String ENDPOINT = "https://debugpaste.powernukkit.org/paste.php";
     private static final String USER_AGENT = "PowerNukkit/" + Nukkit.VERSION;

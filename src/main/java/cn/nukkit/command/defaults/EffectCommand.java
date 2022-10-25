@@ -23,7 +23,7 @@ import java.util.List;
  * @author Snake1999 and Pub4Game
  * @since 2016/1/23
  */
-public class EffectCommand extends Command {
+public class EffectCommand extends VanillaCommand {
     public EffectCommand(String name) {
         super(name, "commands.effect.description");
         this.setPermission("nukkit.command.effect");
@@ -50,7 +50,7 @@ public class EffectCommand extends Command {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
         if (!this.testPermission(sender)) {
             return false;
         }

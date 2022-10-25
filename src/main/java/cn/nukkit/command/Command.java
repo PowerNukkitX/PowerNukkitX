@@ -147,7 +147,7 @@ public abstract class Command {
             return pos + Double.parseDouble(arg.substring(1));
         }
     }
-    
+
     public abstract boolean execute(CommandSender sender, String commandLabel, String[] args);
 
     public String getName() {
@@ -249,7 +249,7 @@ public abstract class Command {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public String getCommandFormatTips(){
+    public String getCommandFormatTips() {
         StringBuilder builder = new StringBuilder();
         for (String form : this.getCommandParameters().keySet()) {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
@@ -258,14 +258,14 @@ public abstract class Command {
                 if (!commandParameter.optional) {
                     if (commandParameter.enumData == null) {
                         builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
-                    }else{
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                    } else {
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
-                }else{
+                } else {
                     if (commandParameter.enumData == null) {
                         builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
-                    }else{
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                    } else {
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }
@@ -338,7 +338,7 @@ public abstract class Command {
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
         if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
-            (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
+                (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
             return;
         }
 

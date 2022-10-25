@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.utils.CommandOutputContainer;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
@@ -62,10 +63,7 @@ import cn.nukkit.network.CompressionProvider;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.types.ContainerIds;
-import cn.nukkit.network.protocol.types.NetworkInventoryAction;
-import cn.nukkit.network.protocol.types.PacketCompressionAlgorithm;
-import cn.nukkit.network.protocol.types.PlayerAbility;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.session.NetworkPlayerSession;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
@@ -151,12 +149,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int CRAFTING_ANVIL = 2;
     public static final int CRAFTING_ENCHANT = 3;
     public static final int CRAFTING_BEACON = 4;
-    public static final @PowerNukkitOnly int CRAFTING_GRINDSTONE = 1000;
-    public static final @PowerNukkitOnly int CRAFTING_STONECUTTER = 1001;
-    public static final @PowerNukkitOnly int CRAFTING_CARTOGRAPHY = 1002;
-    public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
+    public static final @PowerNukkitOnly
+    int CRAFTING_GRINDSTONE = 1000;
+    public static final @PowerNukkitOnly
+    int CRAFTING_STONECUTTER = 1001;
+    public static final @PowerNukkitOnly
+    int CRAFTING_CARTOGRAPHY = 1002;
+    public static final @PowerNukkitOnly
+    int CRAFTING_SMITHING = 1003;
     public static final @PowerNukkitXOnly
-    @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
+    @Since("1.19.21-r1")
+    int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float MAXIMUM_SPEED = 0.5f;
@@ -169,9 +172,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ANVIL_WINDOW_ID = 2;
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
-    public static final @PowerNukkitOnly int GRINDSTONE_WINDOW_ID = dynamic(5);
+    public static final @PowerNukkitOnly
+    int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final @Since("1.4.0.0-PN")
-    @PowerNukkitOnly int SMITHING_WINDOW_ID = dynamic(6);
+    @PowerNukkitOnly
+    int SMITHING_WINDOW_ID = dynamic(6);
 
     @Since("FUTURE")
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
@@ -4789,6 +4794,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendMessage(TextContainer message) {
         if (message instanceof TranslationContainer) {
             this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
+            return;
+        } else if (message instanceof CommandOutputContainer op) {
+            var pk = new CommandOutputPacket();
+            pk.messages.add(new CommandOutputMessage(op.isSuccessed(), op.getText(), op.getParameters()));
+            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
+            pk.type = op.isSendCommandFeedback() ? CommandOutputType.ALL_OUTPUT : CommandOutputType.SILENT;
+            pk.successCount = op.isSuccessed() ? 1 : 0;//todo 发现>1的情况
+            this.dataPacket(pk);
             return;
         }
         this.sendMessage(message.getText());

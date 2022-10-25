@@ -13,7 +13,7 @@ public final class CommandOriginData {
     public final Origin type;
     public final UUID uuid;
     public final String requestId;
-    private final Long varlong;
+    private final Long varlong;//event
 
     public CommandOriginData(Origin type, UUID uuid, String requestId, Long varlong) {
         this.type = type;
@@ -41,6 +41,10 @@ public final class CommandOriginData {
         ENTITY,
         VIRTUAL,
         GAME_ARGUMENT,
-        ENTITY_SERVER
+        ENTITY_SERVER,
+        PRECOMPILED,
+        GAME_DIRECTOR_ENTITY_SERVER,
+        SCRIPT,
+        EXECUTE_CONTEXT
     }
 }

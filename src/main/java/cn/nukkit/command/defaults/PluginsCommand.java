@@ -11,7 +11,7 @@ import java.util.Map;
  * @author xtypr
  * @since 2015/11/12
  */
-public class PluginsCommand extends VanillaCommand {
+public class PluginsCommand extends CoreCommand {
 
     public PluginsCommand(String name) {
         super(name,

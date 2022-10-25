@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -17,7 +16,7 @@ import java.util.List;
  * @author Snake1999
  * @since 2016/1/22
  */
-public class XpCommand extends Command {
+public class XpCommand extends VanillaCommand {
     public XpCommand(String name) {
         super(name, "commands.xp.description");
         this.setPermission("nukkit.command.xp");
@@ -33,7 +32,7 @@ public class XpCommand extends Command {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
         if (!this.testPermission(sender)) {
             return false;
         }

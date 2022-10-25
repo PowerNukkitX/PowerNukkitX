@@ -10,8 +10,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.math.BVector3;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -76,7 +76,7 @@ public class TeleportCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
         if (!this.testPermission(sender)) {
             return false;
         }
