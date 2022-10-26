@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.item.*;
@@ -8,6 +10,7 @@ import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
 import com.google.common.collect.ImmutableMap;
 import lombok.ToString;
@@ -161,8 +164,11 @@ public class AddEntityPacket extends DataPacket {
     public float headYaw;
     //todo: check what's the usage of this
     public float bodyYaw = -1;
-    public EntityMetadata metadata = new EntityMetadata();
+    @PowerNukkitXOnly
+    @Since("1.19.40-r1")
     public Attribute[] attributes = Attribute.EMPTY_ARRAY;
+    public EntityMetadata metadata = new EntityMetadata();
+    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
     public EntityLink[] links = EntityLink.EMPTY_ARRAY;
 
     @Override
@@ -187,11 +193,23 @@ public class AddEntityPacket extends DataPacket {
         this.putLFloat(this.bodyYaw != -1 ? this.bodyYaw : this.yaw);
         this.putAttributeList(this.attributes);
         this.put(Binary.writeMetadata(this.metadata));
+        //syncedProperties
+        this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
+        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
+            this.putUnsignedVarInt(i);
+            this.putVarInt(this.syncedProperties.intProperties()[i]);
+        }
+        this.putUnsignedVarInt(this.syncedProperties.floatProperties().length);
+        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
+            this.putUnsignedVarInt(i);
+            this.putLFloat(this.syncedProperties.floatProperties()[i]);
+        }
         this.putUnsignedVarInt(this.links.length);
         for (EntityLink link : links) {
             putEntityLink(link);
         }
     }
 
-    public AddEntityPacket(){}
+    public AddEntityPacket() {
+    }
 }
