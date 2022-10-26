@@ -23,7 +23,7 @@
 
 PowerNukkitX的优势：
 
-1. 支持1.19.30协议。
+1. 支持1.19.40协议。
 2. 原生支持384限高（目前仅限主世界，其余则为256格限高）。
 3. 原生支持地狱世界，无需另外安装插件补丁等。
 4. 支持3D生物群系（完善中）。<!--自定义维度接口 TODO-->
@@ -39,7 +39,7 @@ PowerNukkitX的优势：
 
 ## 🎮 如何使用
 
-_**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量.**_
+**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变量.**
 
 ### 我们建议您使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)运行PowerNukkitX,为什么?
 
@@ -49,8 +49,8 @@ _**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变�
 4. 纯命令行操作,简洁有效,linux命令风格
 5. github版本同步,更新版本无需重复下载依赖库,只需一键命令  
 
-##### 您可以在[此处](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何启动PNX。
-##### 如果您的平台不适合使用PNX-CLI,那么请查看以下步骤。
+您可以在[此处](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何启动PNX。
+如果您的平台不适合使用PNX-CLI或者你不想使用它,那么请查看以下步骤。
 
 ### 使用步骤:
 
@@ -58,7 +58,7 @@ _**PowerNukkitX要求的最低Java版本为17,请自行安装且配置环境变�
 2. 将libs.tar.gz中的libs文件夹解压到和powernukkitx.jar同一路径下
 3. 运行以下命令
 
-##### Windows版本
+Windows版本
 
 ```
 java -Dfile.encoding=UTF-8 ^
@@ -75,7 +75,7 @@ java -Dfile.encoding=UTF-8 ^
 cn.nukkit.Nukkit
 ```
 
-##### Linux版本
+Linux版本
 
 ```
 java -Dfile.encoding=UTF-8 \
@@ -132,7 +132,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.31-r1'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.40-r1'
 }
 ```
 
@@ -142,7 +142,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.31-r1</version>
+        <version>1.19.40-r1</version>
     </dependency>
 </dependencies>
 ```
