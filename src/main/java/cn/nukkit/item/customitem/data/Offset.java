@@ -11,7 +11,7 @@ import cn.nukkit.math.Vector3f;
  * This represents the offset object in RenderOffsets
  */
 @PowerNukkitXOnly
-@Since("1.19.31-r2")
+@Since("1.19.40-r1")
 public class Offset {
     private Vector3f position;
     private Vector3f rotation;
