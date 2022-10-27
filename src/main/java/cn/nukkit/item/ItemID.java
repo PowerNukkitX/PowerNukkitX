@@ -239,40 +239,49 @@ public interface ItemID {
     int TURTLE_SHELL = 469;
     int PHANTOM_MEMBRANE = 470;
     int CROSSBOW = 471;
-    @PowerNukkitOnly int SPRUCE_SIGN = 472;
-    @PowerNukkitOnly int BIRCH_SIGN = 473;
-    @PowerNukkitOnly int JUNGLE_SIGN = 474;
-    @PowerNukkitOnly int ACACIA_SIGN = 475;
-    @PowerNukkitOnly int DARKOAK_SIGN = 476;
-    @PowerNukkitOnly int DARK_OAK_SIGN = 476;
+    @PowerNukkitOnly
+    int SPRUCE_SIGN = 472;
+    @PowerNukkitOnly
+    int BIRCH_SIGN = 473;
+    @PowerNukkitOnly
+    int JUNGLE_SIGN = 474;
+    @PowerNukkitOnly
+    int ACACIA_SIGN = 475;
+    @PowerNukkitOnly
+    int DARKOAK_SIGN = 476;
+    @PowerNukkitOnly
+    int DARK_OAK_SIGN = 476;
     int SWEET_BERRIES = 477;
-
-    int RECORD_13 = 500;
-    int RECORD_CAT = 501;
-    int RECORD_BLOCKS = 502;
-    int RECORD_CHIRP = 503;
-    int RECORD_FAR = 504;
-    int RECORD_MALL = 505;
-    int RECORD_MELLOHI = 506;
-    int RECORD_STAL = 507;
-    int RECORD_STRAD = 508;
-    int RECORD_WARD = 509;
-    int RECORD_11 = 510;
-    int RECORD_WAIT = 511;
+    int GLOW_INK_SAC = 503;
+    int COPPER_INGOT = 504;
+    int RAW_IRON = 505;
+    int RAW_GOLD = 506;
+    int RAW_COPPER = 507;
 
     int SHIELD = 513;
+
+    int RECORD_13 = 534;
+    int RECORD_CAT = 535;
+    int RECORD_BLOCKS = 536;
+    int RECORD_CHIRP = 537;
+    int RECORD_FAR = 538;
+    int RECORD_MALL = 539;
+    int RECORD_MELLOHI = 540;
+    int RECORD_STAL = 541;
+    int RECORD_STRAD = 542;
+    int RECORD_WARD = 543;
+    int RECORD_11 = 544;
+    int RECORD_WAIT = 545;
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     int GLOW_ITEM_FRAME = 623;
-
-    @Since("1.6.0.0-PNX")
-    @PowerNukkitXOnly
-    int ITEM_MANGROVE_DOOR = 633;
-
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     int RECORD_OTHERSIDE = 626;
+    @Since("1.6.0.0-PNX")
+    @PowerNukkitXOnly
+    int ITEM_MANGROVE_DOOR = 633;
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly

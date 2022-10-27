@@ -385,20 +385,26 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[DARKOAK_SIGN] = ItemDarkOakSign.class; //476
             list[SWEET_BERRIES] = ItemSweetBerries.class; //477
 
-            list[RECORD_13] = ItemRecord13.class; //500
-            list[RECORD_CAT] = ItemRecordCat.class; //501
-            list[RECORD_BLOCKS] = ItemRecordBlocks.class; //502
-            list[RECORD_CHIRP] = ItemRecordChirp.class; //503
-            list[RECORD_FAR] = ItemRecordFar.class; //504
-            list[RECORD_MALL] = ItemRecordMall.class; //505
-            list[RECORD_MELLOHI] = ItemRecordMellohi.class; //506
-            list[RECORD_STAL] = ItemRecordStal.class; //507
-            list[RECORD_STRAD] = ItemRecordStrad.class; //508
-            list[RECORD_WARD] = ItemRecordWard.class; //509
-            list[RECORD_11] = ItemRecord11.class; //510
-            list[RECORD_WAIT] = ItemRecordWait.class; //511
-
             list[SHIELD] = ItemShield.class; //513
+
+            list[GLOW_INK_SAC] = ItemGlowInkSac.class; //503
+            list[COPPER_INGOT] = ItemIngotCopper.class; //504
+            list[RAW_IRON] = ItemRawIron.class; //505
+            list[RAW_GOLD] = ItemRawGold.class; //506
+            list[RAW_COPPER] = ItemRawCopper.class; //507
+
+            list[RECORD_13] = ItemRecord13.class; //534
+            list[RECORD_CAT] = ItemRecordCat.class; //535
+            list[RECORD_BLOCKS] = ItemRecordBlocks.class; //536
+            list[RECORD_CHIRP] = ItemRecordChirp.class; //537
+            list[RECORD_FAR] = ItemRecordFar.class; //538
+            list[RECORD_MALL] = ItemRecordMall.class; //539
+            list[RECORD_MELLOHI] = ItemRecordMellohi.class; //540
+            list[RECORD_STAL] = ItemRecordStal.class; //541
+            list[RECORD_STRAD] = ItemRecordStrad.class; //542
+            list[RECORD_WARD] = ItemRecordWard.class; //543
+            list[RECORD_11] = ItemRecord11.class; //544
+            list[RECORD_WAIT] = ItemRecordWait.class; //545
 
             list[GLOW_ITEM_FRAME] = ItemItemFrameGlow.class; //623
 
@@ -471,12 +477,6 @@ public class Item implements Cloneable, BlockID, ItemID {
                     log.warn("Failed to cache the namespaced id resolution of the item {}", aClass, e);
                 }
             }
-
-            runtimeMapping.registerNamespacedIdItem(ItemRawIron.class);
-            runtimeMapping.registerNamespacedIdItem(ItemRawGold.class);
-            runtimeMapping.registerNamespacedIdItem(ItemRawCopper.class);
-            runtimeMapping.registerNamespacedIdItem(ItemGlowInkSac.class);
-            runtimeMapping.registerNamespacedIdItem(ItemIngotCopper.class);
         }
 
         initCreativeItems();

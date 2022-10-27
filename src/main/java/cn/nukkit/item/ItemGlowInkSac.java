@@ -5,8 +5,16 @@ import cn.nukkit.api.Since;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class ItemGlowInkSac extends StringItem{
+public class ItemGlowInkSac extends Item {
     public ItemGlowInkSac() {
-        super(MinecraftItemID.GLOW_INK_SAC.getNamespacedId(), "Glow Ink Sac");
+        this(0, 1);
+    }
+
+    public ItemGlowInkSac(Integer meta) {
+        this(meta, 1);
+    }
+
+    public ItemGlowInkSac(Integer meta, int count) {
+        super(GLOW_INK_SAC, 0, count, "Glow Ink Sac");
     }
 }

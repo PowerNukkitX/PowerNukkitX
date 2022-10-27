@@ -1,18 +1,23 @@
 package cn.nukkit.item;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.Since;
 
 /**
  * @author joserobjr
  * @since 2021-06-12
  */
 @PowerNukkitOnly
-@Since("FUTURE")
-public class ItemRawIron extends ItemRawMaterial {
-    @PowerNukkitOnly
-    @Since("FUTURE")
+public class ItemRawIron extends Item {
     public ItemRawIron() {
-        super(MinecraftItemID.RAW_IRON.getNamespacedId(), "Raw Iron");
+        this(0, 1);
+    }
+
+    public ItemRawIron(Integer meta) {
+        this(meta, 1);
+    }
+
+    @PowerNukkitOnly
+    public ItemRawIron(Integer meta, int count) {
+        super(RAW_IRON, 0, count, "Raw Iron");
     }
 }
