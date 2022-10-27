@@ -567,24 +567,25 @@
     <item namespaced-id="minecraft:birch_sign" numeric-id="473" name="Birch Sign" fuel-time="200" stack-size="16"/>
     <item namespaced-id="minecraft:jungle_sign" numeric-id="474" name="Jungle Sign" fuel-time="200" stack-size="16"/>
     <item namespaced-id="minecraft:acacia_sign" numeric-id="475" name="Acacia Sign" fuel-time="200" stack-size="16"/>
-    <item namespaced-id="minecraft:dark_oak_sign" numeric-id="476" name="Dark Oak Sign" fuel-time="200" stack-size="16"/>
+    <item namespaced-id="minecraft:dark_oak_sign" numeric-id="476" name="Dark Oak Sign" fuel-time="200"
+          stack-size="16"/>
     <item namespaced-id="minecraft:sweet_berries" numeric-id="477" name="Sweet Berries"/>
     <!-- TODO Implement
     <item namespaced-id="minecraft:camera" numeric-id="498" name="Camera"/>
     <item namespaced-id="minecraft:compound" numeric-id="499" name="Compound"/>
     -->
-    <item namespaced-id="minecraft:music_disc_13" numeric-id="500" name="Music Disc 13" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_cat" numeric-id="501" name="Music Disc Cat" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_blocks" numeric-id="502" name="Music Disc Blocks" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_chirp" numeric-id="503" name="Music Disc Chirp" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_far" numeric-id="504" name="Music Disc Far" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_mall" numeric-id="505" name="Music Disc Mall" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_mellohi" numeric-id="506" name="Music Disc Mellohi" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_stal" numeric-id="507" name="Music Disc Stal" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_strad" numeric-id="508" name="Music Disc Strad" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_ward" numeric-id="509" name="Music Disc Ward" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_11" numeric-id="510" name="Music Disc 11" stack-size="1"/>
-    <item namespaced-id="minecraft:music_disc_wait" numeric-id="511" name="Music Disc Wait" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_13" numeric-id="534" name="Music Disc 13" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_cat" numeric-id="535" name="Music Disc Cat" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_blocks" numeric-id="536" name="Music Disc Blocks" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_chirp" numeric-id="537" name="Music Disc Chirp" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_far" numeric-id="538" name="Music Disc Far" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_mall" numeric-id="539" name="Music Disc Mall" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_mellohi" numeric-id="540" name="Music Disc Mellohi" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_stal" numeric-id="541" name="Music Disc Stal" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_strad" numeric-id="542" name="Music Disc Strad" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_ward" numeric-id="543" name="Music Disc Ward" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_11" numeric-id="544" name="Music Disc 11" stack-size="1"/>
+    <item namespaced-id="minecraft:music_disc_wait" numeric-id="545" name="Music Disc Wait" stack-size="1"/>
     <item namespaced-id="minecraft:shield" numeric-id="513" name="Shield" stack-size="1" durability="337" tool="true"/>
     <item namespaced-id="minecraft:campfire" numeric-id="720" name="Campfire" stack-size="1"/>
     <item namespaced-id="minecraft:suspicious_stew" numeric-id="734" name="Suspicious Stew" stack-size="1"/>
@@ -592,9 +593,12 @@
     <item namespaced-id="minecraft:honey_bottle" numeric-id="737" name="Honey Bottle" stack-size="16"/>
     <item namespaced-id="minecraft:lodestone_compass" numeric-id="741" name="Lodestone Compass" stack-size="1"/>
     <item namespaced-id="minecraft:netherite_ingot" numeric-id="742" name="Netherite Ingot" lava-resistant="true"/>
-    <item namespaced-id="minecraft:netherite_sword" numeric-id="743" name="Netherite Sword" tool="true" tier="netherite" sword="true" lava-resistant="true" stack-size="1" durability="2032"/>
-    <item namespaced-id="minecraft:netherite_shovel" numeric-id="744" name="Netherite Shovel" tool="true" tier="netherite" shovel="true" lava-resistant="true" stack-size="1" durability="2032"/>
-    <item namespaced-id="minecraft:netherite_pickaxe" numeric-id="745" name="Netherite Pickaxe" tool="true" tier="netherite" pickaxe="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_sword" numeric-id="743" name="Netherite Sword" tool="true" tier="netherite"
+          sword="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_shovel" numeric-id="744" name="Netherite Shovel" tool="true"
+          tier="netherite" shovel="true" lava-resistant="true" stack-size="1" durability="2032"/>
+    <item namespaced-id="minecraft:netherite_pickaxe" numeric-id="745" name="Netherite Pickaxe" tool="true"
+          tier="netherite" pickaxe="true" lava-resistant="true" stack-size="1" durability="2032"/>
     <item namespaced-id="minecraft:netherite_axe" numeric-id="746" name="Netherite Axe" tool="true" tier="netherite" axe="true" lava-resistant="true" stack-size="1" durability="2032"/>
     <item namespaced-id="minecraft:netherite_hoe" numeric-id="747" name="Netherite Hoe" tool="true" tier="netherite" hoe="true" lava-resistant="true" stack-size="1" durability="2032"/>
     <item namespaced-id="minecraft:netherite_helmet" numeric-id="748" name="Netherite Helmet" armor="true" tier="netherite" helmet="true" lava-resistant="true" stack-size="1" durability="407"/>
