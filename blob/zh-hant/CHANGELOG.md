@@ -36,7 +36,7 @@
 
 ## 修改記錄
 
-- [#719] 增強`ProjectileLaunchEvent`事件，
+- [#719] 增強`ProjectileLaunchEvent`事件。
 - [#726] 重做自定義功能（[點擊查看遷移文檔](https://github.com/PowerNukkitX/PowerNukkitX/pull/726#issuecomment-1281778804)）。
 - [#730] 移動優化。
 
