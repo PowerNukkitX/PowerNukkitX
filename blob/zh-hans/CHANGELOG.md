@@ -37,7 +37,7 @@
 ## 修改记录
 
 - [#719] 增强`ProjectileLaunchEvent`事件。
-- [#726] 重做自定义功能（[点击查看迁移文档](https://github.com/PowerNukkitX/PowerNukkitX/pull/726#issuecomment-1281778804)）。
+- [#726] 重做自定义功能 `(破坏性改动)`（[点击查看迁移文档](https://github.com/PowerNukkitX/PowerNukkitX/pull/726#issuecomment-1281778804)）。
 - [#730] 移动优化。
 
 ## BUG修复
