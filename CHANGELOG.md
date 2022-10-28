@@ -23,8 +23,8 @@ This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 5
 
 ## Fixes
 
-- [#733] 临时修复滴水石锥生长问题。
-- [#738] 修复`AnimateEntityPacket`数据包。
+- [#733] Temporary fix for dripstone cone growth issue.
+- [#738] Fix `AnimateEntityPacket` packet.
 
 ## [1.19.31-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.31-r1) - 2022-10-21
 This work in progress version supports Minecraft:BE `1.19.31 (Protocol Version 554)`.
