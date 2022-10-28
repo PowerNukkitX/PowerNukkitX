@@ -12,7 +12,7 @@ public abstract class Zlib {
     private static ZlibProvider provider;
 
     static {
-        providers = new ZlibProvider[3];
+        providers = new ZlibProvider[4];
         providers[2] = new ZlibThreadLocal();
         provider = providers[2];
     }
@@ -32,11 +32,18 @@ public abstract class Zlib {
                 if (providers[providerIndex] == null)
                     providers[providerIndex] = new ZlibThreadLocal();
                 break;
+            case 3:
+                if (providers[providerIndex] == null)
+                    providers[providerIndex] = new LibDeflateThreadLocal();
+                break;
             default:
                 throw new UnsupportedOperationException("Invalid provider: " + providerIndex);
         }
-        if (providerIndex != 2) {
+        if (providerIndex < 2) {
             log.warn(" - This Zlib will negatively affect performance");
+        }
+        if (providerIndex == 3) {
+            log.warn(" - This Zlib is still experimental! If you find any issues, please report them at github");
         }
         provider = providers[providerIndex];
     }

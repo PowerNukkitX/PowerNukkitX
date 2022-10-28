@@ -15,12 +15,12 @@ import java.util.zip.Deflater;
 @Fork(1)
 public class ChunkIOSimulateJMHTest {
     Deflater javaCompressor = new Deflater();
-    LibdeflateCompressor libdeflateCompressor = new LibdeflateCompressor(9);
+    LibdeflateCompressor libdeflateCompressor = new LibdeflateCompressor(6);
     byte[] data;
 
     @Setup
     public void setup() {
-        javaCompressor.setLevel(9);
+        javaCompressor.setLevel(1);
         data = new byte[64 * 1024];
         // fill random values
         for (int i = 0; i < data.length / 4; i++) {
