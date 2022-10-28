@@ -53,6 +53,7 @@
 - [#710] 修复`PlayerExperienceChangeEvent`事件无法被触发的BUG（在[#711]中修复）。
 - [#715] 修复所有门类方块无法在256+高度摆放（在[#717]中修复）。
 - [#718] 修复版本检查。
+- [#724] 修复潜声传感器在观察者模式下依然会被触发的漏洞（在[#728]中修复）。
 - [#732] 修复自定义物品name为空的判断（在[#734]中修复）。
 - [#735] 修复`CustomItemDefinition`中的一个错误。
 
@@ -1759,7 +1760,9 @@ Need to switch languages?
 [#718]: https://github.com/PowerNukkitX/PowerNukkitX/pull/718
 [#719]: https://github.com/PowerNukkitX/PowerNukkitX/pull/719
 [#721]: https://github.com/PowerNukkitX/PowerNukkitX/pull/721
+[#724]: https://github.com/PowerNukkitX/PowerNukkitX/issues/724
 [#726]: https://github.com/PowerNukkitX/PowerNukkitX/pull/726
+[#728]: https://github.com/PowerNukkitX/PowerNukkitX/pull/728
 [#730]: https://github.com/PowerNukkitX/PowerNukkitX/pull/730
 [#732]: https://github.com/PowerNukkitX/PowerNukkitX/issues/732
 [#733]: https://github.com/PowerNukkitX/PowerNukkitX/pull/733
