@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.powernukkitx.libdeflate.Libdeflate;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -18,7 +19,6 @@ public abstract class Zlib {
     }
 
     public static void setProvider(int providerIndex) {
-        log.info("Selected Zlib Provider: {} ({})", providerIndex, provider.getClass().getCanonicalName());
         switch (providerIndex) {
             case 0:
                 if (providers[providerIndex] == null)
@@ -33,19 +33,27 @@ public abstract class Zlib {
                     providers[providerIndex] = new ZlibThreadLocal();
                 break;
             case 3:
-                if (providers[providerIndex] == null)
-                    providers[providerIndex] = new LibDeflateThreadLocal();
+                if (Libdeflate.isAvailable()) {
+                    if (providers[providerIndex] == null)
+                        providers[providerIndex] = new LibDeflateThreadLocal();
+                } else {
+                    log.warn("his provider is not available, using the default ZlibThreadLocal");
+                    providerIndex = 2;
+                    if (providers[providerIndex] == null)
+                        providers[providerIndex] = new ZlibThreadLocal();
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Invalid provider: " + providerIndex);
         }
         if (providerIndex < 2) {
-            log.warn(" - This Zlib will negatively affect performance");
+            log.warn("This Zlib will negatively affect performance");
         }
         if (providerIndex == 3) {
-            log.warn(" - This Zlib is still experimental! If you find any issues, please report them at github");
+            log.warn("This Zlib is still experimental! If you find any issues, please report them at github");
         }
         provider = providers[providerIndex];
+        log.info("Selected Zlib Provider: {} ({})", providerIndex, provider.getClass().getCanonicalName());
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")

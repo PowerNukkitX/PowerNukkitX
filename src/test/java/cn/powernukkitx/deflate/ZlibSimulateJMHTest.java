@@ -19,11 +19,11 @@ import java.util.zip.Deflater;
 @Fork(1)
 public class ZlibSimulateJMHTest {
     byte[][] data;
-    static final int DATA_SIZE = 8 * 1024 - 2;
+    static final int DATA_SIZE = 256;
 
     @Setup
     public void setup() {
-        data = new byte[1024][DATA_SIZE];
+        data = new byte[16384][DATA_SIZE];
         // fill random values
         for (int i = 0; i < data.length; i++) {
             data[i] = new byte[DATA_SIZE];
@@ -44,7 +44,7 @@ public class ZlibSimulateJMHTest {
     }
 
     @Benchmark
-    public void libdeflateDeflate(Blackhole blackhole) throws IOException {
+    public void libdeflateZlib(Blackhole blackhole) throws IOException {
         Zlib.setProvider(3);
         byte[] in = data[ThreadLocalRandom.current().nextInt(data.length)];
         byte[] compressed = Zlib.deflate(in);
