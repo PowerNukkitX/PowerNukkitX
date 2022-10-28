@@ -23,26 +23,26 @@ Join US:
 
 What's new in PowerNukkitX? Let's See：
 
-1. Support for 1.19.30 protocol.
-2. Native support for 384 height limits (Currently only the main world, the rest are limited to 256 blocks).
-3. Native support for The Nether world, no need to install additional plug-in patches, etc.
-4. Support 3D biomes (improving) .<!--Custom dimension interface TODO-->
-5. Native support for vanilla commands and command block, etc.
+1. Support for 1.19.40 protocol.
+2. Support for 384 world height.
+3. Support for The Nether world, no need to install additional plugin.
+4. Support 3D biomes.<!--Custom dimension interface TODO-->
+5. Support for vanilla commands and command block.
 6. Built-in [Terra](https://github.com/PolyhedralDev/Terra) generator (if you have
    questions [click here to view](https://doc.powernukkitx.cn/en-us/faq/Terra_faq.html)) .
-7. Support for writing plug-ins using the JavaSrcipt language (preliminary completion, development documentation can be
+7. Support for writing plugins using the JavaScript language (development documentation can be
    found [here](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)).
 8. Support custom blocks / items / entity (refinement in progress, [documentation](https://doc.powernukkitx.cn/) to be
    added).
-9. Built-in Bio AI, no need to install MobPlugin (under development, not perfect).
+9. Original Entity AI framework, no need to install MobPlugin (under development, Not all creature completed).
 10. Todo...
 
 ---
 
 ## 🎮 How to use
 
-_**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
-variables.**_
+**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
+variables.**
 
 ### We suggest that you use [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI) to run PowerNukkitX, Why?
 
@@ -53,8 +53,10 @@ variables.**_
 4. Pure command line operation, concise and effective, Linux command style
 5. Github version synchronization,update version does not need to repeat the download of dependent libraries,just a key
    command
-##### you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
-##### If your platform is not suitable for using PNX-CLI,then please read the following steps.
+
+you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
+
+If your platform is not suitable for using PNX-CLI or you do not want to it,then please read the following steps.
 
 ### Steps:
 
@@ -62,7 +64,7 @@ variables.**_
 2. Extract the libs folder in libs.tar.gz to the same path as powernukkitx.jar
 3. Run the following command
 
-##### Windows Version
+Windows Version
 
 ```
 java -Dfile.encoding=UTF-8 ^
@@ -79,7 +81,7 @@ java -Dfile.encoding=UTF-8 ^
 cn.nukkit.Nukkit
 ```
 
-##### Linux Version
+Linux Version
 
 ```
 java -Dfile.encoding=UTF-8 \
@@ -102,8 +104,8 @@ cn.nukkit.Nukkit
 <!-- Just Do it :-D -->
 <!--使用DeepL暴力翻译-->
 **PowerNukkitX** is a modified and optimized version based on PowerNukkit and Nukkit, fixing its bugs, adding more
-feature support, etc., such as [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (under improvement) plugin
-compatibility, etc.
+feature support,such as [LiteLoader](https://github.com/PowerNukkitX/LiteLoader-Libs) (WIP) plugin
+compatibility.
 
 * Please note that **PowerNukkitX** is not maintained by Cloudburst developers, it relies on the open source community
   to generate electricity with love. If you encounter any problems when using PowerNukkitX, you should
@@ -146,7 +148,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.30-r2'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.40-r1'
 }
 ```
 
@@ -156,7 +158,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.30-r2</version>
+        <version>1.19.40-r1</version>
     </dependency>
 </dependencies>
 ```
