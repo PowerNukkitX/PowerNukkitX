@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
+import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
 
 @PowerNukkitXOnly
@@ -13,6 +14,12 @@ public class PlayerChangeArmorStandEvent extends PlayerEvent implements Cancella
     private final Entity armorStand;
     private Item item;
     private final int slot;
+
+    private static final HandlerList handlers = new HandlerList();
+
+    public static HandlerList getHandlers() {
+        return handlers;
+    }
 
     public PlayerChangeArmorStandEvent(Player player, Entity armorStand, Item item, int slot) {
         this.player = player;
