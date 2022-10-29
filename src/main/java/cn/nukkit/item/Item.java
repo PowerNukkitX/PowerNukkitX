@@ -255,7 +255,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[PAPER] = ItemPaper.class; //339
             list[BOOK] = ItemBook.class; //340
             list[SLIMEBALL] = ItemSlimeball.class; //341
-            list[MINECART_WITH_CHEST] = ItemMinecartChest.class; //342
+            list[CHEST_MINECART] = ItemMinecartChest.class; //342
 
             list[EGG] = ItemEgg.class; //344
             list[COMPASS] = ItemCompass.class; //345
@@ -320,8 +320,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[COMPARATOR] = ItemRedstoneComparator.class; //404
             list[NETHER_BRICK] = ItemNetherBrick.class; //405
             list[QUARTZ] = ItemQuartz.class; //406
-            list[MINECART_WITH_TNT] = ItemMinecartTNT.class; //407
-            list[MINECART_WITH_HOPPER] = ItemMinecartHopper.class; //408
+            list[TNT_MINECART] = ItemMinecartTNT.class; //407
+            list[HOPPER_MINECART] = ItemMinecartHopper.class; //408
             list[PRISMARINE_SHARD] = ItemPrismarineShard.class; //409
             list[HOPPER] = ItemHopper.class;
             list[RAW_RABBIT] = ItemRabbitRaw.class; //411
