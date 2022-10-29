@@ -24,7 +24,7 @@ public class ItemMinecartTNT extends Item {
     }
 
     public ItemMinecartTNT(Integer meta, int count) {
-        super(TNT_MINECART, meta, count, "TNT Minecart");
+        super(TNT_MINECART, meta, count, "Minecart with TNT");
     }
 
     @Override
