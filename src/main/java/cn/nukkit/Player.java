@@ -5770,29 +5770,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    protected void broadcastMovement(Boolean teleport) {
-        if (teleport) {
-            //TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
-            //this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
-            //snaps to the teleport position, but then lerps back to the original position if a normal movement for the
-            //entity was recently broadcasted. This can be seen with players throwing ender pearls.
-            //TODO: remove this if the bug ever gets fixed (lol)
-            for (var player : hasSpawned.values()) {
-                despawnFrom(player);
-                spawnTo(player);
-            }
-        } else {
-            var pk = new MoveEntityAbsolutePacket();
-            pk.eid = this.getId();
-            pk.x = this.x;
-            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
-            pk.z = this.z;
-            pk.headYaw = yaw;
-            pk.pitch = pitch;
-            pk.yaw = yaw;
-            pk.onGround = this.onGround;
-            Server.broadcastPacket(hasSpawned.values(), pk);
-        }
+    protected void broadcastMovement(boolean teleport) {
+        var pk = new MoveEntityAbsolutePacket();
+        pk.eid = this.getId();
+        pk.x = this.x;
+        pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+        pk.z = this.z;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = teleport;
+        pk.onGround = this.onGround;
+        Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
     @Override
