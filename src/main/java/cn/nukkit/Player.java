@@ -5770,7 +5770,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    public void broadcastMovement(Boolean teleport) {
+    protected void broadcastMovement(Boolean teleport) {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
