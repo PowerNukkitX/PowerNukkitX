@@ -16,6 +16,7 @@ import java.util.zip.Deflater;
 public class ChunkIOSimulateJMHTest {
     Deflater javaCompressor = new Deflater();
     LibdeflateCompressor libdeflateCompressor = new LibdeflateCompressor(6);
+    ThreadLocal<LibdeflateCompressor> compressorThreadLocal = ThreadLocal.withInitial(() -> new LibdeflateCompressor(6));
     byte[] data;
 
     @Setup
@@ -53,9 +54,29 @@ public class ChunkIOSimulateJMHTest {
         blackhole.consume(compressed);
     }
 
+    @Benchmark
+    public void libdeflateDeflateNoReuse(Blackhole blackhole) {
+        byte[] compressed = new byte[64 * 1024];
+        try (var compressor = new LibdeflateCompressor(6)) {
+            int compressedLength = compressor.compress(data, compressed, CompressionType.DEFLATE);
+            blackhole.consume(compressedLength);
+            blackhole.consume(compressed);
+        }
+    }
+
+    @Benchmark
+    public void libdeflateDeflateThreadLocal(Blackhole blackhole) {
+        byte[] compressed = new byte[64 * 1024];
+        var compressor = compressorThreadLocal.get();
+        int compressedLength = compressor.compress(data, compressed, CompressionType.DEFLATE);
+        blackhole.consume(compressedLength);
+        blackhole.consume(compressed);
+    }
+
     @TearDown
     public void tearDown() {
         javaCompressor.end();
         libdeflateCompressor.close();
+        compressorThreadLocal.get().close();
     }
 }

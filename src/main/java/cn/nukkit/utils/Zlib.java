@@ -1,7 +1,10 @@
 package cn.nukkit.utils;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.network.Network;
 import cn.powernukkitx.libdeflate.Libdeflate;
+import io.netty.handler.codec.compression.Snappy;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -18,6 +21,7 @@ public abstract class Zlib {
         provider = providers[2];
     }
 
+    @PowerNukkitXDifference(info = "Add the LibDeflate Provider", since = "1.19.40-r3")
     public static void setProvider(int providerIndex) {
         switch (providerIndex) {
             case 0:
@@ -34,6 +38,7 @@ public abstract class Zlib {
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
+                    Network.libDeflateAvailable = true;
                     if (providers[providerIndex] == null)
                         providers[providerIndex] = new LibDeflateThreadLocal();
                 } else {

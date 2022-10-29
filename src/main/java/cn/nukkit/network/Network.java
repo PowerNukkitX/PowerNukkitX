@@ -5,10 +5,9 @@ import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.ThreadCache;
-import cn.nukkit.utils.Utils;
-import cn.nukkit.utils.VarInt;
+import cn.nukkit.utils.*;
+import cn.powernukkitx.libdeflate.CompressionType;
+import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -36,8 +35,16 @@ public class Network {
 
     private static final ThreadLocal<Inflater> INFLATER_RAW = ThreadLocal.withInitial(() -> new Inflater(true));
     private static final ThreadLocal<Deflater> DEFLATER_RAW = ThreadLocal.withInitial(() -> new Deflater(7, true));
-    private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[2 * 1024 * 1024]);
-
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    private static final ThreadLocal<LibdeflateCompressor> PNX_DEFLATER_RAW = ThreadLocal.withInitial(() -> new PNXLibDeflater(7));
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    private static final int BUFFER_LEN = 2 * 1024 * 1024;
+    private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[BUFFER_LEN]);
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    public static boolean libDeflateAvailable = false;
 
     public static final byte CHANNEL_NONE = 0;
     public static final byte CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
@@ -108,7 +115,17 @@ public class Network {
     }
 
     @Since("1.3.0.0-PN")
+    @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
     public static byte[] deflateRaw(byte[] data, int level) throws IOException {
+        if (libDeflateAvailable) {
+            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new PNXLibDeflater(level);
+            byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+            int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
+            if (level != 7) {
+                deflater.close();
+            }
+            return Arrays.copyOf(buffer, size);
+        }
         Deflater deflater = DEFLATER_RAW.get();
         try {
             deflater.setLevel(level);
@@ -129,7 +146,23 @@ public class Network {
     }
 
     @Since("1.3.0.0-PN")
+    @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
     public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
+        if (libDeflateAvailable) {
+            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new PNXLibDeflater(level);
+            var bos = ThreadCache.fbaos.get();
+            bos.reset();
+            for (var data : datas) {
+                bos.write(data, 0, data.length);
+            }
+            var data = bos.toByteArray();
+            byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+            int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
+            if (level != 7) {
+                deflater.close();
+            }
+            return Arrays.copyOf(buffer, size);
+        }
         Deflater deflater = DEFLATER_RAW.get();
         try {
             deflater.setLevel(level);

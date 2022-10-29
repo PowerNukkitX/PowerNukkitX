@@ -8,6 +8,7 @@ import cn.powernukkitx.libdeflate.LibdeflateCompressor;
 import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -26,11 +27,12 @@ public class LibDeflateThreadLocal implements ZlibProvider {
         var bos = ThreadCache.fbaos.get();
         bos.reset();
         for (var data : datas) {
-            byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192 ? BUFFER.get() : new byte[data.length];
-            int compressedSize = deflater.compress(data, buffer, CompressionType.ZLIB);
-            bos.write(buffer, 0, compressedSize);
+            bos.write(data, 0, data.length);
         }
-        return bos.toByteArray();
+        var data = bos.toByteArray();
+        byte[] buffer = deflater.getCompressBound(data.length, CompressionType.ZLIB) < 8192 ? BUFFER.get() : new byte[data.length];
+        int compressedSize = deflater.compress(data, buffer, CompressionType.ZLIB);
+        return Arrays.copyOf(buffer, compressedSize);
     }
 
     @Override
