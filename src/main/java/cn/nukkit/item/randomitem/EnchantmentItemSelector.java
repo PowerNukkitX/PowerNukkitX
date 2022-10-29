@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author LT_Name
  */
 @PowerNukkitXOnly
-@Since("1.19.31-r2")
+@Since("1.19.40-r3")
 public class EnchantmentItemSelector extends ConstantItemSelector {
     public EnchantmentItemSelector(int id, Selector parent) {
         this(id, 0, parent);
@@ -31,12 +31,14 @@ public class EnchantmentItemSelector extends ConstantItemSelector {
 
     public EnchantmentItemSelector(Item item, Selector parent) {
         super(item, parent);
-        //TODO 这里可能是30级附魔台的概率
+        //TODO 贴近原版附魔概率
         List<Enchantment> enchantments = getSupportEnchantments(item);
         if (!enchantments.isEmpty()) {
             Random random = ThreadLocalRandom.current();
             Enchantment enchantment = enchantments.get(random.nextInt(enchantments.size()));
-            enchantment.setLevel(Utils.rand(1, enchantment.getMaxLevel()));
+            if (random.nextDouble() < 0.3) { //减少高等级附魔概率
+                enchantment.setLevel(Utils.rand(1, enchantment.getMaxLevel()));
+            }
             item.addEnchantment(enchantment);
         }
     }
