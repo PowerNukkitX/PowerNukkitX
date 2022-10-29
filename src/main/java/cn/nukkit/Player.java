@@ -1921,12 +1921,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (distance >= 0.05) {
                 double jump = 0;
                 double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                if (swimming != 0) distance = 0;
+                double distance2 = distance;
+                if (swimming != 0) distance2 = 0;
                 if (this.isSprinting()) {  //Running
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.2;
                     }
-                    this.getFoodData().updateFoodExpLevel(0.1 * distance + jump + swimming);
+                    this.getFoodData().updateFoodExpLevel(0.1 * distance2 + jump + swimming);
                 } else {
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.05;
