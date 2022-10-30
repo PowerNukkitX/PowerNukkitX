@@ -1,8 +1,11 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.PropertySyncData;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
@@ -36,6 +39,9 @@ public class AddPlayerPacket extends DataPacket {
     public Item item;
     public int gameType = Server.getInstance().getGamemode();
     public EntityMetadata metadata = new EntityMetadata();
+    @PowerNukkitXOnly
+    @Since("1.19.40-r1")
+    public PropertySyncData syncedProperties = new PropertySyncData(new int[]{}, new float[]{});
     //public EntityLink links = new EntityLink[0];
     public String deviceId = "";
     public int buildPlatform = -1;
@@ -61,6 +67,17 @@ public class AddPlayerPacket extends DataPacket {
         this.putSlot(this.item);
         this.putVarInt(this.gameType);
         this.put(Binary.writeMetadata(this.metadata));
+        //syncedProperties
+        this.putUnsignedVarInt(this.syncedProperties.intProperties().length);
+        for (int i = 0, len = this.syncedProperties.intProperties().length; i < len; ++i) {
+            this.putUnsignedVarInt(i);
+            this.putVarInt(this.syncedProperties.intProperties()[i]);
+        }
+        this.putUnsignedVarInt(this.syncedProperties.floatProperties().length);
+        for (int i = 0, len = this.syncedProperties.floatProperties().length; i < len; ++i) {
+            this.putUnsignedVarInt(i);
+            this.putLFloat(this.syncedProperties.floatProperties()[i]);
+        }
 //        this.putUnsignedVarInt(0); //TODO: Adventure settings
 //        this.putUnsignedVarInt(0);
 //        this.putUnsignedVarInt(0);

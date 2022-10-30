@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -104,7 +105,10 @@ public interface ItemID {
     int PAPER = 339;
     int BOOK = 340;
     int SLIMEBALL = 341;
-    int MINECART_WITH_CHEST = 342;
+    int CHEST_MINECART = 342;
+    @Deprecated
+    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "CHEST_MINECART")
+    int MINECART_WITH_CHEST = CHEST_MINECART;
 
     int EGG = 344;
     int COMPASS = 345;
@@ -179,8 +183,14 @@ public interface ItemID {
     int NETHER_BRICK = 405;
     int QUARTZ = 406;
     int NETHER_QUARTZ = 406;
-    int MINECART_WITH_TNT = 407;
-    int MINECART_WITH_HOPPER = 408;
+    int TNT_MINECART = 407;
+    @Deprecated
+    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "TNT_MINECART")
+    int MINECART_WITH_TNT = TNT_MINECART;
+    int HOPPER_MINECART = 408;
+    @Deprecated
+    @DeprecationDetails(since = "1.19.40-r2", reason = "Using new name instead", replaceWith = "HOPPER_MINECART")
+    int MINECART_WITH_HOPPER = HOPPER_MINECART;
     int PRISMARINE_SHARD = 409;
     int HOPPER = 410;
     int RAW_RABBIT = 411;

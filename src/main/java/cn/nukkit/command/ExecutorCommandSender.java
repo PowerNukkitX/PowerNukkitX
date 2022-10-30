@@ -17,6 +17,7 @@ import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 //used for executing commands in place of an entity
@@ -28,7 +29,7 @@ public class ExecutorCommandSender implements CommandSender {
     private Entity entity;
     private Location executeLocation;
 
-    public ExecutorCommandSender(CommandSender executor, Entity entity, Location executeLocation) {
+    public ExecutorCommandSender(@Nonnull CommandSender executor, @Nullable Entity entity, @Nullable Location executeLocation) {
         if (executor instanceof ExecutorCommandSender executorCommandSender) {
             this.executor = executorCommandSender.getExecutor();
         } else {
@@ -58,7 +59,7 @@ public class ExecutorCommandSender implements CommandSender {
 
     @Override
     public Server getServer() {
-        return entity.getServer();
+        return executor.getServer();
     }
 
     @Nonnull

@@ -8,7 +8,7 @@
 
     <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
-    <version>1.19.30-r2</version>
+    <version>1.19.40-r2</version>
 
     <inceptionYear>2022</inceptionYear>
     <organization>
@@ -476,7 +476,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.0+BETA</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -761,12 +761,12 @@
                     <includeOnlyProperties>
                     </includeOnlyProperties>
                     <useNativeGit>false</useNativeGit>
-                    <abbrevLength>7</abbrevLength>
+                    <abbrevLength>9</abbrevLength>
                     <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
                         <skip>false</skip>
                         <always>false</always>
-                        <abbrev>7</abbrev>
+                        <abbrev>9</abbrev>
                         <dirty>-dirty</dirty>
                         <match>*</match>
                         <tags>false</tags>

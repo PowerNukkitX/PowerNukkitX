@@ -630,18 +630,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     @PowerNukkitXOnly
-    @Deprecated(since = "1.19.21-r2")
-    @DeprecationDetails(since = "1.19.21-r2", reason = "Use EntityProvider instead.")
-    public static void registerCustomEntity(CustomEntityDefinition customEntityDefinition, Class<? extends Entity> entity) {
-        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom entity!");
-            return;
-        }
-        entityDefinitions.add(customEntityDefinition);
-        registerEntity(customEntityDefinition.getStringId(), entity, true);
-    }
-
-    @PowerNukkitXOnly
     @Since("1.19.21-r2")
     public static void registerCustomEntity(CustomEntityProvider customEntityProvider) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
@@ -1929,10 +1917,10 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
     @Override
     public Vector3 getDirectionVector() {
-        Vector3 vector = super.getDirectionVector();
-        return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
+        return super.getDirectionVector();
     }
 
     public Vector2 getDirectionPlane() {

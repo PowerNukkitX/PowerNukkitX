@@ -9,6 +9,8 @@ import {Food} from "cn.nukkit.item.food.Food";
 import {FoodNormal} from "cn.nukkit.item.food.FoodNormal";
 import {ItemCustomTool} from "cn.nukkit.item.customitem.ItemCustomTool";
 import {ItemCustomArmor} from "cn.nukkit.item.customitem.ItemCustomArmor";
+import {CustomItemDefinition} from "cn.nukkit.item.customitem.CustomItemDefinition";
+import {ItemCreativeCategory} from "cn.nukkit.item.customitem.data.ItemCreativeCategory";
 
 const JPrimitiveBoolean = Java.type("boolean");
 const JPrimitiveInt = Java.type("int");
@@ -122,32 +124,33 @@ export class BlockItemUtil {
      * @param name {string} 物品ID
      * @param type {CreativeInventoryType} 创造物品栏分类
      * @param textureName {string} 贴图名称，在材质包中可以指定
-     * @param textureSize {number} 贴图大小，单位为像素，如为非正方形则以长边为准
      * @param stackSize {number} 最大堆叠
      * @param canOnOffhand {boolean} 是否可以装备在副手
+     * @param handEquipped {boolean} 控制第三人称手持物品的显示方式
+     * @param foil {boolean} 自定义物品是否带有附魔光辉效果
      */
-    static registerSimpleItem(id, name, type, textureName, textureSize, stackSize, canOnOffhand) {
+    static registerSimpleItem(id, name, type, textureName, stackSize, canOnOffhand, handEquipped, foil) {
         const jClassBuilder = new JavaClassBuilder(id.replaceAll(":", "."), "cn.nukkit.item.customitem.ItemCustom");
         jClassBuilder.setJSDelegate({
             new() {
                 return [id, name, textureName];
             },
             constructor(javaThis) {
-                javaThis.setTextureSize(textureSize);
             },
-            allowOffHand() {
-                return canOnOffhand;
+            getDefinition(javaThis) {
+                return CustomItemDefinition
+                    .simpleBuilder(javaThis, ItemCreativeCategory.fromID(type.typeId))
+                    .allowOffHand(canOnOffhand)
+                    .handEquipped(handEquipped)
+                    .foil(foil)
+                    .build();
             },
             getMaxStackSize() {
                 return stackSize;
-            },
-            getCreativeCategory() {
-                return type.typeId;
             }
         }).addJavaConstructor("new", "constructor", [JString, JString, JString])
-            .addJavaMethod("allowOffHand", "allowOffHand", JPrimitiveBoolean)
             .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
-            .addJavaMethod("getCreativeCategory", "getCreativeCategory", JPrimitiveInt);
+            .addJavaMethod("getDefinition", "getDefinition", CustomItemDefinition);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
     }
 
@@ -157,7 +160,6 @@ export class BlockItemUtil {
      * @param name {string} 物品ID
      * @param type {CreativeInventoryType} 创造物品栏分类
      * @param textureName {string} 贴图名称，在材质包中可以指定
-     * @param textureSize {number} 贴图大小，单位为像素，如为非正方形则以长边为准
      * @param stackSize {number} 最大堆叠
      * @param canOnOffhand {boolean} 是否可以装备在副手
      * @param consumeTime {number} 食用耗时
@@ -165,26 +167,29 @@ export class BlockItemUtil {
      * @param canAlwaysEat {boolean} 是否能满饥饿度了还吃
      * @param restoreFood {number} 恢复的饥饿值
      * @param restoreSaturation {number} 恢复的饱食度
+     * @param handEquipped {boolean} 控制第三人称手持物品的显示方式
+     * @param foil {boolean} 自定义物品是否带有附魔光辉效果
      */
-    static registerFoodItem(id, name, type, textureName, textureSize,
+    static registerFoodItem(id, name, type, textureName,
                             stackSize, canOnOffhand, consumeTime, isDrink, canAlwaysEat,
-                            restoreFood, restoreSaturation) {
+                            restoreFood, restoreSaturation, handEquipped, foil) {
         const jClassBuilder = new JavaClassBuilder(id.replaceAll(":", "."), "cn.nukkit.item.customitem.ItemCustomEdible");
         jClassBuilder.setJSDelegate({
             new() {
                 return [id, name, textureName];
             },
             constructor(javaThis) {
-                javaThis.setTextureSize(textureSize);
             },
-            allowOffHand() {
-                return canOnOffhand;
+            getDefinition(javaThis) {
+                return CustomItemDefinition
+                    .edibleBuilder(javaThis, ItemCreativeCategory.fromID(type.typeId))
+                    .allowOffHand(canOnOffhand)
+                    .handEquipped(handEquipped)
+                    .foil(foil)
+                    .build();
             },
             getMaxStackSize() {
                 return stackSize;
-            },
-            getCreativeCategory() {
-                return type.typeId;
             },
             getEatTick() {
                 return consumeTime;
@@ -196,12 +201,11 @@ export class BlockItemUtil {
                 return canAlwaysEat;
             }
         }).addJavaConstructor("new", "constructor", [JString, JString, JString])
-            .addJavaMethod("allowOffHand", "allowOffHand", JPrimitiveBoolean)
             .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
-            .addJavaMethod("getCreativeCategory", "getCreativeCategory", JPrimitiveInt)
             .addJavaMethod("getEatTick", "getEatTick", JPrimitiveInt)
             .addJavaMethod("isDrink", "isDrink", JPrimitiveBoolean)
-            .addJavaMethod("canAlwaysEat", "canAlwaysEat", JPrimitiveBoolean);
+            .addJavaMethod("canAlwaysEat", "canAlwaysEat", JPrimitiveBoolean)
+            .addJavaMethod("getDefinition", "getDefinition", CustomItemDefinition);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
         const foodNormal = new FoodNormal(restoreFood, restoreSaturation);
         foodNormal.addRelative(id, 0, jsPlugin);
@@ -214,7 +218,6 @@ export class BlockItemUtil {
      * @param name {string} 物品ID
      * @param type {CreativeInventoryType} 创造物品栏分类
      * @param textureName {string} 贴图名称，在材质包中可以指定
-     * @param textureSize {number} 贴图大小，单位为像素，如为非正方形则以长边为准
      * @param stackSize {number} 最大堆叠
      * @param canOnOffhand {boolean} 是否可以装备在副手
      * @param toolType {ToolType} 工具种类
@@ -222,26 +225,29 @@ export class BlockItemUtil {
      * @param durability {number} 最大耐久
      * @param damageOnAttackEntity {boolean} 是否因伤害实体而减少耐久
      * @param damageOnBreakBlock {boolean} 是否因破坏方块而减少耐久
+     * @param handEquipped {boolean} 控制第三人称手持物品的显示方式
+     * @param foil {boolean} 自定义物品是否带有附魔光辉效果
      */
-    static registerToolItem(id, name, type, textureName, textureSize,
+    static registerToolItem(id, name, type, textureName,
                             stackSize, canOnOffhand, toolType, toolTier, durability,
-                            damageOnAttackEntity, damageOnBreakBlock) {
+                            damageOnAttackEntity, damageOnBreakBlock, handEquipped, foil) {
         const jClassBuilder = new JavaClassBuilder(id.replaceAll(":", "."), "cn.nukkit.item.customitem.ItemCustomTool");
         const delegate = {
             new() {
                 return [id, name, textureName];
             },
             constructor(javaThis) {
-                javaThis.setTextureSize(textureSize);
             },
-            allowOffHand() {
-                return canOnOffhand;
+            getDefinition(javaThis) {
+                return CustomItemDefinition
+                    .toolBuilder(javaThis, ItemCreativeCategory.fromID(type.typeId))
+                    .allowOffHand(canOnOffhand)
+                    .handEquipped(handEquipped)
+                    .foil(foil)
+                    .build();
             },
             getMaxStackSize() {
                 return stackSize;
-            },
-            getCreativeCategory() {
-                return type.typeId;
             },
             getTier() {
                 return toolTier.tierId;
@@ -258,9 +264,7 @@ export class BlockItemUtil {
         };
         jClassBuilder
             .addJavaConstructor("new", "constructor", [JString, JString, JString])
-            .addJavaMethod("allowOffHand", "allowOffHand", JPrimitiveBoolean)
-            .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
-            .addJavaMethod("getCreativeCategory", "getCreativeCategory", JPrimitiveInt);
+            .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt);
         if (toolType === ToolType.AXE) {
             jClassBuilder.addJavaMethod("isAxe", "isAxe", JPrimitiveBoolean);
             delegate.isAxe = () => true;
@@ -284,6 +288,7 @@ export class BlockItemUtil {
             .addJavaMethod("getMaxDurability", "getMaxDurability", JPrimitiveInt)
             .addJavaMethod("noDamageOnAttack", "noDamageOnAttack", JPrimitiveBoolean)
             .addJavaMethod("noDamageOnBreak", "noDamageOnBreak", JPrimitiveBoolean)
+            .addJavaMethod("getDefinition", "getDefinition", CustomItemDefinition)
             .setJSDelegate(delegate);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
     }
@@ -294,33 +299,35 @@ export class BlockItemUtil {
      * @param name {string} 物品ID
      * @param type {CreativeInventoryType} 创造物品栏分类
      * @param textureName {string} 贴图名称，在材质包中可以指定
-     * @param textureSize {number} 贴图大小，单位为像素，如为非正方形则以长边为准
      * @param stackSize {number} 最大堆叠
      * @param canOnOffhand {boolean} 是否可以装备在副手
      * @param armorType {ArmorType} 防具种类
      * @param armorTier {ArmorTier} 防具等级
      * @param durability {number} 防具耐久
      * @param armorPoint {number} 防具提供的盔甲点数
+     * @param handEquipped {boolean} 控制第三人称手持物品的显示方式
+     * @param foil {boolean} 自定义物品是否带有附魔光辉效果
      */
-    static registerArmorItem(id, name, type, textureName, textureSize,
+    static registerArmorItem(id, name, type, textureName,
                              stackSize, canOnOffhand, armorType, armorTier,
-                             durability, armorPoint) {
+                             durability, armorPoint, handEquipped, foil) {
         const jClassBuilder = new JavaClassBuilder(id.replaceAll(":", "."), "cn.nukkit.item.customitem.ItemCustomArmor");
         const delegate = {
             new() {
                 return [id, name, textureName];
             },
             constructor(javaThis) {
-                javaThis.setTextureSize(textureSize);
             },
-            allowOffHand() {
-                return canOnOffhand;
+            getDefinition(javaThis) {
+                return CustomItemDefinition
+                    .armorBuilder(javaThis, ItemCreativeCategory.fromID(type.typeId))
+                    .allowOffHand(canOnOffhand)
+                    .handEquipped(handEquipped)
+                    .foil(foil)
+                    .build();
             },
             getMaxStackSize() {
                 return stackSize;
-            },
-            getCreativeCategory() {
-                return type.typeId;
             },
             getTier() {
                 return armorTier.tierId;
@@ -333,9 +340,7 @@ export class BlockItemUtil {
             }
         };
         jClassBuilder.setJSDelegate(delegate).addJavaConstructor("new", "constructor", [JString, JString, JString])
-            .addJavaMethod("allowOffHand", "allowOffHand", JPrimitiveBoolean)
-            .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt)
-            .addJavaMethod("getCreativeCategory", "getCreativeCategory", JPrimitiveInt);
+            .addJavaMethod("getMaxStackSize", "getMaxStackSize", JPrimitiveInt);
         if (armorType === ArmorType.HELMET) {
             jClassBuilder.addJavaMethod("isHelmet", "isHelmet", JPrimitiveBoolean);
             delegate.isHelmet = () => true;
@@ -352,6 +357,7 @@ export class BlockItemUtil {
         jClassBuilder.addJavaMethod("getTier", "getTier", JPrimitiveInt)
             .addJavaMethod("getMaxDurability", "getMaxDurability", JPrimitiveInt)
             .addJavaMethod("getArmorPoint", "getArmorPoint", JPrimitiveInt)
+            .addJavaMethod("getDefinition", "getDefinition", CustomItemDefinition)
             .setJSDelegate(delegate);
         Item.registerCustomItem(jClassBuilder.compileToJavaClass());
     }
