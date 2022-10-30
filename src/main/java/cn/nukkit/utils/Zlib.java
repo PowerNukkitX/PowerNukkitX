@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.network.Network;
@@ -23,6 +24,7 @@ public abstract class Zlib {
 
     @PowerNukkitXDifference(info = "Add the LibDeflate Provider", since = "1.19.40-r3")
     public static void setProvider(int providerIndex) {
+        var lang = Server.getInstance().getLanguage();
         switch (providerIndex) {
             case 0:
                 if (providers[providerIndex] == null)
@@ -35,6 +37,8 @@ public abstract class Zlib {
             case 2:
                 if (providers[providerIndex] == null)
                     providers[providerIndex] = new ZlibThreadLocal();
+                if (Libdeflate.isAvailable())
+                    log.info(TextFormat.WHITE + lang.translateString("nukkit.zlib.acceleration-can-enable"));
                 break;
             case 3:
                 if (Libdeflate.isAvailable()) {
@@ -42,7 +46,7 @@ public abstract class Zlib {
                     if (providers[providerIndex] == null)
                         providers[providerIndex] = new LibDeflateThreadLocal();
                 } else {
-                    log.warn("his provider is not available, using the default ZlibThreadLocal");
+                    log.warn(lang.translateString("nukkit.zlib.unavailable"));
                     providerIndex = 2;
                     if (providers[providerIndex] == null)
                         providers[providerIndex] = new ZlibThreadLocal();
@@ -52,13 +56,13 @@ public abstract class Zlib {
                 throw new UnsupportedOperationException("Invalid provider: " + providerIndex);
         }
         if (providerIndex < 2) {
-            log.warn("This Zlib will negatively affect performance");
+            log.warn(lang.translateString("nukkit.zlib.affect-performance"));
         }
         if (providerIndex == 3) {
-            log.warn("This Zlib is still experimental! If you find any issues, please report them at github");
+            log.warn(lang.translateString("nukkit.zlib.acceleration-experimental"));
         }
         provider = providers[providerIndex];
-        log.info("Selected Zlib Provider: {} ({})", providerIndex, provider.getClass().getCanonicalName());
+        log.info(lang.translateString("nukkit.zlib.selected") + ": {} ({})", providerIndex, provider.getClass().getCanonicalName());
     }
 
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Throws IOException instead of Exception")
