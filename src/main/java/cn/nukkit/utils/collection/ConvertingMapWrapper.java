@@ -59,7 +59,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
     public ConvertingMapWrapper(Map<K, V2> proxied, Function<V1, V2> converter, Function<V2, V1> reverseConverter) {
         this(proxied, converter, reverseConverter, false);
     }
-    
+
 
     @Override
     public Set<Entry<K, V1>> entrySet() {
@@ -169,7 +169,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
 
         @Override
         public String toString() {
-            return entryProxied.getKey()+"="+getValue();
+            return entryProxied.getKey() + "=" + getValue();
         }
 
         @Override
@@ -178,7 +178,7 @@ public class ConvertingMapWrapper<K, V1, V2> extends AbstractMap<K, V1> {
                 return true;
             }
             if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
+                Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
                 return Objects.equals(entryProxied.getKey(), e.getKey()) && Objects.equals(getValue(), e.getValue());
             }
             return false;

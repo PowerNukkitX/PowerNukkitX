@@ -16,7 +16,6 @@ import java.util.function.LongUnaryOperator;
  *
  * @param <F> the type of the first argument to the function
  * @param <S> the type of the second argument to the function
- *
  * @see Function
  * @since 1.4.0.0-PN
  */
