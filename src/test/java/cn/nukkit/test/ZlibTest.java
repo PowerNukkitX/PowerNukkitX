@@ -15,8 +15,7 @@ class ZlibTest {
     @DisplayName("Inflate and Deflate")
     @Test
     void testAll() throws Exception {
-        Zlib.setProvider(3);
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 100; i++) {
             byte[] in = getRandomBytes(ThreadLocalRandom.current().nextInt(114514));
             byte[] compressed = Zlib.deflate(in);
             byte[] out = Zlib.inflate(compressed);

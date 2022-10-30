@@ -3,6 +3,7 @@ package cn.nukkit.utils;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitXDifference;
+import cn.nukkit.lang.BaseLang;
 import cn.nukkit.network.Network;
 import cn.powernukkitx.libdeflate.Libdeflate;
 import io.netty.handler.codec.compression.Snappy;
@@ -24,7 +25,7 @@ public abstract class Zlib {
 
     @PowerNukkitXDifference(info = "Add the LibDeflate Provider", since = "1.19.40-r3")
     public static void setProvider(int providerIndex) {
-        var lang = Server.getInstance().getLanguage();
+        var lang = Server.getInstance() == null ? new BaseLang("eng") : Server.getInstance().getLanguage();
         switch (providerIndex) {
             case 0:
                 if (providers[providerIndex] == null)
