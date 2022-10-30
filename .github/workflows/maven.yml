@@ -6,7 +6,7 @@ jobs:
   check-files:
     name: 检查仓库文件
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
 
@@ -109,7 +109,6 @@ jobs:
         with:
           artifacts: "target/powernukkitx.jar,target/libs.tar.gz,target/hash/sha256/powernukkitx.jar.sha256,target/hash/sha256/libs.tar.gz.sha256,target/hash/md5/powernukkitx.jar.md5,target/hash/md5/libs.tar.gz.md5"
           tag: ${{ steps.getVersion.outputs.version }}
-          prerelease: ${{ contains(github.ref_name, 'patch') || contains(github.ref_name, 'feature') }}
           body: ${{ steps.getVersion.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}
