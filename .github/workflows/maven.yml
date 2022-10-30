@@ -84,16 +84,7 @@ jobs:
         if: success()
         with:
           name: PowerNukkitX-Libs
-          path: |
-            target/libs/
-            !target/libs/jmh-core-*.jar
-            !target/libs/jmh-generator-annprocess-*.jar
-            !target/libs/powernukkit-tests-junit5-*.jar
-            !target/libs/junit-*.jar
-            !target/libs/mockito-*.jar
-            !target/libs/assertj-core-*.jar
-            !target/libs/commons-io-*.jar
-            !target/libs/spoon-core-*.jar
+          path: target/libs/
       - name: Archive Hashes
         uses: actions/upload-artifact@v3
         if: success()

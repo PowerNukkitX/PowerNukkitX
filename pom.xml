@@ -678,7 +678,7 @@
                         <configuration>
                             <skip>${skipCopyLibs}</skip>
                             <outputDirectory>${project.build.directory}/libs</outputDirectory>
-                            <excludeScope>provided</excludeScope>
+                            <includeScope>runtime</includeScope>
                         </configuration>
                     </execution>
                 </executions>
