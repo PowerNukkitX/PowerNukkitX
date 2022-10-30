@@ -165,7 +165,7 @@ public class DummyBossBar {
         BossEventPacket pk = new BossEventPacket();
         pk.bossEid = this.bossBarId;
         pk.type = BossEventPacket.TYPE_TEXTURE;
-        pk.color = color != null? color.ordinal() : 0;
+        pk.color = color != null ? color.ordinal() : 0;
         player.dataPacket(pk);
     }
 

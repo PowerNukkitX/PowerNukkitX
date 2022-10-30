@@ -15,7 +15,6 @@ import java.util.function.IntUnaryOperator;
  * whose functional method is {@link #apply(Object, int, int)}.
  *
  * @param <F> the type of the first argument to the function
- *
  * @see Function
  * @since 1.4.0.0-PN
  */

@@ -612,8 +612,8 @@ public class Config {
                     this.correct = false;
             }
         } catch (Exception e) {
-          log.warn("Failed to parse the config file {}", file, e);
-          throw e;
+            log.warn("Failed to parse the config file {}", file, e);
+            throw e;
         }
     }
 
