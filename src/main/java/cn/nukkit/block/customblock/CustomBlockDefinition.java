@@ -69,7 +69,7 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
                             .putFloat("value", (float) customBlock.getFrictionFactor()))
                     .putCompound("minecraft:explosion_resistance", new CompoundTag()
                             .putInt("value", (int) customBlock.getResistance()))
-                    .putCompound("minecraft:block_light_filter", new CompoundTag()
+                    .putCompound("minecraft:light_dampening", new CompoundTag()
                             .putByte("lightLevel", (byte) customBlock.getLightFilter()))
                     .putCompound("minecraft:light_emission", new CompoundTag()
                             .putByte("emission", (byte) customBlock.getLightLevel()))

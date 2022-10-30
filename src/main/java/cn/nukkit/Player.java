@@ -1921,12 +1921,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (distance >= 0.05) {
                 double jump = 0;
                 double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                if (swimming != 0) distance = 0;
+                double distance2 = distance;
+                if (swimming != 0) distance2 = 0;
                 if (this.isSprinting()) {  //Running
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.2;
                     }
-                    this.getFoodData().updateFoodExpLevel(0.1 * distance + jump + swimming);
+                    this.getFoodData().updateFoodExpLevel(0.1 * distance2 + jump + swimming);
                 } else {
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.05;
@@ -5770,29 +5771,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitXOnly
     @Since("1.19.31-r1")
-    protected void broadcastMovement(Boolean teleport) {
-        if (teleport) {
-            //TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
-            //this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
-            //snaps to the teleport position, but then lerps back to the original position if a normal movement for the
-            //entity was recently broadcasted. This can be seen with players throwing ender pearls.
-            //TODO: remove this if the bug ever gets fixed (lol)
-            for (var player : hasSpawned.values()) {
-                despawnFrom(player);
-                spawnTo(player);
-            }
-        } else {
-            var pk = new MoveEntityAbsolutePacket();
-            pk.eid = this.getId();
-            pk.x = this.x;
-            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
-            pk.z = this.z;
-            pk.headYaw = yaw;
-            pk.pitch = pitch;
-            pk.yaw = yaw;
-            pk.onGround = this.onGround;
-            Server.broadcastPacket(hasSpawned.values(), pk);
-        }
+    protected void broadcastMovement(boolean teleport) {
+        var pk = new MoveEntityAbsolutePacket();
+        pk.eid = this.getId();
+        pk.x = this.x;
+        pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+        pk.z = this.z;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = teleport;
+        pk.onGround = this.onGround;
+        Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
     @Override

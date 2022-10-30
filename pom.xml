@@ -8,7 +8,7 @@
 
     <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
-    <version>1.19.31-r1</version>
+    <version>1.19.40-r2</version>
 
     <inceptionYear>2022</inceptionYear>
     <organization>
@@ -489,7 +489,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.0+BETA</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
