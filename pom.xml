@@ -504,7 +504,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>libdeflate-java</artifactId>
-            <version>0.0.1-PNX</version>
+            <version>0.0.2-PNX</version>
         </dependency>
     </dependencies>
 
