@@ -1,15 +1,14 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
+import cn.powernukkitx.libdeflate.Libdeflate;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Log4J2LoggerFactory;
-import io.sentry.Sentry;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -24,10 +23,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
