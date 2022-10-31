@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -56,7 +55,7 @@ public class ItemBow extends ItemTool {
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
-    @PowerNukkitXDifference(info = "change the arrow shot force to match vanilla")
+    //todo 优化弓箭
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Item itemArrow = Item.get(Item.ARROW, 0, 1);
@@ -103,8 +102,7 @@ public class ItemBow extends ItemTool {
             return false;
         }
 
-        //Java Edition: abstractarrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, f * 3.0F, 1.0F);
-        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f * 3.0F);
+        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
 
         if (f < 0.1 || ticksUsed < 3) {
             entityShootBowEvent.setCancelled();
@@ -140,7 +138,7 @@ public class ItemBow extends ItemTool {
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
-                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile());
+                ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile(), player);
                 Server.getInstance().getPluginManager().callEvent(projectev);
                 if (projectev.isCancelled()) {
                     entityShootBowEvent.getProjectile().kill();

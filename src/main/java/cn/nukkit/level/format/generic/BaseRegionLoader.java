@@ -23,6 +23,9 @@ abstract public class BaseRegionLoader {
     public static final int VERSION = 1;
     public static final byte COMPRESSION_GZIP = 1;
     public static final byte COMPRESSION_ZLIB = 2;
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.30-r2", reason = "moved into nukkit.yml", replaceWith = "Server::getMaximumSizePerChunk()")
     public static final int MAX_SECTOR_LENGTH = 256 << 12;
     public static final int COMPRESSION_LEVEL = 7;
 

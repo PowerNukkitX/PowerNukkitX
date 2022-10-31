@@ -54,14 +54,16 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
         this.calculateOffsetBoundingBox();
-        // 处理运动
-        handleGravity();
-        if (needsRecalcMovement) {
-            handleCollideMovement(currentTick);
+        if (!this.isImmobile()) {
+            // 处理运动
+            handleGravity();
+            if (needsRecalcMovement) {
+                handleCollideMovement(currentTick);
+            }
+            addTmpMoveMotionXZ(previousCollideMotion);
+            handleFrictionMovement();
+            handleFloatingMovement();
         }
-        addTmpMoveMotionXZ(previousCollideMotion);
-        handleFrictionMovement();
-        handleFloatingMovement();
     }
 
     @Override

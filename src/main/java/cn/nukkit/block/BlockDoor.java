@@ -266,7 +266,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Redstone
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
-        if (this.y > 254 || face != BlockFace.UP) {
+        if (this.y > this.level.getMaxHeight() - 2 || face != BlockFace.UP) {
             return false;
         }
 

@@ -44,7 +44,7 @@ public class HumanStringComparator implements Comparator<String> {
                 char c = str.charAt(j);
                 if (SYMBOLS.indexOf(c) != -1) {
                     if (!changed) {
-                        result = list instanceof ArrayList? list : new ArrayList<>(list);
+                        result = list instanceof ArrayList ? list : new ArrayList<>(list);
                         changed = true;
                     }
                     int indexToAddLast;
@@ -132,11 +132,11 @@ public class HumanStringComparator implements Comparator<String> {
     private boolean detectOmittedNumber(List<String> l1, int len1, int i, String str2, int strLen2, int minStrLen, String commonPart1) {
         String combined;
         String comparingWith;
-        String next1 = len1 > i + 1? l1.get(i + 1) : null;
-        int nextLen1 = next1 == null? 0 : next1.length();
+        String next1 = len1 > i + 1 ? l1.get(i + 1) : null;
+        int nextLen1 = next1 == null ? 0 : next1.length();
         boolean isDigit1 = next1 != null && Character.isDigit(next1.charAt(nextLen1 - 1));
-        String afterNext1 = isDigit1 && len1 > i + 2? l1.get(i + 2) : null;
-        int afterNextLen1 = afterNext1 != null? afterNext1.length() : 0;
+        String afterNext1 = isDigit1 && len1 > i + 2 ? l1.get(i + 2) : null;
+        int afterNextLen1 = afterNext1 != null ? afterNext1.length() : 0;
         if (afterNextLen1 > 0) {
             combined = commonPart1 + afterNext1.substring(0, Math.min(afterNextLen1, strLen2 - minStrLen));
             comparingWith = str2;

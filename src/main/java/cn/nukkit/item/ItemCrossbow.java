@@ -168,7 +168,7 @@ public class ItemCrossbow extends ItemTool {
                     entityShootBowEvent.getProjectile(0).setMotion(entityShootBowEvent.getProjectile(0).getMotion().multiply(3.5D));
                     if (entityShootBowEvent.getProjectile(0) != null) {
                         EntityProjectile proj = entityShootBowEvent.getProjectile(0);
-                        ProjectileLaunchEvent projectile = new ProjectileLaunchEvent(proj);
+                        ProjectileLaunchEvent projectile = new ProjectileLaunchEvent(proj, player);
                         Server.getInstance().getPluginManager().callEvent(projectile);
                         if (projectile.isCancelled()) {
                             proj.close();

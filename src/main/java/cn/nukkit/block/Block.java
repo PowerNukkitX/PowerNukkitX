@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
-import cn.nukkit.block.customblock.BlockPropertyData;
 import cn.nukkit.block.customblock.CustomBlock;
+import cn.nukkit.block.customblock.CustomBlockDefinition;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -16,6 +16,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.RuntimeItems;
+import cn.nukkit.item.customitem.ItemCustomTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
@@ -146,7 +147,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static boolean[] diffusesSkyLight = null;
 
     @PowerNukkitXOnly
-    private static final List<BlockPropertyData> BLOCK_PROPERTY_DATA = new ArrayList<>();
+    private static final List<CustomBlockDefinition> CUSTOM_BLOCK_DEFINITIONS = new ArrayList<>();
 
     @PowerNukkitXOnly
     public static final Int2ObjectMap<CustomBlock> ID_TO_CUSTOM_BLOCK = new Int2ObjectOpenHashMap<>();
@@ -1218,13 +1219,31 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    @Deprecated(since = "1.19.20-r5")
     public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        var map = new HashMap<String, Class<? extends CustomBlock>>(blockClassList.size() + 1, 0.99f);
-        for (var each : blockClassList) {
-            map.put(each.getDeclaredConstructor().newInstance().getNamespace(), each);
+        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
+            log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
+            return;
         }
-        registerCustomBlock(map);
+        SortedMap<String, CustomBlock> sortedCustomBlock = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
+
+        for (var each : blockClassList) {
+            CustomBlock block = each.getDeclaredConstructor().newInstance();
+            if (!CUSTOM_BLOCK_ID_MAP.containsKey(block.getNamespaceId())) {
+                sortedCustomBlock.put(block.getNamespaceId(), block);
+            }
+        }
+        if (!sortedCustomBlock.isEmpty()) {
+            for (var entry : sortedCustomBlock.entrySet()) {
+                CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
+                ID_TO_CUSTOM_BLOCK.put(nextBlockId, entry.getValue());//自定义方块id->自定义方块
+                CUSTOM_BLOCK_DEFINITIONS.add(entry.getValue().getDefinition());//行为包数据
+                ++nextBlockId;
+            }
+            var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
+            BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state
+            RuntimeItems.getRuntimeMapping().registerCustomBlock(blocks);//注册物品
+            blocks.forEach(b -> Item.addCreativeItem(b.toItem()));//注册创造栏物品
+        }
     }
 
     /**
@@ -1240,7 +1259,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         //方块升序排序
         SortedMap<String, Class<? extends CustomBlock>> sortedCustomBlockClasses = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
-        //监测该方块是否已经注册,如果已经注册将他排除
+        //监测该方块是否已经注册
         for (var entry : blockNamespaceClassMap.entrySet()) {
             if (!CUSTOM_BLOCK_ID_MAP.containsKey(entry.getKey())) {
                 sortedCustomBlockClasses.put(entry.getKey(), entry.getValue());
@@ -1253,7 +1272,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
                 CustomBlock block = entry.getValue().getDeclaredConstructor().newInstance();
                 ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
-                BLOCK_PROPERTY_DATA.add(block.getBlockPropertyData());//行为包数据
+                CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
                 ++nextBlockId;
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
@@ -1265,7 +1284,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void deleteCustomBlock() {
+    public static void deleteAllCustomBlock() {
         for (var block : ID_TO_CUSTOM_BLOCK.values()) {
             Item.removeCreativeItem(block.toItem());
         }
@@ -1273,12 +1292,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         BlockStateRegistry.deleteCustomBlockState();
         ID_TO_CUSTOM_BLOCK.clear();
         CUSTOM_BLOCK_ID_MAP.clear();
+        CUSTOM_BLOCK_DEFINITIONS.clear();
         nextBlockId = 1000;
     }
 
     @PowerNukkitXOnly
-    public static List<BlockPropertyData> getBlockPropertyDataList() {
-        return BLOCK_PROPERTY_DATA;
+    @Since("1.19.31-r1")
+    public static List<CustomBlockDefinition> getCustomBlockDefinitionList() {
+        return new ArrayList<>(CUSTOM_BLOCK_DEFINITIONS);
     }
 
     @PowerNukkitXOnly
@@ -1661,7 +1682,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     private double toolBreakTimeBonus0(Item item) {
-        return toolBreakTimeBonus0(toolType0(item, getId()), item.getTier(), getId());
+        if (item instanceof ItemCustomTool itemCustomTool && itemCustomTool.getSpeed() != null) {
+            return customToolBreakTimeBonus0(toolType0(item, getId()), itemCustomTool.getSpeed(), getId());
+        } else return toolBreakTimeBonus0(toolType0(item, getId()), item.getTier(), getId());
     }
 
     private static double toolBreakTimeBonus0(int toolType, int toolTier, int blockId) {
@@ -1702,6 +1725,28 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 }
                 return 1.0;
         }
+    }
+
+    private static double customToolBreakTimeBonus0(int toolType, int speed, int blockId) {
+        if (toolType == ItemTool.TYPE_SWORD) {
+            if (blockId == BlockID.COBWEB) {
+                return 15.0;
+            }
+            if (blockId == BlockID.BAMBOO) {
+                return 30.0;
+            }
+            return 1.0;
+        }
+        if (toolType == ItemTool.TYPE_SHEARS) {
+            if (blockId == Block.WOOL || blockId == LEAVES || blockId == LEAVES2) {
+                return 5.0;
+            } else if (blockId == COBWEB) {
+                return 15.0;
+            }
+            return 1.0;
+        }
+        if (toolType == ItemTool.TYPE_NONE) return 1.0;
+        return speed;
     }
 
     private static double speedBonusByEfficiencyLore0(int efficiencyLoreLevel) {

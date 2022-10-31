@@ -29,13 +29,13 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     public long position() {
-        return (long)this.position;
+        return (long) this.position;
     }
 
     public SeekableByteChannel position(long newPosition) throws IOException {
         this.ensureOpen();
         if (newPosition >= 0L && newPosition <= 2147483647L) {
-            this.position = (int)newPosition;
+            this.position = (int) newPosition;
             return this;
         } else {
             throw new IOException("Position has to be in range 0.. 2147483647");
@@ -48,12 +48,12 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     public SeekableByteChannel truncate(long newSize) {
         if (newSize >= 0L && newSize <= 2147483647L) {
-            if ((long)this.size > newSize) {
-                this.size = (int)newSize;
+            if ((long) this.size > newSize) {
+                this.size = (int) newSize;
             }
 
-            if ((long)this.position > newSize) {
-                this.position = (int)newSize;
+            if ((long) this.position > newSize) {
+                this.position = (int) newSize;
             }
 
             return this;
@@ -121,7 +121,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
 
         if (newLength < 1073741823) {
-            while(len < newLength) {
+            while (len < newLength) {
                 len <<= 1;
             }
         } else {

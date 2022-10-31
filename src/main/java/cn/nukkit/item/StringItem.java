@@ -22,7 +22,7 @@ public class StringItem extends Item {
     private byte[] customCompound = EmptyArrays.EMPTY_BYTES;
 
     private static String notEmpty(String value) {
-        Preconditions.checkArgument(value != null && !value.trim().isEmpty(), "The name cannot be empty");
+        if (value != null && value.trim().isEmpty()) throw new IllegalArgumentException("The name cannot be empty");
         return value;
     }
 

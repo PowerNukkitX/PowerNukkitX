@@ -12,7 +12,7 @@ import java.util.*;
 @Log4j2
 public class ResourcePackManager {
 
-    private int maxChunkSize = 102400;
+    private int maxChunkSize = 1024 * 128;// 131,072 is default
     
     private final Map<UUID, ResourcePack> resourcePacksById = new HashMap<>();
     private ResourcePack[] resourcePacks;

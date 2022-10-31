@@ -8,7 +8,7 @@
 
     <groupId>cn.powernukkitx</groupId>
     <artifactId>powernukkitx</artifactId>
-    <version>1.19.30-r1</version>
+    <version>1.19.40-r2</version>
 
     <inceptionYear>2022</inceptionYear>
     <organization>
@@ -180,7 +180,7 @@
             <!-- 不要换成NKX的依赖，这个版本具有特定接口 -->
             <groupId>org.powernukkit.bedrock.network</groupId>
             <artifactId>raknet</artifactId>
-            <version>1.6.28-PN.3</version>
+            <version>1.6.28-PNX.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -476,7 +476,7 @@
         <dependency>
             <groupId>com.dfsek.terra</groupId>
             <artifactId>Terra</artifactId>
-            <version>6.2.0</version>
+            <version>6.2.0+BETA</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -736,7 +736,7 @@
                         <configuration>
                             <skip>${skipCopyLibs}</skip>
                             <outputDirectory>${project.build.directory}/libs</outputDirectory>
-                            <excludeScope>provided</excludeScope>
+                            <includeScope>runtime</includeScope>
                         </configuration>
                     </execution>
                 </executions>
@@ -819,12 +819,12 @@
                     <includeOnlyProperties>
                     </includeOnlyProperties>
                     <useNativeGit>false</useNativeGit>
-                    <abbrevLength>7</abbrevLength>
+                    <abbrevLength>9</abbrevLength>
                     <commitIdGenerationMode>flat</commitIdGenerationMode>
                     <gitDescribe>
                         <skip>false</skip>
                         <always>false</always>
-                        <abbrev>7</abbrev>
+                        <abbrev>9</abbrev>
                         <dirty>-dirty</dirty>
                         <match>*</match>
                         <tags>false</tags>

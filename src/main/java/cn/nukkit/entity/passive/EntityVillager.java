@@ -180,7 +180,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         } else {
             this.canTrade = this.namedTag.getBoolean("canTrade");
         }
-        if (!this.namedTag.contains("displayName")) {
+        if (!this.namedTag.contains("displayName") && ran != 0) {
             this.setDisplayName(getProfessionName(ran));
         } else {
             this.displayName = this.namedTag.getString("displayName");
@@ -236,7 +236,7 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
             case 11 -> "entity.villager.butcher";
             case 12 -> "entity.villager.leather";
             case 13 -> "entity.villager.mason";
-            default -> throw new IllegalStateException("Unexpected value: " + profession);
+            default -> null;
         };
     }
 

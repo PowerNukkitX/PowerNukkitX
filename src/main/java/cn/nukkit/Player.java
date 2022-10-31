@@ -2241,11 +2241,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 if (!(revert = ev.isCancelled())) { //Yes, this is intended
                     if (!to.equals(ev.getTo()) && this.riding == null) { //If plugins modify the destination
-                        if (delta > 0.0001d)
+                        if (delta > 0.0001d && this.getGamemode() != Player.SPECTATOR)
                             this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, ev.getTo().clone(), VibrationType.TELEPORT));
                         this.teleport(ev.getTo(), null);
                     } else {
-                        if (delta > 0.0001d) {
+                        if (delta > 0.0001d && this.getGamemode() != Player.SPECTATOR) {
                             if (this.isOnGround() && this.isGliding()) {
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.ELYTRA_GLIDE));
                             } else if (this.isOnGround() && this.getSide(BlockFace.DOWN).getLevelBlock().getId() != BlockID.WOOL && !this.isSneaking()) {
@@ -2254,7 +2254,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
                             }
                         }
-                        this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
+//                        this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
+                        this.broadcastMovement(false);
                     }
                     //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];
                     //sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
@@ -2276,12 +2277,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (distance >= 0.05) {
                 double jump = 0;
                 double swimming = this.isInsideOfWater() ? 0.01 * distance : 0;
-                if (swimming != 0) distance = 0;
+                double distance2 = distance;
+                if (swimming != 0) distance2 = 0;
                 if (this.isSprinting()) {  //Running
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.2;
                     }
-                    this.getFoodData().updateFoodExpLevel(0.1 * distance + jump + swimming);
+                    this.getFoodData().updateFoodExpLevel(0.1 * distance2 + jump + swimming);
                 } else {
                     if (this.inAirTicks == 3 && swimming == 0) {
                         jump = 0.05;
@@ -2876,7 +2878,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
         //写入自定义方块数据
-        startGamePacket.blockProperties.addAll(Block.getBlockPropertyDataList());
+        startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         this.dataPacketImmediately(startGamePacket);
 
         //写入自定义物品数据
@@ -2890,7 +2892,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 try {
                     Item item = Item.fromString(id);
                     if (item instanceof ItemCustom itemCustom) {
-                        CompoundTag data = itemCustom.getComponentsData();
+                        CompoundTag data = Item.getCustomItemDefinition().get(itemCustom.getNamespaceId()).nbt();
                         data.putShort("minecraft:identifier", i);
 
                         entries.put(i, new ItemComponentPacket.Entry(item.getNamespaceId(), data));
@@ -6199,6 +6201,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     //todo something on performance, lots of exp orbs then lots of packets, could crash client
     @PowerNukkitOnly
     public void setExperience(int exp, int level, boolean playLevelUpSound) {
+        var expEvent = new PlayerExperienceChangeEvent(this, this.getExperience(), this.getExperienceLevel(), exp, level);
+        this.server.getPluginManager().callEvent(expEvent);
+        if (expEvent.isCancelled()) {
+            return;
+        }
+        exp = expEvent.getNewExperience();
+        level = expEvent.getNewExperienceLevel();
+
         int levelBefore = this.expLevel;
         this.exp = exp;
         this.expLevel = level;
@@ -6480,6 +6490,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    protected void broadcastMovement(boolean teleport) {
+        var pk = new MoveEntityAbsolutePacket();
+        pk.eid = this.getId();
+        pk.x = this.x;
+        pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+        pk.z = this.z;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = teleport;
+        pk.onGround = this.onGround;
+        Server.broadcastPacket(hasSpawned.values(), pk);
+    }
+
     @Override
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
@@ -6576,6 +6602,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.yaw = to.yaw;
             this.pitch = to.pitch;
             this.sendPosition(this, to.yaw, to.pitch, MovePlayerPacket.MODE_TELEPORT);
+            this.broadcastMovement(true);
 
             this.checkTeleportPosition();
 
@@ -7160,7 +7187,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
-
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
         LevelChunkPacket pk = new LevelChunkPacket();
         pk.chunkX = chunkX;
@@ -7536,7 +7562,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
         fishingHook.setMotion(new Vector3(-Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f, -Math.sin(Math.toRadians(pitch)) * f * f,
                 Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * f * f));
-        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook);
+        ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook, this);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             fishingHook.close();

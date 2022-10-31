@@ -19,7 +19,7 @@ public enum OptionalBoolean {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     TRUE(Boolean.TRUE),
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     FALSE(Boolean.FALSE),
@@ -27,7 +27,7 @@ public enum OptionalBoolean {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     EMPTY(null);
-    
+
     @Nullable
     private final Boolean value;
 
@@ -44,13 +44,13 @@ public enum OptionalBoolean {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static OptionalBoolean of(boolean value) {
-        return value? TRUE : FALSE;
+        return value ? TRUE : FALSE;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static OptionalBoolean ofNullable(Boolean value) {
-        return value == null? EMPTY : of(value);
+        return value == null ? EMPTY : of(value);
     }
 
     @PowerNukkitOnly
@@ -85,18 +85,18 @@ public enum OptionalBoolean {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean orElse(boolean other) {
-        return value != null? value : other;
+        return value != null ? value : other;
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean orElseGet(BooleanSupplier other) {
-        return value != null? value : other.getAsBoolean();
+        return value != null ? value : other.getAsBoolean();
     }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    public<X extends Throwable> boolean orElseThrow(Supplier<X> exceptionSupplier) throws X {
+    public <X extends Throwable> boolean orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (value != null) {
             return value;
         } else {
@@ -106,8 +106,8 @@ public enum OptionalBoolean {
 
     @Override
     public String toString() {
-        return value == null? "OptionalBoolean.empty" : 
-                value? "OptionalBoolean[true]" : 
+        return value == null ? "OptionalBoolean.empty" :
+                value ? "OptionalBoolean[true]" :
                         "OptionalBoolean[false]";
     }
 }
