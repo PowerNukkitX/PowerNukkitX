@@ -118,7 +118,7 @@ public class Network {
     @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
     public static byte[] deflateRaw(byte[] data, int level) throws IOException {
         if (libDeflateAvailable) {
-            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new PNXLibDeflater(level);
+            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
             byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
             int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
             if (level != 7) {
@@ -149,7 +149,7 @@ public class Network {
     @PowerNukkitXDifference(info = "Uses the LibDeflate deflater", since = "1.19.40-r3")
     public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
         if (libDeflateAvailable) {
-            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new PNXLibDeflater(level);
+            var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
             var bos = ThreadCache.fbaos.get();
             bos.reset();
             for (var data : datas) {

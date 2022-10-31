@@ -13,7 +13,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 @PowerNukkitXOnly
-@Since("1.19.40-r1")
+@Since("1.19.40-r3")
 public class LibDeflateThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
     private static final ThreadLocal<LibdeflateDecompressor> PNX_INFLATER = ThreadLocal.withInitial(PNXLibInflater::new);

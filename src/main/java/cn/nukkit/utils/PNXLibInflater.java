@@ -7,7 +7,7 @@ import cn.powernukkitx.libdeflate.LibdeflateDecompressor;
 import java.io.Closeable;
 
 @PowerNukkitXOnly
-@Since("1.19.40-r1")
+@Since("1.19.40-r3")
 public final class PNXLibInflater extends LibdeflateDecompressor implements Closeable, AutoCloseable {
     public PNXLibInflater() {
 
