@@ -34,7 +34,8 @@ public class RenderOffsets {
             this.nbt.putCompound("main_hand", new CompoundTag());
             if (mainHandFirstPerson != null) {
                 this.nbt.getCompound("main_hand").putCompound("first_person", xyzToCompoundTag(mainHandFirstPerson.getPosition(), mainHandFirstPerson.getRotation(), mainHandFirstPerson.getScale()));
-            } else {
+            }
+            if (mainHandThirdPerson != null) {
                 this.nbt.getCompound("main_hand").putCompound("third_person", xyzToCompoundTag(mainHandThirdPerson.getPosition(), mainHandThirdPerson.getRotation(), mainHandThirdPerson.getScale()));
             }
         }
@@ -42,7 +43,8 @@ public class RenderOffsets {
             this.nbt.putCompound("off_hand", new CompoundTag());
             if (offHandFirstPerson != null) {
                 this.nbt.getCompound("off_hand").putCompound("first_person", xyzToCompoundTag(offHandFirstPerson.getPosition(), offHandFirstPerson.getRotation(), offHandFirstPerson.getScale()));
-            } else {
+            }
+            if (offHandThirdPerson != null) {
                 this.nbt.getCompound("off_hand").putCompound("third_person", xyzToCompoundTag(offHandThirdPerson.getPosition(), offHandThirdPerson.getRotation(), offHandThirdPerson.getScale()));
             }
         } else if (mainHandFirstPerson == null && mainHandThirdPerson == null)
@@ -54,7 +56,7 @@ public class RenderOffsets {
      * <p>
      * Adjusts the scale offset of the first-person main hand with the specified multiplier
      *
-     * @param multiplier 范围0-1->?  越接近0物品越靠近玩家,越远离1物品越远离玩家<br>(Range 0-1->?)The closer the multiplier is to 0,the closer the item is to the player.The further the multiplier is from 1,the farther the item is from the player
+     * @param multiplier 按照指定规模缩放物品,这只会影响scale,所以物品位置可能不正确<br>Scaling the item to the specified scale multiplier number, which only affects the scale, so the item position may not be correct.
      * @return the render offsets
      */
     public static RenderOffsets scaleOffset(double multiplier) {
@@ -70,6 +72,19 @@ public class RenderOffsets {
                 Offset.builder().scale(scale1, scale2, scale1),
                 Offset.builder().scale(scale1, scale2, scale1)
         );
+    }
+
+    /**
+     * 按照指定的物品材质大小缩放为标准16x16像素物品显示
+     * <p>
+     * Scale to a standard 16x16 pixel item display at the specified item texture size
+     *
+     * @param textureSize 指定物品材质的像素大小,只能为16的倍数<br>Specify the pixel size of the item texture, which can only be a multiple of 16.
+     * @return the render offsets
+     */
+    public static RenderOffsets scaleOffset(int textureSize) {
+        double multiplier = textureSize / 16f;
+        return scaleOffset(multiplier);
     }
 
     private CompoundTag xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
