@@ -243,8 +243,9 @@ public class EntityFishingHook extends EntityProjectile {
         if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
-            Vector3 motion = player.subtract(this).multiply(0.1);
-            motion.y += Math.sqrt(player.distance(this)) * 0.08;
+            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); //实体生成在水面上
+            Vector3 motion = player.subtract(pos).multiply(0.1);
+            motion.y += Math.sqrt(player.distance(pos)) * 0.08;
 
             PlayerFishEvent event = new PlayerFishEvent(player, this, item, experience, motion);
             this.getServer().getPluginManager().callEvent(event);
@@ -253,7 +254,7 @@ public class EntityFishingHook extends EntityProjectile {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
-                                        new Vector3(this.x, this.getWaterHeight(), this.z),
+                                        pos,
                                         event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
                                         0
                                 ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
