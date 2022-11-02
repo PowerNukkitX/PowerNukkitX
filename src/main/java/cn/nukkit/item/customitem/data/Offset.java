@@ -30,12 +30,12 @@ public class Offset {
     }
 
     public Offset rotation(float x, float y, float z){
-        this.position = new Vector3f(x,y,z);
+        this.rotation = new Vector3f(x,y,z);
         return this;
     }
 
     public Offset scale(float x, float y, float z){
-        this.position = new Vector3f(x,y,z);
+        this.scale = new Vector3f(x,y,z);
         return this;
     }
 
