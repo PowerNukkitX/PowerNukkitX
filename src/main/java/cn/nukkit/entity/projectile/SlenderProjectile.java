@@ -51,11 +51,9 @@ public abstract class SlenderProjectile extends EntityProjectile {
         double movZ = dz;
 
         var currentAABB = this.boundingBox.clone();
-        int division = NukkitMath.ceilDouble((dx * dx + dy * dy + dz * dz) * 1.25);
-        division = Math.max(division, 1);
-        var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) division);
+        var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) 10);
         boolean isCollision = false;
-        for (int i = 0; i < division; ++i) {
+        for (int i = 0; i < 10; ++i) {
             var collisionResult = this.level.fastCollisionCubes(this, currentAABB.offset(dirVector.x, dirVector.y, dirVector.z), false);
             if (!collisionResult.isEmpty()) {
                 isCollision = true;
