@@ -6,8 +6,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import co.aikar.timings.Timings;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -40,7 +42,7 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public float getWidth() {
-        return 0.5f;
+        return 0.05f;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public float getHeight() {
-        return 0.5f;
+        return 0.1f;
     }
 
     @Override
@@ -61,6 +63,98 @@ public class EntityArrow extends EntityProjectile {
     @Override
     public float getDrag() {
         return 0.01f;
+    }
+
+    @Override
+    public boolean move(double dx, double dy, double dz) {
+        if (dx == 0 && dz == 0 && dy == 0) {
+            return true;
+        }
+        Timings.entityMoveTimer.startTiming();
+
+        this.ySize *= 0.4;
+
+        double movX = dx;
+        double movY = dy;
+        double movZ = dz;
+
+        var currentAABB = this.boundingBox.clone();
+        var dirvec = new Vector3(dx, dy, dz).multiply(1 / (double) 10);
+        boolean isCollision = false;
+        for (int i = 0; i < 10; ++i) {
+            var collisionResult = this.level.fastCollisionCubes(this, currentAABB.offset(dirvec.x, dirvec.y, dirvec.z), false);
+            if (!collisionResult.isEmpty()) {
+                isCollision = true;
+                break;
+            }
+        }
+        if (isCollision) {
+            if (dy > 0 && this.boundingBox.getMaxY() <= currentAABB.getMinY()) {
+                double y1 = currentAABB.getMinY() - this.boundingBox.getMaxY();
+                if (y1 < dy) {
+                    dy = y1;
+                }
+            }
+            if (dy < 0 && this.boundingBox.getMinY() >= currentAABB.getMaxY()) {
+                double y2 = currentAABB.getMaxY() - this.boundingBox.getMinY();
+                if (y2 > dy) {
+                    dy = y2;
+                }
+            }
+
+            if (dx > 0 && this.boundingBox.getMaxX() <= currentAABB.getMinX()) {
+                double x1 = currentAABB.getMinX() - this.boundingBox.getMaxX();
+                if (x1 < dx) {
+                    dx = x1;
+                }
+            }
+            if (dx < 0 && this.boundingBox.getMinX() >= currentAABB.getMaxX()) {
+                double x2 = currentAABB.getMaxX() - this.boundingBox.getMinX();
+                if (x2 > dx) {
+                    dx = x2;
+                }
+            }
+
+            if (dz > 0 && this.boundingBox.getMaxZ() <= currentAABB.getMinZ()) {
+                double z1 = currentAABB.getMinZ() - this.boundingBox.getMaxZ();
+                if (z1 < dz) {
+                    dz = z1;
+                }
+            }
+            if (dz < 0 && this.boundingBox.getMinZ() >= currentAABB.getMaxZ()) {
+                double z2 = currentAABB.getMaxZ() - this.boundingBox.getMinZ();
+                if (z2 > dz) {
+                    dz = z2;
+                }
+            }
+        }
+        this.boundingBox.offset(0, dy, 0);
+        this.boundingBox.offset(dx, 0, 0);
+        this.boundingBox.offset(0, 0, dz);
+        this.x = (this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2;
+        this.y = this.boundingBox.getMinY() - this.ySize;
+        this.z = (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2;
+
+        this.checkChunks();
+
+        this.checkGroundState(movX, movY, movZ, dx, dy, dz);
+        this.updateFallState(this.onGround);
+
+        if (movX != dx) {
+            this.motionX = 0;
+        }
+
+        if (movY != dy) {
+            this.motionY = 0;
+        }
+
+        if (movZ != dz) {
+            this.motionZ = 0;
+        }
+
+        //TODO: vehicle collision events (first we need to spawn them!)
+        Timings.entityMoveTimer.stopTiming();
+        return true;
     }
 
     @Since("1.4.0.0-PN")
