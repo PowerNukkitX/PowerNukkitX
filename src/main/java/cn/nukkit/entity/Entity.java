@@ -637,7 +637,6 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
         entityDefinitions.add(customEntityProvider.getCustomEntityDefinition());
-        //自定义实体只用getSimpleName当做knownEntities的Key
         registerEntity(customEntityProvider, true);
     }
 

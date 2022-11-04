@@ -31,10 +31,9 @@ public abstract class CustomEntityProvider implements EntityProvider<Entity> {
         return null;
     }
 
-    //自定义物品只用getSimpleName当做knownEntities的Key所以不需要指定NETWORK ID
     @Override
     public int getNetworkId() {
-        return Entity.NETWORK_ID;
+        return customEntityDefinition.getRuntimeId();
     }
 
     @NotNull
