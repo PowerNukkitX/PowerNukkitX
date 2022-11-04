@@ -2,7 +2,6 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import co.aikar.timings.Timings;
@@ -35,7 +34,7 @@ public abstract class SlenderProjectile extends EntityProjectile {
     }
 
     /*
-     * 经过测试这个算法在大多数情况下效果不错，但是在部分情况下，碰撞发生后会出现箭插入过深，或奇怪的向下偏移几格落入土里。
+     * 经过测试这个算法在大多数情况下效果不错。
      */
     @Override
     public boolean move(double dx, double dy, double dz) {
@@ -51,56 +50,66 @@ public abstract class SlenderProjectile extends EntityProjectile {
         double movZ = dz;
 
         var currentAABB = this.boundingBox.clone();
-        var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) 10);
+        var dirVector = new Vector3(dx, dy, dz).multiply(1 / (double) 15);
         boolean isCollision = false;
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 15; ++i) {
             var collisionResult = this.level.fastCollisionCubes(this, currentAABB.offset(dirVector.x, dirVector.y, dirVector.z), false);
             if (!collisionResult.isEmpty()) {
+                //debug
+//                System.out.println("碰撞结果");
+//                System.out.println(collisionResult);
                 isCollision = true;
                 break;
             }
         }
-        //todo 改进这个dx dy dz计算
+//        System.out.println(dx);
+//        System.out.println(dy);
+//        System.out.println(dz);
+//        System.out.println("---");
         if (isCollision) {
-            if (dy > 0 && this.boundingBox.getMaxY() <= currentAABB.getMinY()) {
+            if (dy > 0) {
                 double y1 = currentAABB.getMinY() - this.boundingBox.getMaxY();
                 if (y1 < dy) {
                     dy = y1;
                 }
             }
-            if (dy < 0 && this.boundingBox.getMinY() >= currentAABB.getMaxY()) {
+            if (dy < 0) {
                 double y2 = currentAABB.getMaxY() - this.boundingBox.getMinY();
                 if (y2 > dy) {
                     dy = y2;
                 }
             }
 
-            if (dx > 0 && this.boundingBox.getMaxX() <= currentAABB.getMinX()) {
+            if (dx > 0) {
                 double x1 = currentAABB.getMinX() - this.boundingBox.getMaxX();
                 if (x1 < dx) {
                     dx = x1;
                 }
             }
-            if (dx < 0 && this.boundingBox.getMinX() >= currentAABB.getMaxX()) {
+            if (dx < 0) {
                 double x2 = currentAABB.getMaxX() - this.boundingBox.getMinX();
                 if (x2 > dx) {
                     dx = x2;
                 }
             }
 
-            if (dz > 0 && this.boundingBox.getMaxZ() <= currentAABB.getMinZ()) {
+            if (dz > 0) {
                 double z1 = currentAABB.getMinZ() - this.boundingBox.getMaxZ();
                 if (z1 < dz) {
                     dz = z1;
                 }
             }
-            if (dz < 0 && this.boundingBox.getMinZ() >= currentAABB.getMaxZ()) {
+            if (dz < 0) {
                 double z2 = currentAABB.getMaxZ() - this.boundingBox.getMinZ();
                 if (z2 > dz) {
                     dz = z2;
                 }
             }
         }
+//        System.out.println(dx);
+//        System.out.println(dy);
+//        System.out.println(dz);
+//        System.out.println("---");
         this.boundingBox.offset(0, dy, 0);
         this.boundingBox.offset(dx, 0, 0);
         this.boundingBox.offset(0, 0, dz);
