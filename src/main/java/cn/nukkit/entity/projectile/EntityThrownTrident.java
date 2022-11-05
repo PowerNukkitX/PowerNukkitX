@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author PetteriM1
  * @author GoodLucky777
  */
-public class EntityThrownTrident extends EntityProjectile {
+public class EntityThrownTrident extends SlenderProjectile {
 
     public static final int NETWORK_ID = 73;
     private static final String TAG_PICKUP = "pickup";
@@ -87,18 +87,8 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @Override
-    public float getWidth() {
-        return 0.25f;
-    }
-
-    @Override
     public float getLength() {
         return 0.25f;
-    }
-
-    @Override
-    public float getHeight() {
-        return 0.35f;
     }
 
     @Override
