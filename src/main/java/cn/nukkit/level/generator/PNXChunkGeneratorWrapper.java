@@ -34,7 +34,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     }
 
     public PNXChunkGeneratorWrapper(Map<String, Object> option) {
-        var packName = option.containsKey("present") ? option.get("present").toString() : "default";
+        var packName = option.containsKey("preset") ? option.get("preset").toString() : "default";
         if (packName == null || packName.strip().length() == 0) {
             packName = "default";
         }

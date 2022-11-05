@@ -38,10 +38,10 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
             var chunkManager = getHandle();
             var ob = chunkManager.getBlockStateAt(x, y, z);
             if (pnxBlockState.getHandle().getBlockId() == BlockID.BLOCK_KELP){
-                chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
                 chunkManager.setBlockAtLayer(x, y, z, 1, BlockID.STILL_WATER);
+                chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
             } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
-                chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
                 chunkManager.setBlockStateAt(x, y, z, 1, ob);
             } else chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
         }
