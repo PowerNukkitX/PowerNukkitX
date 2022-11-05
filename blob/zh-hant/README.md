@@ -3,11 +3,11 @@
 <h2>🌐Need to switch languages?&ensp;/&ensp;多語言文檔</h2>
 
 [![Discord](https://img.shields.io/discord/944227466912870410?style=flat-square)](https://discord.gg/BcPhZCVJHJ)
-[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/en-us/README.md)
-[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![English](https://img.shields.io/badge/English-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/README.md)
+[![简体中文](https://img.shields.io/badge/简体中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hans/README.md)
 [![繁體中文](https://img.shields.io/badge/繁體中文-100%25-green?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/README.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/LICENSE)
-[![ChangeLog](https://img.shields.io/badge/更新日志-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
+[![ChangeLog](https://img.shields.io/badge/ChangeLog-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/blob/master/blob/zh-hant/CHANGELOG.md)
 [![FAQ](https://img.shields.io/badge/FAQ-blue?style=flat-square)](https://github.com/PowerNukkitX/PowerNukkitX/wiki/FAQ)
 [![PNX-DOC](https://img.shields.io/badge/PNX-DOC文檔庫-blue?style=flat-square)](https://doc.powernukkitx.cn)
 [![Maven Central](https://img.shields.io/maven-central/v/cn.powernukkitx/powernukkitx.svg?label=Maven%20Central&style=flat-square)](https://search.maven.org/search?q=g:%22cn.powernukkitx%22%20AND%20a:%22powernukkitx%22)
@@ -23,7 +23,7 @@
 
 PowerNukkitX的優勢：
 
-1. 支持1.19.21協議。
+1. 支持1.19.40協議。
 2. 原生支持384限高（目前僅限主世界，其餘則為256格限高）。
 3. 原生支持地獄世界，無需另外安裝插件補丁等。
 4. 支持3D生物群系（完善中）。<!--自定義維度接口 TODO-->
@@ -39,7 +39,7 @@ PowerNukkitX的優勢：
 
 ## 🎮 如何使用
 
-_**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量**_
+**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量**
 
 ### 我們建議你使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)運行PowerNukkitX,爲什麽?
 
@@ -48,8 +48,9 @@ _**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變�
 3. 提供高效自適應的啓動命令,無需手動編寫
 4. 纯命令行操作,簡介有效,linux命令風格
 5. github版本同步,更新版本無需重複下載依賴庫,只需一鍵命令
-##### 您可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何啟動PNX。
-##### 如果你的平台不適合使用PNX-CLI,那麽請查看以下步驟。
+
+您可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何啟動PNX。
+如果你的平台不適合使用PNX-CLI或者你不想使用它,那麽請查看以下步驟。
 
 ### 使用步驟:
 
@@ -57,7 +58,7 @@ _**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變�
 2. 将libs.tar.gz中的libs文件夾解壓到和powernukkitx.jar同一路徑下
 3. 運行以下命令
 
-##### Windows版本
+Windows版本
 
 ```
 java -Dfile.encoding=UTF-8 ^
@@ -74,7 +75,7 @@ java -Dfile.encoding=UTF-8 ^
 cn.nukkit.Nukkit
 ```
 
-##### Linux版本
+Linux版本
 
 ```
 java -Dfile.encoding=UTF-8 \
@@ -131,7 +132,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.21-r4'
+    compile group: 'cn.powernukkitx', name: 'powernukkitx', version: '1.19.40-r2'
 }
 ```
 
@@ -142,7 +143,7 @@ dependencies {
     <dependency>
         <groupId>cn.powernukkitx</groupId>
         <artifactId>powernukkitx</artifactId>
-        <version>1.19.21-r4</version>
+        <version>1.19.40-r2</version>
     </dependency>
 </dependencies>
 ```

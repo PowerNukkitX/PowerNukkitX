@@ -6,12 +6,13 @@ jobs:
   check-files:
     name: 检查仓库文件
     runs-on: ubuntu-latest
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
     outputs:
       changed-files: ${{ steps.check-changed-files.outputs.all_changed_and_modified_files }}
 
     steps:
       - name: 检出仓库内容
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -26,6 +27,7 @@ jobs:
     name: 构建PNX服务端
     runs-on: ubuntu-latest
     needs: check-files
+    #    event为push且发生改变或push或commit第一条信息+b +u
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) && (contains(needs.check-files.outputs.changed-files, 'src/') || (github.event_name == 'push' && (contains(github.event.commits[0].message, '+b') || contains(github.event.commits[0].message, '+u'))))
 
     steps:
@@ -94,11 +96,10 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - uses: ncipollo/release-action@v1
         name: Release new version
-        if: success() && contains(github.event.commits[0].message, '+u')
+        if: success() && contains(github.event.commits[0].message, '+u') && github.repository == 'PowerNukkitX/PowerNukkitX' && contains(github.ref_name, 'master')
         with:
           artifacts: "target/powernukkitx.jar,target/libs.tar.gz,target/hash/sha256/powernukkitx.jar.sha256,target/hash/sha256/libs.tar.gz.sha256,target/hash/md5/powernukkitx.jar.md5,target/hash/md5/libs.tar.gz.md5"
           tag: ${{ steps.getVersion.outputs.version }}
-          prerelease: ${{ contains(github.ref_name, 'patch') || contains(github.ref_name, 'feature') }}
           body: ${{ steps.getVersion.outputs.version }} - ${{ github.ref_name }} - ${{ steps.vars.outputs.sha_short }}
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.ref_name }}

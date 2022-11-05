@@ -7,7 +7,6 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Sound;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.CompletedUsingItemPacket;
 
 import javax.annotation.Nonnull;
@@ -26,24 +25,6 @@ public abstract class ItemCustomEdible extends ItemCustom {
 
     public ItemCustomEdible(@Nonnull String id, @Nullable String name, @Nonnull String textureName) {
         super(id, name, textureName);
-    }
-
-    @Override
-    public CompoundTag getComponentsData() {
-        CompoundTag data = super.getComponentsData();
-
-        data.getCompound("components").putCompound("minecraft:food",
-                new CompoundTag()
-                        .putInt("nutrition", 0)
-                        .putBoolean("can_always_eat", this.canAlwaysEat())
-        );
-
-        data.getCompound("components").getCompound("item_properties")
-                .putInt("use_duration", this.getEatTick())
-                .putInt("use_animation", this.isDrink() ? 2 : 1);
-
-
-        return data;
     }
 
     @Override
@@ -95,5 +76,4 @@ public abstract class ItemCustomEdible extends ItemCustom {
     public boolean canAlwaysEat() {
         return this.isDrink();
     }
-
 }

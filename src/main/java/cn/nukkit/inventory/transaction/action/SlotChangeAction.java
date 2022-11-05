@@ -49,7 +49,6 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public boolean isValid(Player source) {
         Item check = inventory.getItem(this.inventorySlot);
-
         return check.equalsExact(this.sourceItem);
     }
 
@@ -72,9 +71,12 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
-        viewers.remove(source);
-
-        this.inventory.sendSlot(this.inventorySlot, viewers);
+        if (source.getLoginChainData().getDeviceOS() == 7) {
+            this.inventory.sendSlot(this.inventorySlot, viewers);
+        } else {
+            viewers.remove(source);
+            this.inventory.sendSlot(this.inventorySlot, viewers);
+        }
     }
 
     /**

@@ -51,8 +51,6 @@ public class EntityScorer implements IScorer {
 
     @Override
     public SetScorePacket.ScoreInfo toNetworkInfo(IScoreboard scoreboard, IScoreboardLine line) {
-        UUID uuid = getEntityUuid();
-        long id = uuid.getMostSignificantBits();
-        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, id);
+        return new SetScorePacket.ScoreInfo(line.getLineId(), scoreboard.getObjectiveName(), line.getScore(), ScorerType.ENTITY, entityUuid.getMostSignificantBits());
     }
 }

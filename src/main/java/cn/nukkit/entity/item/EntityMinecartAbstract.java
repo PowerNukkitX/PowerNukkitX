@@ -11,6 +11,7 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
@@ -241,6 +242,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     public void dropItem() {
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            Entity damager = entityDamageByEntityEvent.getDamager();
+            if (damager instanceof Player player && player.isCreative()) {
+                return;
+            }
+        }
         level.dropItem(this, new ItemMinecart());
     }
 

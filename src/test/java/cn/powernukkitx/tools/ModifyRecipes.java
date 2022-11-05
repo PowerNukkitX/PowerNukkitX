@@ -152,6 +152,10 @@ public class ModifyRecipes {
         modify.put("minecraft:polished_andesite", 6);
         modify.put("minecraft:polished_granite", 2);
         modify.put("minecraft:polished_diorite", 4);
+        //fix recipes for sandstone to cut sandstone
+        modify.put("minecraft:smooth_red_sandstone", 2);
+        //todo 未知原因不生效 断点检测注册配方数据值正常 但接受合成数据包时数据值又变为0
+        modify.put("minecraft:smooth_sandstone", 2);
         Config config = new Config(Config.JSON);
         try (InputStream recipesStream = new FileInputStream("src/main/resources/recipes.json")) {
             if (recipesStream == null) {
@@ -267,6 +271,13 @@ public class ModifyRecipes {
                                 map.put("output", output);
                             }
                         }
+                        //沙石 红沙石 -> 平滑沙石
+                        if (input2.get("id").equals("minecraft:red_sandstone") || input2.get("id").equals("minecraft:sandstone")) {
+                            if (output != null && output.get("id").equals("minecraft:red_sandstone") || output.get("id").equals("minecraft:sandstone")) {
+                                output.put("damage", 3);
+                                map.put("output", output);
+                            }
+                        }
                     }
                 }
                 for (var id : modify.keySet()) {
@@ -289,7 +300,7 @@ public class ModifyRecipes {
         }
     }
 
-    private static <T> List<T> castList(Object obj, Class<T> clazz) {
+    public static <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> result = new ArrayList<>();
         if (obj instanceof List<?> list) {
             for (Object o : list) {
@@ -300,7 +311,7 @@ public class ModifyRecipes {
         return null;
     }
 
-    private static <K, V> List<Map<K, V>> castListMap(List<?> list, Class<K> kClass, Class<V> vClass) {
+    public static <K, V> List<Map<K, V>> castListMap(List<?> list, Class<K> kClass, Class<V> vClass) {
         List<Map<K, V>> result = new ArrayList<>();
         for (Object o : list) {
             var map = castMap(o, kClass, vClass);
@@ -310,7 +321,7 @@ public class ModifyRecipes {
         return result;
     }
 
-    private static <K, V> Map<K, V> castMap(Object obj, Class<K> kClass, Class<V> vClass) {
+    public static <K, V> Map<K, V> castMap(Object obj, Class<K> kClass, Class<V> vClass) {
         Map<K, V> result = new HashMap<>();
         if (obj instanceof Map<?, ?> map) {
             for (Object o : map.keySet()) {

@@ -164,4 +164,9 @@ public interface IScoreboard {
      * @param lines 需要设置的行内容
      */
     void setLines(Collection<IScoreboardLine> lines);
+
+    /**
+     * @return 对此计分板的更改是否会产生事件
+     */
+    boolean shouldCallEvent();
 }

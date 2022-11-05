@@ -14,7 +14,6 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
@@ -271,18 +270,28 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             }
         }
 
-        if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
-            return armor;
-        }
+        if (event.getCause() != DamageCause.VOID &&
+                event.getCause() != DamageCause.MAGIC &&
+                event.getCause() != DamageCause.HUNGER &&
+                event.getCause() != DamageCause.DROWNING &&
+                event.getCause() != DamageCause.SUFFOCATION &&
+                event.getCause() != DamageCause.SUICIDE &&
+                event.getCause() != DamageCause.FIRE_TICK &&
+                event.getCause() != DamageCause.FALL) { // No armor damage
 
-        if (armor.getId() == ItemID.SHIELD)
-            armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
-        else
-            armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+            if (armor.isUnbreakable() || armor.getMaxDurability() < 0) {
+                return armor;
+            }
 
-        if (armor.getDamage() >= armor.getMaxDurability()) {
-            getLevel().addSound(this, Sound.RANDOM_BREAK);
-            return Item.get(BlockID.AIR, 0, 0);
+            if (armor.getId() == ItemID.SHIELD)
+                armor.setDamage(armor.getDamage() + (event.getDamage() >= 3 ? (int) event.getDamage() + 1 : 0));
+            else
+                armor.setDamage(armor.getDamage() + Math.max(1, (int) (event.getDamage() / 4.0f)));
+
+            if (armor.getDamage() >= armor.getMaxDurability()) {
+                getLevel().addSound(this, Sound.RANDOM_BREAK);
+                return Item.get(BlockID.AIR, 0, 0);
+            }
         }
 
         return armor;

@@ -28,6 +28,7 @@ public class BlockRedSandstone extends BlockSandstone {
         String[] names = new String[]{
                 "Red Sandstone",
                 "Chiseled Red Sandstone",
+                "Cut Red Sandstone",
                 "Smooth Red Sandstone",
                 ""
         };

@@ -10,6 +10,7 @@ import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
+import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.updater.ChunkUpdater;
 import cn.nukkit.math.BlockVector3;
@@ -69,7 +70,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         return chunk;
     }
 
-    @PowerNukkitDifference(info="using BlockEntity.close() instead of removeBlockEntity() to solve the bug of incomplete cleanup", since="1.6.0.0-PNX")
+    @PowerNukkitDifference(info = "using BlockEntity.close() instead of removeBlockEntity() to solve the bug of incomplete cleanup", since = "1.6.0.0-PNX")
     private void removeInvalidTile(int x, int y, int z) {
         BlockEntity entity = getTile(x, y, z);
         if (entity != null) {
@@ -221,7 +222,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         }
     }
 
-    private ChunkSection getOrCreateMutableSection(int sectionY) {
+    protected ChunkSection getOrCreateMutableSection(int sectionY) {
         ChunkSection section = sections[sectionY];
         if (section.isEmpty()) {
             createChunkSection(sectionY);
@@ -233,7 +234,12 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     protected void createChunkSection(int sectionY) {
         try {
-            this.setInternalSection(sectionY, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, sectionY));
+            var oldCs = sections[sectionY];
+            var newCs = (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, sectionY);
+            if (oldCs instanceof ChunkSection3DBiome chunkSection3DBiome && newCs instanceof ChunkSection3DBiome newChunkSection3DBiome) {
+                newChunkSection3DBiome.set3DBiomeDataArray(chunkSection3DBiome.get3DBiomeDataArray());
+            }
+            this.setInternalSection(sectionY, newCs);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Failed to create ChunkSection", e);
             throw new ChunkException(e);

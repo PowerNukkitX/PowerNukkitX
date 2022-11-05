@@ -12,6 +12,7 @@ import cn.nukkit.entity.EntityNameable;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.player.PlayerChangeArmorStandEvent;
 import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.EntityArmorInventory;
 import cn.nukkit.inventory.EntityEquipmentInventory;
@@ -228,14 +229,18 @@ public class EntityArmorStand extends Entity implements EntityInventoryHolder, E
             }
         }
 
+        var ev = new PlayerChangeArmorStandEvent(player, this, item, slot);
+        this.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) return false;
+
         boolean changed = false;
         if (isArmor) {
-            changed = this.tryChangeEquipment(player, item, slot, true);
+            changed = this.tryChangeEquipment(player, ev.getItem(), slot, true);
             slot = EntityEquipmentInventory.MAIN_HAND;
         }
 
         if (!changed) {
-            changed = this.tryChangeEquipment(player, item, slot, false);
+            changed = this.tryChangeEquipment(player, ev.getItem(), slot, false);
         }
 
         if (changed) {

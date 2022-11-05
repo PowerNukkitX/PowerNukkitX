@@ -33932,9 +33932,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 179,
-          "id": "minecraft:red_sandstone",
-          "count": 4
+          "id": "minecraft:red_sandstone"
         }
       ],
       "shape": [
@@ -33980,9 +33981,10 @@
       },
       "output": [
         {
+          "damage": 2,
+          "count": 4,
           "legacyId": 24,
-          "id": "minecraft:sandstone",
-          "count": 4
+          "id": "minecraft:sandstone"
         }
       ],
       "shape": [
@@ -58508,6 +58510,7 @@
         "damage": -1
       },
       "output": {
+        "damage": 3,
         "legacyId": 24,
         "id": "minecraft:sandstone"
       },
@@ -58944,6 +58947,7 @@
         "damage": -1
       },
       "output": {
+        "damage": 3,
         "legacyId": 179,
         "id": "minecraft:red_sandstone"
       },

@@ -66,7 +66,7 @@ public class KillCommand extends VanillaCommand {
                     }
                 }
                 if (entity instanceof Player player) {
-                    EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000);
+                    EntityDamageEvent ev = new EntityDamageEvent(player, DamageCause.SUICIDE, 1000000);
                     player.attack(ev);
                 } else {
                     entity.kill();
@@ -81,7 +81,7 @@ public class KillCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
                 return true;
             }
-            EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000);
+            EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000000);
             sender.asPlayer().attack(ev);
         } else {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));

@@ -9,7 +9,9 @@ import cn.nukkit.entity.Entity;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +72,7 @@ public class FormWindowDialog implements Dialog{
         return buttons;
     }
 
-    public void setButtons(List<ElementDialogButton> buttons) {
+    public void setButtons(@Nonnull List<ElementDialogButton> buttons) {
         this.buttons = buttons;
     }
 
@@ -115,7 +117,10 @@ public class FormWindowDialog implements Dialog{
     }
 
     public void setButtonJSONData(String json){
-        this.setButtons(GSON.fromJson(json, new TypeToken<List<ElementDialogButton>>(){}.getType()));
+        var buttons = GSON.<List<ElementDialogButton>>fromJson(json, new TypeToken<List<ElementDialogButton>>(){}.getType());
+        //Cannot be null
+        if (buttons == null) buttons = new ArrayList<>();
+        this.setButtons(buttons);
     }
 
     public String getSceneName() {
@@ -132,7 +137,7 @@ public class FormWindowDialog implements Dialog{
     }
 
     @Override
-    public void send(Player player){
+    public void send(@NotNull Player player){
         player.showDialogWindow(this);
     }
 }
