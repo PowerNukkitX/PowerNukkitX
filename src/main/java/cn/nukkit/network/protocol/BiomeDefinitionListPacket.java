@@ -1,14 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Nukkit;
-import cn.nukkit.nbt.stream.NBTInputStream;
-import cn.nukkit.nbt.tag.CompoundTag;
 import com.google.common.io.ByteStreams;
 import lombok.ToString;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteOrder;
 
 @ToString(exclude = "tag")
 public class BiomeDefinitionListPacket extends DataPacket {
