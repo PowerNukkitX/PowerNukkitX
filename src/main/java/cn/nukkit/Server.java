@@ -617,9 +617,10 @@ public class Server {
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
+                put("server-authoritative-movement", "client-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
+                put("server-authoritative-block-breaking", false);
             }
         });
-
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
 
@@ -2916,6 +2917,23 @@ public class Server {
     @Since("1.19.30-r2")
     public int getMaximumSizePerChunk() {
         return maximumSizePerChunk;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    public int getServerAuthoritativeMovement() {
+        return switch (this.properties.get("server-authoritative-movement", "client-auth")) {
+            case "client-auth" -> 0;
+            case "server-auth" -> 1;
+            case "server-auth-with-rewind" -> 2;
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    public boolean isServerAuthoritativeBlockBreaking() {
+        return this.properties.get("server-authoritative-block-breaking", false);
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
