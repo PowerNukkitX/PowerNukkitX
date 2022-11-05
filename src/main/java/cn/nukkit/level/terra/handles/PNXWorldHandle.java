@@ -66,6 +66,7 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:dark_oak_fence" -> s = "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]";
             case "minecraft:sculk_sensor" -> s = "minecraft:sculk_sensor[power=0,sculk_sensor_phase=inactive,waterlogged=false]";
             case "minecraft:deepslate_tile_stairs" -> s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
+            case "minecraft:kelp[age=25]" -> s = "minecraft:kelp";
         }
         State jeBlockStateData = new State(s);
         if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")) {

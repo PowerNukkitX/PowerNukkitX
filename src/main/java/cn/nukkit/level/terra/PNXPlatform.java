@@ -14,7 +14,9 @@ import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.event.events.platform.PlatformInitializationEvent;
 import com.dfsek.terra.api.handle.ItemHandle;
 import com.dfsek.terra.api.handle.WorldHandle;
+import com.dfsek.terra.api.registry.key.RegistryKey;
 import com.dfsek.terra.api.world.biome.PlatformBiome;
+import com.dfsek.terra.config.pack.ConfigPackImpl;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.zip.ZipFile;
 
 @Log4j2
 @PowerNukkitXOnly
@@ -74,6 +78,22 @@ public class PNXPlatform extends AbstractPlatform {
         final var platform = new PNXPlatform();
         platform.load();
         platform.getEventManager().callEvent(new PlatformInitializationEvent());
+        final var configRegistry = platform.getConfigRegistry();
+        final var packsDir = new File("./terra/packs");
+        for (final var each : Objects.requireNonNull(packsDir.listFiles())) {
+            if (each.isFile() && each.getName().endsWith(".zip")) {
+                try {
+                    final var configFile = new ZipFile(each);
+                    final var configPack = new ConfigPackImpl(configFile, platform);
+                    var packName = each.getName();
+                    packName = packName.substring(Math.max(packName.lastIndexOf("/"), packName.lastIndexOf("\\")) + 1,
+                            packName.lastIndexOf("."));
+                    configRegistry.register(RegistryKey.of("PNXChunkGeneratorWrapper", packName), configPack);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         if (PNXWorldHandle.err != 0) {
             log.warn("Fail to load {} terra block states.", PNXWorldHandle.err);
         }
