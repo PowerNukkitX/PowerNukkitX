@@ -8,6 +8,7 @@ import cn.nukkit.level.biome.BiomeLegacyId2StringIdMap;
 import cn.nukkit.level.terra.delegate.PNXBiomeDelegate;
 import cn.nukkit.level.terra.handles.PNXItemHandle;
 import cn.nukkit.level.terra.handles.PNXWorldHandle;
+import cn.nukkit.utils.Config;
 import com.dfsek.tectonic.api.TypeRegistry;
 import com.dfsek.terra.AbstractPlatform;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -24,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
@@ -35,6 +38,9 @@ public class PNXPlatform extends AbstractPlatform {
     private static final PNXWorldHandle pnxWorldHandle = new PNXWorldHandle();
     private static final PNXItemHandle pnxItemHandle = new PNXItemHandle();
     private static PNXPlatform INSTANCE = null;
+
+    //je -> be biomes mapping
+    private static Map<String, Integer> jeBiomesMapping = new HashMap<>();
 
     static {
         DATA_PATH = new File("./terra");
@@ -56,6 +62,14 @@ public class PNXPlatform extends AbstractPlatform {
                 log.info("Failed to extract terra config.");
             }
         }
+        //读取映射
+        final var jeBiomesMappingConfig = new Config(Config.JSON);
+        try {
+            jeBiomesMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeMappings/jeBiomesMapping.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        jeBiomesMappingConfig.getAll().forEach((k, v) -> jeBiomesMapping.put(k, ((Map<String, Double>) v).get("bedrock_id").intValue()));
     }
 
     public synchronized static PNXPlatform getInstance() {
@@ -89,9 +103,7 @@ public class PNXPlatform extends AbstractPlatform {
     }
 
     private static PNXBiomeDelegate parseBiome(String str) {
-        if (str.startsWith("minecraft:")) str = str.substring(10);
-        var id = BiomeLegacyId2StringIdMap.INSTANCE.string2Legacy(str);
-        if (id == -1) id = 1;
+        var id = jeBiomesMapping.get(str);
         return PNXAdapter.adapt(Biome.getBiome(id));
     }
 

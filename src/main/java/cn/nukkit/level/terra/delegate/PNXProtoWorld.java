@@ -33,17 +33,17 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     }
 
     @Override
-    public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
+    public void setBlockState(int x, int y, int z, BlockState blockState, boolean b) {
         if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             var chunkManager = getHandle();
-            var ob = chunkManager.getBlockStateAt(i, i1, i2);
+            var ob = chunkManager.getBlockStateAt(x, y, z);
             if (pnxBlockState.getHandle().getBlockId() == BlockID.BLOCK_KELP){
-                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
-                chunkManager.setBlockAtLayer(i, i1, i2, 1, BlockID.STILL_WATER);
+                chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
+                chunkManager.setBlockAtLayer(x, y, z, 1, BlockID.STILL_WATER);
             } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
-                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
-                chunkManager.setBlockStateAt(i, i1, i2, 1, ob);
-            } else chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(x, y, z, 1, ob);
+            } else chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
         }
     }
 

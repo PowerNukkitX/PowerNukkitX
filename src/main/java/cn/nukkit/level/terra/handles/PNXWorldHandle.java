@@ -2,7 +2,6 @@ package cn.nukkit.level.terra.handles;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.level.terra.PNXAdapter;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXEntityType;
@@ -21,52 +20,53 @@ import java.util.Map;
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-    public static Map<State, Map<String, Object>> jeBlockMapping = new HashMap<>();
+    public static Map<State, Map<String, Object>> jeBlocksMapping = new HashMap<>();
     public static int err = 0;
 
     static {
-        final var jeBlockMappingConfig = new Config(Config.JSON);
+        final var jeBlocksMappingConfig = new Config(Config.JSON);
         try {
-            jeBlockMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeBlocksMapping.json"));
+            jeBlocksMappingConfig.load(PNXWorldHandle.class.getModule().getResourceAsStream("jeMappings/jeBlocksMapping.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        jeBlockMappingConfig.getAll().forEach((k, v) -> jeBlockMapping.put(new State(k), (Map<String, Object>) v));
+        jeBlocksMappingConfig.getAll().forEach((k, v) -> jeBlocksMapping.put(new State(k), (Map<String, Object>) v));
     }
 
     @Override
     public @NotNull
     BlockState createBlockState(@NotNull String s) {
-        if (s.equals("minecraft:water"))
-            s = "minecraft:water[level=0]";
-        if (s.equals("minecraft:lava"))
-            s = "minecraft:lava[level=0]";
-        if (s.equals("minecraft:deepslate"))
-            s = "minecraft:deepslate[axis=y]";
-        if (s.equals("minecraft:grass_block"))
-            s = "minecraft:grass_block[snowy=false]";
-        if (s.equals("minecraft:podzol"))
-            s = "minecraft:podzol[snowy=false]";
-        if (s.equals("minecraft:mycelium"))
-            s = "minecraft:mycelium[snowy=false]";
-        if (s.equals("minecraft:sugar_cane"))
-            s = "minecraft:sugar_cane[age=0]";
-        if (s.equals("minecraft:brown_mushroom_block[down=false]"))
-            s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";
-        if (s.equals("minecraft:cactus"))
-            s = "minecraft:cactus[age=0]";
-        if (s.equals("minecraft:mushroom_stem"))
-            s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";
-        if (s.equals("minecraft:jungle_wood"))
-            s = "minecraft:jungle_wood[axis=y]";
-        if (s.equals("minecraft:redstone_ore"))
-            s = "minecraft:redstone_ore[lit=false]";
-        if (s.equals("minecraft:deepslate_redstone_ore"))
-            s = "minecraft:deepslate_redstone_ore[lit=false]";
-        if (s.equals("minecraft:basalt"))
-            s = "minecraft:basalt[axis=y]";
-        if (s.equals("minecraft:snow"))
-            s = "minecraft:snow[layers=8]";
+        //修正部分属性缺失以能正确获取对应基岩版映射
+        switch (s) {
+            case "minecraft:water" -> s = "minecraft:water[level=0]";
+            case "minecraft:lava" -> s = "minecraft:lava[level=0]";
+            case "minecraft:deepslate" -> s = "minecraft:deepslate[axis=y]";
+            case "minecraft:grass_block" -> s = "minecraft:grass_block[snowy=false]";
+            case "minecraft:podzol" -> s = "minecraft:podzol[snowy=false]";
+            case "minecraft:mycelium" -> s = "minecraft:mycelium[snowy=false]";
+            case "minecraft:sugar_cane" -> s = "minecraft:sugar_cane[age=0]";
+            case "minecraft:brown_mushroom_block[down=false]" -> s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";
+            case "minecraft:cactus" -> s = "minecraft:cactus[age=0]";
+            case "minecraft:mushroom_stem" -> s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";
+            case "minecraft:jungle_wood" -> s = "minecraft:jungle_wood[axis=y]";
+            case "minecraft:redstone_ore" -> s = "minecraft:redstone_ore[lit=false]";
+            case "minecraft:deepslate_redstone_ore" -> s = "minecraft:deepslate_redstone_ore[lit=false]";
+            case "minecraft:basalt" -> s = "minecraft:basalt[axis=y]";
+            case "minecraft:snow" -> s = "minecraft:snow[layers=8]";
+            case "minecraft:cave_vines" -> s = "minecraft:cave_vines[age=0,berries=true]";
+            case "minecraft:polished_basalt" -> s = "minecraft:polished_basalt[axis=y]";
+            case "minecraft:azalea_leaves[persistent=true]" -> s = "minecraft:azalea_leaves[distance=1,persistent=true,waterlogged=false]";
+            case "minecraft:flowering_azalea_leaves[persistent=true]" -> s = "minecraft:flowering_azalea_leaves[distance=1,persistent=true,waterlogged=false]";
+            case "minecraft:deepslate_tile_wall" -> s = "minecraft:deepslate_tile_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:farmland" -> s = "minecraft:farmland[moisture=7]";
+            case "minecraft:cobbled_deepslate_wall" -> s = "minecraft:cobbled_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:polished_deepslate_wall" -> s = "minecraft:polished_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:sculk_shrieker[can_summon=true]" -> s = "minecraft:sculk_shrieker[can_summon=true,shrieking=false,waterlogged=false]";
+            case "minecraft:sculk_catalyst" -> s = "minecraft:sculk_catalyst[bloom=false]";
+            case "minecraft:dark_oak_fence" -> s = "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]";
+            case "minecraft:sculk_sensor" -> s = "minecraft:sculk_sensor[power=0,sculk_sensor_phase=inactive,waterlogged=false]";
+            case "minecraft:deepslate_tile_stairs" -> s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
+        }
         State jeBlockStateData = new State(s);
         if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")) {
             jeBlockStateData.attributes.putIfAbsent("axis", "y");
@@ -84,15 +84,17 @@ public class PNXWorldHandle implements WorldHandle {
             jeBlockStateData.attributes.putIfAbsent("up", "false");
             jeBlockStateData.attributes.putIfAbsent("west", "false");
         }
-        Map<String, Object> mappedData = jeBlockMapping.get(jeBlockStateData);
+        Map<String, Object> mappedData = jeBlocksMapping.get(jeBlockStateData);
         var toDefaultState = false;
+        //若未获取到属性，排除掉含水再次尝试
         if (mappedData == null) {
             jeBlockStateData.equalsIgnoreWaterlogged = true;
-            mappedData = jeBlockMapping.get(jeBlockStateData);
+            mappedData = jeBlocksMapping.get(jeBlockStateData);
         }
+        //排除所有属性再次尝试
         if (mappedData == null) {
             jeBlockStateData.equalsIgnoreAttributes = true;
-            mappedData = jeBlockMapping.get(jeBlockStateData);
+            mappedData = jeBlocksMapping.get(jeBlockStateData);
             toDefaultState = true;
         }
         if (mappedData == null) {
@@ -182,10 +184,8 @@ public class PNXWorldHandle implements WorldHandle {
                 if (equalsIgnoreWaterlogged || state.equalsIgnoreWaterlogged) {
                     Map m1 = new Object2ObjectArrayMap(attributes);
                     Map m2 = new Object2ObjectArrayMap(state.attributes);
-                    if (m1.containsKey("waterlogged"))
-                        m1.remove("waterlogged");
-                    if (m2.containsKey("waterlogged"))
-                        m2.remove("waterlogged");
+                    m1.remove("waterlogged");
+                    m2.remove("waterlogged");
                     if (state.identifier.equals(identifier) && m1.equals(m2)) return true;
                 }
                 return state.identifier.equals(identifier) && attributes.equals(state.attributes);

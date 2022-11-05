@@ -49,6 +49,7 @@ import cn.nukkit.item.enchantment.sideeffect.SideEffect;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.particle.PunchBlockParticle;
@@ -1901,8 +1902,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 //                        this.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.yaw);
                         this.broadcastMovement(false);
                     }
-                    //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];
-                    //sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
+                    //Only for DEBUG
+                    var biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorY(), this.getFloorZ())];
+                    sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
                 } else {
                     this.blocksAround = blocksAround;
                     this.collisionBlocks = collidingBlocks;
