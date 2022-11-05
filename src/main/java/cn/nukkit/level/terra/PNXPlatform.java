@@ -77,7 +77,9 @@ public class PNXPlatform extends AbstractPlatform {
         }
         final var platform = new PNXPlatform();
         platform.load();
+        //请求terra加载配置包
         platform.getEventManager().callEvent(new PlatformInitializationEvent());
+        //以下代码使得在 nukkit.yml 中可以通过类似 terra:<zip file name> 的格式指定地形生成器，并非重复代码
         final var configRegistry = platform.getConfigRegistry();
         final var packsDir = new File("./terra/packs");
         for (final var each : Objects.requireNonNull(packsDir.listFiles())) {
