@@ -90,9 +90,11 @@ public class StartGamePacket extends DataPacket {
     public String worldName;
     public String premiumWorldTemplateId = "";
     public boolean isTrial = false;
-    public boolean isMovementServerAuthoritative;
+    public int serverAuthoritativeMovement;
     @Since("1.3.0.0-PN")
     public boolean isInventoryServerAuthoritative;
+    @Since("1.19.40-r3")
+    public boolean isServerAuthoritativeBlockBreaking;
     public long currentTick;
 
     public int enchantmentSeed;
@@ -203,9 +205,9 @@ public class StartGamePacket extends DataPacket {
         this.putString(this.worldName);
         this.putString(this.premiumWorldTemplateId);
         this.putBoolean(this.isTrial);
-        this.putVarInt(this.isMovementServerAuthoritative ? 1 : 0); // 2 - rewind
+        this.putVarInt(this.serverAuthoritativeMovement);// 2 - rewind
         this.putVarInt(0); // RewindHistorySize
-        this.putBoolean(false); // isServerAuthoritativeBlockBreaking
+        this.putBoolean(this.isServerAuthoritativeBlockBreaking); // isServerAuthoritativeBlockBreaking
         this.putLLong(this.currentTick);
         this.putVarInt(this.enchantmentSeed);
 
