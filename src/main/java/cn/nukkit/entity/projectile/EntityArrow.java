@@ -6,15 +6,17 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import co.aikar.timings.Timings;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class EntityArrow extends EntityProjectile {
+public class EntityArrow extends SlenderProjectile {
 
     public static final int NETWORK_ID = 80;
 
@@ -39,17 +41,7 @@ public class EntityArrow extends EntityProjectile {
     }
 
     @Override
-    public float getWidth() {
-        return 0.5f;
-    }
-
-    @Override
     public float getLength() {
-        return 0.5f;
-    }
-
-    @Override
-    public float getHeight() {
         return 0.5f;
     }
 

@@ -8,7 +8,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.entity.projectile.SlenderProjectile;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author PetteriM1
  */
-public class EntityFishingHook extends EntityProjectile {
+public class EntityFishingHook extends SlenderProjectile {
 
     public static final int NETWORK_ID = 77;
 
@@ -72,17 +72,7 @@ public class EntityFishingHook extends EntityProjectile {
     }
 
     @Override
-    public float getWidth() {
-        return 0.2f;
-    }
-
-    @Override
     public float getLength() {
-        return 0.2f;
-    }
-
-    @Override
-    public float getHeight() {
         return 0.2f;
     }
 
@@ -122,7 +112,7 @@ public class EntityFishingHook extends EntityProjectile {
         }
 
         boolean inWater = this.isInsideOfWater();
-        if (inWater) {
+        if (inWater) {//防止鱼钩沉底 水中的阻力
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
@@ -175,6 +165,24 @@ public class EntityFishingHook extends EntityProjectile {
         }
 
         return hasUpdate;
+    }
+
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    protected void updateMotion() {
+        //正确的浮力
+        if (this.isInsideOfWater() && this.getY() < this.getWaterHeight() - 2) {
+            this.motionX = 0;
+            this.motionY += getGravity();
+            this.motionZ = 0;
+        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) {//防止鱼钩上浮超出水面
+            this.motionX = 0;
+            this.motionZ = 0;
+            this.motionY = 0;
+        } else {//处理不在水中的情况
+            super.updateMotion();
+        }
     }
 
     public int getWaterHeight() {
@@ -243,8 +251,9 @@ public class EntityFishingHook extends EntityProjectile {
         if (this.shootingEntity instanceof Player player && this.caught) {
             Item item = Fishing.getFishingResult(this.rod);
             int experience = ThreadLocalRandom.current().nextInt(3) + 1;
-            Vector3 motion = player.subtract(this).multiply(0.1);
-            motion.y += Math.sqrt(player.distance(this)) * 0.08;
+            Vector3 pos = new Vector3(this.x, this.getWaterHeight(), this.z); //实体生成在水面上
+            Vector3 motion = player.subtract(pos).multiply(0.1);
+            motion.y += Math.sqrt(player.distance(pos)) * 0.08;
 
             PlayerFishEvent event = new PlayerFishEvent(player, this, item, experience, motion);
             this.getServer().getPluginManager().callEvent(event);
@@ -253,7 +262,7 @@ public class EntityFishingHook extends EntityProjectile {
                 EntityItem itemEntity = (EntityItem) Entity.createEntity(EntityItem.NETWORK_ID,
                         this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true),
                         Entity.getDefaultNBT(
-                                        new Vector3(this.x, this.getWaterHeight(), this.z),
+                                        pos,
                                         event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360,
                                         0
                                 ).putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
