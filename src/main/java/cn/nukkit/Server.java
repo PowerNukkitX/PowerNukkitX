@@ -540,7 +540,7 @@ public class Server {
                             }
                         } else if (key.equals("nukkit.yml.settings.language")) {
                             for (String comment : comments) {
-                                comment = comment.replace("%s", languagesCommaList);
+                                comment = comment.replace("%1", languagesCommaList);
                                 result.append(ident).append("# ").append(comment).append(System.lineSeparator());
                             }
                             result.append(ident).append("language: ").append(language).append(System.lineSeparator());
