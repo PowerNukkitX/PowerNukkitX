@@ -112,7 +112,7 @@ public class EntityFishingHook extends SlenderProjectile {
         }
 
         boolean inWater = this.isInsideOfWater();
-        if (inWater) {
+        if (inWater) {//防止鱼钩沉底 水中的阻力
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
@@ -171,11 +171,16 @@ public class EntityFishingHook extends SlenderProjectile {
     @PowerNukkitOnly
     @Override
     protected void updateMotion() {
+        //正确的浮力
         if (this.isInsideOfWater() && this.getY() < this.getWaterHeight() - 2) {
+            this.motionX = 0;
+            this.motionY += getGravity();
+            this.motionZ = 0;
+        } else if (this.isInsideOfWater() && this.getY() >= this.getWaterHeight() - 2) {//防止鱼钩上浮超出水面
             this.motionX = 0;
             this.motionZ = 0;
             this.motionY = 0;
-        } else {
+        } else {//处理不在水中的情况
             super.updateMotion();
         }
     }
