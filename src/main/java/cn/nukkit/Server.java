@@ -504,7 +504,14 @@ public class Server {
                         int newIdent = ident.length();
 
                         if (newIdent < lastIdent) {
-                            int reduced = lastIdent;
+                            int reduced = lastIdent - newIdent;
+                            int i = 0;
+                            while (i < reduced) {
+                                path.pollLast();
+                                i++;
+                            }
+                            lastIdent = lastIdent - reduced;
+                            /*int reduced = lastIdent;
                             String[] parent;
                             while ((parent = path.pollLast()) != null) {
                                 reduced -= parent[1].length() + 1;
@@ -512,7 +519,7 @@ public class Server {
                                     break;
                                 }
                             }
-                            lastIdent = reduced;
+                            lastIdent = reduced;*/
                         }
                         if (newIdent > lastIdent) {
                             path.add(last);
