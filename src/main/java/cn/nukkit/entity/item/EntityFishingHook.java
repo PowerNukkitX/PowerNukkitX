@@ -175,7 +175,7 @@ public class EntityFishingHook extends SlenderProjectile {
             this.motionX = 0;
             this.motionZ = 0;
             this.motionY = 0;
-        }else {
+        } else {
             super.updateMotion();
         }
     }
