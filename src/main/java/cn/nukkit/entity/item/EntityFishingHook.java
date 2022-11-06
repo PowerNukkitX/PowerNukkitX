@@ -107,9 +107,6 @@ public class EntityFishingHook extends SlenderProjectile {
         }
 
         hasUpdate |= super.onUpdate(currentTick);
-        if (hasUpdate) {
-            return false;
-        }
 
         boolean inWater = this.isInsideOfWater();
         if (inWater) {
@@ -163,7 +160,6 @@ public class EntityFishingHook extends SlenderProjectile {
                 }
             }
         }
-
         return hasUpdate;
     }
 
