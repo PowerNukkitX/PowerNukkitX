@@ -167,6 +167,19 @@ public class EntityFishingHook extends SlenderProjectile {
         return hasUpdate;
     }
 
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    @Override
+    protected void updateMotion() {
+        if (this.isInsideOfWater() && this.getY() < this.getWaterHeight() - 2) {
+            this.motionX = 0;
+            this.motionZ = 0;
+            this.motionY = 0;
+        }else {
+            super.updateMotion();
+        }
+    }
+
     public int getWaterHeight() {
         for (int y = this.getFloorY(); y < level.getMaxHeight(); y++) {
             int id = this.level.getBlockIdAt(this.getFloorX(), y, this.getFloorZ());
