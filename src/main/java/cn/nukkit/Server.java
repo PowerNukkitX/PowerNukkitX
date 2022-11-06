@@ -504,16 +504,15 @@ public class Server {
                         int newIdent = ident.length();
 
                         if (newIdent < lastIdent) {
-                            int reduced = lastIdent;
-                            String[] parent;
-                            while ((parent = path.pollLast()) != null) {
-                                reduced -= parent[1].length();
-                                if (reduced <= newIdent) {
-                                    break;
-                                }
+                            int reduced = lastIdent - newIdent;
+                            int i = 0;
+                            while (i < reduced) {
+                                path.pollLast();
+                                i++;
                             }
-                            lastIdent = reduced;
-                        } else if (newIdent > lastIdent) {
+                            lastIdent = lastIdent - reduced;
+                        }
+                        if (newIdent > lastIdent) {
                             path.add(last);
                             lastIdent = newIdent;
                         }
@@ -539,7 +538,7 @@ public class Server {
                             }
                         } else if (key.equals("nukkit.yml.settings.language")) {
                             for (String comment : comments) {
-                                comment = comment.replace("%s", languagesCommaList);
+                                comment = comment.replace("%1", languagesCommaList);
                                 result.append(ident).append("# ").append(comment).append(System.lineSeparator());
                             }
                             result.append(ident).append("language: ").append(language).append(System.lineSeparator());
