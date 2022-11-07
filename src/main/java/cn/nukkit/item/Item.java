@@ -721,7 +721,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 获取创造模式下创造背包中的物品
+     * 定义创造模式下创造背包中的物品
      * <p>
      * Get the items in the Creative backpack in Creative mode
      */
@@ -750,6 +750,15 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
+    /**
+     * 检测这个物品是否存在于创造背包
+     * <p>
+     * Detect if the item exists in the Creative backpack
+     *
+     * @param item
+     * @return
+     */
+
     public static boolean isCreativeItem(Item item) {
         for (Item aCreative : Item.creative) {
             if (item.equals(aCreative, !item.isTool())) {
@@ -759,10 +768,23 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
+    /**
+     * @param index
+     * @return
+     */
+
     public static Item getCreativeItem(int index) {
         return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
     }
 
+    /**
+     * 定义物品所在创造背包的位置
+     * <p>
+     * Get the location of the Creative backpack where the item is located
+     *
+     * @param item
+     * @return
+     */
     public static int getCreativeItemIndex(Item item) {
         for (int i = 0; i < Item.creative.size(); i++) {
             if (item.equals(Item.creative.get(i), !item.isTool())) {
@@ -1147,7 +1169,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return null;
     }
 
-    //Whether to apply the enchantment effect when using this item
+    /**
+     * 使用该物品时是否有附魔效果
+     * <p>
+     * Whether to apply the enchantment effect when using this item
+     *
+     * @return
+     */
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean applyEnchantments() {
@@ -1171,6 +1200,8 @@ public class Item implements Cloneable, BlockID, ItemID {
 
 
     /**
+     * 通过附魔id来查找附魔等级
+     * <p>
      * Find the enchantment level by the enchantment id.
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
@@ -1191,6 +1222,15 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         return 0;
     }
+
+    /**
+     * 定义附魔的id
+     * <p>
+     * Get the id of the enchantment
+     *
+     * @param id
+     * @return
+     */
 
     public Enchantment getEnchantment(int id) {
         return getEnchantment((short) (id & 0xffff));
@@ -1355,6 +1395,15 @@ public class Item implements Cloneable, BlockID, ItemID {
         return "";
     }
 
+    /**
+     * 设置物品的自定义名字
+     * <p>
+     * Set custom names for items
+     *
+     * @param name
+     * @return
+     */
+
     public Item setCustomName(String name) {
         if (name == null || name.equals("")) {
             this.clearCustomName();
@@ -1377,6 +1426,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this;
     }
 
+    /**
+     * 清除物品的自定义名称
+     * <p>
+     * Clear custom name for item
+     *
+     * @return
+     */
+
     public Item clearCustomName() {
         if (!this.hasCompoundTag()) {
             return this;
@@ -1396,6 +1453,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this;
     }
 
+    /**
+     * 定义物品的Lore信息
+     * <p>
+     * Get the Lore information of the item
+     *
+     * @return
+     */
+
     public String[] getLore() {
         Tag tag = this.getNamedTagEntry("display");
         ArrayList<String> lines = new ArrayList<>();
@@ -1413,6 +1478,15 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         return lines.toArray(EmptyArrays.EMPTY_STRINGS);
     }
+
+    /**
+     * 设置物品的Lore信息
+     * <p>
+     * Set the Lore information of the item
+     *
+     * @param lines
+     * @return
+     */
 
     public Item setLore(String... lines) {
         CompoundTag tag;
@@ -1589,6 +1663,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return item;
     }
 
+    /**
+     * 定义物品堆叠的最大数量
+     * <p>
+     * Define the maximum number of items to be stacked
+     *
+     * @return
+     */
+
     public int getMaxStackSize() {
         return block == null ? 64 : block.getItemMaxStackSize();
     }
@@ -1612,10 +1694,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 判断这个物品是否为工具
+     * 定义物品是否为工具
      * <p>
-     * Determine if this item is a tool
-     *
+     * Define if this item is a tool
      * @return
      */
 
@@ -1624,9 +1705,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 获取这个物品最大耐久值
+     * 定义物品最大耐久值
      * <p>
-     * getMaxDurability
+     * Define the maximum durability value of the item
      *
      * @return
      */
@@ -1635,69 +1716,197 @@ public class Item implements Cloneable, BlockID, ItemID {
         return -1;
     }
 
+    /**
+     * 定义物品的挖掘等级
+     * <p>
+     * Define the item Tier level
+     *
+     * @return
+     */
+
     public int getTier() {
         return 0;
     }
+
+    /**
+     * 定义物品是否为镐子
+     * <p>
+     * Define if the item is a Pickaxe
+     *
+     * @return
+     */
 
     public boolean isPickaxe() {
         return false;
     }
 
+    /**
+     * 定义物品是否为斧子
+     * <p>
+     * Define if the item is a Axe
+     *
+     * @return
+     */
+
     public boolean isAxe() {
         return false;
     }
 
+    /**
+     * 定义物品是否为剑
+     * <p>
+     * Define if the item is a Sword
+     *
+     * @return
+     */
     public boolean isSword() {
         return false;
     }
+
+    /**
+     * 定义物品是否为铲子
+     * <p>
+     * Define if the item is a Shovel
+     *
+     * @return
+     */
 
     public boolean isShovel() {
         return false;
     }
 
+    /**
+     * 定义物品是否为锄头
+     * <p>
+     * Define if the item is a Hoe
+     *
+     * @return
+     */
+
     public boolean isHoe() {
         return false;
     }
 
+    /**
+     * 定义物品是否为剪刀
+     * <p>
+     * Define if the item is a Shears
+     *
+     * @return
+     */
     public boolean isShears() {
         return false;
     }
 
+    /**
+     * 定义物品是否为盔甲
+     * <p>
+     * Define if the item is a Armor
+     *
+     * @return
+     */
     public boolean isArmor() {
         return false;
     }
 
+    /**
+     * 定义物品是否为头盔
+     * <p>
+     * Define if the item is a Helmet
+     *
+     * @return
+     */
     public boolean isHelmet() {
         return false;
     }
 
+    /**
+     * 定义物品是否为胸甲
+     * <p>
+     * Define if the item is a Chestplate
+     *
+     * @return
+     */
     public boolean isChestplate() {
         return false;
     }
 
+    /**
+     * 定义物品是否为护腿
+     * <p>
+     * Define if the item is a Leggings
+     *
+     * @return
+     */
     public boolean isLeggings() {
         return false;
     }
 
+    /**
+     * 定义物品是否为靴子
+     * <p>
+     * Define if the item is a Boots
+     *
+     * @return
+     */
     public boolean isBoots() {
         return false;
     }
 
+    /**
+     * 定义物品的附魔
+     * <p>
+     * Define the enchantment of an item
+     *
+     * @return
+     */
     public int getEnchantAbility() {
         return 0;
     }
+
+    /**
+     * 定义物品的攻击伤害
+     * <p>
+     * Define the attackdamage of an item
+     *
+     * @return
+     */
 
     public int getAttackDamage() {
         return 1;
     }
 
+    /**
+     * 定义物品的护甲值
+     * <p>
+     * Define the Armour value of an item
+     *
+     * @return
+     */
+
     public int getArmorPoints() {
         return 0;
     }
 
+    /**
+     * 定义物品的盔甲韧性
+     * <p>
+     * Define the Armour Toughness of an item
+     *
+     * @return
+     */
+
     public int getToughness() {
         return 0;
     }
+
+    /**
+     * 定义物品是否不可损坏
+     * <p>
+     * Define if the item is Unbreakable
+     *
+     * @return
+     */
 
     public boolean isUnbreakable() {
         return false;
@@ -1715,6 +1924,14 @@ public class Item implements Cloneable, BlockID, ItemID {
     public boolean isLavaResistant() {
         return false;
     }
+
+    /**
+     * 定义物品是否可以打破盾牌
+     * <p>
+     * Define if the item can break the shield
+     *
+     * @return
+     */
 
     @PowerNukkitXOnly
     @Since("1.19.21-r4")
@@ -1736,7 +1953,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      *                  <p>
      *                  松开按钮的玩家
      * @param ticksUsed How many ticks the item was held.
-     *                  <p> 这个物品被使用多少ticks时间
+     *                  <p>
+     *                  这个物品被使用多少ticks时间
      * @return If an inventory contents update should be sent to the player
      * <p>
      * 如果要向玩家发送库存内容的更新信息
@@ -1930,6 +2148,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return RuntimeItems.getNetworkId(getNetworkFullId());
     }
 
+    /**
+     * 控制此物品/方块（在冒险模式下）可以使用/放置在其上的方块类型。
+     * <p>
+     * Controls what block types this block may be placed on.
+     *
+     * @param block
+     */
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addCanPlaceOn(Block block) {
@@ -1965,6 +2191,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = getOrCreateNamedTag();
         return tag.getList("CanPlaceOn", StringTag.class);
     }
+
+    /**
+     * 控制此物品/方块（在冒险模式下）可以破坏的方块类型。此效果不会改变原本的破坏速度和破坏后掉落物。
+     * <p>
+     * Controls what block types this item can destroy
+     *
+     * @param block
+     */
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -2002,6 +2236,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         return tag.getList("CanDestroy", StringTag.class);
     }
 
+    /**
+     * 物品锁定在玩家的物品栏
+     * LOCK_IN_SLOT 阻止该物品被从玩家物品栏的该槽位移动、移除、丢弃或用于合成
+     * LOCK_IN_INVENTORY 阻止该物品被从玩家的物品栏移除、丢弃或用于合成
+     * <p>
+     * Locks the item in the player's inventory
+     * LOCK_IN_SLOT Prevents the item from being removed from the player's inventory, dropped, or crafted with.
+     * LOCK_IN_INVENTORY Prevents the item from being moved or removed from its slot in the player's inventory, dropped, or crafted with
+     */
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public enum ItemLockMode {
@@ -2021,6 +2265,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         this.setCompoundTag(tag);
     }
+
+    /**
+     * 定义物品锁定在玩家的物品栏
+     * <p>
+     * Define items locked to the player's inventory
+     *
+     * @return
+     */
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -2043,6 +2295,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         this.setCompoundTag(tag);
     }
+
+    /**
+     * 定义物品是否死亡不掉落
+     * <p>
+     * Define if the item does not drop on death
+     *
+     * @return
+     */
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
