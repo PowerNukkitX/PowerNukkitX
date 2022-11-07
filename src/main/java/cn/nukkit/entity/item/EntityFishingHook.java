@@ -103,10 +103,13 @@ public class EntityFishingHook extends SlenderProjectile {
                 Vector3f offset = entity.getMountedOffset(this);
                 setPosition(new Vector3(entity.x + offset.x, entity.y + offset.y, entity.z + offset.z));
             }
-            return false;
+            hasUpdate = true;
         }
 
-        hasUpdate = super.onUpdate(currentTick);
+        hasUpdate |= super.onUpdate(currentTick);
+        if (hasUpdate) {
+            return false;
+        }
 
         boolean inWater = this.isInsideOfWater();
         if (inWater) {//防止鱼钩沉底 水中的阻力
@@ -160,6 +163,7 @@ public class EntityFishingHook extends SlenderProjectile {
                 }
             }
         }
+
         return hasUpdate;
     }
 

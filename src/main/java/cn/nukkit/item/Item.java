@@ -484,6 +484,13 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     private static List<String> itemList;
 
+    /**
+     * 重构项目物品列表
+     * <p>
+     * rebuild ItemList
+     * @return
+     */
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static List<String> rebuildItemList() {
@@ -493,6 +500,12 @@ public class Item implements Cloneable, BlockID, ItemID {
                 itemIds.keySet().stream()
         ).flatMap(Function.identity()).distinct().collect(Collectors.toList()));
     }
+    /**
+     * 获取项目物品列表也可以获取重构物品列表
+     * <p>
+     * Get the list of item items and also get the list of reconstructed items
+     * @return
+     */
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -659,6 +672,8 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     /**
      * 卸载全部的自定义物品
+     * <p>
+     * Remove all custom items
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -672,6 +687,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
+    /**
+     * 用于获取发送给客户端的自定义物品数据
+     * <p>
+     * Used to get the custom item data sent to the client
+     * @return
+     */
+
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static HashMap<String, Class<? extends Item>> getCustomItems() {
@@ -684,18 +706,36 @@ public class Item implements Cloneable, BlockID, ItemID {
         return new HashMap<>(CUSTOM_ITEM_DEFINITIONS);
     }
 
+    /**
+     * 取消创造模式下创造背包中的物品
+     * <p>
+     * Cancel the Creative of items in the backpack in Creative mode
+     */
+
     public static void clearCreativeItems() {
         Item.creative.clear();
     }
-
+    /**
+     * 获取创造模式下创造背包中的物品
+     * <p>
+     * Get the items in the Creative backpack in Creative mode
+     */
     public static ArrayList<Item> getCreativeItems() {
         return new ArrayList<>(Item.creative);
     }
-
+    /**
+     * 为创造模式中创造背包添加物品
+     * <p>
+     * Adding items to the Creative backpack in Creative mode
+     */
     public static void addCreativeItem(Item item) {
         Item.creative.add(item.clone());
     }
-
+    /**
+     * 在创造模式的创造背包中移除物品
+     * <p>
+     * Remove items from the Creative backpack in Creative mode
+     */
     public static void removeCreativeItem(Item item) {
         int index = getCreativeItemIndex(item);
         if (index != -1) {
@@ -1707,6 +1747,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
+     * 如果为true,这个物品可以如骨粉一样减少作物成长时间
+     * <p>
      * When true, this item can be used to reduce growing times like a bone meal.
      *
      * @return {@code true} if it can act like a bone meal
@@ -1718,6 +1760,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
+     * 玩家在空气中投掷如三叉戟一样
+     * 返回物品是否改变,例如数量变化或耐久度
+     * <p>
      * Called when a player uses the item on air, for example throwing a projectile.
      * Returns whether the item was changed, for example count decrease or durability change.
      *
@@ -1755,6 +1800,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
+     * 返回物品堆叠是否与指定的物品堆叠有相同的ID,伤害,NBT和数量
+     * <p>
      * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
      *
      * @param other item

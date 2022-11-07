@@ -663,6 +663,64 @@
                 <configuration>
                     <sourcepath>${project.build.directory}/delombok</sourcepath>
                     <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <groups>
+                        <group>
+                            <title>cn.nukkit.block</title>
+                            <packages>cn.nukkit.block.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.command</title>
+                            <packages>cn.nukkit.command.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.dialog</title>
+                            <packages>cn.nukkit.dialog.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.entity</title>
+                            <packages>cn.nukkit.entity.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.event</title>
+                            <packages>cn.nukkit.event.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.form</title>
+                            <packages>cn.nukkit.form.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.inventory</title>
+                            <packages>cn.nukkit.inventory.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.item</title>
+                            <packages>cn.nukkit.item.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.level</title>
+                            <packages>cn.nukkit.level.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.nbt</title>
+                            <packages>cn.nukkit.nbt.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.network</title>
+                            <packages>cn.nukkit.network.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.plugin</title>
+                            <packages>cn.nukkit.plugin.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.scoreboard</title>
+                            <packages>cn.nukkit.scoreboard.*</packages>
+                        </group>
+                        <group>
+                            <title>cn.nukkit.utils</title>
+                            <packages>cn.nukkit.utils.*</packages>
+                        </group>
+                    </groups>
                 </configuration>
                 <executions>
                     <execution>
