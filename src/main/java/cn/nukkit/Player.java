@@ -373,6 +373,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 我们使用google的cache来存储NPC对话框发送信息
      * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
      * 5分钟后未响应的对话框会被清除
+     * <p>
+     * We use Google's cache to store NPC dialogs to send messages
+     * The reason is that there is a chance that the client will not respond to the dialogs sent, and in certain cases we cannot clear these dialogs, which can lead to memory leaks
+     * Unresponsive dialogs will be cleared after 5 minutes
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -391,6 +395,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 lastRightClickPos = null;
 
     private int timeSinceRest;
+
+    /**
+     * 玩家升级时播放音乐的时间
+     * <p>
+     * Time to play sound when player upgrades
+     */
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -479,6 +489,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * 这个函数负责处理MinecraftBedrock已知的游戏模式（从1.1.0.3开始，包括生存、创造和冒险）
+     * <p>
      * Returns a client-friendly gamemode of the specified real gamemode
      * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
      * <p>
@@ -1757,6 +1769,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.server.onPlayerCompleteLoginSequence(this);
     }
 
+    /**
+     * 判断重生锚是否有效如果重生锚有效则在重生锚上重生或者在床上重生
+     * 如果玩家以上2种都没有则在服务器重生点重生
+     * <p>
+     * Determine if the respawn anchor is valid if the respawn anchor is valid then the anchor is respawned at the respawn anchor or reborn in bed
+     * If the player has none of the above 2 then respawn at the server respawn point
+     *
+     * @param block
+     * @return
+     */
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected boolean isValidRespawnBlock(Block block) {
@@ -1924,6 +1947,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.chunk.addEntity(this);
         }
     }
+
+    /**
+     * 检测传送位置
+     *
+     * @return
+     */
 
     protected boolean checkTeleportPosition() {
         if (this.teleportPosition != null) {
