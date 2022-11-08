@@ -616,8 +616,12 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     /**
      * 注册自定义物品
+     * <p>
+     * Register custom item
      *
      * @param c 传入自定义物品类的实例
+     *          <p>
+     *          Import in an instance of a custom item class
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -635,9 +639,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 注册自定义方块
-     *
+     * 注册自定义物品
+     * <p>
+     * Register custom item
      * @param itemClassList 传入自定义物品class List
+     *                      <p>
+     *                      Import custom items class List
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -657,8 +664,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 卸载指定的自定义物品
-     *
+     * 卸载自定义物品
+     * <p>
+     * Remove custom items
      * @param namespaceId 传入自定义物品的namespaceId
      */
     @PowerNukkitXOnly
@@ -729,35 +737,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         return new ArrayList<>(Item.creative);
     }
 
-    /**
-     * 为创造模式中创造背包添加物品
-     * <p>
-     * Adding items to the Creative backpack in Creative mode
-     */
     public static void addCreativeItem(Item item) {
         Item.creative.add(item.clone());
     }
 
-    /**
-     * 在创造模式的创造背包中移除物品
-     * <p>
-     * Remove items from the Creative backpack in Creative mode
-     */
     public static void removeCreativeItem(Item item) {
         int index = getCreativeItemIndex(item);
         if (index != -1) {
             Item.creative.remove(index);
         }
     }
-
-    /**
-     * 检测这个物品是否存在于创造背包
-     * <p>
-     * Detect if the item exists in the Creative backpack
-     *
-     * @param item
-     * @return
-     */
 
     public static boolean isCreativeItem(Item item) {
         for (Item aCreative : Item.creative) {
@@ -768,19 +757,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         return false;
     }
 
-    /**
-     * @param index
-     * @return
-     */
-
     public static Item getCreativeItem(int index) {
         return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
     }
 
     /**
-     * 定义物品所在创造背包的位置
+     * 定义物品是否在创造背包中
      * <p>
-     * Get the location of the Creative backpack where the item is located
+     * Define if the item is in the creation backpack
      *
      * @param item
      * @return
@@ -1170,7 +1154,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 使用该物品时是否有附魔效果
+     * 使用该物品是否应用附魔效果例如锋利等....
      * <p>
      * Whether to apply the enchantment effect when using this item
      *
@@ -1296,6 +1280,16 @@ public class Item implements Cloneable, BlockID, ItemID {
         this.setNamedTag(tag);
     }
 
+    /**
+     * 定义物品附魔效果和等级
+     * <p>
+     * Define the item level of enchantment effect
+     *
+     * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY
+     * <p>
+     * If there is no enchanting effect return Enchantment.EMPTY_ARRAY
+     */
+
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
             return Enchantment.EMPTY_ARRAY;
@@ -1316,6 +1310,8 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
+     * 快捷方便的方法,检测该物品是否有该附魔
+     * <p>
      * Convenience method to check if the item stack has positive level on a specific enchantment by it's id.
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
@@ -2149,7 +2145,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 控制此物品/方块（在冒险模式下）可以使用/放置在其上的方块类型。
+     * 控制此方块（在冒险模式下）可以使用/放置在其上的方块类型。
      * <p>
      * Controls what block types this block may be placed on.
      *
@@ -2193,9 +2189,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 控制此物品/方块（在冒险模式下）可以破坏的方块类型。此效果不会改变原本的破坏速度和破坏后掉落物。
+     * 控制此方块（在冒险模式下）可以破坏的方块类型。此效果不会改变原本的破坏速度和破坏后掉落物。
      * <p>
-     * Controls what block types this item can destroy
+     * Controls what block types can destroy
      *
      * @param block
      */
