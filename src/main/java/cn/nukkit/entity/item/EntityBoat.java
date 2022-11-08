@@ -85,7 +85,7 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_STACKABLE, true);
         this.dataProperties.putInt(DATA_VARIANT, woodID);
-        this.dataProperties.putInt(DATA_IS_BUOYANT, 1);
+        this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
         this.dataProperties.putString(DATA_BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
         this.dataProperties.putInt(DATA_MAX_AIR, 300);
         this.dataProperties.putLong(DATA_OWNER_EID, -1);

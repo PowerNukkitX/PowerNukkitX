@@ -275,19 +275,17 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN")
     public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.5.0.0-PN")
-    public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); //float
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
     @Since("1.3.0.0-PN")
-    public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
+    public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
     @Since("1.4.0.0-PN")
-    public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
+    public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
     @Since("1.5.0.0-PN")
-    public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(125); // ???
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(126); // ???
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(127); // ???
+    public static final int DATA_UPDATE_PROPERTIES = dynamic(123); // ???
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
