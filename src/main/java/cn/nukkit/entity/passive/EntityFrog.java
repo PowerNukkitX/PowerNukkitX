@@ -29,6 +29,7 @@ public class EntityFrog extends EntityWalkingAnimal {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(10);
+        this.setHealth(10);
     }
 
     @Override

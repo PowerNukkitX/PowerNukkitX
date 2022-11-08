@@ -42,5 +42,6 @@ public class EntityPufferfish extends EntitySwimmingAnimal {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(3);
+        this.setHealth(3);
     }
 }

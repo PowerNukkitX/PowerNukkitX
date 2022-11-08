@@ -26,6 +26,7 @@ public class EntityEnderman extends EntityWalkingMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(40);
+        this.setHealth(40);
     }
 
     @Override

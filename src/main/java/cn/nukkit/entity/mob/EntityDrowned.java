@@ -28,6 +28,7 @@ public class EntityDrowned extends EntityAmphibiousMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 
     @Override

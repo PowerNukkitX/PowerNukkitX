@@ -35,6 +35,7 @@ public class EntityBat extends EntityFlyingAnimal {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(6);
+        this.setHealth(6);
     }
 
 

@@ -40,5 +40,6 @@ public class EntityWanderingTrader extends EntityCreature implements EntityNPC {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 }

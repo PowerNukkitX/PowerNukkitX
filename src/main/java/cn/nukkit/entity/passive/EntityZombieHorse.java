@@ -37,6 +37,7 @@ public class EntityZombieHorse extends EntityWalkingAnimal implements EntitySmit
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(15);
+        this.setHealth(15);
     }
 
     @Override

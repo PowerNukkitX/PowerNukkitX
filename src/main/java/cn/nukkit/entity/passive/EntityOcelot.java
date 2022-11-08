@@ -48,7 +48,8 @@ public class EntityOcelot extends EntityWalkingAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
-        setMaxHealth(10);
+        this.setMaxHealth(10);
+        this.setHealth(10);
     }
 
     @Override

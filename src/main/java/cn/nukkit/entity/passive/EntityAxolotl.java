@@ -29,6 +29,7 @@ public class EntityAxolotl extends EntitySwimmingAnimal {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(14);
+        this.setHealth(14);
     }
 
 

@@ -37,6 +37,7 @@ public class EntityWither extends EntityFlyingMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(600);
+        this.setHealth(600);
     }
 
     @PowerNukkitOnly

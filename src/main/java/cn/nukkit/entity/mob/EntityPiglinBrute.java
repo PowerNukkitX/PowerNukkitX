@@ -33,6 +33,7 @@ public class EntityPiglinBrute extends EntityWalkingMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(50);
+        this.setHealth(50);
     }
 
     @Override

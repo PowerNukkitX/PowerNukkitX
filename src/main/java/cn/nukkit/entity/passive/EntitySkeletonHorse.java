@@ -37,6 +37,7 @@ public class EntitySkeletonHorse extends EntityWalkingAnimal implements EntitySm
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(15);
+        this.setHealth(15);
     }
 
     @Override

@@ -32,6 +32,7 @@ public class EntityPanda extends EntityWalkingAnimal {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 
 

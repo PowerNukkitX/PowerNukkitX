@@ -42,5 +42,6 @@ public class EntityTropicalFish extends EntitySwimmingAnimal {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(6);
+        this.setHealth(6);
     }
 }

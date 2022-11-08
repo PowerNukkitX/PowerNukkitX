@@ -150,6 +150,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
             this.dataProperties.putBoolean(DATA_POWERED, true);
         }
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 
     @PowerNukkitOnly

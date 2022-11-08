@@ -26,6 +26,7 @@ public class EntityVex extends EntityFlyingMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(14);
+        this.setHealth(14);
     }
 
     @Override

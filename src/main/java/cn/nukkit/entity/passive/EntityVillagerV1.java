@@ -60,6 +60,7 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
 
         if (!this.namedTag.contains("Profession")) {
             this.setProfession(PROFESSION_GENERIC);

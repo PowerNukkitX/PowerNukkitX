@@ -30,6 +30,7 @@ public class EntityZombieVillagerV1 extends EntityWalkingMob implements EntitySm
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 
     @Override

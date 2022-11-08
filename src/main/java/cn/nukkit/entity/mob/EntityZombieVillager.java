@@ -27,6 +27,7 @@ public class EntityZombieVillager extends EntityWalkingMob implements EntitySmit
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setHealth(20);
     }
 
     @Override
