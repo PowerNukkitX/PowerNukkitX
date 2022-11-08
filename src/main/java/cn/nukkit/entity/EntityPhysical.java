@@ -76,6 +76,11 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (needsCollisionDamage) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
         }
+
+        //修复生物在天上浮空而不能识别是否在地面的漏洞
+        if(this.motionY ==0d && this.motionX ==0d  && this.motionZ ==0d && this.onGround && this.getLevel().getBlock(new Vector3(this.x,this.y-0.001,this.z)).getId()==0){
+            this.onGround = false;
+        }
         return super.onUpdate(currentTick);
     }
 
