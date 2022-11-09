@@ -50,6 +50,12 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
 
     @Override
     public void asyncPrepare(int currentTick) {
+        //修复生物在天上浮空而不能识别是否在地面的漏洞
+        if (this.onGround) {
+            AxisAlignedBB bb = this.boundingBox.clone();
+            bb.setMinY(bb.getMinY() - 0.5);
+            this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
+        }
         // 计算是否需要重新计算高开销实体运动
         this.needsRecalcMovement = this.level.tickRateOptDelay == 1 || ((currentTick + tickSpread) & (this.level.tickRateOptDelay - 1)) == 0;
         // 重新计算绝对位置碰撞箱
@@ -75,13 +81,6 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         // 添加挤压伤害
         if (needsCollisionDamage) {
             this.attack(new EntityDamageEvent(this, EntityDamageEvent.DamageCause.COLLIDE, 3));
-        }
-
-        //修复生物在天上浮空而不能识别是否在地面的漏洞
-        if (this.onGround) {
-            AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMinY(bb.getMinY() - 0.5);
-            this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
         }
         return super.onUpdate(currentTick);
     }
