@@ -52,7 +52,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     public void asyncPrepare(int currentTick) {
         //修复生物在天上浮空而不能识别是否在地面的漏洞
         if (this.onGround) {
-            AxisAlignedBB bb = this.boundingBox.clone();
+            AxisAlignedBB bb = this.offsetBoundingBox.clone();
             bb.setMinY(bb.getMinY() - 0.5);
             this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
         }
