@@ -737,16 +737,35 @@ public class Item implements Cloneable, BlockID, ItemID {
         return new ArrayList<>(Item.creative);
     }
 
+    /**
+     * 为创造模式中创造背包添加物品
+     * <p>
+     * Adding items to the Creative backpack in Creative mode
+     */
     public static void addCreativeItem(Item item) {
         Item.creative.add(item.clone());
     }
 
+    /**
+     * 在创造模式的创造背包中移除物品
+     * <p>
+     * Remove items from the Creative backpack in Creative mode
+     */
     public static void removeCreativeItem(Item item) {
         int index = getCreativeItemIndex(item);
         if (index != -1) {
             Item.creative.remove(index);
         }
     }
+
+    /**
+     * 检测这个物品是否存在于创造背包
+     * <p>
+     * Detect if the item exists in the Creative backpack
+     *
+     * @param item
+     * @return
+     */
 
     public static boolean isCreativeItem(Item item) {
         for (Item aCreative : Item.creative) {
@@ -756,6 +775,11 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
         return false;
     }
+
+    /**
+     * @param index
+     * @return
+     */
 
     public static Item getCreativeItem(int index) {
         return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
