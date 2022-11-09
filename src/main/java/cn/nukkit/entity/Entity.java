@@ -282,10 +282,20 @@ public abstract class Entity extends Location implements Metadatable {
     @Since("1.4.0.0-PN")
     public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
     @Since("1.5.0.0-PN")
-    public static final int DATA_UPDATE_PROPERTIES = dynamic(123); // ???
+    public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
+    //Deprecated
+    //@Since("1.5.0.0-PN")
+    //public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
     public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
     public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_HAS_DIED = 129;// ???
+
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
