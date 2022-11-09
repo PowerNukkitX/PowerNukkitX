@@ -10,6 +10,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.passive.EntitySwimmingAnimal;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
@@ -553,6 +554,13 @@ public class EntityBoat extends EntityVehicle {
             return;
         }
         super.kill();
+
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            Entity damager = entityDamageByEntityEvent.getDamager();
+            if (damager instanceof Player player && player.isCreative()) {
+                return;
+            }
+        }
 
         if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             dropItem();

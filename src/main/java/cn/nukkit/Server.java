@@ -504,16 +504,15 @@ public class Server {
                         int newIdent = ident.length();
 
                         if (newIdent < lastIdent) {
-                            int reduced = lastIdent;
-                            String[] parent;
-                            while ((parent = path.pollLast()) != null) {
-                                reduced -= parent[1].length();
-                                if (reduced <= newIdent) {
-                                    break;
-                                }
+                            int reduced = lastIdent - newIdent;
+                            int i = 0;
+                            while (i < reduced) {
+                                path.pollLast();
+                                i++;
                             }
-                            lastIdent = reduced;
-                        } else if (newIdent > lastIdent) {
+                            lastIdent = lastIdent - reduced;
+                        }
+                        if (newIdent > lastIdent) {
                             path.add(last);
                             lastIdent = newIdent;
                         }
@@ -539,7 +538,7 @@ public class Server {
                             }
                         } else if (key.equals("nukkit.yml.settings.language")) {
                             for (String comment : comments) {
-                                comment = comment.replace("%s", languagesCommaList);
+                                comment = comment.replace("%1", languagesCommaList);
                                 result.append(ident).append("# ").append(comment).append(System.lineSeparator());
                             }
                             result.append(ident).append("language: ").append(language).append(System.lineSeparator());
@@ -617,9 +616,10 @@ public class Server {
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
+                put("server-authoritative-movement", "client-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
+                put("server-authoritative-block-breaking", false);
             }
         });
-
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
         this.allowNether = this.properties.getBoolean("allow-nether", true);
 
@@ -1628,7 +1628,7 @@ public class Server {
     }
 
     public String getBStatsNukkitVersion() {
-        return Nukkit.VERSION + "-PNX";
+        return Nukkit.VERSION;
     }
 
     @PowerNukkitOnly
@@ -2916,6 +2916,23 @@ public class Server {
     @Since("1.19.30-r2")
     public int getMaximumSizePerChunk() {
         return maximumSizePerChunk;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    public int getServerAuthoritativeMovement() {
+        return switch (this.properties.get("server-authoritative-movement", "client-auth")) {
+            case "client-auth" -> 0;
+            case "server-auth" -> 1;
+            case "server-auth-with-rewind" -> 2;
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.40-r3")
+    public boolean isServerAuthoritativeBlockBreaking() {
+        return this.properties.get("server-authoritative-block-breaking", false);
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {

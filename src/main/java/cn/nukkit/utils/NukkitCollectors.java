@@ -38,14 +38,12 @@ public class NukkitCollectors {
      * counts the number of input elements.  If no elements are present, the
      * result is 0.
      *
-     * @implSpec
-     * This produces a result equivalent to:
+     * @param <T> the type of the input elements
+     * @return a {@code Collector} that counts the input elements
+     * @implSpec This produces a result equivalent to:
      * <pre>{@code
      *     reducing(0, e -> 1, Integer::sum)
      * }</pre>
-     *
-     * @param <T> the type of the input elements
-     * @return a {@code Collector} that counts the input elements
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")

@@ -22,7 +22,7 @@ public class InvalidBlockDamageException extends InvalidBlockPropertyMetaExcepti
     public InvalidBlockDamageException(int blockId, int damage, int before) {
         super(BlockUnknown.UNKNOWN,
                 before, damage,
-                "Invalid block-meta combination. New: "+blockId+":"+damage+", Before: "+blockId+":"+before);
+                "Invalid block-meta combination. New: " + blockId + ":" + damage + ", Before: " + blockId + ":" + before);
         this.blockId = blockId;
         this.damage = damage;
         this.before = before;

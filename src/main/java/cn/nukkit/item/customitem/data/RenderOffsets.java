@@ -6,7 +6,6 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
 
@@ -25,26 +24,28 @@ public class RenderOffsets {
      * <p>
      * Set rendering offsets for custom items at different viewpoints
      *
-     * @param mainHandFirstPerson 设置第一人称主手物品的偏移<br>Set the offset of the first person main hand item
-     * @param mainHandThirdPerson 设置第三人称主手物品的偏移<br>Set the offset of the third person main hand item
-     * @param offHandFirstPerson  设置第一人称副手物品的偏移<br>Set the offset of the first person offhand item
-     * @param offHandThirdPerson  设置第三人称副手物品的偏移<br>Set the offset of the third person offhand item
+     * @param mainHandFirstPerson 设置第一人称主手物品的偏移量<br>Set the offset of the first person main hand item
+     * @param mainHandThirdPerson 设置第三人称主手物品的偏移量<br>Set the offset of the third person main hand item
+     * @param offHandFirstPerson  设置第一人称副手物品的偏移量<br>Set the offset of the first person offhand item
+     * @param offHandThirdPerson  设置第三人称副手物品的偏移量<br>Set the offset of the third person offhand item
      */
-    public RenderOffsets(@Nullable Offset.OffsetBuilder mainHandFirstPerson, @Nullable Offset.OffsetBuilder mainHandThirdPerson, @Nullable Offset.OffsetBuilder offHandFirstPerson, @Nullable Offset.OffsetBuilder offHandThirdPerson) {
+    public RenderOffsets(@Nullable Offset mainHandFirstPerson, @Nullable Offset mainHandThirdPerson, @Nullable Offset offHandFirstPerson, @Nullable Offset offHandThirdPerson) {
         if (mainHandFirstPerson != null || mainHandThirdPerson != null) {
             this.nbt.putCompound("main_hand", new CompoundTag());
             if (mainHandFirstPerson != null) {
-                this.nbt.getCompound("main_hand").putCompound("first_person", xyzToCompoundTag(mainHandFirstPerson.position, mainHandFirstPerson.rotation, mainHandFirstPerson.scale));
-            } else {
-                this.nbt.getCompound("main_hand").putCompound("third_person", xyzToCompoundTag(mainHandThirdPerson.position, mainHandThirdPerson.rotation, mainHandThirdPerson.scale));
+                this.nbt.getCompound("main_hand").putCompound("first_person", xyzToCompoundTag(mainHandFirstPerson.getPosition(), mainHandFirstPerson.getRotation(), mainHandFirstPerson.getScale()));
+            }
+            if (mainHandThirdPerson != null) {
+                this.nbt.getCompound("main_hand").putCompound("third_person", xyzToCompoundTag(mainHandThirdPerson.getPosition(), mainHandThirdPerson.getRotation(), mainHandThirdPerson.getScale()));
             }
         }
         if (offHandFirstPerson != null || offHandThirdPerson != null) {
             this.nbt.putCompound("off_hand", new CompoundTag());
             if (offHandFirstPerson != null) {
-                this.nbt.getCompound("off_hand").putCompound("first_person", xyzToCompoundTag(offHandFirstPerson.position, offHandFirstPerson.rotation, offHandFirstPerson.scale));
-            } else {
-                this.nbt.getCompound("off_hand").putCompound("third_person", xyzToCompoundTag(offHandThirdPerson.position, offHandThirdPerson.rotation, offHandThirdPerson.scale));
+                this.nbt.getCompound("off_hand").putCompound("first_person", xyzToCompoundTag(offHandFirstPerson.getPosition(), offHandFirstPerson.getRotation(), offHandFirstPerson.getScale()));
+            }
+            if (offHandThirdPerson != null) {
+                this.nbt.getCompound("off_hand").putCompound("third_person", xyzToCompoundTag(offHandThirdPerson.getPosition(), offHandThirdPerson.getRotation(), offHandThirdPerson.getScale()));
             }
         } else if (mainHandFirstPerson == null && mainHandThirdPerson == null)
             throw new IllegalArgumentException("Do not allow all parameters to be empty, if you do not want to specify, please do not use the renderOffsets method");
@@ -55,7 +56,7 @@ public class RenderOffsets {
      * <p>
      * Adjusts the scale offset of the first-person main hand with the specified multiplier
      *
-     * @param multiplier 范围0-1->?  越接近0物品越靠近玩家,越远离1物品越远离玩家<br>(Range 0-1->?)The closer the multiplier is to 0,the closer the item is to the player.The further the multiplier is from 1,the farther the item is from the player
+     * @param multiplier 按照指定规模缩放物品,这只会影响scale,所以物品位置可能不正确<br>Scaling the item to the specified scale multiplier number, which only affects the scale, so the item position may not be correct.
      * @return the render offsets
      */
     public static RenderOffsets scaleOffset(double multiplier) {
@@ -66,11 +67,24 @@ public class RenderOffsets {
         float scale2 = (float) (0.125 / multiplier);
         float scale3 = (float) (0.075 / (multiplier * 2.4f));
         return new RenderOffsets(
-                Offset.builder().scale(new Vector3f(scale3, scale3, scale3)),
-                Offset.builder().scale(new Vector3f(scale1, scale2, scale1)),
-                Offset.builder().scale(new Vector3f(scale1, scale2, scale1)),
-                Offset.builder().scale(new Vector3f(scale1, scale2, scale1))
+                Offset.builder().scale(scale3, scale3, scale3),
+                Offset.builder().scale(scale1, scale2, scale1),
+                Offset.builder().scale(scale1, scale2, scale1),
+                Offset.builder().scale(scale1, scale2, scale1)
         );
+    }
+
+    /**
+     * 按照指定的物品材质大小缩放为标准16x16像素物品显示
+     * <p>
+     * Scale to a standard 16x16 pixel item display at the specified item texture size
+     *
+     * @param textureSize 指定物品材质的像素大小,只能为16的倍数<br>Specify the pixel size of the item texture, which can only be a multiple of 16.
+     * @return the render offsets
+     */
+    public static RenderOffsets scaleOffset(int textureSize) {
+        double multiplier = textureSize / 16f;
+        return scaleOffset(multiplier);
     }
 
     private CompoundTag xyzToCompoundTag(Vector3f pos, Vector3f rot, Vector3f sc) {
@@ -97,12 +111,5 @@ public class RenderOffsets {
             result.putList(scale);
         }
         return result;
-    }
-
-    @Builder
-    public static class Offset {
-        public Vector3f position;
-        public Vector3f rotation;
-        public Vector3f scale;
     }
 }

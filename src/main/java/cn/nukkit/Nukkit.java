@@ -1,15 +1,14 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
+import cn.powernukkitx.libdeflate.Libdeflate;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Log4J2LoggerFactory;
-import io.sentry.Sentry;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -24,10 +23,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static cn.nukkit.utils.Utils.dynamic;
 
@@ -75,57 +72,8 @@ public class Nukkit {
 
     public static void main(String[] args) {
         AtomicBoolean disableSentry = new AtomicBoolean(false);
-        Sentry.init(options -> {
-            options.setDsn("https://a99f9e0c50424fff9f96feb2fd94c22f:6891b003c5874fa4bf407fe45035e3f1@o505263.ingest.sentry.io/5593371");
-            options.setRelease(getVersion() + "-" + getGitCommit());
-            options.setBeforeSend((event, hint) -> {
-                if (disableSentry.get()) {
-                    return null;
-                }
-
-                try {
-                    Server sv = Server.getInstance();
-                    event.setExtra("players", sv.getOnlinePlayers().size());
-                    Map<Integer, cn.nukkit.level.Level> levels = sv.getLevels();
-                    event.setExtra("levels", levels.size());
-                    event.setExtra("chunks", levels.values().stream().mapToInt(l -> l.getChunks().size()).sum());
-                    event.setExtra("tiles", levels.values().stream().mapToInt(l -> l.getBlockEntities().size()).sum());
-                    event.setExtra("entities", levels.values().stream().mapToInt(l -> l.getEntities().length).sum());
-                } catch (Exception e) {
-                    log.debug("Failed to add player/level/chunk/tiles/entities information", e);
-                }
-
-                try {
-                    Runtime runtime = Runtime.getRuntime();
-                    double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
-                    double usedMB = NukkitMath.round((double) (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024, 2);
-                    double maxMB = NukkitMath.round(((double) runtime.maxMemory()) / 1024 / 1024, 2);
-                    double usage = usedMB / maxMB * 100;
-
-                    event.setExtra("memTotal", totalMB);
-                    event.setExtra("memUsed", usedMB);
-                    event.setExtra("memMax", maxMB);
-                    event.setExtra("memUsage", usage);
-                } catch (Exception e) {
-                    log.debug("Failed to add memory information", e);
-                }
-
-                try {
-                    event.setModules(
-                            Server.getInstance().getPluginManager().getPlugins().entrySet().stream()
-                                    .map(entry -> new SimpleEntry<>(
-                                            entry.getKey(),
-                                            entry.getValue().getDescription().getVersion()
-                                    )).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                    );
-                } catch (Exception e) {
-                    log.debug("Failed to grab the list of enabled plugins", e);
-                }
-                return event;
-            });
-        });
-
         disableSentry.set(Boolean.parseBoolean(System.getProperty("disableSentry", "false")));
+
         Path propertiesPath = Paths.get(DATA_PATH, "server.properties");
         if (!disableSentry.get() && Files.isRegularFile(propertiesPath)) {
             Properties properties = new Properties();

@@ -255,7 +255,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[PAPER] = ItemPaper.class; //339
             list[BOOK] = ItemBook.class; //340
             list[SLIMEBALL] = ItemSlimeball.class; //341
-            list[MINECART_WITH_CHEST] = ItemMinecartChest.class; //342
+            list[CHEST_MINECART] = ItemMinecartChest.class; //342
 
             list[EGG] = ItemEgg.class; //344
             list[COMPASS] = ItemCompass.class; //345
@@ -320,8 +320,8 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[COMPARATOR] = ItemRedstoneComparator.class; //404
             list[NETHER_BRICK] = ItemNetherBrick.class; //405
             list[QUARTZ] = ItemQuartz.class; //406
-            list[MINECART_WITH_TNT] = ItemMinecartTNT.class; //407
-            list[MINECART_WITH_HOPPER] = ItemMinecartHopper.class; //408
+            list[TNT_MINECART] = ItemMinecartTNT.class; //407
+            list[HOPPER_MINECART] = ItemMinecartHopper.class; //408
             list[PRISMARINE_SHARD] = ItemPrismarineShard.class; //409
             list[HOPPER] = ItemHopper.class;
             list[RAW_RABBIT] = ItemRabbitRaw.class; //411
@@ -860,7 +860,22 @@ public class Item implements Cloneable, BlockID, ItemID {
                 return get(AIR);
             }
             if (CUSTOM_ITEMS.containsKey(namespacedId)) {
-                ItemCustom itemCustom = (ItemCustom) RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                var item = RuntimeItems.getRuntimeMapping().getItemByNamespaceId(namespacedId, 1);
+                ItemCustom itemCustom;
+
+                /*
+                 * 因为getDefinition中如果需要使用Item.fromString()获取自定义物品,此时RuntimeItems中还没注册自定义物品,所以留一个反射构造。
+                 * 主要用于getDefinition中addRepairItems
+                 */
+                if (item.getName() != null && item.getName().equals(Item.UNKNOWN_STR)) {
+                    try {
+                        itemCustom = (ItemCustom) CUSTOM_ITEMS.get(namespacedId).getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else itemCustom = (ItemCustom) item;
+
                 if (meta.isPresent()) {
                     int damage = meta.getAsInt();
                     if (damage < 0) {

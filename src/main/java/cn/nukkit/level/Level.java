@@ -3141,9 +3141,19 @@ public class Level implements ChunkManager, Metadatable {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
                 //if (diff.lengthSquared() > 0.00001) {
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                if (hand.getBoundingBox().intersectsWith(bb)) {
-                    ++realCount;
+
+                //这是一个对于x z更宽松的碰撞检测,用于解决临界条件下方块无法放置的问题
+                if (bb.getMaxY() > hand.getMinY() && bb.getMinY() < hand.getMaxY()) {
+                    if (bb.getMaxX() - hand.getMinX() > 0.005 && bb.getMinX() - hand.getMaxX() < -0.005) {
+                        if (bb.getMaxZ() - hand.getMinZ() > 0.005 && bb.getMinZ() - hand.getMaxZ() < -0.005) {
+                            ++realCount;
+                        }
+                    }
                 }
+
+                /*if (hand.getBoundingBox().intersectsWith(bb)) {
+                    ++realCount;
+                }*/
                 //}
             }
 
@@ -5055,7 +5065,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
-    public VibrationManager getVibrationManager(){
+    public VibrationManager getVibrationManager() {
         return this.vibrationManager;
     }
 

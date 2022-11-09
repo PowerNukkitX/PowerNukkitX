@@ -275,19 +275,27 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_HITBOX = dynamic(118); //NBT
     @Since("1.3.0.0-PN")
     public static final int DATA_IS_BUOYANT = dynamic(119); //byte
-    @Since("1.5.0.0-PN")
-    public static final int DATA_BASE_RUNTIME_ID = dynamic(120); // ???
     @Since("1.4.0.0-PN")
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(121); //float
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = dynamic(120); //float
     @Since("1.3.0.0-PN")
-    public static final int DATA_BUOYANCY_DATA = dynamic(122); //string
+    public static final int DATA_BUOYANCY_DATA = dynamic(121); //string
     @Since("1.4.0.0-PN")
-    public static final int DATA_GOAT_HORN_COUNT = dynamic(123); // ???
+    public static final int DATA_GOAT_HORN_COUNT = dynamic(122); // ???
     @Since("1.5.0.0-PN")
-    public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(125); // ???
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(126); // ???
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(127); // ???
+    public static final int DATA_BASE_RUNTIME_ID = dynamic(123); // ???
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = dynamic(124); // ???
+    //Deprecated
+    //@Since("1.5.0.0-PN")
+    //public static final int DATA_UPDATE_PROPERTIES = dynamic(124); // ???
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = dynamic(125); // ???
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = dynamic(126); // ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_POS = 127;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 128;// ???
+    @Since("1.19.40-r3")
+    public static final int DATA_PLAYER_HAS_DIED = 129;// ???
+
     // Flags
     public static final int DATA_FLAG_ONFIRE = dynamic(0);
     public static final int DATA_FLAG_SNEAKING = dynamic(1);
@@ -1917,10 +1925,10 @@ public abstract class Entity extends Location implements Metadatable {
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
+    @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")
     @Override
     public Vector3 getDirectionVector() {
-        Vector3 vector = super.getDirectionVector();
-        return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
+        return super.getDirectionVector();
     }
 
     public Vector2 getDirectionPlane() {

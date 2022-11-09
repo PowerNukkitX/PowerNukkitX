@@ -5,6 +5,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
@@ -54,12 +55,22 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
 
     @Override
     public void dropItem() {
-        super.dropItem();
-
-        this.level.dropItem(this, Item.get(Item.CHEST));
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);
         }
+
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+            Entity damager = entityDamageByEntityEvent.getDamager();
+            if (damager instanceof Player player && player.isCreative()) {
+                return;
+            }
+        }
+        this.level.dropItem(this, Item.get(Item.CHEST_MINECART));
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
         this.inventory.clearAll();
     }
 
