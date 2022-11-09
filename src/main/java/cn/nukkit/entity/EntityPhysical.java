@@ -81,7 +81,7 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
         if (this.onGround) {
             AxisAlignedBB bb = this.boundingBox.clone();
             bb.setMinY(bb.getMinY() - 0.5);
-            this.onGround = this.level.getCollisionBlocks(bb).length > 0;
+            this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
         }
         return super.onUpdate(currentTick);
     }
