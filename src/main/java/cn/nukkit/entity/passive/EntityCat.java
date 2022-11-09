@@ -13,11 +13,12 @@ public class EntityCat extends EntityWalkingAnimal {
         super(chunk, nbt);
     }
 
+
     @Override
-    public boolean isAlive() {
+    public void updateMovement() {
         //猫猫流线运动怎么可能会摔落造成伤害呢~
         this.highestPosition = this.y;
-        return super.isAlive();
+        super.updateMovement();
     }
 
     @Override
