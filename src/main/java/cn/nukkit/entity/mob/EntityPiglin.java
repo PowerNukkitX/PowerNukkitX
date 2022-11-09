@@ -27,9 +27,8 @@ public class EntityPiglin extends EntityWalkingMob implements EntityAgeable {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(16);
-        this.setHealth(16);
+        super.initEntity();
     }
 
     @Override

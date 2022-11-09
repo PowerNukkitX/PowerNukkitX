@@ -21,9 +21,8 @@ public class EntityPillager extends EntityWalkingMob {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(24);
-        this.setHealth(24);
+        super.initEntity();
     }
 
     @Override

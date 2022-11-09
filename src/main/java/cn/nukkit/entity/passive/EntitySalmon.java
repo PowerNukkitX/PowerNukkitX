@@ -40,8 +40,7 @@ public class EntitySalmon extends EntitySwimmingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(3);
-        this.setHealth(3);
+        super.initEntity();
     }
 }

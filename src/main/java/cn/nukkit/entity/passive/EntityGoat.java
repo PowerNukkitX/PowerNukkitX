@@ -28,9 +28,8 @@ public class EntityGoat extends EntityWalkingAnimal {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
-        this.setHealth(10);
+        super.initEntity();
     }
 
     @Override

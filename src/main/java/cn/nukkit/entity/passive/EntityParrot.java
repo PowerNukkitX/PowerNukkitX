@@ -41,9 +41,8 @@ public class EntityParrot extends EntityFlyingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(6);
-        this.setHealth(6);
+        super.initEntity();
     }
 
     @Override

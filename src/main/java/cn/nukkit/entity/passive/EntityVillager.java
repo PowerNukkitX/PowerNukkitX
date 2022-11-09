@@ -164,9 +164,8 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
     @Since("1.19.21-r1")
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
-        this.setHealth(20);
+        super.initEntity();
         setTradingPlayer(0L);
         int ran = randomProfession();
         if (!this.namedTag.contains("profession")) {

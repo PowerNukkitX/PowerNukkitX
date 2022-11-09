@@ -58,9 +58,8 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
-        this.setHealth(20);
+        super.initEntity();
 
         if (!this.namedTag.contains("Profession")) {
             this.setProfession(PROFESSION_GENERIC);

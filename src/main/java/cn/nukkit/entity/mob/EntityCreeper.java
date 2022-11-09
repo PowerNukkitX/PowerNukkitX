@@ -144,13 +144,12 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
 
     @Override
     protected void initEntity() {
+        this.setMaxHealth(20);
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
             this.dataProperties.putBoolean(DATA_POWERED, true);
         }
-        this.setMaxHealth(20);
-        this.setHealth(20);
     }
 
     @PowerNukkitOnly

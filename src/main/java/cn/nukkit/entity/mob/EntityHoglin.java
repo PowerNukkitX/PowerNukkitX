@@ -27,9 +27,8 @@ public class EntityHoglin extends EntityWalkingMob implements EntityAgeable {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(40);
-        this.setHealth(40);
+        super.initEntity();
     }
 
     @Override

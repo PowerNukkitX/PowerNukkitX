@@ -136,9 +136,8 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(4);
-        this.setHealth(4);
+        super.initEntity();
     }
 
     @Override

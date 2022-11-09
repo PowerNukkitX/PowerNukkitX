@@ -30,9 +30,8 @@ public class EntityPanda extends EntityWalkingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
-        this.setHealth(20);
+        super.initEntity();
     }
 
 

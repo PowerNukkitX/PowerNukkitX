@@ -164,9 +164,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(500);
-        this.setHealth(500);
+        super.initEntity();
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
         //空闲声音

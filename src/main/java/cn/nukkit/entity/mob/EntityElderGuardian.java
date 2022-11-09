@@ -24,9 +24,8 @@ public class EntityElderGuardian extends EntitySwimmingMob {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(80);
-        this.setHealth(80);
+        super.initEntity();
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ELDER, true);
     }
 

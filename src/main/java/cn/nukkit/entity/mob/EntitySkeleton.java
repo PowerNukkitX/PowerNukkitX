@@ -29,9 +29,8 @@ public class EntitySkeleton extends EntityWalkingMob implements EntitySmite {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
-        this.setHealth(20);
+        super.initEntity();
     }
 
     @Override
