@@ -41,7 +41,7 @@ public class EntityChicken extends EntityWalkingAnimal {
     @Override
     public void updateMovement() {
         //补充鸡的缓慢无伤落地特性
-        if(!this.onGround && this.motionY<-0.08f){
+        if (!this.onGround && this.motionY < -0.08f) {
             this.motionY = -0.08f;
             this.highestPosition = this.y;
         }
