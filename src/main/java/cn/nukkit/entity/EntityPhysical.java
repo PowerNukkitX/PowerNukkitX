@@ -114,9 +114,9 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
             }
         }else {
             //修复生物在天上浮空而不能识别是否在地面的漏洞
-            AxisAlignedBB bb = this.offsetBoundingBox.clone();
-            bb.setMinY(bb.getMinY() - 0.5);
-            this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
+            if(this.getLevel().getTickCachedBlock(this.getPosition().setY(this.y-0.001)).canPassThrough()){
+                this.onGround = false;
+            }
         }
     }
 
