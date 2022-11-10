@@ -118,10 +118,10 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
              * 通过 shrink 缩小 XZ 碰撞箱大小，并将Y设为0
              * 再通过 offset 偏移碰撞箱检测位置（偏移至脚下）
              */
-            AxisAlignedBB bb = this.offsetBoundingBox.clone()
-                    .shrink(0.4 * this.getWidth(), 0.5 * this.getHeight(), 0.4 * this.getWidth())
-                    .offset(0, -0.6 * this.getHeight(), 0);
-            this.onGround = this.level.getTickCachedCollisionBlocks(bb).length > 0;
+            this.onGround = this.level.getTickCachedCollisionBlocks(
+                    this.offsetBoundingBox.
+                            shrink(0.4 * this.getWidth(), 0.5 * this.getHeight(), 0.4 * this.getWidth()).
+                            offset(0, -0.6 * this.getHeight(), 0)).length > 0;
         }
     }
 
