@@ -37,8 +37,8 @@ public class EntityFox extends EntityWalkingAnimal {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
+        super.initEntity();
     }
 
     @PowerNukkitOnly

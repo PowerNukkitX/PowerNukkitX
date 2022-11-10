@@ -47,8 +47,8 @@ public class EntityTurtle extends EntityAmphibiousAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(30);
+        super.initEntity();
     }
 
     @PowerNukkitOnly

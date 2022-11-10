@@ -25,8 +25,8 @@ public class EntityCaveSpider extends EntityWalkingMob implements EntityArthropo
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(12);
+        super.initEntity();
     }
 
     @Override

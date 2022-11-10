@@ -13,6 +13,14 @@ public class EntityCat extends EntityWalkingAnimal {
         super(chunk, nbt);
     }
 
+
+    @Override
+    public void updateMovement() {
+        //猫猫流线运动怎么可能会摔落造成伤害呢~
+        this.highestPosition = this.y;
+        super.updateMovement();
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -36,8 +44,8 @@ public class EntityCat extends EntityWalkingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
+        super.initEntity();
     }
 
 

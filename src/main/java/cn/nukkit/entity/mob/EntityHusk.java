@@ -25,8 +25,8 @@ public class EntityHusk extends EntityWalkingMob implements EntitySmite {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
+        super.initEntity();
     }
 
     @Override
