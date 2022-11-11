@@ -17,9 +17,9 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Weir
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.Mth;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
+import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageBlacksmithChest;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageTwoRoomHouseChest;
-import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 import cn.nukkit.level.generator.task.ActorSpawnTask;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;
 import cn.nukkit.math.BlockFace;

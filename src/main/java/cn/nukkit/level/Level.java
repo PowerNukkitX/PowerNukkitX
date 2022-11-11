@@ -311,7 +311,7 @@ public class Level implements ChunkManager, Metadatable {
     public int tickRateOptDelay = 1;
 
     private Class<? extends Generator> generatorClass;
-    private IterableThreadLocal<Generator> generators = new IterableThreadLocal<Generator>() {
+    private IterableThreadLocal<Generator> generators = new IterableThreadLocal<>() {
         @Override
         public Generator init() {
             try {

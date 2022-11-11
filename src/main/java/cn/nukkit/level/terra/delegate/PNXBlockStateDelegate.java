@@ -40,6 +40,7 @@ public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockSt
         //todo: 未完全实现带状态的toString，因为需要返回一个JE格式的BlockState字符串，这需要做BE->JE的方块状态映射
         //很多的方块生成问题都是因为这里返回的Str不对，需要特别注意
         var name = innerBlockState.getPersistenceName();
+        //对于一些特殊方块的HACK
         return switch (name) {
             case "minecraft:snow_layer" -> "minecraft:snow";
             case "minecraft:snow" -> "minecraft:snow_block";

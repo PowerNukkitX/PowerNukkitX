@@ -31,7 +31,7 @@ public class PNXEntity implements Entity {
 
     @Override
     public void world(ServerWorld serverWorld) {
-        nukkitEntity.setLevel(((PNXServerWorld)serverWorld).level());
+        nukkitEntity.setLevel(((PNXServerWorld)serverWorld).generatorWrapper().getLevel());
         world = serverWorld;
     }
 

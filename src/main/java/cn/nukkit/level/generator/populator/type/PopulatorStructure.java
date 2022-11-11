@@ -3,6 +3,8 @@ package cn.nukkit.level.generator.populator.type;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.generator.populator.impl.structure.desertpyramid.PopulatorDesertPyramid;
+import cn.nukkit.level.generator.populator.impl.structure.desertwell.PopulatorDesertWell;
+import cn.nukkit.level.generator.populator.impl.structure.dungeon.PopulatorDungeon;
 import cn.nukkit.level.generator.populator.impl.structure.fossil.PopulatorFossil;
 import cn.nukkit.level.generator.populator.impl.structure.igloo.PopulatorIgloo;
 import cn.nukkit.level.generator.populator.impl.structure.jungletemple.PopulatorJungleTemple;
@@ -11,8 +13,6 @@ import cn.nukkit.level.generator.populator.impl.structure.netherfortress.Populat
 import cn.nukkit.level.generator.populator.impl.structure.oceanmonument.PopulatorOceanMonument;
 import cn.nukkit.level.generator.populator.impl.structure.oceanruin.PopulatorOceanRuin;
 import cn.nukkit.level.generator.populator.impl.structure.pillageroutpost.PopulatorPillagerOutpost;
-import cn.nukkit.level.generator.populator.impl.structure.desertwell.PopulatorDesertWell;
-import cn.nukkit.level.generator.populator.impl.structure.dungeon.PopulatorDungeon;
 import cn.nukkit.level.generator.populator.impl.structure.shipwreck.PopulatorShipwreck;
 import cn.nukkit.level.generator.populator.impl.structure.stronghold.PopulatorStronghold;
 import cn.nukkit.level.generator.populator.impl.structure.swamphut.PopulatorSwampHut;
