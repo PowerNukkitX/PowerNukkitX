@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -15,6 +16,8 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public record PNXServerWorld(Level level, ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ServerWorld {
 
     @Override

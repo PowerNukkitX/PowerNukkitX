@@ -1,14 +1,16 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.world.chunk.generation.ProtoChunk;
-import org.iq80.leveldb.table.Block;
 import org.jetbrains.annotations.NotNull;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
     @Override
     public int getMaxHeight() {

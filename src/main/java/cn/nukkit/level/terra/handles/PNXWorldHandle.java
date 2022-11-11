@@ -9,18 +9,19 @@ import cn.nukkit.utils.Config;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.entity.EntityType;
 import com.dfsek.terra.api.handle.WorldHandle;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXWorldHandle implements WorldHandle {
     public static final PNXBlockStateDelegate AIR = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
-    public static Map<State, Map<String, Object>> jeBlocksMapping = new HashMap<>();
+    public static Map<JeBlockState, Map<String, Object>> jeBlocksMapping = new HashMap<>();
     public static int err = 0;
 
     static {
@@ -30,7 +31,7 @@ public class PNXWorldHandle implements WorldHandle {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        jeBlocksMappingConfig.getAll().forEach((k, v) -> jeBlocksMapping.put(new State(k), (Map<String, Object>) v));
+        jeBlocksMappingConfig.getAll().forEach((k, v) -> jeBlocksMapping.put(new JeBlockState(k), (Map<String, Object>) v));
     }
 
     @Override
@@ -52,7 +53,7 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:redstone_ore" -> s = "minecraft:redstone_ore[lit=false]";
             case "minecraft:deepslate_redstone_ore" -> s = "minecraft:deepslate_redstone_ore[lit=false]";
             case "minecraft:basalt" -> s = "minecraft:basalt[axis=y]";
-            case "minecraft:snow" -> s = "minecraft:snow[layers=8]";
+            case "minecraft:snow" -> s = "minecraft:snow[layers=1]";
             case "minecraft:cave_vines" -> s = "minecraft:cave_vines[age=0,berries=true]";
             case "minecraft:polished_basalt" -> s = "minecraft:polished_basalt[axis=y]";
             case "minecraft:azalea_leaves[persistent=true]" -> s = "minecraft:azalea_leaves[distance=1,persistent=true,waterlogged=false]";
@@ -66,60 +67,58 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:dark_oak_fence" -> s = "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]";
             case "minecraft:sculk_sensor" -> s = "minecraft:sculk_sensor[power=0,sculk_sensor_phase=inactive,waterlogged=false]";
             case "minecraft:deepslate_tile_stairs" -> s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
-            case "minecraft:kelp[age=25]" -> s = "minecraft:kelp";
         }
-        State jeBlockStateData = new State(s);
-        if (jeBlockStateData.identifier.contains("log") || jeBlockStateData.identifier.contains("wood")) {
-            jeBlockStateData.attributes.putIfAbsent("axis", "y");
+        JeBlockState jeBlockState = new JeBlockState(s);
+        var jeBlockIdentifier = jeBlockState.getIdentifier();
+        var jeBlockAttributes = jeBlockState.getAttributes();
+        if (jeBlockIdentifier.contains("log") || jeBlockIdentifier.contains("wood")) {
+            jeBlockAttributes.putIfAbsent("axis", "y");
         }
-        if (jeBlockStateData.identifier.equals("minecraft:jungle_leaves") || jeBlockStateData.identifier.equals("minecraft:spruce_leaves") || jeBlockStateData.identifier.equals("minecraft:oak_leaves")) {
-            jeBlockStateData.attributes.putIfAbsent("distance", "7");
-            jeBlockStateData.attributes.putIfAbsent("persistent", "true");
+        if (jeBlockIdentifier.equals("minecraft:jungle_leaves") || jeBlockIdentifier.equals("minecraft:spruce_leaves") || jeBlockIdentifier.equals("minecraft:oak_leaves")) {
+            jeBlockAttributes.putIfAbsent("distance", "7");
+            jeBlockAttributes.putIfAbsent("persistent", "true");
         }
-        if (jeBlockStateData.identifier.equals("minecraft:bee_nest"))
-            jeBlockStateData.attributes.putIfAbsent("honey_level", "0");
-        if (jeBlockStateData.identifier.equals("minecraft:vine")) {
-            jeBlockStateData.attributes.putIfAbsent("east", "false");
-            jeBlockStateData.attributes.putIfAbsent("north", "false");
-            jeBlockStateData.attributes.putIfAbsent("south", "false");
-            jeBlockStateData.attributes.putIfAbsent("up", "false");
-            jeBlockStateData.attributes.putIfAbsent("west", "false");
+        if (jeBlockIdentifier.equals("minecraft:bee_nest"))
+            jeBlockAttributes.putIfAbsent("honey_level", "0");
+        if (jeBlockIdentifier.equals("minecraft:vine")) {
+            jeBlockAttributes.putIfAbsent("east", "false");
+            jeBlockAttributes.putIfAbsent("north", "false");
+            jeBlockAttributes.putIfAbsent("south", "false");
+            jeBlockAttributes.putIfAbsent("up", "false");
+            jeBlockAttributes.putIfAbsent("west", "false");
         }
-        Map<String, Object> mappedData = jeBlocksMapping.get(jeBlockStateData);
+        Map<String, Object> mappedData = jeBlocksMapping.get(jeBlockState);
         var toDefaultState = false;
         //若未获取到属性，排除掉含水再次尝试
         if (mappedData == null) {
-            jeBlockStateData.equalsIgnoreWaterlogged = true;
-            mappedData = jeBlocksMapping.get(jeBlockStateData);
+            jeBlockState.setEqualsIgnoreWaterlogged(true);
+            mappedData = jeBlocksMapping.get(jeBlockState);
         }
         //排除所有属性再次尝试
         if (mappedData == null) {
-            jeBlockStateData.equalsIgnoreAttributes = true;
-            mappedData = jeBlocksMapping.get(jeBlockStateData);
+            jeBlockState.setEqualsIgnoreAttributes(true);
+            mappedData = jeBlocksMapping.get(jeBlockState);
             toDefaultState = true;
         }
         if (mappedData == null) {
             return AIR;
         }
-        boolean hasStates = false;
-        Map<String, Object> states = (Map<String, Object>) mappedData.get("bedrock_states");
-        Map<String, Object> statesConverted = new HashMap<>();
-        if (states != null && !toDefaultState) {
-            hasStates = true;
-            states.forEach((k, v) -> {
+        final Map<String, Object> bedrockStates = new HashMap<>();
+        if (mappedData.containsKey("bedrock_states") && !toDefaultState) {
+            ((Map<String, Object>) mappedData.get("bedrock_states")).forEach((k, v) -> {
                 if (v instanceof Boolean) {
                     if ((Boolean) v) {
-                        statesConverted.put(k, 1);
+                        bedrockStates.put(k, 1);
                     } else {
-                        statesConverted.put(k, 0);
+                        bedrockStates.put(k, 0);
                     }
                     return;
                 }
                 if (v instanceof Number) {
-                    statesConverted.put(k, ((Number) v).intValue());
+                    bedrockStates.put(k, ((Number) v).intValue());
                     return;
                 }
-                statesConverted.put(k, v);
+                 bedrockStates.put(k, v);
             });
         }
         var identifier = (String) mappedData.get("bedrock_identifier");
@@ -127,16 +126,26 @@ public class PNXWorldHandle implements WorldHandle {
             identifier = "minecraft:concrete_powder";
         final var data = new StringBuilder();
         data.append(identifier);
-        if (hasStates) {
-            statesConverted.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
+        if (!bedrockStates.isEmpty()) {
+            bedrockStates.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
         }
         try {
-            return PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
+            var delegate = PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
+//            if (!stateDelegateList.contains(delegate)) {
+//                stateDelegateList.add(delegate);
+//                strDelegateList.add(s);
+//            } else
+//                throw new RuntimeException();
+            return delegate;
         } catch (Exception e) {
             err++;
             return AIR;
         }
     }
+
+    //test
+    private static List<PNXBlockStateDelegate> stateDelegateList = new ArrayList<>();
+    private static List<String> strDelegateList = new ArrayList<>();
 
     @Override
     public @NotNull
@@ -152,59 +161,8 @@ public class PNXWorldHandle implements WorldHandle {
         if (s.equals("bee")) s = "Bee";
         var entityType = new PNXEntityType(s);
         if (entityType.getHandle() == null) {
-            System.out.println("null entityType!");
+            throw new IllegalArgumentException("Unknown entity type!");
         }
         return entityType;
-    }
-
-    private static class State {
-
-        private final String identifier;
-        private final Map<String, Object> attributes = new Object2ObjectArrayMap<>(1);
-        public boolean equalsIgnoreAttributes = false;
-        public boolean equalsIgnoreWaterlogged = false;
-
-        public State(String str) {
-            var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ", "").split(",");
-            identifier = strings[0];
-            if (strings.length > 1) {
-                for (int i = 1; i < strings.length; i++) {
-                    final var tmp = strings[i];
-                    final var index = tmp.indexOf("=");
-                    attributes.put(tmp.substring(0, index), tmp.substring(index + 1));
-                }
-            }
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof State state) {
-                if (equalsIgnoreAttributes || state.equalsIgnoreAttributes) {
-                    if (state.identifier.equals(identifier)) return true;
-                }
-                if (equalsIgnoreWaterlogged || state.equalsIgnoreWaterlogged) {
-                    Map m1 = new Object2ObjectArrayMap(attributes);
-                    Map m2 = new Object2ObjectArrayMap(state.attributes);
-                    m1.remove("waterlogged");
-                    m2.remove("waterlogged");
-                    if (state.identifier.equals(identifier) && m1.equals(m2)) return true;
-                }
-                return state.identifier.equals(identifier) && attributes.equals(state.attributes);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            // TODO: 2022/2/26 确认hashcode与对应方块的联系，避免空中矿石
-            return identifier.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder ret = new StringBuilder(identifier).append(";");
-            attributes.forEach((k, v) -> ret.append(k).append("=").append(v).append(";"));
-            return ret.toString();
-        }
     }
 }
