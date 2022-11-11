@@ -108,8 +108,8 @@ public class EntityMooshroom extends EntityWalkingAnimal {
 
     @Override
     protected void initEntity() {
+        this.setMaxHealth(10);
         super.initEntity();
-        setMaxHealth(10);
     }
 
     @Override

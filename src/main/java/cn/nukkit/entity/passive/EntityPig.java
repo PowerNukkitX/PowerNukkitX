@@ -95,9 +95,8 @@ public class EntityPig extends EntityWalkingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
-        this.setHealth(10);
+        super.initEntity();
     }
 
     @PowerNukkitOnly

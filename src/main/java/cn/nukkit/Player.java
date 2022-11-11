@@ -2596,9 +2596,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-            //适配单元Test
-            if (networkSession == null) this.interfaz.putPacket(this, packet, false, false);
-            else this.networkSession.sendPacket(packet);
+            this.interfaz.putPacket(this, packet, false, false);
         }
         return true;
     }
@@ -5675,10 +5673,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                //适配单元测试
-                if (networkSession == null) this.dataPacketImmediately(pk);
-                else
-                    this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
+                this.dataPacketImmediately(pk);
             }
 
             this.connected = false;
