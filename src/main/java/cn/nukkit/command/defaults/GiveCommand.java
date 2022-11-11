@@ -6,22 +6,32 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.CommandOutputContainer;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xtypr
  * @since 2015/12/9
  */
 public class GiveCommand extends VanillaCommand {
+    //item name;item count
+    public static final String RECEIVER_RAWTEXT = """
+            {"rawtext":[{"translate":"commands.give.successRecipient","with":{"rawtext":[{"text":"%s"},{"text":"%d"}]}}]}
+            """;
+    //sender name;item name;item count;receivers name
+    public static final String EXECUTE_SUCCESS_RAWTEXT = """
+            {"rawtext":[{"text":"§7§o["},{"translate":"%s"},{"text":": "},{"translate":"commands.give.success","with":{"rawtext":[{"text":"%s"},{"text":"%d"},{"text":"%s"}]}},{"text":"]"}]}
+            """;
+
     public GiveCommand(String name) {
         super(name, "commands.give.description");
         this.setPermission("nukkit.command.give");
@@ -36,15 +46,15 @@ public class GiveCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return false;
         }
+
+        var log = new CommandLogger(this, sender, args);
+
         if (args.length < 2) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, args.length == 0 ? -1 : 0), false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            log.outputSyntaxErrors(args.length == 0 ? -1 : 0);
             return false;
         }
 
@@ -59,24 +69,15 @@ public class GiveCommand extends VanillaCommand {
         try {
             item = Item.fromString(args[1]);
         } catch (Exception e) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            log.outputSyntaxErrors(1);
             return false;
         }
 
         if (item.isNull()) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
+            log.outputError(1, TextFormat.RED + "%commands.give.item.notFound", new String[]{args[1]});
             return false;
         } else if (item instanceof ItemBlock && item.getBlock() instanceof BlockUnknown) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.syntax", this.getGenericSyntaxErrors(args, 1), false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer("commands.give.block.notFound", args[1]));
+            log.outputError(1, "commands.give.block.notFound", new String[]{args[1]});
             return false;
         }
 
@@ -85,14 +86,12 @@ public class GiveCommand extends VanillaCommand {
         if (args.length > 2) {
             try {
                 count = Integer.parseInt(args[2]);
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         if (count <= 0) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.num.tooSmall", new String[]{args[2], " 1"}, false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            log.outputError("commands.generic.num.tooSmall", new String[]{args[2], " 1"});
             return false;
         }
         item.setCount(count);
@@ -102,10 +101,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (item.getDamage() < 0) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.give.item.invalid", new String[]{item.getNamespaceId().split(":")[1]}, false, sendCommandFeedback));
-            else
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            log.outputError("commands.give.item.invalid", new String[]{item.getNamespaceId().split(":")[1]});
             return true;
         }
 
@@ -115,9 +111,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (players.size() == 0) {
-            if (sender.isPlayer())
-                sender.sendMessage(new CommandOutputContainer("commands.generic.noTargetMatch", new String[]{}, false, sendCommandFeedback));
-            else sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
+            log.outputNoTargetMatch();
             return false;
         }
 
@@ -145,8 +139,19 @@ public class GiveCommand extends VanillaCommand {
             for (Item drop : drops) {
                 player.dropItem(drop);
             }
-            sender.sendMessage(new CommandOutputContainer("commands.give.success", new String[]{item.getName(), " " + count, sender.getName()}, true, sendCommandFeedback));
+            log.outputObjectWhisper(RECEIVER_RAWTEXT, player, item.getName(), item.getCount());
         }
+        var playerV = new ArrayList<String>();
+        playerV.add(item.getName());
+        playerV.add(" " + count);
+        playerV.addAll(players.stream().map(Player::getName).toList());
+        var consoleV = new ArrayList<String>();
+        consoleV.add(item.getName() + " (" + item.getNamespaceId() + (item.getDamage() != 0 ? ":" + item.getDamage() : "") + ")");
+        consoleV.add(String.valueOf(item.getCount()));
+        consoleV.add(players.stream().map(Player::getName).collect(Collectors.joining(", ")));
+        log.outputResult(players.size(), "commands.give.success", playerV.toArray(CommandOutputContainer.EMPTY_STRING_ARRAY),
+                "%commands.give.success", consoleV.toArray(CommandOutputContainer.EMPTY_STRING_ARRAY),
+                EXECUTE_SUCCESS_RAWTEXT, sender.getName(), item.getName(), item.getCount(), consoleV.get(2));
         return true;
     }
 }

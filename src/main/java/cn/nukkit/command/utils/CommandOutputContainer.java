@@ -1,37 +1,40 @@
 package cn.nukkit.command.utils;
 
-import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 
-public class CommandOutputContainer extends TextContainer implements Cloneable {
-    protected String[] parameters;
-    protected Boolean successed;
-    protected Boolean sendCommandFeedback;
+public class CommandOutputContainer extends TranslationContainer implements Cloneable {
+    protected boolean successed;
+    protected int successCount = 0;
 
-    public CommandOutputContainer(String message, Boolean successed, Boolean sendCommandFeedback) {
-        this(message, new String[]{}, successed, sendCommandFeedback);
+    public CommandOutputContainer(String message, boolean successed) {
+        this(message, new String[]{}, successed, successed ? 1 : 0);
     }
 
-    public CommandOutputContainer(String messageId, String[] parameters, Boolean successed, Boolean sendCommandFeedback) {
+    public CommandOutputContainer(String messageId, String[] parameters, boolean successed) {
+        this(messageId, parameters, successed, successed ? 1 : 0);
+    }
+
+    public CommandOutputContainer(String messageId, String[] parameters, boolean successed, int successCount) {
         super(messageId);
-        this.parameters = parameters;
+        this.params = parameters;
         this.successed = successed;
-        this.sendCommandFeedback = sendCommandFeedback;
+        this.successCount = successCount;
     }
 
-    public String[] getParameters() {
-        return parameters;
+    public void setSuccessCount(int successCount) {
+        this.successCount = successCount;
     }
 
-    public Boolean isSuccessed() {
+    public int getSuccessCount() {
+        return successCount;
+    }
+
+    public boolean isSuccessed() {
         return successed;
-    }
-
-    public Boolean isSendCommandFeedback() {
-        return sendCommandFeedback;
     }
 
     @Override
     public CommandOutputContainer clone() {
-        return new CommandOutputContainer(text, parameters.clone(), successed, sendCommandFeedback);
+        return new CommandOutputContainer(text, params.clone(), successed);
     }
 }

@@ -28,7 +28,7 @@ public class DeopCommand extends VanillaCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String commandLabel, String[] args, Boolean sendCommandFeedback) {
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
             return false;
         }

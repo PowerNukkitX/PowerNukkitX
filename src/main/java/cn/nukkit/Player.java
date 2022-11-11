@@ -5477,16 +5477,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void sendMessage(TextContainer message) {
-        if (message instanceof TranslationContainer) {
-            this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
-            return;
-        } else if (message instanceof CommandOutputContainer op) {
+        if (message instanceof CommandOutputContainer op) {
             var pk = new CommandOutputPacket();
             pk.messages.add(new CommandOutputMessage(op.isSuccessed(), op.getText(), op.getParameters()));
             pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
-            pk.type = op.isSendCommandFeedback() ? CommandOutputType.ALL_OUTPUT : CommandOutputType.SILENT;
-            pk.successCount = op.isSuccessed() ? 1 : 0;//todo 发现>1的情况
+            pk.type = CommandOutputType.ALL_OUTPUT;//1.19.40已经失效
+            pk.successCount = op.getSuccessCount();
             this.dataPacket(pk);
+            return;
+        } else if (message instanceof TranslationContainer) {
+            this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
             return;
         }
         this.sendMessage(message.getText());
