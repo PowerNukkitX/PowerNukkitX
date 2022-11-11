@@ -20,6 +20,7 @@ public record PNXEnchantmentDelegate(cn.nukkit.item.enchantment.Enchantment inne
 
     @Override
     public String getID() {
+        //todo: 使用核心自带的int -> str映射
         return switch (innerEnchantment.getId()) {
             case 0 -> "protection";
             case 1 -> "fire_protection";

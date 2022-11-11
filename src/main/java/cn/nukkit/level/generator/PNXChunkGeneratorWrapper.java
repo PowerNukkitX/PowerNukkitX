@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
@@ -25,6 +26,8 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
     private volatile Reference<ChunkGenerator> chunkGenerator = new WeakReference<>(null);
     private final BiomeProvider biomeProvider;
