@@ -12,8 +12,7 @@ import com.dfsek.terra.api.block.state.properties.Property;
 public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockState) implements BlockState {
     @Override
     public boolean matches(BlockState blockState) {
-        var that = ((PNXBlockStateDelegate) blockState);
-        return that.innerBlockState.equals(this.innerBlockState);
+        return ((PNXBlockStateDelegate) blockState).innerBlockState.equals(this.innerBlockState);
     }
 
     @Override
@@ -38,6 +37,8 @@ public record PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState innerBlockSt
 
     @Override
     public String getAsString(boolean b) {
+        //todo: 未完全实现带状态的toString，因为需要返回一个JE格式的BlockState字符串，这需要做BE->JE的方块状态映射
+        //很多的方块生成问题都是因为这里返回的Str不对，需要特别注意
         var name = innerBlockState.getPersistenceName();
         return switch (name) {
             case "minecraft:snow_layer" -> "minecraft:snow";

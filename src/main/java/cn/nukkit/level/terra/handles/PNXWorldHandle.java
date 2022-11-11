@@ -130,22 +130,12 @@ public class PNXWorldHandle implements WorldHandle {
             bedrockStates.forEach((k, v) -> data.append(";").append(k).append("=").append(v));
         }
         try {
-            var delegate = PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
-//            if (!stateDelegateList.contains(delegate)) {
-//                stateDelegateList.add(delegate);
-//                strDelegateList.add(s);
-//            } else
-//                throw new RuntimeException();
-            return delegate;
+            return PNXAdapter.adapt(cn.nukkit.blockstate.BlockState.of(data.toString()));
         } catch (Exception e) {
             err++;
             return AIR;
         }
     }
-
-    //test
-    private static List<PNXBlockStateDelegate> stateDelegateList = new ArrayList<>();
-    private static List<String> strDelegateList = new ArrayList<>();
 
     @Override
     public @NotNull

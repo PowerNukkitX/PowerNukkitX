@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public final class PNXAdapter {
-//    private static final Map<BlockState, PNXBlockStateDelegate> stateDelegateStore = new WeakHashMap<>(2820, 0.99f);
-
     @NotNull
     public static PNXItemDelegate adapt(cn.nukkit.item.Item pnxItem) {
         return new PNXItemDelegate(pnxItem);
@@ -24,13 +22,6 @@ public final class PNXAdapter {
     }
 
     public static PNXBlockStateDelegate adapt(BlockState blockState) {
-//        PNXBlockStateDelegate adapted = stateDelegateStore.get(blockState);
-//        if (adapted != null) return adapted;
-//        else {
-//            final var delegate = new PNXBlockStateDelegate(blockState);
-//            stateDelegateStore.put(blockState, delegate);
-//            return delegate;
-//        }
         return new PNXBlockStateDelegate(blockState);
     }
 }
