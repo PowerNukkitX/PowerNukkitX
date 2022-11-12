@@ -88,8 +88,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         super.initBlockEntity();
 
         Block block = getBlock();
-        if (block instanceof BlockHopper) {
-            disabled = !((BlockHopper) block).isEnabled();
+        if (block instanceof BlockHopper hopper) {
+            disabled = !hopper.isEnabled();
         }
     }
 
@@ -663,6 +663,15 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         return false;
+    }
+
+    /**
+     * 漏斗的getBlock()方法会被高频调用，所以使用缓存提高性能
+     * @return Block
+     */
+    @Override
+    public Block getBlock() {
+        return getTickCachedLevelBlock();
     }
 
     @Override
