@@ -31,13 +31,6 @@ public abstract class Generator implements BlockID {
     public static final int TYPE_NETHER = 3;
     public static final int TYPE_THE_END = 4;
 
-    /**
-     * 适用于Terra这类世界类型由配置包决定的生成器
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    public static final int TYPE_UNCERTAIN = -1;
-
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     protected Level level;
@@ -141,6 +134,20 @@ public abstract class Generator implements BlockID {
             if (!Generator.typeList.containsKey(type)) {
                 Generator.typeList.put(type, clazz);
             }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 注册未知类型的生成器(Terra)
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    public static boolean addGenerator(Class<? extends Generator> clazz, String name) {
+        name = name.toLowerCase();
+        if (clazz != null && !Generator.nameList.containsKey(name)) {
+            Generator.nameList.put(name, clazz);
             return true;
         }
         return false;
