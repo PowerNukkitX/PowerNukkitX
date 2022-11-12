@@ -65,12 +65,12 @@ public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implemen
 
     @Override
     public int getMaxHeight() {
-        return generatorWrapper.getLevel().getMaxHeight();
+        return generatorWrapper.getDimensionData().getMaxHeight();
     }
 
     @Override
     public int getMinHeight() {
-        return generatorWrapper.getLevel().getMinHeight();
+        return generatorWrapper.getDimensionData().getMinHeight();
     }
 
     @Override
