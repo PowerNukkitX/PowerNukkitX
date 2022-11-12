@@ -174,9 +174,8 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(8);
-        this.setHealth(8);
+        super.initEntity();
 
         if (this.namedTag.contains("Sitting")) {
             if (this.namedTag.getBoolean("Sitting")) {

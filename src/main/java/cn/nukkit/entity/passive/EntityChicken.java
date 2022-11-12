@@ -39,6 +39,16 @@ public class EntityChicken extends EntityWalkingAnimal {
     }
 
     @Override
+    public void updateMovement() {
+        //补充鸡的缓慢无伤落地特性
+        if (!this.onGround && this.motionY < -0.08f) {
+            this.motionY = -0.08f;
+            this.highestPosition = this.y;
+        }
+        super.updateMovement();
+    }
+
+    @Override
     public IBehaviorGroup getBehaviorGroup() {
         if (behaviorGroup == null) {
             behaviorGroup = new BehaviorGroup(
@@ -126,8 +136,8 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     @Override
     protected void initEntity() {
+        this.setMaxHealth(4);
         super.initEntity();
-        setMaxHealth(4);
     }
 
     @Override

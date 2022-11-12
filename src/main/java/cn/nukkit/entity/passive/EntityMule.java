@@ -45,8 +45,8 @@ public class EntityMule extends EntityWalkingAnimal {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(15);
+        super.initEntity();
     }
 
 

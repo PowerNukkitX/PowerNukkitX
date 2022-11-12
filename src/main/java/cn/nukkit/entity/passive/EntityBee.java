@@ -114,8 +114,8 @@ public class EntityBee extends EntityFlyingAnimal {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
+        super.initEntity();
     }
 
     @PowerNukkitOnly
