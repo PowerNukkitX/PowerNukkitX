@@ -3,6 +3,7 @@ package cn.nukkit.level.format;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -137,8 +138,15 @@ public interface LevelProvider {
         } else {
             switch (getGenerator()) {
                 case "normal":
-//                case "terra":
-//                    return Level.DIMENSION_OVERWORLD;
+                case "terra": {
+                    if (getGeneratorOptions().containsKey("preset")) {
+                        var opts = getGeneratorOptions().get("preset").toString().split(":");
+                        if (opts.length == 2) {
+                            return DimensionEnum.valueOf(opts[1].toUpperCase()).ordinal();
+                        }
+                    }
+                    return Level.DIMENSION_OVERWORLD;
+                }
                 case "nether":
                     return Level.DIMENSION_NETHER;
                 case "the_end":

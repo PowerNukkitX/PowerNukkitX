@@ -3,6 +3,8 @@ package cn.nukkit.level.generator;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.DimensionData;
+import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
@@ -37,6 +39,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private final WorldProperties worldProperties;
     private ServerWorld world;
     private ChunkManager chunkManager;
+    private DimensionData dimensionData;
     private NukkitRandom nukkitRandom;
 
     public PNXChunkGeneratorWrapper() {
@@ -44,9 +47,16 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     }
 
     public PNXChunkGeneratorWrapper(Map<String, Object> option) {
-        var packName = option.containsKey("preset") ? option.get("preset").toString() : "default";
-        if (packName == null || packName.strip().length() == 0) {
-            packName = "default";
+        String packName = "default";
+        this.dimensionData = DimensionEnum.getDataFromId(0);
+        if (option.containsKey("preset")) {
+            var opts = option.get("preset").toString().split(":");
+            if (opts.length == 1) {
+                packName = opts[0];
+            } else if (opts.length == 2) {
+                packName = opts[0];
+                this.dimensionData = DimensionEnum.valueOf(opts[1].toUpperCase()).getDimensionData();
+            }
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         this.configPack = createConfigPack(packName);
@@ -59,12 +69,12 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
             @Override
             public int getMaxHeight() {
-                return 320;
+                return dimensionData.getMaxHeight();
             }
 
             @Override
             public int getMinHeight() {
-                return -64;
+                return dimensionData.getMinHeight();
             }
 
             @Override
@@ -77,6 +87,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     public PNXChunkGeneratorWrapper(ConfigPack configPack, BlockState air) {
         this.air = air;
         this.configPack = configPack;
+        this.dimensionData = DimensionEnum.getDataFromId(0);
         this.biomeProvider = this.configPack.getBiomeProvider();
         this.worldProperties = new WorldProperties() {
             @Override
@@ -86,12 +97,12 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
             @Override
             public int getMaxHeight() {
-                return 320;
+                return dimensionData.getMaxHeight();
             }
 
             @Override
             public int getMinHeight() {
-                return -64;
+                return dimensionData.getMinHeight();
             }
 
             @Override
@@ -207,16 +218,22 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         return biomeProvider;
     }
 
+    @Override
+    public DimensionData getDimensionData() {
+        return dimensionData;
+    }
+
     /**
      * 调查发现，ChunkGenerator::samplerCache在大量区块生成后会造成大量内存占用
      * 所以将其设置为软引用以在内存不足时允许JVM清理它
      * 通过此方法获取一个非Null的ChunkGenerator实例
+     *
      * @return ChunkGenerator
      */
     @Nonnull
     @Since("1.19.40-r3")
     public ChunkGenerator requireChunkGenerator() {
-        var current =  chunkGenerator.get();
+        var current = chunkGenerator.get();
         if (current != null) return current;
         else {
             //同步防止多线程环境下重复创建
