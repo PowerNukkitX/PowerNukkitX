@@ -103,8 +103,7 @@ public class PNXPlatform extends AbstractPlatform {
     }
 
     private static PNXBiomeDelegate parseBiome(String str) {
-        var id = jeBiomesMapping.get(str);
-        if (id == null) id = 1;
+        var id = jeBiomesMapping.getOrDefault(str, 1);
         return PNXAdapter.adapt(Biome.getBiome(id));
     }
 
