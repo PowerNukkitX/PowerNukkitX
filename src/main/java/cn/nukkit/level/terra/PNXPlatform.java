@@ -103,6 +103,7 @@ public class PNXPlatform extends AbstractPlatform {
     }
 
     private static PNXBiomeDelegate parseBiome(String str) {
+        //使用getOrDefault()防止NPE
         var id = jeBiomesMapping.getOrDefault(str, 1);
         return PNXAdapter.adapt(Biome.getBiome(id));
     }
