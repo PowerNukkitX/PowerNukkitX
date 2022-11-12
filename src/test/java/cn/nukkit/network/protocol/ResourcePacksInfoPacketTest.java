@@ -46,6 +46,7 @@ class ResourcePacksInfoPacketTest {
         when(resourcePack.getPackId()).thenReturn(UUID.randomUUID());
         when(resourcePack.getPackVersion()).thenReturn("1.0");
         when(resourcePack.getPackSize()).thenReturn(1000);
+        when(resourcePack.getEncryptionKey()).thenReturn("");
         
         val packet = new ResourcePacksInfoPacket();
         packet.setBehaviourPackEntries(new ResourcePack[]{resourcePack});
