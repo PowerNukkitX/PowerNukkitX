@@ -16,6 +16,7 @@ public class PopulatorDesertPyramid extends PopulatorScatteredStructure {
 
     @Override
     protected boolean canGenerate(int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return false;
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
         return (biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id) && super.canGenerate(chunkX, chunkZ, random, chunk);
     }

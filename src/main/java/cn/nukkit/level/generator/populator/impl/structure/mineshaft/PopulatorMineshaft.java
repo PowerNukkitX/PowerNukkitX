@@ -23,7 +23,8 @@ public class PopulatorMineshaft extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if (chunk.getProvider().isOverWorld() && VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
+        if (!chunk.isOverWorld()) return;
+        if (VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             long seed = level.getSeed();
             random.setSeed(seed);

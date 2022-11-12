@@ -139,6 +139,20 @@ public abstract class Generator implements BlockID {
         return false;
     }
 
+    /**
+     * 注册未知类型的生成器(Terra)
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    public static boolean addGenerator(Class<? extends Generator> clazz, String name) {
+        name = name.toLowerCase();
+        if (clazz != null && !Generator.nameList.containsKey(name)) {
+            Generator.nameList.put(name, clazz);
+            return true;
+        }
+        return false;
+    }
+
     public static String[] getGeneratorList() {
         String[] keys = new String[Generator.nameList.size()];
         return Generator.nameList.keySet().toArray(keys);
@@ -160,18 +174,18 @@ public abstract class Generator implements BlockID {
     }
 
     public static String getGeneratorName(Class<? extends Generator> c) {
-        for (String key : Generator.nameList.keySet()) {
-            if (Generator.nameList.get(key).equals(c)) {
-                return key;
+        for (var entry : Generator.nameList.entrySet()) {
+            if (entry.getValue().equals(c)) {
+                return entry.getKey();
             }
         }
         return "unknown";
     }
 
     public static int getGeneratorType(Class<? extends Generator> c) {
-        for (int key : Generator.typeList.keySet()) {
-            if (Generator.typeList.get(key).equals(c)) {
-                return key;
+        for (var entry : Generator.typeList.entrySet()) {
+            if (entry.getValue().equals(c)) {
+                return entry.getKey();
             }
         }
         return Generator.TYPE_INFINITE;

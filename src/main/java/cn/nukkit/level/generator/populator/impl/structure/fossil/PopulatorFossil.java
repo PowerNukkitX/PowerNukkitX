@@ -44,6 +44,7 @@ public class PopulatorFossil extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
         int biome = chunk.getBiomeId(3, chunk.getHighestBlockAt(3, 3), 3);
         if ((biome == EnumBiome.DESERT.id || biome == EnumBiome.DESERT_HILLS.id || biome == EnumBiome.DESERT_M.id
                 || biome == EnumBiome.SWAMP.id || biome == EnumBiome.SWAMPLAND_M.id)
