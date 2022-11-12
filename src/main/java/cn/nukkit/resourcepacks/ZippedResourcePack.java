@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 public class ZippedResourcePack extends AbstractResourcePack {
     private File file;
     private byte[] sha256 = null;
+    private String encryptionKey = "";
 
     @PowerNukkitDifference(info = "Accepts resource packs with subfolder structure", since = "1.4.0.0-PN")
     public ZippedResourcePack(File file) {
@@ -42,13 +43,23 @@ public class ZippedResourcePack extends AbstractResourcePack {
                             return fe.getParent() == null || fe.getParentFile().getParent() == null;
                         })
                         .findFirst()
-                        .orElseThrow(()-> new IllegalArgumentException(
+                        .orElseThrow(() -> new IllegalArgumentException(
                                 Server.getInstance().getLanguage().translateString("nukkit.resources.zip.no-manifest")));
             }
-            
+
             this.manifest = new JsonParser()
                     .parse(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                     .getAsJsonObject();
+            File parentFolder = this.file.getParentFile();
+            if (parentFolder == null || !parentFolder.isDirectory()) {
+                throw new IOException("Invalid resource pack path");
+            }
+            File keyFile = new File(parentFolder, this.file.getName() + ".key");
+            System.out.println(keyFile);
+            if (keyFile.exists()) {
+                this.encryptionKey = new String(Files.readAllBytes(keyFile.toPath()), StandardCharsets.UTF_8);
+                System.out.println(this.encryptionKey);
+            }
         } catch (IOException e) {
             log.error("An error occurred while loading the zipped resource pack {}", file, e);
         }
@@ -94,5 +105,10 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         return chunk;
+    }
+
+    @Override
+    public String getEncryptionKey() {
+        return this.encryptionKey;
     }
 }
