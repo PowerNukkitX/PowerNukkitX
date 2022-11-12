@@ -31,12 +31,12 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
-    private volatile Reference<ChunkGenerator> chunkGenerator = new WeakReference<>(null);
     private final BiomeProvider biomeProvider;
     @Getter
     private final ConfigPack configPack;
     private final BlockState air;
     private final WorldProperties worldProperties;
+    private volatile Reference<ChunkGenerator> chunkGenerator = new WeakReference<>(null);
     private ServerWorld world;
     private ChunkManager chunkManager;
     private DimensionData dimensionData;
@@ -51,11 +51,11 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.dimensionData = DimensionEnum.getDataFromId(0);
         if (option.containsKey("preset")) {
             var opts = option.get("preset").toString().split(":");
-            if (opts.length == 1) {
+            if (opts.length >= 1) {
                 packName = opts[0];
-            } else if (opts.length == 2) {
-                packName = opts[0];
-                this.dimensionData = DimensionEnum.valueOf(opts[1].toUpperCase()).getDimensionData();
+                if (opts.length == 2) {
+                    this.dimensionData = DimensionEnum.valueOf(opts[1].toUpperCase()).getDimensionData();
+                }
             }
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
