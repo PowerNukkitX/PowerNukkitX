@@ -11,6 +11,7 @@ import cn.nukkit.utils.Config;
 import com.dfsek.tectonic.api.TypeRegistry;
 import com.dfsek.terra.AbstractPlatform;
 import com.dfsek.terra.api.block.state.BlockState;
+import com.dfsek.terra.api.event.events.platform.PlatformInitializationEvent;
 import com.dfsek.terra.api.handle.ItemHandle;
 import com.dfsek.terra.api.handle.WorldHandle;
 import com.dfsek.terra.api.registry.key.RegistryKey;
@@ -76,6 +77,8 @@ public class PNXPlatform extends AbstractPlatform {
         }
         final var platform = new PNXPlatform();
         platform.load();
+        //手动加载包以允许在nukkit.yml中使用terra:<zip file name>格式的包名称格式
+        //platform.getEventManager().callEvent(new PlatformInitializationEvent());
         final var configRegistry = platform.getConfigRegistry();
         final var packsDir = new File("./terra/packs");
         for (final var each : Objects.requireNonNull(packsDir.listFiles())) {

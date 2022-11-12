@@ -144,8 +144,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
         requireChunkGenerator().generateChunkData(new PNXProtoChunk(chunk), worldProperties,
                 biomeProvider, chunkX, chunkZ);
-        int minHeight = chunk.isOverWorld() ? -64 : 0;
-        int maxHeight = chunk.isOverWorld() ? 320 : 256;
+        int minHeight = this.level.getMinHeight();
+        int maxHeight = this.level.getMaxHeight();
         for (int x = 0; x < 16; x++) {
             for (int y = minHeight; y < maxHeight; y++) {
                 for (int z = 0; z < 16; z++) {
@@ -214,6 +214,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
      * @return ChunkGenerator
      */
     @Nonnull
+    @Since("1.19.40-r3")
     public ChunkGenerator requireChunkGenerator() {
         var current =  chunkGenerator.get();
         if (current != null) return current;
