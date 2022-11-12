@@ -804,7 +804,7 @@ public class Server {
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
         if (useTerra) {
-            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra", Generator.TYPE_TERRA);
+            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra");
             PNXPlatform.getInstance();
         }
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
