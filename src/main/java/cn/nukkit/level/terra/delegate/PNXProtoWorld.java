@@ -1,6 +1,7 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Position;
@@ -15,6 +16,8 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.ProtoWorld;
 
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
 public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int centerChunkZ) implements ProtoWorld {
 
     @Override
@@ -33,24 +36,24 @@ public record PNXProtoWorld(ServerWorld serverWorld, int centerChunkX, int cente
     }
 
     @Override
-    public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
+    public void setBlockState(int x, int y, int z, BlockState blockState, boolean b) {
         if (blockState instanceof PNXBlockStateDelegate pnxBlockState) {
             var chunkManager = getHandle();
-            var ob = chunkManager.getBlockStateAt(i, i1, i2);
+            var ob = chunkManager.getBlockStateAt(x, y, z);
             if (pnxBlockState.getHandle().getBlockId() == BlockID.BLOCK_KELP){
-                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
-                chunkManager.setBlockAtLayer(i, i1, i2, 1, BlockID.STILL_WATER);
+                chunkManager.setBlockAtLayer(x, y, z, 1, BlockID.STILL_WATER);
+                chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
             } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {
-                chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
-                chunkManager.setBlockStateAt(i, i1, i2, 1, ob);
-            } else chunkManager.setBlockStateAt(i, i1, i2, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(x, y, z, 0, pnxBlockState.getHandle());
+                chunkManager.setBlockStateAt(x, y, z, 1, ob);
+            } else chunkManager.setBlockStateAt(x, y, z, pnxBlockState.getHandle());
         }
     }
 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, ((PNXServerWorld) serverWorld).generatorWrapper().getLevel()));
         return new PNXEntity(nukkitEntity, serverWorld);
     }
 

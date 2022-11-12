@@ -10,8 +10,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
-import it.unimi.dsi.fastutil.ints.IntList;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;

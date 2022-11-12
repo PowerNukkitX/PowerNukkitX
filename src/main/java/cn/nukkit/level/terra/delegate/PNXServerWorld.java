@@ -1,9 +1,10 @@
 package cn.nukkit.level.terra.delegate;
 
-import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.generator.PNXChunkGeneratorWrapper;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -15,23 +16,25 @@ import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.Chunk;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 
-public record PNXServerWorld(Level level, ChunkManager chunkManager, ChunkGenerator chunkGenerator, ConfigPack configPack) implements ServerWorld {
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
+public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        chunkManager.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
+        generatorWrapper.getChunkManager().setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
     }
 
     @Override
     public Entity spawnEntity(double v, double v1, double v2, EntityType entityType) {
         String identifier = (String) entityType.getHandle();
-        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, Server.getInstance().getDefaultLevel()));
+        cn.nukkit.entity.Entity nukkitEntity = cn.nukkit.entity.Entity.createEntity(identifier, new Position(v, v1, v2, generatorWrapper.getLevel()));
         return new PNXEntity(nukkitEntity, this);
     }
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return PNXAdapter.adapt(chunkManager.getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(generatorWrapper.getChunkManager().getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -42,22 +45,22 @@ public record PNXServerWorld(Level level, ChunkManager chunkManager, ChunkGenera
 
     @Override
     public ChunkGenerator getGenerator() {
-        return chunkGenerator;
+        return generatorWrapper.requireChunkGenerator();
     }
 
     @Override
     public BiomeProvider getBiomeProvider() {
-        return configPack.getBiomeProvider();
+        return generatorWrapper.getBiomeProvider();
     }
 
     @Override
     public ConfigPack getPack() {
-        return configPack;
+        return generatorWrapper.getConfigPack();
     }
 
     @Override
     public long getSeed() {
-        return chunkManager.getSeed();
+        return generatorWrapper.getChunkManager().getSeed();
     }
 
     @Override
@@ -72,11 +75,11 @@ public record PNXServerWorld(Level level, ChunkManager chunkManager, ChunkGenera
 
     @Override
     public ChunkManager getHandle() {
-        return chunkManager;
+        return generatorWrapper.getChunkManager();
     }
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(this, chunkManager.getChunk(i, i1));
+        return new PNXChunkDelegate(this, generatorWrapper.getChunkManager().getChunk(i, i1));
     }
 }

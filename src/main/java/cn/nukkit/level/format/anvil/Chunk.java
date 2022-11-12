@@ -14,7 +14,6 @@ import cn.nukkit.level.format.ChunkSection3DBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseChunk;
-import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
@@ -32,7 +31,6 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.stream.IntStream;
 
 /**
  * @author MagicDroidX (Nukkit Project)

@@ -2,7 +2,6 @@ package cn.nukkit.level.terra.delegate;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.level.Level;
 import com.dfsek.terra.api.entity.Entity;
 import com.dfsek.terra.api.util.vector.Vector3;
 import com.dfsek.terra.api.world.ServerWorld;
@@ -32,7 +31,7 @@ public class PNXEntity implements Entity {
 
     @Override
     public void world(ServerWorld serverWorld) {
-        nukkitEntity.setLevel(((PNXServerWorld)serverWorld).level());
+        nukkitEntity.setLevel(((PNXServerWorld)serverWorld).generatorWrapper().getLevel());
         world = serverWorld;
     }
 
