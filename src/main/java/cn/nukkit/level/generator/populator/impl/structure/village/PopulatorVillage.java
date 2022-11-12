@@ -34,6 +34,7 @@ public class PopulatorVillage extends PopulatorStructure {
         random = new NukkitRandom(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ level.getSeed());
         //\\ VillageFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
+        if (!chunk.isOverWorld()) return;
         if (biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.SAVANNA.id || biome == EnumBiome.TAIGA.id
                 || biome == EnumBiome.COLD_TAIGA.id || biome == EnumBiome.ICE_PLAINS.id) {
             long seed = level.getSeed();

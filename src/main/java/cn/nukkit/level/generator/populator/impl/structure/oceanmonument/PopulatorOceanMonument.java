@@ -32,6 +32,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
         if (DEEP_OCEAN_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
             //\\ OceanMonumentFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int cX = (chunkX < 0 ? chunkX - SPACING + 1 : chunkX) / SPACING;
