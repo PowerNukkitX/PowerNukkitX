@@ -137,8 +137,8 @@ public interface LevelProvider {
         } else {
             switch (getGenerator()) {
                 case "normal":
-                case "terra":
-                    return Level.DIMENSION_OVERWORLD;
+//                case "terra":
+//                    return Level.DIMENSION_OVERWORLD;
                 case "nether":
                     return Level.DIMENSION_NETHER;
                 case "the_end":

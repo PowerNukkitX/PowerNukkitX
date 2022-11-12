@@ -31,6 +31,13 @@ public abstract class Generator implements BlockID {
     public static final int TYPE_NETHER = 3;
     public static final int TYPE_THE_END = 4;
 
+    /**
+     * 适用于Terra这类世界类型由配置包决定的生成器
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    public static final int TYPE_UNCERTAIN = -1;
+
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
     protected Level level;
