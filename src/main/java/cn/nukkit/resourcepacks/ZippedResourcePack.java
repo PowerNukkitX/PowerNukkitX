@@ -55,7 +55,6 @@ public class ZippedResourcePack extends AbstractResourcePack {
                 throw new IOException("Invalid resource pack path");
             }
             File keyFile = new File(parentFolder, this.file.getName() + ".key");
-            System.out.println(keyFile);
             if (keyFile.exists()) {
                 this.encryptionKey = new String(Files.readAllBytes(keyFile.toPath()), StandardCharsets.UTF_8);
                 System.out.println(this.encryptionKey);
