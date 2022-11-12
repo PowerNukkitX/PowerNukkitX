@@ -23,8 +23,6 @@
  */
 package co.aikar.timings;
 
-import cn.nukkit.api.PowerNukkitXDifference;
-
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -38,11 +36,9 @@ class TimingIdentifier {
     final Timing groupTiming;
     private final int hashCode;
 
-    @PowerNukkitXDifference(since = "1.19.40-r4", info = "去除字符串常量池操作以提高任务创建速度")
     TimingIdentifier(String group, String name, Timing groupTiming) {
-        //去除字符串常量池操作(String::intern)以提高任务创建速度
-        this.group = group != null ? group/*.intern()*/ : DEFAULT_GROUP.name;
-        this.name = name/*.intern()*/;
+        this.group = group != null ? group.intern() : DEFAULT_GROUP.name;
+        this.name = name.intern();
         this.groupTiming = groupTiming;
         this.hashCode = (31 * this.group.hashCode()) + this.name.hashCode();
     }
