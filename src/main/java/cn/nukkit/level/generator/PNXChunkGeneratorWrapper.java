@@ -140,7 +140,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public int getId() {
-        return TYPE_INFINITE;
+        return getDimensionData().getDimensionId();
     }
 
     @Override
