@@ -1,49 +1,52 @@
 ---
-name: "\U0001F50C I found a compatibility issue"
-about: Report a plugin or backward compatibility problem
+name: "\U0001F50C 我发现一个兼容性问题"
+about: 关于一些旧插件无法使用的问题
 title: ''
-labels: 'Type: compatibility'
+labels: 'Type: 兼容性问题'
 assignees: ''
 
 ---
 
-# 🔌 Plugin compatibility issue
+# 🔌 插件兼容性问题
+
 <!-- 
-👉 This template is helpful, but you may erase everything if you can express the issue clearly
-      Feel free to ask questions or start related discussion 
+👉 尽可能详实地描述你使用插件的环境和你所遇到的问题
 -->
 
-### 📸 Screenshots / Videos
-<!-- ✍ If applicable, add screenshots or video recordings to help explain your problem -->
+### 📸 截图 / 视频
 
+<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
 
-### ▶ Steps to Reproduce
-<!--- ✍ Reliable steps which someone can use to reproduce the issue. -->
+### ▶ 复现步骤
+
+<!--- ✍ 复现问题的步骤 -->
+
 1. Run command '...'
 2. Click on '....'
 3. Put '....' at '...'
 4. See error
 
+### ✔ 预期行为
 
-### ✔ Expected Behavior
-<!-- ✍ What would you expect to happen -->
+<!-- ✍ 预期行为 -->
 
+### ❌ 实际行为
 
-### ❌ Actual Behavior
-<!-- ✍ What actually happened -->
+<!-- ✍ 实际行为 -->
 
+### 📋 Debug 信息
 
-### 📋 Debug information
-<!-- Use the 'debugpaste upload' and 'timings paste' command in PowerNukkitX -->
-<!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
+<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+
 * PowerNukkitX version: ✍
 * Debug link: ✍
-* Timings link (if relevant): ✍ 
+* Timings link (if relevant): ✍
 
-### 💢 Crash Dump, Stack Trace and Other Files
-<!-- ✍ Use https://hastebin.com for big logs or dumps -->
+### 💢 错误堆栈或崩溃日志
 
+<!-- ✍ 最好使用 https://hastebin.com -->
 
-### 💬 Anything else we should know?
-<!-- ✍ This is the perfect place to add any additional details -->
+### 💬 其他信息
+
+<!-- ✍ 其他可能有助于解决此问题的信息 -->
 
