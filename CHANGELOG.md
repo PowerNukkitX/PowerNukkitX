@@ -10,6 +10,63 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
+## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
+This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
+
+## Changed
+
+- [#781] Initial optimization of the funnel.
+- [#784] Add issue template. 
+
+## Fixes
+
+- [#778] Fix terra biome npe.
+- [#782] Fix missing terra level-type.
+- [#786] Fix tripwire hook NPE issue.
+
+## [1.19.40-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3) - 2022-11-12
+This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
+
+## Added
+
+- [#496] Server-side authoritative movement support.
+- [#740] Modern hardware-accelerated data compression is supported (click for [help file](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3)).
+- [#762] support Terra 6.2.0+BETA.
+- [#777] Implement native resource pack encryption support.
+
+## Changed
+
+- [#757] Optimize the collision box calculation for arrow entity.
+- [#767] Add many language translations.
+
+## Fixes
+
+- [#588] Fix fishing rod will drop to the enchantment book without enchantment attribute (fixed in [#736]).
+- [#750] Add missing `getHandlers` method.
+- [#755] Fix the bug of custom item scale ineffective.
+- [#759] Fix Custom Entity Disappeared when the server restarts (fixed in [#760]).
+- [#761] Fix the problem of missing nukkit.yml annotation.
+- [#764] Fix sinking fish hooks.
+- [#766] Fix the problem of missing nukkit.yml annotation.
+- [#768] Fix the problem that the ship will sink in the water (fixed in [#771]).
+- [#775] Fix the problem of entity levitation.
+
+## [1.19.40-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2) - 2022-10-30
+This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
+
+## Changed
+
+- [#749] Fetch NukkitX.
+
+## Fixes
+
+- [#722] Fix issue Powder Snow Block dropping (fixed in[#749]).
+- [#748] Remove hack in `broadcastMovement` method.
+
+## CRITICAL SECURITY FIX
+
+- [#730] Fix `OutOfMemoryException` memory overflow problem caused by switching `MoveEntityAbsolutePacket` network packets of PMMP codebase in certain extreme cases (fixed in [#749]).
+
 ## [1.19.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r1) - 2022-10-27
 This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
 
@@ -48,7 +105,7 @@ This work in progress version supports Minecraft:BE `1.19.31 (Protocol Version 5
 - [#694]/[#695] Fix 3D biome related issues (fixed in [#709]).
 - [#702] Fix the Hell Dimension `getHighestBlockAt` error and fix the bug that duplicate custom items appear when players join the game to create the item bar after reload reload.
 - [#703] Fixing the vulnerability of fires in the rain (fixed in [Commit#20b4ff](https://github.com/PowerNukkitX/PowerNukkitX/commit/20b4ff615de70228ed0e8e9340c8b0aeae37c62c)).
-- [#705] Fix the bug that `FormResponseDialog#clickedButton` can be empty, but the constructor is not empty （在[#716]中修复）。
+- [#705] Fix the bug that `FormResponseDialog#clickedButton` can be empty, but the constructor is not empty (fixed in [#716]).
 - [#707] Fix `setImmobile` not being handled correctly (fixed in [#708]).
 - [#710] Fix the bug that the `PlayerExperienceChangeEvent` event cannot be triggered (fixed in [#711]).
 - [#715] Fix all door blocks cannot be placed at 256+ height (fixed in [#717]).
@@ -1284,6 +1341,8 @@ Fixes several anvil issues.
   <summary>1.19.40-PNX</summary>
 
    1. [#1.19.40-r1] PNX-1.19.40-r1 (Protocol Version 557)
+   2. [#1.19.40-r2] PNX-1.19.40-r2 (Protocol Version 557)
+   3. [#1.19.40-r3] PNX-1.19.40-r3 (Protocol Version 557)
 
 </details>
 
@@ -1638,6 +1697,7 @@ Need to switch languages?
 [#492]: https://github.com/PowerNukkitX/PowerNukkitX/pull/492
 [#493]: https://github.com/PowerNukkitX/PowerNukkitX/pull/493
 [#494]: https://github.com/PowerNukkitX/PowerNukkitX/pull/494
+[#496]: https://github.com/PowerNukkitX/PowerNukkitX/pull/496
 [#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
 [#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
 [#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
@@ -1682,6 +1742,7 @@ Need to switch languages?
 [#585]: https://github.com/PowerNukkitX/PowerNukkitX/pull/585
 [#586]: https://github.com/PowerNukkitX/PowerNukkitX/pull/586
 [#587]: https://github.com/PowerNukkitX/PowerNukkitX/pull/587
+[#588]: https://github.com/PowerNukkitX/PowerNukkitX/issues/588
 [#591]: https://github.com/PowerNukkitX/PowerNukkitX/issues/591
 [#592]: https://github.com/PowerNukkitX/PowerNukkitX/issues/592
 [#593]: https://github.com/PowerNukkitX/PowerNukkitX/pull/593
@@ -1757,6 +1818,7 @@ Need to switch languages?
 [#718]: https://github.com/PowerNukkitX/PowerNukkitX/pull/718
 [#719]: https://github.com/PowerNukkitX/PowerNukkitX/pull/719
 [#721]: https://github.com/PowerNukkitX/PowerNukkitX/pull/721
+[#722]: https://github.com/PowerNukkitX/PowerNukkitX/issues/722
 [#724]: https://github.com/PowerNukkitX/PowerNukkitX/issues/724
 [#726]: https://github.com/PowerNukkitX/PowerNukkitX/pull/726
 [#728]: https://github.com/PowerNukkitX/PowerNukkitX/pull/728
@@ -1765,9 +1827,32 @@ Need to switch languages?
 [#733]: https://github.com/PowerNukkitX/PowerNukkitX/pull/733
 [#734]: https://github.com/PowerNukkitX/PowerNukkitX/pull/734
 [#735]: https://github.com/PowerNukkitX/PowerNukkitX/pull/735
+[#736]: https://github.com/PowerNukkitX/PowerNukkitX/pull/736
 [#738]: https://github.com/PowerNukkitX/PowerNukkitX/pull/738
 [#739]: https://github.com/PowerNukkitX/PowerNukkitX/pull/739
+[#740]: https://github.com/PowerNukkitX/PowerNukkitX/pull/740
 [#744]: https://github.com/PowerNukkitX/PowerNukkitX/pull/744
+[#748]: https://github.com/PowerNukkitX/PowerNukkitX/pull/748
+[#749]: https://github.com/PowerNukkitX/PowerNukkitX/pull/749
+[#750]: https://github.com/PowerNukkitX/PowerNukkitX/pull/750
+[#755]: https://github.com/PowerNukkitX/PowerNukkitX/pull/755
+[#757]: https://github.com/PowerNukkitX/PowerNukkitX/pull/757
+[#759]: https://github.com/PowerNukkitX/PowerNukkitX/issues/759
+[#760]: https://github.com/PowerNukkitX/PowerNukkitX/pull/760
+[#761]: https://github.com/PowerNukkitX/PowerNukkitX/pull/761
+[#762]: https://github.com/PowerNukkitX/PowerNukkitX/pull/762
+[#764]: https://github.com/PowerNukkitX/PowerNukkitX/pull/764
+[#766]: https://github.com/PowerNukkitX/PowerNukkitX/pull/766
+[#767]: https://github.com/PowerNukkitX/PowerNukkitX/pull/767
+[#768]: https://github.com/PowerNukkitX/PowerNukkitX/issues/768
+[#771]: https://github.com/PowerNukkitX/PowerNukkitX/pull/771
+[#777]: https://github.com/PowerNukkitX/PowerNukkitX/pull/777
+[#775]: https://github.com/PowerNukkitX/PowerNukkitX/pull/775
+[#778]: https://github.com/PowerNukkitX/PowerNukkitX/pull/778
+[#781]: https://github.com/PowerNukkitX/PowerNukkitX/pull/781
+[#782]: https://github.com/PowerNukkitX/PowerNukkitX/pull/782
+[#784]: https://github.com/PowerNukkitX/PowerNukkitX/pull/784
+[#786]: https://github.com/PowerNukkitX/PowerNukkitX/pull/786
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1818,6 +1903,10 @@ Need to switch languages?
 
 <!--1.19.40-r1-PNX Protocol Version 557-->
 [#1.19.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r1
+<!--1.19.40-r2-PNX Protocol Version 557-->
+[#1.19.40-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2
+<!--1.19.40-r3-PNX Protocol Version 557-->
+[#1.19.40-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
@@ -1829,4 +1918,4 @@ Need to switch languages?
 
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
-[Discord]:https://discord.gg/BcPhZCVJHJ
+[Discord]: https://discord.gg/BcPhZCVJHJ
