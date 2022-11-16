@@ -166,6 +166,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements RedstoneC
         canConnect = canConnect & distance > 1;
         nextPowered = nextPowered & canConnect;
         BlockTripWireHook hook = (BlockTripWireHook) Block.get(BlockID.TRIPWIRE_HOOK);
+        hook.setLevel(this.level);
         hook.setAttached(canConnect);
         hook.setPowered(nextPowered);
 
