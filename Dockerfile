@@ -1,61 +1,44 @@
-# This Dockerfile uses Docker Multi-Stage Builds
-# See https://docs.docker.com/engine/userguide/eng-image/multistage-build/
-# Requires Docker v17.05
+FROM alpine/git:v2.36.3 AS prepare
 
-# Prepare the source
-FROM alpine/git:v2.26.2 AS prepare
+# Copy the source to maven build
+WORKDIR /work
 
-# Copy the source
-WORKDIR /src
-COPY pom.xml /src
-
-COPY src/main/java /src/src/main/java
-COPY src/main/resources /src/src/main/resources
-
-COPY src/test/java/cn /src/src/test/java/cn
-COPY src/test/resources /src/src/test/resources
+COPY pom.xml /work
+COPY src/ /work/src
+COPY .git /work/.git
+COPY entrypoint.sh /work/entrypoint.sh
 
 # Update the language submodule
-RUN if [ -z "$(ls -A /src/src/main/resources/lang)" ]; then git submodule update --init; fi
+RUN if [ -z "$(ls -A /work/src/main/resources/language)" ]; then git submodule update --init; fi
 
-# Prepare to build the source
-FROM maven:3.6-jdk-8-alpine as build
 
-# Copy the source
-WORKDIR /src
-COPY --from=prepare /src /src
+FROM maven:3.8.6-eclipse-temurin-17-alpine as build
 
+WORKDIR /build
+
+COPY --from=prepare /work /build
+# cache maven dependency
+RUN mvn verify --fail-never
 # Build the source
-RUN mvn --no-transfer-progress -Dmaven.javadoc.skip=true clean package
+RUN mvn -Dmaven.javadoc.skip=true -Dfile.encoding=UTF-8 package -P dev
 
-# Use OpenJDK JRE image to runtime
-FROM openjdk:8-jre-slim AS run
-LABEL maintainer="José Roberto de Araújo Júnior <joserobjr@powernukkit.org>"
+# Final image
+FROM findepi/graalvm:java17
+LABEL author="CoolLoong"
+WORKDIR /pnx
 
-# Copy artifact from build image
-COPY --from=build /src/target/powernukkit-*-shaded.jar /app/powernukkit.jar
+ENV Xmx=2G
+ENV Xms=1G
 
-# Create minecraft user
-RUN useradd --user-group \
-            --no-create-home \
-            --home-dir /data \
-            --shell /usr/sbin/nologin \
-            minecraft
+COPY --from=build /build/entrypoint.sh /pnx/entrypoint.sh
+COPY --from=build /build/target/libs /pnx/libs
+COPY --from=build /build/target/powernukkitx-1.19.40-r3.jar /pnx/powernukkitx.jar
 
-# Ports
+RUN gu install js && \
+    mkdir -p /pnx/plugins /pnx/players /pnx/worlds && \
+    chmod +x /pnx/entrypoint.sh
+
 EXPOSE 19132/udp
-
-# Make app owned by minecraft user
-RUN mkdir /data && chown -R minecraft:minecraft /app /data
-
-# Volumes
-VOLUME /data /home/minecraft
-
-# User and group to run as
-USER minecraft:minecraft
-
-# Set runtime workdir
-WORKDIR /data
-
-# Run app
-CMD [ "java", "-jar", "/app/powernukkit.jar" ]
+VOLUME ["/pnx/plugins","/pnx/players","/pnx/worlds"]
+ENTRYPOINT ["/pnx/entrypoint.sh"]
+CMD ["$Xms","$Xmx"]
