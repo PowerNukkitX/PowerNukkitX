@@ -5,6 +5,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.lang.TranslationContainer;
 
@@ -29,10 +30,10 @@ public class BanCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return false;
         }
+        CommandLogger log = new CommandLogger(this, sender, args);
 
         if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
-
+            log.outputSyntaxErrors(-1);
             return false;
         }
 

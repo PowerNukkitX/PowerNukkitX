@@ -3,6 +3,7 @@ package cn.nukkit.command;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.*;
+import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
 import cn.nukkit.lang.TextContainer;
@@ -341,6 +342,9 @@ public abstract class Command {
                 (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
             return;
         }
+
+        if ((source.isPlayer() || source instanceof BlockEntityCommandBlock || source instanceof ExecutorCommandSender) && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK))
+            return;
 
         TextContainer m = message.clone();
         String resultStr = "[" + source.getName() + ": " + (!m.getText().equals(source.getServer().getLanguage().get(m.getText())) ? "%" : "") + m.getText() + "]";

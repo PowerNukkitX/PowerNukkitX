@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.permission.BanEntry;
 import cn.nukkit.permission.BanList;
@@ -29,20 +30,21 @@ public class BanListCommand extends VanillaCommand {
             return false;
         }
 
+        CommandLogger log = new CommandLogger(this, sender, args);
+
         BanList list;
         boolean ips = false;
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
-                case "ips":
+                case "ips" -> {
                     list = sender.getServer().getIPBans();
                     ips = true;
-                    break;
-                case "players":
-                    list = sender.getServer().getNameBans();
-                    break;
-                default:
-                    sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+                }
+                case "players" -> list = sender.getServer().getNameBans();
+                default -> {
+                    log.outputSyntaxErrors(0);
                     return false;
+                }
             }
         } else {
             list = sender.getServer().getNameBans();
@@ -58,11 +60,11 @@ public class BanListCommand extends VanillaCommand {
         }
 
         if (ips) {
-            sender.sendMessage(new TranslationContainer("commands.banlist.ips", String.valueOf(list.getEntires().size())));
+            log.outputInfo(null, null, "commands.banlist.ips", new String[]{String.valueOf(list.getEntires().size())});
         } else {
-            sender.sendMessage(new TranslationContainer("commands.banlist.players", String.valueOf(list.getEntires().size())));
+            log.outputInfo(null, null, "commands.banlist.players", new String[]{String.valueOf(list.getEntires().size())});
         }
-        sender.sendMessage(builder.toString());
+        log.outputInfo(null, null, builder.toString(), TranslationContainer.EMPTY_STRING_ARRAY);
         return true;
     }
 }

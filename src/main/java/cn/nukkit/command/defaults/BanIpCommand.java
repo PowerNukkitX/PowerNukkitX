@@ -6,6 +6,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.nbt.NBTIO;
@@ -47,9 +48,10 @@ public class BanIpCommand extends VanillaCommand {
             return false;
         }
 
-        if (args.length == 0) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+        CommandLogger log = new CommandLogger(this, sender, args);
 
+        if (args.length == 0) {
+            log.outputSyntaxErrors(-1);
             return false;
         }
 
@@ -91,7 +93,7 @@ public class BanIpCommand extends VanillaCommand {
 
                     Command.broadcastCommandMessage(sender, new TranslationContainer("commands.banip.success", value));
                 } else {
-                    sender.sendMessage(new TranslationContainer("commands.banip.invalid"));
+                    log.outputError(0, "commands.banip.invalid", TranslationContainer.EMPTY_STRING_ARRAY);
                     return false;
                 }
             }

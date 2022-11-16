@@ -95,10 +95,10 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      * 输出一条命令的成功信息
      *
      * @param successCount 成功执行的数量
-     * @param playerK      当发送者是玩家执行的key
-     * @param playerV      当发送者是玩家执行的value
-     * @param consoleK     当发送者是控制台执行的key
-     * @param consoleV     当发送者是控制台执行的value
+     * @param playerK      当发送者是玩家，返回的消息key
+     * @param playerV      当发送者是玩家，返回的消息value
+     * @param consoleK     当发送者是控制台，返回的消息key
+     * @param consoleV     当发送者是控制台，返回的消息value
      * @param rawtext      给命令目标的反馈信息
      * @param params       给命令目标的反馈信息参数
      */
