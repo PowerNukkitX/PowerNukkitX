@@ -4,7 +4,7 @@ import cn.nukkit.lang.TranslationContainer;
 
 public class CommandOutputContainer extends TranslationContainer implements Cloneable {
     protected boolean successed;
-    protected int successCount = 0;
+    protected int successCount;
 
     public CommandOutputContainer(String message, boolean successed) {
         this(message, new String[]{}, successed, successed ? 1 : 0);
@@ -16,7 +16,8 @@ public class CommandOutputContainer extends TranslationContainer implements Clon
 
     public CommandOutputContainer(String messageId, String[] parameters, boolean successed, int successCount) {
         super(messageId);
-        this.params = parameters;
+        if (parameters == null) this.params = TranslationContainer.EMPTY_STRING_ARRAY;
+        else this.params = parameters;
         this.successed = successed;
         this.successCount = successCount;
     }

@@ -65,6 +65,11 @@ public class GiveCommand extends VanillaCommand {
             players.add(sender.getServer().getPlayer(args[0]));
         }
 
+        if (players.size() == 0) {
+            log.outputNoTargetMatch();
+            return false;
+        }
+
         Item item;
         try {
             item = Item.fromString(args[1]);
@@ -91,7 +96,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         if (count <= 0) {
-            log.outputError("commands.generic.num.tooSmall", new String[]{args[2], " 1"});
+            log.outputNumTooSmall(2, 1);
             return false;
         }
         item.setCount(count);
@@ -108,11 +113,6 @@ public class GiveCommand extends VanillaCommand {
         if (args.length >= 5) {
             Item.ItemJsonComponents components = Item.ItemJsonComponents.fromJson(String.join("", Arrays.copyOfRange(args, 4, args.length)));
             item.readItemJsonComponents(components);
-        }
-
-        if (players.size() == 0) {
-            log.outputNoTargetMatch();
-            return false;
         }
 
         for (Player player : players) {

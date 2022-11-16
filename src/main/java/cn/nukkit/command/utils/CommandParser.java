@@ -12,9 +12,9 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.BVector3;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -224,13 +224,12 @@ public class CommandParser {
             }
         }
 
-        String result = null;
-
+        String result;
         if (commandPatterns.size() == 1) {
             result = commandPatterns.keySet().iterator().next();
         } else if (commandPatterns.size() == 0) {
-            result = null;
-        } else if (commandPatterns.size() > 1) {
+            return null;
+        } else {
             String maxLengthForm = commandPatterns.keySet().iterator().next();
             int maxLength = commandArgLength.get(maxLengthForm);
             for (Map.Entry<String, Pattern> entry : commandPatterns.entrySet()) {
@@ -240,8 +239,6 @@ public class CommandParser {
                 }
             }
             result = maxLengthForm;
-        } else {
-            result = null;
         }
 
         if (result == null) {

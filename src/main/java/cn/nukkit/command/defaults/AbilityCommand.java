@@ -9,7 +9,9 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.command.utils.CommandParser;
+import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.lang.TranslationContainer;
 
 import java.util.List;
@@ -36,50 +38,64 @@ public class AbilityCommand extends VanillaCommand {
         }
 
         CommandParser parser = new CommandParser(this, sender, args);
-        if (parser.matchCommandForm() == null) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+        CommandLogger log = new CommandLogger(this, sender, args);
+        if (args.length == 0) {
+            log.outputSyntaxErrors(-1);
+        }
+
+        if (args.length == 1) {
+            log.outputSyntaxErrors(1);
             return false;
         }
 
+        List<Player> players = EntitySelector.matchPlayers(sender, args[0]);
+        if (players.size() == 0) {
+            log.outputNoTargetMatch();
+            return false;
+        }
+
+        String ability_str;
+        AdventureSettings.Type type;
         try {
-            List<Player> players = parser.parseTargetPlayers();
-            if (players.size() == 0) {
-                sender.sendMessage(new TranslationContainer("commands.generic.noTargetMatch"));
-                return false;
-            }
-
-            String ability_str;
-
-            AdventureSettings.Type type = switch (ability_str = parser.parseString()) {
+            ability_str = parser.parseString();
+            type = switch (ability_str) {
                 case "mayfly" -> AdventureSettings.Type.ALLOW_FLIGHT;
                 case "mute" -> AdventureSettings.Type.MUTED;
                 case "worldbuilder" -> AdventureSettings.Type.WORLD_BUILDER;
                 default -> null;
             };
-
-            if (parser.hasNext()) {
-                boolean value = parser.parseBoolean();
-                for (Player player : players) {
-                    player.getAdventureSettings().set(type, value);
-                    player.getAdventureSettings().update();
-                    if (value)
-                        player.sendMessage(new TranslationContainer("commands.ability.granted", ability_str));
-                    else
-                        player.sendMessage(new TranslationContainer("commands.ability.revoked", ability_str));
-                }
-                sender.sendMessage(new TranslationContainer("commands.ability.success"));
-                return true;
-            } else {
-                if (!sender.isPlayer()) {
-                    return false;
-                }
-                boolean value = sender.asPlayer().getAdventureSettings().get(type);
-                sender.sendMessage(ability_str + " = " + value);
-                return true;
-            }
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
+            log.outputSyntaxErrors(1);
             return false;
         }
+
+        if (type == null || ability_str.isBlank()) log.outputSyntaxErrors(1);
+
+        if (parser.hasNext()) {
+            boolean value;
+            try {
+                value = parser.parseBoolean();
+            } catch (CommandSyntaxException e) {
+                log.outputSyntaxErrors(2);
+                return false;
+            }
+
+            for (Player player : players) {
+                player.getAdventureSettings().set(type, value);
+                player.getAdventureSettings().update();
+                if (value)
+                    log.outputInfo(null, null, "commands.ability.granted", new String[]{ability_str});
+                else
+                    log.outputInfo(null, null, "commands.ability.revoked", new String[]{ability_str});
+            }
+            log.outputInfo(null, null, "commands.ability.success", TranslationContainer.EMPTY_STRING_ARRAY);
+        } else {
+            if (!sender.isPlayer()) {
+                return false;
+            }
+            boolean value = sender.asPlayer().getAdventureSettings().get(type);
+            log.outputInfo(null, null, "ability_str = " + value, TranslationContainer.EMPTY_STRING_ARRAY);
+        }
+        return true;
     }
 }
