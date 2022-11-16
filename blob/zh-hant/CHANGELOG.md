@@ -32,7 +32,7 @@
 - [#496] 服務端權威移動支持。
 - [#740] 支持現代硬件加速數據壓縮（點擊查看[幫助文檔](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3)）。
 - [#762] 支持Terra 6.2.0+Beta。
-- [#770] 添加資源包加密支持功能。
+- [#777] 添加資源包加密支持功能。
 
 ## 修改記錄
 
@@ -1847,9 +1847,9 @@ Need to switch languages?
 [#766]: https://github.com/PowerNukkitX/PowerNukkitX/pull/766
 [#767]: https://github.com/PowerNukkitX/PowerNukkitX/pull/767
 [#768]: https://github.com/PowerNukkitX/PowerNukkitX/issues/768
-[#770]: https://github.com/PowerNukkitX/PowerNukkitX/pull/770
 [#771]: https://github.com/PowerNukkitX/PowerNukkitX/pull/771
 [#775]: https://github.com/PowerNukkitX/PowerNukkitX/pull/775
+[#777]: https://github.com/PowerNukkitX/PowerNukkitX/pull/777
 [#778]: https://github.com/PowerNukkitX/PowerNukkitX/pull/778
 [#781]: https://github.com/PowerNukkitX/PowerNukkitX/pull/781
 [#782]: https://github.com/PowerNukkitX/PowerNukkitX/pull/782
