@@ -1,0 +1,32 @@
+FROM alpine:3.16.3 AS prepare
+
+# Copy the source to maven build
+WORKDIR /work
+
+COPY /target/libs /work/libs
+COPY src/main/resources/default-nukkit.yml /work/nukkit.yml
+
+RUN apk add --no-cache wget && \
+    apk add --no-cache unzip && \
+    wget https://github.com/PowerNukkitX/PNX-CLI/releases/download/v0.0.7/PNX-CLI-Jar.zip && \
+    unzip PNX-CLI-Jar.zip -d /work
+
+# Final image
+FROM khipu/openjdk17-alpine
+LABEL author="CoolLoong"
+WORKDIR /pnx
+
+ENV language=eng
+
+COPY --from=prepare /work/libs /pnx/libs
+COPY --from=prepare /work/PNX-CLI-0.0.1-alpha.jar /pnx/cli.jar
+COPY --from=prepare /work/nukkit.yml /pnx/nukkit.yml
+
+RUN mkdir -p /pnx/plugins /pnx/players /pnx/worlds && \
+    java -jar /pnx/cli.jar server -u --latest && \
+    java -jar /pnx/cli.jar comp -u graaljit && \
+    sed -i '/.* language: "eng"*/c\ language: "'$language'"' nukkit.yml
+
+EXPOSE 19132/udp
+VOLUME ["/pnx/plugins","/pnx/players","/pnx/worlds"]
+ENTRYPOINT ["java","-jar","cli.jar"]
