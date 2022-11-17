@@ -41,24 +41,17 @@ What's new in PowerNukkitX? Let's See：
 
 ## 🎮 How to use
 
-**PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
-variables.**
+### 1.Run from [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI):
 
-### We suggest that you use [PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI) to run PowerNukkitX, Why?
-
-1. PNX-CLI is compiled using GraalVM Native Image,which can be used without java runtime environment,with small memory
-   consumption and high running efficiency.
-2. Simplify GraalJit and JDK installation.With GraalJit,your JS plugin will run 100 times more efficiently
-3. Provides efficient and adaptive startup commands without the need to write them manually
-4. Pure command line operation, concise and effective, Linux command style
-5. Github version synchronization,update version does not need to repeat the download of dependent libraries,just a key
-   command
+1. Download the `PNX-CLI-Jar.zip` latest version from [release](https://github.com/PowerNukkitX/PNX-CLI/releases)
+2. Run `java -jar PNX-CLI-0.0.1-alpha.jar`
 
 you can [click here](https://doc.powernukkitx.cn/en-us/Get_Started.html) to get more information.
 
-If your platform is not suitable for using PNX-CLI or you do not want to it,then please read the following steps.
+### 2.Run from command:
 
-### Steps:
+PowerNukkitX requires a minimum Java version of 17, please install it yourself and configure the environment
+variables.
 
 1. Download libs.tar.gz and powernukkitx.jar from [release](https://github.com/PowerNukkitX/PowerNukkitX/releases)
 2. Extract the libs folder in libs.tar.gz to the same path as powernukkitx.jar
@@ -97,6 +90,10 @@ java -Dfile.encoding=UTF-8 \
 -cp ./powernukkitx.jar:./libs/* \
 cn.nukkit.Nukkit
 ```
+
+### 3.Run from docker image:
+
+https://hub.docker.com/r/coolloong/powernukkitx
 
 ---
 📌 Statement

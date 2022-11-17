@@ -30,7 +30,8 @@ PowerNukkitX的優勢：
 5. 原生支持香草命令和命令方塊等（完善中）。
 6. 內置[Terra](https://github.com/PolyhedralDev/Terra)
    地形生成器（如有問題[點此查看](https://doc.powernukkitx.cn/zh-cn/faq/Terra%E9%97%AE%E9%A2%98.html)）。
-7. 支持使用JavaSrcipt語言編寫插件 （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
+7. 支持使用JavaSrcipt語言編寫插件
+   （初步完成，可在[此處](https://doc.powernukkitx.cn/zh-cn/plugin-dev/js/%E6%A6%82%E8%BF%B0.html)查找開發文檔）。
 8. 支持自定義方塊 / 物品 / 實體（完善中，[檔案](https://doc.powernukkitx.cn)待補充）。
 9. 內置生物AI，無需安裝MobPlugin（開發中，未完善）。
 10. Todo...
@@ -39,20 +40,16 @@ PowerNukkitX的優勢：
 
 ## 🎮 如何使用
 
-**PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量**
+### 1.从[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)啟動:
 
-### 我們建議你使用[PNX-CLI](https://github.com/PowerNukkitX/PNX-CLI)運行PowerNukkitX,爲什麽?
+1. 从[release](https://github.com/PowerNukkitX/PNX-CLI/releases)下載`PNX-CLI-Jar.zip`最新版本
+2. 運行`java -jar PNX-CLI-0.0.1-alpha.jar`
 
-1. PNX-CLI使用GraalVM Native Image編譯,無需java運行環境即可使用,占用内存小,運行效率高
-2. 簡化GraalJit和JDK的安裝,擁有GraalJit,你的JS插件運行效率會提升100倍
-3. 提供高效自適應的啓動命令,無需手動編寫
-4. 纯命令行操作,簡介有效,linux命令風格
-5. github版本同步,更新版本無需重複下載依賴庫,只需一鍵命令
+您还可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查阅更多信息。
 
-您可以在[此處](https://doc.powernukkitx.cn/zh-cn/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8.html)查看如何啟動PNX。
-如果你的平台不適合使用PNX-CLI或者你不想使用它,那麽請查看以下步驟。
+### 2.从命令啟動:
 
-### 使用步驟:
+PowerNukkitX要求的最低Java版本为17,請自行安裝且配置環境變量
 
 1. 从[release](https://github.com/PowerNukkitX/PowerNukkitX/releases)下载libs.tar.gz和powernukkitx.jar
 2. 将libs.tar.gz中的libs文件夾解壓到和powernukkitx.jar同一路徑下
@@ -91,6 +88,11 @@ java -Dfile.encoding=UTF-8 \
 -cp ./powernukkitx.jar:./libs/* \
 cn.nukkit.Nukkit
 ```
+
+### 3.从docker啟動:
+
+https://hub.docker.com/r/coolloong/powernukkitx
+
 
 ---
 📌 聲明
