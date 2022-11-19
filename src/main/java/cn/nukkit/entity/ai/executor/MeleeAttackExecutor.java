@@ -87,18 +87,15 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
-        Vector3 clonedTarget = target.clone();
         if (this.lookTarget == null) {
-            this.lookTarget = clonedTarget;
+            this.lookTarget = target.clone();
         }
         //更新寻路target
-        setRouteTarget(entity, clonedTarget);
+        setRouteTarget(entity, this.target.clone());
         //更新视线target
-        setLookTarget(entity, lookTarget);
-        //清空以待下次使用
-        this.lookTarget = null;
+        setLookTarget(entity, this.lookTarget.clone());
 
-        var floor = clonedTarget.floor();
+        var floor = target.floor();
 
         if (oldTarget == null || !oldTarget.equals(floor)) entity.getBehaviorGroup().setForceUpdateRoute(true);
 
@@ -140,6 +137,10 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
             attackTick = 0;
             return target.getHealth() != 0;
         }
+
+        //清空以待下次使用
+        this.lookTarget = null;
+        this.target = null;
         return true;
     }
 
