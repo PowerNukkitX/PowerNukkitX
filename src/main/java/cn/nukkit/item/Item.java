@@ -1675,6 +1675,14 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
     }
 
+    /**
+     * 物品合成配方方法
+     * <p>
+     * Item crafting recipe methods
+     *
+     * @return
+     */
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Item createFuzzyCraftingRecipe() {
@@ -1694,6 +1702,14 @@ public class Item implements Cloneable, BlockID, ItemID {
     public int getMaxStackSize() {
         return block == null ? 64 : block.getItemMaxStackSize();
     }
+
+    /**
+     * 定义物品可燃烧时间例如煤炭在熔炉中燃烧...
+     * <p>
+     * Define the burnable time of an item e.g. coal burning in a furnace...
+     *
+     * @return
+     */
 
     final public Short getFuelTime() {
         if (!Fuel.duration.containsKey(id)) {
@@ -1995,6 +2011,22 @@ public class Item implements Cloneable, BlockID, ItemID {
     public int getDestroySpeed(Block block, Player player) {
         return 1;
     }
+
+    /**
+     * 玩家点击或长按触发什么,例如玩家放置水桶
+     * <p>
+     * The player clicks or long presses to trigger something, for example, the player places a bucket of water
+     *
+     * @param level
+     * @param player
+     * @param block
+     * @param target
+     * @param face
+     * @param fx
+     * @param fy
+     * @param fz
+     * @return
+     */
 
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         return false;
