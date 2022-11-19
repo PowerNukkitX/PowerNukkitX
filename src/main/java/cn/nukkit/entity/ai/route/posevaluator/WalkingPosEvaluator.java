@@ -64,6 +64,7 @@ public class WalkingPosEvaluator implements IPosEvaluator {
     /**
      * 指定实体在指定坐标上能否不发生碰撞
      */
+    //todo: 此方法会造成大量开销，原因是碰撞检查，有待优化
     protected boolean isPassable(EntityIntelligent entity, Vector3 vector3) {
         double radius = (entity.getWidth() * entity.getScale()) / 2;
         float height = entity.getHeight() * entity.getScale();
