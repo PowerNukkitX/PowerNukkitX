@@ -34,11 +34,11 @@ public abstract class PositionNode extends ParamNode<Position> {
         if (str.isEmpty()) throw new CommandSyntaxException();
         if (str.get().length() != arg.length()) throw new CommandSyntaxException();
         else {
+            Player player = null;
+            if (extras[0] instanceof Player) {
+                player = (Player) extras[0];
+            }
             for (String s : TMP) {
-                Player player = null;
-                if (extras[0] instanceof Player) {
-                    player = (Player) extras[0];
-                }
                 if (s.charAt(0) == '~') {
                     if (player == null) throw new CommandSyntaxException();
                     String relativeCoordinate = s.substring(1);
@@ -49,12 +49,13 @@ public abstract class PositionNode extends ParamNode<Position> {
                             case 2 -> coordinate[type] = player.getZ();
                             default -> throw new CommandSyntaxException();
                         }
-                    }
-                    switch (type) {
-                        case 0 -> coordinate[type] = player.getX() + Double.parseDouble(relativeCoordinate);
-                        case 1 -> coordinate[type] = player.getY() + Double.parseDouble(relativeCoordinate);
-                        case 2 -> coordinate[type] = player.getZ() + Double.parseDouble(relativeCoordinate);
-                        default -> throw new CommandSyntaxException();
+                    } else {
+                        switch (type) {
+                            case 0 -> coordinate[type] = player.getX() + Double.parseDouble(relativeCoordinate);
+                            case 1 -> coordinate[type] = player.getY() + Double.parseDouble(relativeCoordinate);
+                            case 2 -> coordinate[type] = player.getZ() + Double.parseDouble(relativeCoordinate);
+                            default -> throw new CommandSyntaxException();
+                        }
                     }
                 } else if (s.charAt(0) == '^') {
                     if (player == null) throw new CommandSyntaxException();
@@ -66,22 +67,24 @@ public abstract class PositionNode extends ParamNode<Position> {
                             case 2 -> coordinate[type] = player.getZ();
                             default -> throw new CommandSyntaxException();
                         }
-                    }
-                    switch (type) {
-                        case 0 ->
-                                coordinate[type] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
-                        case 1 ->
-                                coordinate[type] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
-                        case 2 ->
-                                coordinate[type] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
-                        default -> throw new CommandSyntaxException();
+                    } else {
+                        switch (type) {
+                            case 0 ->
+                                    coordinate[type] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
+                            case 1 ->
+                                    coordinate[type] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
+                            case 2 ->
+                                    coordinate[type] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
+                            default -> throw new CommandSyntaxException();
+                        }
                     }
                 } else {
                     coordinate[type] = Double.parseDouble(s);
                 }
-                if (type == 2) {
-                    this.value = new Position(coordinate[0], coordinate[1], coordinate[2], player == null ? Server.getInstance().getLevel(0) : player.getLevel());
-                }
+                type++;
+            }
+            if (type == 3) {
+                this.value = new Position(coordinate[0], coordinate[1], coordinate[2], player == null ? Server.getInstance().getDefaultLevel() : player.getLevel());
             }
         }
     }
