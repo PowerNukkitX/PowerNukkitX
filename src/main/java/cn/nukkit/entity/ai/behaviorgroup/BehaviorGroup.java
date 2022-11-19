@@ -230,7 +230,7 @@ public class BehaviorGroup implements IBehaviorGroup {
                 //clone防止寻路器潜在的修改
                 RouteFindingManager.getInstance().submit(routeFindingTask = new RouteFindingManager.RouteFindingTask(routeFinder, task -> {
                     updateMoveDirection(entity);
-                    entity.setNeedUpdateMoveDirection(false);
+                    entity.setShouldUpdateMoveDirection(false);
                     currentRouteUpdateTick = 0;
                     setForceUpdateRoute(false);
                 })
@@ -245,11 +245,11 @@ public class BehaviorGroup implements IBehaviorGroup {
             entity.setMoveDirectionStart(null);
             entity.setMoveDirectionEnd(null);
         }
-        if (entity.isNeedUpdateMoveDirection()) {
+        if (entity.isShouldUpdateMoveDirection()) {
             if (routeFinder.hasNext()) {
                 //若有新的移动方向，则更新
                 updateMoveDirection(entity);
-                entity.setNeedUpdateMoveDirection(false);
+                entity.setShouldUpdateMoveDirection(false);
             }
         }
     }

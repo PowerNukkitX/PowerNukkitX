@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.math.Vector3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,17 @@ import java.util.Map;
 @PowerNukkitXOnly
 @Since("1.19.40-r4")
 public interface CoreMemoryTypes {
+    //运动控制器相关
+    MemoryType<Vector3> LOOK_TARGET = new MemoryType<>("minecraft:look_target");
+    MemoryType<Vector3> MOVE_TARGET = new MemoryType<>("minecraft:move_target");
+    MemoryType<Vector3> MOVE_DIRECTION_START = new MemoryType<>("minecraft:move_direction_start");
+    MemoryType<Vector3> MOVE_DIRECTION_END = new MemoryType<>("minecraft:move_direction_end");
+    MemoryType<Boolean> SHOULD_UPDATE_MOVE_DIRECTION = new MemoryType<>("minecraft:should_update_move_direction", false);
+    MemoryType<Boolean> ENABLE_PITCH = new MemoryType<>("minecraft:enable_pitch", true);
+    //以下这两个暂时未使用到
+//    MemoryType<Boolean> ENABLE_YAW = new MemoryType<>("minecraft:enable_yaw", true);
+//    MemoryType<Boolean> ENABLE_HEAD_YAW = new MemoryType<>("minecraft:enable_head_yaw", true);
+
     MemoryType<EntityDamageEvent> BE_ATTACKED_EVENT = new MemoryType<>("minecraft:be_attacked_event");
     MemoryType<Integer> LAST_BE_ATTACKED_TIME = new MemoryType<>("minecraft:last_be_attacked_time", -65536);
     MemoryType<Entity> ATTACK_TARGET = new MemoryType<>("minecraft:attack_target");

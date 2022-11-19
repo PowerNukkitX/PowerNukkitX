@@ -89,12 +89,14 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
 
         Vector3 clonedTarget = target.clone();
         if (this.lookTarget == null) {
-            lookTarget = clonedTarget;
+            this.lookTarget = clonedTarget;
         }
         //更新寻路target
         setRouteTarget(entity, clonedTarget);
         //更新视线target
         setLookTarget(entity, lookTarget);
+        //清空以待下次使用
+        this.lookTarget = null;
 
         var floor = clonedTarget.floor();
 
@@ -136,7 +138,7 @@ public class MeleeAttackExecutor extends AboutControlExecutor {
             target.attack(ev);
             playAttackAnimation(entity);
             attackTick = 0;
-            if (target.getHealth() == 0) return false;
+            return target.getHealth() != 0;
         }
         return true;
     }

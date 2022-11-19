@@ -24,7 +24,7 @@ public class WalkController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
-        if (entity.hasMoveDirection() && !entity.isNeedUpdateMoveDirection()) {
+        if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
@@ -69,7 +69,7 @@ public class WalkController implements IController {
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.setNeedUpdateMoveDirection(true);
+        entity.setShouldUpdateMoveDirection(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

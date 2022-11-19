@@ -31,17 +31,6 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     protected boolean isActive = true;
 
-    //todo: 移动到memory
-    //我们将寻路相关的参数直接作为属性存储到EntityIntelligent中，这样可以提高性能
-    protected Vector3 lookTarget;
-    protected Vector3 moveTarget;
-    protected Vector3 moveDirectionStart;
-    protected Vector3 moveDirectionEnd;
-    protected boolean needUpdateMoveDirection;
-    //控制是否启用pitch
-    //若为true,则实体在看向目标的同时还会调整视线垂直角度
-    protected boolean enablePitch;
-
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         var storage = getMemoryStorage();
@@ -125,12 +114,84 @@ public abstract class EntityIntelligent extends EntityPhysical {
     }
 
     public boolean hasMoveDirection() {
-        return moveDirectionStart != null && moveDirectionEnd != null;
+        return getMoveDirectionStart() != null && getMoveDirectionEnd() != null;
     }
 
-    @Since("1.6.0.0-PNX")
     @Override
     public boolean enableHeadYaw() {
         return true;
     }
+
+    public Vector3 getLookTarget() {
+        return getMemoryStorage().get(CoreMemoryTypes.LOOK_TARGET);
+    }
+
+    public void setLookTarget(Vector3 lookTarget) {
+        getMemoryStorage().put(CoreMemoryTypes.LOOK_TARGET, lookTarget);
+    }
+
+    public Vector3 getMoveTarget() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_TARGET);
+    }
+
+    public void setMoveTarget(Vector3 moveTarget) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_TARGET, moveTarget);
+    }
+
+    public Vector3 getMoveDirectionStart() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_START);
+    }
+
+    public void setMoveDirectionStart(Vector3 moveDirectionStart) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_START, moveDirectionStart);
+    }
+
+    public Vector3 getMoveDirectionEnd() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_END);
+    }
+
+    public void setMoveDirectionEnd(Vector3 moveDirectionEnd) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_END, moveDirectionEnd);
+    }
+
+    public boolean isShouldUpdateMoveDirection() {
+        return getMemoryStorage().get(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION);
+    }
+
+    public void setShouldUpdateMoveDirection(boolean shouldUpdateMoveDirection) {
+        getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, shouldUpdateMoveDirection);
+    }
+
+    public boolean isEnablePitch() {
+        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_PITCH);
+    }
+
+    public void setEnablePitch(boolean enablePitch) {
+        getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, enablePitch);
+    }
+
+    //暂时不使用
+//    @PowerNukkitXOnly
+//    @Since("1.19.40-r4")
+//    public boolean isEnableYaw() {
+//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_YAW);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.40-r4")
+//    public void setEnableYaw(boolean enableYaw) {
+//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_YAW, enableYaw);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.40-r4")
+//    public boolean isEnableHeadYaw() {
+//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_HEAD_YAW);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.40-r4")
+//    public void setEnableHeadYaw(boolean enableHeadYaw) {
+//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_HEAD_YAW, enableHeadYaw);
+//    }
 }
