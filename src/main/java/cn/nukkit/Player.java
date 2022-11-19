@@ -1617,7 +1617,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
-        startGamePacket.isServerAuthoritativeBlockBreaking = getServer().isServerAuthoritativeBlockBreaking();
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
@@ -3885,6 +3884,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.setSneaking(false);
                             }
                             break packetswitch;
+                        case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+                            this.onBlockBreakComplete(new BlockVector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z), face);
+                            break;
                         case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
                             this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_NORMAL);
                             break; //TODO

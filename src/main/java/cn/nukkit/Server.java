@@ -617,7 +617,6 @@ public class Server {
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
                 put("server-authoritative-movement", "client-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
-                put("server-authoritative-block-breaking", false);
             }
         });
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
@@ -2927,12 +2926,6 @@ public class Server {
             case "server-auth-with-rewind" -> 2;
             default -> throw new IllegalArgumentException();
         };
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r3")
-    public boolean isServerAuthoritativeBlockBreaking() {
-        return this.properties.get("server-authoritative-block-breaking", false);
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
