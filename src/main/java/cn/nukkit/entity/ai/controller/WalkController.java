@@ -25,7 +25,8 @@ public class WalkController implements IController {
     public boolean control(EntityIntelligent entity) {
         currentJumpCoolDown++;
         if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
-            Vector3 direction = entity.getMoveDirectionEnd();
+            //clone防止异步导致的NPE
+            Vector3 direction = entity.getMoveDirectionEnd().clone();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
                 entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);

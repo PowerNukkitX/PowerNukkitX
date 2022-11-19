@@ -21,9 +21,10 @@ public class LookController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
         Vector3 lookTarget = entity.getLookTarget();
-        Vector3 moveDirectionEnd = entity.getMoveDirectionEnd();
 
         if (lookAtRoute && entity.hasMoveDirection()) {
+            //clone防止异步导致的NPE
+            Vector3 moveDirectionEnd = entity.getMoveDirectionEnd().clone();
             //构建路径方向向量
             BVector3 bv2route = BVector3.fromPos(moveDirectionEnd.x - entity.x, moveDirectionEnd.y - entity.y, moveDirectionEnd.z - entity.z);
             entity.setYaw(bv2route.getYaw());

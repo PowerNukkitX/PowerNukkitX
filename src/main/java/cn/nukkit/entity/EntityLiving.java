@@ -292,9 +292,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             hasUpdate = true;
         }
 
-        if (this.riding == null) {
+        //吐槽：性能不要了是吧
+//        if (this.riding == null) {
+//            for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
+//                if (entity instanceof EntityRideable) {
+//                    this.collidingWith(entity);
+//                }
+//            }
+//        }
+        if (this instanceof EntityRideable) {
             for (Entity entity : level.fastNearbyEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-                if (entity instanceof EntityRideable) {
+                if (entity.riding == null) {
                     this.collidingWith(entity);
                 }
             }

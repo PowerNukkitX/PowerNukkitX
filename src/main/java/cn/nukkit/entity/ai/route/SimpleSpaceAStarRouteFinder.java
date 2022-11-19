@@ -36,7 +36,8 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {
-                    var vec = node.getVector3().add(dx, dy, dz);
+                    //居中防止卡角
+                    var vec = node.getVector3().floor().add(dx + 0.5, dy + 0.5, dz + 0.5);
                     if (!existInCloseList(vec) && evalPos(vec)) {
                         // 计算移动1格的开销
                         var cost = switch (Math.abs(dx) + Math.abs(dy) + Math.abs(dz)) {

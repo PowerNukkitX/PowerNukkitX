@@ -469,7 +469,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                     return this.level.getTickCachedCollisionBlocks(offsetBox, true).length > 0;
                 }
         );
-//        if (pos1.equals(pos2)) return false;
+
 //        if (pos1.getFloorY() != pos2.getFloorY()) return true;
 //        boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
 //        ArrayList<Vector3> list = new ArrayList<>();
@@ -493,11 +493,6 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 //        return hasBlocksAround(list);
     }
 
-    // 保持向前兼容
-//    protected boolean hasBlocksAround(ArrayList<Vector3> list) {
-//        return hasBlocksAround((List<Vector3>) list);
-//    }
-//
 //    protected boolean hasBlocksAround(List<Vector3> list) {
 //        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
 //        double height = this.entity.getHeight() * this.entity.getScale();
