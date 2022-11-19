@@ -18,7 +18,7 @@ import cn.nukkit.entity.ai.executor.WardenRangedAttackExecutor;
 import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
 import cn.nukkit.entity.ai.executor.WardenViolentAnimationExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
 import cn.nukkit.entity.data.IntEntityData;

@@ -10,7 +10,7 @@ import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.entity.ai.memory.MemoryStorage;
 import cn.nukkit.entity.ai.route.RouteFindingManager;
-import cn.nukkit.entity.ai.route.SimpleRouteFinder;
+import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.math.Vector3;
 import lombok.Getter;

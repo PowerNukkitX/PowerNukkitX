@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.route;
+package cn.nukkit.entity.ai.route.finder;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;

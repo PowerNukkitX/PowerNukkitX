@@ -20,7 +20,7 @@ import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
 import cn.nukkit.entity.ai.executor.WolfLookPlayerExecutor;
 import cn.nukkit.entity.ai.executor.WolfMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.EntityAttackedByPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;

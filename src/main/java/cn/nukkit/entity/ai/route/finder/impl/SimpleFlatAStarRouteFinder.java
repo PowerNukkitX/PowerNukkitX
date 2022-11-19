@@ -1,11 +1,13 @@
-package cn.nukkit.entity.ai.route;
+package cn.nukkit.entity.ai.route.finder.impl;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.route.data.Node;
+import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -19,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * 标准A*寻路实现，性能不佳
+ * 标准A*寻路实现
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
@@ -156,9 +158,9 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         this.addNode(findingPath);
 
         //debug only
-//        findingPath.forEach(node -> {
-//            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-//        });
+        findingPath.forEach(node -> {
+            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+        });
 
         this.reachable = currentReachable;
         this.finished = true;

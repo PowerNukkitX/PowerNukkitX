@@ -6,7 +6,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.behavior.IBehavior;
 import cn.nukkit.entity.ai.controller.IController;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
-import cn.nukkit.entity.ai.route.IRouteFinder;
+import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 
 import java.util.Set;
