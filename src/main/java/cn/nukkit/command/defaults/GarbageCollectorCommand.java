@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
@@ -10,7 +11,7 @@ import cn.nukkit.utils.ThreadCache;
  * @author xtypr
  * @since 2015/11/11
  */
-public class GarbageCollectorCommand extends VanillaCommand {
+public class GarbageCollectorCommand extends CoreCommand {
 
     public GarbageCollectorCommand(String name) {
         super(name, "%nukkit.command.gc.description", "%nukkit.command.gc.usage");

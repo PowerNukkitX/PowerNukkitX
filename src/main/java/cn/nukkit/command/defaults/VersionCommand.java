@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -33,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  * @author xtypr
  * @since 2015/11/12
  */
-public class VersionCommand extends VanillaCommand {
+public class VersionCommand extends CoreCommand {
 
     private List<Query> queryQueue = new LinkedList<>();
     private int lastUpdateTick = 0;

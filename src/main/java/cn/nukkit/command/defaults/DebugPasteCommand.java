@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.CapturingCommandSender;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.Plugin;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Log4j2
-public class DebugPasteCommand extends VanillaCommand {
+public class DebugPasteCommand extends CoreCommand {
 
     private static final String ENDPOINT = "https://debugpaste.powernukkit.org/paste.php";
     private static final String USER_AGENT = "PowerNukkit/" + Nukkit.VERSION;

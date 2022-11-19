@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.CoreCommand;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
@@ -11,7 +12,7 @@ import java.util.Map;
  * @author xtypr
  * @since 2015/11/12
  */
-public class PluginsCommand extends VanillaCommand {
+public class PluginsCommand extends CoreCommand {
 
     public PluginsCommand(String name) {
         super(name,
