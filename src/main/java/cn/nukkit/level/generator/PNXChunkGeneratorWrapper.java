@@ -170,6 +170,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     public void populateChunk(int chunkX, int chunkZ) {
         var tmp = new PNXProtoWorld(world, chunkX, chunkZ);
         try {
+            //todo: ConcurrentModificationException
             for (var generationStage : configPack.getStages()) {
                 generationStage.populate(tmp);
             }

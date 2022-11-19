@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;

@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,6 +10,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+
+@PowerNukkitXOnly
+@Since("1.19.40-r4")
+//todo: 不知道是啥时候写的，但是没留注解，需要进一步确认时间
 public class MultipleExecutor implements IBehaviorExecutor {
 
     protected Set<IBehaviorExecutor> executors;

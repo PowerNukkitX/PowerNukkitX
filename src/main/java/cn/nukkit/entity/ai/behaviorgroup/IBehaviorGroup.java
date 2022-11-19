@@ -35,7 +35,7 @@ public interface IBehaviorGroup {
     void evaluateCoreBehaviors(EntityIntelligent entity);
 
     /**
-     * 调用行为组内部的所有传感器{@link ISensor}，并将传感器返回的记忆{@link cn.nukkit.entity.ai.memory.IMemory}写入到记忆存储器中{@link IMemoryStorage}
+     * 调用行为组内部的所有传感器{@link ISensor}，并将传感器返回的记忆数据写入到记忆存储器中{@link IMemoryStorage}
      *
      * @param entity 目标实体对象
      */

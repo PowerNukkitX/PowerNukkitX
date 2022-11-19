@@ -5,7 +5,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.BooleanMemory;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
@@ -25,22 +25,22 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     protected int explodeTime;
     protected int explodeForce;
     protected int currentTick = 0;
-    protected Class<? extends BooleanMemory> flagMemoryClazz;
+    @Nullable protected MemoryType<Boolean> flagMemory;
 
     public EntityExplosionExecutor(int explodeTime, int explodeForce) {
         this(explodeTime, explodeForce, null);
     }
 
-    public EntityExplosionExecutor(int explodeTime, int explodeForce, @Nullable Class<? extends BooleanMemory> flagMemoryClazz) {
+    public EntityExplosionExecutor(int explodeTime, int explodeForce, @Nullable MemoryType<Boolean> flagMemory) {
         this.explodeTime = explodeTime;
         this.explodeForce = explodeForce;
-        this.flagMemoryClazz = flagMemoryClazz;
+        this.flagMemory = flagMemory;
     }
 
     @Override
     public boolean execute(EntityIntelligent entity) {
         //check flag
-        if (flagMemoryClazz != null && entity.getMemoryStorage().checkData(flagMemoryClazz, false)) {
+        if (flagMemory != null && entity.getMemoryStorage().compareDataTo(flagMemory, false)) {
             return false;
         }
 

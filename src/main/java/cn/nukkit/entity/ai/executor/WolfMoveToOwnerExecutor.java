@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -6,7 +6,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.AboutControlExecutor;
-import cn.nukkit.entity.ai.memory.NearestFeedingPlayerMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
@@ -61,7 +61,7 @@ public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
                 //更新视线target
                 setLookTarget(entity, target);
 
-                if (entity.getMemoryStorage().notEmpty(NearestFeedingPlayerMemory.class)) {
+                if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
                     entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, true);
                 }
 
@@ -95,7 +95,7 @@ public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
         //重置速度
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
-        if (entity.getMemoryStorage().isEmpty(NearestFeedingPlayerMemory.class)) {
+        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
         }
         oldTarget = null;
@@ -109,7 +109,7 @@ public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
         //重置速度
         entity.setMovementSpeed(1.2f);
         entity.setEnablePitch(false);
-        if (entity.getMemoryStorage().isEmpty(NearestFeedingPlayerMemory.class)) {
+        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
         }
         oldTarget = null;

@@ -16,17 +16,16 @@ import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
 import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.entity.WolfAttackExecutor;
-import cn.nukkit.entity.ai.executor.entity.WolfLookPlayerExecutor;
-import cn.nukkit.entity.ai.executor.entity.WolfMoveToOwnerExecutor;
-import cn.nukkit.entity.ai.memory.*;
-import cn.nukkit.entity.ai.memory.entity.WolfNearestSkeletonMemory;
+import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
+import cn.nukkit.entity.ai.executor.WolfLookPlayerExecutor;
+import cn.nukkit.entity.ai.executor.WolfMoveToOwnerExecutor;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
+import cn.nukkit.entity.ai.sensor.EntityAttackedByPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
-import cn.nukkit.entity.ai.sensor.PlayerAttackEntitySensor;
-import cn.nukkit.entity.ai.sensor.entity.WolfNearestFeedingPlayerSensor;
+import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.mob.EntitySkeleton;
@@ -69,6 +68,10 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     private IBehaviorGroup behaviorGroup;
     private float[] diffHandDamage;
 
+    public EntityWolf(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -84,33 +87,33 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                             new Behavior(
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class, 0, 400),
-                                            new PassByTimeEvaluator<>(InLoveMemory.class, 6000, Integer.MAX_VALUE, true)
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
                                     1, 1
                             )
                     ),
                     Set.of(
-                            new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 6, 1),
                             //未驯服狼反击 todo 召集同伴
-                            new Behavior(new WolfAttackExecutor(AttackTargetMemory.class, null, 0.35f, 33, true, 15), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
+                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, null, 0.35f, 33, true, 15), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                     entity -> !entityHasOwner(entity, false, false)
                             ), 5, 1),
                             //驯服后的狼 攻击玩家击打的实体 和击打玩家的实体 以及附近的骷髅
-                            new Behavior(new WolfAttackExecutor(PlayerAttackEntityMemory.class, WolfNearestSkeletonMemory.class, 0.35f, 33, true, 15), new AllMatchEvaluator(
+                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, 0.35f, 33, true, 15), new AllMatchEvaluator(
                                     new AnyMatchEvaluator(
-                                            new MemoryCheckNotEmptyEvaluator(PlayerAttackEntityMemory.class),
-                                            new MemoryCheckNotEmptyEvaluator(WolfNearestSkeletonMemory.class)
+                                            new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER),
+                                            new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SKELETON)
                                     ),
                                     entity -> entityHasOwner(entity, true, false)
                             ), 5, 1),
                             //未驯服的狼攻击附近符合的实体
-                            new Behavior(new WolfAttackExecutor(NearestEntityMemory.class, null, 0.35f, 14, true, 15), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(NearestEntityMemory.class),
+                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.NEAREST_ENTITY, null, 0.35f, 14, true, 15), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ENTITY),
                                     entity -> !entityHasOwner(entity, false, false),
                                     entity -> {
-                                        var tmp = (Entity) entity.getMemoryData(NearestEntityMemory.class);
+                                        var tmp = (Entity) entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_ENTITY);
                                         if (tmp == null) return false;
                                         return attackTarget(tmp);
                                     }
@@ -125,28 +128,24 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     return distanceSquared >= 100;
                                 } else return false;
                             }, 4, 1),
-                            new Behavior(new WolfLookPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 3, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 150), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10),
+                            new Behavior(new WolfLookPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 150), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10),
                                     1, 1, 25),
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),
                                     new ProbabilityEvaluator(5, 10), 1, 1, 50)
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20),
-                            new NearestTargetEntitySensor<>(0, 20, 5, List.of(NearestEntityMemory.class, WolfNearestSkeletonMemory.class), this::attackTarget, entity -> switch (entity.getNetworkId()) {
+                            new NearestTargetEntitySensor<>(0, 20, 5, List.of(CoreMemoryTypes.NEAREST_ENTITY, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget, entity -> switch (entity.getNetworkId()) {
                                 case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
                                         true;
                                 default -> false;
-                            }), new PlayerAttackEntitySensor(5, false)
+                            }), new EntityAttackedByPlayerSensor(5, false)
                     ),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
         }
         return behaviorGroup;
-    }
-
-    public EntityWolf(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
     }
 
     @Override
@@ -286,7 +285,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                 this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
             }
 
-            getMemoryStorage().get(PlayerBreedingMemory.class).setData(player);
+            getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
             return true;
         } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
             this.setSitting(!this.isSitting());
@@ -302,7 +301,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
             if (entityDamageByEntityEvent.getDamager() instanceof Player player && player.isCreative()) return result;
             //更新仇恨目标
-            getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
+            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
         return result;
     }
@@ -457,14 +456,14 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
     }
 
     @Override
-    public float getDiffHandDamage(int difficulty) {
-        return diffHandDamage[difficulty - 1];
-    }
-
-    @Override
     public void setDiffHandDamage(float[] damages) {
         this.diffHandDamage = damages;
         this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
+    }
+
+    @Override
+    public float getDiffHandDamage(int difficulty) {
+        return diffHandDamage[difficulty - 1];
     }
 
     @Override

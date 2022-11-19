@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -6,8 +6,8 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.AboutControlExecutor;
-import cn.nukkit.entity.ai.memory.EntityMemory;
-import cn.nukkit.entity.ai.memory.entity.WardenAngerValueMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.mob.EntityWarden;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -23,14 +23,14 @@ import java.util.Map;
 public class WardenMeleeAttackExecutor extends AboutControlExecutor {
 
     protected int attackTick;
-    protected Class<? extends EntityMemory<?>> memoryClazz;
+    protected MemoryType<? extends Entity> memory;
     protected float damage;
     protected float speed;
     protected int coolDown;
     protected Vector3 oldTarget;
 
-    public WardenMeleeAttackExecutor(Class<? extends EntityMemory<?>> memoryClazz, float damage, float speed) {
-        this.memoryClazz = memoryClazz;
+    public WardenMeleeAttackExecutor(MemoryType<? extends Entity> memory, float damage, float speed) {
+        this.memory = memory;
         this.damage = damage;
         this.speed = speed;
     }
@@ -38,11 +38,11 @@ public class WardenMeleeAttackExecutor extends AboutControlExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         attackTick++;
-        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) return false;
+        if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) return false;
         if (entity.getMovementSpeed() != speed)
             entity.setMovementSpeed(speed);
         //获取目标位置（这个clone很重要）
-        Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
+        Entity target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         this.coolDown = calCoolDown(entity, target);
         Vector3 clonedTarget = target.clone();
         //更新寻路target
@@ -76,7 +76,7 @@ public class WardenMeleeAttackExecutor extends AboutControlExecutor {
 
     protected int calCoolDown(EntityIntelligent entity, Entity target) {
         if (entity instanceof EntityWarden warden) {
-            var anger = warden.getMemoryStorage().get(WardenAngerValueMemory.class).getData().getOrDefault(target, 0);
+            var anger = warden.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
             return anger >= 145 ? 18 : 36;
         } else {
             return 20;

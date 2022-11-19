@@ -1,4 +1,4 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
@@ -7,7 +7,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.ai.memory.AttackTargetMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Sound;
@@ -36,10 +36,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
-        if (entity.getMemoryStorage().isEmpty(AttackTargetMemory.class))
+        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.ATTACK_TARGET))
             return false;
         if (currentTick == this.chargingTime) {
-            var target = entity.getMemoryStorage().getData(AttackTargetMemory.class);
+            var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
 
             //particle
             sendAttackParticle(entity, entity.add(0, 1.5), target.add(0, target.getHeight() / 2));
@@ -72,9 +72,10 @@ public class WardenRangedAttackExecutor implements IBehaviorExecutor {
         if (currentTick > this.totalRunningTime) {
             return false;
         } else {
+            var target = entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
             //更新视线target
-            entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData().clone());
-            entity.setMoveTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData().clone());
+            entity.setLookTarget(target.clone());
+            entity.setMoveTarget(target.clone());
             return true;
         }
     }

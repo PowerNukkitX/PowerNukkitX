@@ -6,9 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.memory.AttackMemory;
-import cn.nukkit.entity.ai.memory.BurnTimeMemory;
-import cn.nukkit.entity.ai.memory.IMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -16,7 +14,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -34,6 +31,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     protected boolean isActive = true;
 
+    //todo: 移动到memory
     //我们将寻路相关的参数直接作为属性存储到EntityIntelligent中，这样可以提高性能
     protected Vector3 lookTarget;
     protected Vector3 moveTarget;
@@ -46,9 +44,9 @@ public abstract class EntityIntelligent extends EntityPhysical {
 
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        var memoryStorage = getMemoryStorage();
-        if (memoryStorage != null) {
-            memoryStorage.setData(BurnTimeMemory.class, Server.getInstance().getTick());
+        var storage = getMemoryStorage();
+        if (storage != null) {
+            getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
         }
     }
 
@@ -104,32 +102,16 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
-        var memory = getMemoryStorage();
-        if (memory != null) {
-            memory.get(AttackMemory.class).setData(source);
+        var storage = getMemoryStorage();
+        if (storage != null) {
+            storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
+            storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
         }
         return result;
     }
 
-    @Nullable
     public IMemoryStorage getMemoryStorage() {
         return getBehaviorGroup().getMemoryStorage();
-    }
-
-    /**
-     * 获得指定记忆类型的记忆数据，这个方法会自动判空，如果数据不存在或无法获取则返回null.
-     * <p>
-     * Get the memory data of the specified memory type, this method will automatically return null if the data does not exist or cannot be obtained.
-     *
-     * @param memoryClazz 记忆类型<br>Memory class
-     */
-    @Nullable
-    public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
-        var memoryStorage = this.getMemoryStorage();
-        if (memoryStorage == null) return null;
-        if (memoryStorage.notEmpty(memoryClazz)) {
-            return memoryStorage.get(memoryClazz).getData();
-        } else return null;
     }
 
     /**

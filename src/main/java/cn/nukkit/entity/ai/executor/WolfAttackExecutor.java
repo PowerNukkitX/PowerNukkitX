@@ -1,13 +1,12 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
-import cn.nukkit.entity.ai.memory.EntityMemory;
-import cn.nukkit.entity.ai.memory.NearestFeedingPlayerMemory;
-import cn.nukkit.entity.ai.memory.Vector3Memory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.passive.EntityWolf;
 
 /**
@@ -18,9 +17,9 @@ import cn.nukkit.entity.passive.EntityWolf;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public class WolfAttackExecutor extends MeleeAttackExecutor {
-    protected Class<? extends EntityMemory<?>> minorMemoryTarget;
+    protected MemoryType<? extends Entity> minorMemoryTarget;
 
-    public WolfAttackExecutor(Class<? extends EntityMemory<?>> mainMemoryTarget, Class<? extends EntityMemory<?>> minorMemoryTarget, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+    public WolfAttackExecutor(MemoryType<? extends Entity> mainMemoryTarget, MemoryType<? extends Entity> minorMemoryTarget, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
         super(mainMemoryTarget, speed, maxSenseRange, clearDataWhenLose, coolDown);
         this.minorMemoryTarget = minorMemoryTarget;
     }
@@ -29,22 +28,22 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
     public boolean execute(EntityIntelligent entity) {
         var wolf = (EntityWolf) entity;
 
-        target = entity.getBehaviorGroup().getMemoryStorage().get(memoryClazz).getData();
+        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
 
         wolf.setAngry(true);
 
         if (minorMemoryTarget != null) {
-            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memoryClazz)) {
-                target = entity.getBehaviorGroup().getMemoryStorage().get(minorMemoryTarget).getData();
+            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
+                target = entity.getBehaviorGroup().getMemoryStorage().get(minorMemoryTarget);
             }
         }
 
-        if (entity.getMemoryStorage().notEmpty(NearestFeedingPlayerMemory.class)) {
+        if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-            Vector3Memory<?> vector3Memory = entity.getMemoryStorage().get(NearestFeedingPlayerMemory.class);
-            if (vector3Memory.hasData()) {
-                this.lookTarget = vector3Memory.getData();
+            var vector3 = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_FEEDING_PLAYER);
+            if (vector3 != null) {
+                this.lookTarget = vector3.clone();
                 entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, true);
             }
         }
@@ -67,7 +66,7 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
         var wolf = (EntityWolf) entity;
         entity.getServer().getScheduler().scheduleDelayedTask(null, () -> wolf.setAngry(false), 5);
 
-        if (entity.getMemoryStorage().isEmpty(NearestFeedingPlayerMemory.class)) {
+        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
         }
 

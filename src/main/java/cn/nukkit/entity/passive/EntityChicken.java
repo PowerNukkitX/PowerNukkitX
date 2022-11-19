@@ -10,8 +10,7 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.*;
 import cn.nukkit.entity.ai.executor.*;
-import cn.nukkit.entity.ai.memory.*;
-import cn.nukkit.entity.ai.memory.entity.EggSpawnTimeMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
@@ -26,7 +25,7 @@ import java.util.Set;
 /**
  * @author BeYkeRYkt (Nukkit Project)
  */
-public class EntityChicken extends EntityWalkingAnimal {
+public class EntityChicken extends EntityWalkingAnimal{
 
     public static final int NETWORK_ID = 10;
 
@@ -34,8 +33,6 @@ public class EntityChicken extends EntityWalkingAnimal {
 
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        //init egg spawn time
-        getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
     }
 
     @Override
@@ -58,8 +55,8 @@ public class EntityChicken extends EntityWalkingAnimal {
                             new Behavior(
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class, 0, 400),
-                                            new PassByTimeEvaluator<>(InLoveMemory.class, 6000, Integer.MAX_VALUE, true)
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
                                     1, 1
                             ),
@@ -68,29 +65,29 @@ public class EntityChicken extends EntityWalkingAnimal {
                                     new AnimalGrowExecutor(),
                                     //todo：Growth rate
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(BurnTimeMemory.class, 20 * 60 * 20, Integer.MAX_VALUE),
+                                            new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
                                             entity -> entity instanceof EntityAnimal animal && animal.isBaby()
                                     )
                                     , 1, 1, 1200
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(0.3f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator<>(AttackMemory.class, 0, 100), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntityChicken.class, 16, 100, 0.3f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 5, 1),
-                            new Behavior(new MoveToTargetExecutor(NearestFeedingPlayerMemory.class, 0.3f, true), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 4, 1),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new RandomRoamExecutor(0.3f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntityChicken.class, 16, 100, 0.3f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
+                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.3f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1),
                             new Behavior(entity -> {
-                                entity.getMemoryStorage().setData(EggSpawnTimeMemory.class, Server.getInstance().getTick());
+                                entity.getMemoryStorage().put(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, Server.getInstance().getTick());
                                 entity.getLevel().dropItem(entity, Item.get(Item.EGG));
                                 entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                                 return false;
                             }, new AnyMatchEvaluator(
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 6000, 12000),
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
                                             new ProbabilityEvaluator(20, 100)
                                     ),
-                                    new PassByTimeEvaluator<>(EggSpawnTimeMemory.class, 12000, Integer.MAX_VALUE)
+                                    new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 12000, Integer.MAX_VALUE)
                             ), 1, 1, 20)
                     ),
                     Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),

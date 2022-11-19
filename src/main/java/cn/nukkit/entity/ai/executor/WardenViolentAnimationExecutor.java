@@ -1,12 +1,11 @@
-package cn.nukkit.entity.ai.executor.entity;
+package cn.nukkit.entity.ai.executor;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.executor.IBehaviorExecutor;
-import cn.nukkit.entity.ai.memory.AttackTargetMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
@@ -25,8 +24,8 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
         if (currentTick > duration) return false;
         else {
             //更新视线target
-            if (entity.getMemoryStorage().notEmpty(AttackTargetMemory.class))
-                entity.setLookTarget(entity.getMemoryStorage().get(AttackTargetMemory.class).getData());
+            if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
+                entity.setLookTarget(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET));
             return true;
         }
     }
@@ -40,7 +39,7 @@ public class WardenViolentAnimationExecutor implements IBehaviorExecutor {
 
     @Override
     public void onStart(EntityIntelligent entity) {
-        entity.getMemoryStorage().setData(NewAttackTargetMemory.class, false);
+        entity.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, false);
         entity.setMoveTarget(null);
 
         entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_ROARING, true);

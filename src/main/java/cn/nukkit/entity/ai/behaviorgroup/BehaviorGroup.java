@@ -274,14 +274,6 @@ public class BehaviorGroup implements IBehaviorGroup {
         sensors.forEach(sensor -> sensorPeriodTimer.put(sensor, 0));
     }
 
-//    protected void clearMemory(Class<? extends IMemory<?>> clazz) {
-//        memoryStorage.clear(clazz);
-//    }
-//
-//    protected <T> void setMemoryData(Class<? extends IMemory<T>> clazz, T data) {
-//        memoryStorage.get(clazz).setData(data);
-//    }
-
     protected void updateMoveDirection(EntityIntelligent entity) {
         Vector3 end = entity.getMoveDirectionEnd();
         if (end == null) {
