@@ -1,6 +1,7 @@
 package cn.nukkit.command.tree.node;
 
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.tree.ParamNodeType;
 
 public class FloatNode extends ParamNode<Double> {
     public FloatNode(boolean optional) {
@@ -14,11 +15,6 @@ public class FloatNode extends ParamNode<Double> {
         } catch (Exception e) {
             throw new CommandSyntaxException();
         }
-    }
-
-    @Override
-    public boolean hasResult() {
-        return false;
     }
 
     @Override

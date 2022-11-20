@@ -3,6 +3,7 @@ package cn.nukkit.command.tree.node;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.tree.ParamNodeType;
 import cn.nukkit.item.RuntimeItems;
 
 public class EnumNode extends ParamNode<String> {

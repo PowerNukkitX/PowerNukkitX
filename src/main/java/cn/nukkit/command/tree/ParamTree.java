@@ -25,7 +25,9 @@ public class ParamTree {
                             paramList.add(new IntNode(parameter.optional));
                         }
                         case WILDCARD_INT -> {
-                            //todo 1
+                            if (parameter.name.contains("max")) {
+                                paramList.add(new WildcardIntNode(Integer.MAX_VALUE, parameter.optional));
+                            } else paramList.add(new WildcardIntNode(parameter.optional));
                         }
                         case FLOAT, VALUE -> {
                             paramList.add(new FloatNode(parameter.optional));
@@ -64,15 +66,15 @@ public class ParamTree {
         for (Map.Entry<String, ParamList> entry : this.root.entrySet().stream().filter(e -> e.getValue().error == -1).toList()) {
             for (var node : entry.getValue()) {
                 if (entry.getValue().index == args.length) break;//已经用完输入参数
-                switch (node.type()) {
-                    case STRING, INT, FLOAT, ENUM -> {
+                switch (node.type()) {//代表所需要的参数数量
+                    case STRING, INT, FLOAT, WILDCARD_INT, ENUM -> {//1
                         try {
                             node.fill(args[entry.getValue().index++]);
                         } catch (CommandSyntaxException e) {
                             entry.getValue().error = entry.getValue().index;//logger
                         }
                     }
-                    case INT_POS, FLOAT_POS -> {
+                    case BLOCK_POSITION, POSITION -> {//3
                         byte i = 0;
                         while (!node.hasResult()) {
                             try {

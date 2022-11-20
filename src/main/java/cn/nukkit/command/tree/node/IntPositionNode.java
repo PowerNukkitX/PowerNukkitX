@@ -1,5 +1,7 @@
 package cn.nukkit.command.tree.node;
 
+import cn.nukkit.command.tree.ParamNodeType;
+
 import java.util.regex.Pattern;
 
 public class IntPositionNode extends PositionNode {
@@ -11,6 +13,6 @@ public class IntPositionNode extends PositionNode {
 
     @Override
     public ParamNodeType type() {
-        return ParamNodeType.INT_POS;
+        return ParamNodeType.BLOCK_POSITION;
     }
 }

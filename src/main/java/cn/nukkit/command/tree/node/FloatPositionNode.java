@@ -1,5 +1,7 @@
 package cn.nukkit.command.tree.node;
 
+import cn.nukkit.command.tree.ParamNodeType;
+
 import java.util.regex.Pattern;
 
 
@@ -13,6 +15,6 @@ public class FloatPositionNode extends PositionNode {
 
     @Override
     public ParamNodeType type() {
-        return ParamNodeType.FLOAT_POS;
+        return ParamNodeType.POSITION;
     }
 }
