@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemoryStorage implements IMemoryStorage {
 
     //表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值
-    public static Object EMPTY_VALUE = new Object();
+    public static final Object EMPTY_VALUE = new Object();
 
     protected Map<MemoryType<?>, Object> memoryMap = new ConcurrentHashMap<>();
 
