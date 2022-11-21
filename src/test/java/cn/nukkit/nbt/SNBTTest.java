@@ -107,7 +107,7 @@ public class SNBTTest {
     }
 
     @Test
-    void issue551() throws IOException {
+    void bigNBT() throws IOException {
         var oldNBT = NBTIO.readCompressed(Nukkit.class.getClassLoader().getResourceAsStream("cn/nukkit/test/water_citadel_center_varient_1.nbt"), ByteOrder.BIG_ENDIAN);
         var oldSNBT = oldNBT.toSNBT();
         var oldSNBTFormat = oldNBT.toSNBT(4);
