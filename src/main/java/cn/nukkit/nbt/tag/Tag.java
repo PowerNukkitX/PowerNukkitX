@@ -33,9 +33,9 @@ public abstract class Tag {
     @Override
     public abstract String toString();
 
-    public abstract String toSnbt();
+    public abstract String toSNBT();
 
-    public abstract String toSnbt(int space);
+    public abstract String toSNBT(int space);
 
     public abstract byte getId();
 

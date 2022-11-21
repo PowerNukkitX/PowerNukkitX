@@ -53,12 +53,12 @@ public class IntTag extends NumberTag<Integer> {
     }
 
     @Override
-    public String toSnbt() {
+    public String toSNBT() {
         return "\"" + this.getName() + "\":" + data;
     }
 
     @Override
-    public String toSnbt(int space) {
+    public String toSNBT(int space) {
         return "\"" + this.getName() + "\": " + data;
     }
 

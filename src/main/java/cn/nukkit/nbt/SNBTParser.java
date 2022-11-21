@@ -1,14 +1,25 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.nbt.tag.*;
-import lombok.NonNull;
 
 public class SNBTParser {
-    private final String snbt;
+    private String SNBT;
     private int index = 0;
+    private int nestLimit = 50;
+    private int compoundNestNum = 0;
+    private int listNestNum = 0;
 
-    SNBTParser(@NonNull String snbt) {
-        this.snbt = snbt.replace(" ", "").replace("\n", "");
+    SNBTParser() {
+        this.SNBT = null;
+    }
+
+    SNBTParser(String SNBT) {
+        this.SNBT = preProcessing(SNBT);
+    }
+
+    public static CompoundTag parseSNBT(String SNBT) {
+        SNBTParser parser = new SNBTParser(SNBT);
+        return parser.deserializationSNBT();
     }
 
     public CompoundTag deserializationSNBT() {
@@ -16,153 +27,201 @@ public class SNBTParser {
         return parsingCompound(key);
     }
 
+    public SNBTParser setNestLimit(int nestLimit) {
+        this.nestLimit = nestLimit;
+        return this;
+    }
+
+    public static SNBTParser build() {
+        return new SNBTParser();
+    }
+
+    public SNBTParser setSNBT(String SNBT) {
+        this.reset();
+        this.SNBT = preProcessing(SNBT);
+        return this;
+    }
+
+    private void reset() {
+        index = 0;
+        nestLimit = 50;
+        compoundNestNum = 0;
+        listNestNum = 0;
+    }
+
+    private String preProcessing(String SNBT) {
+        return SNBT.trim();
+    }
+
     private CompoundTag parsingCompound(String compoundKey) {
         if (compoundKey == null) compoundKey = "";
         var result = new CompoundTag(compoundKey);
+        compoundNestNum++;
         //每次循环读取一个key:value;
         do {
-            if (snbt.charAt(index) == '}') {
-                next(1);
+            if (SNBT.charAt(index) == '}') {
+                move(1);
                 break;
             }
             //index移动到'"'才能调用使用getKey
-            if (snbt.charAt(index) != '"') {
-                next(1);
-                continue;
-            }
-            //使用后index到达':',或者进入无key Compound递归
-            String key = getKey();
-            if (key == null) result.putCompound("", parsingCompound(""));
-            //获取':'后第一个字符
-            char type = peek(1);
-            eval(type);
-            //判断value类型
-            if (type == '{') result.putCompound(key, parsingCompound(key));
-            else if (type == '[') {//只字节数组或者List,List中元素类型必须相同
-                if (snbt.charAt(index + 1) == 'B') {
-                    int start = index + 3;
-                    int end = snbt.indexOf("]", start);
-                    var value = snbt
-                            .substring(start, end)
-                            .replace("b", "")
-                            .split(",");
-                    var byteArray = new byte[value.length];
-                    for (int i = 0; i < value.length; ++i) {
-                        byteArray[i] = Byte.parseByte(value[i]);
+            if (SNBT.charAt(index) != '"') {
+                move(1);
+            } else {
+                String key = getKey();
+                if (key == null) result.putCompound("", parsingCompound(""));
+                //获取':'后第一个字符
+                char type = peek(1);
+                while (type == ' ' || type == '\n') {
+                    type = peek(1);
+                }
+                eval(type);
+                //判断value类型
+                if (type == '{') result.putCompound(key, parsingCompound(key));
+                else if (type == '[') {//只字节数组或者List,List中元素类型必须相同
+                    if (SNBT.charAt(index + 1) == 'B') {
+                        result.putByteArray(key, parseByteArray(type));
+                    } else {
+                        move(1);
+                        result.putList(parsingList(key));
                     }
-                    result.putByteArray(key, byteArray);
-                    next(end - index + 1);//index前往']'后一个位置
-                } else {
-                    result.putList(parsingList(key));
+                } else if (type >= '0' && type <= '9' || type == '-') {
+                    StringBuilder str = new StringBuilder();
+                    while (SNBT.charAt(index) != ',' && SNBT.charAt(index) != '}') {
+                        str.append(SNBT.charAt(index));
+                        move(1);//index直到','或者'}'
+                    }
+                    if (index != SNBT.length() - 1) result.put(key, getNumber(key, str.toString()));
+                    else result.put(key, getNumber(key, str.toString().replace("\n", "")));
+                } else if (type == '\"') {
+                    int start = index + 1;
+                    int end = SNBT.indexOf("\"", start);
+                    var value = SNBT.substring(start, end);
+                    result.put(key, new StringTag(key, value));
+                    move(end - index + 1);//index前往'"'后一个位置
+                } else if (type == ',' || type == '}') {
+                    result.put(key, new EndTag());
                 }
-            } else if (type >= '0' && type <= '9' || type == '-') {
-                StringBuilder str = new StringBuilder();
-                while (snbt.charAt(index) != ',' && snbt.charAt(index) != '}') {
-                    str.append(snbt.charAt(index));
-                    next(1);//index直到','或者'}'
-                }
-                result.put(key, getNumber(key, str.toString()));
-            } else if (type == '\"') {
-                int start = index + 1;
-                int end = snbt.indexOf("\"", start);
-                var value = snbt.substring(start, end);
-                result.put(key, new StringTag(key, value));
-                next(end - index + 1);//index前往'"'后一个位置
-            } else if (type == ',' || type == '}') {
-                result.put(key, new EndTag());
             }
-        } while (index <= snbt.length());
+        } while (index <= SNBT.length());
+        compoundNestNum--;
         return result;
     }
 
     private ListTag<Tag> parsingList(String listKey) {
         ListTag<Tag> result = new ListTag<>(listKey);
+        listNestNum++;
         //每次循环读取一个key:value;
         do {
-            char charAtIndex = snbt.charAt(index);
-            if (charAtIndex == ']') break;
-            //获取'[' ',' 后第一个字符
-            char type = charAtIndex;
-            if (charAtIndex == ',' || charAtIndex == '[') type = peek(1);
+            char type = SNBT.charAt(index);
+            while (type == ' ' || type == '\n') {
+                type = peek(1);
+            }
+            if (type == ']') break;
             eval(type);
             //判断value类型
             if (type == '{') {
                 result.add(parsingCompound(""));
             } else if (type == '[') {//只字节数组或者List,List中元素类型必须相同
-                if (snbt.charAt(index + 1) == 'B') {
-                    int start = index + 3;
-                    int end = snbt.indexOf("]", start);
-                    var value = snbt
-                            .substring(start, end)
-                            .replace("b", "")
-                            .split(",");
-                    var byteArray = new byte[value.length];
-                    for (int i = 0; i < value.length; ++i) {
-                        byteArray[i] = Byte.parseByte(value[i]);
-                    }
-                    result.add(new ByteArrayTag("", byteArray));
-                    next(end - index + 1);//index前往']'后一个位置
-                } else {
-                    result.add(parsingList(""));
-                    next(1);//index到达','或者']'
-                }
+                move(1);
+                var tmp = parsingList("");
+                if (tmp.size() == 1 && tmp.get(0) instanceof ByteArrayTag) {
+                    result.add(tmp.get(0));
+                } else result.add(tmp);
+            } else if (type == 'B') {
+                result.add(new ByteArrayTag("", parseByteArray(type)));
             } else if (type >= '0' && type <= '9' || type == '-') {
-                int start = index;
-                int end = snbt.indexOf("]", start);
-                var value = snbt
-                        .substring(start, end)
-                        .split(",");
-                for (var tag : value) {
-                    result.add(getNumber("", tag));
-                }
-                next(end - start);
+                parseNumberArray(result, type);
             } else if (type == '\"') {
-                int start = index;
-                int end = snbt.indexOf("]", start);
-                var value = snbt
-                        .substring(start, end)
-                        .split(",");
-                for (var tag : value) {
-                    result.add(new StringTag("", tag.replace("\"", "")));
-                }
-                next(end - start);
-            } else if (type == ',' || type == ']') {
-                int start = index;
-                int end = snbt.indexOf("]", start);
-                if (type == ']') {
-                    result.add(new EndTag());
-                } else {
-                    var len = snbt.substring(start, end).length() + 1;
-                    for (int i = 0; i < len; ++i) {
-                        result.add(new EndTag());
-                    }
-                }
-                next(end - start);
+                parseStringArray(result, type);
+            } else if (type == ',') {
+                parseNullArray(result, type);
             }
-        } while (index <= snbt.length());
+            if (SNBT.charAt(index) == ',') move(1);
+        } while (index <= SNBT.length());
+        move(1);
+        listNestNum--;
         return result;
     }
 
-    private void next(int num) {
-        if (index + num > snbt.length()) throw new IndexOutOfBoundsException("snbt索引越界");
+    private byte[] parseByteArray(char type) {
+        int start = index + 3;
+        int end = SNBT.indexOf("]", start);
+        var value = SNBT
+                .substring(start, end)
+                .replace(" ", "")
+                .replace("\n", "")
+                .replace("b", "")
+                .split(",");
+        var byteArray = new byte[value.length];
+        for (int i = 0; i < value.length; ++i) {
+            byteArray[i] = Byte.parseByte(value[i]);
+        }
+        move(end - index);//index前往']'后一个位置
+        return byteArray;
+    }
+
+    private void parseNumberArray(ListTag<Tag> result, char type) {
+        int start = index;
+        int end = SNBT.indexOf("]", start);
+        var value = SNBT
+                .substring(start, end)
+                .replace(" ", "")
+                .replace("\n", "")
+                .split(",");
+        for (var tag : value) {
+            result.add(getNumber("", tag));
+        }
+        move(end - start);
+    }
+
+    private void parseStringArray(ListTag<Tag> result, char type) {
+        int start = index;
+        int end = SNBT.indexOf("]", start);
+        var value = SNBT
+                .substring(start, end)
+                .replace(" ", "")
+                .replace("\n", "")
+                .split(",");
+        for (var tag : value) {
+            result.add(new StringTag("", tag.replace("\"", "")));
+        }
+        move(end - start);
+    }
+
+    private void parseNullArray(ListTag<Tag> result, char type) {
+        int start = index;
+        int end = SNBT.indexOf("]", start);
+        if (type == ']') {
+            result.add(new EndTag());
+        } else {
+            var len = SNBT.substring(start, end).replace(" ", "").replace("\n", "").length() + 1;
+            for (int i = 0; i < len; ++i) {
+                result.add(new EndTag());
+            }
+        }
+        move(end - start);
+    }
+
+    private void move(int num) {
+        if (index + num > SNBT.length()) throw new IndexOutOfBoundsException("snbt索引越界");
         index += num;
     }
 
     private char peek(int num) {
-        if (index + num > snbt.length()) throw new IndexOutOfBoundsException("snbt索引越界");
+        if (index + num > SNBT.length()) throw new IndexOutOfBoundsException("snbt索引越界");
         index += num;
-        return snbt.charAt(index);
+        return SNBT.charAt(index);
     }
 
     private String getKey() {
-        if (snbt.charAt(index) == '\"') {
+        if (SNBT.charAt(index) == '\"') {
             int start = index + 1;
-            int end = snbt.indexOf("\"", start);
+            int end = SNBT.indexOf("\"", start);
             //index进入':'
             if (peek(end - index + 1) != ':') throw new IllegalArgumentException("snbt格式错误");
-            return snbt.substring(start, end);
-        } else if (snbt.charAt(index) == '{') {//为'{'意味着当前是无key Compound
-            next(1);
+            return SNBT.substring(start, end);
+        } else if (SNBT.charAt(index) == '{') {//为'{'意味着当前是无key Compound
+            move(1);
             return null;
         }
         return null;
@@ -195,18 +254,12 @@ public class SNBTParser {
 
     private void eval(char type) {
         if (!((type >= '0' && type <= '9') || type == ',' || type == '[' || type == '{'
-                || type == ']' || type == '\"' || type == '}' || type == '-')) {
+                || type == ']' || type == '\"' || type == '}' || type == '-' || type == 'B')) {
             throw new IllegalArgumentException("snbt格式错误");
         }
-    }
-
-    public void reset() {
-        index = 0;
-    }
-
-    public static CompoundTag parseSNBT(String SNBT) {
-        SNBTParser parser = new SNBTParser(SNBT);
-        return parser.deserializationSNBT();
+        if (compoundNestNum > nestLimit || listNestNum > nestLimit) {
+            throw new StackOverflowError("NBT嵌套层数过深，大于限制层数" + nestLimit);
+        }
     }
 }
 

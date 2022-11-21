@@ -318,17 +318,17 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     @Override
-    public String toSnbt() {
+    public String toSNBT() {
         StringJoiner joiner = new StringJoiner(",");
-        tags.forEach((key, tag) -> joiner.add(tag.toSnbt()));
+        tags.forEach((key, tag) -> joiner.add(tag.toSNBT()));
         return "\"" + this.getName() + "\":" + "{" + joiner + "}";
     }
 
-    public String toSnbt(int space) {
+    public String toSNBT(int space) {
         StringBuilder addSpace = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
         StringJoiner joiner = new StringJoiner(",\n" + addSpace);
-        tags.forEach((key, tag) -> joiner.add(tag.toSnbt(space).replace("\n", "\n" + addSpace)));
+        tags.forEach((key, tag) -> joiner.add(tag.toSNBT(space).replace("\n", "\n" + addSpace)));
         return "\"" + this.getName() + "\": " + "{\n" + addSpace + joiner + "\n}";
     }
 

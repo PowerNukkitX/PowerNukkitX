@@ -61,17 +61,17 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     @Override
-    public String toSnbt() {
+    public String toSNBT() {
         if (this.getName().equals("")) return "[" + list.stream()
-                .map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":"))
+                .map(tag -> StringUtils.afterFirst(tag.toSNBT(), ":"))
                 .collect(Collectors.joining(",")) + "]";
         else return "\"" + this.getName() + "\":[" + list.stream()
-                .map(tag -> StringUtils.afterFirst(tag.toSnbt(), ":"))
+                .map(tag -> StringUtils.afterFirst(tag.toSNBT(), ":"))
                 .collect(Collectors.joining(",")) + "]";
     }
 
     @Override
-    public String toSnbt(int space) {
+    public String toSNBT(int space) {
         StringBuilder addSpace = new StringBuilder();
         addSpace.append(" ".repeat(Math.max(0, space)));
         if (list.isEmpty()) {
@@ -79,14 +79,14 @@ public class ListTag<T extends Tag> extends Tag {
         } else if (list.get(0) instanceof StringTag || list.get(0) instanceof CompoundTag || list.get(0) instanceof ListTag<?>) {
             StringJoiner joiner1 = new StringJoiner(",\n" + addSpace);
             list.forEach(tag -> {
-                var str = tag.toSnbt(space);
+                var str = tag.toSNBT(space);
                 joiner1.add(str.substring(str.indexOf(":") + 2).replace("\n", "\n" + addSpace));
             });
             return "\"" + this.getName() + "\": [\n" + addSpace + joiner1 + "\n]";
         } else {
             StringJoiner joiner2 = new StringJoiner(", ");
             list.forEach(tag -> {
-                var str = tag.toSnbt(space);
+                var str = tag.toSNBT(space);
                 joiner2.add(str.substring(str.indexOf(":") + 2));
             });
             return "\"" + this.getName() + "\": [" + joiner2 + "]";

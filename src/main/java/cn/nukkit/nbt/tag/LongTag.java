@@ -53,12 +53,12 @@ public class LongTag extends NumberTag<Long> {
     }
 
     @Override
-    public String toSnbt() {
+    public String toSNBT() {
         return "\"" + this.getName() + "\":" + data + "L";
     }
 
     @Override
-    public String toSnbt(int space) {
+    public String toSNBT(int space) {
         return "\"" + this.getName() + "\": " + data + "L";
     }
 
