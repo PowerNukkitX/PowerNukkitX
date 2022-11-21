@@ -1,6 +1,7 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.nbt.tag.*;
+import com.dfsek.terra.lib.commons.lang3.StringUtils;
 
 public class SNBTParser {
     private String SNBT;
@@ -90,8 +91,7 @@ public class SNBTParser {
                         str.append(SNBT.charAt(index));
                         move(1);//index直到','或者'}'
                     }
-                    if (index != SNBT.length() - 1) result.put(key, getNumber(key, str.toString()));
-                    else result.put(key, getNumber(key, str.toString().replace("\n", "")));
+                    result.put(key, getNumber(key, str.toString().replace(" ", "").replace("\n", "")));
                 } else if (type == '\"') {
                     int start = index + 1;
                     int end = SNBT.indexOf("\"", start);
@@ -179,11 +179,11 @@ public class SNBTParser {
         int end = SNBT.indexOf("]", start);
         var value = SNBT
                 .substring(start, end)
-                .replace(" ", "")
-                .replace("\n", "")
-                .split(",");
+                .split("\",");
         for (var tag : value) {
-            result.add(new StringTag("", tag.replace("\"", "")));
+            var str = StringUtils.removeEnd(tag.trim(), "\"");
+            str = StringUtils.removeStart(str, "\"");
+            result.add(new StringTag("", str));
         }
         move(end - start);
     }

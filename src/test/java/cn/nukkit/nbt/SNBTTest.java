@@ -78,11 +78,6 @@ public class SNBTTest {
             if (file.isDirectory()) {
                 for (var nbt : file.listFiles()) {
                     var oldNBT = NBTIO.readCompressed(new FileInputStream(nbt), ByteOrder.BIG_ENDIAN);
-                    var oldSNBT = oldNBT.toSNBT();
-                    if (((ListTag) oldNBT.get("entities")).size() == 0) {
-                        oldNBT.put("entities", new ListTag<EndTag>());
-                    }
-                    var newNBT = SNBTParser.parseSNBT(oldSNBT);
                     ((ListTag<CompoundTag>) oldNBT.get("blocks")).getAll().forEach(compoundTag -> {
                         if (compoundTag.contains("nbt")) {
                             var x = (((CompoundTag) compoundTag.get("nbt")));
@@ -90,12 +85,36 @@ public class SNBTTest {
                                 x.put("Items", new ListTag<EndTag>());
                             } else if (x.contains("Patterns") && ((ListTag) x.get("Patterns")).size() == 0) {
                                 x.put("Patterns", new ListTag<EndTag>());
+                            } else if (x.contains("Text")) {
+                                x.put("Text", new StringTag("", ((StringTag) x.get("Text")).parseValue().replace(" ", "").replace("\n", "")));
                             }
                         }
                     });
-                    assertEquals(oldNBT, newNBT);
+
+                    var oldSNBT = oldNBT.toSNBT();
+                    var oldSNBTFormat = oldNBT.toSNBT(4);
+                    if (((ListTag) oldNBT.get("entities")).size() == 0) {
+                        oldNBT.put("entities", new ListTag<EndTag>());
+                    }
+                    var newNBT1 = SNBTParser.parseSNBT(oldSNBT);
+                    var newNBT2 = SNBTParser.parseSNBT(oldSNBTFormat);
+                    assertEquals(oldNBT, newNBT1);
+                    assertEquals(oldNBT, newNBT2);
+//                    break end;
                 }
             }
         }
+    }
+
+    @Test
+    void issue551() throws IOException {
+        var oldNBT = NBTIO.readCompressed(Nukkit.class.getClassLoader().getResourceAsStream("cn/nukkit/test/water_citadel_center_varient_1.nbt"), ByteOrder.BIG_ENDIAN);
+        var oldSNBT = oldNBT.toSNBT();
+        var oldSNBTFormat = oldNBT.toSNBT(4);
+        System.out.println(oldSNBT);
+        var newNBT1 = SNBTParser.parseSNBT(oldSNBT);
+        var newNBT2 = SNBTParser.parseSNBT(oldSNBTFormat);
+        assertEquals(oldNBT, newNBT1);
+        assertEquals(oldNBT, newNBT2);
     }
 }
