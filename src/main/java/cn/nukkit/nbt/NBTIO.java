@@ -65,7 +65,7 @@ public class NBTIO {
     }
 
     public static Item getItemHelper(CompoundTag tag) {
-        if (!tag.containsByte("Count") || !(tag.containsShort("id") || tag.containsString("Name"))) {
+        if (!tag.containsByte("Count") || !(tag.containsShort("id"))) {
             return Item.get(0);
         }
 

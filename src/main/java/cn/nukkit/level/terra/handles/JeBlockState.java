@@ -20,7 +20,7 @@ public class JeBlockState {
     private boolean equalsIgnoreWaterlogged = false;
 
     public JeBlockState(String str) {
-        var strings = str.replaceAll("\\[", ",").replaceAll("]", ",").replaceAll(" ", "").split(",");
+        var strings = str.replace("[", ",").replace("]", ",").replace(" ", "").split(",");
         identifier = strings[0];
         if (strings.length > 1) {
             for (int i = 1; i < strings.length; i++) {
