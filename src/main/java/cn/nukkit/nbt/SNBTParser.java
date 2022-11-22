@@ -1,7 +1,6 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.nbt.tag.*;
-import com.dfsek.terra.lib.commons.lang3.StringUtils;
 
 public class SNBTParser {
     private String SNBT;
@@ -181,8 +180,9 @@ public class SNBTParser {
                 .substring(start, end)
                 .split("\",");
         for (var tag : value) {
-            var str = StringUtils.removeEnd(tag.trim(), "\"");
-            str = StringUtils.removeStart(str, "\"");
+            var str = tag.trim();
+            str = str.endsWith("\"") ? str.substring(0, str.length() - 1) : str;
+            str = str.startsWith("\"") ? str.substring(1) : str;
             result.add(new StringTag("", str));
         }
         move(end - start);
