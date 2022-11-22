@@ -80,13 +80,17 @@ public class NBTIO {
                     item = Item.get(id, damage, amount);
                 } catch (Exception e) {
                     item = Item.fromString(tag.getString("id"));
-                    item.setDamage(damage);
+                    if (item.getDamage() == 0) {
+                        item.setDamage(damage);
+                    }
                     item.setCount(amount);
                 }
             }
         } else {
             item = Item.fromString(tag.getString("Name"));
-            item.setDamage(damage);
+            if (item.getDamage() == 0) {
+                item.setDamage(damage);
+            }
             item.setCount(amount);
         }
 
