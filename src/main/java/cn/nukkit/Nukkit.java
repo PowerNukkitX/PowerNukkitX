@@ -53,7 +53,7 @@ public class Nukkit {
     @PowerNukkitOnly
     public final static String GIT_COMMIT = getGitCommit();
     public final static String API_VERSION = dynamic("1.0.14");
-    public final static String CODENAME = dynamic("PowerNukkitX");
+    public final static String CODENAME = dynamic("PureX");
     @Deprecated
     public final static String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
     @Deprecated
@@ -222,19 +222,19 @@ public class Nukkit {
             throw new RuntimeException(e);
         }
         if (resourceAsStream == null) {
-            return "Unknown-PNX-SNAPSHOT";
+            return "Unknown-PX-SNAPSHOT";
         }
         try (InputStream is = resourceAsStream;
              InputStreamReader reader = new InputStreamReader(is);
              BufferedReader buffered = new BufferedReader(reader)) {
             String line = buffered.readLine().trim();
             if ("${project.version}".equalsIgnoreCase(line)) {
-                return "Unknown-PNX-SNAPSHOT";
+                return "Unknown-PX-SNAPSHOT";
             } else {
                 return line;
             }
         } catch (IOException e) {
-            return "Unknown-PNX-SNAPSHOT";
+            return "Unknown-PX-SNAPSHOT";
         }
     }
 
