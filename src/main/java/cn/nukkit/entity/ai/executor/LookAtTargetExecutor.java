@@ -28,11 +28,7 @@ public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
         if (vector3Memory != null) {
             setLookTarget(entity, vector3Memory);
         }
-        if (currentTick <= duration) {
-            return true;
-        } else {
-            return false;
-        }
+        return currentTick <= duration;
     }
 
     @Override

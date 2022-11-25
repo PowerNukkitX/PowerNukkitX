@@ -7,7 +7,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityWolf;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,12 +42,13 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
             if (player == null || entityWolf.isSitting()) return false;
 
             //获取目的地位置（这个clone很重要）
-            var tmp = randomVector3(player, 2);
-            if (tmp == null) return true;
-            Vector3 target = tmp.clone();
+//            var tmp = randomVector3(player, 2);
+//            if (tmp == null) return true;
+            var target = player.clone();
+            if (target.distanceSquared(entity) <= 9) return false;
 
             //不允许跨世界
-            if (target instanceof Position position && !position.level.getName().equals(entity.level.getName()))
+            if (!target.level.getName().equals(entity.level.getName()))
                 return false;
 
             if (entityWolf.getPosition().floor().equals(oldTarget)) return false;
@@ -78,12 +78,13 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
 
                 return true;
             } else {
-                var targetVector = randomVector3(player, 3);
-                if (targetVector == null) return true;
-                else return entityWolf.teleport(targetVector);
+                var targetVector = randomVector3(player, 4);
+                if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
+                    return true;//继续寻找
+                else return !entityWolf.teleport(targetVector);
             }
         }
-        return true;
+        return false;
     }
 
     @Override

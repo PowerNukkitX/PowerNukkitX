@@ -12,17 +12,11 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.*;
-import cn.nukkit.entity.ai.executor.EntityBreedingExecutor;
-import cn.nukkit.entity.ai.executor.InLoveExecutor;
-import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
-import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
-import cn.nukkit.entity.ai.executor.WolfLookFeedingPlayerExecutor;
-import cn.nukkit.entity.ai.executor.WolfMoveToOwnerExecutor;
+import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.EntityAttackedByPlayerSensor;
+import cn.nukkit.entity.ai.sensor.EntityAttackedByOwnerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
 import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
@@ -91,33 +85,54 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
                                     1, 1
+                            ),
+                            //刷新攻击目标
+                            new Behavior(
+                                    entity -> {
+                                        var storage = getMemoryStorage();
+                                        var hasOwner = hasOwner();
+                                        Entity attackTarget = null;
+                                        var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
+                                        EntityDamageByEntityEvent attackByEntityEvent = null;
+                                        if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv) attackByEntityEvent = attackByEntityEv;
+                                        boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
+                                        if (hasOwner) {
+                                            //已驯服
+                                            if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive()) {
+                                                //攻击攻击主人的生物
+                                                attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
+                                            } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive()) {
+                                                //攻击主人攻击的生物
+                                                attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
+                                            } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {
+                                                //攻击攻击自己的生物（主人例外）
+                                                attackTarget = attackByEntityEvent.getDamager();
+                                            } else if (storage.notEmpty(CoreMemoryTypes.NEAREST_SKELETON) && storage.get(CoreMemoryTypes.NEAREST_SKELETON).isAlive()) {
+                                                //攻击最近的骷髅
+                                                attackTarget = storage.get(CoreMemoryTypes.NEAREST_SKELETON);
+                                            }
+                                        } else {
+                                            //未驯服
+                                            if (attackByEntityEvent != null && validAttacker) {
+                                                //攻击攻击自己的生物
+                                                attackTarget = attackByEntityEvent.getDamager();
+                                            } else if (storage.notEmpty(CoreMemoryTypes.WOLF_NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.WOLF_NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                                //攻击最近的合适生物
+                                                attackTarget = storage.get(CoreMemoryTypes.WOLF_NEAREST_SUITABLE_ATTACK_TARGET);
+                                            }
+                                        }
+                                        storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                        return true;
+                                    },
+                                    entity -> true, 1
                             )
                     ),
                     Set.of(
-                            new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 6, 1),
-                            //未驯服狼反击 todo 召集同伴
-                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, null, 0.35f, 33, true, 15), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
-                                    entity -> !entityHasOwner(entity, false, false)
-                            ), 5, 1),
-                            //驯服后的狼 攻击玩家击打的实体 和击打玩家的实体 以及附近的骷髅
-                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, 0.35f, 33, true, 15), new AllMatchEvaluator(
-                                    new AnyMatchEvaluator(
-                                            new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER),
-                                            new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_SKELETON)
-                                    ),
-                                    entity -> entityHasOwner(entity, true, false)
-                            ), 5, 1),
-                            //未驯服的狼攻击附近符合的实体
-                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.NEAREST_ENTITY, null, 0.35f, 14, true, 15), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_ENTITY),
-                                    entity -> !entityHasOwner(entity, false, false),
-                                    entity -> {
-                                        var tmp = (Entity) entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_ENTITY);
-                                        if (tmp == null) return false;
-                                        return attackTarget(tmp);
-                                    }
-                            ), 4, 1),
+                            //攻击仇恨目标 todo 召集同伴
+                            new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 33, true, 15),
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
+                                    , 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
                             new Behavior(new WolfMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityWolf entityWolf && entityWolf.hasOwner()) {
                                     var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
@@ -134,12 +149,16 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),
                                     new ProbabilityEvaluator(5, 10), 1, 1, 50)
                     ),
-                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0), new NearestPlayerSensor(8, 0, 20),
-                            new NearestTargetEntitySensor<>(0, 20, 5, List.of(CoreMemoryTypes.NEAREST_ENTITY, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget, entity -> switch (entity.getNetworkId()) {
-                                case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
-                                        true;
-                                default -> false;
-                            }), new EntityAttackedByPlayerSensor(5, false)
+                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
+                            new NearestPlayerSensor(8, 0, 20),
+                            new NearestTargetEntitySensor<>(0, 20, 20,
+                                    List.of(CoreMemoryTypes.WOLF_NEAREST_SUITABLE_ATTACK_TARGET, CoreMemoryTypes.NEAREST_SKELETON), this::attackTarget,
+                                    entity -> switch (entity.getNetworkId()) {
+                                        case EntitySkeleton.NETWORK_ID, EntityWitherSkeleton.NETWORK_ID, EntityStray.NETWORK_ID ->
+                                                true;
+                                        default -> false;
+                                    }),
+                            new EntityAttackedByOwnerSensor(5, false)
                     ),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
@@ -300,8 +319,8 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         var result = super.attack(source);
         if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
             if (entityDamageByEntityEvent.getDamager() instanceof Player player && player.isCreative()) return result;
-            //更新仇恨目标
-            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
+//            //更新仇恨目标
+//            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
         return result;
     }

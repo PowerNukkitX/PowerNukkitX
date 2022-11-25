@@ -25,7 +25,8 @@ public class EntityExplosionExecutor implements IBehaviorExecutor {
     protected int explodeTime;
     protected int explodeForce;
     protected int currentTick = 0;
-    @Nullable protected MemoryType<Boolean> flagMemory;
+    @Nullable
+    protected MemoryType<Boolean> flagMemory;
 
     public EntityExplosionExecutor(int explodeTime, int explodeForce) {
         this(explodeTime, explodeForce, null);

@@ -38,10 +38,11 @@ public interface CoreMemoryTypes {
     MemoryType<Boolean> IS_IN_LOVE = new MemoryType<>("minecraft:is_in_love", false);
     MemoryType<Integer> LAST_IN_LOVE_TIME = new MemoryType<>("minecraft:last_in_love_time", -65536);
     MemoryType<Integer> LAST_EGG_SPAWN_TIME = new MemoryType<>("minecraft:last_egg_spawn_time", () -> Server.getInstance().getTick());
-    MemoryType<Entity> NEAREST_ENTITY = new MemoryType<>("minecraft:nearest_entity");
+    MemoryType<Entity> WOLF_NEAREST_SUITABLE_ATTACK_TARGET = new MemoryType<>("minecraft:wolf_nearest_suitable_attack_target");
     MemoryType<Player> NEAREST_FEEDING_PLAYER = new MemoryType<>("minecraft:nearest_feeding_player");
     MemoryType<Player> NEAREST_PLAYER = new MemoryType<>("minecraft:nearest_player");
-    MemoryType<Entity> ENTITY_ATTACKED_BY_PLAYER = new MemoryType<>("minecraft:entity_attacked_by_player");
+    MemoryType<Entity> ENTITY_ATTACKED_BY_OWNER = new MemoryType<>("minecraft:entity_attacked_by_owner");
+    MemoryType<Entity> ENTITY_ATTACKING_OWNER = new MemoryType<>("minecraft:entity_attacking_owner");
     MemoryType<Integer> LAST_BE_FED_TIME = new MemoryType<>("minecraft:last_be_fed_time", -65536);
     MemoryType<Player> LAST_FEED_PLAYER = new MemoryType<>("minecraft:last_feeding_player");
     MemoryType<Integer> ROUTE_UNREACHABLE_TIME = new MemoryType<>("minecraft:route_unreachable_time", 0);

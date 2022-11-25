@@ -4,11 +4,11 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityTamable;
 
-public class EntityAttackedByPlayerSensor implements ISensor {
+public class EntityAttackedByOwnerSensor implements ISensor {
     protected int period;
     protected boolean changeTarget;
 
-    public EntityAttackedByPlayerSensor(int period, boolean changeTarget) {
+    public EntityAttackedByOwnerSensor(int period, boolean changeTarget) {
         this.period = period;
         this.changeTarget = changeTarget;
     }
@@ -18,17 +18,16 @@ public class EntityAttackedByPlayerSensor implements ISensor {
         if (entity instanceof EntityTamable entityTamable) {
             var player = entityTamable.getOwner();
             if (player != null) {
-                var current = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER);
+                var current = entity.getMemoryStorage().get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                 if (!changeTarget) {
                     if (current != null && current.isAlive()) return;
-                    else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER);
+                    else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                 }
-                //todo: 这里对于 CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER 的使用存在二义性，等待解决
                 if (player.getLastBeAttackEntity() != null) {
-                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, player.getLastBeAttackEntity());
+                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKING_OWNER, player.getLastBeAttackEntity());
                 } else if (player.getLastAttackEntity() != null) {
-                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER, player.getLastAttackEntity());
-                } else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_PLAYER);
+                    entity.getMemoryStorage().put(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER, player.getLastAttackEntity());
+                } else entity.getMemoryStorage().clear(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
             }
         }
     }

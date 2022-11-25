@@ -33,7 +33,7 @@ public class SimpleSpaceAStarRouteFinder extends SimpleFlatAStarRouteFinder {
 
     @Override
     protected void putNeighborNodeIntoOpen(@NotNull Node node) {
-        var centeredNode = node.getVector3().floor().add(0.5,0.5,0.5);
+        var centeredNode = node.getVector3().floor().add(0.5, 0.5, 0.5);
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy = -1; dy <= 1; dy++) {

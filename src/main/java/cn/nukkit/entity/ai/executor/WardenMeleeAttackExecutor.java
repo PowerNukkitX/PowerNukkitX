@@ -67,8 +67,7 @@ public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecut
             playAttackAnimation(entity);
             entity.level.addSound(target, Sound.MOB_WARDEN_ATTACK);
             attackTick = 0;
-            if (!target.isUndead())
-                return false;
+            return target.isUndead();
         }
         return true;
     }

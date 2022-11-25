@@ -2,9 +2,7 @@ package cn.nukkit.entity.ai.memory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import com.dfsek.terra.lib.commons.lang3.ObjectUtils;
 
-import javax.lang.model.type.NullType;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

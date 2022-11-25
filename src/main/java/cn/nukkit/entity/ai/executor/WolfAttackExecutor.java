@@ -16,27 +16,19 @@ import cn.nukkit.entity.passive.EntityWolf;
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
 public class WolfAttackExecutor extends MeleeAttackExecutor {
-    protected MemoryType<? extends Entity> minorMemoryTarget;
 
-    public WolfAttackExecutor(MemoryType<? extends Entity> mainMemoryTarget, MemoryType<? extends Entity> minorMemoryTarget, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
-        super(mainMemoryTarget, speed, maxSenseRange, clearDataWhenLose, coolDown);
-        this.minorMemoryTarget = minorMemoryTarget;
+    public WolfAttackExecutor(MemoryType<? extends Entity> memory, float speed, int maxSenseRange, boolean clearDataWhenLose, int coolDown) {
+        super(memory, speed, maxSenseRange, clearDataWhenLose, coolDown);
     }
 
     @Override
     public boolean execute(EntityIntelligent entity) {
         var wolf = (EntityWolf) entity;
 
-        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
-        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
+//        target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
+//        if ((target != null && !target.isAlive()) || (target != null && target.equals(entity))) return false;
 
         wolf.setAngry(true);
-
-        if (minorMemoryTarget != null) {
-            if (entity.getBehaviorGroup().getMemoryStorage().isEmpty(memory)) {
-                target = entity.getBehaviorGroup().getMemoryStorage().get(minorMemoryTarget);
-            }
-        }
 
         if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             if (!entity.isEnablePitch()) entity.setEnablePitch(true);
@@ -67,10 +59,6 @@ public class WolfAttackExecutor extends MeleeAttackExecutor {
 
         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, false);
-        }
-
-        if (clearDataWhenLose && minorMemoryTarget != null) {
-            entity.getBehaviorGroup().getMemoryStorage().clear(minorMemoryTarget);
         }
     }
 }
