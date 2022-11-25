@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class MeleeAttackExecutor extends AboutControlExecutor {
+public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected MemoryType<? extends Entity> memory;
     protected float speed;

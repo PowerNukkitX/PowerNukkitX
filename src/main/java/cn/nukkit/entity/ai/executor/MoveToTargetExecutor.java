@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 @Getter
-public class MoveToTargetExecutor extends AboutControlExecutor {
+public class MoveToTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;

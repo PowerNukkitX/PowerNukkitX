@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomRoamExecutor extends AboutControlExecutor {
+public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
 
     protected float speed;
     protected int maxRoamRange;

@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.executor.AboutControlExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.level.Position;
@@ -21,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
-public class WolfMoveToOwnerExecutor extends AboutControlExecutor {
+public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;
     protected Vector3 oldTarget;

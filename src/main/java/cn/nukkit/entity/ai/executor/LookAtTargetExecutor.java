@@ -8,7 +8,7 @@ import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class LookAtTargetExecutor extends AboutControlExecutor {
+public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
     protected MemoryType<? extends Vector3> memory;

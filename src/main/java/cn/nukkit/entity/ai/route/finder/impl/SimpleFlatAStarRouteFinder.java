@@ -147,7 +147,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         ArrayList<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
         //使用floyd平滑路径
         if (enableFloydSmooth)
-            findingPath = FloydSmooth(findingPath);
+            findingPath = floydSmooth(findingPath);
 
         //清空上次的寻路结果
         this.resetNodes();
@@ -529,7 +529,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
     /**
      * 使用Floyd算法平滑A*路径
      */
-    protected ArrayList<Node> FloydSmooth(ArrayList<Node> array) {
+    protected ArrayList<Node> floydSmooth(ArrayList<Node> array) {
         int current = 0;
         int total = 2;
         if (array.size() > 2) {

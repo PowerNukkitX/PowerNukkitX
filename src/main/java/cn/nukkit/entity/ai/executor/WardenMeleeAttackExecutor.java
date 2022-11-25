@@ -5,7 +5,6 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.executor.AboutControlExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.MemoryType;
 import cn.nukkit.entity.mob.EntityWarden;
@@ -20,7 +19,7 @@ import java.util.Map;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
-public class WardenMeleeAttackExecutor extends AboutControlExecutor {
+public class WardenMeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
 
     protected int attackTick;
     protected MemoryType<? extends Entity> memory;
