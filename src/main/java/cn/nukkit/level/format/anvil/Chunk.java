@@ -558,7 +558,6 @@ public class Chunk extends BaseChunk {
 
         CompoundTag chunk = new CompoundTag("");
         chunk.putCompound("Level", nbt);
-
         try {
             return Zlib.deflate(NBTIO.write(chunk, ByteOrder.BIG_ENDIAN), RegionLoader.COMPRESSION_LEVEL);
         } catch (IOException e) {

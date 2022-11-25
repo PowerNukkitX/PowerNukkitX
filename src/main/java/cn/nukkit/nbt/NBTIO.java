@@ -1,6 +1,7 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
@@ -64,8 +65,9 @@ public class NBTIO {
         return tag;
     }
 
+    @PowerNukkitXDifference(info = "not limit name and id because the return value of fromString not null")
     public static Item getItemHelper(CompoundTag tag) {
-        if (!tag.containsByte("Count") || !(tag.containsShort("id") || tag.containsString("Name"))) {
+        if (!tag.containsByte("Count")) {
             return Item.get(0);
         }
 
@@ -80,13 +82,17 @@ public class NBTIO {
                     item = Item.get(id, damage, amount);
                 } catch (Exception e) {
                     item = Item.fromString(tag.getString("id"));
-                    item.setDamage(damage);
+                    if (item.getDamage() == 0) {
+                        item.setDamage(damage);
+                    }
                     item.setCount(amount);
                 }
             }
         } else {
             item = Item.fromString(tag.getString("Name"));
-            item.setDamage(damage);
+            if (item.getDamage() == 0) {
+                item.setDamage(damage);
+            }
             item.setCount(amount);
         }
 
@@ -97,7 +103,7 @@ public class NBTIO {
 
         return item;
     }
-    
+
     @SuppressWarnings("deprecation")
     private static Item fixAlphaItem(int id, int damage, int count) {
         PNAlphaItemID badAlphaId = PNAlphaItemID.getBadAlphaId(id);
@@ -163,8 +169,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream); 
-            InputStream buffered = new BufferedInputStream(gzip)) {
+        try (InputStream gzip = new GZIPInputStream(inputStream);
+             InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
     }
@@ -174,7 +180,7 @@ public class NBTIO {
     }
 
     public static CompoundTag readCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data); 
+        try (InputStream bytes = new ByteArrayInputStream(data);
              InputStream gzip = new GZIPInputStream(bytes);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
@@ -186,7 +192,7 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(InputStream inputStream, ByteOrder endianness) throws IOException {
-        try (InputStream gzip = new GZIPInputStream(inputStream); 
+        try (InputStream gzip = new GZIPInputStream(inputStream);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness);
         }
@@ -197,8 +203,8 @@ public class NBTIO {
     }
 
     public static CompoundTag readNetworkCompressed(byte[] data, ByteOrder endianness) throws IOException {
-        try (InputStream bytes = new ByteArrayInputStream(data); 
-             InputStream gzip = new GZIPInputStream(bytes); 
+        try (InputStream bytes = new ByteArrayInputStream(data);
+             InputStream gzip = new GZIPInputStream(bytes);
              InputStream buffered = new BufferedInputStream(gzip)) {
             return read(buffered, endianness, true);
         }

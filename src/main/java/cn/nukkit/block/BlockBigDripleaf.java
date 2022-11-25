@@ -34,12 +34,13 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
     public static Set<Position> fullTiltBlocks = new HashSet<>();
 
     static{
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[actions.size()])) {
+        if (Server.getInstance() != null) {
+            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+                for (Map.Entry<Position, TiltAction> entry : actions.entrySet().toArray(new Map.Entry[actions.size()])) {
                     if (--entry.getValue().delay == 0) {
                         if (checkTiltAction(entry.getKey())) {
                             BlockBigDripleaf blockBigDripleaf = (BlockBigDripleaf) entry.getKey().getLevelBlock();
-                            BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf,blockBigDripleaf.getTilt(),entry.getValue().targetState);
+                            BigDripleafTiltChangeEvent event = new BigDripleafTiltChangeEvent(blockBigDripleaf, blockBigDripleaf.getTilt(), entry.getValue().targetState);
                             Server.getInstance().getPluginManager().callEvent(event);
                             if (event.isCancelled()) {
                                 return;
@@ -52,21 +53,22 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
                             }
                         }
                         actions.remove(entry.getKey());
-                        if (entry.getValue().nextAction != null){
+                        if (entry.getValue().nextAction != null) {
                             actions.put(entry.getKey(), entry.getValue().nextAction);
                         }
                     }
-            }
-        },1);
-        Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
-            for (Position pos : fullTiltBlocks.toArray(new Position[0])) {
-                if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
-                    pos.getLevelBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                }else{
-                    fullTiltBlocks.remove(pos);
                 }
-            }
-        },1);
+            }, 1);
+            Server.getInstance().getScheduler().scheduleRepeatingTask(() -> {
+                for (Position pos : fullTiltBlocks.toArray(new Position[0])) {
+                    if (pos.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.FULL_TILT) {
+                        pos.getLevelBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
+                    } else {
+                        fullTiltBlocks.remove(pos);
+                    }
+                }
+            }, 1);
+        }
     }
 
     @PowerNukkitXOnly

@@ -88,19 +88,20 @@ public final class Timings {
     public static final Timing permissionDefaultTimer;
 
     static {
-        setTimingsEnabled(Server.getInstance().getConfig("timings.enabled", false));
-        setVerboseEnabled(Server.getInstance().getConfig("timings.verbose", false));
-        setHistoryInterval(Server.getInstance().getConfig("timings.history-interval", 6000));
-        setHistoryLength(Server.getInstance().getConfig("timings.history-length", 72000));
-
-        privacy = Server.getInstance().getConfig("timings.privacy", false);
-        ignoredConfigSections.addAll(Server.getInstance().getConfig().getStringList("timings.ignore"));
+        if (Server.getInstance() != null) {
+            setTimingsEnabled(Server.getInstance().getConfig("timings.enabled", false));
+            setVerboseEnabled(Server.getInstance().getConfig("timings.verbose", false));
+            setHistoryInterval(Server.getInstance().getConfig("timings.history-interval", 6000));
+            setHistoryLength(Server.getInstance().getConfig("timings.history-length", 72000));
+            privacy = Server.getInstance().getConfig("timings.privacy", false);
+            ignoredConfigSections.addAll(Server.getInstance().getConfig().getStringList("timings.ignore"));
+        }
 
         log.debug("Timings: \n" +
-                "Enabled - {}\n" +
-                "Verbose - {}\n" +
-                "History Interval - {}\n" +
-                "History Length - {}",
+                        "Enabled - {}\n" +
+                        "Verbose - {}\n" +
+                        "History Interval - {}\n" +
+                        "History Length - {}",
                 isTimingsEnabled(), isVerboseEnabled(), getHistoryInterval(), getHistoryLength());
 
         fullServerTickTimer = new FullServerTickTiming();
@@ -204,7 +205,7 @@ public final class Timings {
             log.warn(
                     "Timings Length too high. Requested {}, max is {}"
                             + ". To get longer history, you must increase your interval. Set Interval to {}"
-                            + " to achieve this length.", 
+                            + " to achieve this length.",
                     length, maxLength, Math.ceil((float) length / MAX_HISTORY_FRAMES));
         }
 
