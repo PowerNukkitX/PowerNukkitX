@@ -13,7 +13,7 @@ import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
  */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
-public class WolfLookPlayerExecutor implements EntityControl, IBehaviorExecutor {
+public class WolfLookFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);

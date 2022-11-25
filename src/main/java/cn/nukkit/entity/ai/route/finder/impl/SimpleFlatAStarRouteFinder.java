@@ -13,6 +13,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.VectorMath;
 import cn.nukkit.network.protocol.SpawnParticleEffectPacket;
+import cn.nukkit.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
 
     protected final PriorityQueue<Node> openList = new PriorityQueue<>();
 
-    protected final ArrayList<Node> closeList = new ArrayList<>();
+    protected final List<Node> closeList = new ArrayList<>();
     protected final HashSet<Vector3> closeHashSet = new HashSet<>();
 
     protected EntityIntelligent entity;
@@ -144,7 +145,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         //如果无法到达，则取最接近终点的一个Node作为尾节点
         Node reachableNode = null;
         reachableTarget = currentReachable ? target : (reachableNode = getNearestNodeFromCloseList(target)).getVector3();
-        ArrayList<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
+        List<Node> findingPath = currentReachable ? getPathRoute(targetNode) : getPathRoute(reachableNode);
         //使用floyd平滑路径
         if (enableFloydSmooth)
             findingPath = floydSmooth(findingPath);
@@ -468,68 +469,15 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                     var offsetY = pos.y - this.entity.y;
                     var offsetZ = pos.z - this.entity.z;
                     var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
-                    return this.level.getTickCachedCollisionBlocks(offsetBox, true).length > 0;
+                    return Utils.hasCollisionBlocks(this.level, offsetBox);
                 }
         );
-
-//        if (pos1.getFloorY() != pos2.getFloorY()) return true;
-//        boolean traverseDirection = Math.abs(pos1.getX() - pos2.getX()) > Math.abs(pos1.getZ() - pos2.getZ());
-//        ArrayList<Vector3> list = new ArrayList<>();
-//        if (traverseDirection) {
-//            double loopStart = Math.min(pos1.getX(), pos2.getX());
-//            double loopEnd = Math.max(pos1.getX(), pos2.getX());
-//            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
-//                double result;
-//                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_X_OBTAIN_Y)) != Double.MAX_VALUE)
-//                    list.add(new Vector3(i, pos1.getY(), result));
-//            }
-//        } else {
-//            double loopStart = Math.min(pos1.getZ(), pos2.getZ());
-//            double loopEnd = Math.max(pos1.getZ(), pos2.getZ());
-//            for (double i = Math.ceil(loopStart); i <= Math.floor(loopEnd); i += 1.0) {
-//                double result;
-//                if ((result = Utils.calLinearFunction(pos1, pos2, i, Utils.ACCORDING_Y_OBTAIN_X)) != Double.MAX_VALUE)
-//                    list.add(new Vector3(result, pos1.getY(), i));
-//            }
-//        }
-//        return hasBlocksAround(list);
     }
-
-//    protected boolean hasBlocksAround(List<Vector3> list) {
-//        double radius = (this.entity.getWidth() * this.entity.getScale()) / 2 + 0.1;
-//        double height = this.entity.getHeight() * this.entity.getScale();
-//        for (Vector3 vector3 : list) {
-//            AxisAlignedBB bb = new SimpleAxisAlignedBB(vector3.getX() - radius, vector3.getY(), vector3.getZ() - radius, vector3.getX() + radius, vector3.getY() + height, vector3.getZ() + radius);
-//            if (Utils.hasCollisionTickCachedBlocks(level, bb)) return true;
-//
-//            boolean xIsInt = vector3.getX() % 1 == 0;
-//            boolean zIsInt = vector3.getZ() % 1 == 0;
-//            if (xIsInt && zIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-//                    return true;
-//            } else if (xIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX() - 1, vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-//                    return true;
-//            } else if (zIsInt) {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough() ||
-//                        level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ() - 1), false).canPassThrough())
-//                    return true;
-//            } else {
-//                if (level.getTickCachedBlock(new Vector3(vector3.getX(), vector3.getY() - 1, vector3.getZ()), false).canPassThrough())
-//                    return true;
-//            }
-//        }
-//        return false;
-//    }
 
     /**
      * 使用Floyd算法平滑A*路径
      */
-    protected ArrayList<Node> floydSmooth(ArrayList<Node> array) {
+    protected List<Node> floydSmooth(List<Node> array) {
         int current = 0;
         int total = 2;
         if (array.size() > 2) {
@@ -541,7 +489,7 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
                 total++;
             }
             Node temp = array.get(array.size() - 1);
-            ArrayList<Node> tempL = new ArrayList<>();
+            List<Node> tempL = new ArrayList<>();
             tempL.add(temp);
             while (temp.getParent() != null) {
                 tempL.add((temp = temp.getParent()));
@@ -557,8 +505,8 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
      *
      * @param end 列表尾节点
      */
-    protected ArrayList<Node> getPathRoute(@Nullable Node end) {
-        ArrayList<Node> nodes = new ArrayList<>();
+    protected List<Node> getPathRoute(@Nullable Node end) {
+        List<Node> nodes = new ArrayList<>();
         if (end == null)
             end = closeList.get(closeList.size() - 1);
         nodes.add(end);

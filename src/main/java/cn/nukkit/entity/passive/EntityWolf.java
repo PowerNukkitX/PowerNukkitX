@@ -17,7 +17,7 @@ import cn.nukkit.entity.ai.executor.InLoveExecutor;
 import cn.nukkit.entity.ai.executor.LookAtTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
 import cn.nukkit.entity.ai.executor.WolfAttackExecutor;
-import cn.nukkit.entity.ai.executor.WolfLookPlayerExecutor;
+import cn.nukkit.entity.ai.executor.WolfLookFeedingPlayerExecutor;
 import cn.nukkit.entity.ai.executor.WolfMoveToOwnerExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -128,7 +128,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     return distanceSquared >= 100;
                                 } else return false;
                             }, 4, 1),
-                            new Behavior(new WolfLookPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
+                            new Behavior(new WolfLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 150), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10),
                                     1, 1, 25),
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),

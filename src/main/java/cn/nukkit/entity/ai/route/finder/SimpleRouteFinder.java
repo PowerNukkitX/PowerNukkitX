@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 非异步的路径查找抽象类 <br/>
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 public abstract class SimpleRouteFinder implements IRouteFinder {
 
     //用于存储寻路结果的List
-    protected ArrayList<Node> nodes = new ArrayList<>();
+    protected List<Node> nodes = new ArrayList<>();
 
     //索引值
     protected int currentIndex = 0;
@@ -38,7 +39,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     //批量添加寻路结果节点
-    protected void addNode(ArrayList<Node> node) {
+    protected void addNode(List<Node> node) {
         nodes.addAll(node);
     }
 
@@ -48,7 +49,7 @@ public abstract class SimpleRouteFinder implements IRouteFinder {
     }
 
     @Override
-    public ArrayList<Node> getRoute() {
+    public List<Node> getRoute() {
         return new ArrayList<>(this.nodes);
     }
 
