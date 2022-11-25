@@ -1,6 +1,7 @@
 package cn.nukkit.nbt;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
@@ -64,6 +65,7 @@ public class NBTIO {
         return tag;
     }
 
+    @PowerNukkitXDifference(info = "not limit name and id because the return value of fromString not null")
     public static Item getItemHelper(CompoundTag tag) {
         if (!tag.containsByte("Count")) {
             return Item.get(0);
