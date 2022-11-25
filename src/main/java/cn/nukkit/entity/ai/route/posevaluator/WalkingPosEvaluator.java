@@ -19,28 +19,6 @@ import org.jetbrains.annotations.NotNull;
 @Since("1.6.0.0-PNX")
 public class WalkingPosEvaluator implements IPosEvaluator {
     @Override
-    public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 vec) {
-        //居中坐标
-        var blockCenter = vec.add(0.5, 0, 0.5);
-        //检查是否可到达
-        if (!isPassable(entity, blockCenter))
-            return false;
-        var block = entity.level.getTickCachedBlock(blockCenter.add(0, -1));
-        //TODO: 检查碰头
-        //脚下不能是伤害性方块
-        if (block.getId() == Block.FLOWING_LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS)
-            return false;
-        //不能是栏杆
-        if (block instanceof BlockFence || block instanceof BlockFenceGate)
-            return false;
-        //水特判
-        if (block.getId() == Block.STILL_WATER || block.getId() == Block.FLOWING_WATER)
-            return true;
-        //必须可以站立
-        return !block.canPassThrough();
-    }
-
-    @Override
     public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
         //居中坐标
         var blockCenter = block.add(0.5, 1, 0.5);
