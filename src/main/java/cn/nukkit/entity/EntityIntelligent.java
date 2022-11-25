@@ -1,14 +1,19 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -63,6 +68,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.applyController(this);
+            if (EntityAI.DEBUG) behaviorGroup.debugTick(this);
         }
         return super.onUpdate(currentTick);
     }
@@ -97,6 +103,31 @@ public abstract class EntityIntelligent extends EntityPhysical {
             storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
         }
         return result;
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (!EntityAI.DEBUG) {
+            return super.onInteract(player, item, clickedPos);
+        } else {
+            if (player.isOp() && item.getId() == ItemID.STICK) {
+                var strBuilder = new StringBuilder();
+
+                //Build memory information
+                strBuilder.append("§eMemory:§f\n");
+                var all = getMemoryStorage().getAll();
+                all.forEach((memory, value) -> {
+                    strBuilder.append(memory.getIdentifier());
+                    strBuilder.append(" = §b");
+                    strBuilder.append(value);
+                    strBuilder.append("§f\n");
+                });
+
+                var form = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
+                player.showFormWindow(form);
+                return true;
+            } else return super.onInteract(player, item, clickedPos);
+        }
     }
 
     public IMemoryStorage getMemoryStorage() {

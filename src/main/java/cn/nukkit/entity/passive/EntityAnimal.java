@@ -34,6 +34,7 @@ public abstract class EntityAnimal extends EntityIntelligent {
         boolean superResult = super.onInteract(player, item, clickedPos);
         if (isBreedingItem(item)) {
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
             sendBreedingAnimation(item);
             item.count--;
             return player.getInventory().setItemInHand(item) && superResult;

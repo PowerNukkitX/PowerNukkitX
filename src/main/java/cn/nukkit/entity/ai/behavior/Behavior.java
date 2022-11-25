@@ -67,4 +67,9 @@ public class Behavior extends AbstractBehavior {
     public void onStop(EntityIntelligent entity) {
         executor.onStop(entity);
     }
+
+    @Override
+    public String toString(){
+        return "[" + priority + "] " + executor.getClass().getSimpleName() + " | " + evaluator.getClass().getSimpleName();
+    }
 }

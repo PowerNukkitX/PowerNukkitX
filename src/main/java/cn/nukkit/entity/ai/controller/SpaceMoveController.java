@@ -7,7 +7,7 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 
 /**
- * 处理3D实体运动
+ * 处理飞行/游泳实体运动
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")

@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,6 +29,15 @@ public class MemoryStorage implements IMemoryStorage {
         if (!memoryMap.containsKey(type)) put(type, type.getDefaultData());
         D value;
         return (value = (D) memoryMap.get(type)) != EMPTY_VALUE ? value : null;
+    }
+
+    @Override
+    public Map<MemoryType<?>, ?> getAll() {
+        var hashMap = new HashMap<MemoryType<?>, Object>();
+        memoryMap.forEach((k, v) -> {
+            if (v != EMPTY_VALUE) hashMap.put(k, v);
+        });
+        return hashMap;
     }
 
     @Override

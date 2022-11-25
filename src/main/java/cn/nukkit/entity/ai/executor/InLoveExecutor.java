@@ -30,7 +30,7 @@ public class InLoveExecutor implements IBehaviorExecutor {
         currentTick++;
         if (currentTick > duration || !entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE)/*interrupt by other*/) {
             currentTick = 0;
-            entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, true);
+            entity.getMemoryStorage().put(CoreMemoryTypes.IS_IN_LOVE, false);
             return false;
         }
         if (currentTick % 10 == 0) {

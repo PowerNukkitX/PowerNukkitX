@@ -3,6 +3,8 @@ package cn.nukkit.entity.ai.memory;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
+import java.util.Map;
+
 /**
  * 记忆存储器
  */
@@ -27,6 +29,13 @@ public interface IMemoryStorage {
      * @return 数据
      */
     <D> D get(MemoryType<D> type);
+
+    /**
+     * 获取所有记忆
+     *
+     * @return 所有记忆
+     */
+    Map<MemoryType<?>, ?> getAll();
 
     /**
      * 清空指定记忆类型数据为null

@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
+import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.route.data.Node;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.IPosEvaluator;
@@ -158,10 +159,11 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         //写入结果
         this.addNode(findingPath);
 
-        //debug only
-        findingPath.forEach(node -> {
-            sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
-        });
+        if (EntityAI.DEBUG) {
+            findingPath.forEach(node -> {
+                sendParticle("minecraft:balloon_gas_particle", node.getVector3(), Server.getInstance().getOnlinePlayers().values().toArray(Player.EMPTY_ARRAY));
+            });
+        }
 
         this.reachable = currentReachable;
         this.finished = true;
@@ -170,20 +172,17 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         return true;
     }
 
-    //debug only
-    private void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
+    protected void sendParticle(String identifier, Vector3 pos, Player[] showPlayers) {
+        SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
+        packet.identifier = identifier;
+        packet.dimensionId = this.entity.level.getDimension();
+        packet.position = pos.asVector3f();
         Arrays.stream(showPlayers).forEach(player -> {
             if (!player.isOnline())
                 return;
-            SpawnParticleEffectPacket packet = new SpawnParticleEffectPacket();
-            packet.identifier = identifier;
-            packet.dimensionId = this.entity.level.getDimension();
-            packet.position = pos.asVector3f();
             try {
                 player.dataPacket(packet);
-            } catch (Throwable ignore) {
-
-            }
+            } catch (Throwable ignore) {}
         });
     }
 
