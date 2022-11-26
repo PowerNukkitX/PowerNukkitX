@@ -1,5 +1,8 @@
 package cn.nukkit.utils.collection;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
@@ -9,9 +12,15 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     private final int rawLength;
     private byte[] data;
 
-    public FreezableByteArray(int length, FreezableArrayManager manager) {
+    FreezableByteArray(int length, @NotNull FreezableArrayManager manager) {
         this.rawLength = length;
         this.data = new byte[length];
+        this.manager = manager;
+    }
+
+    FreezableByteArray(@NotNull byte[] src, @NotNull FreezableArrayManager manager) {
+        this.rawLength = src.length;
+        this.data = Arrays.copyOf(src, rawLength);
         this.manager = manager;
     }
 
@@ -30,12 +39,22 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
     }
 
     @Override
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
+    public void warmer(int temperature) {
+        this.temperature += temperature;
+    }
+
+    @Override
+    public void colder(int temperature) {
+        setTemperature(this.temperature - temperature);
+    }
+
+    private void setTemperature(int temperature) {
+        this.temperature = Math.max(manager.getAbsoluteZero(), temperature);
     }
 
     @Override
     public void freeze() {
+        if (temperature > manager.getFreezingPoint()) return;
         if (freezeStatus.get() != FreezeStatus.NONE) return;
         freezeStatus.set(FreezeStatus.FREEZING);
         data = LZ4Freezer.compressor.compress(data);
@@ -44,9 +63,11 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void deepFreeze() {
+        if (temperature > manager.getAbsoluteZero()) return;
         if (freezeStatus.get() != FreezeStatus.NONE || freezeStatus.get() != FreezeStatus.FREEZE) return;
+        var needDecompressFirst = freezeStatus.get() == FreezeStatus.FREEZE;
         freezeStatus.set(FreezeStatus.DEEP_FREEZING);
-        var tmp = LZ4Freezer.decompressor.decompress(data, rawLength);
+        var tmp = needDecompressFirst ? LZ4Freezer.decompressor.decompress(data, rawLength) : data;
         data = LZ4Freezer.deepCompressor.compress(tmp);
         freezeStatus.set(FreezeStatus.DEEP_FREEZE);
     }
@@ -64,6 +85,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         if (freezeStatus.get() == FreezeStatus.FREEZE || freezeStatus.get() == FreezeStatus.DEEP_FREEZE) {
             data = LZ4Freezer.decompressor.decompress(data, rawLength);
         }
+        if (temperature < manager.getMeltingHeat()) temperature = manager.getMeltingHeat();
     }
 
     @Override
@@ -79,6 +101,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         if (freezeStatus.get() != FreezeStatus.NONE) {
             thaw();
         }
+        warmer(manager.getBatchOperationHeat());
         return data;
     }
 
@@ -95,6 +118,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         if (freezeStatus.get() != FreezeStatus.NONE) {
             thaw();
         }
+        warmer(manager.getSingleOperationHeat());
         return data[index];
     }
 
@@ -111,6 +135,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         if (freezeStatus.get() != FreezeStatus.NONE) {
             thaw();
         }
+        warmer(manager.getSingleOperationHeat());
         data[index] = b;
     }
 }

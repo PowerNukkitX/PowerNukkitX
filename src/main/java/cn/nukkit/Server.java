@@ -81,6 +81,7 @@ import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
+import cn.nukkit.utils.collection.FreezableArrayManager;
 import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -312,6 +313,10 @@ public class Server {
     @Since("1.6.0.0-PNX")
     private boolean enableExperimentMode;
 
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    private FreezableArrayManager freezableArrayManager;
+
     /**
      * Minimal initializer for testing
      */
@@ -348,6 +353,7 @@ public class Server {
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool();
+        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 16, 1, 32);
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -756,6 +762,8 @@ public class Server {
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         this.commandMap = new SimpleCommandMap(this);
+
+        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 16, 1, 32);
 
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
@@ -1551,6 +1559,9 @@ public class Server {
                     .toArray(CompletableFuture[]::new));
         }
 
+        // 处理可冻结数组
+        freezableArrayManager.setMaxCompressionTime((int) (System.currentTimeMillis() - tickTime)).tick();
+
         Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();
         long nowNano = System.nanoTime();
@@ -1909,6 +1920,10 @@ public class Server {
 
     public TickingAreaManager getTickingAreaManager() {
         return tickingAreaManager;
+    }
+
+    public FreezableArrayManager getFreezableArrayManager() {
+        return freezableArrayManager;
     }
 
     public ServerScheduler getScheduler() {
