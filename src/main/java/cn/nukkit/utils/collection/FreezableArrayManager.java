@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @PowerNukkitXOnly
 @Since("1.19.40-r4")
-@Log4j2
 public class FreezableArrayManager {
     protected ConcurrentHashMap<Integer, CopyOnWriteArrayList<WeakReference<AutoFreezable>>> tickArrayMap;
     public final int cycleTick;
@@ -58,16 +57,23 @@ public class FreezableArrayManager {
     private static FreezableArrayManager fallbackInstance = null;
 
     public static FreezableArrayManager getInstance() {
-        var server = Server.getInstance();
-        if (server != null) {
-            return server.getFreezableArrayManager();
-        } else {
-            if (fallbackInstance == null) {
-                fallbackInstance = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
-                log.warn("Cannot get FreezableArrayManager from Server instance, using a fallback instance!");
+        try {
+            var server = Server.getInstance();
+            if (server != null) {
+                var tmp = server.getFreezableArrayManager();
+                if (tmp != null) {
+                    return tmp;
+                }
             }
-            return fallbackInstance;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        if (fallbackInstance == null) {
+            fallbackInstance = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
+            System.err.println("Cannot get FreezableArrayManager from Server instance, using a fallback instance!");
+        }
+        return fallbackInstance;
+
     }
 
     public FreezableArrayManager(int cycleTick, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
