@@ -4292,6 +4292,45 @@ public class Level implements ChunkManager, Metadatable {
         this.generateChunk(x, z);
     }
 
+    public List<CompletableFuture<Void>> asyncChunkGarbageCollection() {
+        this.timings.doChunkGC.startTiming();
+        var gcBlockEntities = CompletableFuture.runAsync(() -> {
+            // remove all invaild block entities.
+            if (!blockEntities.isEmpty()) {
+                ObjectIterator<BlockEntity> iter = blockEntities.values().iterator();
+                while (iter.hasNext()) {
+                    BlockEntity blockEntity = iter.next();
+                    if (blockEntity != null) {
+                        if (!blockEntity.isValid()) {
+                            iter.remove();
+                            blockEntity.close();
+                        }
+                    } else {
+                        iter.remove();
+                    }
+                }
+            }
+        });
+        var gcDeadChunks = CompletableFuture.runAsync(() -> {
+            for (Map.Entry<Long, ? extends FullChunk> entry : requireProvider().getLoadedChunks().entrySet()) {
+                long index = entry.getKey();
+                if (!this.unloadQueue.containsKey(index)) {
+                    FullChunk chunk = entry.getValue();
+                    int X = chunk.getX();
+                    int Z = chunk.getZ();
+                    if (!this.isSpawnChunk(X, Z)) {
+                        this.unloadChunkRequest(X, Z, true);
+                    }
+                }
+            }
+        });
+        var gcSuper = CompletableFuture.runAsync(() -> this.requireProvider().doGarbageCollection());
+        this.timings.doChunkGC.stopTiming();
+        return List.of(gcBlockEntities, gcDeadChunks, gcSuper);
+    }
+
+    @Deprecated
+    @DeprecationDetails(since = "1.19.40-r4", reason = "Should be async", replaceWith = "asyncChunkGarbageCollection")
     public void doChunkGarbageCollection() {
         this.timings.doChunkGC.startTiming();
         // remove all invaild block entities.

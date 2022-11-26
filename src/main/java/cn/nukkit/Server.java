@@ -105,6 +105,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1545,9 +1546,9 @@ public class Server {
         }
 
         if (this.tickCounter % 100 == 0) {
-            for (Level level : this.levelArray) {
-                level.doChunkGarbageCollection();
-            }
+            CompletableFuture.allOf(Arrays.stream(this.levelArray).parallel()
+                    .flatMap(l -> l.asyncChunkGarbageCollection().stream())
+                    .toArray(CompletableFuture[]::new));
         }
 
         Timings.fullServerTickTimer.stopTiming();
