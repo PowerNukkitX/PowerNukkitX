@@ -37,7 +37,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private final ConfigPack configPack;
     private final BlockState air;
     private final WorldProperties worldProperties;
-    private ChunkGenerator chunkGenerator;
+    private final ChunkGenerator chunkGenerator;
 
     private ServerWorld world;
     private ChunkManager chunkManager;
