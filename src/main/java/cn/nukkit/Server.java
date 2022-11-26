@@ -1560,7 +1560,11 @@ public class Server {
         }
 
         // 处理可冻结数组
-        freezableArrayManager.setMaxCompressionTime((int) (50 - (System.currentTimeMillis() - tickTime))).tick();
+        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        if (freezableArrayCompressTime > 4) {
+            freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
+        }
+
 
         Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();
