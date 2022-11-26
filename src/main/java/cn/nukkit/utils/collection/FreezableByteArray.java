@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
     private final FreezableArrayManager manager;
     private final AtomicReference<FreezeStatus> freezeStatus = new AtomicReference<>(FreezeStatus.NONE);
-    private int temperature = 32;
+    private int temperature;
     private final int rawLength;
     private byte[] data;
 
@@ -15,12 +15,14 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         this.rawLength = length;
         this.data = new byte[length];
         this.manager = manager;
+        this.temperature = manager.getDefaultTemperature();
     }
 
     FreezableByteArray(@NotNull byte[] src, @NotNull FreezableArrayManager manager) {
         this.rawLength = src.length;
         this.data = src;
         this.manager = manager;
+        this.temperature = manager.getDefaultTemperature();
     }
 
     public FreezableArrayManager getManager() {

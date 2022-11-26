@@ -3,7 +3,6 @@ package cn.nukkit.utils.collection;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -29,6 +28,10 @@ public class FreezableArrayManager {
     private final AtomicInteger currentArrayId = new AtomicInteger(0);
     private int currentTick;
 
+    /**
+     * 默认温度，新创建的数组温度等于此温度
+     */
+    private final int defaultTemperature;
     /**
      * 冰点，当可冻结数组的温度低于冰点时有可能被冻结
      */
@@ -69,15 +72,16 @@ public class FreezableArrayManager {
             e.printStackTrace();
         }
         if (fallbackInstance == null) {
-            fallbackInstance = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
+            fallbackInstance = new FreezableArrayManager(32, 32, 0, -256, 1024, 16, 1, 32);
             System.err.println("Cannot get FreezableArrayManager from Server instance, using a fallback instance!");
         }
         return fallbackInstance;
 
     }
 
-    public FreezableArrayManager(int cycleTick, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
+    public FreezableArrayManager(int cycleTick, int defaultTemperature, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
         this.cycleTick = cycleTick;
+        this.defaultTemperature = defaultTemperature;
         this.freezingPoint = freezingPoint;
         this.absoluteZero = absoluteZero;
         this.tickArrayMap = new ConcurrentHashMap<>(cycleTick + 1, 0.999f);
@@ -85,6 +89,10 @@ public class FreezableArrayManager {
         this.meltingHeat = meltingHeat;
         this.singleOperationHeat = singleOperationHeat;
         this.batchOperationHeat = batchOperationHeat;
+    }
+
+    public int getDefaultTemperature() {
+        return defaultTemperature;
     }
 
     public int getAbsoluteZero() {
