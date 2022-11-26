@@ -353,7 +353,7 @@ public class Server {
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool();
-        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 16, 1, 32);
+        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -763,7 +763,7 @@ public class Server {
 
         this.commandMap = new SimpleCommandMap(this);
 
-        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 16, 1, 32);
+        freezableArrayManager = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
 
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
@@ -1560,7 +1560,7 @@ public class Server {
         }
 
         // 处理可冻结数组
-        freezableArrayManager.setMaxCompressionTime((int) (System.currentTimeMillis() - tickTime)).tick();
+        freezableArrayManager.setMaxCompressionTime((int) (50 - (System.currentTimeMillis() - tickTime))).tick();
 
         Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();

@@ -12,14 +12,14 @@ public interface AutoFreezable {
 
     /**
      * this.temperature += temperature; <br/>
-     * 没有绝对零度检查！
+     * 带有沸点检查，没有绝对零度检查！
      * @param temperature 温度变化量
      */
     void warmer(int temperature);
 
     /**
      * this.temperature -= temperature; <br/>
-     * 带有绝对零度检查
+     * 带有绝对零度检查，没有沸点检查！
      * @param temperature 温度变化量
      */
     void colder(int temperature);

@@ -10,6 +10,9 @@ public interface ArrayWrapper<T> {
     T[] getRawData();
 
     @ShouldThaw
+    void setRawData(T[] data);
+
+    @ShouldThaw
     T get(int index);
 
     @ShouldThaw

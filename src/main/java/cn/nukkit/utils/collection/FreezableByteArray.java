@@ -2,13 +2,12 @@ package cn.nukkit.utils.collection;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable {
     private final FreezableArrayManager manager;
     private final AtomicReference<FreezeStatus> freezeStatus = new AtomicReference<>(FreezeStatus.NONE);
-    private int temperature = 0;
+    private int temperature = 32;
     private final int rawLength;
     private byte[] data;
 
@@ -20,7 +19,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     FreezableByteArray(@NotNull byte[] src, @NotNull FreezableArrayManager manager) {
         this.rawLength = src.length;
-        this.data = Arrays.copyOf(src, rawLength);
+        this.data = src;
         this.manager = manager;
     }
 
@@ -40,16 +39,12 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
 
     @Override
     public void warmer(int temperature) {
-        this.temperature += temperature;
+        this.temperature = Math.min(manager.getBoilingPoint(), this.temperature + temperature);
     }
 
     @Override
     public void colder(int temperature) {
-        setTemperature(this.temperature - temperature);
-    }
-
-    private void setTemperature(int temperature) {
-        this.temperature = Math.max(manager.getAbsoluteZero(), temperature);
+        this.temperature = Math.max(manager.getAbsoluteZero(), this.temperature - temperature);
     }
 
     @Override
@@ -84,6 +79,7 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         }
         if (freezeStatus.get() == FreezeStatus.FREEZE || freezeStatus.get() == FreezeStatus.DEEP_FREEZE) {
             data = LZ4Freezer.decompressor.decompress(data, rawLength);
+            freezeStatus.set(FreezeStatus.NONE);
         }
         if (temperature < manager.getMeltingHeat()) temperature = manager.getMeltingHeat();
     }
@@ -103,6 +99,20 @@ public final class FreezableByteArray implements ByteArrayWrapper, AutoFreezable
         }
         warmer(manager.getBatchOperationHeat());
         return data;
+    }
+
+    @Override
+    public void setRawBytes(byte[] bytes) {
+        while (freezeStatus.get() == FreezeStatus.THAWING || freezeStatus.get() == FreezeStatus.FREEZING || freezeStatus.get() == FreezeStatus.DEEP_FREEZING) {
+            try {
+                //noinspection BusyWait
+                Thread.sleep(0); // Put a safe-point here
+            } catch (InterruptedException ignore) {
+
+            }
+        }
+        data = bytes;
+        freezeStatus.set(FreezeStatus.NONE);
     }
 
     @Override

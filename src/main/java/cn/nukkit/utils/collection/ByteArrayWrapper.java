@@ -9,6 +9,8 @@ import cn.nukkit.api.Since;
 public interface ByteArrayWrapper extends ArrayWrapper<Byte> {
     byte[] getRawBytes();
 
+    void setRawBytes(byte[] bytes);
+
     @ShouldThaw
     byte getByte(int index);
 
@@ -38,5 +40,15 @@ public interface ByteArrayWrapper extends ArrayWrapper<Byte> {
         var out = new Byte[len];
         for (int i = 0; i < len; i++) out[i] = tmp[i];
         return out;
+    }
+
+    @Override
+    @Deprecated
+    @DeprecationDetails(since = "1.19.40-r3", reason = "avoid boxing", replaceWith = "setRawBytes")
+    default void setRawData(Byte[] data) {
+        var len = data.length;
+        var out = new byte[len];
+        for (int i = 0; i < len; i++) out[i] = data[i];
+        setRawBytes(out);
     }
 }

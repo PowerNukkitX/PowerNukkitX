@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,6 +39,10 @@ public class FreezableArrayManager {
      */
     private final int absoluteZero;
     /**
+     * 沸点，一个可冻结数组的温度无论如何加热都不能高于此温度
+     */
+    private final int boilingPoint;
+    /**
      * 熔化热，解冻后的数组温度会等于熔化热
      */
     private final int meltingHeat;
@@ -58,18 +63,19 @@ public class FreezableArrayManager {
             return server.getFreezableArrayManager();
         } else {
             if (fallbackInstance == null) {
-                fallbackInstance = new FreezableArrayManager(32, 0, -256, 16, 1, 32);
+                fallbackInstance = new FreezableArrayManager(32, 0, -256, 1024, 16, 1, 32);
                 log.warn("Cannot get FreezableArrayManager from Server instance, using a fallback instance!");
             }
             return fallbackInstance;
         }
     }
 
-    public FreezableArrayManager(int cycleTick, int freezingPoint, int absoluteZero, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
+    public FreezableArrayManager(int cycleTick, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
         this.cycleTick = cycleTick;
         this.freezingPoint = freezingPoint;
         this.absoluteZero = absoluteZero;
         this.tickArrayMap = new ConcurrentHashMap<>(cycleTick + 1, 0.999f);
+        this.boilingPoint = boilingPoint;
         this.meltingHeat = meltingHeat;
         this.singleOperationHeat = singleOperationHeat;
         this.batchOperationHeat = batchOperationHeat;
@@ -85,6 +91,10 @@ public class FreezableArrayManager {
 
     public int getMeltingHeat() {
         return meltingHeat;
+    }
+
+    public int getBoilingPoint() {
+        return boilingPoint;
     }
 
     public int getSingleOperationHeat() {
@@ -111,8 +121,15 @@ public class FreezableArrayManager {
         return tmp;
     }
 
-    public FreezableByteArray cloneByteArray(@NotNull byte[] array) {
+    public FreezableByteArray wrapByteArray(@NotNull byte[] array) {
         var tmp = new FreezableByteArray(array, this);
+        var list = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new CopyOnWriteArrayList<>());
+        list.add(new WeakReference<>(tmp));
+        return tmp;
+    }
+
+    public FreezableByteArray cloneByteArray(@NotNull byte[] array) {
+        var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
         var list = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new CopyOnWriteArrayList<>());
         list.add(new WeakReference<>(tmp));
         return tmp;
@@ -132,7 +149,7 @@ public class FreezableArrayManager {
             if (e == null) return false;
             int temp = e.getTemperature();
             e.colder(1);
-            return temp <= 1;
+            return temp <= getFreezingPoint() + 1;
         }).forEach(r -> {
             if (System.currentTimeMillis() - start > maxCompressionTime) {
                 return;
