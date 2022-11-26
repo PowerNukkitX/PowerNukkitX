@@ -42,6 +42,10 @@ public class RegionLoader extends BaseRegionLoader {
         super(level, regionX, regionZ, "mca");
     }
 
+    protected static int getChunkOffset(int x, int z) {
+        return x | (z << 5);
+    }
+
     @Override
     protected boolean isChunkGenerated(int index) {
         int[] array = this.primitiveLocationTable.get(index);
@@ -198,10 +202,6 @@ public class RegionLoader extends BaseRegionLoader {
         this.saveChunk(chunk.getX() & 0x1f, chunk.getZ() & 0x1f, chunkData);
     }
 
-    protected static int getChunkOffset(int x, int z) {
-        return x | (z << 5);
-    }
-
     @Override
     public void close() throws IOException {
         this.writeLocationTable();
@@ -325,7 +325,7 @@ public class RegionLoader extends BaseRegionLoader {
             this.primitiveLocationTable.put(index, v);
             this.lastSector = sector;
         }
-        raf.setLength((s + 1) << 12);
+        raf.setLength((long) (s + 1) << 12);
         return shift;
     }
 
@@ -333,9 +333,9 @@ public class RegionLoader extends BaseRegionLoader {
     protected void writeLocationIndex(int index) throws IOException {
         RandomAccessFile raf = this.getRandomAccessFile();
         int[] array = this.primitiveLocationTable.get(index);
-        raf.seek(index << 2);
+        raf.seek((long) index << 2);
         raf.writeInt((array[0] << 8) | array[1]);
-        raf.seek(4096 + (index << 2));
+        raf.seek(4096 + ((long) index << 2));
         raf.writeInt(array[2]);
     }
 

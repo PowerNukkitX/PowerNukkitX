@@ -108,6 +108,7 @@ import java.util.Random;
  * End.java
  */
 public class Normal extends Generator {
+    public static final int seaHeight = 64;
     private static final float[] biomeWeights = new float[25];
 
     static {
@@ -118,23 +119,22 @@ public class Normal extends Generator {
         }
     }
 
-    private List<Populator> populators = Collections.emptyList();
-    private List<Populator> generationPopulators = Collections.emptyList();
-    public static final int seaHeight = 64;
     public NoiseGeneratorOctavesF scaleNoise;
     public NoiseGeneratorOctavesF depthNoise;
+    private List<Populator> populators = Collections.emptyList();
+    private List<Populator> generationPopulators = Collections.emptyList();
     private ChunkManager level;
     private Random random;
     private NukkitRandom nukkitRandom;
     private long localSeed1;
     private long localSeed2;
     private BiomeSelector selector;
-    private ThreadLocal<Biome[]> biomes = ThreadLocal.withInitial(() -> new Biome[10 * 10]);
-    private ThreadLocal<float[]> depthRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> mainNoiseRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> minLimitRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> maxLimitRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> heightMap = ThreadLocal.withInitial(() -> new float[825]);
+    private final ThreadLocal<Biome[]> biomes = ThreadLocal.withInitial(() -> new Biome[10 * 10]);
+    private final ThreadLocal<float[]> depthRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> mainNoiseRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> minLimitRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> maxLimitRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> heightMap = ThreadLocal.withInitial(() -> new float[825]);
     private NoiseGeneratorOctavesF minLimitPerlinNoise;
     private NoiseGeneratorOctavesF maxLimitPerlinNoise;
     private NoiseGeneratorOctavesF mainPerlinNoise;
@@ -392,7 +392,7 @@ public class Normal extends Generator {
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = this.level.getChunk(chunkX, chunkZ);
-        this.nukkitRandom.setSeed(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        this.nukkitRandom.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
         for (Populator populator : this.populators) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }

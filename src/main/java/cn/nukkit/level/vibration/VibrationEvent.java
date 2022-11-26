@@ -5,10 +5,9 @@ import cn.nukkit.api.Since;
 import cn.nukkit.math.Vector3;
 
 /**
- *
  * @param initiator The object which cause the vibration (can be an instance of Block, Entity ...)
- * @param source The vibration source pos
- * @param type Vibration type
+ * @param source    The vibration source pos
+ * @param type      Vibration type
  */
 @PowerNukkitXOnly
 @Since("1.19.21-r3")

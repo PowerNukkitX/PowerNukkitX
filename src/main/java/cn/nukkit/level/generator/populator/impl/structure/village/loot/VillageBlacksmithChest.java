@@ -14,10 +14,6 @@ public class VillageBlacksmithChest extends RandomizableContainer {
 
     private static final VillageBlacksmithChest INSTANCE = new VillageBlacksmithChest();
 
-    public static VillageBlacksmithChest get() {
-        return INSTANCE;
-    }
-
     private VillageBlacksmithChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -40,5 +36,9 @@ public class VillageBlacksmithChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.GOLD_HORSE_ARMOR, 1))
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 1));
         this.pools.put(pool1.build(), new RollEntry(8, 3, pool1.getTotalWeight()));
+    }
+
+    public static VillageBlacksmithChest get() {
+        return INSTANCE;
     }
 }

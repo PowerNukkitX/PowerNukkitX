@@ -21,7 +21,7 @@ public record PNXProtoChunk(BaseFullChunk chunk) implements ProtoChunk {
     public void setBlock(int i, int i1, int i2, @NotNull BlockState blockState) {
         var ob = chunk.getBlockState(i, i1, i2);
         var innerBlockState = ((PNXBlockStateDelegate) blockState).getHandle();
-        if (innerBlockState.getBlockId() == BlockID.BLOCK_KELP){
+        if (innerBlockState.getBlockId() == BlockID.BLOCK_KELP) {
             chunk.setBlockStateAt(i, i1, i2, innerBlockState);
             chunk.setBlockAtLayer(i, i1, i2, 1, BlockID.STILL_WATER);
         } else if (ob.getBlockId() == BlockID.WATERLILY || ob.getBlockId() == BlockID.STILL_WATER || ob.getBlockId() == BlockID.FLOWING_WATER) {

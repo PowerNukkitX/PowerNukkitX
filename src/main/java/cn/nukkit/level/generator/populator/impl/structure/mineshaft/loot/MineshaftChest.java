@@ -15,10 +15,6 @@ public class MineshaftChest extends RandomizableContainer {
 
     private static final MineshaftChest INSTANCE = new MineshaftChest();
 
-    public static MineshaftChest get() {
-        return INSTANCE;
-    }
-
     private MineshaftChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -51,5 +47,9 @@ public class MineshaftChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.ACTIVATOR_RAIL, 0, 4, 5))
                 .register(new ItemEntry(Item.TORCH, 0, 16, 15));
         this.pools.put(pool3.build(), new RollEntry(3, pool3.getTotalWeight()));
+    }
+
+    public static MineshaftChest get() {
+        return INSTANCE;
     }
 }

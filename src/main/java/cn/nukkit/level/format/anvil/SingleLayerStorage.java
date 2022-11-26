@@ -168,7 +168,7 @@ public final class SingleLayerStorage extends LayerStorage {
     @PowerNukkitOnly
     @Override
     public int size() {
-        return storage == ImmutableBlockStorage.EMPTY? 0 : 1;
+        return storage == ImmutableBlockStorage.EMPTY ? 0 : 1;
     }
 
     @Since("1.4.0.0-PN")

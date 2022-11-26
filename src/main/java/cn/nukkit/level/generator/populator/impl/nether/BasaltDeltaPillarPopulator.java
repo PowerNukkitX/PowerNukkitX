@@ -28,11 +28,11 @@ public class BasaltDeltaPillarPopulator extends Populator {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             ArrayList<Integer> ys = this.getHighestWorkableBlocks(x, z);
-            for(int y : ys) {
-                if(y <= 1) continue;
-                if(random.nextBoundedInt(5) == 0) continue;
-                for(int randomHeight = 0; randomHeight < random.nextBoundedInt(5)+1; randomHeight++) {
-                    int placeLocation = y+randomHeight;
+            for (int y : ys) {
+                if (y <= 1) continue;
+                if (random.nextBoundedInt(5) == 0) continue;
+                for (int randomHeight = 0; randomHeight < random.nextBoundedInt(5) + 1; randomHeight++) {
+                    int placeLocation = y + randomHeight;
                     this.level.setBlockAt(x, placeLocation, z, BlockID.BASALT);
                 }
             }
@@ -44,8 +44,8 @@ public class BasaltDeltaPillarPopulator extends Populator {
         ArrayList<Integer> blockYs = new ArrayList<>();
         for (y = 128; y > 0; --y) {
             int b = this.level.getBlockIdAt(x, y, z);
-            if ((b == Block.BASALT || b == Block.BLACKSTONE) && this.level.getBlockIdAt(x, y+1, z) == 0) {
-                blockYs.add(y+1);
+            if ((b == Block.BASALT || b == Block.BLACKSTONE) && this.level.getBlockIdAt(x, y + 1, z) == 0) {
+                blockYs.add(y + 1);
             }
         }
         return blockYs;

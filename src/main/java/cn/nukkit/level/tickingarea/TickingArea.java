@@ -64,6 +64,18 @@ public class TickingArea {
         return "Area" + ThreadLocalRandom.current().nextInt(0, Short.MAX_VALUE - Short.MIN_VALUE);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getLevelName() {
+        return levelName;
+    }
+
+    public Set<ChunkPos> getChunks() {
+        return chunks;
+    }
+
     public static class ChunkPos {
         public int x;
         public int z;
@@ -84,17 +96,5 @@ public class TickingArea {
         public int hashCode() {
             return x ^ (z << 12);
         }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLevelName() {
-        return levelName;
-    }
-
-    public Set<ChunkPos> getChunks() {
-        return chunks;
     }
 }

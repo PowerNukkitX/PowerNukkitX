@@ -26,7 +26,7 @@ public class ChunkPopulationTask extends AsyncTask {
     public void onRun() {
         int chunkX = this.chunk.getX();
         int chunkZ = this.chunk.getZ();
-        NukkitRandom random = new NukkitRandom(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        NukkitRandom random = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
         for (var populator : this.populators) {
             populator.populate(this.level, chunkX, chunkZ, random, this.chunk);
         }

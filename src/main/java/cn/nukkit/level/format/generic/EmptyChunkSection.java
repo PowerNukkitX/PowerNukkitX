@@ -31,8 +31,21 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
     @SuppressWarnings("java:S2386")
     public static final EmptyChunkSection[] EMPTY24 = new EmptyChunkSection[24];
+    public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048]; // Filled with 0xFF
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final byte[] EMPTY_ID_ARRAY = new byte[4096];
+    @PowerNukkitXOnly
+    @Since("1.19.20-r3")
+    public static final byte[] EMPTY_BIOME_ARRAY = new byte[4096];
     private static final String MODIFICATION_ERROR_MESSAGE = "Tried to modify an empty Chunk";
     private static final String BIOME_TAG_NAME = "Biomes";
+    private static final byte[] EMPTY_2KB = new byte[2048];
+    public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2KB;
+    @Since("1.4.0.0-PN")
+    @PowerNukkitOnly
+    public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
+    private static final byte[] EMPTY_CHUNK_DATA;
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
@@ -43,24 +56,9 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         }
     }
 
-    private static final byte[] EMPTY_2KB = new byte[2048];
-    public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2KB;
-    public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048]; // Filled with 0xFF
-
     static {
         Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);
     }
-
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    public static final byte[] EMPTY_ID_ARRAY = new byte[4096];
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
-    public static final byte[] EMPTY_DATA_ARRAY = EMPTY_2KB;
-    private static final byte[] EMPTY_CHUNK_DATA;
-    @PowerNukkitXOnly
-    @Since("1.19.20-r3")
-    public static final byte[] EMPTY_BIOME_ARRAY = new byte[4096];
 
     static {
         BinaryStream stream = new BinaryStream();
@@ -80,6 +78,12 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     public EmptyChunkSection(int y, byte[] biomeId) {
         this.y = y;
         this.biomeId = biomeId;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.20-r5")
+    private static int getAnvilIndex(int x, int y, int z) {
+        return (y << 8) + (z << 4) + x; // YZX
     }
 
     @Override
@@ -327,12 +331,6 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @Override
     public List<Block> scanBlocks(LevelProvider provider, int offsetX, int offsetZ, BlockVector3 min, BlockVector3 max, BiPredicate<BlockVector3, BlockState> condition) {
         return Collections.emptyList();
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.20-r5")
-    private static int getAnvilIndex(int x, int y, int z) {
-        return (y << 8) + (z << 4) + x; // YZX
     }
 
     @Override

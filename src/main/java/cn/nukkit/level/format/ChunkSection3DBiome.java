@@ -8,6 +8,7 @@ import cn.nukkit.api.Since;
 public interface ChunkSection3DBiome {
     /**
      * 获取子区块中某个特定位置的生物群系id
+     *
      * @param x [0, 16)
      * @param y [0, 16)
      * @param z [0, 16)
@@ -17,9 +18,10 @@ public interface ChunkSection3DBiome {
 
     /**
      * 设置子区块中某个特定位置的生物群系id
-     * @param x [0, 16)
-     * @param y [0, 16)
-     * @param z [0, 16)
+     *
+     * @param x  [0, 16)
+     * @param y  [0, 16)
+     * @param z  [0, 16)
      * @param id 生物群系id
      */
     void setBiomeId(int x, int y, int z, byte id);

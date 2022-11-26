@@ -21,38 +21,38 @@ public class PopulatorVines extends PopulatorCount {
             // Randomize x, z
             x += random.nextBoundedInt(4) - random.nextBoundedInt(4);
             z += random.nextBoundedInt(4) - random.nextBoundedInt(4);
-            
+
             if (level.getBlockIdAt(x, y, z) == AIR) {
                 Set<BlockFace> attachFaces = new HashSet<>();
-                
+
                 if (level.getBlockStateAt(x - 1, y, z).getBlock().isSolid()) {
                     attachFaces.add(BlockFace.WEST);
                 }
-                
+
                 if (level.getBlockStateAt(x + 1, y, z).getBlock().isSolid()) {
                     attachFaces.add(BlockFace.EAST);
                 }
-                
+
                 if (level.getBlockStateAt(x, y, z - 1).getBlock().isSolid()) {
                     attachFaces.add(BlockFace.SOUTH);
                 }
-                
+
                 if (level.getBlockStateAt(x, y, z + 1).getBlock().isSolid()) {
                     attachFaces.add(BlockFace.NORTH);
                 }
-                
+
                 if (!attachFaces.isEmpty()) {
                     level.setBlockStateAt(x, y, z, BlockState.of(VINE, BlockVine.getMetaFromFaces(attachFaces)));
                 }
             }
         }
     }
-    
+
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         return -1;
     }
-    
+
     @Override
     protected void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         generateVines(level, (chunkX << 4) + random.nextBoundedInt(16), (chunkZ << 4) + random.nextBoundedInt(16), random);

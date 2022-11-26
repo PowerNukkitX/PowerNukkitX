@@ -16,6 +16,7 @@ public interface ChunkManager {
 
     @PowerNukkitOnly
     int getBlockIdAt(int x, int y, int z, int layer);
+
     int getBlockIdAt(int x, int y, int z);
 
     @PowerNukkitOnly
@@ -29,6 +30,7 @@ public interface ChunkManager {
 
     @PowerNukkitOnly
     void setBlockIdAt(int x, int y, int z, int layer, int id);
+
     void setBlockIdAt(int x, int y, int z, int id);
 
     @Deprecated
@@ -44,21 +46,21 @@ public interface ChunkManager {
     default void setBlockAt(int x, int y, int z, int id) {
         setBlockStateAt(x, y, z, BlockState.of(id));
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     boolean setBlockStateAt(int x, int y, int z, int layer, BlockState state);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     default boolean setBlockStateAt(int x, int y, int z, BlockState state) {
         return setBlockStateAt(x, y, z, 0, state);
     }
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     BlockState getBlockStateAt(int x, int y, int z, int layer);
-    
+
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     default BlockState getBlockStateAt(int x, int y, int z) {

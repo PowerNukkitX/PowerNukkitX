@@ -25,6 +25,14 @@ public class BlockState {
         this.meta = meta;
     }
 
+    public static BlockState fromFullId(int fullId) {
+        return new BlockState(fullId >> 4, fullId & 0xf);
+    }
+
+    public static BlockState fromHash(int hash) {
+        return new BlockState(hash >> 6, hash & 0x3f);
+    }
+
     public int getId() {
         return this.id;
     }
@@ -64,8 +72,7 @@ public class BlockState {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof BlockState) {
-            BlockState o = (BlockState) obj;
+        if (obj instanceof BlockState o) {
             return this.id == o.id && this.meta == o.meta;
         }
         return false;
@@ -79,13 +86,5 @@ public class BlockState {
     @Override
     public String toString() {
         return String.format("BlockState(id=%s, meta=%s)", this.id, this.meta);
-    }
-
-    public static BlockState fromFullId(int fullId) {
-        return new BlockState(fullId >> 4, fullId & 0xf);
-    }
-
-    public static BlockState fromHash(int hash) {
-        return new BlockState(hash >> 6, hash & 0x3f);
     }
 }

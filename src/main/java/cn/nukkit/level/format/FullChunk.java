@@ -22,16 +22,16 @@ public interface FullChunk extends Cloneable {
 
     int getX();
 
+    void setX(int x);
+
     int getZ();
+
+    void setZ(int z);
 
     default void setPosition(int x, int z) {
         setX(x);
         setZ(z);
     }
-
-    void setX(int x);
-
-    void setZ(int z);
 
     long getIndex();
 
@@ -208,21 +208,21 @@ public interface FullChunk extends Cloneable {
 
     boolean isLightPopulated();
 
-    void setLightPopulated();
-
     void setLightPopulated(boolean value);
+
+    void setLightPopulated();
 
     boolean isPopulated();
 
-    void setPopulated();
-
     void setPopulated(boolean value);
+
+    void setPopulated();
 
     boolean isGenerated();
 
-    void setGenerated();
-
     void setGenerated(boolean value);
+
+    void setGenerated();
 
     void addEntity(Entity entity);
 

@@ -31,28 +31,22 @@ public class BlockStorage {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final BlockStorage[] EMPTY_ARRAY = new BlockStorage[0];
-
+    @PowerNukkitOnly
+    public static final int SECTION_SIZE = 4096;
     private static final byte FLAG_HAS_ID = 0b00_0001;
     private static final byte FLAG_HAS_ID_EXTRA = 0b00_0010;
     private static final byte FLAG_HAS_DATA_EXTRA = 0b00_0100;
     private static final byte FLAG_HAS_DATA_BIG = 0b00_1000;
     private static final byte FLAG_HAS_DATA_HUGE = 0b01_0000;
     private static final byte FLAG_PALETTE_UPDATED = 0b10_0000;
-
     private static final byte FLAG_ENABLE_ID_EXTRA = FLAG_HAS_ID | FLAG_HAS_ID_EXTRA;
     private static final byte FLAG_ENABLE_DATA_EXTRA = FLAG_HAS_ID | FLAG_HAS_DATA_EXTRA;
     private static final byte FLAG_ENABLE_DATA_BIG = FLAG_ENABLE_DATA_EXTRA | FLAG_HAS_DATA_BIG;
     private static final byte FLAG_ENABLE_DATA_HUGE = FLAG_ENABLE_DATA_BIG | FLAG_HAS_DATA_HUGE;
-
     private static final byte FLAG_EVERYTHING_ENABLED = FLAG_ENABLE_DATA_HUGE | FLAG_ENABLE_ID_EXTRA | FLAG_PALETTE_UPDATED;
-
     private static final int BLOCK_ID_MASK = 0x00FF;
     private static final int BLOCK_ID_EXTRA_MASK = 0xFF00;
     private static final int BLOCK_ID_FULL = BLOCK_ID_MASK | BLOCK_ID_EXTRA_MASK;
-
-    @PowerNukkitOnly
-    public static final int SECTION_SIZE = 4096;
-
     private static final BlockState[] EMPTY = new BlockState[SECTION_SIZE];
 
     static {
@@ -537,7 +531,7 @@ public class BlockStorage {
                 var rid = states[i].getRuntimeId();
                 if (x != 0 && z != 0 && y != 0 && x != 15 && z != 15 && y != 15) {
                     var tmp = realOreToFakeMap.getOrDefault(rid, Integer.MAX_VALUE);
-                    if (tmp != Integer.MAX_VALUE  && canBeObfuscated(transparentBlockSet, x, y, z)) {
+                    if (tmp != Integer.MAX_VALUE && canBeObfuscated(transparentBlockSet, x, y, z)) {
                         rid = tmp;
                     } else {
                         var tmp2 = fakeBlockMap.get(rid);

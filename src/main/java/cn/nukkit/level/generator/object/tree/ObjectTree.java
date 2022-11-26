@@ -13,43 +13,12 @@ import cn.nukkit.math.NukkitRandom;
  * @author MagicDroidX (Nukkit Project)
  */
 public abstract class ObjectTree {
-    protected boolean overridable(int id) {
-        switch (id) {
-            case Block.AIR:
-            case Block.SAPLING:
-            case Block.LOG:
-            case Block.LEAVES:
-            case Block.SNOW_LAYER:
-            case Block.LOG2:
-            case Block.LEAVES2:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public int getType() {
-        return 0;
-    }
-
-    public int getTrunkBlock() {
-        return Block.LOG;
-    }
-
-    public int getLeafBlock() {
-        return Block.LEAVES;
-    }
-
-    public int getTreeHeight() {
-        return 7;
-    }
-
     public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random) {
         growTree(level, x, y, z, random, 0);
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value in type", 
+    @DeprecationDetails(since = "1.4.0.0-PN", by = "PowerNukkit", reason = "Magic value in type",
             replaceWith = "growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, WoodType type, boolean tall)")
     public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type) {
         WoodType woodType;
@@ -107,6 +76,36 @@ public abstract class ObjectTree {
         }
     }
 
+    protected boolean overridable(int id) {
+        switch (id) {
+            case Block.AIR:
+            case Block.SAPLING:
+            case Block.LOG:
+            case Block.LEAVES:
+            case Block.SNOW_LAYER:
+            case Block.LOG2:
+            case Block.LEAVES2:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public int getType() {
+        return 0;
+    }
+
+    public int getTrunkBlock() {
+        return Block.LOG;
+    }
+
+    public int getLeafBlock() {
+        return Block.LEAVES;
+    }
+
+    public int getTreeHeight() {
+        return 7;
+    }
 
     public boolean canPlaceObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
         int radiusToCheck = 0;

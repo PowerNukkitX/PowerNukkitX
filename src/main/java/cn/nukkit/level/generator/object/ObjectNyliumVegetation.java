@@ -21,8 +21,8 @@ public class ObjectNyliumVegetation {
             int x = pos.getFloorX();
             int y = pos.getFloorY() + 1;
             int z = pos.getFloorZ();
-            
-            boolean crimson = level.getBlockIdAt(x, y-1, z) == BlockID.CRIMSON_NYLIUM;
+
+            boolean crimson = level.getBlockIdAt(x, y - 1, z) == BlockID.CRIMSON_NYLIUM;
 
             while (true) {
                 if (num >= i / 16) {

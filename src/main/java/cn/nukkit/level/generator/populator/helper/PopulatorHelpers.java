@@ -14,6 +14,7 @@ import java.util.HashSet;
 public final class PopulatorHelpers implements BlockID {
 
     private static final IntSet nonSolidBlocks = new IntOpenHashSet();
+    private static final HashSet<BlockState> nonOceanSolidBlocks = new HashSet<BlockState>(3);
 
     static {
         nonSolidBlocks.add(AIR);
@@ -22,9 +23,7 @@ public final class PopulatorHelpers implements BlockID {
         nonSolidBlocks.add(SNOW_LAYER);
         nonSolidBlocks.add(TALL_GRASS);
     }
-    
-    private static final HashSet<BlockState> nonOceanSolidBlocks = new HashSet<BlockState>(3);
-    
+
     static {
         nonOceanSolidBlocks.add(BlockState.of(AIR));
         nonOceanSolidBlocks.add(BlockState.of(WATER));
@@ -33,7 +32,7 @@ public final class PopulatorHelpers implements BlockID {
         nonOceanSolidBlocks.add(BlockState.of(PACKED_ICE));
         nonOceanSolidBlocks.add(BlockState.of(BLUE_ICE));
     }
-    
+
     private PopulatorHelpers() {
     }
 
@@ -44,7 +43,7 @@ public final class PopulatorHelpers implements BlockID {
     public static boolean isNonSolid(int id) {
         return nonSolidBlocks.contains(id);
     }
-    
+
     public static boolean isNonOceanSolid(BlockState blockState) {
         return nonOceanSolidBlocks.contains(blockState);
     }

@@ -14,7 +14,7 @@ public class LegacyFrozenOceanBiome extends OceanBiome {
     public LegacyFrozenOceanBiome() {
         WaterIcePopulator ice = new WaterIcePopulator();
         this.addPopulator(ice);
-        
+
         this.setBaseHeight(-1f);
         this.setHeightVariation(0.1f);
     }

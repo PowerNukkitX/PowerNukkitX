@@ -21,11 +21,11 @@ public abstract class PopulatorOceanFloorSurfaceBlock extends PopulatorCount {
             placeBlock(x, y, z, getBlockState(x, z, random, chunk), chunk, random);
         }
     }
-    
+
     protected abstract boolean canStay(int x, int y, int z, FullChunk chunk);
-    
+
     protected abstract BlockState getBlockState(int x, int z, NukkitRandom random, FullChunk chunk);
-    
+
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         int y;
@@ -34,10 +34,10 @@ public abstract class PopulatorOceanFloorSurfaceBlock extends PopulatorCount {
                 break;
             }
         }
-        
+
         return y == 0 ? -1 : ++y;
     }
-    
+
     protected void placeBlock(int x, int y, int z, BlockState blockState, FullChunk chunk, NukkitRandom random) {
         chunk.setBlockState(x, y, z, blockState);
     }

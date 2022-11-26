@@ -35,62 +35,6 @@ public class MovingObjectPosition {
     public Vector3 hitVector;
 
     public Entity entityHit;
-    
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @Nullable
-    @SuppressWarnings("java:S1874")
-    public BlockFace getFaceHit() {
-        switch (sideHit) {
-            case 0:
-                return BlockFace.DOWN;
-            case 1:
-                return BlockFace.UP;
-            case 2:
-                return BlockFace.EAST;
-            case 3:
-                return BlockFace.WEST;
-            case 4:
-                return BlockFace.NORTH;
-            case 5:
-                return BlockFace.SOUTH;
-            default:
-                return null;
-        }
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    @SuppressWarnings("java:S1874")
-    public void setFaceHit(@Nullable BlockFace face) {
-        if (face == null) {
-            sideHit = -1;
-            return;
-        }
-        
-        switch (face) {
-            case DOWN:
-                sideHit = 0;
-                break;
-            case UP:
-                sideHit = 1;
-                break;
-            case NORTH:
-                sideHit = 4;
-                break;
-            case SOUTH:
-                sideHit = 5;
-                break;
-            case WEST:
-                sideHit = 3;
-                break;
-            case EAST:
-                sideHit = 2;
-                break;
-            default:
-                sideHit = -1;
-        }
-    }
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -125,6 +69,62 @@ public class MovingObjectPosition {
         objectPosition.entityHit = entity;
         objectPosition.hitVector = new Vector3(entity.x, entity.y, entity.z);
         return objectPosition;
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @Nullable
+    @SuppressWarnings("java:S1874")
+    public BlockFace getFaceHit() {
+        switch (sideHit) {
+            case 0:
+                return BlockFace.DOWN;
+            case 1:
+                return BlockFace.UP;
+            case 2:
+                return BlockFace.EAST;
+            case 3:
+                return BlockFace.WEST;
+            case 4:
+                return BlockFace.NORTH;
+            case 5:
+                return BlockFace.SOUTH;
+            default:
+                return null;
+        }
+    }
+
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    @SuppressWarnings("java:S1874")
+    public void setFaceHit(@Nullable BlockFace face) {
+        if (face == null) {
+            sideHit = -1;
+            return;
+        }
+
+        switch (face) {
+            case DOWN:
+                sideHit = 0;
+                break;
+            case UP:
+                sideHit = 1;
+                break;
+            case NORTH:
+                sideHit = 4;
+                break;
+            case SOUTH:
+                sideHit = 5;
+                break;
+            case WEST:
+                sideHit = 3;
+                break;
+            case EAST:
+                sideHit = 2;
+                break;
+            default:
+                sideHit = -1;
+        }
     }
 
     @Override

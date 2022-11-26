@@ -42,6 +42,14 @@ public class PopulatorFossil extends PopulatorStructure {
             new ReadOnlyLegacyStructureTemplate().load(loadNBT("structures/fossils/fossil_skull_04_coal.nbt"))
     };
 
+    private static CompoundTag loadNBT(String path) {
+        try (InputStream inputStream = PopulatorFossil.class.getModule().getResourceAsStream(path)) {
+            return NBTIO.readCompressed(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
@@ -60,14 +68,6 @@ public class PopulatorFossil extends PopulatorStructure {
             BlockVector3 vec = new BlockVector3(chunkX << 4, Math.max(10, y - 15 - random.nextBoundedInt(10)), chunkZ << 4);
             FOSSILS[index].placeInChunk(chunk, random, vec, 90, null);
             FOSSILS_COAL[index].placeInChunk(chunk, random, vec, 10, null);
-        }
-    }
-
-    private static CompoundTag loadNBT(String path) {
-        try (InputStream inputStream = PopulatorFossil.class.getModule().getResourceAsStream(path)) {
-            return NBTIO.readCompressed(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

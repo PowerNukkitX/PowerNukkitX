@@ -15,7 +15,8 @@ public class Location extends Position {
 
     public double yaw;
     public double pitch;
-    @Since("1.6.0.0-PNX") public double headYaw;
+    @Since("1.6.0.0-PNX")
+    public double headYaw;
 
     public Location() {
         this(0);
@@ -93,14 +94,19 @@ public class Location extends Position {
         return this.yaw;
     }
 
+    @PowerNukkitOnly
+    public Location setYaw(double yaw) {
+        this.yaw = yaw;
+        return this;
+    }
+
     public double getPitch() {
         return this.pitch;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.6.0.0-PNX")
-    public Location setHeadYaw(double headYaw) {
-        this.headYaw = headYaw;
+    @PowerNukkitOnly
+    public Location setPitch(double pitch) {
+        this.pitch = pitch;
         return this;
     }
 
@@ -109,15 +115,10 @@ public class Location extends Position {
         return this.headYaw;
     }
 
-    @PowerNukkitOnly
-    public Location setYaw(double yaw) {
-        this.yaw = yaw;
-        return this;
-    }
-
-    @PowerNukkitOnly
-    public Location setPitch(double pitch) {
-        this.pitch = pitch;
+    @PowerNukkitXOnly
+    @Since("1.6.0.0-PNX")
+    public Location setHeadYaw(double headYaw) {
+        this.headYaw = headYaw;
         return this;
     }
 

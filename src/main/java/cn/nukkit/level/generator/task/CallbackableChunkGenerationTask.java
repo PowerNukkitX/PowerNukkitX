@@ -14,12 +14,11 @@ import java.util.function.Consumer;
 @Since("1.19.21-r2")
 public class CallbackableChunkGenerationTask<T> extends AsyncTask {
 
-    public boolean state = true;
-
     private final Level level;
-    private BaseFullChunk chunk;
     private final T structure;
     private final Consumer<T> callback;
+    public boolean state = true;
+    private BaseFullChunk chunk;
 
     public CallbackableChunkGenerationTask(Level level, BaseFullChunk chunk, T structure, Consumer<T> callback) {
         this.chunk = chunk;

@@ -19,5 +19,6 @@ public abstract class NetherBiome extends Biome {
     }
 
     public abstract int getCoverBlock();
+
     public abstract int getMiddleBlock();
 }

@@ -14,10 +14,6 @@ public class DungeonChest extends RandomizableContainer {
 
     private static final DungeonChest INSTANCE = new DungeonChest();
 
-    public static DungeonChest get() {
-        return INSTANCE;
-    }
-
     private DungeonChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -53,5 +49,9 @@ public class DungeonChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.ROTTEN_FLESH, 0, 8, 10))
                 .register(new ItemEntry(Item.STRING, 0, 8, 10));
         this.pools.put(pool3.build(), new RollEntry(3, pool3.getTotalWeight()));
+    }
+
+    public static DungeonChest get() {
+        return INSTANCE;
     }
 }

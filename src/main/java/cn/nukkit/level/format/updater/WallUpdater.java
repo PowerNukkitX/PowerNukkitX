@@ -55,13 +55,13 @@ class WallUpdater implements Updater {
             } catch (InvalidBlockStateException e2) {
                 e.addSuppressed(e2);
                 Server server = Server.getInstance();
-                log.warn("Failed to update the block X:{}, Y:{}, Z:{} at {}, could not cast it to BlockWall. Section Version:{}, Updating To:{}, Server Version:{} {}", 
-                        levelX, levelY, levelZ, level, section.getContentVersion(), ChunkUpdater.getCurrentContentVersion(), 
+                log.warn("Failed to update the block X:{}, Y:{}, Z:{} at {}, could not cast it to BlockWall. Section Version:{}, Updating To:{}, Server Version:{} {}",
+                        levelX, levelY, levelZ, level, section.getContentVersion(), ChunkUpdater.getCurrentContentVersion(),
                         server.getNukkitVersion(), server.getGitCommit(), e);
                 return false;
             }
         }
-        
+
         BlockWall blockWall = (BlockWall) block;
         if (blockWall.autoConfigureState()) {
             section.setBlockStateAtLayer(x, y, z, 0, blockWall.getCurrentState());

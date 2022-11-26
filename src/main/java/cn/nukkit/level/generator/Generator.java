@@ -42,6 +42,8 @@ public abstract class Generator implements BlockID {
     @Since("1.19.21-r2")
     protected NukkitRandom random;
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     protected List<PopulatorStructure> structurePopulators = new ArrayList<>();
 
     {
@@ -59,6 +61,8 @@ public abstract class Generator implements BlockID {
 
     public abstract int getId();
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     public List<PopulatorStructure> getStructurePopulators() {
         return structurePopulators;
     }
@@ -108,6 +112,8 @@ public abstract class Generator implements BlockID {
         this.level = level;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     public void setChunkManager(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
     }
@@ -211,8 +217,10 @@ public abstract class Generator implements BlockID {
         //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
         var chunk = level.getChunk(chunkX, chunkZ);
         for (PopulatorStructure populator : structurePopulators) {
-            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
-            else populator.populate(level, chunkX, chunkZ, random, chunk);
+//            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
+//            else populator.populate(level, chunkX, chunkZ, random, chunk);
+            //todo: 临时解决Level::generators.get()的性能问题，有待进一步处理
+            populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }
 

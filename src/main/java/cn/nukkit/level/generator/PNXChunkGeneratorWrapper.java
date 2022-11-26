@@ -22,10 +22,6 @@ import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
 import com.dfsek.terra.api.world.info.WorldProperties;
 import lombok.Getter;
 
-import javax.annotation.Nonnull;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 
@@ -159,8 +155,9 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
         chunkGenerator.generateChunkData(new PNXProtoChunk(chunk), worldProperties,
                 biomeProvider, chunkX, chunkZ);
-        int minHeight = this.level.getMinHeight();
-        int maxHeight = this.level.getMaxHeight();
+        var level = this.getLevel();
+        int minHeight = level.getMinHeight();
+        int maxHeight = level.getMaxHeight();
         for (int x = 0; x < 16; x++) {
             for (int y = minHeight; y < maxHeight; y++) {
                 for (int z = 0; z < 16; z++) {

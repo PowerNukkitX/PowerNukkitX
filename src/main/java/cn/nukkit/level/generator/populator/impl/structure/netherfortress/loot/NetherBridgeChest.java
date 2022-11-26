@@ -14,10 +14,6 @@ public class NetherBridgeChest extends RandomizableContainer {
 
     private static final NetherBridgeChest INSTANCE = new NetherBridgeChest();
 
-    public static NetherBridgeChest get() {
-        return INSTANCE;
-    }
-
     private NetherBridgeChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -35,5 +31,9 @@ public class NetherBridgeChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 3))
                 .register(new ItemEntry(Item.OBSIDIAN, 0, 4, 2, 2));
         this.pools.put(pool1.build(), new RollEntry(4, 2, pool1.getTotalWeight()));
+    }
+
+    public static NetherBridgeChest get() {
+        return INSTANCE;
     }
 }

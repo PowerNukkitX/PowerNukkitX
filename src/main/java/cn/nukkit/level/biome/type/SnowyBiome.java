@@ -20,7 +20,7 @@ public abstract class SnowyBiome extends GrassyBiome {
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {
-            return getCoverId(0,0);
+            return getCoverId(0, 0);
         }
         return SNOW_LAYER;
     }

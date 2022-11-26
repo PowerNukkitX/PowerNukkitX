@@ -46,7 +46,7 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                     BoundingBox boundingBox = start.getBoundingBox();
                     for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                         for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                            NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
+                            NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
                             int x = cx << 4;
                             int z = cz << 4;
                             BaseFullChunk ck = level.getChunk(cx, cz);
@@ -68,6 +68,12 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                 }
             }
         }
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 
     public static class NetherFortressStart extends StructureStart {
@@ -96,11 +102,5 @@ public class PopulatorNetherFortress extends PopulatorStructure {
         public String getType() {
             return "Fortress";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

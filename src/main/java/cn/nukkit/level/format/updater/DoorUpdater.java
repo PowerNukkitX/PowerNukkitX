@@ -18,7 +18,7 @@ public class DoorUpdater implements Updater {
     private static final int DOOR_OPEN_BIT = 0x04;
     private static final int DOOR_TOP_BIT = 0x08;
     private static final int DOOR_HINGE_BIT = 0x01;
-    
+
     private final Chunk chunk;
     private final ChunkSection section;
 
@@ -44,14 +44,14 @@ public class DoorUpdater implements Updater {
             default:
                 return false;
         }
-        
-        @SuppressWarnings("deprecation") 
+
+        @SuppressWarnings("deprecation")
         int legacy = state.getLegacyDamage();
         MutableBlockState mutableState = BlockStateRegistry.createMutableState(state.getBlockId());
         if ((legacy & DOOR_TOP_BIT) > 0) {
             mutableState.setBooleanValue(CommonBlockProperties.UPPER_BLOCK, true);
             mutableState.setBooleanValue(BlockDoor.DOOR_HINGE, (legacy & DOOR_HINGE_BIT) > 0);
-            
+
             int underY = offsetY + y - 1;
             if (underY >= 0) {
                 BlockState underState = chunk.getBlockState(x, underY, z);
@@ -65,7 +65,7 @@ public class DoorUpdater implements Updater {
             mutableState.setPropertyValue(BlockDoor.DOOR_DIRECTION, BlockDoor.DOOR_DIRECTION.getValueForMeta(legacy & 0x3));
             mutableState.setBooleanValue(CommonBlockProperties.OPEN, (legacy & DOOR_OPEN_BIT) > 0);
         }
-        
+
         return section.setBlockState(x, y, z, mutableState.getCurrentState());
     }
 }

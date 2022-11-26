@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public abstract class ScatteredStructurePiece {
 
-    private static final IntList PLANTS = new IntArrayList(){
+    private static final IntList PLANTS = new IntArrayList() {
         {
             add(Block.LOG);
             add(Block.LEAVES);
@@ -41,7 +41,7 @@ public abstract class ScatteredStructurePiece {
     /**
      * Creates a scattered structure piece.
      *
-     * @param pos the root location
+     * @param pos  the root location
      * @param size the size as a width-height-depth vector
      */
     public ScatteredStructurePiece(BlockVector3 pos, BlockVector3 size) {

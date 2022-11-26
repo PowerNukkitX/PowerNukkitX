@@ -11,7 +11,7 @@ public class BambooJungleHillsBiome extends BambooJungleBiome {
         this.setBaseHeight(0.45f);
         this.setHeightVariation(0.3f);
     }
-    
+
     @Override
     public String getName() {
         return "Bamboo Jungle Hills";
