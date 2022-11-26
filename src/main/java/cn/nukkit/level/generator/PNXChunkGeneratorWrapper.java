@@ -24,6 +24,7 @@ import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
@@ -36,7 +37,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     private final ConfigPack configPack;
     private final BlockState air;
     private final WorldProperties worldProperties;
-    private volatile Reference<ChunkGenerator> chunkGenerator = new WeakReference<>(null);
+    private ChunkGenerator chunkGenerator;
+
     private ServerWorld world;
     private ChunkManager chunkManager;
     private DimensionData dimensionData;
@@ -60,6 +62,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         }
         this.air = new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR);
         this.configPack = createConfigPack(packName);
+        this.chunkGenerator = createGenerator(this.configPack);
         this.biomeProvider = this.configPack.getBiomeProvider();
         this.worldProperties = new WorldProperties() {
             @Override
@@ -87,6 +90,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     public PNXChunkGeneratorWrapper(ConfigPack configPack, BlockState air) {
         this.air = air;
         this.configPack = configPack;
+        this.chunkGenerator = createGenerator(this.configPack);
         this.dimensionData = DimensionEnum.getDataFromId(0);
         this.biomeProvider = this.configPack.getBiomeProvider();
         this.worldProperties = new WorldProperties() {
@@ -153,7 +157,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
-        requireChunkGenerator().generateChunkData(new PNXProtoChunk(chunk), worldProperties,
+        chunkGenerator.generateChunkData(new PNXProtoChunk(chunk), worldProperties,
                 biomeProvider, chunkX, chunkZ);
         int minHeight = this.level.getMinHeight();
         int maxHeight = this.level.getMaxHeight();
@@ -211,7 +215,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
 
     @Override
     public ChunkGenerator getHandle() {
-        return requireChunkGenerator();
+        return chunkGenerator;
     }
 
     public BiomeProvider getBiomeProvider() {
@@ -221,28 +225,5 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     @Override
     public DimensionData getDimensionData() {
         return dimensionData;
-    }
-
-    /**
-     * 调查发现，ChunkGenerator::samplerCache在大量区块生成后会造成大量内存占用
-     * 所以将其设置为软引用以在内存不足时允许JVM清理它
-     * 通过此方法获取一个非Null的ChunkGenerator实例
-     *
-     * @return ChunkGenerator
-     */
-    @Nonnull
-    @Since("1.19.40-r3")
-    public ChunkGenerator requireChunkGenerator() {
-        var current = chunkGenerator.get();
-        if (current != null) return current;
-        else {
-            //同步防止多线程环境下重复创建
-            synchronized (ChunkGenerator.class) {
-                //双重check防止重复创建
-                if ((current = chunkGenerator.get()) == null)
-                    chunkGenerator = new WeakReference<>(current = createGenerator(this.configPack));
-                return current;
-            }
-        }
     }
 }
