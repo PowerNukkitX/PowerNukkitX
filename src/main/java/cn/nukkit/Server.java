@@ -659,7 +659,7 @@ public class Server {
             try {
                 poolSize = Integer.valueOf((String) poolSize);
             } catch (Exception e) {
-                poolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
+                poolSize = Math.max(Runtime.getRuntime().availableProcessors(), 4);
             }
         }
 
@@ -1180,6 +1180,7 @@ public class Server {
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
             this.scheduler.mainThreadHeartbeat(Integer.MAX_VALUE);
+            this.scheduler.close();
 
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {

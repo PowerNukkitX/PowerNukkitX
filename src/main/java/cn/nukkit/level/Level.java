@@ -232,7 +232,7 @@ public class Level implements ChunkManager, Metadatable {
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     private final Int2IntMap realOreToReplacedRuntimeIds = new Int2IntOpenHashMap(24);
-//    private final TreeSet<BlockUpdateEntry> updateQueue = new TreeSet<>();
+    //    private final TreeSet<BlockUpdateEntry> updateQueue = new TreeSet<>();
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
     @PowerNukkitXOnly
@@ -268,9 +268,9 @@ public class Level implements ChunkManager, Metadatable {
     private final int chunkTickRadius;
     private final int chunksPerTicks;
     private final boolean clearChunksOnTick;
-    private final IterableThreadLocal<Generator> generators = new IterableThreadLocal<>() {
+    private final Supplier<Generator> generators = new Supplier<>() {
         @Override
-        public Generator init() {
+        public synchronized Generator get() {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
@@ -287,13 +287,8 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
             }
         }
-
-        @Override
-        protected Generator initialValue() {
-            //todo: 此处只是临时修复，其实现仍然有巨大的性能问题，有待解决
-            return init();
-        }
     };
+
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
     private final Class<? extends Generator> generatorClass;
@@ -753,7 +748,6 @@ public class Level implements ChunkManager, Metadatable {
         this.blockMetadata = null;
         this.temporalPosition = null;
         this.server.getLevels().remove(this.levelId);
-        this.generators.clean();
     }
 
     public void addSound(Vector3 pos, Sound sound) {
