@@ -49,7 +49,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public final int BIG_META_MASK = 0xFFFFFFFF;
-    private final ExecutorService asyncStateRemover = Executors.newSingleThreadExecutor();
+    private final ExecutorService asyncStateRemover = Executors.newSingleThreadExecutor(t -> new Thread(t, "BlockStateRegistry#asyncStateRemover"));
     private final Pattern BLOCK_ID_NAME_PATTERN = Pattern.compile("^blockid:(\\d+)$");
 
     private Registration updateBlockRegistration;
@@ -754,6 +754,12 @@ public class BlockStateRegistry {
     @Since("1.4.0.0-PN")
     public BlockState getFallbackBlockState() {
         return updateBlockRegistration.state;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    public static void close() {
+        asyncStateRemover.shutdownNow();
     }
 
     private Comparator<String> getBlockIdComparator() {
