@@ -398,19 +398,6 @@ public class Server {
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
-
-        class ComputeThread extends ForkJoinWorkerThread {
-            /**
-             * Creates a ForkJoinWorkerThread operating in the given pool.
-             *
-             * @param pool the pool this thread works in
-             * @throws NullPointerException if pool is null
-             */
-            ComputeThread(ForkJoinPool pool) {
-                super(pool);
-                this.setName("computeThread" + pool.getPoolSize());
-            }
-        }
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
 
         this.playerDataSerializer = new DefaultPlayerDataSerializer(this);
