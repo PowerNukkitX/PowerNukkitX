@@ -1209,7 +1209,7 @@ public class Server {
             if (nameLookup != null) {
                 nameLookup.close();
             }
-
+            //close watchdog and metrics
             this.watchdog.running = false;
             NukkitMetrics.closeNow(this);
 
@@ -2954,7 +2954,7 @@ public class Server {
          */
         ComputeThread(ForkJoinPool pool, AtomicInteger threadCount) {
             super(pool);
-            this.setName("computeThread:" + threadCount.getAndIncrement());
+            this.setName("ComputeThreadPool-thread-" + threadCount.getAndIncrement());
         }
     }
 
