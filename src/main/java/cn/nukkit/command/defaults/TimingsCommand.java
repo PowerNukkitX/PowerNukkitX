@@ -11,7 +11,7 @@ import co.aikar.timings.TimingsExport;
  * @author fromgate
  * @author Pub4Game
  */
-public class TimingsCommand extends VanillaCommand {
+public class TimingsCommand extends TestCommand {
 
     public TimingsCommand(String name) {
         super(name, "%nukkit.command.timings.description", "%nukkit.command.timings.usage");

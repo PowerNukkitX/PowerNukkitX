@@ -96,13 +96,14 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new XpCommand("xp"));
         this.register("nukkit", new SetBlockCommand("setblock"));
 
-//        if ((boolean) this.server.getConfig("debug.commands", false)) {
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
         this.register("nukkit", new TimingsCommand("timings"));
         this.register("nukkit", new DebugPasteCommand("debugpaste"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
-//        }
+        if (this.server.getConfig("debug.commands", false)) {
+            this.register("nukkit", new DebugCommand("debug"));
+        }
     }
 
     @Override

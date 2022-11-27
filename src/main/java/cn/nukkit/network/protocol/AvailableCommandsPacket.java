@@ -141,7 +141,13 @@ public class AvailableCommandsPacket extends DataPacket {
 
             putString(name);
             putString(data.description);
-            putLShort(data.flags);
+
+            int flags = 0;
+            for (CommandData.Flag flag : data.flags) {
+                flags |= 1 << flag.ordinal();
+            }
+            putLShort(flags);
+
             putByte((byte) data.permission);
 
             putLInt(data.aliases == null ? -1 : enums.indexOf(data.aliases));

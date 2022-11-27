@@ -10,7 +10,7 @@ import cn.nukkit.utils.ThreadCache;
  * @author xtypr
  * @since 2015/11/11
  */
-public class GarbageCollectorCommand extends VanillaCommand {
+public class GarbageCollectorCommand extends TestCommand {
 
     public GarbageCollectorCommand(String name) {
         super(name, "%nukkit.command.gc.description", "%nukkit.command.gc.usage");

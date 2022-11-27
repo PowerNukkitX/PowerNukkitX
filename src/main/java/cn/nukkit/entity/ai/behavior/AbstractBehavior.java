@@ -5,6 +5,9 @@ import cn.nukkit.api.Since;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * AbstractBehavior包含一个{@link BehaviorState}属性以及它的Getter/Setter
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public abstract class AbstractBehavior implements IBehavior {

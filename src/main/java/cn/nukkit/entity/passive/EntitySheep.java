@@ -11,8 +11,8 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.*;
 import cn.nukkit.entity.ai.executor.*;
-import cn.nukkit.entity.ai.memory.*;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
@@ -54,16 +54,16 @@ public class EntitySheep extends EntityWalkingAnimal {
                             new Behavior(
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
-                                            new PassByTimeEvaluator<>(PlayerBreedingMemory.class, 0, 400),
-                                            new PassByTimeEvaluator<>(InLoveMemory.class, 6000, Integer.MAX_VALUE, true)
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
                                     1, 1
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator<>(AttackMemory.class, 0, 100), 6, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(InLoveMemory.class).isInLove(), 5, 1),
-                            new Behavior(new MoveToTargetExecutor(NearestFeedingPlayerMemory.class, 0.25f, true, 8, 1.5f), new MemoryCheckNotEmptyEvaluator(NearestFeedingPlayerMemory.class), 4, 1),
+                            new Behavior(new RandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 6, 1),
+                            new Behavior(new EntityBreedingExecutor<>(EntitySheep.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
+                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.25f, true, 8, 1.5f), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1),
                             new Behavior(new EatGrassExecutor(40), new AllMatchEvaluator(
                                     new AnyMatchEvaluator(
                                             new AllMatchEvaluator(
@@ -80,7 +80,7 @@ public class EntitySheep extends EntityWalkingAnimal {
                                             new BlockCheckEvaluator(Block.TALL_GRASS, Vector3.ZERO))),
                                     3, 1, 100
                             ),
-                            new Behavior(new LookAtTargetExecutor(NearestPlayerMemory.class, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ProbabilityEvaluator(4, 10), 1, 1, 100),
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
                     Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),

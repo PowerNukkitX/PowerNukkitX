@@ -3,11 +3,11 @@ package cn.nukkit.entity.ai.sensor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.IMemory;
+import cn.nukkit.entity.ai.memory.IMemoryStorage;
 
 /**
  * 此接口抽象了一个传感器 <br/>
- * 传感器用于搜集环境信息并向记忆存储器{@link cn.nukkit.entity.ai.memory.IMemoryStorage}写入一个记忆{@link IMemory}
+ * 传感器用于搜集环境信息并向记忆存储器{@link IMemoryStorage}写入一个记忆{@link cn.nukkit.entity.ai.memory.MemoryType}
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
