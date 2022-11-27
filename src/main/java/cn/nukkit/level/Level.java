@@ -268,7 +268,7 @@ public class Level implements ChunkManager, Metadatable {
     private final int chunkTickRadius;
     private final int chunksPerTicks;
     private final boolean clearChunksOnTick;
-    private final Supplier<Generator> generators = new Supplier<>() {
+    private final ThreadLocal<Generator> generators = new ThreadLocal<>() {
         @Override
         public Generator get() {
             try {
@@ -748,6 +748,7 @@ public class Level implements ChunkManager, Metadatable {
         this.blockMetadata = null;
         this.temporalPosition = null;
         this.server.getLevels().remove(this.levelId);
+        this.generators.remove();
     }
 
     public void addSound(Vector3 pos, Sound sound) {
