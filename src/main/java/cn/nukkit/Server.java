@@ -2937,7 +2937,7 @@ public class Server {
         };
     }
 
-    //NukkitConsole 会阻塞关不掉
+    //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
         @Override
         public void run() {
