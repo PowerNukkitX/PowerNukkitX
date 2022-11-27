@@ -13,10 +13,6 @@ public class RuinBigChest extends RandomizableContainer {
 
     private static final RuinBigChest INSTANCE = new RuinBigChest();
 
-    public static RuinBigChest get() {
-        return INSTANCE;
-    }
-
     private RuinBigChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -35,5 +31,9 @@ public class RuinBigChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.FISHING_ROD, 5)) //TODO: enchant_randomly
                 .register(new ItemEntry(Item.MAP, 10)); //TODO: exploration_map buried treasure
         this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
+    }
+
+    public static RuinBigChest get() {
+        return INSTANCE;
     }
 }

@@ -68,7 +68,7 @@ public class ScatteredStructureBuilder {
      * Sets the block entity at a given point.
      *
      * @param pos a point relative to this structure's root point
-     * @param id the new block entity id
+     * @param id  the new block entity id
      */
     public void setTile(BlockVector3 pos, String id) {
         this.setTile(pos, id, null);
@@ -77,8 +77,8 @@ public class ScatteredStructureBuilder {
     /**
      * Sets the block entity at a given point.
      *
-     * @param pos a point relative to this structure's root point
-     * @param id the new block entity id
+     * @param pos  a point relative to this structure's root point
+     * @param id   the new block entity id
      * @param data extra nbt data
      */
     public void setTile(BlockVector3 pos, String id, CompoundTag data) {
@@ -95,7 +95,7 @@ public class ScatteredStructureBuilder {
      * Sets the block at a given point.
      *
      * @param pos a point relative to this structure's root point
-     * @param id the new block id
+     * @param id  the new block id
      */
     public void setBlock(BlockVector3 pos, int id) {
         this.setBlock(pos, id, 0);
@@ -104,8 +104,8 @@ public class ScatteredStructureBuilder {
     /**
      * Sets the block at a given point.
      *
-     * @param pos a point relative to this structure's root point
-     * @param id the new block id
+     * @param pos  a point relative to this structure's root point
+     * @param id   the new block id
      * @param meta the new block meta
      */
     public void setBlock(BlockVector3 pos, int id, int meta) {
@@ -118,7 +118,7 @@ public class ScatteredStructureBuilder {
      * location and proceeding downward until a solid block is reached.
      *
      * @param pos the highest point to possibly replace, relative to this structure's root point
-     * @param id the block id to fill
+     * @param id  the block id to fill
      */
     public void setBlockDownward(BlockVector3 pos, int id) {
         this.setBlockDownward(pos, id, 0);
@@ -128,8 +128,8 @@ public class ScatteredStructureBuilder {
      * Builds a 1x1 column out of the given block, replacing non-solid blocks starting at a given
      * location and proceeding downward until a solid block is reached.
      *
-     * @param pos the highest point to possibly replace, relative to this structure's root point
-     * @param id the block id to fill
+     * @param pos  the highest point to possibly replace, relative to this structure's root point
+     * @param id   the block id to fill
      * @param meta the block meta
      */
     public void setBlockDownward(BlockVector3 pos, int id, int meta) {
@@ -151,7 +151,7 @@ public class ScatteredStructureBuilder {
      *
      * @param min the minimum coordinates, relative to this structure's root point
      * @param max the maximum coordinates, relative to this structure's root point
-     * @param id the block id
+     * @param id  the block id
      */
     public void fill(BlockVector3 min, BlockVector3 max, int id) {
         this.fill(min, max, id, 0);
@@ -160,9 +160,9 @@ public class ScatteredStructureBuilder {
     /**
      * Fills a box with the given block.
      *
-     * @param min the minimum coordinates, relative to this structure's root point
-     * @param max the maximum coordinates, relative to this structure's root point
-     * @param id the block id
+     * @param min  the minimum coordinates, relative to this structure's root point
+     * @param max  the maximum coordinates, relative to this structure's root point
+     * @param id   the block id
      * @param meta the block meta
      */
     public void fill(BlockVector3 min, BlockVector3 max, int id, int meta) {
@@ -172,11 +172,11 @@ public class ScatteredStructureBuilder {
     /**
      * Builds a box from one block, and fills it with another.
      *
-     * @param min the minimum coordinates, relative to this structure's root point
-     * @param max the maximum coordinates, relative to this structure's root point
-     * @param outerId the block id for the faces
+     * @param min       the minimum coordinates, relative to this structure's root point
+     * @param max       the maximum coordinates, relative to this structure's root point
+     * @param outerId   the block id for the faces
      * @param outerMeta the block meta for the faces
-     * @param innerId the block id for the interior
+     * @param innerId   the block id for the interior
      * @param innerMeta the block meta for the interior
      */
     public void fill(BlockVector3 min, BlockVector3 max, int outerId, int outerMeta, int innerId, int innerMeta) {
@@ -201,8 +201,8 @@ public class ScatteredStructureBuilder {
     /**
      * Sets a box of blocks to have random types, chosen independently.
      *
-     * @param min the minimum coordinates, relative to this structure's root point
-     * @param max the maximum coordinates, relative to this structure's root point
+     * @param min    the minimum coordinates, relative to this structure's root point
+     * @param max    the maximum coordinates, relative to this structure's root point
      * @param random the PRNG to use
      * @param blocks a map of possible blocks to integer weights
      */

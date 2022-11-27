@@ -6,6 +6,11 @@ import cn.nukkit.math.NukkitRandom;
  * @author DaPorkchop_ (Nukkit Project)
  */
 public class SimplexF extends PerlinF {
+    public static final int[][] grad3 = {
+            {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
+            {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
+            {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
+    };
     protected static float SQRT_3;
     protected static float SQRT_5;
     protected static float F2;
@@ -18,11 +23,6 @@ public class SimplexF extends PerlinF {
     protected static float G42;
     protected static float G43;
     protected static float G44;
-    public static final int[][] grad3 = {
-            {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
-            {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
-            {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
-    };
     protected final float offsetW;
 
     public SimplexF(NukkitRandom random, float octaves, float persistence) {

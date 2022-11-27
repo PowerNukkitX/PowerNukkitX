@@ -13,10 +13,6 @@ public class JungleTempleChest extends RandomizableContainer {
 
     private static final JungleTempleChest INSTANCE = new JungleTempleChest();
 
-    public static JungleTempleChest get() {
-        return INSTANCE;
-    }
-
     private JungleTempleChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -34,5 +30,9 @@ public class JungleTempleChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
                 .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)); //TODO: ench nbt
         this.pools.put(pool1.build(), new RollEntry(6, 2, pool1.getTotalWeight()));
+    }
+
+    public static JungleTempleChest get() {
+        return INSTANCE;
     }
 }

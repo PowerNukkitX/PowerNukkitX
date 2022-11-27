@@ -44,9 +44,11 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:podzol" -> s = "minecraft:podzol[snowy=false]";
             case "minecraft:mycelium" -> s = "minecraft:mycelium[snowy=false]";
             case "minecraft:sugar_cane" -> s = "minecraft:sugar_cane[age=0]";
-            case "minecraft:brown_mushroom_block[down=false]" -> s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";
+            case "minecraft:brown_mushroom_block[down=false]" ->
+                    s = "minecraft:brown_mushroom_block[down=false,east=true,north=true,south=true,up=true,west=true]";
             case "minecraft:cactus" -> s = "minecraft:cactus[age=0]";
-            case "minecraft:mushroom_stem" -> s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";
+            case "minecraft:mushroom_stem" ->
+                    s = "minecraft:mushroom_stem[down=true,east=true,north=true,south=true,up=true,west=true]";
             case "minecraft:jungle_wood" -> s = "minecraft:jungle_wood[axis=y]";
             case "minecraft:redstone_ore" -> s = "minecraft:redstone_ore[lit=false]";
             case "minecraft:deepslate_redstone_ore" -> s = "minecraft:deepslate_redstone_ore[lit=false]";
@@ -54,17 +56,26 @@ public class PNXWorldHandle implements WorldHandle {
             case "minecraft:snow" -> s = "minecraft:snow[layers=1]";
             case "minecraft:cave_vines" -> s = "minecraft:cave_vines[age=0,berries=true]";
             case "minecraft:polished_basalt" -> s = "minecraft:polished_basalt[axis=y]";
-            case "minecraft:azalea_leaves[persistent=true]" -> s = "minecraft:azalea_leaves[distance=1,persistent=true,waterlogged=false]";
-            case "minecraft:flowering_azalea_leaves[persistent=true]" -> s = "minecraft:flowering_azalea_leaves[distance=1,persistent=true,waterlogged=false]";
-            case "minecraft:deepslate_tile_wall" -> s = "minecraft:deepslate_tile_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:azalea_leaves[persistent=true]" ->
+                    s = "minecraft:azalea_leaves[distance=1,persistent=true,waterlogged=false]";
+            case "minecraft:flowering_azalea_leaves[persistent=true]" ->
+                    s = "minecraft:flowering_azalea_leaves[distance=1,persistent=true,waterlogged=false]";
+            case "minecraft:deepslate_tile_wall" ->
+                    s = "minecraft:deepslate_tile_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
             case "minecraft:farmland" -> s = "minecraft:farmland[moisture=7]";
-            case "minecraft:cobbled_deepslate_wall" -> s = "minecraft:cobbled_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
-            case "minecraft:polished_deepslate_wall" -> s = "minecraft:polished_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
-            case "minecraft:sculk_shrieker[can_summon=true]" -> s = "minecraft:sculk_shrieker[can_summon=true,shrieking=false,waterlogged=false]";
+            case "minecraft:cobbled_deepslate_wall" ->
+                    s = "minecraft:cobbled_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:polished_deepslate_wall" ->
+                    s = "minecraft:polished_deepslate_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=none]";
+            case "minecraft:sculk_shrieker[can_summon=true]" ->
+                    s = "minecraft:sculk_shrieker[can_summon=true,shrieking=false,waterlogged=false]";
             case "minecraft:sculk_catalyst" -> s = "minecraft:sculk_catalyst[bloom=false]";
-            case "minecraft:dark_oak_fence" -> s = "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]";
-            case "minecraft:sculk_sensor" -> s = "minecraft:sculk_sensor[power=0,sculk_sensor_phase=inactive,waterlogged=false]";
-            case "minecraft:deepslate_tile_stairs" -> s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
+            case "minecraft:dark_oak_fence" ->
+                    s = "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]";
+            case "minecraft:sculk_sensor" ->
+                    s = "minecraft:sculk_sensor[power=0,sculk_sensor_phase=inactive,waterlogged=false]";
+            case "minecraft:deepslate_tile_stairs" ->
+                    s = "minecraft:deepslate_tile_stairs[facing=north,half=top,shape=straight,waterlogged=false]";
         }
         JeBlockState jeBlockState = new JeBlockState(s);
         var jeBlockIdentifier = jeBlockState.getIdentifier();
@@ -116,7 +127,7 @@ public class PNXWorldHandle implements WorldHandle {
                     bedrockStates.put(k, ((Number) v).intValue());
                     return;
                 }
-                 bedrockStates.put(k, v);
+                bedrockStates.put(k, v);
             });
         }
         var identifier = (String) mappedData.get("bedrock_identifier");

@@ -18,14 +18,14 @@ import java.util.List;
 public class PopulatorDisk extends PopulatorCount {
 
     private static final BlockState STATE_STILL_WATER = BlockState.of(STILL_WATER);
-    
-    private double probability;
-    private BlockState sourceBlock;
-    private int radiusMin;
-    private int radiusMax;
-    private int radiusY;
-    private List<BlockState> replaceBlocks;
-    
+
+    private final double probability;
+    private final BlockState sourceBlock;
+    private final int radiusMin;
+    private final int radiusMax;
+    private final int radiusY;
+    private final List<BlockState> replaceBlocks;
+
     public PopulatorDisk() {
         this.probability = 1.0;
         this.sourceBlock = BlockState.of(GRAVEL);
@@ -34,7 +34,7 @@ public class PopulatorDisk extends PopulatorCount {
         this.radiusY = 2;
         this.replaceBlocks = Arrays.asList(BlockState.of(DIRT), BlockState.of(GRASS));
     }
-    
+
     public PopulatorDisk(double probability, BlockState sourceBlock, int radiusMin, int radiusMax, int radiusY, List<BlockState> replaceBlocks) {
         this.probability = probability;
         this.sourceBlock = sourceBlock;
@@ -43,24 +43,24 @@ public class PopulatorDisk extends PopulatorCount {
         this.radiusY = radiusY;
         this.replaceBlocks = replaceBlocks;
     }
-    
+
     @Override
     public void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (random.nextDouble() >= probability) {
             return;
         }
-        
+
         int sourceX = (chunkX << 4) + random.nextBoundedInt(16);
         int sourceZ = (chunkZ << 4) + random.nextBoundedInt(16);
         int sourceY = getHighestWorkableBlock(level, sourceX, sourceZ, chunk) - 1;
         if (sourceY < radiusY) {
             return;
         }
-        
+
         if (!level.getBlockStateAt(sourceX, sourceY + 1, sourceZ).equals(STATE_STILL_WATER)) {
             return;
         }
-        
+
         int radius = NukkitMath.randomRange(random, radiusMin, radiusMax);
         for (int x = sourceX - radius; x <= sourceX + radius; x++) {
             for (int z = sourceZ - radius; z <= sourceZ + radius; z++) {
@@ -76,7 +76,7 @@ public class PopulatorDisk extends PopulatorCount {
             }
         }
     }
-    
+
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         int y;
@@ -85,7 +85,7 @@ public class PopulatorDisk extends PopulatorCount {
                 break;
             }
         }
-        
+
         return y == 0 ? -1 : ++y;
     }
 }

@@ -17,17 +17,21 @@ public class PopulatorRavines extends Populator {
     private long worldLong1;
     private long worldLong2;
 
-    private int ravineRarity = 1;//2
-    private int ravineMinAltitude = 20;
-    private int ravineMaxAltitude = 67;
-    private int ravineMinLength = 84;
-    private int ravineMaxLength = 111;
+    private final int ravineRarity = 1;//2
+    private final int ravineMinAltitude = 20;
+    private final int ravineMaxAltitude = 67;
+    private final int ravineMinLength = 84;
+    private final int ravineMaxLength = 111;
 
-    private double ravineDepth = 3;
+    private final double ravineDepth = 3;
 
-    private int worldHeightCap = 1 << 8;
+    private final int worldHeightCap = 1 << 8;
 
-    private float[] a = new float[1024];
+    private final float[] a = new float[1024];
+
+    public static int numberInRange(Random random, int min, int max) {
+        return min + random.nextInt(max - min + 1);
+    }
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
@@ -197,9 +201,5 @@ public class PopulatorRavines extends Populator {
             if (i != 0)
                 break;
         }
-    }
-
-    public static int numberInRange(Random random, int min, int max) {
-        return min + random.nextInt(max - min + 1);
     }
 }

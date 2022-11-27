@@ -58,23 +58,18 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
     private static final String HUGE_TAG_NAME = "DataHyper";
     private static final String BIOME_TAG_NAME = "Biomes";
     private static final BigInteger BYTE_MASK = BigInteger.valueOf(0xFF);
-
-    private final int y;
     protected final ReentrantReadWriteLock sectionLock = new ReentrantReadWriteLock();
-
-    private LayerStorage layerStorage;
-
+    private final int y;
     protected byte[] biomeId; // YZX
     protected byte[] blockLight;
     protected byte[] skyLight;
     protected byte[] compressedLight;
     protected boolean hasBlockLight;
     protected boolean hasSkyLight;
-
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected boolean invalidCustomBlockWhenLoad = false;
-
+    private LayerStorage layerStorage;
     private int contentVersion;
 
     private ChunkSection(
@@ -157,6 +152,70 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
         }
     }
 
+    private static BlockState loadState(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
+        if (hugeDataSize == 0) {
+            return BlockState.of(blockId, composedData);
+        } else if (hugeDataSize < 3) {
+            return loadHugeIntData(index, blockId, composedData, hugeDataList, hugeDataSize);
+        } else if (hugeDataSize < 7) {
+            return loadHugeLongData(index, blockId, composedData, hugeDataList, hugeDataSize);
+        } else {
+            return loadHugeBigData(index, blockId, composedData, hugeDataList, hugeDataSize);
+        }
+    }
+
+    private static BlockState loadHugeIntData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
+        int data = composedData;
+        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
+            int longPart = (hugeDataList.get(dataIndex).data[index] & 0xFF) << 8 << (8 * dataIndex);
+            data |= longPart;
+        }
+        return BlockState.of(blockId, data);
+    }
+
+    private static BlockState loadHugeLongData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
+        long data = composedData;
+        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
+            long longPart = (hugeDataList.get(dataIndex).data[index] & 0xFFL) << 8 << (8 * dataIndex);
+            data |= longPart;
+        }
+        return BlockState.of(blockId, data);
+    }
+
+    private static BlockState loadHugeBigData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
+        BigInteger data = BigInteger.valueOf(composedData);
+        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
+            BigInteger hugePart = BigInteger.valueOf((hugeDataList.get(dataIndex).data[index] & 0xFFL) << 8).shiftLeft(8 * dataIndex);
+            data = data.or(hugePart);
+        }
+        return BlockState.of(blockId, data);
+    }
+
+    private static ListTag<CompoundTag> getStorageTagList(CompoundTag nbt, int version) {
+        ListTag<CompoundTag> storageTagList;
+        if (version == SAVE_STORAGE_VERSION || version == 8) {
+            storageTagList = nbt.getList(STORAGE_TAG_NAME, CompoundTag.class);
+        } else if (version == 0 || version == 1) {
+            storageTagList = new ListTag<>(STORAGE_TAG_NAME);
+            storageTagList.add(nbt);
+        } else {
+            throw new ChunkException("Unsupported chunk section version: " + version);
+        }
+        return storageTagList;
+    }
+
+    private static int composeBlockId(byte baseId, byte extraId) {
+        return ((extraId & 0xFF) << 8) | (baseId & 0xFF);
+    }
+
+    private static int composeData(byte baseData, byte extraData) {
+        return ((extraData & 0xF) << 4) | (baseData & 0xF);
+    }
+
+    private static int getAnvilIndex(int x, int y, int z) {
+        return (y << 8) + (z << 4) + x; // YZX
+    }
+
     private void loadStorage(int layer, CompoundTag storageTag, @NotNull Int2ObjectMap<String> customBlocksIdMap) {
         byte[] blocks = storageTag.getByteArray("Blocks");
         boolean hasBlockIds = false;
@@ -233,70 +292,6 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection, ChunkS
                 }
             }
         }
-    }
-
-    private static BlockState loadState(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
-        if (hugeDataSize == 0) {
-            return BlockState.of(blockId, composedData);
-        } else if (hugeDataSize < 3) {
-            return loadHugeIntData(index, blockId, composedData, hugeDataList, hugeDataSize);
-        } else if (hugeDataSize < 7) {
-            return loadHugeLongData(index, blockId, composedData, hugeDataList, hugeDataSize);
-        } else {
-            return loadHugeBigData(index, blockId, composedData, hugeDataList, hugeDataSize);
-        }
-    }
-
-    private static BlockState loadHugeIntData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
-        int data = composedData;
-        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
-            int longPart = (hugeDataList.get(dataIndex).data[index] & 0xFF) << 8 << (8 * dataIndex);
-            data |= longPart;
-        }
-        return BlockState.of(blockId, data);
-    }
-
-    private static BlockState loadHugeLongData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
-        long data = composedData;
-        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
-            long longPart = (hugeDataList.get(dataIndex).data[index] & 0xFFL) << 8 << (8 * dataIndex);
-            data |= longPart;
-        }
-        return BlockState.of(blockId, data);
-    }
-
-    private static BlockState loadHugeBigData(int index, int blockId, int composedData, ListTag<ByteArrayTag> hugeDataList, int hugeDataSize) {
-        BigInteger data = BigInteger.valueOf(composedData);
-        for (int dataIndex = 0; dataIndex < hugeDataSize; dataIndex++) {
-            BigInteger hugePart = BigInteger.valueOf((hugeDataList.get(dataIndex).data[index] & 0xFFL) << 8).shiftLeft(8 * dataIndex);
-            data = data.or(hugePart);
-        }
-        return BlockState.of(blockId, data);
-    }
-
-    private static ListTag<CompoundTag> getStorageTagList(CompoundTag nbt, int version) {
-        ListTag<CompoundTag> storageTagList;
-        if (version == SAVE_STORAGE_VERSION || version == 8) {
-            storageTagList = nbt.getList(STORAGE_TAG_NAME, CompoundTag.class);
-        } else if (version == 0 || version == 1) {
-            storageTagList = new ListTag<>(STORAGE_TAG_NAME);
-            storageTagList.add(nbt);
-        } else {
-            throw new ChunkException("Unsupported chunk section version: " + version);
-        }
-        return storageTagList;
-    }
-
-    private static int composeBlockId(byte baseId, byte extraId) {
-        return ((extraId & 0xFF) << 8) | (baseId & 0xFF);
-    }
-
-    private static int composeData(byte baseData, byte extraData) {
-        return ((extraData & 0xF) << 4) | (baseData & 0xF);
-    }
-
-    private static int getAnvilIndex(int x, int y, int z) {
-        return (y << 8) + (z << 4) + x; // YZX
     }
 
     @Override

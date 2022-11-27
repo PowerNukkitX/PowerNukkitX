@@ -22,13 +22,13 @@ public class NewLeafUpdater implements Updater {
     @Override
     public boolean update(int offsetX, int offsetY, int offsetZ, int x, int y, int z, BlockState state) {
         if (state.getBlockId() == BlockID.LEAVES2) {
-            @SuppressWarnings("deprecation") 
+            @SuppressWarnings("deprecation")
             int legacyDamage = state.getLegacyDamage();
             if ((legacyDamage & 0xE) == 0x0) {
                 // No flags, no conversion is needed
                 return false;
             }
-            
+
             boolean newSystemForSure = (legacyDamage & 0x8) == 0x8; // New check decay, invalid on old system
             boolean oldSystemForSure = (legacyDamage & 0x2) == 0x2; // Old check decay, invalid on new system
             if (newSystemForSure && oldSystemForSure) {
@@ -52,12 +52,12 @@ public class NewLeafUpdater implements Updater {
                 boolean persistent = (legacyDamage & 0x04) == 0x04;
                 if (persistent) {
                     newData |= 0b0100; // Persistent
-                } 
-                
+                }
+
                 if (oldSystemForSure || !persistent) {
                     newData |= 0b1000; // Check Decay
                 }
-                
+
                 BlockState fixed = state.withData(newData);
                 if (newData == legacyDamage) {
                     return false;

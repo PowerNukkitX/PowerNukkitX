@@ -45,7 +45,7 @@ public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implemen
 
     @Override
     public ChunkGenerator getGenerator() {
-        return generatorWrapper.requireChunkGenerator();
+        return generatorWrapper.getHandle();
     }
 
     @Override

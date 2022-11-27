@@ -10,7 +10,7 @@ import cn.nukkit.math.NukkitRandom;
  * @author DaPorkchop_ (Nukkit Project)
  * <p>
  * make sure this is touching another extreme hills type or it'll look dumb
- *
+ * <p>
  * very smooth hills with flat areas between
  */
 public class ExtremeHillsMBiome extends ExtremeHillsPlusBiome {
@@ -45,7 +45,7 @@ public class ExtremeHillsMBiome extends ExtremeHillsPlusBiome {
     public int getSurfaceDepth(int x, int y, int z) {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? 4 : 1;
     }
-    
+
     @Override
     public int getGroundDepth(int x, int y, int z) {
         return gravelNoise.noise2D(x, z, true) < -0.75f ? 0 : 4;

@@ -28,27 +28,22 @@ abstract public class BaseRegionLoader {
     @DeprecationDetails(since = "1.19.30-r2", reason = "moved into nukkit.yml", replaceWith = "Server::getMaximumSizePerChunk()")
     public static final int MAX_SECTOR_LENGTH = 256 << 12;
     public static final int COMPRESSION_LEVEL = 7;
-
-    protected int x;
-    protected int z;
-    protected int lastSector;
-    protected LevelProvider levelProvider;
-
-    private RandomAccessFile randomAccessFile;
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected final Int2ObjectMap<int[]> primitiveLocationTable = new Int2ObjectOpenHashMap<>();
-    
     @Deprecated
     @DeprecationDetails(since = "1.4.0.0-PN", reason = "Integer boxing was polluting the memory heap", replaceWith = "primitiveLocationTable")
     protected final Map<Integer, Integer[]> locationTable = new ConvertingMapWrapper<>(
             primitiveLocationTable,
-            table-> Arrays.stream(table).mapToInt(Integer::intValue).toArray(),
+            table -> Arrays.stream(table).mapToInt(Integer::intValue).toArray(),
             table -> Arrays.stream(table).boxed().toArray(Integer[]::new)
     );
-
     public long lastUsed;
+    protected int x;
+    protected int z;
+    protected int lastSector;
+    protected LevelProvider levelProvider;
+    private final RandomAccessFile randomAccessFile;
 
     public BaseRegionLoader(LevelProvider level, int regionX, int regionZ, String ext) {
         try {
@@ -117,7 +112,7 @@ abstract public class BaseRegionLoader {
     @Deprecated
     @DeprecationDetails(
             since = "1.4.0.0-PN", by = "PowerNukkit",
-            reason = "Unnecessary int-boxing causing heap pollution", 
+            reason = "Unnecessary int-boxing causing heap pollution",
             replaceWith = "getIntLocationIndexes()")
     public Integer[] getLocationIndexes() {
         return this.primitiveLocationTable.keySet().toArray(Utils.EMPTY_INTEGERS);

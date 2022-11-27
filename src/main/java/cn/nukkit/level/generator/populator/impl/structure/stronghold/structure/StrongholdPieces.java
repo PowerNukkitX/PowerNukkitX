@@ -76,12 +76,10 @@ public class StrongholdPieces {
                 }
             }
     };
-
+    private static final SmoothStoneSelector SMOOTH_STONE_SELECTOR = new SmoothStoneSelector();
     private static List<PieceWeight> currentPieces;
     private static Class<? extends StructurePiece> imposedPiece;
     private static int totalWeight;
-
-    private static final SmoothStoneSelector SMOOTH_STONE_SELECTOR = new SmoothStoneSelector();
 
     public static Object getLock() {
         return lock;
@@ -141,7 +139,8 @@ public class StrongholdPieces {
         return null;
     }
 
-    @Nullable //\\ StrongholdPiece::generatePieceFromSmallDoor(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random const &,int,int,int,int,int)
+    @Nullable
+    //\\ StrongholdPiece::generatePieceFromSmallDoor(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random const &,int,int,int,int,int)
     private static StrongholdPiece generatePieceFromSmallDoor(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
         if (updatePieceWeight()) {
             if (imposedPiece != null) {
@@ -186,7 +185,8 @@ public class StrongholdPieces {
         return null;
     }
 
-    @Nullable //\\ StrongholdPiece::generateAndAddPiece(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    @Nullable
+    //\\ StrongholdPiece::generateAndAddPiece(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
     private static StructurePiece generateAndAddPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, @Nullable BlockFace orientation, int genDepth) {
         if (genDepth > 50) {
             return null;
@@ -203,12 +203,16 @@ public class StrongholdPieces {
         }
     }
 
+    public static void init() {
+        //NOOP
+    }
+
     static class PieceWeight {
 
         public final Class<? extends StructurePiece> pieceClass;
         public final int weight;
-        public int placeCount;
         public final int maxPlaceCount;
+        public int placeCount;
 
         public PieceWeight(Class<? extends StructurePiece> pieceClass, int weight, int maxPlaceCount) {
             this.pieceClass = pieceClass;
@@ -238,6 +242,10 @@ public class StrongholdPieces {
             super(tag);
             this.entryDoor = SmallDoorType.OPENING;
             this.entryDoor = SmallDoorType.valueOf(tag.getString("EntryDoor"));
+        }
+
+        protected static boolean isOkBox(BoundingBox boundingBox) {
+            return boundingBox != null && boundingBox.y0 > 10;
         }
 
         @Override //\\ SHStartPiece::getType(void) // 1397248082i64
@@ -313,7 +321,8 @@ public class StrongholdPieces {
             }
         }
 
-        @Nullable //\\ StrongholdPiece::generateSmallDoorChildForward(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        @Nullable
+        //\\ StrongholdPiece::generateSmallDoorChildForward(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
         protected StructurePiece generateSmallDoorChildForward(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
@@ -332,7 +341,8 @@ public class StrongholdPieces {
             return null;
         }
 
-        @Nullable //\\ StrongholdPiece::generateSmallDoorChildLeft(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        @Nullable
+        //\\ StrongholdPiece::generateSmallDoorChildLeft(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
         protected StructurePiece generateSmallDoorChildLeft(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
@@ -349,7 +359,8 @@ public class StrongholdPieces {
             return null;
         }
 
-        @Nullable //\\ StrongholdPiece::generateSmallDoorChildRight(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
+        @Nullable
+        //\\ StrongholdPiece::generateSmallDoorChildRight(SHStartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int)
         protected StructurePiece generateSmallDoorChildRight(StartPiece piece, List<StructurePiece> pieces, NukkitRandom random, int y, int z) {
             BlockFace orientation = this.getOrientation();
             if (orientation != null) {
@@ -366,15 +377,11 @@ public class StrongholdPieces {
             return null;
         }
 
-        protected static boolean isOkBox(BoundingBox boundingBox) {
-            return boundingBox != null && boundingBox.y0 > 10;
-        }
-
         public enum SmallDoorType {
             OPENING,
             WOOD_DOOR,
             GRATES,
-            IRON_DOOR;
+            IRON_DOOR
         }
     }
 
@@ -394,17 +401,6 @@ public class StrongholdPieces {
             this.steps = tag.getInt("Steps");
         }
 
-        @Override //\\ SHFillerCorridor::getType(void) // 1397245513i64
-        public String getType() {
-            return "SHFC";
-        }
-
-        @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("Steps", this.steps);
-        }
-
         //\\ SHFillerCorridor::findPieceBox(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
         public static BoundingBox findPieceBox(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 4, orientation);
@@ -421,6 +417,17 @@ public class StrongholdPieces {
 
             }
             return null;
+        }
+
+        @Override //\\ SHFillerCorridor::getType(void) // 1397245513i64
+        public String getType() {
+            return "SHFC";
+        }
+
+        @Override
+        protected void addAdditionalSaveData(CompoundTag tag) {
+            super.addAdditionalSaveData(tag);
+            tag.putInt("Steps", this.steps);
         }
 
         @Override
@@ -476,6 +483,12 @@ public class StrongholdPieces {
             this.isSource = tag.getBoolean("Source");
         }
 
+        //\\ SHStairsDown::createPiece(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+        public static StairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 5, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StairsDown(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHStairsDown::getType(void) // 1397248836i64
         public String getType() {
             return "SHSD";
@@ -487,19 +500,14 @@ public class StrongholdPieces {
             tag.putBoolean("Source", this.isSource);
         }
 
-        @Override //\\ SHStairsDown::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        @Override
+        //\\ SHStairsDown::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             if (this.isSource) {
                 imposedPiece = FiveCrossing.class;
             }
 
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 1, 1);
-        }
-
-        //\\ SHStairsDown::createPiece(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-        public static StairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StairsDown(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override //\\ SHStairsDown::postProcess(BlockSource *,Random &,BoundingBox const &)
@@ -531,10 +539,10 @@ public class StrongholdPieces {
 
     public static class StartPiece extends StairsDown {
 
+        public final List<StructurePiece> pendingChildren = Lists.newArrayList();
         public PieceWeight previousPiece;
         @Nullable
         public PortalRoom portalRoomPiece;
-        public final List<StructurePiece> pendingChildren = Lists.newArrayList();
 
         public StartPiece(NukkitRandom random, int x, int z) {
             super(0, random, x, z);
@@ -561,6 +569,11 @@ public class StrongholdPieces {
             this.rightChild = tag.getBoolean("Right");
         }
 
+        public static Straight createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Straight(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHStraight::getType(void) // 1397248852i64
         public String getType() {
             return "SHS";
@@ -583,11 +596,6 @@ public class StrongholdPieces {
             if (this.rightChild) {
                 this.generateSmallDoorChildRight((StartPiece) piece, pieces, random, 1, 2);
             }
-        }
-
-        public static Straight createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Straight(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -630,6 +638,11 @@ public class StrongholdPieces {
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
 
+        public static ChestCorridor createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new ChestCorridor(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHChestCorridor::getType(void) // 1397244744i64
         public String getType() {
             return "SHCC";
@@ -644,11 +657,6 @@ public class StrongholdPieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 1, 1);
-        }
-
-        public static ChestCorridor createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new ChestCorridor(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -703,6 +711,11 @@ public class StrongholdPieces {
             super(tag);
         }
 
+        public static StraightStairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 8, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StraightStairsDown(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override
         public String getType() {
             return "SHSSD";
@@ -711,11 +724,6 @@ public class StrongholdPieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 1, 1);
-        }
-
-        public static StraightStairsDown createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 11, 8, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new StraightStairsDown(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -765,6 +773,11 @@ public class StrongholdPieces {
             super(tag);
         }
 
+        public static LeftTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new LeftTurn(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHLeftTurn::getType(void) // 1397247060i64
         public String getType() {
             return "SHLT";
@@ -778,11 +791,6 @@ public class StrongholdPieces {
             } else {
                 this.generateSmallDoorChildLeft((StartPiece) piece, pieces, random, 1, 1);
             }
-        }
-
-        public static LeftTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new LeftTurn(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -814,6 +822,11 @@ public class StrongholdPieces {
             super(tag);
         }
 
+        public static RightTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RightTurn(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHRightTurn::getType(void) // 1397248596i64
         public String getType() {
             return "SHRT";
@@ -827,11 +840,6 @@ public class StrongholdPieces {
             } else {
                 this.generateSmallDoorChildRight((StartPiece) piece, pieces, random, 1, 1);
             }
-        }
-
-        public static RightTurn createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RightTurn(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -867,6 +875,11 @@ public class StrongholdPieces {
             this.type = tag.getInt("Type");
         }
 
+        public static RoomCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 7, 11, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RoomCrossing(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHRoomCrossing::getType(void) // 1397248579i64
         public String getType() {
             return "SHRC";
@@ -883,11 +896,6 @@ public class StrongholdPieces {
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 4, 1);
             this.generateSmallDoorChildLeft((StartPiece) piece, pieces, random, 1, 4);
             this.generateSmallDoorChildRight((StartPiece) piece, pieces, random, 1, 4);
-        }
-
-        public static RoomCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 7, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new RoomCrossing(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1031,6 +1039,11 @@ public class StrongholdPieces {
             super(tag);
         }
 
+        public static PrisonHall createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 9, 5, 11, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PrisonHall(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHPrisonHall::getType(void) // 1397248072i64
         public String getType() {
             return "SHPH";
@@ -1039,11 +1052,6 @@ public class StrongholdPieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateSmallDoorChildForward((StartPiece) piece, pieces, random, 1, 1);
-        }
-
-        public static PrisonHall createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -1, 0, 9, 5, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PrisonHall(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1097,17 +1105,6 @@ public class StrongholdPieces {
             this.isTall = tag.getBoolean("Tall");
         }
 
-        @Override //\\ SHLibrary::getType(void) // 1397247049i64
-        public String getType() {
-            return "SHLi";
-        }
-
-        @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("Tall", this.isTall);
-        }
-
         public static Library createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 14, 11, 15, orientation);
             if (!isOkBox(boundingBox) || StructurePiece.findCollisionPiece(pieces, boundingBox) != null) {
@@ -1118,6 +1115,17 @@ public class StrongholdPieces {
             }
 
             return new Library(genDepth, random, boundingBox, orientation);
+        }
+
+        @Override //\\ SHLibrary::getType(void) // 1397247049i64
+        public String getType() {
+            return "SHLi";
+        }
+
+        @Override
+        protected void addAdditionalSaveData(CompoundTag tag) {
+            super.addAdditionalSaveData(tag);
+            tag.putBoolean("Tall", this.isTall);
         }
 
         @Override
@@ -1273,6 +1281,11 @@ public class StrongholdPieces {
             this.rightHigh = tag.getBoolean("rightHigh");
         }
 
+        public static FiveCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -3, 0, 10, 9, 11, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new FiveCrossing(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ SHFiveCrossing::getType(void) // 1397241155i64
         public String getType() {
             return "SH5C";
@@ -1312,11 +1325,6 @@ public class StrongholdPieces {
             if (this.rightHigh) {
                 this.generateSmallDoorChildRight((StartPiece) piece, pieces, random, highX, 7);
             }
-        }
-
-        public static FiveCrossing createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -3, 0, 10, 9, 11, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new FiveCrossing(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1374,6 +1382,11 @@ public class StrongholdPieces {
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
 
+        public static PortalRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 8, 16, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PortalRoom(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override
         public String getType() {
             return "SHPR";
@@ -1390,11 +1403,6 @@ public class StrongholdPieces {
             if (piece != null) {
                 ((StartPiece) piece).portalRoomPiece = this;
             }
-        }
-
-        public static PortalRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -4, -1, 0, 11, 8, 16, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PortalRoom(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1508,9 +1516,5 @@ public class StrongholdPieces {
                 this.next = BlockState.AIR;
             }
         }
-    }
-
-    public static void init() {
-        //NOOP
     }
 }

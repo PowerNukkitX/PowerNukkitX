@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public record PNXChunkDelegate(ServerWorld world,BaseFullChunk chunk) implements Chunk {
+public record PNXChunkDelegate(ServerWorld world, BaseFullChunk chunk) implements Chunk {
     @Override
     public void setBlock(int i, int i1, int i2, BlockState blockState, boolean b) {
         setBlock(i, i1, i2, blockState);

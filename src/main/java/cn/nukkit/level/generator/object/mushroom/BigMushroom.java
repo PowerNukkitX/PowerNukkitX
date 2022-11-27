@@ -27,7 +27,7 @@ public class BigMushroom extends BasicGenerator {
     /**
      * The mushroom type. 0 for brown, 1 for red.
      */
-    private int mushroomType;
+    private final int mushroomType;
 
     public BigMushroom(int mushroomType) {
         this.mushroomType = mushroomType;

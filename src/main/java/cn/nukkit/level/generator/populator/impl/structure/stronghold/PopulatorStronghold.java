@@ -26,12 +26,70 @@ public class PopulatorStronghold extends PopulatorStructure {
     protected static final int DISTANCE = 32;
     protected static final int COUNT = 128;
     protected static final int SPREAD = 3;
+    protected static boolean[] VALID_BIOMES = new boolean[256];
 
-    protected boolean isSpotSelected = false;
-    protected long[] strongholdPos = new long[COUNT];
+    static {
+        VALID_BIOMES[EnumBiome.PLAINS.id] = true;
+        VALID_BIOMES[EnumBiome.DESERT.id] = true;
+        VALID_BIOMES[EnumBiome.EXTREME_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.FOREST.id] = true;
+        VALID_BIOMES[EnumBiome.TAIGA.id] = true;
+        VALID_BIOMES[EnumBiome.ICE_PLAINS.id] = true;
+        VALID_BIOMES[13] = true; //SNOWY_MOUNTAINS
+        VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND.id] = true;
+        VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND_SHORE.id] = true;
+        VALID_BIOMES[EnumBiome.DESERT_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.FOREST_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.TAIGA_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.EXTREME_HILLS_EDGE.id] = true;
+        VALID_BIOMES[EnumBiome.JUNGLE.id] = true;
+        VALID_BIOMES[EnumBiome.JUNGLE_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.JUNGLE_EDGE.id] = true;
+        VALID_BIOMES[EnumBiome.STONE_BEACH.id] = true;
+        VALID_BIOMES[EnumBiome.BIRCH_FOREST.id] = true;
+        VALID_BIOMES[EnumBiome.BIRCH_FOREST_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.ROOFED_FOREST.id] = true;
+        VALID_BIOMES[EnumBiome.COLD_TAIGA.id] = true;
+        VALID_BIOMES[EnumBiome.COLD_TAIGA_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.MEGA_TAIGA.id] = true;
+        VALID_BIOMES[EnumBiome.MEGA_TAIGA_HILLS.id] = true;
+        VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS.id] = true;
+        VALID_BIOMES[EnumBiome.SAVANNA.id] = true;
+        VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU.id] = true;
+        VALID_BIOMES[EnumBiome.MESA.id] = true;
+        VALID_BIOMES[EnumBiome.MESA_PLATEAU_F.id] = true;
+        VALID_BIOMES[EnumBiome.MESA_PLATEAU.id] = true;
+        VALID_BIOMES[EnumBiome.SUNFLOWER_PLAINS.id] = true;
+        VALID_BIOMES[EnumBiome.DESERT_M.id] = true;
+        VALID_BIOMES[EnumBiome.EXTREME_HILLS_M.id] = true;
+        VALID_BIOMES[EnumBiome.FLOWER_FOREST.id] = true;
+        VALID_BIOMES[EnumBiome.TAIGA_M.id] = true;
+        VALID_BIOMES[EnumBiome.ICE_PLAINS_SPIKES.id] = true;
+        VALID_BIOMES[EnumBiome.JUNGLE_M.id] = true;
+        VALID_BIOMES[EnumBiome.JUNGLE_EDGE_M.id] = true;
+        VALID_BIOMES[EnumBiome.BIRCH_FOREST_M.id] = true;
+        VALID_BIOMES[EnumBiome.BIRCH_FOREST_HILLS_M.id] = true;
+        VALID_BIOMES[EnumBiome.ROOFED_FOREST_M.id] = true;
+        VALID_BIOMES[EnumBiome.COLD_TAIGA_M.id] = true;
+        VALID_BIOMES[EnumBiome.MEGA_SPRUCE_TAIGA.id] = true;
+        VALID_BIOMES[161] = true; //GIANT_SPRUCE_TAIGA_HILLS
+        VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS_M.id] = true;
+        VALID_BIOMES[EnumBiome.SAVANNA_M.id] = true;
+        VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU_M.id] = true;
+        VALID_BIOMES[EnumBiome.MESA_BRYCE.id] = true;
+        VALID_BIOMES[EnumBiome.MESA_PLATEAU_F_M.id] = true;
+        VALID_BIOMES[EnumBiome.MESA_PLATEAU_M.id] = true;
+        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE.id] = true; //BAMBOO_JUNGLE
+        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE_HILLS.id] = true; //BAMBOO_JUNGLE_HILLS
+
+        StrongholdPieces.init();
+    }
+
     private final List<StrongholdStart> discoveredStarts = Lists.newArrayList();
 
     private final Object lock = new Object(); //\\ (char *)this + 456
+    protected boolean isSpotSelected = false;
+    protected long[] strongholdPos = new long[COUNT];
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
@@ -99,7 +157,7 @@ public class PopulatorStronghold extends PopulatorStructure {
                         BoundingBox boundingBox = start.getBoundingBox();
                         for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                             for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                                NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
+                                NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
                                 int x = cx << 4;
                                 int z = cz << 4;
                                 BaseFullChunk ck = level.getChunk(cx, cz);
@@ -126,63 +184,10 @@ public class PopulatorStronghold extends PopulatorStructure {
         }
     }
 
-    protected static boolean[] VALID_BIOMES = new boolean[256];
-
-    static {
-        VALID_BIOMES[EnumBiome.PLAINS.id] = true;
-        VALID_BIOMES[EnumBiome.DESERT.id] = true;
-        VALID_BIOMES[EnumBiome.EXTREME_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.FOREST.id] = true;
-        VALID_BIOMES[EnumBiome.TAIGA.id] = true;
-        VALID_BIOMES[EnumBiome.ICE_PLAINS.id] = true;
-        VALID_BIOMES[13] = true; //SNOWY_MOUNTAINS
-        VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND.id] = true;
-        VALID_BIOMES[EnumBiome.MUSHROOM_ISLAND_SHORE.id] = true;
-        VALID_BIOMES[EnumBiome.DESERT_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.FOREST_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.TAIGA_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.EXTREME_HILLS_EDGE.id] = true;
-        VALID_BIOMES[EnumBiome.JUNGLE.id] = true;
-        VALID_BIOMES[EnumBiome.JUNGLE_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.JUNGLE_EDGE.id] = true;
-        VALID_BIOMES[EnumBiome.STONE_BEACH.id] = true;
-        VALID_BIOMES[EnumBiome.BIRCH_FOREST.id] = true;
-        VALID_BIOMES[EnumBiome.BIRCH_FOREST_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.ROOFED_FOREST.id] = true;
-        VALID_BIOMES[EnumBiome.COLD_TAIGA.id] = true;
-        VALID_BIOMES[EnumBiome.COLD_TAIGA_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.MEGA_TAIGA.id] = true;
-        VALID_BIOMES[EnumBiome.MEGA_TAIGA_HILLS.id] = true;
-        VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS.id] = true;
-        VALID_BIOMES[EnumBiome.SAVANNA.id] = true;
-        VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU.id] = true;
-        VALID_BIOMES[EnumBiome.MESA.id] = true;
-        VALID_BIOMES[EnumBiome.MESA_PLATEAU_F.id] = true;
-        VALID_BIOMES[EnumBiome.MESA_PLATEAU.id] = true;
-        VALID_BIOMES[EnumBiome.SUNFLOWER_PLAINS.id] = true;
-        VALID_BIOMES[EnumBiome.DESERT_M.id] = true;
-        VALID_BIOMES[EnumBiome.EXTREME_HILLS_M.id] = true;
-        VALID_BIOMES[EnumBiome.FLOWER_FOREST.id] = true;
-        VALID_BIOMES[EnumBiome.TAIGA_M.id] = true;
-        VALID_BIOMES[EnumBiome.ICE_PLAINS_SPIKES.id] = true;
-        VALID_BIOMES[EnumBiome.JUNGLE_M.id] = true;
-        VALID_BIOMES[EnumBiome.JUNGLE_EDGE_M.id] = true;
-        VALID_BIOMES[EnumBiome.BIRCH_FOREST_M.id] = true;
-        VALID_BIOMES[EnumBiome.BIRCH_FOREST_HILLS_M.id] = true;
-        VALID_BIOMES[EnumBiome.ROOFED_FOREST_M.id] = true;
-        VALID_BIOMES[EnumBiome.COLD_TAIGA_M.id] = true;
-        VALID_BIOMES[EnumBiome.MEGA_SPRUCE_TAIGA.id] = true;
-        VALID_BIOMES[161] = true; //GIANT_SPRUCE_TAIGA_HILLS
-        VALID_BIOMES[EnumBiome.EXTREME_HILLS_PLUS_M.id] = true;
-        VALID_BIOMES[EnumBiome.SAVANNA_M.id] = true;
-        VALID_BIOMES[EnumBiome.SAVANNA_PLATEAU_M.id] = true;
-        VALID_BIOMES[EnumBiome.MESA_BRYCE.id] = true;
-        VALID_BIOMES[EnumBiome.MESA_PLATEAU_F_M.id] = true;
-        VALID_BIOMES[EnumBiome.MESA_PLATEAU_M.id] = true;
-        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE.id] = true; //BAMBOO_JUNGLE
-        VALID_BIOMES[EnumBiome.BAMBOO_JUNGLE_HILLS.id] = true; //BAMBOO_JUNGLE_HILLS
-
-        StrongholdPieces.init();
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 
     public class StrongholdStart extends StructureStart {
@@ -202,7 +207,7 @@ public class PopulatorStronghold extends PopulatorStructure {
                     this.pieces.clear();
                     this.boundingBox = BoundingBox.getUnknownBox();
                     this.random.setSeed(seed + count++);
-                    this.random.setSeed(chunkX * this.random.nextInt() ^ chunkZ * this.random.nextInt() ^ level.getSeed());
+                    this.random.setSeed((long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
                     StrongholdPieces.resetPieces();
 
                     start = new StrongholdPieces.StartPiece(this.random, (chunkX << 4) + 2, (chunkZ << 4) + 2);
@@ -227,11 +232,5 @@ public class PopulatorStronghold extends PopulatorStructure {
         public String getType() {
             return "Stronghold";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

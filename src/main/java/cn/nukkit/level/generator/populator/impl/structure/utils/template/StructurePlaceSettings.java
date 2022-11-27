@@ -17,9 +17,17 @@ public class StructurePlaceSettings {
     private int integrity = 100;
     private Consumer<CompoundTag> blockActorProcessor;
 
+    public boolean isIgnoreEntities() {
+        return this.ignoreEntities;
+    }
+
     public StructurePlaceSettings setIgnoreEntities(boolean ignoreEntities) {
         this.ignoreEntities = ignoreEntities;
         return this;
+    }
+
+    public boolean isIgnoreAir() {
+        return this.ignoreAir;
     }
 
     public StructurePlaceSettings setIgnoreAir(boolean ignoreAir) {
@@ -27,29 +35,21 @@ public class StructurePlaceSettings {
         return this;
     }
 
+    public int getIntegrity() {
+        return this.integrity;
+    }
+
     public StructurePlaceSettings setIntegrity(int integrity) {
         this.integrity = integrity;
         return this;
     }
 
+    public Consumer<CompoundTag> getBlockActorProcessor() {
+        return this.blockActorProcessor;
+    }
+
     public StructurePlaceSettings setBlockActorProcessor(Consumer<CompoundTag> blockActorProcessor) {
         this.blockActorProcessor = blockActorProcessor;
         return this;
-    }
-
-    public boolean isIgnoreEntities() {
-        return this.ignoreEntities;
-    }
-
-    public boolean isIgnoreAir() {
-        return this.ignoreAir;
-    }
-
-    public int getIntegrity() {
-        return this.integrity;
-    }
-
-    public Consumer<CompoundTag> getBlockActorProcessor() {
-        return this.blockActorProcessor;
     }
 }

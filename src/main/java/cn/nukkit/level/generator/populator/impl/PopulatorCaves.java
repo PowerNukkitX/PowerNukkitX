@@ -17,10 +17,6 @@ import java.util.Random;
  */
 public class PopulatorCaves extends Populator {
 
-    protected int checkAreaSize = 8;
-
-    private Random random;
-
     public static int caveRarity = 7;//7
     public static int caveFrequency = 40;//40
     public static int caveMinAltitude = 8;
@@ -31,8 +27,13 @@ public class PopulatorCaves extends Populator {
     public static int caveSystemPocketMinSize = 0;
     public static int caveSystemPocketMaxSize = 4;
     public static boolean evenCaveDistribution = false;
-
     public int worldHeightCap = 128;
+    protected int checkAreaSize = 8;
+    private Random random;
+
+    public static int numberInRange(Random random, int min, int max) {
+        return min + random.nextInt(max - min + 1);
+    }
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
@@ -259,9 +260,5 @@ public class PopulatorCaves extends Populator {
                 generateCaveNode(this.random.nextLong(), generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
             }
         }
-    }
-
-    public static int numberInRange(Random random, int min, int max) {
-        return min + random.nextInt(max - min + 1);
     }
 }

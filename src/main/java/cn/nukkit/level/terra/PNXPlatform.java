@@ -11,7 +11,6 @@ import cn.nukkit.utils.Config;
 import com.dfsek.tectonic.api.TypeRegistry;
 import com.dfsek.terra.AbstractPlatform;
 import com.dfsek.terra.api.block.state.BlockState;
-import com.dfsek.terra.api.event.events.platform.PlatformInitializationEvent;
 import com.dfsek.terra.api.handle.ItemHandle;
 import com.dfsek.terra.api.handle.WorldHandle;
 import com.dfsek.terra.api.registry.key.RegistryKey;
@@ -39,7 +38,7 @@ public class PNXPlatform extends AbstractPlatform {
     private static PNXPlatform INSTANCE = null;
 
     //je -> be biomes mapping
-    private static Map<String, Integer> jeBiomesMapping = new HashMap<>();
+    private static final Map<String, Integer> jeBiomesMapping = new HashMap<>();
 
     static {
         DATA_PATH = new File("./terra");

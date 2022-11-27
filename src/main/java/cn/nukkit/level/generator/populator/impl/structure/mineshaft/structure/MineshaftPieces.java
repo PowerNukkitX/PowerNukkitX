@@ -47,7 +47,8 @@ public class MineshaftPieces {
     private static final BlockState RAIL__NS = new BlockState(Block.RAIL, RailDirection.NORTH_SOUTH);
     private static final BlockState RAIL__EW = new BlockState(Block.RAIL, RailDirection.EAST_WEST);
 
-    @Nullable //\\ MineshaftPiece::createRandomShaftPiece(MineshaftData &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    @Nullable
+    //\\ MineshaftPiece::createRandomShaftPiece(MineshaftData &,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
     private static MineshaftPiece createRandomShaftPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, @Nullable BlockFace orientation, int genDepth, PopulatorMineshaft.Type type) {
         int chance = random.nextBoundedInt(100);
         if (chance >= 80) {
@@ -69,7 +70,8 @@ public class MineshaftPieces {
         return null;
     }
 
-    @Nullable //\\ MineshaftPiece::generateAndAddPiece(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+    @Nullable
+    //\\ MineshaftPiece::generateAndAddPiece(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
     private static MineshaftPiece generateAndAddPiece(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
         if (genDepth <= 8 && Math.abs(x - piece.getBoundingBox().x0) <= 80 && Math.abs(z - piece.getBoundingBox().z0) <= 80) {
             MineshaftPiece result = createRandomShaftPiece(pieces, random, x, y, z, orientation, genDepth + 1, ((MineshaftPiece) piece).type);
@@ -80,6 +82,10 @@ public class MineshaftPieces {
             return result;
         }
         return null;
+    }
+
+    public static void init() {
+        //NOOP
     }
 
     abstract static class MineshaftPiece extends StructurePiece {
@@ -153,7 +159,8 @@ public class MineshaftPieces {
             return "MSRoom";
         }
 
-        @Override //\\ MineshaftRoom::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        @Override
+        //\\ MineshaftRoom::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             int genDepth = this.getGenDepth();
             int yOffset = this.boundingBox.getYSpan() - 3 - 1;
@@ -253,8 +260,8 @@ public class MineshaftPieces {
 
         private final boolean hasRails;
         private final boolean spiderCorridor;
-        private boolean hasPlacedSpider;
         private final int numSections;
+        private boolean hasPlacedSpider;
 
         public MineshaftCorridor(int genDepth, NukkitRandom random, BoundingBox boundingBox, BlockFace orientation, PopulatorMineshaft.Type type) {
             super(genDepth, type);
@@ -277,21 +284,8 @@ public class MineshaftPieces {
             this.numSections = tag.getInt("Num");
         }
 
-        @Override //\\ MineshaftCorridor::getType() // 1297302351i64;
-        public String getType() {
-            return "MSCorridor";
-        }
-
-        @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("hr", this.hasRails);
-            tag.putBoolean("sc", this.spiderCorridor);
-            tag.putBoolean("hps", this.hasPlacedSpider);
-            tag.putInt("Num", this.numSections);
-        }
-
-        @Nullable //\\ MineshaftCorridor::findCorridorSize(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
+        @Nullable
+        //\\ MineshaftCorridor::findCorridorSize(std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
         public static BoundingBox findCorridorSize(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = new BoundingBox(x, y, z, x, y + 3 - 1, z);
 
@@ -325,6 +319,20 @@ public class MineshaftPieces {
             }
 
             return count > 0 ? boundingBox : null;
+        }
+
+        @Override //\\ MineshaftCorridor::getType() // 1297302351i64;
+        public String getType() {
+            return "MSCorridor";
+        }
+
+        @Override
+        protected void addAdditionalSaveData(CompoundTag tag) {
+            super.addAdditionalSaveData(tag);
+            tag.putBoolean("hr", this.hasRails);
+            tag.putBoolean("sc", this.spiderCorridor);
+            tag.putBoolean("hps", this.hasPlacedSpider);
+            tag.putInt("Num", this.numSections);
         }
 
         @Override
@@ -542,18 +550,6 @@ public class MineshaftPieces {
             this.direction = BlockFace.fromHorizontalIndex(tag.getInt("D"));
         }
 
-        @Override //\\ MineshaftCrossing::getType() // 1297302354i64;
-        public String getType() {
-            return "MSCrossing";
-        }
-
-        @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putBoolean("tf", this.isTwoFloored);
-            tag.putInt("D", this.direction.getHorizontalIndex());
-        }
-
         @Nullable
         public static BoundingBox findCrossing(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = new BoundingBox(x, y, z, x, y + 3 - 1, z);
@@ -585,6 +581,18 @@ public class MineshaftPieces {
             }
 
             return StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? boundingBox : null;
+        }
+
+        @Override //\\ MineshaftCrossing::getType() // 1297302354i64;
+        public String getType() {
+            return "MSCrossing";
+        }
+
+        @Override
+        protected void addAdditionalSaveData(CompoundTag tag) {
+            super.addAdditionalSaveData(tag);
+            tag.putBoolean("tf", this.isTwoFloored);
+            tag.putInt("D", this.direction.getHorizontalIndex());
         }
 
         @Override
@@ -683,11 +691,6 @@ public class MineshaftPieces {
             super(tag);
         }
 
-        @Override//\\ MineshaftStairs::getType() // 1297306452i64;
-        public String getType() {
-            return "MSStairs";
-        }
-
         @Nullable
         public static BoundingBox findStairs(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = new BoundingBox(x, y - 5, z, x, y + 3 - 1, z);
@@ -711,6 +714,11 @@ public class MineshaftPieces {
             }
 
             return StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? boundingBox : null;
+        }
+
+        @Override//\\ MineshaftStairs::getType() // 1297306452i64;
+        public String getType() {
+            return "MSStairs";
         }
 
         @Override
@@ -750,9 +758,5 @@ public class MineshaftPieces {
 
             return true;
         }
-    }
-
-    public static void init() {
-        //NOOP
     }
 }

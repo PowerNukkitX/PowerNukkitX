@@ -14,10 +14,6 @@ public class StrongholdCrossingChest extends RandomizableContainer {
 
     private static final StrongholdCrossingChest INSTANCE = new StrongholdCrossingChest();
 
-    public static StrongholdCrossingChest get() {
-        return INSTANCE;
-    }
-
     private StrongholdCrossingChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -32,5 +28,9 @@ public class StrongholdCrossingChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)) //TODO: treasure enchant_with_levels 30
                 .register(new ItemEntry(Item.DYE, 0, 3, 75));
         this.pools.put(pool1.build(), new RollEntry(4, 1, pool1.getTotalWeight()));
+    }
+
+    public static StrongholdCrossingChest get() {
+        return INSTANCE;
     }
 }

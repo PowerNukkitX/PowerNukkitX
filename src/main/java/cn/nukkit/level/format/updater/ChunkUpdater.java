@@ -45,14 +45,14 @@ public class ChunkUpdater {
             if (section.getContentVersion() >= getCurrentContentVersion()) {
                 continue;
             }
-            
+
             if (section.getContentVersion() < 5) {
                 updated = updateToV8FromV0toV5(level, chunk, updated, section, section.getContentVersion());
             } else if (section.getContentVersion() == 5 || section.getContentVersion() == 7) {
                 updated = updateBeehiveFromV5or6or7toV8(chunk, updated, section, false);
             } else if (section.getContentVersion() == 6) {
                 updated = updateBeehiveFromV5or6or7toV8(chunk, updated, section, true);
-            } 
+            }
             if (section.getContentVersion() == 8) {
                 updated = upgradeWallsFromV8toV9(level, chunk, updated, section);
             }
@@ -98,7 +98,7 @@ public class ChunkUpdater {
         section.setContentVersion(10);
         return updated;
     }
-    
+
     private boolean updateBeehiveFromV5or6or7toV8(BaseChunk chunk, boolean updated, ChunkSection section, boolean updateDirection) {
         if (walk(chunk, section, new BeehiveUpdater(section, updateDirection))) {
             updated = true;
@@ -115,11 +115,11 @@ public class ChunkUpdater {
                 new NewLeafUpdater(section),
                 new BeehiveUpdater(section, true),
                 wallUpdater,
-                contentVersion < 1? new StemUpdater(level, section, BlockID.MELON_STEM, BlockID.MELON_BLOCK) : null,
-                contentVersion < 1? new StemUpdater(level, section, BlockID.PUMPKIN_STEM, BlockID.PUMPKIN) : null,
-                contentVersion < 5? new OldWoodBarkUpdater(section, BlockID.LOG,  0b000) : null,
-                contentVersion < 5? new OldWoodBarkUpdater(section, BlockID.LOG2, 0b100) : null,
-                contentVersion < 5? new DoorUpdater(chunk, section) : null
+                contentVersion < 1 ? new StemUpdater(level, section, BlockID.MELON_STEM, BlockID.MELON_BLOCK) : null,
+                contentVersion < 1 ? new StemUpdater(level, section, BlockID.PUMPKIN_STEM, BlockID.PUMPKIN) : null,
+                contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG, 0b000) : null,
+                contentVersion < 5 ? new OldWoodBarkUpdater(section, BlockID.LOG2, 0b100) : null,
+                contentVersion < 5 ? new DoorUpdater(chunk, section) : null
         ));
 
         updated = updated || sectionUpdated;

@@ -50,6 +50,70 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 8;
 
+    protected static void fillBase(FullChunk chunk, int baseY, int startX, int startZ, int sizeX, int sizeZ) {
+        for (int x = startX; x < startX + sizeX; x++) {
+            for (int z = startZ; z < startZ + sizeZ; z++) {
+                int baseId = chunk.getBlockId(x, baseY, z);
+                int baseMeta = chunk.getBlockData(x, baseY, z);
+
+                switch (baseId) {
+                    case COBBLESTONE:
+                    case MOSSY_STONE:
+                    case LOG2:
+                    case PLANKS:
+                    case FENCE:
+                        int y = baseY - 1;
+                        int id = chunk.getBlockId(x, y, z);
+
+                        while ((Utils.isPlantOrFluid[id]) && y > 1) {
+                            chunk.setBlock(x, y, z, baseId, baseMeta);
+                            id = chunk.getBlockId(x, --y, z);
+                        }
+                }
+            }
+        }
+    }
+
+    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
+        return nbt -> {
+            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
+                switch (nbt.getString("metadata")) {
+                    case "topChest":
+                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
+                        PillagerOutpostChest.get().create(itemList, random);
+
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
+                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        break;
+                    case "pillager":
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
+                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
+                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))), 2);
+                        break;
+                    case "captain":
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
+                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
+                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))
+                                        .putBoolean("PatrolLeader", true)), 2);
+                        break;
+                    case "cage":
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
+                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
+                                        .putString("id", String.valueOf(EntityIronGolem.NETWORK_ID))), 2);
+                        break;
+                }
+            }
+        };
+    }
+
+    private static CompoundTag loadNBT(String path) {
+        try (InputStream inputStream = PopulatorPillagerOutpost.class.getModule().getResourceAsStream(path)) {
+            return NBTIO.readCompressed(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
@@ -120,70 +184,6 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         template.placeInChunk(chunk, random, new BlockVector3((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z), new StructurePlaceSettings()
                 .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
         fillBase(chunk, y, x, z, size.getX(), size.getZ());
-    }
-
-    protected static void fillBase(FullChunk chunk, int baseY, int startX, int startZ, int sizeX, int sizeZ) {
-        for (int x = startX; x < startX + sizeX; x++) {
-            for (int z = startZ; z < startZ + sizeZ; z++) {
-                int baseId = chunk.getBlockId(x, baseY, z);
-                int baseMeta = chunk.getBlockData(x, baseY, z);
-
-                switch (baseId) {
-                    case COBBLESTONE:
-                    case MOSSY_STONE:
-                    case LOG2:
-                    case PLANKS:
-                    case FENCE:
-                        int y = baseY - 1;
-                        int id = chunk.getBlockId(x, y, z);
-
-                        while ((Utils.isPlantOrFluid[id]) && y > 1) {
-                            chunk.setBlock(x, y, z, baseId, baseMeta);
-                            id = chunk.getBlockId(x, --y, z);
-                        }
-                }
-            }
-        }
-    }
-
-    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
-        return nbt -> {
-            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
-                switch (nbt.getString("metadata")) {
-                    case "topChest":
-                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
-                        PillagerOutpostChest.get().create(itemList, random);
-
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
-                        break;
-                    case "pillager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))), 2);
-                        break;
-                    case "captain":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityPillager.NETWORK_ID))
-                                        .putBoolean("PatrolLeader", true)), 2);
-                        break;
-                    case "cage":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityIronGolem.NETWORK_ID))), 2);
-                        break;
-                }
-            }
-        };
-    }
-
-    private static CompoundTag loadNBT(String path) {
-        try (InputStream inputStream = PopulatorPillagerOutpost.class.getModule().getResourceAsStream(path)) {
-            return NBTIO.readCompressed(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Since("1.19.21-r2")

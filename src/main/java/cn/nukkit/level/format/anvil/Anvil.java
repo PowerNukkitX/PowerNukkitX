@@ -55,6 +55,7 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
     @PowerNukkitXOnly
     @Since("1.19.20-r3")
     private DimensionData dimensionData;
+    private int lastPosition = 0;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -77,10 +78,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
 
     public static boolean usesChunkSection() {
         return true;
-    }
-
-    public boolean isOldAnvil() {
-        return isOldAnvil;
     }
 
     public static boolean isValid(String path) {
@@ -141,72 +138,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
                 throw new UncheckedIOException(e);
             }
         });
-    }
-
-    @Override
-    public Chunk getEmptyChunk(int chunkX, int chunkZ) {
-        return Chunk.getEmptyChunk(chunkX, chunkZ, this);
-    }
-
-    @Override
-    public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
-        Chunk chunk = (Chunk) this.getChunk(x, z, false);
-        if (chunk == null) {
-            throw new ChunkException("Invalid Chunk Set");
-        }
-
-        long timestamp = chunk.getChanges();
-
-        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) ->
-                this.getLevel().chunkRequestCallback(timestamp, x, z, subchunks, stream.getBuffer());
-        serialize(chunk, callback, this.level.getDimensionData());
-
-        return null;
-    }
-
-    @PowerNukkitXDifference(info = "Non-static")
-    public final void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
-        byte[] blockEntities;
-        if (chunk.getBlockEntities().isEmpty()) {
-            blockEntities = new byte[0];
-        } else {
-            blockEntities = serializeEntities(chunk);
-        }
-
-        int subChunkCount = 0;
-        cn.nukkit.level.format.ChunkSection[] sections = chunk.getSections();
-        for (int i = sections.length - 1; i >= 0; i--) {
-            if (!sections[i].isEmpty()) {
-                subChunkCount = i + 1;
-                break;
-            }
-        }
-
-        int maxDimensionSections = dimensionData.getHeight() >> 4;
-        subChunkCount = Math.min(maxDimensionSections, subChunkCount);
-
-        byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
-        BinaryStream stream = ThreadCache.binaryStream.get().reset();
-
-        int writtenSections = subChunkCount;
-
-        final var tmpSubChunkStreams = new BinaryStream[subChunkCount];
-        for (int i = 0; i < subChunkCount; i++) { // 确保全部在主线程上分配
-            tmpSubChunkStreams[i] = new BinaryStream(new byte[8192]).reset(); // 8KB
-        }
-        if (level != null && level.isAntiXrayEnabled()) {
-            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
-        } else {
-            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
-        }
-        for (int i = 0; i < subChunkCount; i++) {
-            stream.put(tmpSubChunkStreams[i].getBuffer());
-        }
-
-        stream.put(biomePalettes);
-        stream.putByte((byte) 0); // Border blocks
-        stream.put(blockEntities);
-        callback.accept(stream, writtenSections);
     }
 
     private static byte[] serializeEntities(BaseChunk chunk) {
@@ -282,7 +213,82 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         return stream.getBuffer();
     }
 
-    private int lastPosition = 0;
+    @UsedByReflection
+    public static ChunkSection createChunkSection(int y) {
+        ChunkSection cs = new ChunkSection(y);
+        cs.hasSkyLight = true;
+        return cs;
+    }
+
+    public boolean isOldAnvil() {
+        return isOldAnvil;
+    }
+
+    @Override
+    public Chunk getEmptyChunk(int chunkX, int chunkZ) {
+        return Chunk.getEmptyChunk(chunkX, chunkZ, this);
+    }
+
+    @Override
+    public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
+        Chunk chunk = (Chunk) this.getChunk(x, z, false);
+        if (chunk == null) {
+            throw new ChunkException("Invalid Chunk Set");
+        }
+
+        long timestamp = chunk.getChanges();
+
+        BiConsumer<BinaryStream, Integer> callback = (stream, subchunks) ->
+                this.getLevel().chunkRequestCallback(timestamp, x, z, subchunks, stream.getBuffer());
+        serialize(chunk, callback, this.level.getDimensionData());
+
+        return null;
+    }
+
+    @PowerNukkitXDifference(info = "Non-static")
+    public final void serialize(BaseChunk chunk, BiConsumer<BinaryStream, Integer> callback, DimensionData dimensionData) {
+        byte[] blockEntities;
+        if (chunk.getBlockEntities().isEmpty()) {
+            blockEntities = new byte[0];
+        } else {
+            blockEntities = serializeEntities(chunk);
+        }
+
+        int subChunkCount = 0;
+        cn.nukkit.level.format.ChunkSection[] sections = chunk.getSections();
+        for (int i = sections.length - 1; i >= 0; i--) {
+            if (!sections[i].isEmpty()) {
+                subChunkCount = i + 1;
+                break;
+            }
+        }
+
+        int maxDimensionSections = dimensionData.getHeight() >> 4;
+        subChunkCount = Math.min(maxDimensionSections, subChunkCount);
+
+        byte[] biomePalettes = serializeBiomes(chunk, maxDimensionSections);
+        BinaryStream stream = ThreadCache.binaryStream.get().reset();
+
+        int writtenSections = subChunkCount;
+
+        final var tmpSubChunkStreams = new BinaryStream[subChunkCount];
+        for (int i = 0; i < subChunkCount; i++) { // 确保全部在主线程上分配
+            tmpSubChunkStreams[i] = new BinaryStream(new byte[8192]).reset(); // 8KB
+        }
+        if (level != null && level.isAntiXrayEnabled()) {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeObfuscatedTo(tmpSubChunkStreams[i], level));
+        } else {
+            IntStream.range(0, subChunkCount).parallel().forEach(i -> sections[i].writeTo(tmpSubChunkStreams[i]));
+        }
+        for (int i = 0; i < subChunkCount; i++) {
+            stream.put(tmpSubChunkStreams[i].getBuffer());
+        }
+
+        stream.put(biomePalettes);
+        stream.putByte((byte) 0); // Border blocks
+        stream.put(blockEntities);
+        callback.accept(stream, writtenSections);
+    }
 
     @Override
     public void doGarbageCollection(long time) {
@@ -348,7 +354,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         }
     }
 
-
     @Override
     public synchronized void saveChunk(int x, int z, FullChunk chunk) {
         if (!(chunk instanceof Chunk)) {
@@ -364,13 +369,6 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @UsedByReflection
-    public static ChunkSection createChunkSection(int y) {
-        ChunkSection cs = new ChunkSection(y);
-        cs.hasSkyLight = true;
-        return cs;
     }
 
     protected synchronized BaseRegionLoader loadRegion(int x, int z) {

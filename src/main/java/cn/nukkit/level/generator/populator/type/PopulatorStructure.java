@@ -27,7 +27,7 @@ public abstract class PopulatorStructure extends Populator {
 
     protected static List<Class<? extends PopulatorStructure>> STRUCTURE_POPULATORS = new ArrayList<>();
 
-    static{
+    static {
         STRUCTURE_POPULATORS.add(PopulatorVillage.class);
         STRUCTURE_POPULATORS.add(PopulatorOceanMonument.class);
         STRUCTURE_POPULATORS.add(PopulatorDesertWell.class);
@@ -63,6 +63,7 @@ public abstract class PopulatorStructure extends Populator {
 
     /**
      * 若返回值为true,则将会使用{@link cn.nukkit.level.generator.task.ChunkPopulationTask}异步生成结构
+     *
      * @return boolean
      */
     @PowerNukkitXOnly

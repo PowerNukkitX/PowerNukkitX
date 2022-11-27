@@ -11,8 +11,8 @@ import static java.lang.Math.abs;
 
 /**
  * @author Mojang AB
- *         -- Ported from Minecraft JE
- *         -- by AsgoreDream(HelloworldSB)
+ * -- Ported from Minecraft JE
+ * -- by AsgoreDream(HelloworldSB)
  */
 public class ObjectEndSpike extends BasicGenerator {
 
@@ -22,11 +22,11 @@ public class ObjectEndSpike extends BasicGenerator {
     private static final BlockState STATE_AIR = BlockState.of(AIR);
 
     private Vector3 position;
-    private int radius;
-    private int height;
-    private boolean hasIronBars;
+    private final int radius;
+    private final int height;
+    private final boolean hasIronBars;
 
-    private Vector3 tempPosition = new Vector3();
+    private final Vector3 tempPosition = new Vector3();
 
     public ObjectEndSpike(Vector3 position, int radius, int height, boolean hasIronBars) {
         this.position = position;

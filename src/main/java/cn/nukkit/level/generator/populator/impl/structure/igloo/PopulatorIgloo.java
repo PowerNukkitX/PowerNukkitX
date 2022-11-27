@@ -44,6 +44,40 @@ public class PopulatorIgloo extends PopulatorStructure {
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 8;
 
+    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
+        return nbt -> {
+            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
+                switch (nbt.getString("metadata")) {
+                    case "chest":
+                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
+                        IglooChest.get().create(itemList, random);
+
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
+                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
+                        break;
+                    case "Villager":
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
+                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
+                                        .putString("id", String.valueOf(EntityVillager.NETWORK_ID))), 2);
+                        break;
+                    case "Zombie Villager":
+                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
+                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
+                                        .putString("id", String.valueOf(EntityZombieVillager.NETWORK_ID))), 2);
+                        break;
+                }
+            }
+        };
+    }
+
+    private static CompoundTag loadNBT(String path) {
+        try (InputStream inputStream = PopulatorIgloo.class.getModule().getResourceAsStream(path)) {
+            return NBTIO.readCompressed(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         if (!chunk.isOverWorld()) return;
@@ -101,40 +135,6 @@ public class PopulatorIgloo extends PopulatorStructure {
                 template.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
                         .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
             }
-        }
-    }
-
-    protected static Consumer<CompoundTag> getBlockActorProcessor(FullChunk chunk, NukkitRandom random) {
-        return nbt -> {
-            if (nbt.getString("id").equals(BlockEntity.STRUCTURE_BLOCK)) {
-                switch (nbt.getString("metadata")) {
-                    case "chest":
-                        ListTag<CompoundTag> itemList = new ListTag<>("Items");
-                        IglooChest.get().create(itemList, random);
-
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new LootSpawnTask(chunk.getProvider().getLevel(),
-                                new BlockVector3(nbt.getInt("x"), nbt.getInt("y") - 1, nbt.getInt("z")), itemList), 2);
-                        break;
-                    case "Villager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityVillager.NETWORK_ID))), 2);
-                        break;
-                    case "Zombie Villager":
-                        Server.getInstance().getScheduler().scheduleDelayedTask(new ActorSpawnTask(chunk.getProvider().getLevel(),
-                                Entity.getDefaultNBT(new Vector3(nbt.getInt("x") + 0.5, nbt.getInt("y"), nbt.getInt("z") + 0.5))
-                                        .putString("id", String.valueOf(EntityZombieVillager.NETWORK_ID))), 2);
-                        break;
-                }
-            }
-        };
-    }
-
-    private static CompoundTag loadNBT(String path) {
-        try (InputStream inputStream = PopulatorIgloo.class.getModule().getResourceAsStream(path)) {
-            return NBTIO.readCompressed(inputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
