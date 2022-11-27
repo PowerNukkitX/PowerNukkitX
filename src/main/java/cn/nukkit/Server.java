@@ -659,7 +659,7 @@ public class Server {
             try {
                 poolSize = Integer.valueOf((String) poolSize);
             } catch (Exception e) {
-                poolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
+                poolSize = Math.max(Runtime.getRuntime().availableProcessors(), 4);
             }
         }
 

@@ -4,7 +4,6 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
-import cn.powernukkitx.libdeflate.Libdeflate;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -169,7 +168,8 @@ public class Nukkit {
 
         // 停止JS定时器
         JSIInitiator.jsTimer.cancel();
-
+        //关闭异步任务线程池
+        Server.getInstance().getScheduler().close();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;
