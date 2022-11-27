@@ -268,7 +268,26 @@ public class Level implements ChunkManager, Metadatable {
     private final int chunkTickRadius;
     private final int chunksPerTicks;
     private final boolean clearChunksOnTick;
-    private final ThreadLocal<Generator> generators;
+    private final ThreadLocal<Generator> generators = new ThreadLocal<>() {
+        @Override
+        public Generator get() {
+            try {
+                Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
+                NukkitRandom rand = new NukkitRandom(getSeed());
+                generator.setRandom(rand);
+                generator.setLevel(Level.this);
+
+                ChunkManager manager = new PopChunkManager(getSeed());
+                generator.setChunkManager(manager);
+                generator.init(manager, rand);
+
+                return generator;
+            } catch (Throwable e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    };
 
     private int updateLCG = ThreadLocalRandom.current().nextInt();
     private int tickRate;
@@ -351,21 +370,7 @@ public class Level implements ChunkManager, Metadatable {
                 TextFormat.GREEN + levelProvider.getName() + TextFormat.WHITE));
 
         this.generatorClass = Generator.getGenerator(levelProvider.getGenerator());
-        this.generators = ThreadLocal.withInitial(() -> {
-            try {
-                Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
-                NukkitRandom rand = new NukkitRandom(getSeed());
-                generator.setRandom(rand);
-                generator.setLevel(Level.this);
-                ChunkManager manager = new PopChunkManager(getSeed());
-                generator.setChunkManager(manager);
-                generator.init(manager, rand);
-                return generator;
-            } catch (Throwable e) {
-                e.printStackTrace();
-                return null;
-            }
-        });
+
         this.useSections = usesChunkSection.getAsBoolean();
 
         this.folderName = name;
