@@ -270,7 +270,7 @@ public class Level implements ChunkManager, Metadatable {
     private final boolean clearChunksOnTick;
     private final Supplier<Generator> generators = new Supplier<>() {
         @Override
-        public synchronized Generator get() {
+        public Generator get() {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
