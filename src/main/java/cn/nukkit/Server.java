@@ -1180,7 +1180,7 @@ public class Server {
             log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
             this.scheduler.mainThreadHeartbeat(Integer.MAX_VALUE);
-            this.scheduler.close();
+
 
             log.debug("Unloading all levels");
             for (Level level : this.levelArray) {
