@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.plugin.js.JSIInitiator;
 import cn.nukkit.utils.ServerKiller;
@@ -170,6 +171,8 @@ public class Nukkit {
         JSIInitiator.jsTimer.cancel();
         //关闭异步任务线程池
         Server.getInstance().getScheduler().close();
+        // 关闭PGZIPOutputStream中的线程池
+        PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;
@@ -182,7 +185,6 @@ public class Nukkit {
 
         ServerKiller killer = new ServerKiller(8);
         killer.start();
-
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Server Stopped" + (char) 0x07);
         }

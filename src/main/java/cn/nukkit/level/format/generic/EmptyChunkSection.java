@@ -14,6 +14,8 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.collection.FreezableArrayManager;
+import cn.nukkit.utils.collection.FreezableByteArray;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -68,16 +70,16 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     private final int y;
-    private final byte[] biomeId;
+    private final FreezableByteArray biomeId;
 
     public EmptyChunkSection(int y) {
         this.y = y;
-        this.biomeId = new byte[4096];
+        this.biomeId = FreezableArrayManager.getInstance().createByteArray(4096);
     }
 
     public EmptyChunkSection(int y, byte[] biomeId) {
         this.y = y;
-        this.biomeId = biomeId;
+        this.biomeId = FreezableArrayManager.getInstance().wrapByteArray(biomeId);
     }
 
     @PowerNukkitXOnly
@@ -293,7 +295,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     public CompoundTag toNBT() {
         var s = new CompoundTag();
         s.putInt("Y", getY());
-        s.putByteArray(BIOME_TAG_NAME, biomeId);
+        s.putByteArray(BIOME_TAG_NAME, biomeId.getRawBytes());
         s.putByte("Version", -1);
         return s;
     }
@@ -301,7 +303,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     @Nonnull
     @Override
     public EmptyChunkSection copy() {
-        return new EmptyChunkSection(this.y, this.biomeId);
+        return new EmptyChunkSection(this.y, this.biomeId.getRawBytes());
     }
 
     @PowerNukkitOnly
@@ -335,17 +337,17 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        return this.biomeId[getAnvilIndex(x, y, z)];
+        return this.biomeId.getByte(getAnvilIndex(x, y, z));
     }
 
     @Override
     public void setBiomeId(int x, int y, int z, byte id) {
-        this.biomeId[getAnvilIndex(x, y, z)] = id;
+        this.biomeId.setByte(getAnvilIndex(x, y, z), id);
     }
 
     @Override
     public byte[] get3DBiomeDataArray() {
-        return this.biomeId;
+        return this.biomeId.getRawBytes();
     }
 
     @Override
@@ -353,6 +355,6 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
         if (data.length != 4096) {
             throw new ChunkException("Invalid biome data length, expected 4096, got " + data.length);
         }
-        System.arraycopy(data, 0, this.biomeId, 0, 4096);
+        this.biomeId.setRawBytes(Arrays.copyOf(data, 4096));
     }
 }
