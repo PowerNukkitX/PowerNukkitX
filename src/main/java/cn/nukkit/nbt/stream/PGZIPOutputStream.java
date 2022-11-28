@@ -23,7 +23,7 @@ import java.util.zip.DeflaterOutputStream;
  */
 public class PGZIPOutputStream extends FilterOutputStream {
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(t -> new Thread(t, "PGZIPOutputStream#EXECUTOR"));
 
     public static ExecutorService getSharedThreadPool() {
         return EXECUTOR;
