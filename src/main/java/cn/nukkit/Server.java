@@ -81,6 +81,7 @@ import cn.nukkit.scoreboard.manager.ScoreboardManager;
 import cn.nukkit.scoreboard.storage.JSONScoreboardStorage;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
+import cn.nukkit.utils.collection.FreezableArrayManager;
 import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -105,6 +106,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -311,6 +313,10 @@ public class Server {
     @Since("1.6.0.0-PNX")
     private boolean enableExperimentMode;
 
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    private FreezableArrayManager freezableArrayManager;
+
     /**
      * Minimal initializer for testing
      */
@@ -347,6 +353,7 @@ public class Server {
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool();
+        freezableArrayManager = new FreezableArrayManager(32, 32, 0, -256, 1024, 16, 1, 32);
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -754,6 +761,16 @@ public class Server {
         GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         this.commandMap = new SimpleCommandMap(this);
+
+        freezableArrayManager = new FreezableArrayManager(
+                this.getConfig("memory-compression.slots", 32),
+                this.getConfig("memory-compression.default-temperature", 32),
+                this.getConfig("memory-compression.threshold.freezing-point", 0),
+                this.getConfig("memory-compression.threshold.absolute-zero", -256),
+                this.getConfig("memory-compression.threshold.boiling-point", 1024),
+                this.getConfig("memory-compression.heat.melting", 16),
+                this.getConfig("memory-compression.heat.single-operation", 1),
+                this.getConfig("memory-compression.heat.batch-operation", 32));
 
         scoreboardManager = new ScoreboardManager(new JSONScoreboardStorage(this.commandDataPath + "/scoreboard.json"));
 
@@ -1544,10 +1561,17 @@ public class Server {
         }
 
         if (this.tickCounter % 100 == 0) {
-            for (Level level : this.levelArray) {
-                level.doChunkGarbageCollection();
-            }
+            CompletableFuture.allOf(Arrays.stream(this.levelArray).parallel()
+                    .flatMap(l -> l.asyncChunkGarbageCollection().stream())
+                    .toArray(CompletableFuture[]::new));
         }
+
+        // 处理可冻结数组
+        int freezableArrayCompressTime = (int) (50 - (System.currentTimeMillis() - tickTime));
+        if (freezableArrayCompressTime > 4) {
+            freezableArrayManager.setMaxCompressionTime(freezableArrayCompressTime).tick();
+        }
+
 
         Timings.fullServerTickTimer.stopTiming();
         //long now = System.currentTimeMillis();
@@ -1907,6 +1931,10 @@ public class Server {
 
     public TickingAreaManager getTickingAreaManager() {
         return tickingAreaManager;
+    }
+
+    public FreezableArrayManager getFreezableArrayManager() {
+        return freezableArrayManager;
     }
 
     public ServerScheduler getScheduler() {
