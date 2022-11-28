@@ -154,6 +154,10 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
         }
     }
 
+    private static int getAnvilIndex(int x, int y, int z) {
+        return (y << 8) + (z << 4) + x; // YZX
+    }
+
     private static byte[] serializeBiomes(BaseFullChunk chunk, int sectionCount) {
         var stream = ThreadCache.binaryStream.get().reset();
         if (chunk instanceof cn.nukkit.level.format.Chunk sectionChunk && sectionChunk.isChunkSection3DBiomeSupported()) {
@@ -166,10 +170,11 @@ public class Anvil extends BaseLevelProvider implements DimensionDataProvider {
             IntStream.range(0, len).parallel().forEach(i -> {
                 if (sections[i] instanceof ChunkSection3DBiome each) {
                     var palette = PalettedBlockStorage.createWithDefaultState(Biome.getBiomeIdOrCorrect(chunk.getBiomeId(0, 0) & 0xFF));
+                    var biomeData = each.get3DBiomeDataArray();
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             for (int y = 0; y < 16; y++) {
-                                var tmpBiome = Biome.getBiomeIdOrCorrect(each.getBiomeId(x, y, z) & 0xFF);
+                                var tmpBiome = Biome.getBiomeIdOrCorrect(biomeData[getAnvilIndex(x, y, z)] & 0xFF);
                                 palette.setBlock(x, y, z, tmpBiome);
                             }
                         }
