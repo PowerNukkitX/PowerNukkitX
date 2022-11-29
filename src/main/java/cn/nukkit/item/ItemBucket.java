@@ -65,6 +65,8 @@ public class ItemBucket extends Item {
                 return "Powder Snow Bucket";
             case 12:
                 return "Bucket of Axolotl";
+            case 13:
+                return "Bucket of Tadpole";
             default:
                 return "Bucket";
         }
@@ -79,6 +81,7 @@ public class ItemBucket extends Item {
             case 8:
             case 9:
             case 12:
+            case 13:
                 return BlockID.FLOWING_WATER;
             case 10:
                 return BlockID.FLOWING_LAVA;
@@ -130,6 +133,8 @@ public class ItemBucket extends Item {
                 return "Pufferfish";
             case 12:
                 return "Axolotl";
+            case 13:
+                return "Tadpole";
             default:
                 return null;
         }
@@ -369,6 +374,8 @@ public class ItemBucket extends Item {
                 Entity e12 = Entity.createEntity("Axolotl", block);
                 if (e12 != null) e12.spawnToAll();
                 */
+            case 13:
+                //TODO: Uncomment this code after adding the entity
                 break;
         }
     }

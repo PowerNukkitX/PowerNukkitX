@@ -408,6 +408,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             list[MANGROVE_SIGN] = ItemMangroveSign.class;//634
 
             list[RECORD_5] = ItemRecord5.class;//636
+            list[DISC_FRAGMENT_5] = ItemDiscFragment5.class;//637
 
             list[OAK_CHEST_BOAT] = ItemChestBoatOak.class; //638
             list[BIRCH_CHEST_BOAT] = ItemChestBoatBirch.class; //639

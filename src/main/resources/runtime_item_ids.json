@@ -5644,7 +5644,9 @@
   },
   {
     "name": "minecraft:tadpole_bucket",
-    "id": 630
+    "id": 630,
+    "oldId": 325,
+    "oldData": 13
   },
   {
     "name": "minecraft:allay_spawn_egg",
@@ -5675,7 +5677,8 @@
   },
   {
     "name": "minecraft:disc_fragment_5",
-    "id": 637
+    "id": 637,
+    "oldId": 637
   },
   {
     "name": "minecraft:oak_chest_boat",

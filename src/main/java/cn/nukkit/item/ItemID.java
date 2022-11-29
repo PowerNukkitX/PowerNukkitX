@@ -293,6 +293,9 @@ public interface ItemID {
     @Since("1.19.40-r2")
     @PowerNukkitXOnly
     int RECORD_5 = 636;
+    @Since("1.19.40-r4")
+    @PowerNukkitXOnly
+    int DISC_FRAGMENT_5 = 637;
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly
     int OAK_CHEST_BOAT = 638;
