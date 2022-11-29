@@ -11,6 +11,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -126,7 +127,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
                 break;
             default:
                 this.offMinX = 0;
-                this.offMinZ = 1 ;
+                this.offMinZ = 1;
                 this.offMaxX = 1;
                 this.offMaxZ = 1;
                 break;
@@ -167,15 +168,26 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     @PowerNukkitDifference(since = "1.4.0.0-PN", info = "Fixed support logic")
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
+        if (target instanceof BlockLadder) {
+            var opposite = ((BlockLadder) target).getBlockFace().rotateY();
+            var oppositeB = this.getLevel().getBlock(target.add(opposite.getUnitVector()));
+            var aabb = new SimpleAxisAlignedBB(oppositeB.x - 0.2, oppositeB.y - 0.2, oppositeB.z - 0.2, oppositeB.x + 0.2, oppositeB.y + 0.2, oppositeB.z + 0.2);
+            var f = opposite.getOpposite();
+            if (f == face.getOpposite() && !isSupportValid(oppositeB, f) && this.getLevel().fastCollidingEntities(aabb).isEmpty()) {
+                this.setDamage(f.getIndex());
+                this.getLevel().setBlock(oppositeB, this, true, false);
+                return true;
+            }
+        }
         if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
             return false;
         }
-        
+
         this.setDamage(face.getIndex());
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }
-    
+
     private boolean isSupportValid(Block support, BlockFace face) {
         switch (support.getId()) {
             case GLASS:
@@ -219,7 +231,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
@@ -240,7 +252,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     @Override
     @PowerNukkitOnly
-    public  boolean sticksToPiston() {
+    public boolean sticksToPiston() {
         return false;
     }
 }
