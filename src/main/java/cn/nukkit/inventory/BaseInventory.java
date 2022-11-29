@@ -297,7 +297,7 @@ public abstract class BaseInventory implements Inventory {
 
             for (Item slot : new ArrayList<>(itemSlots)) {
                 if (slot.equals(item)) {
-                    int maxStackSize = Math.min(this.getMaxStackSize() ,item.getMaxStackSize());
+                    int maxStackSize = Math.min(this.getMaxStackSize(), item.getMaxStackSize());
                     if (item.getCount() < maxStackSize) {
                         int amount = Math.min(maxStackSize - item.getCount(), slot.getCount());
                         amount = Math.min(amount, this.getMaxStackSize());
@@ -467,9 +467,9 @@ public abstract class BaseInventory implements Inventory {
                 ((Player) holder).updateTrackingPositions(true);
             }
 
-            getViewers().forEach(p-> p.updateTrackingPositions(true));
+            getViewers().forEach(p -> p.updateTrackingPositions(true));
         }
-        
+
 
         if (this.listeners != null) {
             for (InventoryListener listener : listeners) {
