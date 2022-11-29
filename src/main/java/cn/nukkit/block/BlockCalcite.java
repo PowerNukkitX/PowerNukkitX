@@ -69,9 +69,4 @@ public class BlockCalcite extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
-
-    @Override
-    public boolean isLavaResistant() {
-        return true;
-    }
 }
