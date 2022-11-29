@@ -5670,7 +5670,8 @@
   },
   {
     "name": "minecraft:music_disc_5",
-    "id": 636
+    "id": 636,
+    "oldId": 636
   },
   {
     "name": "minecraft:disc_fragment_5",
