@@ -1,6 +1,10 @@
 package cn.nukkit.item;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 
+@PowerNukkitXOnly
+@Since("1.19.40-r4")
 public class ItemDiscFragment5 extends Item {
 
     public ItemDiscFragment5() {

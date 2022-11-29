@@ -327,6 +327,9 @@ public interface ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     int CHEST_BOAT = 645;
+    @PowerNukkitXOnly
+    @Since("1.19.40-r4")
+    int ECHO_SHARD = 647;
 
     @Since("1.6.0.0-PNX")
     @PowerNukkitXOnly

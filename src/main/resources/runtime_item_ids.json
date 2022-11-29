@@ -5726,7 +5726,8 @@
   },
   {
     "name": "minecraft:echo_shard",
-    "id": 647
+    "id": 647,
+    "oldId": 647
   },
   {
     "name": "minecraft:boat",

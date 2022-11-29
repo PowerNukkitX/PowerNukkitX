@@ -1081,12 +1081,12 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.19.30-r2") ALLAY_SPAWN_EGG,
     @PowerNukkitXOnly @Since("1.19.30-r2") FROG_SPAWN_EGG,
     @PowerNukkitXOnly @Since("1.19.30-r2") TADPOLE_SPAWN_EGG,
-    @PowerNukkitOnly @Since("FUTURE") GLOW_INK_SAC,
-    @PowerNukkitOnly @Since("FUTURE") COPPER_INGOT,
-    @PowerNukkitOnly @Since("FUTURE") RAW_IRON,
-    @PowerNukkitOnly @Since("FUTURE") RAW_GOLD,
-    @PowerNukkitOnly @Since("FUTURE") RAW_COPPER,
-    @PowerNukkitOnly @Since("FUTURE") GLOW_FRAME(false),
+    @PowerNukkitOnly GLOW_INK_SAC,
+    @PowerNukkitOnly COPPER_INGOT,
+    @PowerNukkitOnly RAW_IRON,
+    @PowerNukkitOnly RAW_GOLD,
+    @PowerNukkitOnly RAW_COPPER,
+    @PowerNukkitOnly GLOW_FRAME(false),
     //todo 20220709 完成山羊角
     // @PowerNukkitOnly @Since("FUTURE") GOAT_HORN,
     @PowerNukkitOnly @Since("FUTURE") AMETHYST_SHARD,
@@ -1116,8 +1116,9 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") ACACIA_CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") DARK_OAK_CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_CHEST_BOAT,
+    @PowerNukkitXOnly @Since("1.6.0.0-PNX") CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.19.40-r4") DISC_FRAGMENT_5,
-    @PowerNukkitXOnly @Since("1.6.0.0-PNX") CHEST_BOAT;
+    @PowerNukkitXOnly @Since("1.19.40-r4") ECHO_SHARD;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))
