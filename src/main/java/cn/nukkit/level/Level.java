@@ -3067,6 +3067,12 @@ public class Level implements ChunkManager, Metadatable {
             block = target;
             hand.position(block);
         }
+        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
+        if (hand instanceof BlockLadder) {
+            if (target instanceof BlockLadder) {
+                hand.setDamage(face.getOpposite().getIndex());
+            } else hand.setDamage(face.getIndex());
+        }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());

@@ -11,7 +11,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -169,12 +168,11 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(@Nonnull Item item, @Nonnull Block block, @Nonnull Block target, @Nonnull BlockFace face, double fx, double fy, double fz, Player player) {
         if (target instanceof BlockLadder) {
-            var opposite = ((BlockLadder) target).getBlockFace().rotateY();
-            var oppositeB = this.getLevel().getBlock(target.add(opposite.getUnitVector()));
-            var aabb = new SimpleAxisAlignedBB(oppositeB.x - 0.2, oppositeB.y - 0.2, oppositeB.z - 0.2, oppositeB.x + 0.2, oppositeB.y + 0.2, oppositeB.z + 0.2);
-            var f = opposite.getOpposite();
-            if (f == face.getOpposite() && !isSupportValid(oppositeB, f) && this.getLevel().fastCollidingEntities(aabb).isEmpty()) {
-                this.setDamage(f.getIndex());
+            var opposite = face.getOpposite();
+            var oppositeB = this.getLevel().getBlock(target.add(face.getUnitVector()));
+            var targetBlock = this.getLevel().getBlock(target.add(face.getUnitVector().multiply(2)));
+            if (isSupportValid(targetBlock, opposite)) {
+                //不设置damage是因为level#useItemOn中有逻辑设置
                 this.getLevel().setBlock(oppositeB, this, true, false);
                 return true;
             }
@@ -182,8 +180,7 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         if (face.getHorizontalIndex() == -1 || !isSupportValid(target, face)) {
             return false;
         }
-
-        this.setDamage(face.getIndex());
+        //不设置damage是因为level#useItemOn中有逻辑设置
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }
