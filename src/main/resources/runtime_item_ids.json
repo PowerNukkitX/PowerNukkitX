@@ -5655,6 +5655,12 @@
     "oldData": 134
   },
   {
+    "name": "minecraft:warden_spawn_egg",
+    "id": 632,
+    "oldId": 383,
+    "oldData": 131
+  },
+  {
     "name": "minecraft:mangrove_door",
     "id": 633,
     "oldId": 633
@@ -5730,6 +5736,10 @@
     "oldId": 647
   },
   {
+    "name": "minecraft:trader_llama_spawn_egg",
+    "id": 648
+  },
+  {
     "name": "minecraft:boat",
     "id": 649,
     "oldId": 333,
@@ -5761,15 +5771,5 @@
     "name": "minecraft:glow_berries",
     "id": 654,
     "oldId": 654
-  },
-  {
-    "name": "minecraft:trader_llama_spawn_egg",
-    "id": 648
-  },
-  {
-    "name": "minecraft:warden_spawn_egg",
-    "id": 632,
-    "oldId": 383,
-    "oldData": 131
   }
 ]
