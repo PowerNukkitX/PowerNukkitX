@@ -9,7 +9,7 @@ import java.util.Map;
  * 记忆存储器
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public interface IMemoryStorage {
 
     /**

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * 表示一个特定的Memory类型
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 @Getter
 public final class MemoryType<Data> {
 

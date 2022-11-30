@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * 命名空间标识符
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public class Identifier {
     public static final char NAMESPACE_SEPARATOR = ':';
     public static final String DEFAULT_NAMESPACE = "minecraft";

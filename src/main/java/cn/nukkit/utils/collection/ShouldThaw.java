@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Documented
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public @interface ShouldThaw {
 }

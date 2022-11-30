@@ -319,7 +319,7 @@ public class Server {
     private boolean enableExperimentMode;
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     private FreezableArrayManager freezableArrayManager;
 
     /**

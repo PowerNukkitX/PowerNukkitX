@@ -6,7 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public class ItemEchoShard extends Item {
     public ItemEchoShard() {
         this(0, 1);

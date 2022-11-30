@@ -48,10 +48,10 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     //在每次方块实体更新时将获取到的实体缓存起来以减少性能损耗
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     private List<Entity> pickupAreaEntities = new LinkedList<>();
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     private List<Entity> pushAreaEntities = new LinkedList<>();
 
     private boolean disabled;
@@ -690,31 +690,31 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     protected List<Entity> searchEntitiesInPickupArea(){
         return this.level.fastCollidingEntities(this.pickupArea);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     protected List<Entity> requireEntitiesInPickupArea(){
         return pickupAreaEntities != null ? pickupAreaEntities : (pickupAreaEntities = searchEntitiesInPickupArea());
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     protected List<Entity> requireEntitiesInPushArea(){
         return pushAreaEntities != null ? pushAreaEntities : (pushAreaEntities = searchEntitiesInPushArea());
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     protected List<Entity> searchEntitiesInPushArea(){
         return this.level.fastCollidingEntities(this.pickupArea);
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     protected void clearCachedEntities(){
         this.pickupAreaEntities.clear();
         this.pushAreaEntities.clear();

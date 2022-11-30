@@ -293,7 +293,7 @@ public interface ItemID {
     @Since("1.19.40-r2")
     @PowerNukkitXOnly
     int RECORD_5 = 636;
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     @PowerNukkitXOnly
     int DISC_FRAGMENT_5 = 637;
     @Since("1.6.0.0-PNX")
@@ -328,7 +328,7 @@ public interface ItemID {
     @Since("1.6.0.0-PNX")
     int CHEST_BOAT = 645;
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     int ECHO_SHARD = 647;
 
     @Since("1.6.0.0-PNX")

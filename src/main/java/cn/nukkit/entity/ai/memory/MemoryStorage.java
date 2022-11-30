@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 记忆存储器标准实现
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public class MemoryStorage implements IMemoryStorage {
 
     //表示一个空值(null)，这样做是因为在ConcurrentHashMap中不允许放入null值

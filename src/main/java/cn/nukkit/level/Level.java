@@ -4290,7 +4290,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.40-r4", reason = "Should be async", replaceWith = "asyncChunkGarbageCollection")
+    @DeprecationDetails(since = "1.19.50-r1", reason = "Should be async", replaceWith = "asyncChunkGarbageCollection")
     public void doChunkGarbageCollection() {
         this.timings.doChunkGC.startTiming();
         // remove all invaild block entities.

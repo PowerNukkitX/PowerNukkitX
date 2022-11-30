@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public class MultipleExecutor implements IBehaviorExecutor {
 
     protected Set<IBehaviorExecutor> executors;
