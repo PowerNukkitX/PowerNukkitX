@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockproperty.BlockProperties;
 import cn.nukkit.blockproperty.CommonBlockProperties;
@@ -14,19 +15,16 @@ import javax.annotation.Nonnull;
  */
 
 @PowerNukkitOnly
-@Since("FUTURE")
+@PowerNukkitXDifference(info = "not isLavaResistant")
 public class BlockCalcite extends BlockSolid {
     @PowerNukkitOnly
-    @Since("FUTURE")
     public static final BlockProperties PROPERTIES = CommonBlockProperties.EMPTY_PROPERTIES;
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public BlockCalcite() {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     @Nonnull
     @Override
     public BlockProperties getProperties() {
