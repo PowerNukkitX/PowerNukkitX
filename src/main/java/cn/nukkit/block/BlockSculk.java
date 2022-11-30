@@ -47,8 +47,6 @@ public class BlockSculk extends BlockSolid {
         return ItemTool.TIER_WOODEN;
     }
 
-    @Since("1.4.0.0-PN")
-    @PowerNukkitOnly
     @NotNull
     @Override
     public double calculateBreakTime(@NotNull Item item, @Nullable Player player) {
