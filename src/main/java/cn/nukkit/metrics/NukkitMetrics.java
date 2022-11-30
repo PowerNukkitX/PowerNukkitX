@@ -226,6 +226,6 @@ public class NukkitMetrics {
     @Since("1.19.40-r4")
     public static void closeNow(Server server) {
         NukkitMetrics nukkitMetrics = getOrCreateMetrics(server);
-        nukkitMetrics.metrics.close();
+        if (nukkitMetrics.metrics != null) nukkitMetrics.metrics.close();
     }
 }

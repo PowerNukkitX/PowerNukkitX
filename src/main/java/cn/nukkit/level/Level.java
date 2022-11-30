@@ -2980,6 +2980,7 @@ public class Level implements ChunkManager, Metadatable {
         return this.useItemOn(vector, item, face, fx, fy, fz, player, true);
     }
 
+    @PowerNukkitXDifference(info = "Fixed issue#790", since = "1.19.50-r1")
     @PowerNukkitDifference(info = "PowerNukkit#403", since = "1.3.1.2-PN")
     @PowerNukkitDifference(info = "Fixed PowerNukkit#716, block stops placing when towering up", since = "1.4.0.0-PN")
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, Player player, boolean playSound) {
@@ -3066,6 +3067,12 @@ public class Level implements ChunkManager, Metadatable {
         if (!(hand instanceof BlockFrogSpawn) && target.canBeReplaced()) {
             block = target;
             hand.position(block);
+        }
+        //处理放置梯子,我们应该提前给hand设置方向,这样后面计算是否碰撞实体才准确
+        if (hand instanceof BlockLadder) {
+            if (target instanceof BlockLadder) {
+                hand.setDamage(face.getOpposite().getIndex());
+            } else hand.setDamage(face.getIndex());
         }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
