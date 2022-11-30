@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ExtendWith(PowerNukkitExtension.class)
 public class RecipeParseTest {
     static final Config customRecipes;
@@ -39,10 +41,11 @@ public class RecipeParseTest {
 
     @Test
     void shapeRecipe() {
+        boolean result = true;
         toNextRecipe:
         for (Map<String, Object> recipe : recipes) {
-            System.out.println(craftingManager.parseShapeRecipe(recipe));
-            ;
+            if (craftingManager.parseShapeRecipe(recipe).isEmpty()) result = false;
         }
+        assertTrue(result);
     }
 }
