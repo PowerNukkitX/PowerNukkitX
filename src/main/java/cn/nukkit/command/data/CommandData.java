@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@PowerNukkitXDifference(since = "1.19.40-r4", info = "Use List<Flag> instead")
+@PowerNukkitXDifference(since = "1.19.50-r1", info = "Use List<Flag> instead")
 public class CommandData implements Cloneable {
 
     public CommandEnum aliases = null;
@@ -29,7 +29,7 @@ public class CommandData implements Cloneable {
 
     // Bit flags
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     public enum Flag {
         //标记命令为测试(debug)命令
         USAGE,

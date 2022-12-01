@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 这包括计算温度，冻结和解冻
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public class FreezableArrayManager {
     protected ConcurrentHashMap<Integer, CopyOnWriteArrayList<WeakReference<AutoFreezable>>> tickArrayMap;
     public final int cycleTick;

@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -10,7 +9,6 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
-import cn.nukkit.level.generator.task.ChunkPopulationTask;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
@@ -149,7 +147,7 @@ public abstract class Generator implements BlockID {
      * 注册未知类型的生成器(Terra)
      */
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     public static boolean addGenerator(Class<? extends Generator> clazz, String name) {
         name = name.toLowerCase();
         if (clazz != null && !Generator.nameList.containsKey(name)) {

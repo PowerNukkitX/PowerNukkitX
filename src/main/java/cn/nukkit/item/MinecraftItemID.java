@@ -1073,7 +1073,7 @@ public enum MinecraftItemID {
     @PowerNukkitOnly POWDER_SNOW(false, true),
     @PowerNukkitOnly POWDER_SNOW_BUCKET,
     @PowerNukkitOnly AXOLOTL_BUCKET,
-    @PowerNukkitOnly @Since("1.19.40-r4") TADPOLE_BUCKET,
+    @PowerNukkitOnly @Since("1.19.50-r1") TADPOLE_BUCKET,
     @PowerNukkitOnly AXOLOTL_SPAWN_EGG,
     @PowerNukkitOnly GOAT_SPAWN_EGG,
     @PowerNukkitOnly GLOW_SQUID_SPAWN_EGG,
@@ -1117,8 +1117,8 @@ public enum MinecraftItemID {
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") DARK_OAK_CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") MANGROVE_CHEST_BOAT,
     @PowerNukkitXOnly @Since("1.6.0.0-PNX") CHEST_BOAT,
-    @PowerNukkitXOnly @Since("1.19.40-r4") DISC_FRAGMENT_5,
-    @PowerNukkitXOnly @Since("1.19.40-r4") ECHO_SHARD;
+    @PowerNukkitXOnly @Since("1.19.50-r1") DISC_FRAGMENT_5,
+    @PowerNukkitXOnly @Since("1.19.50-r1") ECHO_SHARD;
     private static final Map<String, MinecraftItemID> namespacedIdMap = Arrays.stream(values())
             .flatMap(id ->
                     Stream.concat(Arrays.stream(id.aliases), Stream.of(id.getNamespacedId()))

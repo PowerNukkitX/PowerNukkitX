@@ -7,7 +7,7 @@ import cn.nukkit.api.Since;
  * 存放一些AI框架的全局参数
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public final class EntityAI {
     /**
      * 是否开启生物AI框架测试模式

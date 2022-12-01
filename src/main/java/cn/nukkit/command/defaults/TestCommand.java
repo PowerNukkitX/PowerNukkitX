@@ -8,7 +8,7 @@ import cn.nukkit.command.data.CommandData;
  * 测试命令基类
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public abstract class TestCommand extends VanillaCommand {
 
     public TestCommand(String name) {

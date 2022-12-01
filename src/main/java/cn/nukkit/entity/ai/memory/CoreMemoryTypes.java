@@ -15,7 +15,7 @@ import java.util.Map;
  * 核心使用到的记忆类型枚举
  */
 @PowerNukkitXOnly
-@Since("1.19.40-r4")
+@Since("1.19.50-r1")
 public interface CoreMemoryTypes {
     //运动控制器相关
     MemoryType<Vector3> LOOK_TARGET = new MemoryType<>("minecraft:look_target");

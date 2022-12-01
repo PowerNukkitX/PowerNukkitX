@@ -152,6 +152,17 @@ public class BlockStateRegistry {
             }
         }
 
+        /*for (var block : warned) {
+            var id = 255-RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt();
+            try {
+                var path = Path.of("test.txt");
+                if (!path.toFile().exists()) path.toFile().createNewFile();
+                Files.writeString(path, id + "," + block + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }*/
+
         if (infoUpdateRuntimeId == null) {
             throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");
         }
@@ -757,7 +768,7 @@ public class BlockStateRegistry {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.40-r4")
+    @Since("1.19.50-r1")
     public static void close() {
         asyncStateRemover.shutdownNow();
     }

@@ -29,8 +29,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author CreeperFace
@@ -38,23 +36,19 @@ import java.util.List;
  */
 public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
-    private final BlockVector3 temporalVector = new BlockVector3();
-    public int transferCooldown;
     protected HopperInventory inventory;
+
+    public int transferCooldown;
+
     private AxisAlignedBB pickupArea;
+
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     private AxisAlignedBB pushArea;
 
-    //在每次方块实体更新时将获取到的实体缓存起来以减少性能损耗
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    private List<Entity> pickupAreaEntities = new LinkedList<>();
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    private List<Entity> pushAreaEntities = new LinkedList<>();
-
     private boolean disabled;
+
+    private final BlockVector3 temporalVector = new BlockVector3();
 
     public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -70,9 +64,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
         this.inventory = new HopperInventory(this);
 
-        if (!this.namedTag.contains("Items")) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
-        } else if (!(this.namedTag.get("Items") instanceof ListTag)) {
+        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         }
 
@@ -88,8 +80,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         super.initBlockEntity();
 
         Block block = getBlock();
-        if (block instanceof BlockHopper hopper) {
-            disabled = !hopper.isEnabled();
+        if (block instanceof BlockHopper) {
+            disabled = !((BlockHopper) block).isEnabled();
         }
     }
 
@@ -104,6 +96,11 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     }
 
     @Override
+    public boolean hasName() {
+        return this.namedTag.contains("CustomName");
+    }
+
+    @Override
     public void setName(String name) {
         if (name == null || name.equals("")) {
             this.namedTag.remove("CustomName");
@@ -111,11 +108,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         this.namedTag.putString("CustomName", name);
-    }
-
-    @Override
-    public boolean hasName() {
-        return this.namedTag.contains("CustomName");
     }
 
     public boolean isOnTransferCooldown() {
@@ -239,7 +231,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             setDirty();
         }
 
-        clearCachedEntities();
+
         return true;
     }
 
@@ -259,7 +251,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         Block blockSide = this.getBlock().getSide(BlockFace.UP);
         BlockEntity blockEntity = this.level.getBlockEntity(temporalVector.setComponentsAdding(this, BlockFace.UP));
 
-        if (blockEntity instanceof BlockEntityHopper hopper) {
+        if (blockEntity instanceof BlockEntityHopper) {
+            BlockEntityHopper hopper = (BlockEntityHopper) blockEntity;
             if (hopper.disabled)
                 return false;
         }
@@ -325,7 +318,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                     return true;
                 }
             }
-        } else if (blockSide instanceof BlockComposter blockComposter) {
+        } else if (blockSide instanceof BlockComposter) {
+            BlockComposter blockComposter = (BlockComposter) blockSide;
             if (blockComposter.isFull()) {
                 Item item = blockComposter.empty();
 
@@ -357,7 +351,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
         boolean pickedUpItem = false;
 
-        for (Entity entity : requireEntitiesInPickupArea()) {
+        for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
             if (entity.isClosed() || !(entity instanceof EntityMinecartAbstract && entity instanceof InventoryHolder invHolder) || pushArea.intersectsWith(entity.getBoundingBox())) {
                 continue;
             }
@@ -407,11 +401,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
         boolean pickedUpItem = false;
 
-        for (Entity entity : requireEntitiesInPickupArea()) {
-            if (entity.isClosed() || !(entity instanceof EntityItem itemEntity) || pushArea.intersectsWith(entity.getBoundingBox())) {
+        for (Entity entity : this.level.getCollidingEntities(this.pickupArea)) {
+            if (entity.isClosed() || !(entity instanceof EntityItem) || pushArea.intersectsWith(entity.getBoundingBox())) {
                 continue;
             }
 
+            EntityItem itemEntity = (EntityItem) entity;
             Item item = itemEntity.getItem();
 
             if (item.isNull()) {
@@ -470,7 +465,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     @PowerNukkitXOnly
     @Since("1.19.21-r3")
     public boolean pushItemsIntoMinecart() {
-        for (var entity : requireEntitiesInPushArea()) {
+        for (var entity : this.level.getCollidingEntities(this.pushArea)) {
             if (entity instanceof EntityMinecartAbstract && !(entity instanceof EntityMinecartHopper) && entity instanceof InventoryHolder holder) {
                 Inventory holderInventory = holder.getInventory();
 
@@ -534,7 +529,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         InventoryMoveItemEvent event;
 
         //Fix for furnace inputs
-        if (be instanceof BlockEntityFurnace furnace) {
+        if (be instanceof BlockEntityFurnace) {
+            BlockEntityFurnace furnace = (BlockEntityFurnace) be;
             FurnaceInventory inventory = furnace.getInventory();
             if (inventory.isFull()) {
                 return false;
@@ -602,7 +598,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             }
 
             return pushedItem;
-        } else if (blockSide instanceof BlockComposter composter) {
+        } else if (blockSide instanceof BlockComposter) {
+            BlockComposter composter = (BlockComposter) blockSide;
             if (composter.isFull()) {
                 return false;
             }
@@ -665,15 +662,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return false;
     }
 
-    /**
-     * 漏斗的getBlock()方法会被高频调用，所以使用缓存提高性能
-     * @return Block
-     */
-    @Override
-    public Block getBlock() {
-        return getTickCachedLevelBlock();
-    }
-
     @Override
     public CompoundTag getSpawnCompound() {
         CompoundTag c = new CompoundTag()
@@ -687,36 +675,5 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         return c;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    protected List<Entity> searchEntitiesInPickupArea(){
-        return this.level.fastCollidingEntities(this.pickupArea);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    protected List<Entity> requireEntitiesInPickupArea(){
-        return pickupAreaEntities != null ? pickupAreaEntities : (pickupAreaEntities = searchEntitiesInPickupArea());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    protected List<Entity> requireEntitiesInPushArea(){
-        return pushAreaEntities != null ? pushAreaEntities : (pushAreaEntities = searchEntitiesInPushArea());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    protected List<Entity> searchEntitiesInPushArea(){
-        return this.level.fastCollidingEntities(this.pickupArea);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.40-r4")
-    protected void clearCachedEntities(){
-        this.pickupAreaEntities.clear();
-        this.pushAreaEntities.clear();
     }
 }

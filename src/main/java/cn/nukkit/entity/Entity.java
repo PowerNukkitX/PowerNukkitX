@@ -344,26 +344,28 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CHARGE_ATTACK = dynamic(43);
     public static final int DATA_FLAG_WASD_CONTROLLED = dynamic(44);
     public static final int DATA_FLAG_CAN_POWER_JUMP = dynamic(45);
-    public static final int DATA_FLAG_LINGER = dynamic(46);
-    public static final int DATA_FLAG_HAS_COLLISION = dynamic(47);
-    public static final int DATA_FLAG_GRAVITY = dynamic(48);
-    public static final int DATA_FLAG_FIRE_IMMUNE = dynamic(49);
-    public static final int DATA_FLAG_DANCING = dynamic(50);
-    public static final int DATA_FLAG_ENCHANTED = dynamic(51);
-    public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(52); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
-    public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(53); //inventory is private, doesn't drop contents when killed if true
+    public static final int DATA_FLAG_CAN_DASH = dynamic(46);
+
+    public static final int DATA_FLAG_LINGER = dynamic(47);
+    public static final int DATA_FLAG_HAS_COLLISION = dynamic(48);
+    public static final int DATA_FLAG_GRAVITY = dynamic(49);
+    public static final int DATA_FLAG_FIRE_IMMUNE = dynamic(50);
+    public static final int DATA_FLAG_DANCING = dynamic(51);
+    public static final int DATA_FLAG_ENCHANTED = dynamic(52);
+    public static final int DATA_FLAG_SHOW_TRIDENT_ROPE = dynamic(53); // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
+    public static final int DATA_FLAG_CONTAINER_PRIVATE = dynamic(54); //inventory is private, doesn't drop contents when killed if true
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(54);
-    public static final int DATA_FLAG_SPIN_ATTACK = dynamic(55);
-    public static final int DATA_FLAG_SWIMMING = dynamic(56);
-    public static final int DATA_FLAG_BRIBED = dynamic(57); //dolphins have this set when they go to find treasure for the player
-    public static final int DATA_FLAG_PREGNANT = dynamic(58);
-    public static final int DATA_FLAG_LAYING_EGG = dynamic(59);
+    public static final int DATA_FLAG_IS_TRANSFORMING = dynamic(55);
+    public static final int DATA_FLAG_SPIN_ATTACK = dynamic(56);
+    public static final int DATA_FLAG_SWIMMING = dynamic(57);
+    public static final int DATA_FLAG_BRIBED = dynamic(58); //dolphins have this set when they go to find treasure for the player
+    public static final int DATA_FLAG_PREGNANT = dynamic(59);
+    public static final int DATA_FLAG_LAYING_EGG = dynamic(60);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(60);
+    public static final int DATA_FLAG_RIDER_CAN_PICK = dynamic(61);
     @PowerNukkitOnly
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(61); // PowerNukkit but without typo
+    public static final int DATA_FLAG_TRANSITION_SITTING = dynamic(62); // PowerNukkit but without typo
     /**
      * @see #DATA_FLAG_TRANSITION_SITTING
      * @deprecated This is from NukkitX but it has a typo which we can't remove unless NukkitX removes from their side.
@@ -375,84 +377,88 @@ public abstract class Entity extends Location implements Metadatable {
             replaceWith = "DATA_FLAG_TRANSITION_SITTING")
     @Since("1.2.0.0-PN")
     public static final int DATA_FLAG_TRANSITION_SETTING = DATA_FLAG_TRANSITION_SITTING; // NukkitX with the same typo
-    public static final int DATA_FLAG_EATING = dynamic(62);
-    public static final int DATA_FLAG_LAYING_DOWN = dynamic(63);
-    public static final int DATA_FLAG_SNEEZING = dynamic(64);
-    public static final int DATA_FLAG_TRUSTING = dynamic(65);
-    public static final int DATA_FLAG_ROLLING = dynamic(66);
-    public static final int DATA_FLAG_SCARED = dynamic(67);
-    public static final int DATA_FLAG_IN_SCAFFOLDING = dynamic(68);
-    public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(69);
-    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(70);
-    public static final int DATA_FLAG_BLOCKING = dynamic(71); //shield
+    public static final int DATA_FLAG_EATING = dynamic(63);
+    public static final int DATA_FLAG_LAYING_DOWN = dynamic(64);
+    public static final int DATA_FLAG_SNEEZING = dynamic(65);
+    public static final int DATA_FLAG_TRUSTING = dynamic(66);
+    public static final int DATA_FLAG_ROLLING = dynamic(67);
+    public static final int DATA_FLAG_SCARED = dynamic(68);
+    public static final int DATA_FLAG_IN_SCAFFOLDING = dynamic(69);
+    public static final int DATA_FLAG_OVER_SCAFFOLDING = dynamic(70);
+    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = dynamic(71);
+    public static final int DATA_FLAG_BLOCKING = dynamic(72); //shield
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(72);
+    public static final int DATA_FLAG_TRANSITION_BLOCKING = dynamic(73);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(73);
+    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = dynamic(74);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(74);
+    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = dynamic(75);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_SLEEPING = dynamic(75);
+    public static final int DATA_FLAG_SLEEPING = dynamic(76);
     @Since("FUTURE")
-    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(76);
+    public static final int DATA_FLAG_ENTITY_GROW_UP = dynamic(77);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(77);
+    public static final int DATA_FLAG_TRADE_INTEREST = dynamic(78);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(78);
+    public static final int DATA_FLAG_DOOR_BREAKER = dynamic(79);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(79);
+    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = dynamic(80);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DOOR_OPENER = dynamic(80);
+    public static final int DATA_FLAG_DOOR_OPENER = dynamic(81);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(81);
+    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = dynamic(82);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STUNNED = dynamic(82);
+    public static final int DATA_FLAG_STUNNED = dynamic(83);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_ROARING = dynamic(83);
+    public static final int DATA_FLAG_ROARING = dynamic(84);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(84);
+    public static final int DATA_FLAG_DELAYED_ATTACK = dynamic(85);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(85);
+    public static final int DATA_FLAG_IS_AVOIDING_MOBS = dynamic(86);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(86);
+    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = dynamic(87);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(87);
+    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = dynamic(88);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(88);
+    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = dynamic(89);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_IS_IN_UI = dynamic(89);
+    public static final int DATA_FLAG_IS_IN_UI = dynamic(90);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_STALKING = dynamic(90);
+    public static final int DATA_FLAG_STALKING = dynamic(91);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_EMOTING = dynamic(91);
+    public static final int DATA_FLAG_EMOTING = dynamic(92);
     @Since("1.2.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING = dynamic(92);
+    public static final int DATA_FLAG_CELEBRATING = dynamic(93);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_ADMIRING = dynamic(93);
+    public static final int DATA_FLAG_ADMIRING = dynamic(94);
     @Since("1.3.0.0-PN")
-    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(94);
+    public static final int DATA_FLAG_CELEBRATING_SPECIAL = dynamic(95);
     @Since("1.4.0.0-PN")
-    public static final int DATA_FLAG_RAM_ATTACK = dynamic(96);
+    public static final int DATA_FLAG_RAM_ATTACK = dynamic(97);
     @Since("1.5.0.0-PN")
-    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(97);
+    public static final int DATA_FLAG_PLAYING_DEAD = dynamic(98);
     @Since("FUTURE")
-    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(98);
+    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = dynamic(99);
     @Since("FUTURE")
-    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(99);
+    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = dynamic(100);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_CROAKING = dynamic(100);
+    public static final int DATA_FLAG_CROAKING = dynamic(101);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_EAT_MOB = dynamic(101);
+    public static final int DATA_FLAG_EAT_MOB = dynamic(102);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(102);
+    public static final int DATA_FLAG_JUMP_GOAL_JUMP = dynamic(103);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_EMERGING = dynamic(103);
+    public static final int DATA_FLAG_EMERGING = dynamic(104);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_SNIFFING = dynamic(104);
+    public static final int DATA_FLAG_SNIFFING = dynamic(105);
     @Since("1.6.0.0-PNX")
-    public static final int DATA_FLAG_DIGGING = dynamic(105);
+    public static final int DATA_FLAG_DIGGING = dynamic(106);
     @Since("1.19.21-r4")
-    public static final int DATA_FLAG_SONIC_BOOM = dynamic(106);
+    public static final int DATA_FLAG_SONIC_BOOM = dynamic(107);
+    @Since("1.19.50-r1")
+    public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
+    @Since("1.19.50-r1")
+    public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();
