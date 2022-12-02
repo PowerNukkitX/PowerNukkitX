@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -22,22 +23,32 @@ import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.ItemBreakParticle;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
+import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
+
 public class EntityCat extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 75;
-
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
+    private Player owner = null;
     private String ownerName = "";
     private boolean sitting = false;
-    private boolean angry = false;
     private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
     private IBehaviorGroup behaviorGroup;
 
@@ -83,6 +94,7 @@ public class EntityCat extends EntityWalkingAnimal {
         }
         return behaviorGroup;
     }
+
     @Override
     public float getWidth() {
         if (this.isBaby()) {
@@ -110,13 +122,6 @@ public class EntityCat extends EntityWalkingAnimal {
             }
         }
 
-        if (this.namedTag.contains("Angry")) {
-            if (this.namedTag.getBoolean("Angry")) {
-                this.angry = true;
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, true);
-            }
-        }
-
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
@@ -128,7 +133,105 @@ public class EntityCat extends EntityWalkingAnimal {
             }
         }
     }
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
+        this.namedTag.putBoolean("Sitting", this.sitting);
+        this.namedTag.putString("OwnerName", this.ownerName);
+    }
+    @Override
+    public boolean onUpdate(int currentTick) {
+        var result = super.onUpdate(currentTick);
 
+        //initEntity的时候玩家还没连接，所以只能在onUpdate里面更新
+        if (this.namedTag.contains("OwnerName") && this.owner == null) {
+            String ownerName = namedTag.getString("OwnerName");
+            if (ownerName != null && ownerName.length() > 0) {
+                setOwnerName(ownerName);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
+            return applyNameTag(player, item);
+        }
+        int healable = this.getHealableItem(item);
+        if (item.getId() == ItemID.RAW_FISH) {
+            if (!this.hasOwner()) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                if (Utils.rand(1, 3) == 3) {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_SUCCESS;
+                    player.dataPacket(packet);
+
+                    this.setMaxHealth(20);
+                    this.setHealth(20);
+                    this.setOwnerName(player.getName());
+                    this.setCollarColor(DyeColor.RED);
+                    this.saveNBT();
+
+                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
+
+                    return true;
+                } else {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_FAIL;
+                    player.dataPacket(packet);
+                }
+            }
+        }else if (item.getId() == ItemID.RAW_SALMON ){
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            if (Utils.rand(1, 3) == 3) {
+                EntityEventPacket packet = new EntityEventPacket();
+                packet.eid = this.getId();
+                packet.event = EntityEventPacket.TAME_SUCCESS;
+                player.dataPacket(packet);
+
+                this.setMaxHealth(20);
+                this.setHealth(20);
+                this.setOwnerName(player.getName());
+                this.setCollarColor(DyeColor.RED);
+                this.saveNBT();
+
+                this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
+
+                return true;
+            } else {
+                EntityEventPacket packet = new EntityEventPacket();
+                packet.eid = this.getId();
+                packet.event = EntityEventPacket.TAME_FAIL;
+                player.dataPacket(packet);
+            }
+        } else if (item.getId() == Item.DYE) {
+            if (this.hasOwner() && player.equals(this.getOwner())) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                this.setCollarColor(((ItemDye) item).getDyeColor());
+                return true;
+            }
+        } else if (this.isBreedingItem(item)) {
+            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            this.getLevel().addSound(this, Sound.RANDOM_EAT);
+            this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
+
+            if (healable != 0) {
+                this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
+            }
+
+            getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
+            return true;
+        } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
+            this.setSitting(!this.isSitting());
+            return true;
+        }
+
+        return false;
+    }
     /**
      * 绑定猫繁殖物品
      * WIKI了解只能使用生鲑鱼与生鳕鱼才能繁殖
@@ -176,7 +279,17 @@ public class EntityCat extends EntityWalkingAnimal {
         this.namedTag.putString("OwnerName", this.ownerName);
     }
 
-
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    @Nullable
+    public Player getOwner() {
+        return this.owner;
+    }
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public boolean hasOwner() {
+        return hasOwner(true);
+    }
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     public boolean hasOwner(boolean checkOnline) {
@@ -209,19 +322,6 @@ public class EntityCat extends EntityWalkingAnimal {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean isAngry() {
-        return this.angry;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setAngry(boolean angry) {
-        this.angry = angry;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, angry);
-        this.namedTag.putBoolean("Angry", angry);
-    }
 
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
