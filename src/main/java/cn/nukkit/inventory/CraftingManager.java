@@ -52,7 +52,6 @@ public class CraftingManager {
     private final Int2ObjectMap<Map<UUID, CartographyRecipe>> cartographyRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
-    private final ItemTags itemTags = new ItemTags();
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     @Deprecated
@@ -267,7 +266,10 @@ public class CraftingManager {
                             continue;
                         }
                         var reg = parseUnShapeRecipe(recipe, craftingBlock);
-                        if (reg == null) continue toNextRecipe;
+                        if (reg == null) {
+                            //System.out.println(recipe);
+                            continue toNextRecipe;
+                        }
                         this.registerRecipe(reg);
                         break;
                     case 1:
@@ -277,7 +279,10 @@ public class CraftingManager {
                             continue;
                         }
                         reg = parseShapeRecipe(recipe);
-                        if (reg == null) continue toNextRecipe;
+                        if (reg == null) {
+                            //System.out.println(recipe);
+                            continue toNextRecipe;
+                        }
                         this.registerRecipe(reg);
                         break;
                     case 2:
@@ -519,6 +524,7 @@ public class CraftingManager {
                 return item;
             } catch (IllegalArgumentException e) {
                 log.debug("Failed to load a crafting recipe item, attempting to load by string id", e);
+                id = RuntimeItems.getRuntimeMapping().getNamespacedIdByNetworkId(legacyId);
             }
         }
 

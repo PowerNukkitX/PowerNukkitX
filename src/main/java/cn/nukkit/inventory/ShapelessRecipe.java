@@ -6,12 +6,10 @@ import cn.nukkit.api.Since;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptorType;
+import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.Item;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static cn.nukkit.inventory.Recipe.matchItemList;
 
@@ -30,6 +28,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final List<Item> ingredients = null;
     private final List<Item> ingredientsAggregate;
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    private final List<String> needTags;
+
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
     private final List<ItemDescriptor> newIngredients;
@@ -56,6 +59,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
         this.ingredientsAggregate = new ArrayList<>();
         this.newIngredients = new ArrayList<>();
+        this.needTags = new ArrayList<>();
         for (ItemDescriptor itemDescriptor : ingredients) {
             newIngredients.add(itemDescriptor);
             switch (itemDescriptor.getType()) {
@@ -77,6 +81,9 @@ public class ShapelessRecipe implements CraftingRecipe {
                     this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
                 }
                 case ITEM_TAG -> {
+                    this.needTags.add(((ItemTagDescriptor) itemDescriptor).getItemTag());
+                }
+                default -> {
                 }
             }
         }
@@ -149,7 +156,6 @@ public class ShapelessRecipe implements CraftingRecipe {
         return this.priority;
     }
 
-    //todo 对旧类型配方仍然能匹配 但是带有item_tag的不行，等待后续实现
     @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
@@ -176,7 +182,12 @@ public class ShapelessRecipe implements CraftingRecipe {
         }
 
         if (!matchItemList(haveInputs, needInputs)) {
-            return false;
+            Set<String> tags = new HashSet<>();
+            for (var hInput : haveInputs) {
+                var t = ItemTag.getTags(hInput.getNamespaceId());
+                if (t != null) tags.addAll(t);
+            }
+            return tags.containsAll(needTags);
         }
 
         List<Item> haveOutputs = new ArrayList<>();

@@ -24,6 +24,9 @@ public class ShapedRecipe implements CraftingRecipe {
     private final Item primaryResult;
     private final List<Item> extraResults = new ArrayList<>();
     private final List<Item> ingredientsAggregate;
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    private final List<String> needTags;
     private long least, most;
     private final String[] shape;
     private final int priority;
@@ -99,12 +102,14 @@ public class ShapedRecipe implements CraftingRecipe {
         }
 
         this.ingredientsAggregate = new ArrayList<>();
+        this.needTags = new ArrayList<>();
         for (char c : String.join("", this.shape).toCharArray()) {
             if (c == ' ')
                 continue;
-            switch (this.newIngredients.get(c).getType()) {
+            var des = this.newIngredients.get(c);
+            switch (des.getType()) {
                 case DEFAULT -> {
-                    Item ingredient = this.newIngredients.get(c).toItem().clone();
+                    Item ingredient = des.toItem().clone();
                     for (Item existingIngredient : this.ingredientsAggregate) {
                         if (existingIngredient.equals(ingredient, ingredient.hasMeta(), ingredient.hasCompoundTag())) {
                             existingIngredient.setCount(existingIngredient.getCount() + ingredient.getCount());
@@ -114,6 +119,9 @@ public class ShapedRecipe implements CraftingRecipe {
                     }
                     if (ingredient != null)
                         this.ingredientsAggregate.add(ingredient);
+                }
+                case ITEM_TAG -> {
+                    this.needTags.add(((ItemTagDescriptor) des).getItemTag());
                 }
                 default -> {
                 }
@@ -185,6 +193,8 @@ public class ShapedRecipe implements CraftingRecipe {
         return items;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     public List<ItemDescriptor> getNewIngredientList() {
         List<ItemDescriptor> items = new ArrayList<>();
         for (int y = 0, y2 = getHeight(); y < y2; ++y) {
@@ -222,6 +232,8 @@ public class ShapedRecipe implements CraftingRecipe {
         throw new UnsupportedOperationException("use getNewIngredient()");
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {
             var res = this.newIngredients.get(this.shape[y].charAt(x));
@@ -264,7 +276,6 @@ public class ShapedRecipe implements CraftingRecipe {
         return this.priority;
     }
 
-    //todo 对旧类型配方仍然能匹配 但是带有item_tag的不行，等待后续实现
     @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
@@ -291,7 +302,12 @@ public class ShapedRecipe implements CraftingRecipe {
         }
 
         if (!matchItemList(haveInputs, needInputs)) {
-            return false;
+            Set<String> tags = new HashSet<>();
+            for (var hInput : haveInputs) {
+                var t = ItemTag.getTags(hInput.getNamespaceId());
+                if (t != null) tags.addAll(t);
+            }
+            return tags.containsAll(needTags);
         }
 
         List<Item> haveOutputs = new ArrayList<>();
