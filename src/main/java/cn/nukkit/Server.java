@@ -1230,6 +1230,8 @@ public class Server {
             this.watchdog.running = false;
             NukkitMetrics.closeNow(this);
 
+            this.computeThreadPool.shutdownNow();
+
             log.debug("Disabling timings");
             Timings.stopServer();
             //todo other things

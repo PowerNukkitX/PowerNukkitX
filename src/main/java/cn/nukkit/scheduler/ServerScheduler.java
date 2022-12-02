@@ -91,7 +91,11 @@ public class ServerScheduler {
     }
 
     public int getAsyncTaskPoolSize() {
-        return asyncPool.getParallelism();
+        return asyncPool.getCorePoolSize();
+    }
+
+    public void increaseAsyncTaskPoolSize(int newSize) {
+        throw new UnsupportedOperationException("Cannot increase a working pool size."); //wtf?
     }
 
     /**

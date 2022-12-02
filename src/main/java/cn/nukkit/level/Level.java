@@ -3957,7 +3957,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (!chunk.isLightPopulated() && chunk.isPopulated()
                 && this.getServer().getConfig("chunk-ticking.light-updates", false)) {
-            this.getServer().getScheduler().scheduleAsyncTask(new LightPopulationTask(this, chunk));
+            Server.getInstance().computeThreadPool.submit(new LightPopulationTask(this, chunk));
         }
 
         if (this.isChunkInUse(index)) {
@@ -4211,7 +4211,7 @@ public class Level implements ChunkManager, Metadatable {
                     }
 
                     PopulationTask task = new PopulationTask(this, chunk);
-                    this.server.getScheduler().scheduleAsyncTask(task);
+                    this.server.computeThreadPool.submit(task);
                 }
             }
             Timings.populationTimer.stopTiming();
@@ -4235,7 +4235,7 @@ public class Level implements ChunkManager, Metadatable {
             Timings.generationTimer.startTiming();
             this.chunkGenerationQueue.put(index, Boolean.TRUE);
             GenerationTask task = new GenerationTask(this, this.getChunk(x, z, true));
-            this.server.getScheduler().scheduleAsyncTask(task);
+            this.server.computeThreadPool.submit(task);
             Timings.generationTimer.stopTiming();
         }
     }
