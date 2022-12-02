@@ -1,11 +1,12 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
 import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.inventory.recipe.ItemDescriptorType;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,11 +25,11 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     private long least, most;
 
-    @Nullable
-    private final List<Item> ingredients;
-    @Nullable
+    @Deprecated
+    private final List<Item> ingredients = null;
     private final List<Item> ingredientsAggregate;
-
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     private final List<ItemDescriptor> newIngredients;
 
     private final int priority;
@@ -42,6 +43,7 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this.recipeId = recipeId;
         this.priority = priority;
@@ -50,7 +52,6 @@ public class ShapelessRecipe implements CraftingRecipe {
             throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
         }
 
-        this.ingredients = new ArrayList<>();
         this.ingredientsAggregate = new ArrayList<>();
         this.newIngredients = new ArrayList<>();
         for (ItemDescriptor itemDescriptor : ingredients) {
@@ -71,14 +72,12 @@ public class ShapelessRecipe implements CraftingRecipe {
                     }
                     if (!found)
                         this.ingredientsAggregate.add(item.clone());
-                    this.ingredients.add(item.clone());
                     this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
                 }
                 case ITEM_TAG -> {
                 }
             }
         }
-
     }
 
     @Override
@@ -107,16 +106,15 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public List<Item> getIngredientList() {
-        List<Item> ingredients = new ArrayList<>();
-        for (Item ingredient : this.ingredients) {
-            ingredients.add(ingredient.clone());
-        }
-
-        return ingredients;
+        return this.newIngredients
+                .stream()
+                .filter(itemDescriptor -> itemDescriptor.getType().equals(ItemDescriptorType.DEFAULT))
+                .map(ItemDescriptor::toItem)
+                .toList();
     }
 
     public int getIngredientCount() {
-        return ingredients.size();
+        return this.newIngredients.size();
     }
 
     @Override
@@ -131,7 +129,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     @Override
     public boolean requiresCraftingTable() {
-        return this.ingredients.size() > 4;
+        return this.newIngredients.size() > 4;
     }
 
     @Override
@@ -222,5 +220,9 @@ public class ShapelessRecipe implements CraftingRecipe {
     @Override
     public List<Item> getIngredientsAggregate() {
         return ingredientsAggregate;
+    }
+
+    public List<ItemDescriptor> getNewIngredients() {
+        return newIngredients;
     }
 }

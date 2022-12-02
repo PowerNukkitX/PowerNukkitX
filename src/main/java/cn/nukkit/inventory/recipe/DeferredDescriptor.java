@@ -21,4 +21,9 @@ public class DeferredDescriptor implements ItemDescriptor {
     public Item toItem() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public ItemDescriptor clone() throws CloneNotSupportedException {
+        return (ItemDescriptor) super.clone();
+    }
 }

@@ -20,4 +20,9 @@ public class DefaultDescriptor implements ItemDescriptor {
     public Item toItem() {
         return item;
     }
+
+    @Override
+    public ItemDescriptor clone() throws CloneNotSupportedException {
+        return (ItemDescriptor) super.clone();
+    }
 }

@@ -1,11 +1,10 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Server;
-import cn.nukkit.api.DeprecationDetails;
-import cn.nukkit.api.PowerNukkitOnly;
-import cn.nukkit.api.PowerNukkitXDifference;
-import cn.nukkit.api.Since;
+import cn.nukkit.api.*;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.inventory.recipe.ItemTagDescriptor;
 import cn.nukkit.item.*;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.network.protocol.DataPacket;
@@ -695,6 +694,21 @@ public class CraftingManager {
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public static UUID getItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
+        BinaryStream stream = new BinaryStream();
+        for (Item item : items) {
+            stream.putVarInt(getFullItemHash(item));
+        }
+        for (var des : itemDescriptors) {
+            if (des instanceof ItemTagDescriptor) {
+                stream.putVarInt(itemDescriptors.hashCode());
+            }
+        }
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
     @PowerNukkitOnly("Public only in PowerNukkit")
     @Since("FUTURE")
     public static int getFullItemHash(Item item) {
@@ -750,8 +764,9 @@ public class CraftingManager {
     public void registerShapedRecipe(ShapedRecipe recipe) {
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, ShapedRecipe> map = getShapedRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-        List<Item> inputList = new LinkedList<>(recipe.getIngredientsAggregate());
-        map.put(getMultiItemHash(inputList), recipe);
+        List<Item> list1 = new LinkedList<>(recipe.getIngredientsAggregate());
+        var list2 = recipe.getNewIngredientList();
+        map.put(getItemDescriptorsHash(list1, list2), recipe);
     }
 
 
@@ -784,9 +799,10 @@ public class CraftingManager {
     }
 
     public void registerShapelessRecipe(ShapelessRecipe recipe) {
-        List<Item> list = recipe.getIngredientsAggregate();
+        List<Item> list1 = recipe.getIngredientsAggregate();
+        List<ItemDescriptor> list2 = recipe.getNewIngredients();
 
-        UUID hash = getMultiItemHash(list);
+        UUID hash = getItemDescriptorsHash(list1, list2);
 
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, ShapelessRecipe> map = getShapelessRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
