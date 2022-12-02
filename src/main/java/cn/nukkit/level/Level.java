@@ -684,7 +684,7 @@ public class Level implements ChunkManager, Metadatable {
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());
         Position spawn = this.getSpawnLocation();
-        this.populateChunk(spawn.getChunkX(), spawn.getChunkZ(), true);
+        if (this.getServer() != null) this.populateChunk(spawn.getChunkX(), spawn.getChunkZ(), true);
     }
 
     public Generator getGenerator() {
@@ -3957,7 +3957,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (!chunk.isLightPopulated() && chunk.isPopulated()
                 && this.getServer().getConfig("chunk-ticking.light-updates", false)) {
-            Server.getInstance().computeThreadPool.submit(new LightPopulationTask(this, chunk));
+            this.getServer().computeThreadPool.submit(new LightPopulationTask(this, chunk));
         }
 
         if (this.isChunkInUse(index)) {
