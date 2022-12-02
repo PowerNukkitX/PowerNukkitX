@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -9,6 +10,7 @@ import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.populator.type.PopulatorStructure;
+import cn.nukkit.level.generator.task.ChunkPopulationTask;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
@@ -215,10 +217,9 @@ public abstract class Generator implements BlockID {
         //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
         var chunk = level.getChunk(chunkX, chunkZ);
         for (PopulatorStructure populator : structurePopulators) {
-//            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
-//            else populator.populate(level, chunkX, chunkZ, random, chunk);
-            //todo: 临时解决Level::generators.get()的性能问题，有待进一步处理
-            populator.populate(level, chunkX, chunkZ, random, chunk);
+            if (populator.isAsync())
+                Server.getInstance().computeThreadPool.submit(new ChunkPopulationTask(level, chunk, populator));
+            else populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }
 

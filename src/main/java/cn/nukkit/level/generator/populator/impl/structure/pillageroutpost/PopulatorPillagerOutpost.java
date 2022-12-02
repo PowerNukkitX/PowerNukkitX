@@ -165,7 +165,7 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         int seed = random.nextInt();
 
         if (!chunk.isGenerated()) {
-            Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
+            Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
                     chunk.getProvider().getLevel(), chunk, this,
                     populator -> populator.placeFeature(template, chunk, seed)));
         } else {

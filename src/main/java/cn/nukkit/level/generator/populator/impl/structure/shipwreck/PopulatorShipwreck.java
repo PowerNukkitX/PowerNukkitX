@@ -251,7 +251,7 @@ public class PopulatorShipwreck extends PopulatorStructure implements Callbackab
             if (!chunks.isEmpty()) {
                 this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                 for (BaseFullChunk ck : chunks) {
-                    Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<CallbackableTemplateStructurePopulator>(
+                    Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<CallbackableTemplateStructurePopulator>(
                             chunk.getProvider().getLevel(), ck, this,
                             populator -> populator.generateChunkCallback(template, seed, level, chunkX, chunkZ, y, ck.getX(), ck.getZ())));
                 }
