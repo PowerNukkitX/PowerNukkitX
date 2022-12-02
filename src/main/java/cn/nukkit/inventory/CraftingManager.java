@@ -367,6 +367,8 @@ public class CraftingManager {
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 5), Collections.singletonList(Item.get(ItemID.MAP, 5))));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     public Recipe parseUnShapeRecipe(Map<String, Object> recipeObject, String craftingBlock) {
         List<Map> outputs = ((List<Map>) recipeObject.get("output"));
@@ -416,6 +418,8 @@ public class CraftingManager {
         };
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     @SuppressWarnings("unchecked")
     public Recipe parseShapeRecipe(Map<String, Object> recipeObject) {
         List<Map> outputs = (List<Map>) recipeObject.get("output");

@@ -28,6 +28,7 @@ public class ShapedRecipe implements CraftingRecipe {
     private final String[] shape;
     private final int priority;
     @Deprecated
+    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
@@ -173,7 +174,7 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "use getNewIngredientList()")
+    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "use getNewIngredientList()")
     public List<Item> getIngredientList() {
         List<Item> items = new ArrayList<>();
         for (int y = 0, y2 = getHeight(); y < y2; ++y) {
@@ -211,7 +212,7 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     @Deprecated
-    @DeprecationDetails(since = "1.19.50-r2", reason = "use getNewIngredient()")
+    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "use getNewIngredient()")
     public Item getIngredient(int x, int y) {
         var descriptor = this.newIngredients.get(this.shape[y].charAt(x));
 
@@ -263,6 +264,7 @@ public class ShapedRecipe implements CraftingRecipe {
         return this.priority;
     }
 
+    //todo 对旧类型配方仍然能匹配 但是带有item_tag的不行，等待后续实现
     @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();

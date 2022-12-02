@@ -18,7 +18,7 @@ public class DefaultDescriptor implements ItemDescriptor {
 
     @Override
     public Item toItem() {
-        return item;
+        return item.clone();
     }
 
     @Override

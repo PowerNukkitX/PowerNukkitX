@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.recipe.DefaultDescriptor;
@@ -26,6 +27,7 @@ public class ShapelessRecipe implements CraftingRecipe {
     private long least, most;
 
     @Deprecated
+    @DeprecationDetails(since = "1.19.50-r2", reason = "new ingredients format", replaceWith = "newIngredients")
     private final List<Item> ingredients = null;
     private final List<Item> ingredientsAggregate;
     @PowerNukkitXOnly
@@ -147,6 +149,7 @@ public class ShapelessRecipe implements CraftingRecipe {
         return this.priority;
     }
 
+    //todo 对旧类型配方仍然能匹配 但是带有item_tag的不行，等待后续实现
     @Override
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
         List<Item> haveInputs = new ArrayList<>();
@@ -222,6 +225,8 @@ public class ShapelessRecipe implements CraftingRecipe {
         return ingredientsAggregate;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     public List<ItemDescriptor> getNewIngredients() {
         return newIngredients;
     }

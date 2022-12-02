@@ -730,6 +730,8 @@ public class BinaryStream {
         this.putVarInt(ingredient.getCount());
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
     public void putRecipeIngredient(ItemDescriptor itemDescriptor) {
         ItemDescriptorType type = itemDescriptor.getType();
         this.putByte((byte) type.ordinal());
