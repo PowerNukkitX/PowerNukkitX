@@ -684,7 +684,7 @@ public class Level implements ChunkManager, Metadatable {
 
         log.info("Preparing start region for level \"{}\"", this.getFolderName());
         Position spawn = this.getSpawnLocation();
-        if (this.getServer() != null) this.populateChunk(spawn.getChunkX(), spawn.getChunkZ(), true);
+        this.populateChunk(spawn.getChunkX(), spawn.getChunkZ(), true);
     }
 
     public Generator getGenerator() {
@@ -4211,7 +4211,8 @@ public class Level implements ChunkManager, Metadatable {
                     }
 
                     PopulationTask task = new PopulationTask(this, chunk);
-                    this.server.computeThreadPool.submit(task);
+                    //这个判断是防止单元测试报错
+                    if (this.server.computeThreadPool != null) this.server.computeThreadPool.submit(task);
                 }
             }
             Timings.populationTimer.stopTiming();
