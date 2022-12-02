@@ -787,15 +787,7 @@ public class CraftingManager {
 
     @PowerNukkitOnly
     public void registerCartographyRecipe(CartographyRecipe recipe) {
-        List<Item> list = recipe.getIngredientList();
-        list.sort(recipeComparator);
-
-        UUID hash = getMultiItemHash(list);
-
-        int resultHash = getItemHash(recipe.getResult());
-        Map<UUID, CartographyRecipe> map = getCartographyRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-
-        map.put(hash, recipe);
+        this.registerShapelessRecipe(recipe);
     }
 
     public void registerShapelessRecipe(ShapelessRecipe recipe) {
