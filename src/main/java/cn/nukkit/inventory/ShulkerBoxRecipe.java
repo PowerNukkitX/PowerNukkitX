@@ -13,16 +13,17 @@ import java.util.Collection;
 @PowerNukkitOnly
 @Since("1.5.2.0-PN")
 public class ShulkerBoxRecipe extends ShapelessRecipe {
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
+
     public ShulkerBoxRecipe(Item result, Collection<Item> ingredients) {
         super(result, ingredients);
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.2.0-PN")
     public ShulkerBoxRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
         super(recipeId, priority, result, ingredients);
+    }
+
+    public ShulkerBoxRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients, String craftingTag) {
+        super(recipeId, priority, result, ingredients, craftingTag);
     }
 
     @Override

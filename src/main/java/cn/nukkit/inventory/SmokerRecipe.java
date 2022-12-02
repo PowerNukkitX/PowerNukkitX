@@ -4,32 +4,15 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 @PowerNukkitOnly
-public class SmokerRecipe implements SmeltingRecipe {
+public class SmokerRecipe extends SmeltingRecipe {
 
-    private final Item output;
 
-    private Item ingredient;
-
-    @PowerNukkitOnly
     public SmokerRecipe(Item result, Item ingredient) {
-        this.output = result.clone();
-        this.ingredient = ingredient.clone();
+        super(result, ingredient);
     }
 
-    @PowerNukkitOnly
-    public void setInput(Item item) {
-        this.ingredient = item.clone();
-    }
-
-    @PowerNukkitOnly
-    @Override
-    public Item getInput() {
-        return this.ingredient.clone();
-    }
-
-    @Override
-    public Item getResult() {
-        return this.output.clone();
+    public SmokerRecipe(Item result, Item ingredient, String craftingTag) {
+        super(result, ingredient, craftingTag);
     }
 
     @Override

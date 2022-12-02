@@ -641,7 +641,7 @@ public class CraftingManager {
         }
 
         pk.tryEncode();
-        // TODO: find out whats wrong with compression
+        //TODO: find out whats wrong with compression
         packet = pk.compress(Deflater.BEST_COMPRESSION);
     }
     //</editor-fold>

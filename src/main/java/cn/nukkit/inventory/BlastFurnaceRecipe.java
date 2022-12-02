@@ -4,32 +4,15 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.item.Item;
 
 @PowerNukkitOnly
-public class BlastFurnaceRecipe implements SmeltingRecipe {
+public class BlastFurnaceRecipe extends SmeltingRecipe {
 
-    private final Item output;
 
-    private Item ingredient;
-
-    @PowerNukkitOnly
     public BlastFurnaceRecipe(Item result, Item ingredient) {
-        this.output = result.clone();
-        this.ingredient = ingredient.clone();
+        super(result, ingredient);
     }
 
-    @PowerNukkitOnly
-    public void setInput(Item item) {
-        this.ingredient = item.clone();
-    }
-
-    @PowerNukkitOnly
-    @Override
-    public Item getInput() {
-        return this.ingredient.clone();
-    }
-
-    @Override
-    public Item getResult() {
-        return this.output.clone();
+    public BlastFurnaceRecipe(Item result, Item ingredient, String craftingTag) {
+        super(result, ingredient, craftingTag);
     }
 
     @Override

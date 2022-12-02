@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.item.Item;
 import io.netty.util.collection.CharObjectHashMap;
 
@@ -16,15 +17,18 @@ public class ShapedRecipe implements CraftingRecipe {
     private final Item primaryResult;
     private final List<Item> extraResults = new ArrayList<>();
 
+    @Deprecated
     private final List<Item> ingredientsAggregate;
 
-    private long least,most;
+    private long least, most;
 
     private final String[] shape;
     private final int priority;
 
     private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
 
+    @PowerNukkitXOnly
+    private final String craftingTag;
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
         this(null, 1, primaryResult, shape, ingredients, extraResults);
@@ -46,8 +50,13 @@ public class ShapedRecipe implements CraftingRecipe {
      *                         Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
      */
     public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+        this(recipeId, priority, primaryResult, shape, ingredients, extraResults, null);
+    }
+
+    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, String craftingTag) {
         this.recipeId = recipeId;
         this.priority = priority;
+        this.craftingTag = craftingTag;
         int rowCount = shape.length;
         if (rowCount > 3 || rowCount <= 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 rows, not " + rowCount);
@@ -221,7 +230,7 @@ public class ShapedRecipe implements CraftingRecipe {
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;
@@ -249,7 +258,7 @@ public class ShapedRecipe implements CraftingRecipe {
         }
         haveOutputs.sort(CraftingManager.recipeComparator);
         List<Item> needOutputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : getExtraResults()) {
                 if (item.isNull())
                     continue;
@@ -273,7 +282,7 @@ public class ShapedRecipe implements CraftingRecipe {
      * Returns whether the specified list of crafting grid inputs and outputs matches this recipe. Outputs DO NOT
      * include the primary result item.
      *
-     * @param inputList  list of items taken from the crafting grid
+     * @param inputList       list of items taken from the crafting grid
      * @param extraOutputList list of items put back into the crafting grid (secondary results)
      * @return bool
      */

@@ -1,7 +1,11 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.inventory.recipe.DefaultDescriptor;
+import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,10 +22,14 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     private final Item output;
 
-    private long least,most;
+    private long least, most;
 
+    @Nullable
     private final List<Item> ingredients;
+    @Nullable
     private final List<Item> ingredientsAggregate;
+
+    private final List<ItemDescriptor> newIngredients;
 
     private final int priority;
 
@@ -30,6 +38,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
+        this(recipeId, priority, result, ingredients.stream().map(item -> (ItemDescriptor) new DefaultDescriptor(item)).toList());
+    }
+
+    @PowerNukkitXOnly
+    public ShapelessRecipe(String recipeId, int priority, Item result, List<ItemDescriptor> ingredients) {
         this.recipeId = recipeId;
         this.priority = priority;
         this.output = result.clone();
@@ -39,25 +52,33 @@ public class ShapelessRecipe implements CraftingRecipe {
 
         this.ingredients = new ArrayList<>();
         this.ingredientsAggregate = new ArrayList<>();
-
-        for (Item item : ingredients) {
-            if (item.getCount() < 1) {
-                throw new IllegalArgumentException("Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + item.getCount() + ")");
-            }
-            boolean found = false;
-            for (Item existingIngredient : this.ingredientsAggregate) {
-                if (existingIngredient.equals(item, item.hasMeta(), item.hasCompoundTag())) {
-                    existingIngredient.setCount(existingIngredient.getCount() + item.getCount());
-                    found = true;
-                    break;
+        this.newIngredients = new ArrayList<>();
+        for (ItemDescriptor itemDescriptor : ingredients) {
+            newIngredients.add(itemDescriptor);
+            switch (itemDescriptor.getType()) {
+                case DEFAULT -> {
+                    var item = itemDescriptor.toItem();
+                    if (item.getCount() < 1) {
+                        throw new IllegalArgumentException("Recipe '" + recipeId + "' Ingredient amount was not 1 (value: " + item.getCount() + ")");
+                    }
+                    boolean found = false;
+                    for (Item existingIngredient : this.ingredientsAggregate) {
+                        if (existingIngredient.equals(item, item.hasMeta(), item.hasCompoundTag())) {
+                            existingIngredient.setCount(existingIngredient.getCount() + item.getCount());
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        this.ingredientsAggregate.add(item.clone());
+                    this.ingredients.add(item.clone());
+                    this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
+                }
+                case ITEM_TAG -> {
                 }
             }
-            if (!found)
-                this.ingredientsAggregate.add(item.clone());
-            this.ingredients.add(item.clone());
         }
 
-        this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
     }
 
     @Override
@@ -137,7 +158,7 @@ public class ShapelessRecipe implements CraftingRecipe {
             haveInputs.add(item.clone());
         }
         List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;
@@ -165,7 +186,7 @@ public class ShapelessRecipe implements CraftingRecipe {
         }
         haveOutputs.sort(CraftingManager.recipeComparator);
         List<Item> needOutputs = new ArrayList<>();
-        if(multiplier != 1){
+        if (multiplier != 1) {
             for (Item item : getExtraResults()) {
                 if (item.isNull())
                     continue;
@@ -189,7 +210,7 @@ public class ShapelessRecipe implements CraftingRecipe {
      * Returns whether the specified list of crafting grid inputs and outputs matches this recipe. Outputs DO NOT
      * include the primary result item.
      *
-     * @param inputList  list of items taken from the crafting grid
+     * @param inputList       list of items taken from the crafting grid
      * @param extraOutputList list of items put back into the crafting grid (secondary results)
      * @return bool
      */
