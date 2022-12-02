@@ -5,15 +5,29 @@ import cn.nukkit.item.Item;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-public class FurnaceRecipe extends SmeltingRecipe {
+public class FurnaceRecipe implements SmeltingRecipe {
 
+    private final Item output;
+
+    private Item ingredient;
 
     public FurnaceRecipe(Item result, Item ingredient) {
-        super(result, ingredient);
+        this.output = result.clone();
+        this.ingredient = ingredient.clone();
     }
 
-    public FurnaceRecipe(Item result, Item ingredient, String craftingTag) {
-        super(result, ingredient, craftingTag);
+    public void setInput(Item item) {
+        this.ingredient = item.clone();
+    }
+
+    @Override
+    public Item getInput() {
+        return this.ingredient.clone();
+    }
+
+    @Override
+    public Item getResult() {
+        return this.output.clone();
     }
 
     @Override
