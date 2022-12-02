@@ -13,4 +13,6 @@ public interface ItemDescriptor extends Cloneable {
     Item toItem();
 
     ItemDescriptor clone() throws CloneNotSupportedException;
+
+    int getCount();
 }

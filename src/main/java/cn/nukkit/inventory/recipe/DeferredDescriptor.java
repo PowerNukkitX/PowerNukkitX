@@ -11,6 +11,7 @@ import lombok.Value;
 public class DeferredDescriptor implements ItemDescriptor {
     String fullName;
     int auxValue;
+    int count;
 
     @Override
     public ItemDescriptorType getType() {

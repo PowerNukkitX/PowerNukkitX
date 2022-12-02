@@ -25,4 +25,9 @@ public class DefaultDescriptor implements ItemDescriptor {
     public ItemDescriptor clone() throws CloneNotSupportedException {
         return (ItemDescriptor) super.clone();
     }
+
+    @Override
+    public int getCount() {
+        return this.item.getCount();
+    }
 }

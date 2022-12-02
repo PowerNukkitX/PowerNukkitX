@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.api.DeprecationDetails;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -8,7 +9,7 @@ import cn.nukkit.blockstate.BlockState;
 import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.inventory.recipe.ItemDescriptor;
+import cn.nukkit.inventory.recipe.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
@@ -707,31 +708,67 @@ public class BinaryStream {
         return Item.get(id, damage, count);
     }
 
+    @Deprecated
+    @DeprecationDetails(since = "1.19.50-r2", reason = "Support more types of recipe input", replaceWith = "putRecipeIngredient(ItemDescriptor itemDescriptor)")
+    public void putRecipeIngredient(Item ingredient) {
+        if (ingredient == null || ingredient.getId() == 0) {
+            this.putBoolean(false); // isValid? - false
+            this.putVarInt(0); // item == null ? 0 : item.getCount()
+            return;
+        }
+        this.putBoolean(true); // isValid? - true
+
+        int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(ingredient);
+        int networkId = RuntimeItems.getNetworkId(networkFullId);
+        int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
+        if (RuntimeItems.hasData(networkFullId)) {
+            damage = 0;
+        }
+
+        this.putLShort(networkId);
+        this.putLShort(damage);
+        this.putVarInt(ingredient.getCount());
+    }
+
     public void putRecipeIngredient(ItemDescriptor itemDescriptor) {
-        switch (itemDescriptor.getType()) {
+        ItemDescriptorType type = itemDescriptor.getType();
+        this.putByte((byte) type.ordinal());
+        switch (type) {
             case DEFAULT -> {
                 var ingredient = itemDescriptor.toItem();
                 if (ingredient == null || ingredient.getId() == 0) {
-                    this.putBoolean(false); // isValid? - false
+                    this.putLShort(0);
                     this.putVarInt(0); // item == null ? 0 : item.getCount()
                     return;
                 }
-                this.putBoolean(true); // isValid? - true
-
                 int networkFullId = RuntimeItems.getRuntimeMapping().getNetworkFullId(ingredient);
                 int networkId = RuntimeItems.getNetworkId(networkFullId);
                 int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
                 if (RuntimeItems.hasData(networkFullId)) {
                     damage = 0;
                 }
-
                 this.putLShort(networkId);
                 this.putLShort(damage);
-                this.putVarInt(ingredient.getCount());
             }
-            default -> {
+            case MOLANG -> {
+                MolangDescriptor molangDescriptor = (MolangDescriptor) itemDescriptor;
+                this.putString(molangDescriptor.getTagExpression());
+                this.putByte((byte) molangDescriptor.getMolangVersion());
             }
+            case ITEM_TAG -> {
+                ItemTagDescriptor tagDescriptor = (ItemTagDescriptor) itemDescriptor;
+                this.putString(tagDescriptor.getItemTag());
+            }
+            case DEFERRED -> {
+                DeferredDescriptor deferredDescriptor = (DeferredDescriptor) itemDescriptor;
+                this.putString(deferredDescriptor.getFullName());
+                this.putLShort(deferredDescriptor.getAuxValue());
+            }
+            /*case INVALID -> {
+            }*/
         }
+
+        this.putVarInt(itemDescriptor.getCount());
     }
 
     private List<String> extractStringList(Item item, String tagName) {

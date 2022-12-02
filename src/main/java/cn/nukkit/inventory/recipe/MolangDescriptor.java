@@ -11,6 +11,7 @@ import lombok.Value;
 public class MolangDescriptor implements ItemDescriptor {
     String tagExpression;
     int molangVersion;
+    int count;
 
     @Override
     public ItemDescriptorType getType() {

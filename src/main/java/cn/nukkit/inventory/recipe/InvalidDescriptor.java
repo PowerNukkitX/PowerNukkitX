@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class InvalidDescriptor implements ItemDescriptor {
+    int count = 0;
 
     public static final InvalidDescriptor INSTANCE = new InvalidDescriptor();
 
@@ -28,5 +29,10 @@ public class InvalidDescriptor implements ItemDescriptor {
     @Override
     public ItemDescriptor clone() throws CloneNotSupportedException {
         return (ItemDescriptor) super.clone();
+    }
+
+    @Override
+    public int getCount() {
+        return count;
     }
 }

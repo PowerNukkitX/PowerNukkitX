@@ -44,7 +44,7 @@ public class SmithingRecipe extends ShapelessRecipe {
 
     private final List<Item> ingredientsAggregate;
 
-    //todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前配方不存在,等待未来检查
+    //todo 不知道锻造台是否支持item_tag以及其他类型的配方输入,当前的配方文件中不存在,等待未来检查
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public SmithingRecipe(String recipeId, int priority, Collection<Item> ingredients, Item result) {

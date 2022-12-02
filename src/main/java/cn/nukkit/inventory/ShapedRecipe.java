@@ -114,7 +114,7 @@ public class ShapedRecipe implements CraftingRecipe {
                     if (ingredient != null)
                         this.ingredientsAggregate.add(ingredient);
                 }
-                case ITEM_TAG -> {
+                default -> {
                 }
             }
         }
@@ -223,7 +223,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
     public ItemDescriptor getNewIngredient(int x, int y) {
         try {
-            return this.newIngredients.get(this.shape[y].charAt(x)).clone();
+            var res = this.newIngredients.get(this.shape[y].charAt(x));
+            return res != null ? res.clone() : new DefaultDescriptor(Item.get(Item.AIR));
         } catch (CloneNotSupportedException ignore) {
             return null;
         }
