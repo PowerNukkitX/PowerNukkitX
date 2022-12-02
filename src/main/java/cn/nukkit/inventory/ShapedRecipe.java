@@ -302,12 +302,14 @@ public class ShapedRecipe implements CraftingRecipe {
         }
 
         if (!matchItemList(haveInputs, needInputs)) {
-            Set<String> tags = new HashSet<>();
-            for (var hInput : haveInputs) {
-                var t = ItemTag.getTags(hInput.getNamespaceId());
-                if (t != null) tags.addAll(t);
-            }
-            return tags.containsAll(needTags);
+            if (!haveInputs.isEmpty()) {
+                Set<String> tags = new HashSet<>();
+                for (var hInput : haveInputs) {
+                    var t = ItemTag.getTags(hInput.getNamespaceId());
+                    if (t != null) tags.addAll(t);
+                }
+                if (!tags.containsAll(needTags)) return false;
+            } else return false;
         }
 
         List<Item> haveOutputs = new ArrayList<>();
