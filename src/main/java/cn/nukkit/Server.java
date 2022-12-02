@@ -39,6 +39,7 @@ import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.terra.PNXPlatform;
+import cn.nukkit.level.terra.TerraGenerator;
 import cn.nukkit.level.tickingarea.manager.SimpleTickingAreaManager;
 import cn.nukkit.level.tickingarea.manager.TickingAreaManager;
 import cn.nukkit.level.tickingarea.storage.JSONTickingAreaStorage;
@@ -174,6 +175,11 @@ public class Server {
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
 
+    /**
+     * 负责地形生成，数据压缩等计算任务的FJP线程池<br/>
+     * <br/>
+     * FJP thread pool responsible for terrain generation, data compression and other computing tasks
+     */
     public final ForkJoinPool computeThreadPool;
 
     private SimpleCommandMap commandMap;
@@ -357,7 +363,7 @@ public class Server {
 
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, true);
         freezableArrayManager = new FreezableArrayManager(32, 32, 0, -256, 1024, 16, 1, 32);
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
@@ -405,7 +411,7 @@ public class Server {
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
         this.consoleThread.start();
-        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, false);
+        this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, true);
 
         this.playerDataSerializer = new DefaultPlayerDataSerializer(this);
 
@@ -824,7 +830,7 @@ public class Server {
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
         if (useTerra) {
-            Generator.addGenerator(PNXChunkGeneratorWrapper.class, "terra");
+            Generator.addGenerator(TerraGeneratorWrapper.class, "terra");
             PNXPlatform.getInstance();
         }
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
