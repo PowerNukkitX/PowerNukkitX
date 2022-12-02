@@ -20,17 +20,14 @@ import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.Set;
-
-import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
 
 public class EntityCat extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 75;
@@ -55,6 +52,7 @@ public class EntityCat extends EntityWalkingAnimal {
     public int getNetworkId() {
         return NETWORK_ID;
     }
+
     @Override
     public IBehaviorGroup getBehaviorGroup() {
         if (behaviorGroup == null) {
@@ -74,7 +72,7 @@ public class EntityCat extends EntityWalkingAnimal {
                     Set.of(
                             new Behavior(new RandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 4, 1),
                             new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.25f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
+                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.45f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
                             new Behavior(new RandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
@@ -137,15 +135,13 @@ public class EntityCat extends EntityWalkingAnimal {
      * <p>
      * Bound cat breeding items
      * WIKI understands that only raw salmon and raw cod can be used to breed
-     * @param item 物品
-     * @return
      */
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     @Override
     public boolean isBreedingItem(Item item) {
         return item.getId() == ItemID.RAW_SALMON ||
-                item.getId() == ItemID.ROTTEN_FLESH;
+                item.getId() == ItemID.RAW_FISH;
     }
     /**
      * 获得可以治疗猫的物品的治疗量
@@ -165,6 +161,24 @@ public class EntityCat extends EntityWalkingAnimal {
 
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
+    public String getOwnerName() {
+        return this.ownerName;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public void setOwnerName(String playerName) {
+        var player = getServer().getPlayerExact(playerName);
+        if (player == null) return;
+        this.ownerName = playerName;
+        this.setDataProperty(new LongEntityData(DATA_OWNER_EID, player.getId()));
+        this.setTamed(true);
+        this.namedTag.putString("OwnerName", this.ownerName);
+    }
+
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
     public boolean hasOwner(boolean checkOnline) {
         if (checkOnline) {
             if (this.ownerName == null || this.ownerName.isEmpty()) return false;
@@ -174,6 +188,49 @@ public class EntityCat extends EntityWalkingAnimal {
             return this.ownerName != null && !this.ownerName.isEmpty();
         }
     }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public boolean isSitting() {
+        return this.sitting;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public void setSitting(boolean sit) {
+        this.sitting = sit;
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
+        this.namedTag.putBoolean("Sitting", sit);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    private void setTamed(boolean tamed) {
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public boolean isAngry() {
+        return this.angry;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public void setAngry(boolean angry) {
+        this.angry = angry;
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, angry);
+        this.namedTag.putBoolean("Angry", angry);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public void setCollarColor(DyeColor color) {
+        this.collarColor = color;
+        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color.getWoolData()));
+        this.namedTag.putByte("CollarColor", color.getDyeData());
+    }
+
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     private boolean entityHasOwner(Entity entity, boolean checkOnline, boolean defaultValue) {
