@@ -220,8 +220,6 @@ public abstract class Generator implements BlockID {
             if (populator.isAsync())
                 Server.getInstance().computeThreadPool.submit(new ChunkPopulationTask(level, chunk, populator));
             else populator.populate(level, chunkX, chunkZ, random, chunk);
-//            //todo: 临时解决Level::generators.get()的性能问题，有待进一步处理
-//            populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }
 
