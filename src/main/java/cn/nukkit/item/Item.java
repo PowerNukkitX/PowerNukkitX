@@ -642,9 +642,8 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 注册自定义物品
      * <p>
      * Register custom item
-     * @param itemClassList 传入自定义物品class List
-     *                      <p>
-     *                      Import custom items class List
+     *
+     * @param itemClassList 传入自定义物品class List<br>Import custom items class List
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -667,6 +666,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 卸载自定义物品
      * <p>
      * Remove custom items
+     *
      * @param namespaceId 传入自定义物品的namespaceId
      */
     @PowerNukkitXOnly
@@ -729,27 +729,27 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义创造模式下创造背包中的物品
+     * 获取{@link Item#creative}
      * <p>
-     * Get the items in the Creative backpack in Creative mode
+     * Get the {@link Item#creative}
      */
     public static ArrayList<Item> getCreativeItems() {
         return new ArrayList<>(Item.creative);
     }
 
     /**
-     * 为创造模式中创造背包添加物品
+     * 添加一个物品到{@link Item#creative}
      * <p>
-     * Adding items to the Creative backpack in Creative mode
+     * Add a item to {@link Item#creative}
      */
     public static void addCreativeItem(Item item) {
         Item.creative.add(item.clone());
     }
 
     /**
-     * 在创造模式的创造背包中移除物品
+     * 移除一个指定的创造物品
      * <p>
-     * Remove items from the Creative backpack in Creative mode
+     * Remove a specified created item
      */
     public static void removeCreativeItem(Item item) {
         int index = getCreativeItemIndex(item);
@@ -786,12 +786,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义物品是否在创造背包中
+     * 获取指定物品在{@link Item#creative}中的索引
      * <p>
-     * Define if the item is in the creation backpack
+     * Get the index of the specified item in {@link Item#creative}
      *
-     * @param item
-     * @return
+     * @param item 指定物品 <br>specified item
      */
     public static int getCreativeItemIndex(Item item) {
         for (int i = 0; i < Item.creative.size(); i++) {
@@ -1305,13 +1304,11 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义物品附魔效果和等级
+     * 获取该物品所带有的全部附魔
      * <p>
-     * Define the item level of enchantment effect
+     * Get all the enchantments that the item comes with
      *
-     * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY
-     * <p>
-     * If there is no enchanting effect return Enchantment.EMPTY_ARRAY
+     * @return 如果没有附魔效果返回Enchantment.EMPTY_ARRAY<br>If there is no enchanting effect return Enchantment.EMPTY_ARRAY
      */
 
     public Enchantment[] getEnchantments() {
@@ -1334,9 +1331,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 快捷方便的方法,检测该物品是否有该附魔
+     * 检测该物品是否有该附魔
      * <p>
-     * Convenience method to check if the item stack has positive level on a specific enchantment by it's id.
+     * Detect if the item has the enchantment
      *
      * @param id The enchantment ID from {@link Enchantment} constants.
      */
@@ -1676,11 +1673,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 物品合成配方方法
+     * 创建一个通配配方物品,即该物品可以不限制数据值应用到配方中
      * <p>
-     * Item crafting recipe methods
-     *
-     * @return
+     * Create a wildcard recipe item,the item can be applied to a recipe without restriction on data(damage/meta) values
      */
 
     @PowerNukkitOnly
@@ -1704,11 +1699,9 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义物品可燃烧时间例如煤炭在熔炉中燃烧...
+     * 获取一个可燃烧物品的燃烧时间
      * <p>
-     * Define the burnable time of an item e.g. coal burning in a furnace...
-     *
-     * @return
+     * Get the burn time of a burnable item
      */
 
     final public Short getFuelTime() {
@@ -1733,6 +1726,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 定义物品是否为工具
      * <p>
      * Define if this item is a tool
+     *
      * @return
      */
 
@@ -2013,15 +2007,15 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 玩家点击或长按触发什么,例如玩家放置水桶
+     * 玩家使用一个物品交互时会调用这个方法
      * <p>
-     * The player clicks or long presses to trigger something, for example, the player places a bucket of water
+     * This method is called when the player interacts with an item
      *
-     * @param level
-     * @param player
+     * @param level  玩家所在地图 <br> Player location level
+     * @param player 玩家实例对象 <br> Player instance object
      * @param block
-     * @param target
-     * @param face
+     * @param target 交互的目标方块 <br>Interacting target block
+     * @param face   交互的方向 <br>Direction of Interaction
      * @param fx
      * @param fy
      * @param fz
@@ -2204,10 +2198,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      * 控制此方块（在冒险模式下）可以使用/放置在其上的方块类型。
      * <p>
      * Controls what block types this block may be placed on.
-     *
-     * @param block
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public void addCanPlaceOn(Block block) {
@@ -2319,13 +2310,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义物品锁定在玩家的物品栏
+     * 获取物品锁定在玩家的物品栏的模式
      * <p>
-     * Define items locked to the player's inventory
+     * Get items locked mode in the player's item inventory
      *
      * @return
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public ItemLockMode getItemLockMode() {
@@ -2349,13 +2339,12 @@ public class Item implements Cloneable, BlockID, ItemID {
     }
 
     /**
-     * 定义物品是否死亡不掉落
+     * 该物品是否死亡不掉落
      * <p>
      * Define if the item does not drop on death
      *
      * @return
      */
-
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public boolean keepOnDeath() {
