@@ -1,6 +1,6 @@
 ---
-name: "\U0001F4AC Start a discussion about PowerNukkitX"
-about: Discuss ideas, solutions, give feedback, cheers, etc
+name: "\U0001F4AC 打开一个关于PNX的讨论"
+about: 讨论一些关于插件开发,反馈的问题
 title: ''
 labels: 'Type: dialog'
 assignees: ''
@@ -8,17 +8,17 @@ assignees: ''
 ---
 
 # 💬 Let's talk
-<!--✍ Feel free to ask questions or start related discussion below -->
 
+<!--✍ 尽可能详实地描述你想讨论的问题 -->
 
+### 📋 Debug 信息
 
-### 📋 Debug information
-<!-- ⚠ This information may help us to give you better answers but they are not required ⚠ -->
-<!-- Use the 'debugpaste upload' command in PowerNukkitX -->
-<!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
+<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+
 * PowerNukkitX version: ✍
 * Debug link: ✍
 
-### 💬 Anything else we should know?
-<!-- ✍ This is the perfect place to add any additional details -->
+### 💬 其他信息
+
+<!-- ✍ 其他可能有助于解决此问题的信息 -->
 

@@ -23,10 +23,10 @@ public abstract class StructurePiece {
 
     protected ChunkManager level;
     protected BoundingBox boundingBox;
+    protected int genDepth;
     @Nullable
     private BlockFace orientation;
     private Rotation rotation = Rotation.NONE;
-    protected int genDepth;
 
     protected StructurePiece(int genDepth) {
         this.genDepth = genDepth;
@@ -39,6 +39,21 @@ public abstract class StructurePiece {
         }
         int orientation = tag.getInt("O");
         this.setOrientation(orientation == -1 ? null : BlockFace.fromHorizontalIndex(orientation));
+    }
+
+    public static StructurePiece findCollisionPiece(List<StructurePiece> pieces, BoundingBox boundingBox) {
+        Iterator<StructurePiece> iterator = pieces.iterator();
+
+        StructurePiece piece;
+        do {
+            if (!iterator.hasNext()) {
+                return null;
+            }
+
+            piece = iterator.next();
+        } while (piece.getBoundingBox() == null || !piece.getBoundingBox().intersects(boundingBox));
+
+        return piece;
     }
 
     public final CompoundTag createTag() {
@@ -68,22 +83,7 @@ public abstract class StructurePiece {
         return this.genDepth;
     }
 
-    public static StructurePiece findCollisionPiece(List<StructurePiece> pieces, BoundingBox boundingBox) {
-        Iterator<StructurePiece> iterator = pieces.iterator();
-
-        StructurePiece piece;
-        do {
-            if (!iterator.hasNext()) {
-                return null;
-            }
-
-            piece = iterator.next();
-        } while (piece.getBoundingBox() == null || !piece.getBoundingBox().intersects(boundingBox));
-
-        return piece;
-    }
-
-    protected boolean isLiquid(int id){
+    protected boolean isLiquid(int id) {
         return id == Block.FLOWING_WATER || id == Block.STILL_WATER || id == Block.FLOWING_LAVA || id == Block.STILL_LAVA;
     }
 
@@ -390,7 +390,7 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void generateDoor(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int x, int y, int z, BlockFace orientation, BlockState door)  {
+    protected void generateDoor(ChunkManager level, BoundingBox boundingBox, NukkitRandom random, int x, int y, int z, BlockFace orientation, BlockState door) {
         switch (orientation) {
             case NORTH:
             default:

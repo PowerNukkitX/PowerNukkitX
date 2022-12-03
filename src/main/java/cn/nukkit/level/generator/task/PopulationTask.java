@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.task;
 import cn.nukkit.Server;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.SimpleChunkManager;
@@ -13,13 +12,12 @@ import cn.nukkit.scheduler.AsyncTask;
  * @author MagicDroidX (Nukkit Project)
  */
 public class PopulationTask extends AsyncTask {
+    public final BaseFullChunk[] chunks = new BaseFullChunk[9];
     private final long seed;
     private final Level level;
     private boolean state;
     private BaseFullChunk centerChunk;
     private boolean isPopulated;
-
-    public final BaseFullChunk[] chunks = new BaseFullChunk[9];
 
     public PopulationTask(Level level, BaseFullChunk chunk) {
         this.state = true;
@@ -106,7 +104,7 @@ public class PopulationTask extends AsyncTask {
                         BaseFullChunk newChunk = manager.getChunk(chunk.getX(), chunk.getZ());
                         newChunk.setGenerated();
                         if (newChunk != chunk) manager.setChunk(chunk.getX(), chunk.getZ(), newChunk);
-                   }
+                    }
                 }
 
                 isPopulated = centerChunk.isPopulated();
@@ -166,7 +164,7 @@ public class PopulationTask extends AsyncTask {
             //需要在全部地形生成完毕后再尝试生成结构
             //todo: 不应该写在这里，往前放更合理，但是会有NPE:(
             var generator = level.getGenerator();
-            if (generator.shouldGenerateStructures()){
+            if (generator.shouldGenerateStructures()) {
                 generator.populateStructure(centerChunk.getX(), centerChunk.getZ());
             }
         }

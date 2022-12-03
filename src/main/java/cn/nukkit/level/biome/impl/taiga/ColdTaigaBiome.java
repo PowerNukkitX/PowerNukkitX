@@ -28,7 +28,7 @@ public class ColdTaigaBiome extends TaigaBiome {
     @Override
     public int getCoverBlock() {
         if (useNewRakNetCover()) {
-            return getCoverId(0,0) >> 4;
+            return getCoverId(0, 0) >> 4;
         }
         return SNOW_LAYER;
     }

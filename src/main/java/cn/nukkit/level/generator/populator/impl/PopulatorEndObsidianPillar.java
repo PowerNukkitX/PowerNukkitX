@@ -40,7 +40,7 @@ public class PopulatorEndObsidianPillar extends Populator {
 
         this.place(level);
 
-        var nbt = Entity.getDefaultNBT(new Vector3(x + 0.5,  this.obsidianPillar.getHeight() + 1, z + 0.5));
+        var nbt = Entity.getDefaultNBT(new Vector3(x + 0.5, this.obsidianPillar.getHeight() + 1, z + 0.5));
         var entity = Entity.createEntity("EndCrystal", chunk, nbt);
         ((EntityEndCrystal) entity).setShowBase(true);
         entity.spawnToAll();
@@ -81,6 +81,9 @@ public class PopulatorEndObsidianPillar extends Populator {
 
     public static class ObsidianPillar {
 
+        private static final LoadingCache<Long, ObsidianPillar[]> CACHE = CacheBuilder.newBuilder()
+                .expireAfterWrite(5L, TimeUnit.MINUTES)
+                .build(new ObsidianPillarCacheLoader());
         private final int centerX;
         private final int centerZ;
         private final int radius;
@@ -93,6 +96,10 @@ public class PopulatorEndObsidianPillar extends Populator {
             this.radius = radius;
             this.height = height;
             this.guarded = guarded;
+        }
+
+        public static ObsidianPillar[] getObsidianPillars(long seed) {
+            return CACHE.getUnchecked(new Random(seed).nextLong() & 0xffffL);
         }
 
         public int getCenterX() {
@@ -113,14 +120,6 @@ public class PopulatorEndObsidianPillar extends Populator {
 
         public boolean isGuarded() {
             return this.guarded;
-        }
-
-        private static final LoadingCache<Long, ObsidianPillar[]> CACHE = CacheBuilder.newBuilder()
-                .expireAfterWrite(5L, TimeUnit.MINUTES)
-                .build(new ObsidianPillarCacheLoader());
-
-        public static ObsidianPillar[] getObsidianPillars(long seed) {
-            return CACHE.getUnchecked(new Random(seed).nextLong() & 0xffffL);
         }
 
         private static class ObsidianPillarCacheLoader extends CacheLoader<Long, ObsidianPillar[]> {

@@ -5,6 +5,9 @@ import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
+import cn.nukkit.level.biome.impl.cave.DeepDarkBiome;
+import cn.nukkit.level.biome.impl.cave.DripStoneCavesBiome;
+import cn.nukkit.level.biome.impl.cave.LushCavesBiome;
 import cn.nukkit.level.biome.impl.desert.DesertBiome;
 import cn.nukkit.level.biome.impl.desert.DesertHillsBiome;
 import cn.nukkit.level.biome.impl.desert.DesertMBiome;
@@ -15,7 +18,9 @@ import cn.nukkit.level.biome.impl.forest.ForestBiome;
 import cn.nukkit.level.biome.impl.forest.ForestHillsBiome;
 import cn.nukkit.level.biome.impl.iceplains.IcePlainsBiome;
 import cn.nukkit.level.biome.impl.iceplains.IcePlainsSpikesBiome;
+import cn.nukkit.level.biome.impl.jaggedpeaks.JaggedPeaksBiome;
 import cn.nukkit.level.biome.impl.jungle.*;
+import cn.nukkit.level.biome.impl.mangroveswamp.MangroveSwampBiome;
 import cn.nukkit.level.biome.impl.mesa.*;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandShoreBiome;
@@ -31,6 +36,7 @@ import cn.nukkit.level.biome.impl.savanna.SavannaBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaMBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaPlateauBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaPlateauMBiome;
+import cn.nukkit.level.biome.impl.snowyslopes.SnowySlopesBiome;
 import cn.nukkit.level.biome.impl.swamp.SwampBiome;
 import cn.nukkit.level.biome.impl.swamp.SwamplandMBiome;
 import cn.nukkit.level.biome.impl.taiga.*;
@@ -118,7 +124,14 @@ public enum EnumBiome {
     SOUL_SAND_VALLEY(178, new SoulSandValleyBiome()),
     CRIMSON_FOREST(179, new CrimsonForestBiome()),
     WARPED_FOREST(180, new WarpedForestBiome()),
-    BASALT_DELTAS(181, new BasaltDeltasBiome());
+    BASALT_DELTAS(181, new BasaltDeltasBiome()),
+    //todo: 以下生物群系未完全实现
+    JAGGED_PEAKS(182, new JaggedPeaksBiome()),
+    SNOWY_SLOPES(184, new SnowySlopesBiome()),
+    LUSH_CAVES(187, new LushCavesBiome()),
+    DRIPSTONE_CAVES(188, new DripStoneCavesBiome()),
+    DEEP_DARK(190, new DeepDarkBiome()),
+    MANGROVE_SWAMP(191, new MangroveSwampBiome());
 
     public final int id;
     public final Biome biome;

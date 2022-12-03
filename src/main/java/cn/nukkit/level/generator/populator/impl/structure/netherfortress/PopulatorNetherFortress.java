@@ -24,7 +24,8 @@ public class PopulatorNetherFortress extends PopulatorStructure {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, @NotNull FullChunk chunk) {
-        if (chunk.getProvider().isNether() && chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7) == EnumBiome.HELL.id) {
+        if (!chunk.isNether()) return;
+        if (chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7) == EnumBiome.HELL.id) {
             //\\ NetherFortressFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
             int gx = chunkX >> 4;
             int gz = chunkZ >> 4;
@@ -45,7 +46,7 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                     BoundingBox boundingBox = start.getBoundingBox();
                     for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                         for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                            NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
+                            NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
                             int x = cx << 4;
                             int z = cz << 4;
                             BaseFullChunk ck = level.getChunk(cx, cz);
@@ -58,7 +59,7 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
+                                Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
                                         chunk.getProvider().getLevel(), ck, start,
                                         structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                             }
@@ -67,6 +68,12 @@ public class PopulatorNetherFortress extends PopulatorStructure {
                 }
             }
         }
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 
     public static class NetherFortressStart extends StructureStart {
@@ -95,11 +102,5 @@ public class PopulatorNetherFortress extends PopulatorStructure {
         public String getType() {
             return "Fortress";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

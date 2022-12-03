@@ -7,7 +7,14 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
 import java.util.HashMap;
-
+/**
+ * 这个Inventory并不代表玩家的背包,若想获取玩家背包请使用{@link PlayerInventory}<br>
+ * 0是cursorInventory<br>
+ * 1-2是ANVIL<br>
+ * 16-17是GRINDSTONE<br>
+ * 28-31是craftingGrid没有结果格<br>
+ * 32-40是bigCraftingGrid没有结果格<br>
+ */
 public class PlayerUIInventory extends BaseInventory {
     private final Player player;
 
@@ -39,12 +46,12 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public void onOpen(Player who) {
-        
+
     }
 
     @Override
     public void onClose(Player who) {
-        
+
     }
 
     @Override
@@ -78,7 +85,7 @@ public class PlayerUIInventory extends BaseInventory {
     public void sendContents(Player... target) {
         //doesn't work here
     }
-    
+
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
         switch (player.craftingType) {
@@ -107,7 +114,7 @@ public class PlayerUIInventory extends BaseInventory {
     public void onSlotChangeBase(int index, Item before, boolean send) {
         super.onSlotChange(index, before, send);
     }
-    
+
     @Override
     public int getSize() {
         return 51;

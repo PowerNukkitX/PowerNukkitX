@@ -14,10 +14,6 @@ public class StrongholdCorridorChest extends RandomizableContainer {
 
     private static final StrongholdCorridorChest INSTANCE = new StrongholdCorridorChest();
 
-    public static StrongholdCorridorChest get() {
-        return INSTANCE;
-    }
-
     private StrongholdCorridorChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -43,5 +39,9 @@ public class StrongholdCorridorChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.DIAMOND_HORSE_ARMOR, 5))
                 .register(new ItemEntry(Item.ENCHANTED_BOOK, 6)); //TODO: treasure enchant_with_levels 30
         this.pools.put(pool1.build(), new RollEntry(3, 2, pool1.getTotalWeight()));
+    }
+
+    public static StrongholdCorridorChest get() {
+        return INSTANCE;
     }
 }

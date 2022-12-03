@@ -20,14 +20,14 @@ public final class BitArray4096 {
         this.data = new long[longLen];
     }
 
-    public final void setAt(int index, int value) {
+    public void setAt(int index, int value) {
         if (data.length == 0) return;
         int bitIndexStart = index * bitsPerEntry;
         int longIndexStart = bitIndexStart >> 6;
         int localBitIndexStart = bitIndexStart & 63;
         this.data[longIndexStart] = this.data[longIndexStart] & ~((long) maxEntryValue << localBitIndexStart) | ((long) value) << localBitIndexStart;
 
-        if(localBitIndexStart > maxSeqLocIndex) {
+        if (localBitIndexStart > maxSeqLocIndex) {
             int longIndexEnd = longIndexStart + 1;
             int localShiftStart = 64 - localBitIndexStart;
             int localShiftEnd = bitsPerEntry - localShiftStart;
@@ -35,28 +35,28 @@ public final class BitArray4096 {
         }
     }
 
-    public final int getAt(int index) {
+    public int getAt(int index) {
         if (data.length == 0) return 0;
         int bitIndexStart = index * bitsPerEntry;
 
         int longIndexStart = bitIndexStart >> 6;
 
         int localBitIndexStart = bitIndexStart & 63;
-        if(localBitIndexStart <= maxSeqLocIndex) {
-            return (int)(this.data[longIndexStart] >>> localBitIndexStart & maxEntryValue);
+        if (localBitIndexStart <= maxSeqLocIndex) {
+            return (int) (this.data[longIndexStart] >>> localBitIndexStart & maxEntryValue);
         } else {
             int localShift = 64 - localBitIndexStart;
             return (int) ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift) & maxEntryValue);
         }
     }
 
-    public final void fromRawSlow(char[] arr) {
+    public void fromRawSlow(char[] arr) {
         for (int i = 0; i < arr.length; i++) {
             setAt(i, arr[i]);
         }
     }
 
-    public final void fromRaw(char[] arr) {
+    public void fromRaw(char[] arr) {
         final long[] data = this.data;
         final int dataLength = data.length;
         final int bitsPerEntry = this.bitsPerEntry;
@@ -115,7 +115,7 @@ public final class BitArray4096 {
         return newBitArray;
     }
 
-    public final char[] toRawSlow() {
+    public char[] toRawSlow() {
         char[] arr = new char[4096];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = (char) getAt(i);
@@ -123,11 +123,11 @@ public final class BitArray4096 {
         return arr;
     }
 
-    public final char[] toRaw() {
+    public char[] toRaw() {
         return toRaw(new char[4096]);
     }
 
-    protected final char[] toRaw(char[] buffer) {
+    private char[] toRaw(char[] buffer) {
         final long[] data = this.data;
         final int dataLength = data.length;
         final int bitsPerEntry = this.bitsPerEntry;

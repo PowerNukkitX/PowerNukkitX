@@ -62,7 +62,7 @@ public abstract class PopulatorScatteredStructure extends PopulatorStructure {
     }
 
     protected void generate(ChunkManager level, int chunkX, int chunkZ, ScatteredStructurePiece piece) {
-        piece.generate(level, new NukkitRandom(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ level.getSeed()));
+        piece.generate(level, new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ level.getSeed()));
         this.waitingChunks.remove(Level.chunkHash(chunkX, chunkZ));
     }
 

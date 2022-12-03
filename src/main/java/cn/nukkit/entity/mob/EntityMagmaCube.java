@@ -23,8 +23,8 @@ public class EntityMagmaCube extends EntityWalkingMob {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(16);
+        super.initEntity();
     }
 
     @Override

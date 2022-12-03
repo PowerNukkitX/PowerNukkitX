@@ -13,10 +13,6 @@ public class DesertPyramidChest extends RandomizableContainer {
 
     private static final DesertPyramidChest INSTANCE = new DesertPyramidChest();
 
-    public static DesertPyramidChest get() {
-        return INSTANCE;
-    }
-
     private DesertPyramidChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -45,5 +41,9 @@ public class DesertPyramidChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.STRING, 0, 8, 1, 10))
                 .register(new ItemEntry(Item.SAND, 0, 8, 1, 10));
         this.pools.put(pool2.build(), new RollEntry(4, pool2.getTotalWeight()));
+    }
+
+    public static DesertPyramidChest get() {
+        return INSTANCE;
     }
 }

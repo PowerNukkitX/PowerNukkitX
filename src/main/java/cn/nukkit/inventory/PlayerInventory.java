@@ -20,6 +20,11 @@ import cn.nukkit.network.protocol.types.ContainerIds;
 import java.util.Collection;
 
 /**
+ * 0-8 物品栏<br>
+ * 9-35 背包<br>
+ * 36-39 盔甲栏<br>
+ * 想获取副手库存请用{@link PlayerOffhandInventory}<br>
+ *
  * @author MagicDroidX (Nukkit Project)
  */
 public class PlayerInventory extends BaseInventory {
@@ -497,6 +502,26 @@ public class PlayerInventory extends BaseInventory {
         }
 
         p.dataPacket(pk);
+    }
+
+    //由于NK从PlayerInventory中分离了盔甲栏，并且getSize值修改为36，但实际上slots最大容量为40，按照逻辑应该将solts size也减4
+    @Override
+    public int getFreeSpace(Item item) {
+        int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
+        int slots = this.slots.size() > 36 ? this.slots.size() - 4 : this.slots.size();
+        int space = (this.getSize() - slots) * maxStackSize;
+
+        for (Item slot : this.getContents().values()) {
+            if (slot == null || slot.getId() == 0) {
+                space += maxStackSize;
+                continue;
+            }
+
+            if (slot.equals(item, true, true)) {
+                space += maxStackSize - slot.getCount();
+            }
+        }
+        return space;
     }
 
     @Override

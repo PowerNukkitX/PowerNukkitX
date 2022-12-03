@@ -3,19 +3,20 @@ package cn.nukkit.entity.ai.executor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.Vector3Memory;
+import cn.nukkit.entity.ai.memory.MemoryType;
+import cn.nukkit.math.Vector3;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class LookAtTargetExecutor extends AboutControlExecutor {
+public class LookAtTargetExecutor implements EntityControl, IBehaviorExecutor {
 
     //指示执行器应该从哪个Memory获取目标位置
-    protected Class<? extends Vector3Memory<?>> memoryClazz;
+    protected MemoryType<? extends Vector3> memory;
     protected int duration;
     protected int currentTick;
 
-    public LookAtTargetExecutor(Class<? extends Vector3Memory<?>> memoryClazz, int duration) {
-        this.memoryClazz = memoryClazz;
+    public LookAtTargetExecutor(MemoryType<? extends Vector3> memory, int duration) {
+        this.memory = memory;
         this.duration = duration;
     }
 
@@ -23,15 +24,11 @@ public class LookAtTargetExecutor extends AboutControlExecutor {
     public boolean execute(EntityIntelligent entity) {
         currentTick++;
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
-        Vector3Memory<?> vector3Memory = entity.getMemoryStorage().get(memoryClazz);
-        if (vector3Memory.hasData()) {
-            setLookTarget(entity, vector3Memory.getData());
+        var vector3Memory = entity.getMemoryStorage().get(memory);
+        if (vector3Memory != null) {
+            setLookTarget(entity, vector3Memory);
         }
-        if (currentTick <= duration) {
-            return true;
-        } else {
-            return false;
-        }
+        return currentTick <= duration;
     }
 
     @Override

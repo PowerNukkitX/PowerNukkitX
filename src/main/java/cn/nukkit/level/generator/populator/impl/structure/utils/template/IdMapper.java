@@ -15,9 +15,9 @@ import java.util.Objects;
 @Since("1.19.21-r2")
 public class IdMapper<T> implements Iterable<T> {
 
-    private int nextId;
     private final HashMap<T, Integer> tToId;
     private final List<T> idToT;
+    private int nextId;
 
     public IdMapper() {
         this(1 << 4);

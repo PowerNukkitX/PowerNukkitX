@@ -19,20 +19,19 @@ import java.util.Random;
  * Handles the placement of stained clay for all mesa variants
  */
 public class MesaBiome extends CoveredBiome {
+    static final int[] colorLayer = new int[64];
+    static final SimplexF redSandNoise = new SimplexF(new NukkitRandom(937478913), 2f, 1 / 4f, 1 / 4f);
+    static final SimplexF colorNoise = new SimplexF(new NukkitRandom(193759875), 2f, 1 / 4f, 1 / 32f);
     private static final BlockState STATE_TERRACOTTA = BlockState.of(HARDENED_CLAY);
     private static final BlockState STATE_RED_SAND = BlockState.of(SAND, BlockSand.RED);
     private static final BlockState STATE_RED_SANDSTONE = BlockState.of(RED_SANDSTONE);
     private static final BlockState[] STATE_STAINED_TERRACOTTA = new BlockState[16];
-    
-    static final int[]    colorLayer   = new int[64];
-    static final SimplexF redSandNoise = new SimplexF(new NukkitRandom(937478913), 2f, 1 / 4f, 1 / 4f);
-    static final SimplexF colorNoise   = new SimplexF(new NukkitRandom(193759875), 2f, 1 / 4f, 1 / 32f);
 
     static {
         for (int i = 0; i < STATE_STAINED_TERRACOTTA.length; i++) {
             STATE_STAINED_TERRACOTTA[i] = BlockState.of(STAINED_HARDENED_CLAY, i);
         }
-        
+
         Random random = new Random(29864);
 
         Arrays.fill(colorLayer, -1); // hard clay, other values are stained clay
@@ -53,20 +52,8 @@ public class MesaBiome extends CoveredBiome {
         }
     }
 
-    private static void setRandomLayerColor(Random random, int sliceCount, int color) {
-        for (int i = 0; i < random.nextInt(4) + sliceCount; i++) {
-            int j = random.nextInt(colorLayer.length);
-            int k = 0;
-            while (k < random.nextInt(2) + 1 && j < colorLayer.length) {
-                colorLayer[j++] = color;
-                k++;
-            }
-        }
-    }
-
-    private SimplexF moundNoise = new SimplexF(new NukkitRandom(347228794), 2f, 1 / 4f, getMoundFrequency());
     protected int moundHeight;
-
+    private final SimplexF moundNoise = new SimplexF(new NukkitRandom(347228794), 2f, 1 / 4f, getMoundFrequency());
     public MesaBiome() {
         PopulatorCactus cactus = new PopulatorCactus();
         cactus.setBaseAmount(1);
@@ -79,6 +66,17 @@ public class MesaBiome extends CoveredBiome {
         this.addPopulator(deadBush);
 
         this.setMoundHeight(17);
+    }
+
+    private static void setRandomLayerColor(Random random, int sliceCount, int color) {
+        for (int i = 0; i < random.nextInt(4) + sliceCount; i++) {
+            int j = random.nextInt(colorLayer.length);
+            int k = 0;
+            while (k < random.nextInt(2) + 1 && j < colorLayer.length) {
+                colorLayer[j++] = color;
+                k++;
+            }
+        }
     }
 
     public void setMoundHeight(int height) {

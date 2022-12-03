@@ -1,5 +1,6 @@
 package cn.powernukkitx.tools;
 
+import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.Config;
 
 import java.io.*;
@@ -152,10 +153,9 @@ public class ModifyRecipes {
         modify.put("minecraft:polished_andesite", 6);
         modify.put("minecraft:polished_granite", 2);
         modify.put("minecraft:polished_diorite", 4);
-        //fix recipes for sandstone to cut sandstone
-        modify.put("minecraft:smooth_red_sandstone", 2);
-        //todo 未知原因不生效 断点检测注册配方数据值正常 但接受合成数据包时数据值又变为0
-        modify.put("minecraft:smooth_sandstone", 2);
+        //fix recipes for sandstone to smooth sandstone
+        modify.put("minecraft:smooth_red_sandstone", 3);
+        modify.put("minecraft:smooth_sandstone", 3);
         Config config = new Config(Config.JSON);
         try (InputStream recipesStream = new FileInputStream("src/main/resources/recipes.json")) {
             if (recipesStream == null) {
@@ -168,13 +168,19 @@ public class ModifyRecipes {
                 if (input1 != null) {
                     var listmap = castListMap(input1, String.class, Object.class);
                     if (listmap != null) {
-                        //处理羊毛染色
+
                         if (listmap.size() == 2) {
+                            var p1 = ((Number) listmap.get(0).get("itemId")).intValue();
+                            var p2 = ((Number) listmap.get(1).get("itemId")).intValue();
+                            int deyMeta1 = dyeDamage(p1);
+                            int deyMeta2 = dyeDamage(p2);
+                            /*
                             var p1 = listmap.get(0).get("id");
                             var p2 = listmap.get(1).get("id");
                             int deyMeta1 = dyeDamage((String) listmap.get(0).get("id"));
                             int deyMeta2 = dyeDamage((String) listmap.get(1).get("id"));
-                            if (deyMeta1 != -1 && (p2.equals("minecraft:wool"))) {
+                            */
+                            if (deyMeta1 != -1 && p2 == BlockID.WOOL) {//处理羊毛染色
                                 var output = castList(map.get("output"), Object.class);
                                 if (output != null) {
                                     var target = castMap(output.get(0), String.class, Object.class);
@@ -183,7 +189,7 @@ public class ModifyRecipes {
                                     output.add(target);
                                     map.put("output", output);
                                 }
-                            } else if ((p1.equals("minecraft:shulker_box") || p1.equals("minecraft:undyed_shulker_box")) && deyMeta2 != -1) {
+                            } else if ((p1 == BlockID.SHULKER_BOX || p1 == BlockID.UNDYED_SHULKER_BOX) && deyMeta2 != -1) {//处理潜影盒染色
                                 var output = castList(map.get("output"), Object.class);
                                 if (output != null) {
                                     var target = castMap(output.get(0), String.class, Object.class);
@@ -193,11 +199,16 @@ public class ModifyRecipes {
                                     map.put("output", output);
                                 }
                             }
-                            //处理混凝土染色
+
                         } else if (listmap.size() == 9) {
+                            var id = ((Number) listmap.get(0).get("itemId")).intValue();
+                            var name = ((Number) listmap.get(1).get("itemId")).intValue();
+                            int deyMeta = dyeDamage(id);
+                            /*
                             int deyMeta = dyeDamage((String) listmap.get(0).get("id"));
                             var name = listmap.get(1).get("id");
-                            if (deyMeta != -1 && name.equals("minecraft:sand")) {
+                            */
+                            if (deyMeta != -1 && name == BlockID.SAND) {//处理混凝土染色
                                 var output = castList(map.get("output"), Object.class);
                                 if (output != null) {
                                     var target = castMap(output.get(0), String.class, Object.class);
@@ -212,15 +223,16 @@ public class ModifyRecipes {
                 }
                 var input2 = castMap(map.get("input"), String.class, Object.class);
                 if (input2 != null) {
-                    //修复玻璃 玻璃板 地毯 粘土染色
                     if (input2.keySet().size() == 2 && input2.containsKey("A") && input2.containsKey("B")) {
                         var AA = castMap(input2.get("A"), String.class, Object.class);
                         var BB = castMap(input2.get("B"), String.class, Object.class);
-                        if (AA != null && BB != null) {
-                            var p1 = AA.get("id");
-                            int p2 = dyeDamage((String) BB.get("id"));
-                            if ((p1.equals("minecraft:glass") || p1.equals("minecraft:glass_pane")
-                                    || p1.equals("minecraft:carpet") || p1.equals("minecraft:hardened_clay")) && p2 != -1) {
+                        if (AA != null && BB != null && AA.containsKey("itemId") && BB.containsKey("itemId")) {
+                            var p1 = ((Number) AA.get("itemId")).intValue();
+                            int p2 = dyeDamage(((Number) BB.get("itemId")).intValue());
+                            /*var p1 = AA.get("id");
+                            int p2 = dyeDamage((String) BB.get("id"));*/
+                            //修复玻璃 玻璃板 地毯 粘土染色
+                            if ((p1 == BlockID.GLASS || p1 == BlockID.GLASS_PANE || p1 == BlockID.CARPET || p1 == BlockID.HARDENED_CLAY) && p2 != -1) {
                                 var output = castList(map.get("output"), Object.class);
                                 if (output != null) {
                                     var target = castMap(output.get(0), String.class, Object.class);
@@ -235,16 +247,21 @@ public class ModifyRecipes {
                     //修复染色玻璃合成染色玻璃板,染色羊毛合成染色羊毛毯
                     else if (input2.keySet().size() == 1 && input2.containsKey("A")) {
                         var AA = castMap(input2.get("A"), String.class, Object.class);
-                        if (AA != null && (AA.get("id").equals("minecraft:wool") || AA.get("id").equals("minecraft:stained_glass"))) {
-                            var damage = AA.get("damage");
-                            if (damage != null) {
-                                var output = castList(map.get("output"), Object.class);
-                                if (output != null) {
-                                    var target = castMap(output.get(0), String.class, Object.class);
-                                    output.remove(0);
-                                    target.put("damage", damage);
-                                    output.add(target);
-                                    map.put("output", output);
+                        if (AA != null && AA.containsKey("itemId")) {
+                            /*(AA.get("id").equals("minecraft:wool") || AA.get("id").equals("minecraft:stained_glass")*/
+                            int id = ((Number) AA.get("itemId")).intValue();
+                            if (id == BlockID.WOOL || id == BlockID.STAINED_GLASS) {
+                                //var damage = AA.get("damage");
+                                var damage = AA.get("auxValue");
+                                if (damage != null) {
+                                    var output = castList(map.get("output"), Object.class);
+                                    if (output != null) {
+                                        var target = castMap(output.get(0), String.class, Object.class);
+                                        output.remove(0);
+                                        target.put("damage", damage);
+                                        output.add(target);
+                                        map.put("output", output);
+                                    }
                                 }
                             }
                         }
@@ -255,16 +272,19 @@ public class ModifyRecipes {
                 if (block != null) {
                     if (block.equals("furnace")) {
                         var output = castMap(map.get("output"), String.class, Object.class);
+                        //石英块 -> 平滑石英块
                         if (input2.get("id").equals("minecraft:quartz_block")) {
                             if (output != null) {
                                 output.put("damage", 3);
                                 map.put("output", output);
                             }
                         }
+                        //石头 -> 平滑石头
                         if (input2.get("id").equals("minecraft:stone")) {
                             input2.put("damage", 0);
                             map.put("input", input2);
                         }
+                        //石砖 -> 裂纹石砖
                         if (input2.get("id").equals("minecraft:stonebrick")) {
                             if (output != null && output.get("id").equals("minecraft:stonebrick")) {
                                 output.put("damage", 2);
@@ -280,6 +300,7 @@ public class ModifyRecipes {
                         }
                     }
                 }
+                //寻找MAP中对应配方id的配方，全部添加对应的数据值
                 for (var id : modify.keySet()) {
                     if (map.get("id") != null && map.get("id").equals(id)) {
                         var output = castList(map.get("output"), Object.class);
@@ -349,6 +370,27 @@ public class ModifyRecipes {
             case "minecraft:green_dye" -> 13;
             case "minecraft:red_dye" -> 14;
             case "minecraft:ink_sac", "minecraft:black_dye" -> 15;
+            default -> -1;
+        };
+    }
+
+    private static int dyeDamage(int id) {
+        return switch (id) {
+            case 409 -> 1;
+            case 408 -> 2;
+            case 407 -> 3;
+            case 406 -> 4;
+            case 405 -> 5;
+            case 404 -> 6;
+            case 403 -> 7;
+            case 402 -> 8;//silver_dye
+            case 401 -> 9;
+            case 400 -> 10;
+            case 414 -> 11;
+            case 412, 398 -> 12;
+            case 397 -> 13;
+            case 396 -> 14;
+            case 413, 395 -> 15;
             default -> -1;
         };
     }

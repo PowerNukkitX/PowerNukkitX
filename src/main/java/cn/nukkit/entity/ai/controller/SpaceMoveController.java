@@ -7,14 +7,14 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 
 /**
- * 处理3D实体运动
+ * 处理飞行/游泳实体运动
  */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
 public class SpaceMoveController implements IController {
     @Override
     public boolean control(EntityIntelligent entity) {
-        if (entity.hasMoveDirection() && !entity.isNeedUpdateMoveDirection()) {
+        if (entity.hasMoveDirection() && !entity.isShouldUpdateMoveDirection()) {
             Vector3 direction = entity.getMoveDirectionEnd();
             var speed = entity.getMovementSpeedAtBlock(entity.getTickCachedLevelBlock());
             if (entity.motionX * entity.motionX + entity.motionY * entity.motionY + entity.motionZ * entity.motionZ > speed * speed * 0.4756) {
@@ -40,7 +40,7 @@ public class SpaceMoveController implements IController {
 
     protected void needNewDirection(EntityIntelligent entity) {
         //通知需要新的移动目标
-        entity.setNeedUpdateMoveDirection(true);
+        entity.setShouldUpdateMoveDirection(true);
     }
 
     protected boolean collidesBlocks(EntityIntelligent entity, double dx, double dy, double dz) {

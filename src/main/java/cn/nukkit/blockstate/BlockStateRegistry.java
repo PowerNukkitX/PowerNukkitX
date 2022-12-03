@@ -49,7 +49,7 @@ public class BlockStateRegistry {
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public final int BIG_META_MASK = 0xFFFFFFFF;
-    private final ExecutorService asyncStateRemover = Executors.newSingleThreadExecutor();
+    private final ExecutorService asyncStateRemover = Executors.newSingleThreadExecutor(t -> new Thread(t, "BlockStateRegistry#asyncStateRemover"));
     private final Pattern BLOCK_ID_NAME_PATTERN = Pattern.compile("^blockid:(\\d+)$");
 
     private Registration updateBlockRegistration;
@@ -151,6 +151,17 @@ public class BlockStateRegistry {
                 registerStateId(state, runtimeId);
             }
         }
+
+        /*for (var block : warned) {
+            var id = 255-RuntimeItems.getRuntimeMapping().getNetworkIdByNamespaceId(block).getAsInt();
+            try {
+                var path = Path.of("test.txt");
+                if (!path.toFile().exists()) path.toFile().createNewFile();
+                Files.writeString(path, id + "," + block + "\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }*/
 
         if (infoUpdateRuntimeId == null) {
             throw new IllegalStateException("Could not find the minecraft:info_update runtime id!");
@@ -754,6 +765,12 @@ public class BlockStateRegistry {
     @Since("1.4.0.0-PN")
     public BlockState getFallbackBlockState() {
         return updateBlockRegistration.state;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r1")
+    public static void close() {
+        asyncStateRemover.shutdownNow();
     }
 
     private Comparator<String> getBlockIdComparator() {

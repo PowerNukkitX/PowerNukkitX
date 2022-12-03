@@ -28,12 +28,12 @@ class OldWoodBarkUpdater implements Updater {
             return false;
         }
 
-        @SuppressWarnings("deprecation") 
+        @SuppressWarnings("deprecation")
         int legacyDamage = state.getLegacyDamage();
         if ((legacyDamage & 0b1100) != 0b1100) {
             return false;
         }
-        
+
         section.setBlockState(x, y, z, BlockState.of(BlockID.WOOD, (legacyDamage & 0b11) + increment));
         return true;
     }

@@ -24,8 +24,8 @@ public class EntityGuardian extends EntitySwimmingMob {
 
     @Override
     public void initEntity() {
-        super.initEntity();
         this.setMaxHealth(30);
+        super.initEntity();
     }
 
     @PowerNukkitOnly

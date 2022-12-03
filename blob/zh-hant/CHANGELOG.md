@@ -10,6 +10,63 @@
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我們 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 歷史版本 </a>
 
+## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
+該版本目前支持了Minecraft:BE `1.19.40（協議版本557）`.
+
+## 修改記錄
+
+- [#781] 初步優化漏斗。
+- [#784] 添加Issue模板。 
+
+## BUG修復
+
+- [#778] 修復Terra群系NPE問題。
+- [#782] 修復Terra缺失的level-type。
+- [#786] 修復絆線鉤NPE問題。
+
+## [1.19.40-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3) - 2022-11-12
+該版本目前支持了Minecraft:BE `1.19.40（協議版本557）`.
+
+## 新增內容
+
+- [#496] 服務端權威移動支持。
+- [#740] 支持現代硬件加速數據壓縮（點擊查看[幫助文檔](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3)）。
+- [#762] 支持Terra 6.2.0+Beta。
+- [#777] 添加資源包加密支持功能。
+
+## 修改記錄
+
+- [#757] 優化箭的實體碰撞計算。
+- [#767] 添加缺失的語言翻譯。
+
+## BUG修復
+
+- [#588] 修復魚竿釣到沒有附魔屬性的附魔書的問題（在[#736]中修復）。
+- [#750] 添加缺少的`getHandles`方法。
+- [#755] 修復自定義物品縮放失效的漏洞。
+- [#759] 修復自定義實體在服務器重啟後會消失（在[#760]中修復）。
+- [#761] 修復玩家無法在邊界條件下放置方塊的錯誤。
+- [#764] 修復下沉的魚鉤。
+- [#766] 修復nukkit.yml缺失的註釋。
+- [#768] 修復船會沉在水里的問題（在[#771]中修復）。
+- [#775] 修復實體懸浮問題。
+
+## [1.19.40-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2) - 2022-10-30
+該版本目前支持了Minecraft:BE `1.19.40（協議版本557）`.
+
+## 修改記錄
+
+- [#749] 同步NukkitX的更新。
+
+## BUG修復
+
+- [#722] 修復粉雪方塊掉落問題（在[#749]中修復）。
+- [#748] 刪除了`broadcastMovement`方法hack。
+
+## 安全漏洞修復
+
+- [#730] 修復切换PMMP代码库的`MoveEntityAbsolutePacket`網絡包，特定條件下会导致`OutOfMemoryException`內存溢出問題（在[#749]中修復）。
+
 ## [1.19.40-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r1) - 2022-10-27
 該版本目前支持了Minecraft:BE `1.19.40（協議版本557）`.
 
@@ -1286,6 +1343,8 @@ Fixes several anvil issues.
   <summary>1.19.40-PNX</summary>
 
    1. [#1.19.40-r1] PNX-1.19.40-r1 (協議版本557)
+   2. [#1.19.40-r2] PNX-1.19.40-r2 (協議版本557)
+   3. [#1.19.40-r3] PNX-1.19.40-r3 (協議版本557)
 
 </details>
 
@@ -1640,6 +1699,7 @@ Need to switch languages?
 [#492]: https://github.com/PowerNukkitX/PowerNukkitX/pull/492
 [#493]: https://github.com/PowerNukkitX/PowerNukkitX/pull/493
 [#494]: https://github.com/PowerNukkitX/PowerNukkitX/pull/494
+[#496]: https://github.com/PowerNukkitX/PowerNukkitX/pull/496
 [#498]: https://github.com/PowerNukkitX/PowerNukkitX/pull/498
 [#499]: https://github.com/PowerNukkitX/PowerNukkitX/pull/499
 [#500]: https://github.com/PowerNukkitX/PowerNukkitX/pull/500
@@ -1684,6 +1744,7 @@ Need to switch languages?
 [#585]: https://github.com/PowerNukkitX/PowerNukkitX/pull/585
 [#586]: https://github.com/PowerNukkitX/PowerNukkitX/pull/586
 [#587]: https://github.com/PowerNukkitX/PowerNukkitX/pull/587
+[#588]: https://github.com/PowerNukkitX/PowerNukkitX/issues/588
 [#591]: https://github.com/PowerNukkitX/PowerNukkitX/issues/591
 [#592]: https://github.com/PowerNukkitX/PowerNukkitX/issues/592
 [#593]: https://github.com/PowerNukkitX/PowerNukkitX/pull/593
@@ -1759,6 +1820,7 @@ Need to switch languages?
 [#718]: https://github.com/PowerNukkitX/PowerNukkitX/pull/718
 [#719]: https://github.com/PowerNukkitX/PowerNukkitX/pull/719
 [#721]: https://github.com/PowerNukkitX/PowerNukkitX/pull/721
+[#722]: https://github.com/PowerNukkitX/PowerNukkitX/issues/722
 [#724]: https://github.com/PowerNukkitX/PowerNukkitX/issues/724
 [#726]: https://github.com/PowerNukkitX/PowerNukkitX/pull/726
 [#728]: https://github.com/PowerNukkitX/PowerNukkitX/pull/728
@@ -1767,9 +1829,32 @@ Need to switch languages?
 [#733]: https://github.com/PowerNukkitX/PowerNukkitX/pull/733
 [#734]: https://github.com/PowerNukkitX/PowerNukkitX/pull/734
 [#735]: https://github.com/PowerNukkitX/PowerNukkitX/pull/735
+[#736]: https://github.com/PowerNukkitX/PowerNukkitX/pull/736
 [#738]: https://github.com/PowerNukkitX/PowerNukkitX/pull/738
 [#739]: https://github.com/PowerNukkitX/PowerNukkitX/pull/739
+[#740]: https://github.com/PowerNukkitX/PowerNukkitX/pull/740
 [#744]: https://github.com/PowerNukkitX/PowerNukkitX/pull/744
+[#748]: https://github.com/PowerNukkitX/PowerNukkitX/pull/748
+[#749]: https://github.com/PowerNukkitX/PowerNukkitX/pull/749
+[#750]: https://github.com/PowerNukkitX/PowerNukkitX/pull/750
+[#755]: https://github.com/PowerNukkitX/PowerNukkitX/pull/755
+[#757]: https://github.com/PowerNukkitX/PowerNukkitX/pull/757
+[#759]: https://github.com/PowerNukkitX/PowerNukkitX/issues/759
+[#760]: https://github.com/PowerNukkitX/PowerNukkitX/pull/760
+[#761]: https://github.com/PowerNukkitX/PowerNukkitX/pull/761
+[#762]: https://github.com/PowerNukkitX/PowerNukkitX/pull/762
+[#764]: https://github.com/PowerNukkitX/PowerNukkitX/pull/764
+[#766]: https://github.com/PowerNukkitX/PowerNukkitX/pull/766
+[#767]: https://github.com/PowerNukkitX/PowerNukkitX/pull/767
+[#768]: https://github.com/PowerNukkitX/PowerNukkitX/issues/768
+[#771]: https://github.com/PowerNukkitX/PowerNukkitX/pull/771
+[#775]: https://github.com/PowerNukkitX/PowerNukkitX/pull/775
+[#777]: https://github.com/PowerNukkitX/PowerNukkitX/pull/777
+[#778]: https://github.com/PowerNukkitX/PowerNukkitX/pull/778
+[#781]: https://github.com/PowerNukkitX/PowerNukkitX/pull/781
+[#782]: https://github.com/PowerNukkitX/PowerNukkitX/pull/782
+[#784]: https://github.com/PowerNukkitX/PowerNukkitX/pull/784
+[#786]: https://github.com/PowerNukkitX/PowerNukkitX/pull/786
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1820,6 +1905,10 @@ Need to switch languages?
 
 <!--1.19.40-r1-PNX Protocol Version 557-->
 [#1.19.40-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r1
+<!--1.19.40-r2-PNX Protocol Version 557-->
+[#1.19.40-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2
+<!--1.19.40-r3-PNX Protocol Version 557-->
+[#1.19.40-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
@@ -1831,4 +1920,4 @@ Need to switch languages?
 
 <!--Social Links-->
 [QQ]: https://jq.qq.com/?_wv=1027&k=6rm3gbUI
-[Discord]:https://discord.gg/BcPhZCVJHJ
+[Discord]: https://discord.gg/BcPhZCVJHJ

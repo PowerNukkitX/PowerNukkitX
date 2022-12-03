@@ -10,6 +10,7 @@ import java.io.InputStream;
 public class BiomeDefinitionListPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.BIOME_DEFINITION_LIST_PACKET;
 
+    //原版群系定义数据
     private static final byte[] TAG;
 
     static {

@@ -15,17 +15,17 @@ public class PopulatorSeagrass extends PopulatorOceanFloorSurfaceBlock {
     private final static BlockState STATE_SEAGRASS = BlockState.of(SEAGRASS);
     private final static BlockState STATE_TALL_SEAGRASS_TOP = BlockState.of(SEAGRASS, 1);
     private final static BlockState STATE_TALL_SEAGRASS_BOT = BlockState.of(SEAGRASS, 2);
-    
+
     private final double tallSeagrassProbability;
-    
+
     public PopulatorSeagrass() {
         tallSeagrassProbability = 0.3;
     }
-    
+
     public PopulatorSeagrass(double tallSeagrassProbability) {
         this.tallSeagrassProbability = tallSeagrassProbability;
     }
-    
+
     @Override
     public void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
         int x = random.nextBoundedInt(16);
@@ -45,12 +45,12 @@ public class PopulatorSeagrass extends PopulatorOceanFloorSurfaceBlock {
             }
         }
     }
-    
+
     @Override
     protected boolean canStay(int x, int y, int z, FullChunk chunk) {
         return canStay(x, y, z, chunk, false);
     }
-    
+
     protected boolean canStay(int x, int y, int z, FullChunk chunk, boolean tallSeagrass) {
         if (tallSeagrass) {
             return chunk.getBlockState(x, y, z).equals(STATE_STILL_WATER);
@@ -58,7 +58,7 @@ public class PopulatorSeagrass extends PopulatorOceanFloorSurfaceBlock {
             return chunk.getBlockState(x, y, z).equals(STATE_STILL_WATER) && chunk.getBlockState(x, y - 1, z).getBlock().isSolid();
         }
     }
-    
+
     @Override
     protected BlockState getBlockState(int x, int z, NukkitRandom random, FullChunk chunk) {
         return STATE_SEAGRASS;

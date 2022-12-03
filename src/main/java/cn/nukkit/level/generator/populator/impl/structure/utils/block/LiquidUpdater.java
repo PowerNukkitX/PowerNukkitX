@@ -6,6 +6,10 @@ import cn.nukkit.math.BlockVector3;
 
 public final class LiquidUpdater {
 
+    private LiquidUpdater() {
+
+    }
+
     public static void lavaSpread(ChunkManager level, BlockVector3 vec) {
         lavaSpread(level, vec.x, vec.y, vec.z);
     }
@@ -197,9 +201,5 @@ public final class LiquidUpdater {
             blockDecay = 0;
         }
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
-    }
-
-    private LiquidUpdater() {
-
     }
 }

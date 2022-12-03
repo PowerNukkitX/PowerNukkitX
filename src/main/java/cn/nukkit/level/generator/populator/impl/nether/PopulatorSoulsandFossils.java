@@ -9,7 +9,7 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorSoulsandFossils extends Populator {
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if(random.nextBoundedInt(5) == 0) {
+        if (random.nextBoundedInt(5) == 0) {
             int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
             int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
             int y = this.getHighestWorkableBlock(chunk, x & 0xF, z & 0xF);

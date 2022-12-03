@@ -17,17 +17,17 @@ public abstract class StructureStart {
 
     protected final ChunkManager level;
     protected final List<StructurePiece> pieces = Lists.newArrayList();
-    protected BoundingBox boundingBox;
+    protected final NukkitRandom random;
     private final int chunkX;
     private final int chunkZ;
-    protected final NukkitRandom random;
+    protected BoundingBox boundingBox;
 
     public StructureStart(ChunkManager level, int chunkX, int chunkZ) {
         this.level = level;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.random = new NukkitRandom(level.getSeed());
-        this.random.setSeed(chunkX * this.random.nextInt() ^ chunkZ * this.random.nextInt() ^ level.getSeed());
+        this.random.setSeed((long) chunkX * this.random.nextInt() ^ (long) chunkZ * this.random.nextInt() ^ level.getSeed());
         this.boundingBox = BoundingBox.getUnknownBox();
     }
 

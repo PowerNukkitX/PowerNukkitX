@@ -17,9 +17,9 @@ import cn.nukkit.level.generator.populator.impl.structure.utils.block.state.Weir
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.BoundingBox;
 import cn.nukkit.level.generator.populator.impl.structure.utils.math.Mth;
 import cn.nukkit.level.generator.populator.impl.structure.utils.structure.StructurePiece;
+import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageBlacksmithChest;
 import cn.nukkit.level.generator.populator.impl.structure.village.loot.VillageTwoRoomHouseChest;
-import cn.nukkit.level.generator.populator.impl.structure.village.PopulatorVillage;
 import cn.nukkit.level.generator.task.ActorSpawnTask;
 import cn.nukkit.level.generator.task.BlockActorSpawnTask;
 import cn.nukkit.math.BlockFace;
@@ -87,14 +87,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     public static List<PieceWeight> getStructureVillageWeightedPieceList(NukkitRandom random, int size) {
         List<PieceWeight> weights = Lists.newArrayList();
         weights.add(new PieceWeight(SimpleHouse.class, 4, Mth.nextInt(random, 2 + size, 4 + size * 2)));
-        weights.add(new PieceWeight(SmallTemple.class, 20, Mth.nextInt(random, 0 + size, 1 + size)));
-        weights.add(new PieceWeight(BookHouse.class, 20, Mth.nextInt(random, 0 + size, 2 + size)));
+        weights.add(new PieceWeight(SmallTemple.class, 20, Mth.nextInt(random, size, 1 + size)));
+        weights.add(new PieceWeight(BookHouse.class, 20, Mth.nextInt(random, size, 2 + size)));
         weights.add(new PieceWeight(SmallHut.class, 3, Mth.nextInt(random, 2 + size, 5 + size * 3)));
-        weights.add(new PieceWeight(PigHouse.class, 15, Mth.nextInt(random, 0 + size, 2 + size)));
+        weights.add(new PieceWeight(PigHouse.class, 15, Mth.nextInt(random, size, 2 + size)));
         weights.add(new PieceWeight(DoubleFarmland.class, 3, Mth.nextInt(random, 1 + size, 4 + size)));
         weights.add(new PieceWeight(Farmland.class, 3, Mth.nextInt(random, 2 + size, 4 + size * 2)));
         weights.add(new PieceWeight(Smithy.class, 15, Mth.nextInt(random, 0, 1 + size)));
-        weights.add(new PieceWeight(TwoRoomHouse.class, 8, Mth.nextInt(random, 0 + size, 3 + size * 2)));
+        weights.add(new PieceWeight(TwoRoomHouse.class, 8, Mth.nextInt(random, size, 3 + size * 2)));
         weights.removeIf(pieceWeight -> (pieceWeight).maxPlaceCount == 0);
         return weights;
     }
@@ -204,10 +204,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         return null;
     }
 
+    public static void init() {
+        //NOOP
+    }
+
     public static class PieceWeight {
 
-        public Class<? extends VillagePiece> pieceClass;
         public final int weight;
+        public Class<? extends VillagePiece> pieceClass;
         public int placeCount;
         public int maxPlaceCount;
 
@@ -229,11 +233,10 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
     abstract static class VillagePiece extends StructurePiece {
 
         protected int horizPos = -1;
-        private volatile int villagerCount;
         protected PopulatorVillage.Type type;
         protected boolean isZombieVillage;
-
         protected int yOffset;
+        private volatile int villagerCount;
 
         protected VillagePiece(StartPiece start, int genDepth) {
             super(genDepth);
@@ -258,6 +261,10 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             }
 
             this.isZombieVillage = tag.getBoolean("Zombie");
+        }
+
+        protected static boolean isOkBox(BoundingBox boundingBox) {
+            return boundingBox != null && boundingBox.y0 > 10;
         }
 
         @Override
@@ -335,10 +342,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                 return -1;
             }
             return sum / count;
-        }
-
-        protected static boolean isOkBox(BoundingBox boundingBox) {
-            return boundingBox != null && boundingBox.y0 > 10;
         }
 
         //\\ VillagePiece::spawnVillagers(BlockSource *,BoundingBox const &,int,int,int,int)
@@ -637,6 +640,11 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.hasTerrace = tag.getBoolean("Terrace");
         }
 
+        public static SimpleHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 5, 6, 5, orientation);
+            return StructurePiece.findCollisionPiece(pieces, boundingBox) != null ? null : new SimpleHouse(start, genDepth, random, boundingBox, orientation);
+        }
+
         @Override
         public String getType() {
             return "ViSH";
@@ -646,11 +654,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         protected void addAdditionalSaveData(CompoundTag tag) {
             super.addAdditionalSaveData(tag);
             tag.putBoolean("Terrace", this.hasTerrace);
-        }
-
-        public static SimpleHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 5, 6, 5, orientation);
-            return StructurePiece.findCollisionPiece(pieces, boundingBox) != null ? null : new SimpleHouse(start, genDepth, random, boundingBox, orientation);
         }
 
         @Override
@@ -763,14 +766,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        @Override
-        public String getType() {
-            return "ViST";
-        }
-
         public static SmallTemple createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 5, 12, 9, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new SmallTemple(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViST";
         }
 
         @Override
@@ -882,14 +885,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        @Override
-        public String getType() {
-            return "ViBH";
-        }
-
         public static BookHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 9, 6, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new BookHouse(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViBH";
         }
 
         @Override
@@ -1017,6 +1020,12 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.tablePos = tag.getInt("T");
         }
 
+        //\\ SmallHut::createPiece(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
+        public static SmallHut createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 4, 6, 5, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new SmallHut(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override
         public String getType() {
             return "ViSmH";
@@ -1027,12 +1036,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super.addAdditionalSaveData(tag);
             tag.putInt("T", this.tablePos);
             tag.putBoolean("C", this.hasCompoundRoof);
-        }
-
-        //\\ SmallHut::createPiece(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int,int)
-        public static SmallHut createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 4, 6, 5, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new SmallHut(start, genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1125,14 +1128,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        @Override
-        public String getType() {
-            return "ViPH";
-        }
-
         public static PigHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 7, 11, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new PigHouse(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViPH";
         }
 
         @Override
@@ -1264,6 +1267,11 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.cropD = new BlockState(tag.getInt("CD"));
         }
 
+        public static DoubleFarmland createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 13, 4, 9, orientation);
+            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new DoubleFarmland(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override
         public String getType() {
             return "ViDF";
@@ -1276,11 +1284,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             tag.putInt("CB", this.cropB.getId());
             tag.putInt("CC", this.cropC.getId());
             tag.putInt("CD", this.cropD.getId());
-        }
-
-        public static DoubleFarmland createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 13, 4, 9, orientation);
-            return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new DoubleFarmland(start, genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1361,18 +1364,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.cropB = new BlockState(tag.getInt("CB"));
         }
 
-        @Override
-        public String getType() {
-            return "ViF";
-        }
-
-        @Override
-        protected void addAdditionalSaveData(CompoundTag tag) {
-            super.addAdditionalSaveData(tag);
-            tag.putInt("CA", this.cropA.getId());
-            tag.putInt("CB", this.cropA.getId());
-        }
-
         //\\ Farmland::selectCrops(Random &,StartPiece &)
         protected static BlockState selectCrops(NukkitRandom random) {
             switch (random.nextBoundedInt(10)) {
@@ -1392,6 +1383,18 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
         public static Farmland createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 7, 4, 9, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Farmland(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViF";
+        }
+
+        @Override
+        protected void addAdditionalSaveData(CompoundTag tag) {
+            super.addAdditionalSaveData(tag);
+            tag.putInt("CA", this.cropA.getId());
+            tag.putInt("CB", this.cropA.getId());
         }
 
         @Override
@@ -1456,14 +1459,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.hasPlacedChest = tag.getBoolean("Chest");
         }
 
-        @Override
-        public String getType() {
-            return "ViS";
-        }
-
         public static Smithy createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 10, 6, 7, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new Smithy(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViS";
         }
 
         @Override
@@ -1606,14 +1609,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        @Override
-        public String getType() {
-            return "ViTRH";
-        }
-
         public static TwoRoomHouse createPiece(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 9, 7, 12, orientation);
             return isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ? new TwoRoomHouse(start, genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override
+        public String getType() {
+            return "ViTRH";
         }
 
         @Override
@@ -1778,14 +1781,14 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             super(tag);
         }
 
-        @Override
-        public String getType() {
-            return "ViL";
-        }
-
         public static BoundingBox findPieceBox(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 3, 4, 2, orientation);
             return StructurePiece.findCollisionPiece(pieces, boundingBox) != null ? null : boundingBox;
+        }
+
+        @Override
+        public String getType() {
+            return "ViL";
         }
 
         @Override
@@ -1830,6 +1833,19 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             this.length = tag.getInt("Length");
         }
 
+        //\\ StraightRoad::findPieceBox(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
+        public static BoundingBox findPieceBox(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
+            for (int i = 7 * Mth.nextInt(random, 3, 5); i >= 7; i -= 7) {
+                BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 3, 3, i, orientation);
+
+                if (StructurePiece.findCollisionPiece(pieces, boundingBox) == null) {
+                    return boundingBox;
+                }
+            }
+
+            return null;
+        }
+
         @Override
         public String getType() {
             return "ViSR";
@@ -1841,7 +1857,8 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
             tag.putInt("Length", this.length);
         }
 
-        @Override //\\ StraightRoad::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        @Override
+        //\\ StraightRoad::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             boolean success = false;
 
@@ -1896,19 +1913,6 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
                         generateAndAddRoadPiece((StartPiece) piece, pieces, random, this.boundingBox.x1 - 2, this.boundingBox.y0, this.boundingBox.z1 + 1, BlockFace.SOUTH, this.getGenDepth());
                 }
             }
-        }
-
-        //\\ StraightRoad::findPieceBox(StartPiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &,int,int,int,int)
-        public static BoundingBox findPieceBox(StartPiece start, List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation) {
-            for (int i = 7 * Mth.nextInt(random, 3, 5); i >= 7; i -= 7) {
-                BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, 0, 0, 0, 3, 3, i, orientation);
-
-                if (StructurePiece.findCollisionPiece(pieces, boundingBox) == null) {
-                    return boundingBox;
-                }
-            }
-
-            return null;
         }
 
         @Override //\\ StraightRoad::postProcess(BlockSource *,Random &,BoundingBox const &)
@@ -1966,9 +1970,5 @@ public class VillagePieces { //TODO: mossyStoneSelector (zombie village)
 
             return true;
         }
-    }
-
-    public static void init() {
-        //NOOP
     }
 }

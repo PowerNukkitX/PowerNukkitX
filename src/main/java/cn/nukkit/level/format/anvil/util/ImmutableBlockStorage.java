@@ -46,7 +46,7 @@ public final class ImmutableBlockStorage extends BlockStorage {
     @Since("1.4.0.0-PN")
     @API(definition = INTERNAL, usage = BLEEDING)
     ImmutableBlockStorage(BlockState[] states, byte flags, PalettedBlockStorage palette, @Nullable BitSet denyStates) {
-        super(states.clone(), flags, palette.copy(), denyStates != null? (BitSet)denyStates.clone() : null);
+        super(states.clone(), flags, palette.copy(), denyStates != null ? (BitSet) denyStates.clone() : null);
     }
 
     @PowerNukkitOnly
@@ -59,14 +59,14 @@ public final class ImmutableBlockStorage extends BlockStorage {
     @PowerNukkitOnly
     @Override
     public void delayPaletteUpdates() {
-        
+
     }
 
     @Since("1.4.0.0-PN")
     @PowerNukkitOnly
     @Override
     public void recheckBlocks() {
-        
+
     }
 
     @Since("1.4.0.0-PN")

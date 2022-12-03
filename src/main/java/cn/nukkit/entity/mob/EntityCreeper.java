@@ -15,10 +15,8 @@ import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.EntityExplosionExecutor;
 import cn.nukkit.entity.ai.executor.MoveToTargetExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.memory.AttackTargetMemory;
-import cn.nukkit.entity.ai.memory.EntityExplodeMemory;
-import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
@@ -60,18 +58,18 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                     this.tickSpread,
                     Set.of(),
                     Set.of(new Behavior(
-                                    new EntityExplosionExecutor(30, 3, EntityExplodeMemory.class),
-                                    entity -> entity.getMemoryStorage().checkData(EntityExplodeMemory.class, true), 4, 1
+                                    new EntityExplosionExecutor(30, 3, CoreMemoryTypes.SHOULD_EXPLODE),
+                                    entity -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true), 4, 1
                             ),
-                            new Behavior(new MoveToTargetExecutor(AttackTargetMemory.class, 0.15f, true, 16f, 3f, true), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
-                                    entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
+                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, true, 16f, 3f, true), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                    entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                             ), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(NearestPlayerMemory.class, 0.15f, true, 16f, 3f), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
+                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, true, 16f, 3f), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                     entity -> {
-                                        if (entity.getMemoryStorage().isEmpty(NearestPlayerMemory.class)) return true;
-                                        Player player = entity.getMemoryStorage().get(NearestPlayerMemory.class).getData();
+                                        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
+                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival();
                                     }
                             ), 2, 1),
@@ -79,16 +77,15 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
                     ),
                     Set.of(new NearestPlayerSensor(16, 0, 20), entity -> {
                         var memoryStorage = entity.getMemoryStorage();
-                        Entity attacker = memoryStorage.get(AttackTargetMemory.class).getData();
+                        Entity attacker = memoryStorage.get(CoreMemoryTypes.ATTACK_TARGET);
                         if (attacker == null)
-                            attacker = memoryStorage.get(NearestPlayerMemory.class).getData();
-                        if (attacker != null && (attacker instanceof Player player ? player.isSurvival() : true) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))) {
-                            memoryStorage.setData(EntityExplodeMemory.class, true);
+                            attacker = memoryStorage.get(CoreMemoryTypes.NEAREST_PLAYER);
+                        if (attacker != null && (!(attacker instanceof Player player) || player.isSurvival()) && attacker.distanceSquared(entity) <= 3 * 3 && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
+                            memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
                             return;
                         }
-                        if ((attacker == null || (attacker instanceof Player player ? !player.isSurvival() : false) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.checkData(EntityExplodeMemory.class, true) && memoryStorage.get(EntityExplodeMemory.class).isCancellable()) {
-                            memoryStorage.setData(EntityExplodeMemory.class, false);
-                            return;
+                        if ((attacker == null || (attacker instanceof Player player && !player.isSurvival()) || attacker.distanceSquared(entity) >= 7 * 7) && memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, true) && memoryStorage.get(CoreMemoryTypes.EXPLODE_CANCELLABLE)) {
+                            memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, false);
                         }
                     }),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -144,12 +141,12 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
 
     @Override
     protected void initEntity() {
+        this.setMaxHealth(20);
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
             this.dataProperties.putBoolean(DATA_POWERED, true);
         }
-        this.setMaxHealth(20);
     }
 
     @PowerNukkitOnly
@@ -178,7 +175,7 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
         var result = super.attack(source);
         if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent && !(entityDamageByEntityEvent.getDamager() instanceof EntityCreeper)) {
             //更新仇恨目标
-            getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
+            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
         return result;
     }
@@ -186,9 +183,9 @@ public class EntityCreeper extends EntityWalkingMob implements EntityInteractabl
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         var memoryStorage = this.getMemoryStorage();
-        if (item.getId() == Item.FLINT_AND_STEEL && (memoryStorage.isEmpty(EntityExplodeMemory.class) || memoryStorage.checkData(EntityExplodeMemory.class, false))) {
-            memoryStorage.setData(EntityExplodeMemory.class, true);
-            memoryStorage.get(EntityExplodeMemory.class).setCancellable(false);
+        if (item.getId() == Item.FLINT_AND_STEEL && (memoryStorage.isEmpty(CoreMemoryTypes.SHOULD_EXPLODE) || memoryStorage.compareDataTo(CoreMemoryTypes.SHOULD_EXPLODE, false))) {
+            memoryStorage.put(CoreMemoryTypes.SHOULD_EXPLODE, true);
+            memoryStorage.put(CoreMemoryTypes.EXPLODE_CANCELLABLE, false);
             this.level.addSound(this, Sound.FIRE_IGNITE);
             return true;
         }

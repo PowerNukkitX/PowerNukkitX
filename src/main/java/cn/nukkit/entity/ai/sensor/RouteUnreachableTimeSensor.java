@@ -3,26 +3,25 @@ package cn.nukkit.entity.ai.sensor;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.IntegerMemory;
+import cn.nukkit.entity.ai.memory.MemoryType;
 
 @PowerNukkitXOnly
 @Since("1.19.21-r4")
 public class RouteUnreachableTimeSensor implements ISensor {
 
-    protected Class<? extends IntegerMemory> clazz;
+    protected MemoryType<Integer> type;
 
-    public RouteUnreachableTimeSensor(Class<? extends IntegerMemory> clazz) {
-        this.clazz = clazz;
+    public RouteUnreachableTimeSensor(MemoryType<Integer> type) {
+        this.type = type;
     }
 
     @Override
     public void sense(EntityIntelligent entity) {
-        var memory = entity.getMemoryStorage().get(clazz);
-        var old = memory.hasData() ? memory.getData() : 0;
+        var old = entity.getMemoryStorage().get(type);
         if (!entity.getBehaviorGroup().getRouteFinder().isReachable()) {
-            memory.setData(old + 1);
+            entity.getMemoryStorage().put(type, old + 1);
         } else {
-            memory.setData(0);
+            entity.getMemoryStorage().put(type, 0);
         }
     }
 }

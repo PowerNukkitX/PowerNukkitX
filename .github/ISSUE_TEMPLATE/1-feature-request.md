@@ -1,30 +1,23 @@
 ---
-name: "❇ I have an idea / Can you add ...?"
-about: Suggest an idea for this project
+name: "❇ 我有一个想法 / 你能添加这个功能吗 ...?"
+about: 给我们的项目提供一些建议
 title: ''
-labels: 'Type: enhancement'
+labels: 'Type: 新特性'
 assignees: ''
 
 ---
 
-# ❇ Feature Request
+# ❇ 特性请求
+
 <!-- 
-👉 This template is helpful, but you may erase everything if you can express the issue clearly
-      Feel free to ask questions or start related discussion 
+👉 尽可能详实地描述你的想法
 -->
 
-### 📸 Screenshots / Videos
-<!-- ✍ If applicable, add screenshots or video recordings to help explain your problem -->
+### 📸 截图 / 视频
 
+<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
 
-### ✔ Expected Behavior
-<!-- ✍ What would you expect to happen -->
+### 💬 你知道的其他信息
 
-
-### ❌ Actual Behavior
-<!-- ✍ What actually happened, if relevant -->
-
-
-### 💬 Anything else we should know?
-<!-- ✍ This is the perfect place to add any additional details -->
+<!-- ✍ 其他可能有助于解决此问题的信息 -->
 

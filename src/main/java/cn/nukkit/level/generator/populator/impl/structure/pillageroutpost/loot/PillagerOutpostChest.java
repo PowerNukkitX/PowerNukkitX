@@ -13,10 +13,6 @@ public class PillagerOutpostChest extends RandomizableContainer {
 
     private static final PillagerOutpostChest INSTANCE = new PillagerOutpostChest();
 
-    public static PillagerOutpostChest get() {
-        return INSTANCE;
-    }
-
     private PillagerOutpostChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -42,5 +38,9 @@ public class PillagerOutpostChest extends RandomizableContainer {
                 .register(new ItemEntry(Item.IRON_INGOT, 0, 3, 3))
                 .register(new ItemEntry(Item.ENCHANT_BOOK, 1)); //TODO: enchant_randomly
         this.pools.put(pool4.build(), new RollEntry(3, 2, pool4.getTotalWeight()));
+    }
+
+    public static PillagerOutpostChest get() {
+        return INSTANCE;
     }
 }

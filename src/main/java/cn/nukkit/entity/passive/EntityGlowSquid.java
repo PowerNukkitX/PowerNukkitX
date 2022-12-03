@@ -28,8 +28,8 @@ public class EntityGlowSquid extends EntitySwimmingAnimal {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(10);
+        super.initEntity();
     }
 
     @Override

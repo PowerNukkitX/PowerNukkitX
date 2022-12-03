@@ -1,0 +1,971 @@
+{
+  "minecraft:soul_sand": [
+    "minecraft:soul_fire_base_blocks"
+  ],
+  "minecraft:soul_soil": [
+    "minecraft:soul_fire_base_blocks"
+  ],
+  "minecraft:netherite_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:digger",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:netherite_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:digger",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:diamond_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:digger",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:iron_sword": [
+    "minecraft:is_tool",
+    "minecraft:is_sword",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:netherite_axe": [
+    "minecraft:is_tool",
+    "minecraft:digger",
+    "minecraft:netherite_tier",
+    "minecraft:is_axe"
+  ],
+  "minecraft:wooden_axe": [
+    "minecraft:is_tool",
+    "minecraft:wooden_tier",
+    "minecraft:digger",
+    "minecraft:is_axe"
+  ],
+  "minecraft:diamond_sword": [
+    "minecraft:is_tool",
+    "minecraft:is_sword",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:golden_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:digger",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:stone_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:stone_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:golden_sword": [
+    "minecraft:is_tool",
+    "minecraft:is_sword",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:diamond_axe": [
+    "minecraft:is_tool",
+    "minecraft:digger",
+    "minecraft:diamond_tier",
+    "minecraft:is_axe"
+  ],
+  "minecraft:stone_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:stone_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:iron_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:iron_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:wooden_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:wooden_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:wooden_sword": [
+    "minecraft:is_tool",
+    "minecraft:wooden_tier",
+    "minecraft:is_sword"
+  ],
+  "minecraft:stone_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:stone_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:wooden_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:wooden_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:golden_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:digger",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:golden_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:digger",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:stone_axe": [
+    "minecraft:is_tool",
+    "minecraft:stone_tier",
+    "minecraft:digger",
+    "minecraft:is_axe"
+  ],
+  "minecraft:golden_axe": [
+    "minecraft:is_tool",
+    "minecraft:digger",
+    "minecraft:golden_tier",
+    "minecraft:is_axe"
+  ],
+  "minecraft:iron_axe": [
+    "minecraft:is_tool",
+    "minecraft:iron_tier",
+    "minecraft:digger",
+    "minecraft:is_axe"
+  ],
+  "minecraft:stone_sword": [
+    "minecraft:is_tool",
+    "minecraft:is_sword",
+    "minecraft:stone_tier"
+  ],
+  "minecraft:iron_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:iron_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:diamond_pickaxe": [
+    "minecraft:is_tool",
+    "minecraft:is_pickaxe",
+    "minecraft:digger",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:wooden_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:wooden_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:diamond_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:digger",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:iron_shovel": [
+    "minecraft:is_tool",
+    "minecraft:is_shovel",
+    "minecraft:iron_tier",
+    "minecraft:digger"
+  ],
+  "minecraft:netherite_hoe": [
+    "minecraft:is_tool",
+    "minecraft:is_hoe",
+    "minecraft:digger",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:netherite_sword": [
+    "minecraft:is_tool",
+    "minecraft:is_sword",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:blackstone": [
+    "minecraft:stone_tool_materials",
+    "minecraft:stone_crafting_materials"
+  ],
+  "minecraft:cobbled_deepslate": [
+    "minecraft:stone_tool_materials",
+    "minecraft:stone_crafting_materials"
+  ],
+  "minecraft:cobblestone": [
+    "minecraft:stone_tool_materials",
+    "minecraft:stone_crafting_materials"
+  ],
+  "minecraft:stripped_crimson_stem": [
+    "minecraft:crimson_stems",
+    "minecraft:logs"
+  ],
+  "minecraft:crimson_stem": [
+    "minecraft:crimson_stems",
+    "minecraft:logs"
+  ],
+  "minecraft:stripped_crimson_hyphae": [
+    "minecraft:crimson_stems",
+    "minecraft:logs"
+  ],
+  "minecraft:crimson_hyphae": [
+    "minecraft:crimson_stems",
+    "minecraft:logs"
+  ],
+  "minecraft:carpet": [
+    "minecraft:vibration_damper"
+  ],
+  "minecraft:wool": [
+    "minecraft:vibration_damper",
+    "minecraft:wool"
+  ],
+  "minecraft:leather_chestplate": [
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:leather_helmet": [
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:leather_boots": [
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:leather_leggings": [
+    "minecraft:leather_tier",
+    "minecraft:is_armor"
+  ],
+  "minecraft:jungle_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:spruce_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:oak_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:acacia_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:mangrove_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:acacia_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:birch_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:birch_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:jungle_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:spruce_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:dark_oak_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:oak_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:mangrove_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:dark_oak_chest_boat": [
+    "minecraft:boats",
+    "minecraft:boat"
+  ],
+  "minecraft:stripped_mangrove_log": [
+    "minecraft:mangrove_logs",
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_mangrove_wood": [
+    "minecraft:mangrove_logs",
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:mangrove_wood": [
+    "minecraft:mangrove_logs",
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:mangrove_log": [
+    "minecraft:mangrove_logs",
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:crimson_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:mangrove_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:warped_planks": [
+    "minecraft:planks"
+  ],
+  "minecraft:arrow": [
+    "minecraft:arrow"
+  ],
+  "minecraft:iron_chestplate": [
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:iron_leggings": [
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:netherite_helmet": [
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:chainmail_helmet": [
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:golden_boots": [
+    "minecraft:is_armor",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:netherite_chestplate": [
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:iron_helmet": [
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:chainmail_leggings": [
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:turtle_helmet": [
+    "minecraft:is_armor"
+  ],
+  "minecraft:diamond_helmet": [
+    "minecraft:is_armor",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:diamond_boots": [
+    "minecraft:is_armor",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:golden_leggings": [
+    "minecraft:is_armor",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:diamond_chestplate": [
+    "minecraft:is_armor",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:elytra": [
+    "minecraft:is_armor"
+  ],
+  "minecraft:netherite_boots": [
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:iron_boots": [
+    "minecraft:is_armor",
+    "minecraft:iron_tier"
+  ],
+  "minecraft:netherite_leggings": [
+    "minecraft:is_armor",
+    "minecraft:netherite_tier"
+  ],
+  "minecraft:diamond_leggings": [
+    "minecraft:is_armor",
+    "minecraft:diamond_tier"
+  ],
+  "minecraft:golden_helmet": [
+    "minecraft:is_armor",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:golden_chestplate": [
+    "minecraft:is_armor",
+    "minecraft:golden_tier"
+  ],
+  "minecraft:chainmail_chestplate": [
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:chainmail_boots": [
+    "minecraft:is_armor",
+    "minecraft:chainmail_tier"
+  ],
+  "minecraft:warped_hyphae": [
+    "minecraft:logs",
+    "minecraft:warped_stems"
+  ],
+  "minecraft:warped_stem": [
+    "minecraft:logs",
+    "minecraft:warped_stems"
+  ],
+  "minecraft:stripped_warped_hyphae": [
+    "minecraft:logs",
+    "minecraft:warped_stems"
+  ],
+  "minecraft:stripped_dark_oak_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_birch_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_jungle_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_acacia_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_spruce_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_warped_stem": [
+    "minecraft:logs",
+    "minecraft:warped_stems"
+  ],
+  "minecraft:log2": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:stripped_oak_log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:log": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:wood": [
+    "minecraft:logs",
+    "minecraft:logs_that_burn"
+  ],
+  "minecraft:writable_book": [
+    "minecraft:lectern_books"
+  ],
+  "minecraft:written_book": [
+    "minecraft:lectern_books"
+  ],
+  "minecraft:stonebrick": [
+    "minecraft:stone_bricks"
+  ],
+  "minecraft:painting": [
+    "minecraft:hanging_actor"
+  ],
+  "minecraft:jungle_door": [
+    "minecraft:door"
+  ],
+  "minecraft:mangrove_door": [
+    "minecraft:door"
+  ],
+  "minecraft:wooden_door": [
+    "minecraft:door"
+  ],
+  "minecraft:birch_door": [
+    "minecraft:door"
+  ],
+  "minecraft:warped_door": [
+    "minecraft:door"
+  ],
+  "minecraft:spruce_door": [
+    "minecraft:door"
+  ],
+  "minecraft:dark_oak_door": [
+    "minecraft:door"
+  ],
+  "minecraft:crimson_door": [
+    "minecraft:door"
+  ],
+  "minecraft:iron_door": [
+    "minecraft:door"
+  ],
+  "minecraft:acacia_door": [
+    "minecraft:door"
+  ],
+  "minecraft:hopper_minecart": [
+    "minecraft:is_minecart"
+  ],
+  "minecraft:tnt_minecart": [
+    "minecraft:is_minecart"
+  ],
+  "minecraft:chest_minecart": [
+    "minecraft:is_minecart"
+  ],
+  "minecraft:command_block_minecart": [
+    "minecraft:is_minecart"
+  ],
+  "minecraft:minecart": [
+    "minecraft:is_minecart"
+  ],
+  "minecraft:acacia_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:spruce_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:oak_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:birch_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:crimson_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:mangrove_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:jungle_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:warped_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:dark_oak_sign": [
+    "minecraft:sign"
+  ],
+  "minecraft:coal": [
+    "minecraft:coals"
+  ],
+  "minecraft:charcoal": [
+    "minecraft:coals"
+  ],
+  "minecraft:warped_slab": [
+    "minecraft:wooden_slabs"
+  ],
+  "minecraft:wooden_slab": [
+    "minecraft:wooden_slabs"
+  ],
+  "minecraft:crimson_slab": [
+    "minecraft:wooden_slabs"
+  ],
+  "minecraft:mangrove_slab": [
+    "minecraft:wooden_slabs"
+  ],
+  "minecraft:banner": [
+    "minecraft:banner"
+  ],
+  "minecraft:cooked_porkchop": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:cooked_mutton": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:rabbit_stew": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:cooked_rabbit": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:cooked_cod": [
+    "minecraft:is_cooked",
+    "minecraft:is_fish"
+  ],
+  "minecraft:cooked_chicken": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:cooked_beef": [
+    "minecraft:is_cooked",
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:cooked_salmon": [
+    "minecraft:is_cooked",
+    "minecraft:is_fish"
+  ],
+  "minecraft:zombie_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:strider_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:elder_guardian_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:mule_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:frog_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:ghast_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:cave_spider_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:zombie_pigman_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:pig_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:wolf_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:drowned_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:ravager_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:cow_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:goat_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:dolphin_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:skeleton_horse_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:zombie_horse_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:magma_cube_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:zoglin_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:bee_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:warden_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:sheep_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:tadpole_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:cod_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:donkey_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:cat_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:zombie_villager_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:bat_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:llama_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:guardian_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:tropical_fish_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:endermite_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:piglin_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:fox_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:glow_squid_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:polar_bear_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:piglin_brute_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:phantom_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:turtle_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:slime_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:trader_llama_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:ocelot_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:hoglin_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:vindicator_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:spider_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:stray_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:mooshroom_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:panda_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:witch_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:salmon_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:creeper_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:vex_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:npc_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:silverfish_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:villager_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:husk_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:blaze_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:evoker_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:wandering_trader_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:rabbit_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:wither_skeleton_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:squid_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:allay_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:pufferfish_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:axolotl_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:enderman_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:skeleton_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:chicken_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:horse_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:shulker_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:pillager_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:parrot_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:agent_spawn_egg": [
+    "minecraft:spawn_egg"
+  ],
+  "minecraft:mutton": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:porkchop": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:rotten_flesh": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:chicken": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:beef": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:rabbit": [
+    "minecraft:is_meat",
+    "minecraft:is_food"
+  ],
+  "minecraft:sand": [
+    "minecraft:sand"
+  ],
+  "minecraft:potato": [
+    "minecraft:is_food"
+  ],
+  "minecraft:enchanted_golden_apple": [
+    "minecraft:is_food"
+  ],
+  "minecraft:melon_slice": [
+    "minecraft:is_food"
+  ],
+  "minecraft:golden_carrot": [
+    "minecraft:is_food"
+  ],
+  "minecraft:bread": [
+    "minecraft:is_food"
+  ],
+  "minecraft:beetroot": [
+    "minecraft:is_food"
+  ],
+  "minecraft:carrot": [
+    "minecraft:is_food"
+  ],
+  "minecraft:pumpkin_pie": [
+    "minecraft:is_food"
+  ],
+  "minecraft:sweet_berries": [
+    "minecraft:is_food"
+  ],
+  "minecraft:apple": [
+    "minecraft:is_food"
+  ],
+  "minecraft:dried_kelp": [
+    "minecraft:is_food"
+  ],
+  "minecraft:beetroot_soup": [
+    "minecraft:is_food"
+  ],
+  "minecraft:mushroom_stew": [
+    "minecraft:is_food"
+  ],
+  "minecraft:golden_apple": [
+    "minecraft:is_food"
+  ],
+  "minecraft:baked_potato": [
+    "minecraft:is_food"
+  ],
+  "minecraft:cookie": [
+    "minecraft:is_food"
+  ],
+  "minecraft:music_disc_blocks": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_pigstep": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_stal": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_otherside": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_chirp": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_mellohi": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_11": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_5": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_13": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_strad": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_cat": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_ward": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_wait": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_far": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:music_disc_mall": [
+    "minecraft:music_disc"
+  ],
+  "minecraft:iron_horse_armor": [
+    "minecraft:horse_armor"
+  ],
+  "minecraft:diamond_horse_armor": [
+    "minecraft:horse_armor"
+  ],
+  "minecraft:leather_horse_armor": [
+    "minecraft:horse_armor"
+  ],
+  "minecraft:golden_horse_armor": [
+    "minecraft:horse_armor"
+  ],
+  "minecraft:cod": [
+    "minecraft:is_fish"
+  ],
+  "minecraft:pufferfish": [
+    "minecraft:is_fish"
+  ],
+  "minecraft:salmon": [
+    "minecraft:is_fish"
+  ],
+  "minecraft:tropical_fish": [
+    "minecraft:is_fish"
+  ]
+}

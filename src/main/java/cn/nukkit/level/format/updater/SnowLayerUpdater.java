@@ -27,9 +27,9 @@ public class SnowLayerUpdater implements Updater {
         if (state.getBlockId() != BlockID.SNOW_LAYER) {
             return false;
         }
-        
+
         if (y > 0) {
-            if (section.getBlockId(x, y-1, z) == BlockID.GRASS) {
+            if (section.getBlockId(x, y - 1, z) == BlockID.GRASS) {
                 section.setBlockState(x, y, z, state.withProperty(BlockSnowLayer.COVERED, true));
                 return true;
             }
@@ -40,7 +40,7 @@ public class SnowLayerUpdater implements Updater {
             section.setBlockState(x, y, z, state.withProperty(BlockSnowLayer.COVERED, true));
             return true;
         }
-        
+
         return false;
     }
 }

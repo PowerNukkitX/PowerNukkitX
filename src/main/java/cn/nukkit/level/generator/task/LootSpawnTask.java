@@ -32,7 +32,7 @@ public class LootSpawnTask extends Task {
         if (tile instanceof InventoryHolder) {
             tile.namedTag.putList(this.list);
             Inventory inventory = ((InventoryHolder) tile).getInventory();
-            for (int i = 0; i < this.list.size(); i ++) {
+            for (int i = 0; i < this.list.size(); i++) {
                 inventory.setItem(i, NBTIO.getItemHelper(this.list.get(i)), false);
             }
         }

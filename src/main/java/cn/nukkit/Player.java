@@ -1693,7 +1693,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = (byte) ((this.level.getDimension() + 1) & 0xff); //0 旧世界, 1 主世界, 2 下界, 3末地
-        startGamePacket.isServerAuthoritativeBlockBreaking = getServer().isServerAuthoritativeBlockBreaking();
         startGamePacket.serverAuthoritativeMovement = getServer().getServerAuthoritativeMovement();
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
@@ -2912,9 +2911,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (log.isTraceEnabled() && !server.isIgnoredPacket(packet.getClass())) {
                 log.trace("Outbound {}: {}", this.getName(), packet);
             }
-            //适配单元Test
-            if (networkSession == null) this.interfaz.putPacket(this, packet, false, false);
-            else this.networkSession.sendPacket(packet);
+            this.interfaz.putPacket(this, packet, false, false);
         }
         return true;
     }
@@ -4272,6 +4269,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.setSneaking(false);
                             }
                             break packetswitch;
+                        case PlayerActionPacket.ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+                            this.onBlockBreakComplete(new BlockVector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z), face);
+                            break;
                         case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
                             this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_NORMAL);
                             break; //TODO
@@ -6279,10 +6279,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                //适配单元测试
-                if (networkSession == null) this.dataPacketImmediately(pk);
-                else
-                    this.forceDataPacket(pk, null); // Send DisconnectPacket before the connection is closed, so its reason will show properly
+                this.dataPacketImmediately(pk);
             }
 
             this.connected = false;

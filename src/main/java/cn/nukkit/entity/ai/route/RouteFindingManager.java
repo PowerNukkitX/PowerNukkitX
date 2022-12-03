@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.route;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.route.finder.IRouteFinder;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 

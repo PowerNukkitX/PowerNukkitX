@@ -3,6 +3,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.inventory.*;
+import cn.nukkit.inventory.recipe.DefaultDescriptor;
+import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
@@ -108,7 +110,7 @@ public class CraftingDataPacket extends DataPacket {
                     StonecutterRecipe stonecutter = (StonecutterRecipe) recipe;
                     this.putString(stonecutter.getRecipeId());
                     this.putUnsignedVarInt(1);
-                    this.putRecipeIngredient(stonecutter.getIngredient());
+                    this.putRecipeIngredient(new DefaultDescriptor(stonecutter.getIngredient()));
                     this.putUnsignedVarInt(1);
                     this.putSlot(stonecutter.getResult(), true);
                     this.putUUID(stonecutter.getId());
@@ -122,9 +124,9 @@ public class CraftingDataPacket extends DataPacket {
                 case SMITHING:
                     ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
                     this.putString(shapeless.getRecipeId());
-                    List<Item> ingredients = shapeless.getIngredientList();
+                    List<ItemDescriptor> ingredients = shapeless.getNewIngredients();
                     this.putUnsignedVarInt(ingredients.size());
-                    for (Item ingredient : ingredients) {
+                    for (var ingredient : ingredients) {
                         this.putRecipeIngredient(ingredient);
                     }
                     this.putUnsignedVarInt(1);
@@ -146,7 +148,7 @@ public class CraftingDataPacket extends DataPacket {
 
                     for (int z = 0; z < shaped.getHeight(); ++z) {
                         for (int x = 0; x < shaped.getWidth(); ++x) {
-                            this.putRecipeIngredient(shaped.getIngredient(x, z));
+                            this.putRecipeIngredient(shaped.getNewIngredient(x, z));
                         }
                     }
                     List<Item> outputs = new ArrayList<>();

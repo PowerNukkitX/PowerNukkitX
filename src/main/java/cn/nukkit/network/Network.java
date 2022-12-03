@@ -119,12 +119,15 @@ public class Network {
     public static byte[] deflateRaw(byte[] data, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
-            byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
-            int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
-            if (level != 7) {
-                deflater.close();
+            try {
+                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+                int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
+                return Arrays.copyOf(buffer, size);
+            } finally {
+                if (level != 7) {
+                    deflater.close();
+                }
             }
-            return Arrays.copyOf(buffer, size);
         }
         Deflater deflater = DEFLATER_RAW.get();
         try {
@@ -150,18 +153,21 @@ public class Network {
     public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
         if (libDeflateAvailable) {
             var deflater = level == 7 ? PNX_DEFLATER_RAW.get() : new LibdeflateCompressor(level);
-            var bos = ThreadCache.fbaos.get();
-            bos.reset();
-            for (var data : datas) {
-                bos.write(data, 0, data.length);
+            try {
+                var bos = ThreadCache.fbaos.get();
+                bos.reset();
+                for (var data : datas) {
+                    bos.write(data, 0, data.length);
+                }
+                var data = bos.toByteArray();
+                byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
+                int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
+                return Arrays.copyOf(buffer, size);
+            } finally {
+                if (level != 7) {
+                    deflater.close();
+                }
             }
-            var data = bos.toByteArray();
-            byte[] buffer = deflater.getCompressBound(data.length, CompressionType.DEFLATE) < BUFFER_LEN ? BUFFER.get() : new byte[data.length];
-            int size = deflater.compress(data, buffer, CompressionType.DEFLATE);
-            if (level != 7) {
-                deflater.close();
-            }
-            return Arrays.copyOf(buffer, size);
         }
         Deflater deflater = DEFLATER_RAW.get();
         try {
@@ -576,5 +582,6 @@ public class Network {
         this.registerPacket(ProtocolInfo.UPDATE_ABILITIES_PACKET, UpdateAbilitiesPacket.class);
         this.registerPacket(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET, RequestNetworkSettingsPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET, UpdateAdventureSettingsPacket.class);
+        this.registerPacket(ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS, UpdateClientInputLocksPacket.class);
     }
 }

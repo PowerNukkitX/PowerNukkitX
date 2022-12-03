@@ -11,17 +11,14 @@ import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
 import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.NewAttackTargetMemory;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.executor.entity.WardenMeleeAttackExecutor;
-import cn.nukkit.entity.ai.executor.entity.WardenRangedAttackExecutor;
-import cn.nukkit.entity.ai.executor.entity.WardenSniffExecutor;
-import cn.nukkit.entity.ai.executor.entity.WardenViolentAnimationExecutor;
-import cn.nukkit.entity.ai.memory.AttackTargetMemory;
-import cn.nukkit.entity.ai.memory.RouteUnreachableTimeMemory;
-import cn.nukkit.entity.ai.memory.entity.WardenAngerValueMemory;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.executor.WardenMeleeAttackExecutor;
+import cn.nukkit.entity.ai.executor.WardenRangedAttackExecutor;
+import cn.nukkit.entity.ai.executor.WardenSniffExecutor;
+import cn.nukkit.entity.ai.executor.WardenViolentAnimationExecutor;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.RouteUnreachableTimeSensor;
 import cn.nukkit.entity.data.IntEntityData;
@@ -63,9 +60,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                     Set.of(
                             new Behavior((entity) -> {
                                 //刷新随机播放音效
-                                if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class))
+                                if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
                                     this.setAmbientSoundEvent(Sound.MOB_WARDEN_ANGRY);
-                                else if (this.getMemoryStorage().notEmpty(WardenAngerValueMemory.class))
+                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.WARDEN_ANGER_VALUE))
                                     this.setAmbientSoundEvent(Sound.MOB_WARDEN_AGITATED);
                                 else
                                     this.setAmbientSoundEvent(Sound.MOB_WARDEN_IDLE);
@@ -73,15 +70,15 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             }, (entity) -> true, 1, 1, 20),
                             new Behavior((entity) -> {
                                 //刷新anger数值
-                                var angerValueMap = this.getMemoryStorage().get(WardenAngerValueMemory.class).getData();
+                                var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
                                 var iterator = angerValueMap.entrySet().iterator();
                                 while (iterator.hasNext()) {
                                     Map.Entry<Entity, Integer> next = iterator.next();
                                     if (!entity.level.getName().equals(this.level.getName()) || !isValidAngerEntity(next.getKey())) {
                                         iterator.remove();
-                                        var attackTargetMemory = this.getMemoryStorage().get(AttackTargetMemory.class);
-                                        if (attackTargetMemory.hasData() && attackTargetMemory.getData().equals(next.getKey()))
-                                            attackTargetMemory.setData(null);
+                                        var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+                                        if (attackTarget != null && attackTarget.equals(next.getKey()))
+                                            this.getMemoryStorage().clear(CoreMemoryTypes.ATTACK_TARGET);
                                         continue;
                                     }
                                     var newAnger = next.getValue() - 1;
@@ -116,30 +113,30 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                     Set.of(
                             new Behavior(
                                     new WardenViolentAnimationExecutor((int) (4.2 * 20)), new AllMatchEvaluator(
-                                    (entity) -> entity.getMemoryStorage().checkData(NewAttackTargetMemory.class, true),
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class)), 5
+                                    (entity) -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true),
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 5
                             ),
                             new Behavior(
                                     new WardenRangedAttackExecutor((int) (1.7 * 20), (int) (3.0 * 20)),
-                                    (entity) -> this.getMemoryStorage().getData(RouteUnreachableTimeMemory.class) > 20 //1s
-                                            && this.getMemoryStorage().notEmpty(AttackTargetMemory.class)
-                                            && isInRangedAttackRange(this.getMemoryStorage().getData(AttackTargetMemory.class))
+                                    (entity) -> this.getMemoryStorage().get(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME) > 20 //1s
+                                            && this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET)
+                                            && isInRangedAttackRange(this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET))
                                     , 4, 1, 20
                             ),
                             new Behavior(
-                                    new WardenMeleeAttackExecutor(AttackTargetMemory.class,
+                                    new WardenMeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET,
                                             switch (this.getServer().getDifficulty()) {
                                                 case 1 -> 16;
                                                 case 2 -> 30;
                                                 case 3 -> 45;
                                                 default -> 0;
                                             }, 0.4f),
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class), 3, 1
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1
                             ),
                             new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
                             new Behavior(new RandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
-                    Set.of(new RouteUnreachableTimeSensor(RouteUnreachableTimeMemory.class)),
+                    Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
             );
@@ -164,9 +161,8 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(500);
-        this.setHealth(500);
+        super.initEntity();
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
         this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
         //空闲声音
@@ -217,7 +213,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
             }
         }
 
-        if (this.getMemoryStorage().notEmpty(AttackTargetMemory.class))
+        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET))
             this.level.addSound(this, Sound.MOB_WARDEN_LISTENING_ANGRY);
         else this.level.addSound(this, Sound.MOB_WARDEN_LISTENING);
     }
@@ -268,29 +264,27 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     }
 
     public void addEntityAngerValue(Entity entity, int addition) {
-        var angerValueMap = this.getMemoryStorage().get(WardenAngerValueMemory.class).getData();
-        var attackTargetMemory = this.getMemoryStorage().get(AttackTargetMemory.class);
-        var origin = angerValueMap.containsKey(entity) ? angerValueMap.get(entity) : 0;
+        var angerValueMap = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE);
+        var attackTarget = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
+        var origin = angerValueMap.getOrDefault(entity, 0);
         int added = NukkitMath.clamp(origin + addition, 0, 150);
         if (added == 0) angerValueMap.remove(entity);
         else if (added >= 80) {
             added += 20;
             added = NukkitMath.clamp(added, 0, 150);
             angerValueMap.put(entity, added);
-            boolean changed = false;
-            if (!attackTargetMemory.hasData() ||
-                    (entity instanceof Player && !(attackTargetMemory.getData() instanceof Player))) changed = true;
+            boolean changed = attackTarget == null ||
+                    (entity instanceof Player && !(attackTarget instanceof Player));
             if (changed) {
-                this.getMemoryStorage().setData(NewAttackTargetMemory.class, true);
-                attackTargetMemory.setData(entity);
+                this.getMemoryStorage().put(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true);
+                this.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
             }
         } else angerValueMap.put(entity, added);
     }
 
     public void removeEntityAngerValue(Entity entity) {
         this.getMemoryStorage()
-                .get(WardenAngerValueMemory.class)
-                .getData()
+                .get(CoreMemoryTypes.WARDEN_ANGER_VALUE)
                 .remove(entity);
     }
 
@@ -332,9 +326,9 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
     }
 
     public int calHeartBeatDelay() {
-        var target = this.getMemoryStorage().getData(AttackTargetMemory.class);
+        var target = this.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET);
         if (target == null) return 40;
-        var anger = this.getMemoryStorage().getData(WardenAngerValueMemory.class).getOrDefault(target, 0);
+        var anger = this.getMemoryStorage().get(CoreMemoryTypes.WARDEN_ANGER_VALUE).getOrDefault(target, 0);
         return (int) (40 - NukkitMath.clamp((anger / 80f), 0, 1) * 30f);
     }
 

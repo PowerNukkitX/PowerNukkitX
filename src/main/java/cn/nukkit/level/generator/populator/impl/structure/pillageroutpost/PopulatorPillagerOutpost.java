@@ -50,77 +50,6 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 8;
 
-    @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
-        if (chunk.getProvider().isOverWorld() && (biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.TAIGA.id || biome == EnumBiome.ICE_PLAINS.id || biome == EnumBiome.SAVANNA.id)
-                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
-                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
-            random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
-            random.nextInt();
-
-            if (random.nextBoundedInt(5) == (0x77f73e3a & 3)) { //salted
-                ReadableStructureTemplate template = WATCHTOWER;
-                int y = chunk.getHighestBlockAt(0, 0);
-
-                int blockId = chunk.getBlockId(0, y, 0);
-                while (Utils.isPlant[blockId] && y > 1) {
-                    blockId = chunk.getBlockId(0, --y, 0);
-                }
-
-                BlockVector3 vec = new BlockVector3(chunkX << 4, y, chunkZ << 4);
-                template.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
-                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
-                WATCHTOWER_OVERGROWN.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
-                        .setIntegrity(5)
-                        .setIgnoreAir(true)
-                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
-
-                BlockVector3 size = template.getSize();
-                fillBase(level.getChunk(chunkX, chunkZ), y, 0, 0, size.getX(), size.getZ());
-
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ - 1), random);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ + 1), random);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ - 1), random);
-                }
-                if (random.nextBoolean()) {
-                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ + 1), random);
-                }
-            }
-        }
-    }
-
-    protected void tryPlaceFeature(BaseFullChunk chunk, NukkitRandom random) {
-        ReadableStructureTemplate template = FEATURES[random.nextBoundedInt(FEATURES.length)];
-        int seed = random.nextInt();
-
-        if (!chunk.isGenerated()) {
-            Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
-                    chunk.getProvider().getLevel(), chunk, this,
-                    populator -> populator.placeFeature(template, chunk, seed)));
-        } else {
-            this.placeFeature(template, chunk, seed);
-        }
-    }
-
-    protected void placeFeature(ReadableStructureTemplate template, FullChunk chunk, int seed) {
-        NukkitRandom random = new NukkitRandom(seed);
-
-        BlockVector3 size = template.getSize();
-        int x = random.nextBoundedInt(16 - size.getX());
-        int z = random.nextBoundedInt(16 - size.getZ());
-        int y = chunk.getHighestBlockAt(x, z);
-
-        template.placeInChunk(chunk, random, new BlockVector3((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z), new StructurePlaceSettings()
-                .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
-        fillBase(chunk, y, x, z, size.getX(), size.getZ());
-    }
-
     protected static void fillBase(FullChunk chunk, int baseY, int startX, int startZ, int sizeX, int sizeZ) {
         for (int x = startX; x < startX + sizeX; x++) {
             for (int z = startZ; z < startZ + sizeZ; z++) {
@@ -183,6 +112,78 @@ public class PopulatorPillagerOutpost extends PopulatorStructure {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
+        int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
+        if ((biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.TAIGA.id || biome == EnumBiome.ICE_PLAINS.id || biome == EnumBiome.SAVANNA.id)
+                && chunkX == (((chunkX < 0 ? (chunkX - SPACING + 1) : chunkX) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)
+                && chunkZ == (((chunkZ < 0 ? (chunkZ - SPACING + 1) : chunkZ) / SPACING) * SPACING) + random.nextBoundedInt(SPACING - SEPARATION)) {
+            random.setSeed(((chunkX >> 4) ^ (chunkZ >> 4) << 4) ^ level.getSeed());
+            random.nextInt();
+
+            if (random.nextBoundedInt(5) == (0x77f73e3a & 3)) { //salted
+                ReadableStructureTemplate template = WATCHTOWER;
+                int y = chunk.getHighestBlockAt(0, 0);
+
+                int blockId = chunk.getBlockId(0, y, 0);
+                while (Utils.isPlant[blockId] && y > 1) {
+                    blockId = chunk.getBlockId(0, --y, 0);
+                }
+
+                BlockVector3 vec = new BlockVector3(chunkX << 4, y, chunkZ << 4);
+                template.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
+                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+                WATCHTOWER_OVERGROWN.placeInChunk(chunk, random, vec, new StructurePlaceSettings()
+                        .setIntegrity(5)
+                        .setIgnoreAir(true)
+                        .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+
+                BlockVector3 size = template.getSize();
+                fillBase(level.getChunk(chunkX, chunkZ), y, 0, 0, size.getX(), size.getZ());
+
+                if (random.nextBoolean()) {
+                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ - 1), random);
+                }
+                if (random.nextBoolean()) {
+                    this.tryPlaceFeature(level.getChunk(chunkX - 1, chunkZ + 1), random);
+                }
+                if (random.nextBoolean()) {
+                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ - 1), random);
+                }
+                if (random.nextBoolean()) {
+                    this.tryPlaceFeature(level.getChunk(chunkX + 1, chunkZ + 1), random);
+                }
+            }
+        }
+    }
+
+    protected void tryPlaceFeature(BaseFullChunk chunk, NukkitRandom random) {
+        ReadableStructureTemplate template = FEATURES[random.nextBoundedInt(FEATURES.length)];
+        int seed = random.nextInt();
+
+        if (!chunk.isGenerated()) {
+            Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
+                    chunk.getProvider().getLevel(), chunk, this,
+                    populator -> populator.placeFeature(template, chunk, seed)));
+        } else {
+            this.placeFeature(template, chunk, seed);
+        }
+    }
+
+    protected void placeFeature(ReadableStructureTemplate template, FullChunk chunk, int seed) {
+        NukkitRandom random = new NukkitRandom(seed);
+
+        BlockVector3 size = template.getSize();
+        int x = random.nextBoundedInt(16 - size.getX());
+        int z = random.nextBoundedInt(16 - size.getZ());
+        int y = chunk.getHighestBlockAt(x, z);
+
+        template.placeInChunk(chunk, random, new BlockVector3((chunk.getX() << 4) + x, y, (chunk.getZ() << 4) + z), new StructurePlaceSettings()
+                .setBlockActorProcessor(getBlockActorProcessor(chunk, random)));
+        fillBase(chunk, y, x, z, size.getX(), size.getZ());
     }
 
     @Since("1.19.21-r2")

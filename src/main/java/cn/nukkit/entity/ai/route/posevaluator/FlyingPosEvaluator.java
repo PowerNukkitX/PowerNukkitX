@@ -2,7 +2,6 @@ package cn.nukkit.entity.ai.route.posevaluator;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -17,11 +16,6 @@ public class FlyingPosEvaluator implements IPosEvaluator {
     public boolean evalPos(@NotNull EntityIntelligent entity, @NotNull Vector3 vec) {
         //检查是否可到达
         return isPassable(entity, vec);
-    }
-
-    @Override
-    public boolean evalStandingBlock(@NotNull EntityIntelligent entity, @NotNull Block block) {
-        return true;
     }
 
     /**

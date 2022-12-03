@@ -541,7 +541,7 @@ public class Utils {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = level.getTickCachedBlock(x, y, z, false);
                     //判断是否和非空气方块有碰撞
-                    if (block != null && !block.canPassThrough() && block.collidesWithBB(bb)) {
+                    if (block != null && block.collidesWithBB(bb) && !block.canPassThrough()) {
                         return true;
                     }
                 }

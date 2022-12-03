@@ -4,36 +4,26 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.EntityIntelligent;
-import cn.nukkit.entity.ai.memory.IMemory;
-import cn.nukkit.entity.ai.memory.TimedMemory;
+import cn.nukkit.entity.ai.memory.MemoryType;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class PassByTimeEvaluator<T extends TimedMemory & IMemory<?>> implements IBehaviorEvaluator {
+public class PassByTimeEvaluator implements IBehaviorEvaluator {
 
-    protected Class<T> timedMemory;
+    protected MemoryType<Integer> timedMemory;
     protected int minPassByTimeRange;
     protected int maxPassByTimeRange;
-    protected boolean allowEmpty;
 
-    public PassByTimeEvaluator(Class<T> timedMemory, int minPassByTimeRange, int maxPassByTimeRange) {
-        this(timedMemory, minPassByTimeRange, maxPassByTimeRange, false);
-    }
-
-    public PassByTimeEvaluator(Class<T> timedMemory, int minPassByTimeRange, int maxPassByTimeRange, boolean allowEmpty) {
+    public PassByTimeEvaluator(MemoryType<Integer> timedMemory, int minPassByTimeRange, int maxPassByTimeRange) {
         this.timedMemory = timedMemory;
         this.minPassByTimeRange = minPassByTimeRange;
         this.maxPassByTimeRange = maxPassByTimeRange;
-        this.allowEmpty = allowEmpty;
     }
 
     @Override
     public boolean evaluate(EntityIntelligent entity) {
-        T instance = entity.getMemoryStorage().get(timedMemory);
-        if (!instance.hasData()) {
-            return allowEmpty;
-        }
-        int passByTime = Server.getInstance().getTick() - instance.getTime();
+        var time = entity.getMemoryStorage().get(timedMemory);
+        int passByTime = Server.getInstance().getTick() - time;
         return passByTime >= minPassByTimeRange && passByTime <= maxPassByTimeRange;
     }
 }

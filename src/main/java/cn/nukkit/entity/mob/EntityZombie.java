@@ -14,9 +14,8 @@ import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
 import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
-import cn.nukkit.entity.ai.memory.AttackTargetMemory;
-import cn.nukkit.entity.ai.memory.NearestPlayerMemory;
-import cn.nukkit.entity.ai.route.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
+import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -49,15 +48,15 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
                     this.tickSpread,
                     Set.of(),
                     Set.of(
-                            new Behavior(new MeleeAttackExecutor(AttackTargetMemory.class, 0.15f, 40, true, 10), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(AttackTargetMemory.class),
-                                    entity -> !entity.getMemoryStorage().notEmpty(AttackTargetMemory.class) || !(entity.getMemoryStorage().get(AttackTargetMemory.class).getData() instanceof Player player) || player.isSurvival()
+                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, 40, true, 10), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
+                                    entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                             ), 3, 1),
-                            new Behavior(new MeleeAttackExecutor(NearestPlayerMemory.class, 0.15f, 40, false, 10), new AllMatchEvaluator(
-                                    new MemoryCheckNotEmptyEvaluator(NearestPlayerMemory.class),
+                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, 40, false, 10), new AllMatchEvaluator(
+                                    new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                     entity -> {
-                                        if (entity.getMemoryStorage().isEmpty(NearestPlayerMemory.class)) return true;
-                                        Player player = entity.getMemoryStorage().get(NearestPlayerMemory.class).getData();
+                                        if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
+                                        Player player = entity.getMemoryStorage().get(CoreMemoryTypes.NEAREST_PLAYER);
                                         return player.isSurvival();
                                     }
                             ), 2, 1),
@@ -78,9 +77,8 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
 
     @Override
     protected void initEntity() {
-        super.initEntity();
         this.setMaxHealth(20);
-        this.setHealth(20);
+        super.initEntity();
         if (this.diffHandDamage == null) {
             this.setDiffHandDamage(new float[]{2.5f, 3f, 4.5f});
         }
@@ -133,7 +131,7 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
         var result = super.attack(source);
         if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
             //更新仇恨目标
-            getMemoryStorage().setData(AttackTargetMemory.class, entityDamageByEntityEvent.getDamager());
+            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
         }
         return result;
     }

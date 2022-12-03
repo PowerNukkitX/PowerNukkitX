@@ -1,30 +1,31 @@
 ---
-name: "\U0001F937‍♀️ I have a question about PowerNukkitX"
-about: Ask anything about PowerNukkitX
+name: "\U0001F937‍♀️ 我有一些问题想问"
+about: 询问一些关于PNX的问题
 title: ''
 labels: 'Type: question'
 assignees: ''
 
 ---
 
-# 🤷‍♀️ I have a question
+# 🤷‍♀️ 我有一个问题
+
 <!-- 
-👉 This template is helpful, but you may erase everything if you can express the issue clearly 
+👉 尽可能详实地描述你的问题
 -->
-<!-- ✍ Write your question below -->
+<!-- ✍ 在这下方写你的问题 -->
 
+### 📸 截图 / 视频
 
-### 📸 Screenshots / Videos
-<!-- ✍ If applicable, add screenshots or a video recording to help explain your problem -->
+<!-- ✍ 如果可能的话，附上视频或者截图有助于解决问题 -->
 
+### 📋 Debug 信息
 
-### 📋 Debug information
-<!-- ⚠ This information may help us to give you better answers but they are not required ⚠ -->
-<!-- Use the 'debugpaste upload' command in PowerNukkitX -->
-<!-- You can get the version from the file name, the 'about' or 'debugpaste' command outputs -->
+<!-- 使用 'debugpaste upload' 和 'timings paste' 指令并粘贴结果至此 -->
+
 * PowerNukkitX version: ✍
 * Debug link: ✍
 
-### 💬 Anything else we should know?
-<!-- ✍ This is the perfect place to add any additional details -->
+### 💬 其他信息
+
+<!-- ✍ 其他可能有助于解决此问题的信息 -->
 

@@ -1,22 +1,24 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.memory.AttackMemory;
-import cn.nukkit.entity.ai.memory.BurnTimeMemory;
-import cn.nukkit.entity.ai.memory.IMemory;
+import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.form.window.FormWindowSimple;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * {@code EntityIntelligent}抽象了一个具有行为组{@link IBehaviorGroup}（也就是具有AI）的实体
@@ -34,21 +36,11 @@ public abstract class EntityIntelligent extends EntityPhysical {
      */
     protected boolean isActive = true;
 
-    //我们将寻路相关的参数直接作为属性存储到EntityIntelligent中，这样可以提高性能
-    protected Vector3 lookTarget;
-    protected Vector3 moveTarget;
-    protected Vector3 moveDirectionStart;
-    protected Vector3 moveDirectionEnd;
-    protected boolean needUpdateMoveDirection;
-    //控制是否启用pitch
-    //若为true,则实体在看向目标的同时还会调整视线垂直角度
-    protected boolean enablePitch;
-
     public EntityIntelligent(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        var memoryStorage = getMemoryStorage();
-        if (memoryStorage != null) {
-            memoryStorage.setData(BurnTimeMemory.class, Server.getInstance().getTick());
+        var storage = getMemoryStorage();
+        if (storage != null) {
+            getMemoryStorage().put(CoreMemoryTypes.ENTITY_SPAWN_TIME, Server.getInstance().getTick());
         }
     }
 
@@ -76,6 +68,7 @@ public abstract class EntityIntelligent extends EntityPhysical {
             behaviorGroup.tickRunningCoreBehaviors(this);
             behaviorGroup.tickRunningBehaviors(this);
             behaviorGroup.applyController(this);
+            if (EntityAI.DEBUG) behaviorGroup.debugTick(this);
         }
         return super.onUpdate(currentTick);
     }
@@ -104,32 +97,41 @@ public abstract class EntityIntelligent extends EntityPhysical {
     @Override
     public boolean attack(EntityDamageEvent source) {
         var result = super.attack(source);
-        var memory = getMemoryStorage();
-        if (memory != null) {
-            memory.get(AttackMemory.class).setData(source);
+        var storage = getMemoryStorage();
+        if (storage != null) {
+            storage.put(CoreMemoryTypes.BE_ATTACKED_EVENT, source);
+            storage.put(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, Server.getInstance().getTick());
         }
         return result;
     }
 
-    @Nullable
-    public IMemoryStorage getMemoryStorage() {
-        return getBehaviorGroup().getMemoryStorage();
+    @Override
+    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (!EntityAI.DEBUG) {
+            return super.onInteract(player, item, clickedPos);
+        } else {
+            if (player.isOp() && item.getId() == ItemID.STICK) {
+                var strBuilder = new StringBuilder();
+
+                //Build memory information
+                strBuilder.append("§eMemory:§f\n");
+                var all = getMemoryStorage().getAll();
+                all.forEach((memory, value) -> {
+                    strBuilder.append(memory.getIdentifier());
+                    strBuilder.append(" = §b");
+                    strBuilder.append(value);
+                    strBuilder.append("§f\n");
+                });
+
+                var form = new FormWindowSimple("§f" + getOriginalName(), strBuilder.toString());
+                player.showFormWindow(form);
+                return true;
+            } else return super.onInteract(player, item, clickedPos);
+        }
     }
 
-    /**
-     * 获得指定记忆类型的记忆数据，这个方法会自动判空，如果数据不存在或无法获取则返回null.
-     * <p>
-     * Get the memory data of the specified memory type, this method will automatically return null if the data does not exist or cannot be obtained.
-     *
-     * @param memoryClazz 记忆类型<br>Memory class
-     */
-    @Nullable
-    public Object getMemoryData(Class<? extends IMemory<?>> memoryClazz) {
-        var memoryStorage = this.getMemoryStorage();
-        if (memoryStorage == null) return null;
-        if (memoryStorage.notEmpty(memoryClazz)) {
-            return memoryStorage.get(memoryClazz).getData();
-        } else return null;
+    public IMemoryStorage getMemoryStorage() {
+        return getBehaviorGroup().getMemoryStorage();
     }
 
     /**
@@ -143,12 +145,84 @@ public abstract class EntityIntelligent extends EntityPhysical {
     }
 
     public boolean hasMoveDirection() {
-        return moveDirectionStart != null && moveDirectionEnd != null;
+        return getMoveDirectionStart() != null && getMoveDirectionEnd() != null;
     }
 
-    @Since("1.6.0.0-PNX")
     @Override
     public boolean enableHeadYaw() {
         return true;
     }
+
+    public Vector3 getLookTarget() {
+        return getMemoryStorage().get(CoreMemoryTypes.LOOK_TARGET);
+    }
+
+    public void setLookTarget(Vector3 lookTarget) {
+        getMemoryStorage().put(CoreMemoryTypes.LOOK_TARGET, lookTarget);
+    }
+
+    public Vector3 getMoveTarget() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_TARGET);
+    }
+
+    public void setMoveTarget(Vector3 moveTarget) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_TARGET, moveTarget);
+    }
+
+    public Vector3 getMoveDirectionStart() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_START);
+    }
+
+    public void setMoveDirectionStart(Vector3 moveDirectionStart) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_START, moveDirectionStart);
+    }
+
+    public Vector3 getMoveDirectionEnd() {
+        return getMemoryStorage().get(CoreMemoryTypes.MOVE_DIRECTION_END);
+    }
+
+    public void setMoveDirectionEnd(Vector3 moveDirectionEnd) {
+        getMemoryStorage().put(CoreMemoryTypes.MOVE_DIRECTION_END, moveDirectionEnd);
+    }
+
+    public boolean isShouldUpdateMoveDirection() {
+        return getMemoryStorage().get(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION);
+    }
+
+    public void setShouldUpdateMoveDirection(boolean shouldUpdateMoveDirection) {
+        getMemoryStorage().put(CoreMemoryTypes.SHOULD_UPDATE_MOVE_DIRECTION, shouldUpdateMoveDirection);
+    }
+
+    public boolean isEnablePitch() {
+        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_PITCH);
+    }
+
+    public void setEnablePitch(boolean enablePitch) {
+        getMemoryStorage().put(CoreMemoryTypes.ENABLE_PITCH, enablePitch);
+    }
+
+    //暂时不使用
+//    @PowerNukkitXOnly
+//    @Since("1.19.50-r1")
+//    public boolean isEnableYaw() {
+//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_YAW);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.50-r1")
+//    public void setEnableYaw(boolean enableYaw) {
+//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_YAW, enableYaw);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.50-r1")
+//    public boolean isEnableHeadYaw() {
+//        return getMemoryStorage().get(CoreMemoryTypes.ENABLE_HEAD_YAW);
+//    }
+//
+//    @PowerNukkitXOnly
+//    @Since("1.19.50-r1")
+//    public void setEnableHeadYaw(boolean enableHeadYaw) {
+//        getMemoryStorage().put(CoreMemoryTypes.ENABLE_HEAD_YAW, enableHeadYaw);
+//    }
 }

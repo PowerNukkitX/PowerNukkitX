@@ -6,8 +6,8 @@ import cn.nukkit.utils.ThreadCache;
  * @author https://github.com/boy0001/
  */
 public final class BitArray256 {
+    final long[] data;
     private final int bitsPerEntry;
-    protected final long[] data;
 
     public BitArray256(int bitsPerEntry) {
         this.bitsPerEntry = bitsPerEntry;
@@ -20,13 +20,13 @@ public final class BitArray256 {
         this.data = other.data.clone();
     }
 
-    public final void setAt(int index, int value) {
+    public void setAt(int index, int value) {
         int bitIndexStart = index * bitsPerEntry;
         int longIndexStart = bitIndexStart >> 6;
         int localBitIndexStart = bitIndexStart & 63;
-        this.data[longIndexStart] = this.data[longIndexStart] & ~((long) ((1 << bitsPerEntry) - 1) << localBitIndexStart) | ((long) value) << localBitIndexStart;
+        this.data[longIndexStart] = this.data[longIndexStart] & ~((long) ((1L << bitsPerEntry) - 1) << localBitIndexStart) | ((long) value) << localBitIndexStart;
 
-        if(localBitIndexStart > 64 - bitsPerEntry) {
+        if (localBitIndexStart > 64 - bitsPerEntry) {
             int longIndexEnd = longIndexStart + 1;
             int localShiftStart = 64 - localBitIndexStart;
             int localShiftEnd = bitsPerEntry - localShiftStart;
@@ -34,21 +34,21 @@ public final class BitArray256 {
         }
     }
 
-    public final int getAt(int index) {
+    public int getAt(int index) {
         int bitIndexStart = index * bitsPerEntry;
 
         int longIndexStart = bitIndexStart >> 6;
 
         int localBitIndexStart = bitIndexStart & 63;
-        if(localBitIndexStart <= 64 - bitsPerEntry) {
-            return (int)(this.data[longIndexStart] >>> localBitIndexStart & ((1 << bitsPerEntry) - 1));
+        if (localBitIndexStart <= 64 - bitsPerEntry) {
+            return (int) (this.data[longIndexStart] >>> localBitIndexStart & ((1 << bitsPerEntry) - 1));
         } else {
             int localShift = 64 - localBitIndexStart;
             return (int) ((this.data[longIndexStart] >>> localBitIndexStart | this.data[longIndexStart + 1] << localShift) & ((1 << bitsPerEntry) - 1));
         }
     }
 
-    public final void fromRaw(int[] arr) {
+    public void fromRaw(int[] arr) {
         for (int i = 0; i < arr.length; i++) {
             setAt(i, arr[i]);
         }
@@ -74,14 +74,14 @@ public final class BitArray256 {
         return newBitArray;
     }
 
-    public final int[] toRaw(int[] buffer) {
+    public int[] toRaw(int[] buffer) {
         for (int i = 0; i < buffer.length; i++) {
             buffer[i] = getAt(i);
         }
         return buffer;
     }
 
-    public final int[] toRaw() {
+    public int[] toRaw() {
         return toRaw(new int[256]);
     }
 

@@ -342,4 +342,7 @@ public class ServerScheduler {
         return currentTaskId.incrementAndGet();
     }
 
+    public void close() {
+        this.asyncPool.shutdownNow();
+    }
 }

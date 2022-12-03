@@ -30,7 +30,7 @@ public class PopulatorOreEmerald extends Populator {
             int x = random.nextBoundedInt(16);
             int z = random.nextBoundedInt(16);
             int y = NukkitMath.randomRange(random, 0, 32);
-            
+
             if (chunk.getBlockState(x, y, z) != STATE_STONE) {
                 continue;
             }

@@ -42,6 +42,8 @@ public abstract class Generator implements BlockID {
     @Since("1.19.21-r2")
     protected NukkitRandom random;
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     protected List<PopulatorStructure> structurePopulators = new ArrayList<>();
 
     {
@@ -59,6 +61,8 @@ public abstract class Generator implements BlockID {
 
     public abstract int getId();
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     public List<PopulatorStructure> getStructurePopulators() {
         return structurePopulators;
     }
@@ -108,6 +112,8 @@ public abstract class Generator implements BlockID {
         this.level = level;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.21-r2")
     public void setChunkManager(ChunkManager chunkManager) {
         this.chunkManager = chunkManager;
     }
@@ -139,6 +145,20 @@ public abstract class Generator implements BlockID {
         return false;
     }
 
+    /**
+     * 注册未知类型的生成器(Terra)
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r1")
+    public static boolean addGenerator(Class<? extends Generator> clazz, String name) {
+        name = name.toLowerCase();
+        if (clazz != null && !Generator.nameList.containsKey(name)) {
+            Generator.nameList.put(name, clazz);
+            return true;
+        }
+        return false;
+    }
+
     public static String[] getGeneratorList() {
         String[] keys = new String[Generator.nameList.size()];
         return Generator.nameList.keySet().toArray(keys);
@@ -160,18 +180,18 @@ public abstract class Generator implements BlockID {
     }
 
     public static String getGeneratorName(Class<? extends Generator> c) {
-        for (String key : Generator.nameList.keySet()) {
-            if (Generator.nameList.get(key).equals(c)) {
-                return key;
+        for (var entry : Generator.nameList.entrySet()) {
+            if (entry.getValue().equals(c)) {
+                return entry.getKey();
             }
         }
         return "unknown";
     }
 
     public static int getGeneratorType(Class<? extends Generator> c) {
-        for (int key : Generator.typeList.keySet()) {
-            if (Generator.typeList.get(key).equals(c)) {
-                return key;
+        for (var entry : Generator.typeList.entrySet()) {
+            if (entry.getValue().equals(c)) {
+                return entry.getKey();
             }
         }
         return Generator.TYPE_INFINITE;
@@ -197,7 +217,8 @@ public abstract class Generator implements BlockID {
         //因为在这个方法调用时，区块地形生成工作已完成，chunkManager(实际为PopChunkManager)内所有区块已清空
         var chunk = level.getChunk(chunkX, chunkZ);
         for (PopulatorStructure populator : structurePopulators) {
-            if (populator.isAsync()) Server.getInstance().getScheduler().scheduleAsyncTask(null, new ChunkPopulationTask(level, chunk, populator));
+            if (populator.isAsync())
+                Server.getInstance().computeThreadPool.submit(new ChunkPopulationTask(level, chunk, populator));
             else populator.populate(level, chunkX, chunkZ, random, chunk);
         }
     }

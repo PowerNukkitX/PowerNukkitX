@@ -13,14 +13,14 @@ public class DeepOceanBiome extends OceanBiome {
         populatorKelp.setBaseAmount(-135);
         populatorKelp.setRandomAmount(180);
         this.addPopulator(populatorKelp);
-        
+
         PopulatorSeagrass populatorSeagrass = new PopulatorSeagrass(0.8);
         populatorSeagrass.setBaseAmount(24);
         populatorSeagrass.setBaseAmount(24);
         this.addPopulator(populatorSeagrass);
 
         //TODO: Add Ocean Monuments
-        
+
         this.setBaseHeight(-1.8f);
         this.setHeightVariation(0.1f);
     }

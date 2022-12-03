@@ -9,7 +9,7 @@ import cn.nukkit.level.generator.populator.impl.PopulatorTree;
  * @author DaPorkchop_ (Nukkit Project)
  * <p>
  * make sure this is touching another extreme hills type or it'll look dumb
- *
+ * <p>
  * steep mountains with flat areas between
  */
 public class ExtremeHillsBiome extends GrassyBiome {
@@ -19,10 +19,10 @@ public class ExtremeHillsBiome extends GrassyBiome {
 
     public ExtremeHillsBiome(boolean tree) {
         super();
-        
+
         PopulatorOreEmerald oreEmerald = new PopulatorOreEmerald();
         this.addPopulator(oreEmerald);
-        
+
         if (tree) {
             PopulatorTree trees = new PopulatorTree(BlockSapling.SPRUCE);
             trees.setBaseAmount(2);

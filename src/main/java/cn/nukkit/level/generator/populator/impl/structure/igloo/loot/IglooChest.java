@@ -13,10 +13,6 @@ public class IglooChest extends RandomizableContainer {
 
     private static final IglooChest INSTANCE = new IglooChest();
 
-    public static IglooChest get() {
-        return INSTANCE;
-    }
-
     private IglooChest() {
         super(Maps.newHashMap(), InventoryType.CHEST.getDefaultSize());
 
@@ -33,5 +29,9 @@ public class IglooChest extends RandomizableContainer {
         PoolBuilder pool2 = new PoolBuilder()
                 .register(new ItemEntry(Item.GOLDEN_APPLE, 1));
         this.pools.put(pool2.build(), new RollEntry(1, pool2.getTotalWeight()));
+    }
+
+    public static IglooChest get() {
+        return INSTANCE;
     }
 }

@@ -25,15 +25,16 @@ public class PopulatorVillage extends PopulatorStructure {
     protected static final int SPACING = 32;
     protected static final int SEPARATION = 8;
 
-    static{
+    static {
         VillagePieces.init();
     }
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        random = new NukkitRandom(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ level.getSeed());
+        random = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ level.getSeed());
         //\\ VillageFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
         int biome = chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7);
+        if (!chunk.isOverWorld()) return;
         if (biome == EnumBiome.PLAINS.id || biome == EnumBiome.DESERT.id || biome == EnumBiome.SAVANNA.id || biome == EnumBiome.TAIGA.id
                 || biome == EnumBiome.COLD_TAIGA.id || biome == EnumBiome.ICE_PLAINS.id) {
             long seed = level.getSeed();
@@ -41,7 +42,7 @@ public class PopulatorVillage extends PopulatorStructure {
             int cZ = (chunkZ < 0 ? chunkZ - (SPACING - 1) : chunkZ) / SPACING;
             random.setSeed(cX * 0x4f9939f508L + cZ * 0x1ef1565bd5L + seed + 0x9e7f70);
 
-            if (chunkX == cX * SPACING + random.nextBoundedInt(SPACING - SEPARATION) && chunkZ ==  cZ * SPACING + random.nextBoundedInt(SPACING - SEPARATION)) {
+            if (chunkX == cX * SPACING + random.nextBoundedInt(SPACING - SEPARATION) && chunkZ == cZ * SPACING + random.nextBoundedInt(SPACING - SEPARATION)) {
                 //\\ VillageFeature::createStructureStart(Dimension &,Random &,ChunkPos const &)
                 VillageStart start = new VillageStart(level, chunkX, chunkZ, chunk.getProvider().getGenerator().equals("normal"));
                 start.generatePieces(level, chunkX, chunkZ);
@@ -54,7 +55,7 @@ public class PopulatorVillage extends PopulatorStructure {
                     BoundingBox boundingBox = start.getBoundingBox();
                     for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
                         for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                            NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
+                            NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
                             int x = cx << 4;
                             int z = cz << 4;
                             BaseFullChunk ck = level.getChunk(cx, cz);
@@ -67,7 +68,7 @@ public class PopulatorVillage extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
+                                Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
                                         chunk.getProvider().getLevel(), ck, start,
                                         structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                             }
@@ -76,6 +77,12 @@ public class PopulatorVillage extends PopulatorStructure {
                 }
             }
         }
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
     }
 
     public enum Type {
@@ -96,8 +103,8 @@ public class PopulatorVillage extends PopulatorStructure {
 
     public static class VillageStart extends StructureStart {
 
-        private boolean valid;
         private final boolean isNukkitGenerator;
+        private boolean valid;
 
         public VillageStart(ChunkManager level, int chunkX, int chunkZ, boolean isNukkitGenerator) {
             super(level, chunkX, chunkZ);
@@ -142,11 +149,5 @@ public class PopulatorVillage extends PopulatorStructure {
         public String getType() {
             return "Village";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

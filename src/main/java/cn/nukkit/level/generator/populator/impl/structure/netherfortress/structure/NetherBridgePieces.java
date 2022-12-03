@@ -125,6 +125,10 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        protected static boolean isOkBox(BoundingBox boundingBox) {
+            return boundingBox != null && boundingBox.y0 > 10;
+        }
+
         @Override
         protected void addAdditionalSaveData(CompoundTag tag) {
             //NOOP
@@ -255,18 +259,14 @@ public class NetherBridgePieces {
             }
             return null;
         }
-
-        protected static boolean isOkBox(BoundingBox boundingBox) {
-            return boundingBox != null && boundingBox.y0 > 10;
-        }
     }
 
     public static class StartPiece extends BridgeCrossing {
 
+        public final List<StructurePiece> pendingChildren;
         public PieceWeight previousPiece;
         public List<PieceWeight> availableBridgePieces;
         public List<PieceWeight> availableCastlePieces;
-        public final List<StructurePiece> pendingChildren;
 
         //\\ NBStartPiece::NBStartPiece(Random &,int,int)
         public StartPiece(NukkitRandom random, int x, int z) {
@@ -309,20 +309,21 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static BridgeStraight createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new BridgeStraight(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBBridgeStraight::getType(void) // 1312969556i64
         public String getType() {
             return "NeBS";
         }
 
-        @Override //\\ NBBridgeStraight::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
+        @Override
+        //\\ NBBridgeStraight::addChildren(StructurePiece *,std::vector<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>,std::allocator<std::unique_ptr<StructurePiece,std::default_delete<StructurePiece>>>> &,Random &)
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildForward((StartPiece) piece, pieces, random, 1, 3, false);
-        }
-
-        public static BridgeStraight createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new BridgeStraight(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override //\\ NBBridgeStraight::postProcess(BlockSource *,Random &,BoundingBox const &)
@@ -372,15 +373,15 @@ public class NetherBridgePieces {
             this.selfSeed = tag.getInt("Seed");
         }
 
-        @Override //\\ NBBridgeEndFiller::getType(void) // 1312965958i64
-        public String getType() {
-            return "NeBEF";
-        }
-
         public static BridgeEndFiller createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
             BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -3, 0, 5, 10, 8, orientation);
             return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
                     new BridgeEndFiller(genDepth, random, boundingBox, orientation) : null;
+        }
+
+        @Override //\\ NBBridgeEndFiller::getType(void) // 1312965958i64
+        public String getType() {
+            return "NeBEF";
         }
 
         @Override
@@ -434,6 +435,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static BridgeCrossing createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -8, -3, 0, 19, 10, 19, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new BridgeCrossing(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBBridgeCrossing::getType(void) // 1312965458i64
         public String getType() {
             return "NeBCr";
@@ -444,12 +451,6 @@ public class NetherBridgePieces {
             this.generateChildForward((StartPiece) piece, pieces, random, 8, 3, false);
             this.generateChildLeft((StartPiece) piece, pieces, random, 3, 8, false);
             this.generateChildRight((StartPiece) piece, pieces, random, 3, 8, false);
-        }
-
-        public static BridgeCrossing createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -8, -3, 0, 19, 10, 19, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new BridgeCrossing(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -506,6 +507,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static RoomCrossing createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 9, 7, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new RoomCrossing(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBRoomCrossing::getType(void) // 1312969283i64
         public String getType() {
             return "NeRC";
@@ -516,12 +523,6 @@ public class NetherBridgePieces {
             this.generateChildForward((StartPiece) piece, pieces, random, 2, 0, false);
             this.generateChildLeft((StartPiece) piece, pieces, random, 0, 2, false);
             this.generateChildRight((StartPiece) piece, pieces, random, 0, 2, false);
-        }
-
-        public static RoomCrossing createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 9, 7, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new RoomCrossing(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -567,6 +568,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static StairsRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, int genDepth, BlockFace orientation) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 11, 7, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new StairsRoom(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBStairsRoom::getType(void) // 1312969554i64
         public String getType() {
             return "NeSR";
@@ -575,12 +582,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildRight((StartPiece) piece, pieces, random, 6, 2, false);
-        }
-
-        public static StairsRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, int genDepth, BlockFace orientation) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 11, 7, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new StairsRoom(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -630,6 +631,12 @@ public class NetherBridgePieces {
             this.hasPlacedSpawner = tag.getBoolean("Mob");
         }
 
+        public static MonsterThrone createPiece(List<StructurePiece> pieces, int x, int y, int z, int genDepth, BlockFace orientation) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 8, 9, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new MonsterThrone(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBMonsterThrone::getType(void) // 1312968020i64
         public String getType() {
             return "NeMT";
@@ -639,12 +646,6 @@ public class NetherBridgePieces {
         protected void addAdditionalSaveData(CompoundTag tag) {
             super.addAdditionalSaveData(tag);
             tag.putBoolean("Mob", this.hasPlacedSpawner);
-        }
-
-        public static MonsterThrone createPiece(List<StructurePiece> pieces, int x, int y, int z, int genDepth, BlockFace orientation) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -2, 0, 0, 7, 8, 9, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new MonsterThrone(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -714,6 +715,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleEntrance createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleEntrance(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleEntrance::getType(void) // 1313031502i64
         public String getType() {
             return "NeCE";
@@ -722,12 +729,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildForward((StartPiece) piece, pieces, random, 5, 3, true);
-        }
-
-        public static CastleEntrance createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleEntrance(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -820,6 +821,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleStalkRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleStalkRoom(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleStalkRoom::getType(void) // 1313035090i64
         public String getType() {
             return "NeCSR";
@@ -829,12 +836,6 @@ public class NetherBridgePieces {
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildForward((StartPiece) piece, pieces, random, 5, 3, true);
             this.generateChildForward((StartPiece) piece, pieces, random, 5, 11, true);
-        }
-
-        public static CastleStalkRoom createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleStalkRoom(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -962,6 +963,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleSmallCorridorPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleSmallCorridorPiece(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleSmallCorridorPiece::getType(void) // 1313035075i64
         public String getType() {
             return "NeSC";
@@ -970,12 +977,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildForward((StartPiece) piece, pieces, random, 1, 0, true);
-        }
-
-        public static CastleSmallCorridorPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleSmallCorridorPiece(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1012,6 +1013,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleSmallCorridorCrossingPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleSmallCorridorCrossingPiece(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleSmallCorridorCrossingPiece::getType(void) // 1313030979i64
         public String getType() {
             return "NeSCSC";
@@ -1022,12 +1029,6 @@ public class NetherBridgePieces {
             this.generateChildForward((StartPiece) piece, pieces, random, 1, 0, true);
             this.generateChildLeft((StartPiece) piece, pieces, random, 0, 1, true);
             this.generateChildRight((StartPiece) piece, pieces, random, 0, 1, true);
-        }
-
-        public static CastleSmallCorridorCrossingPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleSmallCorridorCrossingPiece(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1066,6 +1067,12 @@ public class NetherBridgePieces {
             this.isNeedingChest = tag.getBoolean("Chest");
         }
 
+        public static CastleSmallCorridorRightTurnPiece createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleSmallCorridorRightTurnPiece(genDepth, random, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleSmallCorridorRightTurnPiece::getType(void) // 1313034836i64
         public String getType() {
             return "NeSCRT";
@@ -1080,12 +1087,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildRight((StartPiece) piece, pieces, random, 0, 1, true);
-        }
-
-        public static CastleSmallCorridorRightTurnPiece createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleSmallCorridorRightTurnPiece(genDepth, random, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1147,6 +1148,14 @@ public class NetherBridgePieces {
             this.isNeedingChest = tag.getBoolean("Chest");
         }
 
+        public static CastleSmallCorridorLeftTurnPiece createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
+            if (!NetherBridgePiece.isOkBox(boundingBox) || StructurePiece.findCollisionPiece(pieces, boundingBox) != null) {
+                return null;
+            }
+            return new CastleSmallCorridorLeftTurnPiece(genDepth, random, boundingBox, orientation);
+        }
+
         @Override //\\ NBCastleSmallCorridorLeftTurnPiece::getType(void) // 1313033300i64
         public String getType() {
             return "NeSCLT";
@@ -1161,14 +1170,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildLeft((StartPiece) piece, pieces, random, 0, 1, true);
-        }
-
-        public static CastleSmallCorridorLeftTurnPiece createPiece(List<StructurePiece> pieces, NukkitRandom random, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
-            if (!NetherBridgePiece.isOkBox(boundingBox) || StructurePiece.findCollisionPiece(pieces, boundingBox) != null) {
-                return null;
-            }
-            return new CastleSmallCorridorLeftTurnPiece(genDepth, random, boundingBox, orientation);
         }
 
         @Override
@@ -1226,6 +1227,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleCorridorStairsPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 14, 10, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleCorridorStairsPiece(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleCorridorStairsPiece::getType(void) // 1313035092i64
         public String getType() {
             return "NeCCS";
@@ -1234,12 +1241,6 @@ public class NetherBridgePieces {
         @Override
         public void addChildren(StructurePiece piece, List<StructurePiece> pieces, NukkitRandom random) {
             this.generateChildForward((StartPiece) piece, pieces, random, 1, 0, true);
-        }
-
-        public static CastleCorridorStairsPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -1, -7, 0, 5, 14, 10, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleCorridorStairsPiece(genDepth, boundingBox, orientation) : null;
         }
 
         @Override
@@ -1287,6 +1288,12 @@ public class NetherBridgePieces {
             super(tag);
         }
 
+        public static CastleCorridorTBalconyPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
+            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -3, 0, 0, 9, 7, 9, orientation);
+            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
+                    new CastleCorridorTBalconyPiece(genDepth, boundingBox, orientation) : null;
+        }
+
         @Override //\\ NBCastleCorridorTBalconyPiece::getType(void) // 1313030721i64
         public String getType() {
             return "NeCTB";
@@ -1302,12 +1309,6 @@ public class NetherBridgePieces {
 
             this.generateChildLeft((StartPiece) piece, pieces, random, 0, horizontalOffset, random.nextBoundedInt(8) > 0);
             this.generateChildRight((StartPiece) piece, pieces, random, 0, horizontalOffset, random.nextBoundedInt(8) > 0);
-        }
-
-        public static CastleCorridorTBalconyPiece createPiece(List<StructurePiece> pieces, int x, int y, int z, BlockFace orientation, int genDepth) {
-            BoundingBox boundingBox = BoundingBox.orientBox(x, y, z, -3, 0, 0, 9, 7, 9, orientation);
-            return NetherBridgePiece.isOkBox(boundingBox) && StructurePiece.findCollisionPiece(pieces, boundingBox) == null ?
-                    new CastleCorridorTBalconyPiece(genDepth, boundingBox, orientation) : null;
         }
 
         @Override

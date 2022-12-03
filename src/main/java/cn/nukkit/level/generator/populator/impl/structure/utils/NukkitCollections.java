@@ -15,17 +15,21 @@ public class NukkitCollections {
 
     private static final int SHUFFLE_THRESHOLD = 5;
 
+    private NukkitCollections() {
+
+    }
+
     /**
      * Randomly permute the specified list using the specified source of
      * randomness.  All permutations occur with equal likelihood
      * assuming that the source of randomness is fair.<p>
-     *
+     * <p>
      * This implementation traverses the list backwards, from the last element
      * up to the second, repeatedly swapping a randomly selected element into
      * the "current position".  Elements are randomly selected from the
      * portion of the list that runs from the first element to the current
      * position, inclusive.<p>
-     *
+     * <p>
      * This method runs in linear time.  If the specified list does not
      * implement the {@link RandomAccess} interface and is large, this
      * implementation dumps the specified list into an array before shuffling
@@ -33,10 +37,10 @@ public class NukkitCollections {
      * quadratic behavior that would result from shuffling a "sequential
      * access" list in place.
      *
-     * @param  list the list to be shuffled.
-     * @param  rnd the source of randomness to use to shuffle the list.
+     * @param list the list to be shuffled.
+     * @param rnd  the source of randomness to use to shuffle the list.
      * @throws UnsupportedOperationException if the specified list or its
-     *         list-iterator does not support the <tt>set</tt> operation.
+     *                                       list-iterator does not support the <tt>set</tt> operation.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void shuffle(List<?> list, NukkitRandom rnd) {
@@ -70,9 +74,5 @@ public class NukkitCollections {
         Object tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
-    }
-
-    private NukkitCollections() {
-
     }
 }

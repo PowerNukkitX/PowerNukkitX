@@ -20,50 +20,6 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorMineshaft extends PopulatorStructure {
 
     protected static final int PROBABILITY = 4;
-
-    @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        if (chunk.getProvider().isOverWorld() && VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
-            //\\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
-            long seed = level.getSeed();
-            random.setSeed(seed);
-            int r1 = random.nextInt();
-            int r2 = random.nextInt();
-            random.setSeed(chunkX * r1 ^ chunkZ * r2 ^ seed);
-
-            if (random.nextBoundedInt(1000) < PROBABILITY) {
-                //\\ MineshaftFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
-                MineshaftStart start = new MineshaftStart(level, chunkX, chunkZ);
-                start.generatePieces(level, chunkX, chunkZ);
-
-                if (start.isValid()) { //TODO: serialize nbt
-                    BoundingBox boundingBox = start.getBoundingBox();
-                    for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
-                        for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
-                            NukkitRandom rand = new NukkitRandom(cx * r1 ^ cz * r2 ^ seed);
-                            int x = cx << 4;
-                            int z = cz << 4;
-                            BaseFullChunk ck = level.getChunk(cx, cz);
-                            if (ck == null) {
-                                ck = chunk.getProvider().getChunk(cx, cz, true);
-                            }
-
-                            if (ck.isGenerated()) {
-                                start.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
-                            } else {
-                                int f_cx = cx;
-                                int f_cz = cz;
-                                Server.getInstance().getScheduler().scheduleAsyncTask(null, new CallbackableChunkGenerationTask<>(
-                                        chunk.getProvider().getLevel(), ck, start,
-                                        structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     protected static boolean[] VALID_BIOMES = new boolean[256];
 
     static {
@@ -139,6 +95,56 @@ public class PopulatorMineshaft extends PopulatorStructure {
         MineshaftPieces.init();
     }
 
+    @Override
+    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        if (!chunk.isOverWorld()) return;
+        if (VALID_BIOMES[chunk.getBiomeId(7, chunk.getHighestBlockAt(7, 7), 7)]) {
+            //\\ MineshaftFeature::isFeatureChunk(BiomeSource const &,Random &,ChunkPos const &,uint)
+            long seed = level.getSeed();
+            random.setSeed(seed);
+            int r1 = random.nextInt();
+            int r2 = random.nextInt();
+            random.setSeed((long) chunkX * r1 ^ (long) chunkZ * r2 ^ seed);
+
+            if (random.nextBoundedInt(1000) < PROBABILITY) {
+                //\\ MineshaftFeature::createStructureStart(Dimension &,BiomeSource &,Random &,ChunkPos const &)
+                MineshaftStart start = new MineshaftStart(level, chunkX, chunkZ);
+                start.generatePieces(level, chunkX, chunkZ);
+
+                if (start.isValid()) { //TODO: serialize nbt
+                    BoundingBox boundingBox = start.getBoundingBox();
+                    for (int cx = boundingBox.x0 >> 4; cx <= boundingBox.x1 >> 4; cx++) {
+                        for (int cz = boundingBox.z0 >> 4; cz <= boundingBox.z1 >> 4; cz++) {
+                            NukkitRandom rand = new NukkitRandom((long) cx * r1 ^ (long) cz * r2 ^ seed);
+                            int x = cx << 4;
+                            int z = cz << 4;
+                            BaseFullChunk ck = level.getChunk(cx, cz);
+                            if (ck == null) {
+                                ck = chunk.getProvider().getChunk(cx, cz, true);
+                            }
+
+                            if (ck.isGenerated()) {
+                                start.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), cx, cz);
+                            } else {
+                                int f_cx = cx;
+                                int f_cz = cz;
+                                Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
+                                        chunk.getProvider().getLevel(), ck, start,
+                                        structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Since("1.19.21-r2")
+    @Override
+    public boolean isAsync() {
+        return true;
+    }
+
     public enum Type {
         NORMAL,
         MESA;
@@ -186,11 +192,5 @@ public class PopulatorMineshaft extends PopulatorStructure {
         public String getType() {
             return "Mineshaft";
         }
-    }
-
-    @Since("1.19.21-r2")
-    @Override
-    public boolean isAsync() {
-        return true;
     }
 }

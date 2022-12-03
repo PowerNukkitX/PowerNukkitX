@@ -12,11 +12,11 @@ public class DeepWarmOceanBiome extends WarmOceanBiome {
         populatorSeagrass.setBaseAmount(40);
         populatorSeagrass.setBaseAmount(40);
         this.addPopulator(populatorSeagrass);
-        
+
         this.setBaseHeight(-1.8f);
         this.setHeightVariation(0.1f);
     }
-    
+
     @Override
     public String getName() {
         return "Deep Warm Ocean";

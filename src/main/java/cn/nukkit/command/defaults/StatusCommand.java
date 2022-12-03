@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @author xtypr
  * @since 2015/11/11
  */
-public final class StatusCommand extends VanillaCommand {
+public final class StatusCommand extends TestCommand {
     private static final String UPTIME_FORMAT = TextFormat.RED + "%d" + TextFormat.GOLD + " days " +
             TextFormat.RED + "%d" + TextFormat.GOLD + " hours " +
             TextFormat.RED + "%d" + TextFormat.GOLD + " minutes " +
