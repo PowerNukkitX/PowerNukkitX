@@ -10,10 +10,7 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
-import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
-import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
-import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.evaluator.*;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -30,16 +27,12 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-
-import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
 
 public class EntityCat extends EntityWalkingAnimal {
     public static final int NETWORK_ID = 75;
@@ -81,11 +74,22 @@ public class EntityCat extends EntityWalkingAnimal {
                             )
                     ),
                     Set.of(
-                            new Behavior(new RandomRoamExecutor(0.25f, 12, 40, true, 100, true, 10), new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_ATTACKED_TIME, 0, 100), 4, 1),
-                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.5f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
+                            new Behavior(entity -> false, entity -> this.isSitting(), 7),
+                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
                             new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.45f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
-                            new Behavior(new RandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                            new Behavior(new RandomRoamExecutor(0.15f, 12, 150, false, -1, true, 10),
+                                    new ProbabilityEvaluator(5, 10), 1, 1, 50),
+                            new Behavior(new CatMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                                if (entity instanceof EntityCat entityCat && entityCat.hasOwner()) {
+                                    var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
+                                    if (player == null) return false;
+                                    if (!player.isOnGround()) return false;
+                                    var distanceSquared = entity.distanceSquared(player);
+                                    return distanceSquared >= 100;
+                                } else return false;
+                            }, 6, 1),
+                            new Behavior(new CatLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1)
                     ),
                     Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -169,8 +173,8 @@ public class EntityCat extends EntityWalkingAnimal {
                     packet.event = EntityEventPacket.TAME_SUCCESS;
                     player.dataPacket(packet);
 
-                    this.setMaxHealth(20);
-                    this.setHealth(20);
+                    this.setMaxHealth(10);
+                    this.setHealth(10);
                     this.setOwnerName(player.getName());
                     this.setCollarColor(DyeColor.RED);
                     this.saveNBT();
@@ -185,28 +189,30 @@ public class EntityCat extends EntityWalkingAnimal {
                     player.dataPacket(packet);
                 }
             }
-        }else if (item.getId() == ItemID.RAW_SALMON ){
-            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            if (Utils.rand(1, 3) == 3) {
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = this.getId();
-                packet.event = EntityEventPacket.TAME_SUCCESS;
-                player.dataPacket(packet);
+        } else if (item.getId() == ItemID.RAW_SALMON) {
+            if (!this.hasOwner()) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                if (Utils.rand(1, 3) == 3) {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_SUCCESS;
+                    player.dataPacket(packet);
 
-                this.setMaxHealth(20);
-                this.setHealth(20);
-                this.setOwnerName(player.getName());
-                this.setCollarColor(DyeColor.RED);
-                this.saveNBT();
+                    this.setMaxHealth(10);
+                    this.setHealth(10);
+                    this.setOwnerName(player.getName());
+                    this.setCollarColor(DyeColor.RED);
+                    this.saveNBT();
 
-                this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
+                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
 
-                return true;
-            } else {
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = this.getId();
-                packet.event = EntityEventPacket.TAME_FAIL;
-                player.dataPacket(packet);
+                    return true;
+                } else {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_FAIL;
+                    player.dataPacket(packet);
+                }
             }
         } else if (item.getId() == Item.DYE) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
