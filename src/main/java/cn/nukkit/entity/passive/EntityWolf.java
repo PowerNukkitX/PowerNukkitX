@@ -140,7 +140,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
                                     if (player == null) return false;
                                     if (!player.isOnGround()) return false;
-                                    if (this.isSitting()) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;
