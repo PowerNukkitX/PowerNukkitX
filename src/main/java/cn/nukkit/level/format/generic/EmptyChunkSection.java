@@ -14,6 +14,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.collection.ByteArrayWrapper;
 import cn.nukkit.utils.collection.FreezableArrayManager;
 import cn.nukkit.utils.collection.FreezableByteArray;
 
@@ -70,7 +71,7 @@ public class EmptyChunkSection implements ChunkSection, ChunkSection3DBiome {
     }
 
     private final int y;
-    private final FreezableByteArray biomeId;
+    private final ByteArrayWrapper biomeId;
 
     public EmptyChunkSection(int y) {
         this.y = y;

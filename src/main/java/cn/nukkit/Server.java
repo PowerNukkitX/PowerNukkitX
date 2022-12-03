@@ -364,7 +364,7 @@ public class Server {
         console = new NukkitConsole(this);
         consoleThread = new ConsoleThread();
         this.computeThreadPool = new ForkJoinPool(Math.min(0x7fff, Runtime.getRuntime().availableProcessors()), new ComputeThreadPoolThreadFactory(), null, true);
-        freezableArrayManager = new FreezableArrayManager(32, 32, 0, -256, 1024, 16, 1, 32);
+        freezableArrayManager = new FreezableArrayManager(true, 32, 32, 0, -256, 1024, 16, 1, 32);
         properties = new Config();
         banByName = new BanList(dataPath + "banned-players.json");
         banByIP = new BanList(dataPath + "banned-ips.json");
@@ -773,6 +773,7 @@ public class Server {
         this.commandMap = new SimpleCommandMap(this);
 
         freezableArrayManager = new FreezableArrayManager(
+                this.getConfig("memory-compression.enable", true),
                 this.getConfig("memory-compression.slots", 32),
                 this.getConfig("memory-compression.default-temperature", 32),
                 this.getConfig("memory-compression.threshold.freezing-point", 0),
