@@ -75,7 +75,7 @@ public class TerraGeneratorWrapper extends Generator {
 
     @Override
     public boolean shouldGenerateStructures() {
-        return false;
+        return true;
     }
 
     /**
