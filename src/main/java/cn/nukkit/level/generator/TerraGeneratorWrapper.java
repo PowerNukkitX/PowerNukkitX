@@ -24,7 +24,7 @@ import java.util.Map;
 public class TerraGeneratorWrapper extends Generator {
 
     //此代理类实例共享的Terra生成器实例
-    protected static TerraGenerator INSTANCE;
+    protected static volatile TerraGenerator INSTANCE;
     protected static Map<String, Object> OPTION;
 
     public TerraGeneratorWrapper(Map<String, Object> option) {
@@ -33,8 +33,10 @@ public class TerraGeneratorWrapper extends Generator {
 
     @Override
     public void init(ChunkManager chunkManager, NukkitRandom random) {
-        synchronized (TerraGeneratorWrapper.class) {
-            if (INSTANCE == null) INSTANCE = new TerraGenerator(OPTION, getLevel());
+        if (INSTANCE == null) {
+            synchronized (TerraGeneratorWrapper.class) {
+                if (INSTANCE == null) INSTANCE = new TerraGenerator(OPTION, getLevel());
+            }
         }
     }
 
