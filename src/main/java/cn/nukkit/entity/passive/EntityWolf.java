@@ -128,6 +128,8 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                             )
                     ),
                     Set.of(
+                            //坐下锁定
+                            new Behavior(entity -> false, entity -> this.isSitting(), 7),
                             //攻击仇恨目标 todo 召集同伴
                             new Behavior(new WolfAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 33, true, 15),
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
@@ -138,7 +140,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
                                     if (player == null) return false;
                                     if (!player.isOnGround()) return false;
-                                    if (this.isSitting()) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;

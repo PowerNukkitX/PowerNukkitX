@@ -797,6 +797,12 @@ public abstract class Entity extends Location implements Metadatable {
         return 0;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public int getFrostbiteInjury() {
+        return 1;
+    }
+
     protected void initEntity() {
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("uuid")) {
@@ -1800,7 +1806,7 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        if (this.getCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
+        if (this.getTickCachedCollisionBlocks().stream().noneMatch(block -> block.getId() == Block.POWDER_SNOW) && this.getFreezingTicks() > 0) {
             this.addFreezingTicks(-tickDiff);
         }
 
@@ -1812,13 +1818,8 @@ public abstract class Entity extends Location implements Metadatable {
             }
         }
 
-        //todo: 取代求余运算提高性能
         if (this.getFreezingTicks() == 140 && this.getServer().getTick() % 40 == 0) {
-            if (this instanceof EntityBlaze || this instanceof EntityStrider || this instanceof EntityMagmaCube) {
-                this.attack(5);
-            } else {
-                this.attack(1);
-            }
+            this.attack(new EntityDamageEvent(this, DamageCause.FREEZING, getFrostbiteInjury()));
         }
 
         this.age += tickDiff;
@@ -2662,11 +2663,52 @@ public abstract class Entity extends Location implements Metadatable {
         return this.blocksAround;
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public List<Block> getTickCachedBlocksAround() {
+        if (this.blocksAround == null) {
+            int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
+            int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
+            int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
+            int maxX = NukkitMath.ceilDouble(this.boundingBox.getMaxX());
+            int maxY = NukkitMath.ceilDouble(this.boundingBox.getMaxY());
+            int maxZ = NukkitMath.ceilDouble(this.boundingBox.getMaxZ());
+
+            this.blocksAround = new ArrayList<>();
+
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (int x = minX; x <= maxX; ++x) {
+                    for (int y = minY; y <= maxY; ++y) {
+                        this.blocksAround.add(this.level.getTickCachedBlock(this.temporalVector.setComponents(x, y, z)));
+                    }
+                }
+            }
+        }
+
+        return this.blocksAround;
+    }
+
     public List<Block> getCollisionBlocks() {
         if (this.collisionBlocks == null) {
             this.collisionBlocks = new ArrayList<>();
 
             for (Block b : getBlocksAround()) {
+                if (b.collidesWithBB(this.getBoundingBox(), true)) {
+                    this.collisionBlocks.add(b);
+                }
+            }
+        }
+
+        return this.collisionBlocks;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public List<Block> getTickCachedCollisionBlocks() {
+        if (this.collisionBlocks == null) {
+            this.collisionBlocks = new ArrayList<>();
+
+            for (Block b : getTickCachedBlocksAround()) {
                 if (b.collidesWithBB(this.getBoundingBox(), true)) {
                     this.collisionBlocks.add(b);
                 }

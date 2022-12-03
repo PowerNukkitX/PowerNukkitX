@@ -358,7 +358,13 @@ public class Level implements ChunkManager, Metadatable {
                 generator.setLevel(Level.this);
                 ChunkManager manager = new PopChunkManager(getSeed());
                 generator.setChunkManager(manager);
+
+                //这里这么做的原因是为了向前兼容，实际上没必要
+                if (Server.getInstance().isPrimaryThread()) {
+                    generator.init(Level.this, rand);
+                }
                 generator.init(manager, rand);
+
                 return generator;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -4211,8 +4217,8 @@ public class Level implements ChunkManager, Metadatable {
                     }
 
                     PopulationTask task = new PopulationTask(this, chunk);
-                    //这个判断是防止单元测试报错
-                    if (this.server.computeThreadPool != null) this.server.computeThreadPool.submit(task);
+
+                    getGenerator().handleAsyncChunkPopTask(task);
                 }
             }
             Timings.populationTimer.stopTiming();
@@ -4236,7 +4242,7 @@ public class Level implements ChunkManager, Metadatable {
             Timings.generationTimer.startTiming();
             this.chunkGenerationQueue.put(index, Boolean.TRUE);
             GenerationTask task = new GenerationTask(this, this.getChunk(x, z, true));
-            this.server.computeThreadPool.submit(task);
+            getGenerator().handleAsyncChunkPopTask(task);
             Timings.generationTimer.stopTiming();
         }
     }
@@ -5082,6 +5088,4 @@ public class Level implements ChunkManager, Metadatable {
         private Block block;
         private BlockFace neighbor;
     }
-
-
 }
