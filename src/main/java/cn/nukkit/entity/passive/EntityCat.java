@@ -77,6 +77,7 @@ public class EntityCat extends EntityWalkingAnimal {
                             )
                     ),
                     Set.of(
+                            new Behavior(entity -> false, entity -> this.isSitting(), 7),
                             new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
                             new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.45f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
@@ -86,7 +87,6 @@ public class EntityCat extends EntityWalkingAnimal {
                                     var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
                                     if (player == null) return false;
                                     if (!player.isOnGround()) return false;
-                                    if (this.isSitting()) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;
