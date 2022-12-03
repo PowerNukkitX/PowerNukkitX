@@ -26,6 +26,8 @@ public class Flat extends Generator {
 
     private final List<Populator> populators = new ArrayList<>();
     private final Map<String, Object> options;
+    private ChunkManager level;
+    private NukkitRandom random;
     private int[][] structure;
     private int floorLevel;
     private String preset;
@@ -62,7 +64,7 @@ public class Flat extends Generator {
 
     @Override
     public ChunkManager getChunkManager() {
-        return chunkManager;
+        return level;
     }
 
     @Override
@@ -138,8 +140,8 @@ public class Flat extends Generator {
 
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
-        this.chunkManager = level;
-        this.nukkitRandom = random;
+        this.level = level;
+        this.random = random;
     }
 
     @Override
@@ -174,9 +176,9 @@ public class Flat extends Generator {
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
-        this.nukkitRandom.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+        this.random.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
         for (Populator populator : this.populators) {
-            populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
+            populator.populate(this.level, chunkX, chunkZ, this.random, chunk);
         }
     }
 
