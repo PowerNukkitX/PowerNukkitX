@@ -45,7 +45,7 @@ public class CatMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor 
 //            var tmp = randomVector3(player, 2);
 //            if (tmp == null) return true;
             var target = player.clone();
-            if (target.distanceSquared(entity) <= 6) return false;
+            if (target.distanceSquared(entity) <= 9) return false;
 
             //不允许跨世界
             if (!target.level.getName().equals(entity.level.getName()))

@@ -175,8 +175,8 @@ public class EntityCat extends EntityWalkingAnimal {
                     packet.event = EntityEventPacket.TAME_SUCCESS;
                     player.dataPacket(packet);
 
-                    this.setMaxHealth(20);
-                    this.setHealth(20);
+                    this.setMaxHealth(10);
+                    this.setHealth(10);
                     this.setOwnerName(player.getName());
                     this.setCollarColor(DyeColor.RED);
                     this.saveNBT();
@@ -191,28 +191,30 @@ public class EntityCat extends EntityWalkingAnimal {
                     player.dataPacket(packet);
                 }
             }
-        }else if (item.getId() == ItemID.RAW_SALMON ){
-            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            if (Utils.rand(1, 3) == 3) {
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = this.getId();
-                packet.event = EntityEventPacket.TAME_SUCCESS;
-                player.dataPacket(packet);
+        }else if (item.getId() == ItemID.RAW_SALMON ) {
+            if (!this.hasOwner()) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                if (Utils.rand(1, 3) == 3) {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_SUCCESS;
+                    player.dataPacket(packet);
 
-                this.setMaxHealth(20);
-                this.setHealth(20);
-                this.setOwnerName(player.getName());
-                this.setCollarColor(DyeColor.RED);
-                this.saveNBT();
+                    this.setMaxHealth(10);
+                    this.setHealth(10);
+                    this.setOwnerName(player.getName());
+                    this.setCollarColor(DyeColor.RED);
+                    this.saveNBT();
 
-                this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
+                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
 
-                return true;
-            } else {
-                EntityEventPacket packet = new EntityEventPacket();
-                packet.eid = this.getId();
-                packet.event = EntityEventPacket.TAME_FAIL;
-                player.dataPacket(packet);
+                    return true;
+                } else {
+                    EntityEventPacket packet = new EntityEventPacket();
+                    packet.eid = this.getId();
+                    packet.event = EntityEventPacket.TAME_FAIL;
+                    player.dataPacket(packet);
+                }
             }
         } else if (item.getId() == Item.DYE) {
             if (this.hasOwner() && player.equals(this.getOwner())) {
