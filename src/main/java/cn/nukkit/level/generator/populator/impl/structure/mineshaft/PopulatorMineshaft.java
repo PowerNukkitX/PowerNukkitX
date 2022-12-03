@@ -128,7 +128,7 @@ public class PopulatorMineshaft extends PopulatorStructure {
                             } else {
                                 int f_cx = cx;
                                 int f_cz = cz;
-                                Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
+                                chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
                                         chunk.getProvider().getLevel(), ck, start,
                                         structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                             }

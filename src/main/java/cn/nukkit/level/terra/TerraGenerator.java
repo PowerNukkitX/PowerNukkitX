@@ -1,21 +1,19 @@
-package cn.nukkit.level.generator;
+package cn.nukkit.level.terra;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.DimensionEnum;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.terra.PNXPlatform;
 import cn.nukkit.level.terra.delegate.PNXBlockStateDelegate;
 import cn.nukkit.level.terra.delegate.PNXProtoChunk;
 import cn.nukkit.level.terra.delegate.PNXProtoWorld;
 import cn.nukkit.level.terra.delegate.PNXServerWorld;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import com.dfsek.terra.api.block.state.BlockState;
 import com.dfsek.terra.api.config.ConfigPack;
-import com.dfsek.terra.api.world.ServerWorld;
 import com.dfsek.terra.api.world.biome.generation.BiomeProvider;
 import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 import com.dfsek.terra.api.world.chunk.generation.util.GeneratorWrapper;
@@ -24,27 +22,37 @@ import lombok.Getter;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 
+/**
+ * Terra生成器平台实现类<br/>
+ * 请注意我们通常不直接使用此类而是使用{@link cn.nukkit.level.generator.TerraGeneratorWrapper}<br/>
+ * 其每个实例都会持有一个相同的{@link TerraGenerator}实例<br/>
+ * 这样做的原因是因为nk底层会在每个线程新建一个生成器实例并行化生成区块时，而Terra本身就是并行的<br/>
+ * <br/>
+ * Terra generator platform implementation class<br/>
+ * Please note that we usually do not use this class directly but use {@link cn.nukkit.level.generator.TerraGeneratorWrapper}<br/>
+ * Each of its instances will hold an identical instance of {@link TerraGenerator}<br/>
+ * The reason for this is because the bottom layer of nk will create a new generator instance for each thread to generate blocks in parallel, and Terra itself is parallel
+ */
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrapper {
+public class TerraGenerator implements GeneratorWrapper {
     private final BiomeProvider biomeProvider;
     @Getter
     private final ConfigPack configPack;
     private final BlockState air;
     private final WorldProperties worldProperties;
     private final ChunkGenerator chunkGenerator;
-
-    private ServerWorld world;
-    private ChunkManager chunkManager;
+    private final Level level;
     private DimensionData dimensionData;
-    private NukkitRandom nukkitRandom;
 
-    public PNXChunkGeneratorWrapper() {
-        this(createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR));
+    public TerraGenerator(Level level) {
+        this(createConfigPack(), new PNXBlockStateDelegate(cn.nukkit.blockstate.BlockState.AIR), level);
     }
 
-    public PNXChunkGeneratorWrapper(Map<String, Object> option) {
+    public TerraGenerator(Map<String, Object> option, Level level) {
+        this.level = level;
         String packName = "default";
         this.dimensionData = DimensionEnum.getDataFromId(0);
         if (option.containsKey("preset")) {
@@ -63,7 +71,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
-                return chunkManager.getSeed();
+                return level.getSeed();
             }
 
             @Override
@@ -83,7 +91,8 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         };
     }
 
-    public PNXChunkGeneratorWrapper(ConfigPack configPack, BlockState air) {
+    public TerraGenerator(ConfigPack configPack, BlockState air, Level level) {
+        this.level = level;
         this.air = air;
         this.configPack = configPack;
         this.chunkGenerator = createGenerator(this.configPack);
@@ -92,7 +101,7 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         this.worldProperties = new WorldProperties() {
             @Override
             public long getSeed() {
-                return chunkManager.getSeed();
+                return level.getSeed();
             }
 
             @Override
@@ -113,15 +122,11 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
     }
 
     private static ConfigPack createConfigPack() {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow()
-        );
+        return PNXPlatform.getInstance().getConfigRegistry().getByID("default").orElseGet(() -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:default").orElseThrow());
     }
 
     private static ConfigPack createConfigPack(final String packName) {
-        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(
-                () -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow()
-        );
+        return PNXPlatform.getInstance().getConfigRegistry().getByID(packName).orElseGet(() -> PNXPlatform.getInstance().getConfigRegistry().getByID("PNXChunkGeneratorWrapper:" + packName).orElseThrow());
     }
 
     private static ChunkGenerator createGenerator() {
@@ -138,24 +143,9 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         return config.getGeneratorProvider().newInstance(config);
     }
 
-    @Override
-    public int getId() {
-        return getDimensionData().getDimensionId();
-    }
-
-    @Override
-    public void init(ChunkManager level, NukkitRandom random) {
-        this.chunkManager = level;
-        this.world = new PNXServerWorld(this);
-        this.nukkitRandom = random;
-    }
-
-    @Override
-    public void generateChunk(int chunkX, int chunkZ) {
+    public void generateChunk(int chunkX, int chunkZ, ChunkManager chunkManager) {
         var chunk = chunkManager.getChunk(chunkX, chunkZ);
-        chunkGenerator.generateChunkData(new PNXProtoChunk(chunk), worldProperties,
-                biomeProvider, chunkX, chunkZ);
-        var level = this.getLevel();
+        chunkGenerator.generateChunkData(new PNXProtoChunk(chunk), worldProperties, biomeProvider, chunkX, chunkZ);
         int minHeight = level.getMinHeight();
         int maxHeight = level.getMaxHeight();
         for (int x = 0; x < 16; x++) {
@@ -167,11 +157,9 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         }
     }
 
-    @Override
-    public void populateChunk(int chunkX, int chunkZ) {
-        var tmp = new PNXProtoWorld(world, chunkX, chunkZ);
+    public void populateChunk(int chunkX, int chunkZ, ChunkManager chunkManager) {
+        var tmp = new PNXProtoWorld(new PNXServerWorld(this, chunkManager), chunkX, chunkZ);
         try {
-            //todo: ConcurrentModificationException
             for (var generationStage : configPack.getStages()) {
                 generationStage.populate(tmp);
             }
@@ -185,30 +173,16 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         chunk.setLightPopulated(true);
     }
 
-    @Since("1.19.21-r2")
-    @Override
-    public boolean shouldGenerateStructures() {
-        return true;
-    }
-
-    @Override
     public Map<String, Object> getSettings() {
         return Collections.emptyMap();
     }
 
-    @Override
     public String getName() {
         return "terra";
     }
 
-    @Override
     public Vector3 getSpawn() {
         return new Vector3(0.5, 256, 0.5);
-    }
-
-    @Override
-    public ChunkManager getChunkManager() {
-        return chunkManager;
     }
 
     @Override
@@ -220,8 +194,9 @@ public class PNXChunkGeneratorWrapper extends Generator implements GeneratorWrap
         return biomeProvider;
     }
 
-    @Override
     public DimensionData getDimensionData() {
         return dimensionData;
     }
+
+    public Level getLevel() {return level; }
 }

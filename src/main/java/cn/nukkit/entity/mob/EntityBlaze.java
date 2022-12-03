@@ -2,6 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,5 +50,12 @@ public class EntityBlaze extends EntityFlyingMob {
     @Override
     public boolean isPreventingSleep(Player player) {
         return true;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    @Override
+    public int getFrostbiteInjury() {
+        return 5;
     }
 }
