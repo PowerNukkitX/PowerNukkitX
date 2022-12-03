@@ -3,6 +3,8 @@ package cn.nukkit.utils.collection;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import com.google.common.collect.ConcurrentHashMultiset;
+import io.netty.util.internal.ConcurrentSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -19,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
 public class FreezableArrayManager {
-    protected ConcurrentHashMap<Integer, CopyOnWriteArrayList<WeakReference<AutoFreezable>>> tickArrayMap;
+    protected ConcurrentHashMap<Integer, ConcurrentHashMultiset<WeakReference<AutoFreezable>>> tickArrayMap;
+    public final boolean enable;
     public final int cycleTick;
     /**
      * 最大工作时间，如果一直压缩超出这个时间就会放弃接下来其他数组的压缩（冻结）
@@ -72,14 +75,15 @@ public class FreezableArrayManager {
             e.printStackTrace();
         }
         if (fallbackInstance == null) {
-            fallbackInstance = new FreezableArrayManager(32, 32, 0, -256, 1024, 16, 1, 32);
+            fallbackInstance = new FreezableArrayManager(true, 32, 32, 0, -256, 1024, 16, 1, 32);
             System.err.println("Cannot get FreezableArrayManager from Server instance, using a fallback instance!");
         }
         return fallbackInstance;
 
     }
 
-    public FreezableArrayManager(int cycleTick, int defaultTemperature, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
+    public FreezableArrayManager(boolean enable, int cycleTick, int defaultTemperature, int freezingPoint, int absoluteZero, int boilingPoint, int meltingHeat, int singleOperationHeat, int batchOperationHeat) {
+        this.enable = enable;
         this.cycleTick = cycleTick;
         this.defaultTemperature = defaultTemperature;
         this.freezingPoint = freezingPoint;
@@ -128,37 +132,38 @@ public class FreezableArrayManager {
         return this;
     }
 
-    public FreezableByteArray createByteArray(int length) {
+    public ByteArrayWrapper createByteArray(int length) {
         var tmp = new FreezableByteArray(length, this);
-        var list = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new CopyOnWriteArrayList<>());
-        list.add(new WeakReference<>(tmp));
+        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+        set.add(new WeakReference<>(tmp));
         return tmp;
     }
 
-    public FreezableByteArray wrapByteArray(@NotNull byte[] array) {
+    public ByteArrayWrapper wrapByteArray(@NotNull byte[] array) {
         var tmp = new FreezableByteArray(array, this);
-        var list = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new CopyOnWriteArrayList<>());
-        list.add(new WeakReference<>(tmp));
+        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+        set.add(new WeakReference<>(tmp));
         return tmp;
     }
 
-    public FreezableByteArray cloneByteArray(@NotNull byte[] array) {
+    public ByteArrayWrapper cloneByteArray(@NotNull byte[] array) {
         var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
-        var list = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> new CopyOnWriteArrayList<>());
-        list.add(new WeakReference<>(tmp));
+        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+        set.add(new WeakReference<>(tmp));
         return tmp;
     }
 
     public void tick() {
         currentTick++;
+        if (!enable) return;
         var dt = currentTick % cycleTick;
-        var list = tickArrayMap.get(dt);
+        var set = tickArrayMap.get(dt);
         // 定期清理空引用
         if (dt == 0) {
-            list.removeIf(r -> r.get() == null);
+            set.removeIf(r -> r.get() == null);
         }
         var start = System.currentTimeMillis();
-        CompletableFuture.runAsync(() -> list.parallelStream().filter(r -> {
+        CompletableFuture.runAsync(() -> set.parallelStream().filter(r -> {
             var e = r.get();
             if (e == null) return false;
             int temp = e.getTemperature();
