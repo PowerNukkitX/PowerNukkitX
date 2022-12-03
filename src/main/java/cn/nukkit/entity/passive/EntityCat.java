@@ -222,7 +222,7 @@ public class EntityCat extends EntityWalkingAnimal {
             }
         } else if (this.isBreedingItem(item)) {
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            this.getLevel().addSound(this, Sound.RANDOM_EAT);
+            this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
             this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
 
             if (healable != 0) {
