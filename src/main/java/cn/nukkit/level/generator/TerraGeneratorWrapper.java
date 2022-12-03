@@ -9,7 +9,6 @@ import cn.nukkit.level.terra.TerraGenerator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.Map;
@@ -38,6 +37,8 @@ public class TerraGeneratorWrapper extends Generator {
 
     @Override
     public void init(ChunkManager chunkManager, NukkitRandom random) {
+        this.chunkManager = chunkManager;
+        this.nukkitRandom = random;
         this.terra = generators.get(getLevel().getId());
         if (this.terra == null) {
             synchronized (generators) {

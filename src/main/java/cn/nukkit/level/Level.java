@@ -353,18 +353,10 @@ public class Level implements ChunkManager, Metadatable {
         this.generators = ThreadLocal.withInitial(() -> {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(requireProvider().getGeneratorOptions());
-                NukkitRandom rand = new NukkitRandom(getSeed());
-                generator.setRandom(rand);
                 generator.setLevel(Level.this);
+                NukkitRandom rand = new NukkitRandom(getSeed());
                 ChunkManager manager = new PopChunkManager(getSeed());
-                generator.setChunkManager(manager);
-
-                //这里这么做的原因是为了向前兼容，实际上没必要
-                if (Server.getInstance().isPrimaryThread()) {
-                    generator.init(Level.this, rand);
-                }
                 generator.init(manager, rand);
-
                 return generator;
             } catch (Throwable e) {
                 e.printStackTrace();

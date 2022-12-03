@@ -73,8 +73,6 @@ public class TheEnd extends Generator {
     double[] detailNoise;
     double[] roughnessNoise;
     double[] roughnessNoise2;
-    private ChunkManager level;
-    private NukkitRandom nukkitRandom;
     private Random random;
     private NoiseGeneratorOctavesD roughnessNoiseOctaves;
     private NoiseGeneratorOctavesD roughnessNoiseOctaves2;
@@ -116,15 +114,15 @@ public class TheEnd extends Generator {
 
     @Override
     public ChunkManager getChunkManager() {
-        return this.level;
+        return this.chunkManager;
     }
 
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
-        this.level = level;
+        this.chunkManager = level;
         this.nukkitRandom = random;
         this.random = new Random();
-        this.nukkitRandom.setSeed(this.level.getSeed());
+        this.nukkitRandom.setSeed(this.chunkManager.getSeed());
         this.localSeed1 = this.random.nextLong();
         this.localSeed2 = this.random.nextLong();
 

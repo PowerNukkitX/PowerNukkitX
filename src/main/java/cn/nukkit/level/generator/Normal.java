@@ -123,9 +123,7 @@ public class Normal extends Generator {
     public NoiseGeneratorOctavesF depthNoise;
     private List<Populator> populators = Collections.emptyList();
     private List<Populator> generationPopulators = Collections.emptyList();
-    private ChunkManager level;
     private Random random;
-    private NukkitRandom nukkitRandom;
     private long localSeed1;
     private long localSeed2;
     private BiomeSelector selector;
@@ -155,7 +153,7 @@ public class Normal extends Generator {
 
     @Override
     public ChunkManager getChunkManager() {
-        return this.level;
+        return this.chunkManager;
     }
 
     @Override
@@ -174,10 +172,10 @@ public class Normal extends Generator {
 
     @Override
     public void init(ChunkManager level, NukkitRandom random) {
-        this.level = level;
+        this.chunkManager = level;
         this.nukkitRandom = random;
         this.random = new Random();
-        this.nukkitRandom.setSeed(this.level.getSeed());
+        this.nukkitRandom.setSeed(this.chunkManager.getSeed());
         this.localSeed1 = this.random.nextLong();
         this.localSeed2 = this.random.nextLong();
         this.nukkitRandom.setSeed(this.level.getSeed());

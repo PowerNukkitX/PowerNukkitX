@@ -41,7 +41,7 @@ public abstract class Generator implements BlockID {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
-    protected NukkitRandom random;
+    protected NukkitRandom nukkitRandom;
 
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
@@ -91,8 +91,8 @@ public abstract class Generator implements BlockID {
 
     @PowerNukkitXOnly
     @Since("1.19.21-r2")
-    public NukkitRandom getRandom() {
-        return random;
+    public NukkitRandom getNukkitRandom() {
+        return nukkitRandom;
     }
 
     /**
@@ -111,18 +111,6 @@ public abstract class Generator implements BlockID {
     @Since("1.19.21-r2")
     public void setLevel(Level level) {
         this.level = level;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public void setChunkManager(ChunkManager chunkManager) {
-        this.chunkManager = chunkManager;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.21-r2")
-    public void setRandom(NukkitRandom random) {
-        this.random = random;
     }
 
     @Deprecated
@@ -223,7 +211,7 @@ public abstract class Generator implements BlockID {
         for (PopulatorStructure populator : structurePopulators) {
             if (populator.isAsync())
                 handleAsyncStructureGenTask(new ChunkPopulationTask(level, chunk, populator));
-            else populator.populate(level, chunkX, chunkZ, random, chunk);
+            else populator.populate(level, chunkX, chunkZ, nukkitRandom, chunk);
         }
     }
 
