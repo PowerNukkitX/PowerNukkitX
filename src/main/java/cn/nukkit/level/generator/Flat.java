@@ -68,6 +68,11 @@ public class Flat extends Generator {
     }
 
     @Override
+    public NukkitRandom getRandom() {
+        return this.random;
+    }
+
+    @Override
     public Map<String, Object> getSettings() {
         return this.options;
     }
