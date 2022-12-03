@@ -133,24 +133,36 @@ public class FreezableArrayManager {
     }
 
     public ByteArrayWrapper createByteArray(int length) {
-        var tmp = new FreezableByteArray(length, this);
-        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
-        set.add(new WeakReference<>(tmp));
-        return tmp;
+        if (enable) {
+            var tmp = new FreezableByteArray(length, this);
+            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+            set.add(new WeakReference<>(tmp));
+            return tmp;
+        } else {
+            return new PureByteArray(length);
+        }
     }
 
     public ByteArrayWrapper wrapByteArray(@NotNull byte[] array) {
-        var tmp = new FreezableByteArray(array, this);
-        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
-        set.add(new WeakReference<>(tmp));
-        return tmp;
+        if (enable) {
+            var tmp = new FreezableByteArray(array, this);
+            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+            set.add(new WeakReference<>(tmp));
+            return tmp;
+        } else {
+            return new PureByteArray(array);
+        }
     }
 
     public ByteArrayWrapper cloneByteArray(@NotNull byte[] array) {
-        var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
-        var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
-        set.add(new WeakReference<>(tmp));
-        return tmp;
+        if (enable) {
+            var tmp = new FreezableByteArray(Arrays.copyOf(array, array.length), this);
+            var set = tickArrayMap.computeIfAbsent(currentArrayId.getAndIncrement() % cycleTick, (ignore) -> ConcurrentHashMultiset.create());
+            set.add(new WeakReference<>(tmp));
+            return tmp;
+        } else {
+            return new PureByteArray(Arrays.copyOf(array, array.length));
+        }
     }
 
     public void tick() {
