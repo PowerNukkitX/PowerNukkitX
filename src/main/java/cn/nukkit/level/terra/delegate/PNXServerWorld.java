@@ -4,7 +4,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.generator.PNXChunkGeneratorWrapper;
+import cn.nukkit.level.terra.TerraGenerator;
 import cn.nukkit.level.terra.PNXAdapter;
 import com.dfsek.terra.api.block.entity.BlockEntity;
 import com.dfsek.terra.api.block.state.BlockState;
@@ -18,11 +18,11 @@ import com.dfsek.terra.api.world.chunk.generation.ChunkGenerator;
 
 @PowerNukkitXOnly
 @Since("1.6.0.0-PNX")
-public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implements ServerWorld {
+public record PNXServerWorld(TerraGenerator generatorWrapper, ChunkManager manager) implements ServerWorld {
 
     @Override
     public void setBlockState(int i, int i1, int i2, BlockState blockState, boolean b) {
-        generatorWrapper.getChunkManager().setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
+        manager.setBlockStateAt(i, i1, i2, ((PNXBlockStateDelegate) blockState).getHandle());
     }
 
     @Override
@@ -34,7 +34,7 @@ public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implemen
 
     @Override
     public BlockState getBlockState(int i, int i1, int i2) {
-        return PNXAdapter.adapt(generatorWrapper.getChunkManager().getBlockStateAt(i, i1, i2));
+        return PNXAdapter.adapt(manager.getBlockStateAt(i, i1, i2));
     }
 
     @Override
@@ -60,7 +60,7 @@ public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implemen
 
     @Override
     public long getSeed() {
-        return generatorWrapper.getChunkManager().getSeed();
+        return manager.getSeed();
     }
 
     @Override
@@ -75,11 +75,11 @@ public record PNXServerWorld(PNXChunkGeneratorWrapper generatorWrapper) implemen
 
     @Override
     public ChunkManager getHandle() {
-        return generatorWrapper.getChunkManager();
+        return manager;
     }
 
     @Override
     public Chunk getChunkAt(int i, int i1) {
-        return new PNXChunkDelegate(this, generatorWrapper.getChunkManager().getChunk(i, i1));
+        return new PNXChunkDelegate(this, manager.getChunk(i, i1));
     }
 }

@@ -86,7 +86,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     Level world = chunk.getProvider().getLevel();
                     this.waitingChunks.put(Level.chunkHash(chunkX, chunkZ), indexes);
                     for (BaseFullChunk ck : chunks) {
-                        Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(world, ck, this,
+                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(world, ck, this,
                                 feature -> feature.generateChunkCallback(level, startX, startZ, chunk, ck.getX(), ck.getZ())));
                     }
                     return;
@@ -187,7 +187,7 @@ public class PopulatorOceanMonument extends PopulatorStructure {
                     } else {
                         int f_cx = cx;
                         int f_cz = cz;
-                        Server.getInstance().computeThreadPool.submit(new CallbackableChunkGenerationTask<>(
+                        chunk.getProvider().getLevel().getGenerator().handleAsyncStructureGenTask(new CallbackableChunkGenerationTask<>(
                                 chunk.getProvider().getLevel(), ck, start,
                                 structure -> structure.postProcess(level, rand, new BoundingBox(x, z, x + 15, z + 15), f_cx, f_cz)));
                     }
