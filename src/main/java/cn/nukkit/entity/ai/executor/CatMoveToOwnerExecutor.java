@@ -7,7 +7,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.passive.EntityCat;
-import cn.nukkit.entity.passive.EntityWolf;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,7 @@ public class CatMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor 
 //            var tmp = randomVector3(player, 2);
 //            if (tmp == null) return true;
             var target = player.clone();
-            if (target.distanceSquared(entity) <= 9) return false;
+            if (target.distanceSquared(entity) <= 6) return false;
 
             //不允许跨世界
             if (!target.level.getName().equals(entity.level.getName()))
@@ -79,7 +78,7 @@ public class CatMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor 
 
                 return true;
             } else {
-                var targetVector = randomVector3(player, 4);
+                var targetVector = randomVector3(player, 3);
                 if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
                     return true;//继续寻找
                 else return !entityCat.teleport(targetVector);
