@@ -170,10 +170,9 @@ public class FreezableArrayManager {
         if (!enable) return;
         var dt = currentTick % cycleTick;
         var set = tickArrayMap.get(dt);
-        // 定期清理空引用
-        if (dt == 0) {
-            set.removeIf(r -> r.get() == null);
-        }
+        // 清理空引用
+        set.removeIf(r -> r.get() == null);
+        // 冻结数组
         var start = System.currentTimeMillis();
         CompletableFuture.runAsync(() -> set.parallelStream().filter(r -> {
             var e = r.get();
