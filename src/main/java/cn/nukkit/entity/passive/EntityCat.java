@@ -115,7 +115,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
                             new NearestPlayerSensor(8, 0, 20),
-                            new NearestTargetEntitySensor<>(0, 20, 20,
+                            new NearestTargetEntitySensor<>(0, 15, 20,
                                     List.of(CoreMemoryTypes.CAT_NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
                     ),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -204,7 +204,9 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
         int healable = this.getHealableItem(item);
         if (item.getId() == ItemID.RAW_FISH && item.getId() == ItemID.RAW_SALMON) {
-            if (!this.hasOwner()) {
+            if (!this.hasOwner(false)) {
+                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            } else if (!this.hasOwner(true)) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
                     EntityEventPacket packet = new EntityEventPacket();
@@ -251,6 +253,12 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
 
         return false;
+    }
+
+    //击杀猫会掉落0-2根线
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{Item.get(Item.STRING, Utils.rand(0, 2))};
     }
 
     @PowerNukkitOnly
