@@ -44,10 +44,14 @@ public final class ItemTag {
     }
 
     public static List<String> getTags(String itemName) {
-        return ITEM_2_TAGS.get(itemName).stream().toList();
+        var result = ITEM_2_TAGS.get(itemName);
+        if (result == null) return null;
+        return result.stream().toList();
     }
 
     public static List<String> getItems(String tag) {
-        return TAG_2_ITEMS.get(tag).stream().toList();
+        var result = TAG_2_ITEMS.get(tag);
+        if (result == null) return null;
+        return result.stream().toList();
     }
 }
