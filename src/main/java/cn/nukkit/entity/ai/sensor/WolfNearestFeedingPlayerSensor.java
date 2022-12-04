@@ -33,7 +33,7 @@ public class WolfNearestFeedingPlayerSensor extends NearestFeedingPlayerSensor {
             double minRangeSquared = this.minRange * this.minRange;
             //寻找范围内最近满足乞食要求的玩家
             for (Player p : entity.getLevel().getPlayers().values()) {
-                if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && (p.getInventory().getItemInHand().getId() == Item.BONE || entityAnimal.isBreedingItem(p.getInventory().getItemInHand()))) {
+                if (entity.distanceSquared(p) <= rangeSquared && entity.distanceSquared(p) >= minRangeSquared && (p.getInventory().getItemInHand().getId() == Item.BONE || entityAnimal.isBreedingItem(p.getInventory().getItemInHand())) && (p.getInventory().getItemInHand().getId() == Item.RAW_FISH || entityAnimal.isBreedingItem(p.getInventory().getItemInHand())) && (p.getInventory().getItemInHand().getId() == Item.RAW_SALMON || entityAnimal.isBreedingItem(p.getInventory().getItemInHand()))) {
                     if (player == null) {
                         player = p;
                     } else {

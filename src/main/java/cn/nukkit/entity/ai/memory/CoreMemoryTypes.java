@@ -39,6 +39,7 @@ public interface CoreMemoryTypes {
     MemoryType<Integer> LAST_IN_LOVE_TIME = new MemoryType<>("minecraft:last_in_love_time", -65536);
     MemoryType<Integer> LAST_EGG_SPAWN_TIME = new MemoryType<>("minecraft:last_egg_spawn_time", () -> Server.getInstance().getTick());
     MemoryType<Entity> WOLF_NEAREST_SUITABLE_ATTACK_TARGET = new MemoryType<>("minecraft:wolf_nearest_suitable_attack_target");
+    MemoryType<Entity> CAT_NEAREST_SUITABLE_ATTACK_TARGET = new MemoryType<>("minecraft:cat_nearest_suitable_attack_target");
     MemoryType<Player> NEAREST_FEEDING_PLAYER = new MemoryType<>("minecraft:nearest_feeding_player");
     MemoryType<Player> NEAREST_PLAYER = new MemoryType<>("minecraft:nearest_player");
     MemoryType<Entity> ENTITY_ATTACKED_BY_OWNER = new MemoryType<>("minecraft:entity_attacked_by_owner");

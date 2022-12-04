@@ -15,8 +15,9 @@ import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
-import cn.nukkit.entity.ai.sensor.NearestFeedingPlayerSensor;
 import cn.nukkit.entity.ai.sensor.NearestPlayerSensor;
+import cn.nukkit.entity.ai.sensor.NearestTargetEntitySensor;
+import cn.nukkit.entity.ai.sensor.WolfNearestFeedingPlayerSensor;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.item.Item;
@@ -32,29 +33,31 @@ import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityWalkingAnimal {
+public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
     public static final int NETWORK_ID = 75;
-    public EntityCat(FullChunk chunk, CompoundTag nbt) {
-        super(chunk, nbt);
-    }
-    private Player owner = null;
+    private Player owner;
     private String ownerName = "";
     private boolean sitting = false;
     private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
     private IBehaviorGroup behaviorGroup;
+
+    public EntityCat(FullChunk chunk, CompoundTag nbt) {
+        super(chunk, nbt);
+    }
+
+    @Override
+    public int getNetworkId() {
+        return NETWORK_ID;
+    }
 
     @Override
     public void updateMovement() {
         //猫猫流线运动怎么可能会摔落造成伤害呢~
         this.highestPosition = this.y;
         super.updateMovement();
-    }
-
-    @Override
-    public int getNetworkId() {
-        return NETWORK_ID;
     }
 
     @Override
@@ -71,16 +74,34 @@ public class EntityCat extends EntityWalkingAnimal {
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
                                     1, 1
+                            ),
+                            //流浪猫在以自身为半径15格鸡,兔子,小海龟 来自Wiki https://minecraft.fandom.com/wiki/Cat#Bedrock_Edition
+                            new Behavior(
+                                    entity -> {
+                                        var storage = getMemoryStorage();
+                                        Entity attackTarget = null;
+                                        //已驯服为家猫就不攻击下述动物反之未驯服为流浪猫攻击下述动物
+                                        //攻击最近的鸡，小海龟，兔子
+                                        if (storage.notEmpty(CoreMemoryTypes.CAT_NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.CAT_NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
+                                            attackTarget = storage.get(CoreMemoryTypes.CAT_NEAREST_SUITABLE_ATTACK_TARGET);
+                                        }
+                                        storage.put(CoreMemoryTypes.ATTACK_TARGET, attackTarget);
+                                        return true;
+                                    },
+                                    entity -> true, 1
                             )
                     ),
                     Set.of(
+                            //坐下锁定 优先级7
                             new Behavior(entity -> false, entity -> this.isSitting(), 7),
-                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.45f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 150, false, -1, true, 10),
-                                    new ProbabilityEvaluator(5, 10), 1, 1, 50),
-                            new Behavior(new CatMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                            //猫咪繁殖 优先级5
+                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
+                            //猫咪随机目标点移动 优先级1
+                            new Behavior(new RandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 50),
+                            //猫咪看向目标玩家 优先级1
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 200), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
+                            //猫咪向主人移动 优先级4
+                            new Behavior(new WolfMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityCat entityCat && entityCat.hasOwner()) {
                                     var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
                                     if (player == null) return false;
@@ -88,31 +109,49 @@ public class EntityCat extends EntityWalkingAnimal {
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
                                 } else return false;
-                            }, 6, 1),
-                            new Behavior(new CatLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1)
+                            }, 4, 1),
+                            //猫咪看向食物 优先级3
+                            new Behavior(new WolfLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1)
                     ),
-                    Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
+                    Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
+                            new NearestPlayerSensor(8, 0, 20),
+                            new NearestTargetEntitySensor<>(0, 20, 20,
+                                    List.of(CoreMemoryTypes.CAT_NEAREST_SUITABLE_ATTACK_TARGET), this::attackTarget)
+                    ),
                     Set.of(new WalkController(), new LookController(true, true)),
                     new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
+
             );
         }
         return behaviorGroup;
     }
 
+    //猫咪身体大小来自Wiki https://minecraft.fandom.com/wiki/Cat
     @Override
     public float getWidth() {
         if (this.isBaby()) {
-            return 0.3f;
+            return 0.24f;
         }
-        return 0.6f;
+        return 0.48f;
     }
 
     @Override
     public float getHeight() {
         if (this.isBaby()) {
-            return 0.35f;
+            return 0.28f;
         }
-        return 0.7f;
+        return 0.56f;
+    }
+
+    //攻击选择器
+    //流浪猫会攻击兔子,鸡,小海龟
+    @PowerNukkitXOnly
+    @Since("1.19.30-r1")
+    public boolean attackTarget(Entity entity) {
+        return switch (entity.getNetworkId()) {
+            case EntityRabbit.NETWORK_ID, EntityChicken.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+            default -> false;
+        };
     }
 
     @Override
@@ -238,6 +277,14 @@ public class EntityCat extends EntityWalkingAnimal {
 
         return false;
     }
+
+    @PowerNukkitOnly
+    @Since("1.5.1.0-PN")
+    @Override
+    public String getOriginalName() {
+        return "Cat";
+    }
+
     /**
      * 绑定猫繁殖物品
      * WIKI了解只能使用生鲑鱼与生鳕鱼才能繁殖
@@ -291,11 +338,13 @@ public class EntityCat extends EntityWalkingAnimal {
     public Player getOwner() {
         return this.owner;
     }
+
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     public boolean hasOwner() {
         return hasOwner(true);
     }
+
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     public boolean hasOwner(boolean checkOnline) {
@@ -321,14 +370,11 @@ public class EntityCat extends EntityWalkingAnimal {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
         this.namedTag.putBoolean("Sitting", sit);
     }
-
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     private void setTamed(boolean tamed) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
     }
-
-
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     public void setCollarColor(DyeColor color) {
@@ -345,10 +391,4 @@ public class EntityCat extends EntityWalkingAnimal {
         } else return defaultValue;
     }
 
-    @PowerNukkitOnly
-    @Since("1.5.1.0-PN")
-    @Override
-    public String getOriginalName() {
-        return "Cat";
-    }
 }
