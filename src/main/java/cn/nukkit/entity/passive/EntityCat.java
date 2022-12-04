@@ -163,7 +163,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                 this.sitting = true;
                 this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, true);
             }
-        }
+        } else this.sitting = false;
 
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
@@ -174,7 +174,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                 this.collarColor = collarColor;
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
-        }
+        } else this.collarColor = DyeColor.RED;
     }
     @Override
     public void saveNBT() {
@@ -203,32 +203,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
             return applyNameTag(player, item);
         }
         int healable = this.getHealableItem(item);
-        if (item.getId() == ItemID.RAW_FISH) {
-            if (!this.hasOwner()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
-
-                    this.setMaxHealth(10);
-                    this.setHealth(10);
-                    this.setOwnerName(player.getName());
-                    this.setCollarColor(DyeColor.RED);
-                    this.saveNBT();
-
-                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
-
-                    return true;
-                } else {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
-                }
-            }
-        } else if (item.getId() == ItemID.RAW_SALMON) {
+        if (item.getId() == ItemID.RAW_FISH && item.getId() == ItemID.RAW_SALMON) {
             if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
