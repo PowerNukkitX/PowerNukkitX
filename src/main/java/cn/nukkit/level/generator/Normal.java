@@ -159,6 +159,11 @@ public class Normal extends Generator {
     }
 
     @Override
+    public NukkitRandom getRandom() {
+        return this.nukkitRandom;
+    }
+
+    @Override
     public String getName() {
         return "normal";
     }

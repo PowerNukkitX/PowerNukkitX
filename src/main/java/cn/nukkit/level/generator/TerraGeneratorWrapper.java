@@ -9,6 +9,8 @@ import cn.nukkit.level.terra.TerraGenerator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.Map;
 
@@ -23,56 +25,63 @@ import java.util.Map;
 @PowerNukkitXOnly
 public class TerraGeneratorWrapper extends Generator {
 
-    //此代理类实例共享的Terra生成器实例
-    protected static volatile TerraGenerator INSTANCE;
-    protected static Map<String, Object> OPTION;
+    //所有terra实例
+    protected static final Map<Integer, TerraGenerator> generators = new Int2ObjectOpenHashMap<>();
+    //共享的Terra实例
+    protected volatile TerraGenerator terra;
+    protected final Map<String, Object> option;
+
 
     public TerraGeneratorWrapper(Map<String, Object> option) {
-        TerraGeneratorWrapper.OPTION = option;
+        this.option = option;
     }
 
     @Override
     public void init(ChunkManager chunkManager, NukkitRandom random) {
-        if (INSTANCE == null) {
-            synchronized (TerraGeneratorWrapper.class) {
-                if (INSTANCE == null) INSTANCE = new TerraGenerator(OPTION, getLevel());
+        this.terra = generators.get(getLevel().getId());
+        if (this.terra == null) {
+            synchronized (generators) {
+                if (this.terra == null) {
+                    this.terra = new TerraGenerator(this.option, getLevel());
+                    generators.put(getLevel().getId(), this.terra);
+                }
             }
         }
     }
 
     @Override
     public int getId() {
-        return INSTANCE.getDimensionData().getDimensionId();
+        return this.terra.getDimensionData().getDimensionId();
     }
 
     @Override
     public void generateChunk(int chunkX, int chunkZ) {
-        INSTANCE.generateChunk(chunkX, chunkZ, getChunkManager());
+        this.terra.generateChunk(chunkX, chunkZ, getChunkManager());
     }
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        INSTANCE.populateChunk(chunkX, chunkZ, getChunkManager());
+        this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
     }
 
     @Override
     public Map<String, Object> getSettings() {
-        return INSTANCE.getSettings();
+        return this.terra.getSettings();
     }
 
     @Override
     public String getName() {
-        return INSTANCE.getName();
+        return this.terra.getName();
     }
 
     @Override
     public Vector3 getSpawn() {
-        return INSTANCE.getSpawn();
+        return this.terra.getSpawn();
     }
 
     @Override
     public DimensionData getDimensionData() {
-        return INSTANCE.getDimensionData();
+        return this.terra.getDimensionData();
     }
 
     @Override
