@@ -26,7 +26,6 @@ import cn.nukkit.entity.mob.EntitySkeleton;
 import cn.nukkit.entity.mob.EntityStray;
 import cn.nukkit.entity.mob.EntityWitherSkeleton;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
@@ -54,11 +53,15 @@ import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
  */
 public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack {
     public static final int NETWORK_ID = 14;
-    private Player owner = null;
+    private Player owner;
     private String ownerName = "";
-    private boolean sitting = false;
-    private boolean angry = false;
-    private DyeColor collarColor = DyeColor.RED;//项圈颜色
+    //实体子类字段最好不要显式初始化，因为实体创建流程是先初始化父类Entity然后进入Entity#init方法,
+    //随后调用子类initEntity初始化实体,之后从根父类Entity逐级返回初始化字段,最后进入子类初始化字段
+    //字段初始化语句，应当放进initEntity中执行
+    //如果不明白顺序，可能会出现在initEntity中初始化后被字段初始化覆盖的情况
+    private boolean sitting;
+    private boolean angry;
+    private DyeColor collarColor;//项圈颜色
     private IBehaviorGroup behaviorGroup;
     private float[] diffHandDamage;
 
@@ -94,7 +97,8 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                         Entity attackTarget = null;
                                         var attackEvent = storage.get(CoreMemoryTypes.BE_ATTACKED_EVENT);
                                         EntityDamageByEntityEvent attackByEntityEvent = null;
-                                        if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv) attackByEntityEvent = attackByEntityEv;
+                                        if (attackEvent instanceof EntityDamageByEntityEvent attackByEntityEv)
+                                            attackByEntityEvent = attackByEntityEv;
                                         boolean validAttacker = attackByEntityEvent != null && attackByEntityEvent.getDamager().isAlive() && (!(attackByEntityEvent.getDamager() instanceof Player player) || player.isSurvival());
                                         if (hasOwner) {
                                             //已驯服
@@ -201,14 +205,14 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                 this.sitting = true;
                 this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, true);
             }
-        }
+        } else this.sitting = false;
 
         if (this.namedTag.contains("Angry")) {
             if (this.namedTag.getBoolean("Angry")) {
                 this.angry = true;
                 this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, true);
             }
-        }
+        } else this.angry = false;
 
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
@@ -219,18 +223,15 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                 this.collarColor = collarColor;
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
-        }
+        } else this.collarColor = DyeColor.RED;
 
         if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
+            this.diffHandDamage = new float[3];
             var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
             this.diffHandDamage[0] = damageList.get(0).getData();
             this.diffHandDamage[1] = damageList.get(1).getData();
             this.diffHandDamage[2] = damageList.get(2).getData();
-        }
-
-        if (this.diffHandDamage == null) {
-            this.setDiffHandDamage(new float[]{3, 4, 6});
-        }
+        } else this.diffHandDamage = new float[]{3, 4, 6};
     }
 
     @Override
@@ -240,8 +241,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putBoolean("Sitting", this.sitting);
         this.namedTag.putString("OwnerName", this.ownerName);
-        if (diffHandDamage != null)
-            this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
@@ -313,17 +313,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         }
 
         return false;
-    }
-
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        var result = super.attack(source);
-        if (source instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-            if (entityDamageByEntityEvent.getDamager() instanceof Player player && player.isCreative()) return result;
-//            //更新仇恨目标
-//            getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entityDamageByEntityEvent.getDamager());
-        }
-        return result;
     }
 
     @PowerNukkitXOnly
