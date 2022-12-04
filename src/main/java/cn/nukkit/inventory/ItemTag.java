@@ -45,13 +45,13 @@ public final class ItemTag {
 
     public static List<String> getTags(String itemName) {
         var result = ITEM_2_TAGS.get(itemName);
-        if (result.isEmpty()) return null;
+        if (result == null) return null;
         return result.stream().toList();
     }
 
     public static List<String> getItems(String tag) {
         var result = TAG_2_ITEMS.get(tag);
-        if (result.isEmpty()) return null;
+        if (result == null) return null;
         return result.stream().toList();
     }
 }
