@@ -236,8 +236,10 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
         if (this.isHead()) {
             AtomicBoolean hasEntityOn = new AtomicBoolean(false);
             this.getChunk().getEntities().values().stream().parallel().forEach(entity -> {
-                if (entity.asBlockVector3().equals(this.asBlockVector3()))
+                if (this.collidesWithBB(entity.getBoundingBox().expand(0, -0.1, 0), true))
                     hasEntityOn.set(true);
+//                if (entity.asBlockVector3().equals(this.asBlockVector3()))
+//                    hasEntityOn.set(true);
             });
             if (hasEntityOn.get() && this.getLevelBlock() instanceof BlockBigDripleaf blockBigDripleaf && blockBigDripleaf.getTilt() == Tilt.NONE) {
                 addTiltAction(this, new TiltAction(Tilt.PARTIAL_TILT,15,new TiltAction(Tilt.FULL_TILT,15,null)));
