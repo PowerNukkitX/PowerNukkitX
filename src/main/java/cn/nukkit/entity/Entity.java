@@ -1994,8 +1994,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.updateMovement();
         }
 
-        if (this.getLevelBlock() instanceof BlockBigDripleaf) {
-            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+        if (this.getTickCachedLevelBlock() instanceof BlockBigDripleaf block) {
             if (block.isHead())
                 block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
         }
@@ -2741,7 +2740,7 @@ public abstract class Entity extends Location implements Metadatable {
         boolean portal = false;
         boolean scaffolding = false;
         boolean endPortal = false;
-        for (Block block : this.getCollisionBlocks()) {
+        for (var block : this.getTickCachedCollisionBlocks()) {
             switch (block.getId()) {
                 case Block.NETHER_PORTAL -> portal = true;
                 case BlockID.SCAFFOLDING -> scaffolding = true;
@@ -2749,7 +2748,7 @@ public abstract class Entity extends Location implements Metadatable {
             }
 
             block.onEntityCollide(this);
-            block.getLevelBlockAtLayer(1).onEntityCollide(this);
+            block.getTickCachedLevelBlockAtLayer(1).onEntityCollide(this);
             if (needsRecalcCurrent)
                 block.addVelocityToEntity(this, vector);
         }
