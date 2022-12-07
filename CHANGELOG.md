@@ -10,19 +10,55 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 2. <a href="#CataLogs-Join-the-community">💬 Join the Community / 加入我们 </a>
 3. <a href="#CataLogs-Version-history">🔖 Version history / 历史版本 </a>
 
-## [Dev-PNX](https://github.com/PowerNukkitX/PowerNukkitX/actions) - Future
-This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
+## [1.19.50-r2-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2) - 2022-12-5
+This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
+
+## Added
+
+- [#823]/[#824] Revert `AsyncPool` changes and use a better `ForkJoinPool` to generate worlds.
 
 ## Changed
 
+- [#827] Optimize powder snow interaction perfomance.
+- [#830]/[#833]/[#836] Fix a memory leak bug in automatic memory compression and enhance its perfomance.
+- [#837] Non-creature entity performance optimization.
+
+## Fixes
+
+- [#821] Fix some types of recipes that does not work before.
+- [#828] Fix `terra` multi-pack loading bug.
+- [#832] Fix terra multi-pack loading bug.
+
+## [1.19.50-r1-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1) - 2022-12-1
+This work in progress version supports Minecraft:BE `1.19.50 (Protocol Version 560)`.
+
+## Added
+
+- [#785] Memory Usage Optimization.
+- [#785] `nukkit.yml` adds new configuration ([click here to view](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1)).
+- [#788] Add `docker` image.
+- [#817] Add some 1.19 item.
+
+## Changed
+
+- [#187] Resolving thread leaks for graceful downtime (implemented in [#808]).
 - [#781] Initial optimization of the funnel.
 - [#784] Add issue template. 
+- [#794] Remove the `isServerAuthoritativeBlockBreaking`.
+- [#799] some adopt change.
+- [#811] Using `ForkJoinPool` to implement `AsyncPool`.
 
 ## Fixes
 
 - [#778] Fix terra biome npe.
 - [#782] Fix missing terra level-type.
 - [#786] Fix tripwire hook NPE issue.
+- [#790] Fix ladder place bug (fixed in [#815]).
+- [#792] Fix `player#getFreeSpace` returns negative integer (fixed in [#815]).
+- [#806] Temporary fix for Generator memory leak.
+- [#807] Fix Calcite cannot be burned (fixed in [#815]).
+- [#810] Fix Enchanted pickaxe dig speed error (fixed in [#815]).
+- [#812] Fix the problem of shutting down the service and reporting errors (fixed in [#815]).
 
 ## [1.19.40-r3-PNX](https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3) - 2022-11-12
 This work in progress version supports Minecraft:BE `1.19.40 (Protocol Version 557)`.
@@ -1346,6 +1382,14 @@ Fixes several anvil issues.
 
 </details>
 
+<details>
+  <summary>1.19.50-PNX</summary>
+
+   1. [#1.19.50-r1] PNX-1.19.50-r1 (Protocol Version 560)
+   2. [#1.19.50-r2] PNX-1.19.50-r2 (Protocol Version 560)
+
+</details>
+
 ## <a id="CataLogs-Swlang"></a>🌐 多语言文档
 
 ---
@@ -1590,6 +1634,7 @@ Need to switch languages?
 [#171]: https://github.com/PowerNukkitX/PowerNukkitX/issues/171
 [#177]: https://github.com/PowerNukkitX/PowerNukkitX/pull/177
 [#178]: https://github.com/PowerNukkitX/PowerNukkitX/pull/178
+[#187]: https://github.com/PowerNukkitX/PowerNukkitX/issues/187
 [#188]: https://github.com/PowerNukkitX/PowerNukkitX/issues/188
 [#202]: https://github.com/PowerNukkitX/PowerNukkitX/issues/202
 [#235]: https://github.com/PowerNukkitX/PowerNukkitX/pull/235
@@ -1846,13 +1891,37 @@ Need to switch languages?
 [#767]: https://github.com/PowerNukkitX/PowerNukkitX/pull/767
 [#768]: https://github.com/PowerNukkitX/PowerNukkitX/issues/768
 [#771]: https://github.com/PowerNukkitX/PowerNukkitX/pull/771
-[#777]: https://github.com/PowerNukkitX/PowerNukkitX/pull/777
 [#775]: https://github.com/PowerNukkitX/PowerNukkitX/pull/775
+[#777]: https://github.com/PowerNukkitX/PowerNukkitX/pull/777
 [#778]: https://github.com/PowerNukkitX/PowerNukkitX/pull/778
 [#781]: https://github.com/PowerNukkitX/PowerNukkitX/pull/781
 [#782]: https://github.com/PowerNukkitX/PowerNukkitX/pull/782
 [#784]: https://github.com/PowerNukkitX/PowerNukkitX/pull/784
+[#785]: https://github.com/PowerNukkitX/PowerNukkitX/pull/785
 [#786]: https://github.com/PowerNukkitX/PowerNukkitX/pull/786
+[#788]: https://github.com/PowerNukkitX/PowerNukkitX/pull/788
+[#790]: https://github.com/PowerNukkitX/PowerNukkitX/issues/790
+[#792]: https://github.com/PowerNukkitX/PowerNukkitX/issues/792
+[#794]: https://github.com/PowerNukkitX/PowerNukkitX/pull/794
+[#799]: https://github.com/PowerNukkitX/PowerNukkitX/pull/799
+[#806]: https://github.com/PowerNukkitX/PowerNukkitX/pull/806
+[#807]: https://github.com/PowerNukkitX/PowerNukkitX/issues/807
+[#808]: https://github.com/PowerNukkitX/PowerNukkitX/pull/808
+[#810]: https://github.com/PowerNukkitX/PowerNukkitX/issues/810
+[#811]: https://github.com/PowerNukkitX/PowerNukkitX/pull/811
+[#812]: https://github.com/PowerNukkitX/PowerNukkitX/issues/812
+[#815]: https://github.com/PowerNukkitX/PowerNukkitX/pull/815
+[#817]: https://github.com/PowerNukkitX/PowerNukkitX/pull/817
+[#821]: https://github.com/PowerNukkitX/PowerNukkitX/pull/821
+[#823]: https://github.com/PowerNukkitX/PowerNukkitX/pull/823
+[#824]: https://github.com/PowerNukkitX/PowerNukkitX/pull/824
+[#827]: https://github.com/PowerNukkitX/PowerNukkitX/pull/827
+[#828]: https://github.com/PowerNukkitX/PowerNukkitX/pull/828
+[#830]: https://github.com/PowerNukkitX/PowerNukkitX/pull/830
+[#832]: https://github.com/PowerNukkitX/PowerNukkitX/pull/832
+[#833]: https://github.com/PowerNukkitX/PowerNukkitX/pull/833
+[#836]: https://github.com/PowerNukkitX/PowerNukkitX/pull/836
+[#837]: https://github.com/PowerNukkitX/PowerNukkitX/pull/837
 <!--PowerNukkitX Version history-->
 
 <!--1.6.0.0-PNX Version summary Start-->
@@ -1907,6 +1976,11 @@ Need to switch languages?
 [#1.19.40-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r2
 <!--1.19.40-r3-PNX Protocol Version 557-->
 [#1.19.40-r3]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.40-r3
+
+<!--1.19.50-r1-PNX Protocol Version 560-->
+[#1.19.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1
+<!--1.19.40-r2-PNX Protocol Version 560-->
+[#1.19.50-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2
 <!--1.19.xx-PNX Version summary End-->
 
 <!--PowerNukkitX Urls-->
