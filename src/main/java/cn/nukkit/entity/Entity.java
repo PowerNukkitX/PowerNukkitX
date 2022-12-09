@@ -1935,8 +1935,9 @@ public abstract class Entity extends Location implements Metadatable {
         var pk = new MoveEntityAbsolutePacket();
         pk.eid = this.getId();
         pk.x = this.x;
-        //当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
-        //玩家位置和实际位置不相符，需要+getBaseOffset()
+        /*todo HACK实现
+        当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
+        玩家位置和实际位置不相符，需要+getBaseOffset()*/
         if (getServer().getServerAuthoritativeMovement() == 0) {
             pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
         } else pk.y = this.y + this.getEyeHeight();

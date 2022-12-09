@@ -20,7 +20,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -299,13 +298,6 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
         }
         this.move(this.motionX, this.motionY, this.motionZ);
         broadcastMovement(false);
-    }
-
-    @Override
-    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        this.getOffhandInventory().setItem(0, Item.get(ItemID.DIAMOND_PICKAXE));
-        this.getInventory().sendHeldItem(player);
-        return super.onInteract(player, item, clickedPos);
     }
 
     @Override
