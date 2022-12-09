@@ -19,6 +19,8 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.vibration.VibrationEvent;
+import cn.nukkit.level.vibration.VibrationType;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -296,8 +298,39 @@ public class EntityIntelligentHuman extends EntityIntelligent implements Invento
         if (!this.onGround && this.y < this.highestPosition) {
             this.fallingTick++;
         }
+        //这样做是为了向后兼容旧插件
+        if (!enableHeadYaw()) {
+            this.headYaw = this.yaw;
+        }
+        double diffPosition = (this.x - this.lastX) * (this.x - this.lastX) + (this.y - this.lastY) * (this.y - this.lastY) + (this.z - this.lastZ) * (this.z - this.lastZ);
+        double diffRotation = enableHeadYaw() ? (this.headYaw - this.lastHeadYaw) * (this.headYaw - this.lastHeadYaw) : 0 + (this.yaw - this.lastYaw) * (this.yaw - this.lastYaw) + (this.pitch - this.lastPitch) * (this.pitch - this.lastPitch);
+        double diffMotion = (this.motionX - this.lastMotionX) * (this.motionX - this.lastMotionX) + (this.motionY - this.lastMotionY) * (this.motionY - this.lastMotionY) + (this.motionZ - this.lastMotionZ) * (this.motionZ - this.lastMotionZ);
+        if (diffPosition > 0.0001 || diffRotation > 1.0) { //0.2 ** 2, 1.5 ** 2
+            if (diffPosition > 0.0001) {
+                if (this.isOnGround()) {
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.STEP));
+                } else if (this.isTouchingWater()) {
+                    this.level.getVibrationManager().callVibrationEvent(new VibrationEvent(this, this.clone(), VibrationType.SWIM));
+                }
+            }
+            this.broadcastMovement(false);
+            this.lastX = this.x;
+            this.lastY = this.y;
+            this.lastZ = this.z;
+            this.lastPitch = this.pitch;
+            this.lastYaw = this.yaw;
+            this.lastHeadYaw = this.headYaw;
+            this.positionChanged = true;
+        } else {
+            this.positionChanged = false;
+        }
+        if (diffMotion > 0.0025 || (diffMotion > 0.0001 && this.getMotion().lengthSquared() <= 0.0001)) { //0.05 ** 2
+            this.lastMotionX = this.motionX;
+            this.lastMotionY = this.motionY;
+            this.lastMotionZ = this.motionZ;
+            this.addMotion(this.motionX, this.motionY, this.motionZ);
+        }
         this.move(this.motionX, this.motionY, this.motionZ);
-        broadcastMovement(false);
     }
 
     @Override
