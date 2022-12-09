@@ -15,6 +15,7 @@ import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Faceable;
 
@@ -307,9 +308,14 @@ public class BlockBigDripleaf extends BlockFlowable implements Faceable {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        if (this.getTilt() == Tilt.NONE) return this;
-        else if (this.getTilt() == Tilt.FULL_TILT) return null;
-        return this;
+        if (this.isHead()) {
+            if (this.getTilt() == Tilt.NONE) return this;
+            else if (this.getTilt() == Tilt.FULL_TILT) return null;
+            else if (this.getTilt() == Tilt.PARTIAL_TILT) {
+                return new SimpleAxisAlignedBB(this.x, this.y + 0.05, this.z, this.x + 1, this.y + 0.05, this.z + 1);
+            }
+            return this;
+        } else return null;
     }
 
     @Override
