@@ -12,10 +12,7 @@ import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.mob.EntityBlaze;
 import cn.nukkit.entity.mob.EntityEnderDragon;
-import cn.nukkit.entity.mob.EntityMagmaCube;
-import cn.nukkit.entity.passive.EntityStrider;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.provider.ClassEntityProvider;
 import cn.nukkit.entity.provider.CustomEntityProvider;
@@ -1930,6 +1927,27 @@ public abstract class Entity extends Location implements Metadatable {
         pk.motionZ = (float) motionZ;
 
         Server.broadcastPacket(this.hasSpawned.values(), pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.31-r1")
+    protected void broadcastMovement(boolean teleport) {
+        var pk = new MoveEntityAbsolutePacket();
+        pk.eid = this.getId();
+        pk.x = this.x;
+        /*todo HACK实现
+        当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
+        玩家位置和实际位置不相符，需要+getBaseOffset()*/
+        if (getServer().getServerAuthoritativeMovement() == 0) {
+            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
+        } else pk.y = this.y + this.getEyeHeight();
+        pk.z = this.z;
+        pk.headYaw = yaw;
+        pk.pitch = pitch;
+        pk.yaw = yaw;
+        pk.teleport = teleport;
+        pk.onGround = this.onGround;
+        Server.broadcastPacket(hasSpawned.values(), pk);
     }
 
     @PowerNukkitXDifference(info = "There is no need to set the temporalVector, because the result is prone to change in an asynchronous environment.")

@@ -105,7 +105,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                             if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKING_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER).isAlive()) {
                                                 //攻击攻击主人的生物
                                                 attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKING_OWNER);
-                                            } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive()) {
+                                            } else if (storage.notEmpty(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER) && storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).isAlive() && !storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER).equals(this)) {
                                                 //攻击主人攻击的生物
                                                 attackTarget = storage.get(CoreMemoryTypes.ENTITY_ATTACKED_BY_OWNER);
                                             } else if (attackByEntityEvent != null && validAttacker && !attackByEntityEvent.getDamager().equals(getOwner())) {

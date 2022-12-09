@@ -532,6 +532,12 @@ public abstract class BaseInventory implements Inventory {
         return true;
     }
 
+    /**
+     * 检测指定物品能在该库存所能存放的空余数量
+     *
+     * @param item 要检测的物品
+     * @return 所能存放的空余数量
+     */
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
         int space = (this.getSize() - this.slots.size()) * maxStackSize;
