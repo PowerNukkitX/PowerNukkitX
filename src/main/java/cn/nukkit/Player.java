@@ -3069,8 +3069,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             foodData.sendFoodLevel();
         }
 
-        if (this.getLevelBlock() instanceof BlockBigDripleaf) {
-            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+        if (this.getTickCachedLevelBlock() instanceof BlockBigDripleaf block) {
             if (block.isHead())
                 block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
         }
