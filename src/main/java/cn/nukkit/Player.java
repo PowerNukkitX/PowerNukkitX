@@ -270,7 +270,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected final int chunksPerTick;
     protected final int spawnThreshold;
 
-    protected Position spawnPosition = null;
+    protected Position spawnPosition;
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -1578,20 +1578,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        Level level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        Level level = null;
+        if (this.namedTag.containsInt("SpawnLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        }
         if (level != null) {
-            this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+            if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
+                this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+            } else {
+                this.spawnPosition = null;
+            }
             if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY") && this.namedTag.containsInt("SpawnBlockPositionZ")) {
                 this.spawnBlockPosition = new Vector3(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"));
             } else {
                 this.spawnBlockPosition = null;
             }
-        } else {
-            this.spawnPosition = this.level.getSafeSpawn();
-            this.spawnBlockPosition = null;
         }
-
-        spawnPosition = this.getSpawn();
+        Vector3 worldSpawnPoint;
+        if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
+        else worldSpawnPoint = spawnPosition;
 
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
@@ -1606,9 +1611,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();
-        startGamePacket.spawnX = spawnPosition.getFloorX();
-        startGamePacket.spawnY = spawnPosition.getFloorY();
-        startGamePacket.spawnZ = spawnPosition.getFloorZ();
+        startGamePacket.spawnX = worldSpawnPoint.getFloorX();
+        startGamePacket.spawnY = worldSpawnPoint.getFloorY();
+        startGamePacket.spawnZ = worldSpawnPoint.getFloorZ();
         startGamePacket.hasAchievementsDisabled = true;
         startGamePacket.dayCycleStopTime = -1;
         startGamePacket.rainLevel = 0;
@@ -1622,13 +1627,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //写入自定义方块数据
         startGamePacket.blockProperties.addAll(Block.getCustomBlockDefinitionList());
         this.dataPacketImmediately(startGamePacket);
-
         //写入自定义物品数据
         ItemComponentPacket itemComponentPacket = new ItemComponentPacket();
         if (this.getServer().isEnableExperimentMode() && !Item.getCustomItems().isEmpty()) {
-
             Int2ObjectOpenHashMap<ItemComponentPacket.Entry> entries = new Int2ObjectOpenHashMap<>();
-
             int i = 0;
             for (String id : Item.getCustomItems().keySet()) {
                 try {
@@ -1645,7 +1647,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     log.error("ItemComponentPacket encoding error", e);
                 }
             }
-
             itemComponentPacket.setEntries(entries.values().toArray(ItemComponentPacket.Entry.EMPTY_ARRAY));
         }
         this.dataPacket(itemComponentPacket);
@@ -1742,7 +1743,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             } else {
                 playerRespawnEvent.setConsumeCharge(false);
                 playerRespawnEvent.setRespawnBlockAvailable(false);
-                playerRespawnEvent.setRespawnPosition(this.getLevel().getSafeSpawn());
+                playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
             }
         }
         this.server.getPluginManager().callEvent(playerRespawnEvent);
@@ -5769,6 +5770,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     .putInt("SpawnBlockPositionY", spawnBlockPosition.getFloorY())
                     .putInt("SpawnBlockPositionZ", spawnBlockPosition.getFloorZ());
         }
+
+        if (spawnPosition == null) {
+            namedTag.remove("SpawnX")
+                    .remove("SpawnY")
+                    .remove("SpawnZ")
+                    .remove("SpawnLevel")
+                    .remove("SpawnDimension");
+        } else {
+            namedTag.putInt("SpawnX", this.spawnPosition.getFloorX())
+                    .putInt("SpawnY", this.spawnPosition.getFloorY())
+                    .putInt("SpawnZ", this.spawnPosition.getFloorZ());
+            if (this.spawnPosition.getLevel() != null) {
+                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderName());
+                this.namedTag.putInt("SpawnDimension", this.spawnPosition.getLevel().getDimension());
+            } else {
+                this.namedTag.putString("SpawnLevel", this.server.getDefaultLevel().getFolderName());
+                this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
+            }
+        }
     }
 
     public void save(boolean async) {
@@ -5780,13 +5800,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.level != null) {
             this.namedTag.putString("Level", this.level.getFolderName());
-            if (this.spawnPosition != null && this.spawnPosition.getLevel() != null) {
-                this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderName());
-                this.namedTag.putInt("SpawnX", this.spawnPosition.getFloorX());
-                this.namedTag.putInt("SpawnY", this.spawnPosition.getFloorY());
-                this.namedTag.putInt("SpawnZ", this.spawnPosition.getFloorZ());
-                this.namedTag.putInt("SpawnDimension", this.spawnPosition.getLevel().getDimension());
-            }
 
             CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
