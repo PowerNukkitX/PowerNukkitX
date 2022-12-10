@@ -6,6 +6,7 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanAttack;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -32,6 +33,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
@@ -40,12 +43,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
+import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
+
+public class EntityCat extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack {
     public static final int NETWORK_ID = 75;
     private Player owner;
     private String ownerName = "";
     private boolean sitting = false;
     private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
+    private float[] diffHandDamage;
     private IBehaviorGroup behaviorGroup;
 
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
@@ -180,6 +186,13 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
         } else this.collarColor = DyeColor.RED;
+        if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
+            this.diffHandDamage = new float[3];
+            var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
+            this.diffHandDamage[0] = damageList.get(0).getData();
+            this.diffHandDamage[1] = damageList.get(1).getData();
+            this.diffHandDamage[2] = damageList.get(2).getData();
+        } else this.diffHandDamage = new float[]{3, 4, 6};
     }
 
     @Override
@@ -188,6 +201,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putBoolean("Sitting", this.sitting);
         this.namedTag.putString("OwnerName", this.ownerName);
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
     @Override
     public boolean onUpdate(int currentTick) {
@@ -384,6 +398,28 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         if (entity instanceof EntityCat entityCat) {
             return entityCat.hasOwner(checkOnline);
         } else return defaultValue;
+    }
+
+    @Override
+    public float[] getDiffHandDamage() {
+        return this.diffHandDamage;
+    }
+
+    @Override
+    public void setDiffHandDamage(float[] damages) {
+        this.diffHandDamage = damages;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
+    }
+
+    @Override
+    public float getDiffHandDamage(int difficulty) {
+        return diffHandDamage[difficulty - 1];
+    }
+
+    @Override
+    public void setDiffHandDamage(int difficulty, float damage) {
+        this.diffHandDamage[difficulty - 1] = damage;
+        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
 }
