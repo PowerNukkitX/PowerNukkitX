@@ -94,7 +94,7 @@ public class EntityCow extends EntityWalkingAnimal {
 
     @Override
     public Item[] getDrops() {
-        if (!isBaby()) {
+        if (!this.isBaby()) {
             int leatherdorps = Utils.rand(0, 2);
             if (leatherdorps > 0)
                 return new Item[]{Item.get(Item.LEATHER, 0, leatherdorps)};

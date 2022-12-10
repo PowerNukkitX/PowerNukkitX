@@ -133,48 +133,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
 
     //猫咪身体大小来自Wiki https://minecraft.fandom.com/wiki/Cat
     @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            //用于刷新InLove状态的核心行为
-                            new Behavior(
-                                    new InLoveExecutor(400),
-                                    new AllMatchEvaluator(
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
-                                    ),
-                                    1, 1
-                            )
-                    ),
-                    Set.of(
-                            new Behavior(entity -> false, entity -> this.isSitting(), 7),
-                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 16, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 3, 1),
-                            new Behavior(new MoveToTargetExecutor(CoreMemoryTypes.NEAREST_FEEDING_PLAYER, 0.45f, true), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 2, 1),
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 150, false, -1, true, 10),
-                                    new ProbabilityEvaluator(5, 10), 1, 1, 50),
-                            new Behavior(new CatMoveToOwnerExecutor(0.35f, true, 15), entity -> {
-                                if (entity instanceof EntityCat entityCat && entityCat.hasOwner()) {
-                                    var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
-                                    if (player == null) return false;
-                                    if (!player.isOnGround()) return false;
-                                    var distanceSquared = entity.distanceSquared(player);
-                                    return distanceSquared >= 100;
-                                } else return false;
-                            }, 6, 1),
-                            new Behavior(new CatLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 4, 1)
-                    ),
-                    Set.of(new NearestFeedingPlayerSensor(8, 0), new NearestPlayerSensor(8, 0, 20)),
-                    Set.of(new WalkController(), new LookController(true, true)),
-                    new SimpleFlatAStarRouteFinder(new WalkingPosEvaluator(), this)
-            );
-        }
-        return behaviorGroup;
-    }
-
-    @Override
     public float getWidth() {
         if (this.isBaby()) {
             return 0.24f;
@@ -231,7 +189,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         this.namedTag.putBoolean("Sitting", this.sitting);
         this.namedTag.putString("OwnerName", this.ownerName);
     }
-
     @Override
     public boolean onUpdate(int currentTick) {
         var result = super.onUpdate(currentTick);
@@ -245,97 +202,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
         return result;
     }
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-        this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
-        this.namedTag.putBoolean("Sitting", this.sitting);
-        this.namedTag.putString("OwnerName", this.ownerName);
-    }
-    @Override
-    public boolean onUpdate(int currentTick) {
-        var result = super.onUpdate(currentTick);
-
-        //initEntity的时候玩家还没连接，所以只能在onUpdate里面更新
-        if (this.namedTag.contains("OwnerName") && this.owner == null) {
-            String ownerName = namedTag.getString("OwnerName");
-            if (ownerName != null && ownerName.length() > 0) {
-                setOwnerName(ownerName);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
-            return applyNameTag(player, item);
-        }
-        int healable = this.getHealableItem(item);
-        if (item.getId() == ItemID.RAW_FISH) {
-            if (!this.hasOwner()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
-
-                    this.setMaxHealth(10);
-                    this.setHealth(10);
-                    this.setOwnerName(player.getName());
-                    this.setCollarColor(DyeColor.RED);
-                    this.saveNBT();
-
-                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
-
-                    return true;
-                } else {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
-                }
-            }
-        } else if (item.getId() == ItemID.RAW_SALMON) {
-            if (!this.hasOwner()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                if (Utils.rand(1, 3) == 3) {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_SUCCESS;
-                    player.dataPacket(packet);
-
-                    this.setMaxHealth(10);
-                    this.setHealth(10);
-                    this.setOwnerName(player.getName());
-                    this.setCollarColor(DyeColor.RED);
-                    this.saveNBT();
-
-                    this.getLevel().dropExpOrb(this, Utils.rand(1, 7));
-
-                    return true;
-                } else {
-                    EntityEventPacket packet = new EntityEventPacket();
-                    packet.eid = this.getId();
-                    packet.event = EntityEventPacket.TAME_FAIL;
-                    player.dataPacket(packet);
-                }
-            }
-        } else if (item.getId() == Item.DYE) {
-            if (this.hasOwner() && player.equals(this.getOwner())) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                this.setCollarColor(((ItemDye) item).getDyeColor());
-                return true;
-            }
-        } else if (this.isBreedingItem(item)) {
-            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            this.getLevel().addSound(this, Sound.RANDOM_EAT);
-            this.getLevel().addParticle(new ItemBreakParticle(this.add(0, getHeight() * 0.75F, 0), Item.get(item.getId(), 0, 1)));
-
-            if (healable != 0) {
-                this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
-            }
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
@@ -397,7 +263,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
     //击杀小猫不会获得
     @Override
     public Item[] getDrops() {
-        if (!isBaby()) {
+        if (!this.isBaby()) {
             int catdrops = Utils.rand(0, 2);
             if (catdrops > 0) return new Item[]{Item.get(Item.STRING, 0, catdrops)};
         }
