@@ -21,6 +21,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 
 import java.util.Set;
 
@@ -93,7 +94,12 @@ public class EntityCow extends EntityWalkingAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), Item.get(((this.isOnFire()) ? Item.COOKED_BEEF : Item.RAW_BEEF))};
+        if (!isBaby()) {
+            int cowdorps = Utils.rand(0, 2);
+            if (cowdorps > 0)
+                return new Item[]{Item.get(Item.LEATHER), Item.get(((this.isOnFire()) ? Item.COOKED_BEEF : Item.RAW_BEEF))};
+        }
+        return Item.EMPTY_ARRAY;
     }
 
     @Override
