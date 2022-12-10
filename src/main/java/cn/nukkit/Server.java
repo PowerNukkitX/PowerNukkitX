@@ -2977,6 +2977,10 @@ public class Server {
 
     //todo NukkitConsole 会阻塞关不掉
     private class ConsoleThread extends Thread implements InterruptibleThread {
+        public ConsoleThread() {
+            super("Console Thread");
+        }
+
         @Override
         public void run() {
             console.start();

@@ -278,11 +278,6 @@ public class Effect implements Cloneable {
 
     public void add(Entity entity) {
         Effect oldEffect = entity.getEffect(getId());
-        if (oldEffect != null && (Math.abs(this.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
-                Math.abs(this.getAmplifier()) == Math.abs(oldEffect.getAmplifier())
-                        && this.getDuration() < oldEffect.getDuration())) {
-            return;
-        }
 
         EntityEffectUpdateEvent event = new EntityEffectUpdateEvent(entity, oldEffect, this);
         Server.getInstance().getPluginManager().callEvent(event);

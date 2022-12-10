@@ -158,6 +158,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
 
     public static final float DEFAULT_SPEED = 0.1f;
+    public static final float DEFAULT_FLY_SPEED = 0.05f;
     public static final float MAXIMUM_SPEED = 0.5f;
 
     public static final int PERMISSION_CUSTOM = 3;
