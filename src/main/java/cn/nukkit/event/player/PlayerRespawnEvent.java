@@ -13,16 +13,17 @@ public class PlayerRespawnEvent extends PlayerEvent {
         return handlers;
     }
 
-    private Position position;
-    
+    private Position position;//Respawn Position
+
     private Position spawnBlock;
-    
+
+    @Deprecated
     private Position originalSpawnPosition;
-    
+
     private boolean spawnBlockAvailable;
 
     private boolean firstSpawn;
-    
+
     private boolean keepRespawnBlockPosition;
     private boolean keepRespawnPosition;
     private boolean sendInvalidRespawnBlockMessage = true;
@@ -68,18 +69,25 @@ public class PlayerRespawnEvent extends PlayerEvent {
         return spawnBlockAvailable;
     }
 
+    /**
+     * Plugins not suggest use
+     *
+     * @param spawnBlockAvailable the spawn block available
+     */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setRespawnBlockAvailable(boolean spawnBlockAvailable) {
         this.spawnBlockAvailable = spawnBlockAvailable;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Position getOriginalRespawnPosition() {
         return originalSpawnPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setOriginalRespawnPosition(Position originalSpawnPosition) {
