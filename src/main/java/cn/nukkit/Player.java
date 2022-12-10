@@ -1805,26 +1805,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.31-r1")
-    protected void broadcastMovement(boolean teleport) {
-        var pk = new MoveEntityAbsolutePacket();
-        pk.eid = this.getId();
-        pk.x = this.x;
-        //当不启用服务器权威移动、玩家游泳时，以玩家当前位置发送MoveEntityAbsolutePacket会导致
-        //玩家位置和实际位置不相符，需要+getBaseOffset()
-        if (getServer().getServerAuthoritativeMovement() == 0) {
-            pk.y = isSwimming() ? this.y + getBaseOffset() : this.y + this.getEyeHeight();
-        } else pk.y = this.y + this.getEyeHeight();
-        pk.z = this.z;
-        pk.headYaw = yaw;
-        pk.pitch = pitch;
-        pk.yaw = yaw;
-        pk.teleport = teleport;
-        pk.onGround = this.onGround;
-        Server.broadcastPacket(hasSpawned.values(), pk);
-    }
-
     @Override
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4) || this.chunk.getZ() != ((int) this.z >> 4))) {
@@ -3089,8 +3069,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             foodData.sendFoodLevel();
         }
 
-        if (this.getLevelBlock() instanceof BlockBigDripleaf) {
-            BlockBigDripleaf block = (BlockBigDripleaf) this.getLevelBlock();
+        if (this.getTickCachedLevelBlock() instanceof BlockBigDripleaf block) {
             if (block.isHead())
                 block.onUpdate(Level.BLOCK_UPDATE_NORMAL);
         }

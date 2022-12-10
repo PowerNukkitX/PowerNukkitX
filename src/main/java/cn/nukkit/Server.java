@@ -1233,7 +1233,9 @@ public class Server {
                 nameLookup.close();
             }
             //close watchdog and metrics
-            this.watchdog.running = false;
+            if (this.watchdog != null) {
+                this.watchdog.running = false;
+            }
             NukkitMetrics.closeNow(this);
             //close computeThreadPool
             this.computeThreadPool.shutdownNow();

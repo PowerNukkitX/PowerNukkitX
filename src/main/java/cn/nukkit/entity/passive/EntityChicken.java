@@ -8,7 +8,9 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.*;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -54,7 +56,7 @@ public class EntityChicken extends EntityWalkingAnimal{
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
-                                    new AllMatchEvaluator(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),
@@ -64,7 +66,7 @@ public class EntityChicken extends EntityWalkingAnimal{
                             new Behavior(
                                     new AnimalGrowExecutor(),
                                     //todo：Growth rate
-                                    new AllMatchEvaluator(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.ENTITY_SPAWN_TIME, 20 * 60 * 20, Integer.MAX_VALUE),
                                             entity -> entity instanceof EntityAnimal animal && animal.isBaby()
                                     )
@@ -82,8 +84,8 @@ public class EntityChicken extends EntityWalkingAnimal{
                                 entity.getLevel().dropItem(entity, Item.get(Item.EGG));
                                 entity.getLevel().addSound(entity, Sound.MOB_CHICKEN_PLOP);
                                 return false;
-                            }, new AnyMatchEvaluator(
-                                    new AllMatchEvaluator(
+                            }, any(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_EGG_SPAWN_TIME, 6000, 12000),
                                             new ProbabilityEvaluator(20, 100)
                                     ),

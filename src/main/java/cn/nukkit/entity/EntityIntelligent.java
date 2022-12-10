@@ -8,6 +8,7 @@ import cn.nukkit.entity.ai.EntityAI;
 import cn.nukkit.entity.ai.behaviorgroup.EmptyBehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.WalkController;
+import cn.nukkit.entity.ai.evaluator.LogicalUtils;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.memory.IMemoryStorage;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -27,7 +28,7 @@ import lombok.Setter;
 @Since("1.6.0.0-PNX")
 @Getter
 @Setter
-public abstract class EntityIntelligent extends EntityPhysical {
+public abstract class EntityIntelligent extends EntityPhysical implements LogicalUtils {
 
     public static final IBehaviorGroup EMPTY_BEHAVIOR_GROUP = new EmptyBehaviorGroup();
 
