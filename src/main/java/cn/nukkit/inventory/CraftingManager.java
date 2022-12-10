@@ -16,6 +16,7 @@ import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.internal.EmptyArrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
@@ -52,6 +53,9 @@ public class CraftingManager {
     private final Int2ObjectMap<Map<UUID, CartographyRecipe>> cartographyRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipeMap = new Int2ObjectOpenHashMap<>();
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     @Deprecated
@@ -205,6 +209,12 @@ public class CraftingManager {
         return recipes;
     }
 
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
+        return recipeXpMap;
+    }
+
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", replaceWith = "getFurnaceRecipeMap()",
             reason = "The other provides a specialized map which performs better")
@@ -247,6 +257,12 @@ public class CraftingManager {
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
         List<Map> recipes = config.getMapList("recipes");
+        var furnaceXpConfig = new Config(Config.JSON);
+        try {
+            furnaceXpConfig.load(Server.class.getModule().getResourceAsStream("furnace_xp.json"));
+        } catch (IOException e) {
+            log.warn("Failed to load furnace xp config");
+        }
         log.info("Loading recipes...");
         toNextRecipe:
         for (Map<String, Object> recipe : recipes) {
@@ -308,19 +324,24 @@ public class CraftingManager {
                         if (inputItem.isNull()) {
                             continue toNextRecipe;
                         }
+                        Recipe furnaceRecipe = null;
                         switch (craftingBlock) {
                             case "furnace":
-                                this.registerRecipe(new FurnaceRecipe(resultItem, inputItem));
+                                this.registerRecipe(furnaceRecipe = new FurnaceRecipe(resultItem, inputItem));
                                 break;
                             case "blast_furnace":
-                                this.registerRecipe(new BlastFurnaceRecipe(resultItem, inputItem));
+                                this.registerRecipe(furnaceRecipe = new BlastFurnaceRecipe(resultItem, inputItem));
                                 break;
                             case "smoker":
-                                this.registerRecipe(new SmokerRecipe(resultItem, inputItem));
+                                this.registerRecipe(furnaceRecipe = new SmokerRecipe(resultItem, inputItem));
                                 break;
                             case "campfire":
-                                this.registerRecipe(new CampfireRecipe(resultItem, inputItem));
+                                this.registerRecipe(furnaceRecipe = new CampfireRecipe(resultItem, inputItem));
                                 break;
+                        }
+                        var xp = furnaceXpConfig.getDouble(inputItem.getNamespaceId() + ":" + inputItem.getDamage());
+                        if (xp != 0) {
+                            this.setRecipeXp(furnaceRecipe, xp);
                         }
                         break;
                     case 4:
@@ -1002,6 +1023,18 @@ public class CraftingManager {
     @Since("1.4.0.0-PN")
     public void registerMultiRecipe(MultiRecipe recipe) {
         getMultiRecipeMap().put(recipe.getId(), recipe);
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void setRecipeXp(Recipe recipe, double xp) {
+        recipeXpMap.put(recipe, xp);
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public double getRecipeXp(Recipe recipe) {
+        return recipeXpMap.getOrDefault(recipe, 0.0);
     }
 
     public static class Entry {
