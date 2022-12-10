@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -85,7 +86,10 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     new InLoveExecutor(400),
                                     new AllMatchEvaluator(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
+                                            //只有拥有主人的狼才能交配
+                                            //Only wolves with a master can mate
+                                            (entity) -> this.hasOwner()
                                     ),
                                     1, 1
                             ),
@@ -306,6 +310,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
             }
 
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
             return true;
         } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
             this.setSitting(!this.isSitting());
