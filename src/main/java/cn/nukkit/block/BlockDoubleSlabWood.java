@@ -59,7 +59,7 @@ public class BlockDoubleSlabWood extends BlockDoubleSlabBase {
 
     @Override
     public String getName() {
-        return "Double "+getSlabName()+" Wood Slab";
+        return "Double " + getSlabName() + " Wood Slab";
     }
 
     @Override
