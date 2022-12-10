@@ -13,7 +13,6 @@ import cn.nukkit.entity.ai.route.RouteFindingManager;
 import cn.nukkit.entity.ai.route.finder.SimpleRouteFinder;
 import cn.nukkit.entity.ai.sensor.ISensor;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.TextFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
