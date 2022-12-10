@@ -1710,6 +1710,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitDifference(info = "will force using the spawnposition if the value spawnBlock is null,to fix the bug of command /spawnpoint", since = "1.6.0.0-PNX")
     protected void respawn() {
+        //the player cant respawn if the server is hardcore
         if (this.server.isHardcore()) {
             this.setBanned(true);
             return;
@@ -1718,44 +1719,49 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
 
+        //level spawn point < self spawn < block spawn
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
-
-        Vector3 spawnBlock = getSpawnBlock();
         Block respawnBlock = null;
-        int respawnBlockDim = Level.DIMENSION_OVERWORLD;
-        if (spawnBlock != null) {
-            Position spawnBlockPos = new Position(spawnBlock.x, spawnBlock.y, spawnBlock.z, playerRespawnEvent.getRespawnPosition().getLevel());
-            respawnBlockDim = spawnBlockPos.level.getDimension();
-            playerRespawnEvent.setRespawnBlockPosition(spawnBlockPos);
-            respawnBlock = spawnBlockPos.getLevelBlock();
-        }
-        if (respawnBlock == null || isValidRespawnBlock(respawnBlock)) {//true when there is an available respawn block or respawnBlock == null (set spawn by command /spawnpoint)
-            playerRespawnEvent.setRespawnBlockAvailable(respawnBlock != null);
-            playerRespawnEvent.setKeepRespawnPosition(respawnBlock == null);//still using the spawn position if the spawn is set by command /spawnpoint
-            playerRespawnEvent.setKeepRespawnBlockPosition(respawnBlock == null);//still using the block spawn position if the spawn is set by command /spawnpoint
-            playerRespawnEvent.setConsumeCharge(respawnBlock == null ? false : respawnBlock.getId() == BlockID.RESPAWN_ANCHOR);//charge if there is an available respawn block
-        } else {//false when there is no available respawn block
+        Vector3 spawnBlockPos = getSpawnBlock();
+        if (spawnBlockPos == null) {
+            //using the default spawn position of the level
             playerRespawnEvent.setRespawnBlockAvailable(false);
+            playerRespawnEvent.setKeepRespawnPosition(true);
+            playerRespawnEvent.setKeepRespawnBlockPosition(true);
             playerRespawnEvent.setConsumeCharge(false);
-            playerRespawnEvent.setOriginalRespawnPosition(playerRespawnEvent.getRespawnPosition());
-            playerRespawnEvent.setRespawnPosition(this.server.getDefaultLevel().getSafeSpawn());//using the default spawn position of the level
+            playerRespawnEvent.setRespawnPosition(this.getSpawn());
+        } else {
+            Block spawnBlock = Position.fromObject(getSpawnBlock(), this.getLevel()).getLevelBlock();
+            playerRespawnEvent.setRespawnBlockPosition(spawnBlock);
+            playerRespawnEvent.setKeepRespawnPosition(false);
+            playerRespawnEvent.setKeepRespawnBlockPosition(false);
+            if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
+                playerRespawnEvent.setConsumeCharge(spawnBlock.getId() == BlockID.RESPAWN_ANCHOR);
+                playerRespawnEvent.setRespawnBlockAvailable(true);
+                playerRespawnEvent.setRespawnPosition(spawnBlock);
+            } else {
+                playerRespawnEvent.setConsumeCharge(false);
+                playerRespawnEvent.setRespawnBlockAvailable(false);
+                playerRespawnEvent.setRespawnPosition(this.getLevel().getSafeSpawn());
+            }
         }
-
         this.server.getPluginManager().callEvent(playerRespawnEvent);
 
+        // handle spawn point change when block spawn not available
         if (!playerRespawnEvent.isRespawnBlockAvailable()) {
-            if (!playerRespawnEvent.isKeepRespawnBlockPosition()) {
+            if (!playerRespawnEvent.isKeepRespawnBlockPosition()) {//block spawn -> level spawn
                 this.spawnBlockPosition = null;
             }
-            if (!playerRespawnEvent.isKeepRespawnPosition()) {
+            if (!playerRespawnEvent.isKeepRespawnPosition()) {//self spawn -> level spawn
                 this.spawnPosition = null;
                 if (playerRespawnEvent.isSendInvalidRespawnBlockMessage()) {
                     sendMessage(new TranslationContainer(TextFormat.GRAY +
-                            "%tile." + (respawnBlockDim == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
+                            "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
                 }
             }
         }
 
+        // handle RESPAWN_ANCHOR state change when consume charge is true
         if (playerRespawnEvent.isConsumeCharge()) {
             Position pos = playerRespawnEvent.getRespawnBlockPosition();
             if (pos != null && pos.isValid()) {
@@ -2455,8 +2461,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     /**
      * The block that holds the player respawn position. May be null when unknown.
+     * <p>
+     * 保存着玩家重生位置的方块。当未知时可能为空。
      *
-     * @return The position of a bed, respawn anchor, or null when unknown.
+     * @return The position of a bed, respawn anchor, or null when unknown.<br>床、重生锚的位置，如果未知，则为空。
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -2467,8 +2475,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     /**
      * Sets the position of the block that holds the player respawn position. May be null when unknown.
+     * <p>
+     * 设置保存着玩家重生位置的方块的位置。可以设置为空。
      *
-     * @param spawnBlock The position of a bed or respawn anchor
+     * @param spawnBlock The position of a bed or respawn anchor<br>床或重生锚的位置
      */
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -2651,9 +2661,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
-
-        this.setSpawn(pos);
-
+        this.setSpawnBlock(pos);
         this.level.sleepTicks = 60;
 
         this.timeSinceRest = 0;

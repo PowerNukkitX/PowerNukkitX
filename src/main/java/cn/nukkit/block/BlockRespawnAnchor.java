@@ -123,7 +123,6 @@ public class BlockRespawnAnchor extends BlockMeta {
         }
         
         player.setSpawnBlock(this);
-        player.setSpawn(player);
         getLevel().addSound(this, Sound.RESPAWN_ANCHOR_SET_SPAWN);
         player.sendMessage(new TranslationContainer(TextFormat.GRAY + "%tile.respawn_anchor.respawnSet"));
         return true;
