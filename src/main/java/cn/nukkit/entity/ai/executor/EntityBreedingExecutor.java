@@ -101,6 +101,10 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         if (!entity1.isEnablePitch()) entity1.setEnablePitch(true);
         if (!entity2.isEnablePitch()) entity2.setEnablePitch(true);
 
+        //已经挨在一起了就不用更新路径了
+        //If they are already close together, there is no need to update the path
+        if (entity1.getOffsetBoundingBox().intersectsWith(entity2.getOffsetBoundingBox())) return;
+
         //clone the vec
         var cloned1 = entity1.clone();
         var cloned2 = entity2.clone();
@@ -112,6 +116,11 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
         //update look target
         entity1.setLookTarget(cloned2);
         entity2.setLookTarget(cloned1);
+
+        //在下一gt立即更新路径
+        //Immediately update the path on the next gt
+        entity1.getBehaviorGroup().setForceUpdateRoute(true);
+        entity2.getBehaviorGroup().setForceUpdateRoute(true);
     }
 
     @Nullable

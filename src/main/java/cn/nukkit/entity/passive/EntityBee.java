@@ -3,15 +3,9 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockBeehive;
-import cn.nukkit.block.BlockFlower;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * @author joserobjr
