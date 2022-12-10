@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
@@ -10,7 +11,10 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.*;
+import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -69,9 +73,10 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
-                                    new AllMatchEvaluator(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
-                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
+                                            new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
+                                            (entity) -> this.hasOwner()
                                     ),
                                     1, 1
                             ),
@@ -204,9 +209,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
         int healable = this.getHealableItem(item);
         if (item.getId() == ItemID.RAW_FISH && item.getId() == ItemID.RAW_SALMON) {
-            if (!this.hasOwner(false)) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-            } else if (!this.hasOwner(true)) {
+            if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
                     EntityEventPacket packet = new EntityEventPacket();
@@ -244,7 +247,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
             if (healable != 0) {
                 this.setHealth(Math.max(this.getMaxHealth(), this.getHealth() + healable));
             }
-
+            getMemoryStorage().put(CoreMemoryTypes.LAST_BE_FED_TIME, Server.getInstance().getTick());
             getMemoryStorage().put(CoreMemoryTypes.LAST_FEED_PLAYER, player);
             return true;
         } else if (this.hasOwner() && player.getName().equals(getOwnerName())) {
@@ -256,9 +259,19 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
     }
 
     //击杀猫会掉落0-2根线
+    //击杀小猫不会获得
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.STRING, Utils.rand(0, 2))};
+        if (!isBaby()) {
+            int catdrops = Utils.rand(0, 2);
+            if (catdrops > 0) return new Item[]{Item.get(Item.STRING, 0, catdrops)};
+        }
+        return new Item[0];
+    }
+
+    //击杀幼猫不会获得exp
+    public int getKillExperience() {
+        return this.isBaby() ? 0 : Utils.rand(1, 3);
     }
 
     @PowerNukkitOnly
