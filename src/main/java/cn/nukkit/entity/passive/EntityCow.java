@@ -8,7 +8,6 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
@@ -47,7 +46,7 @@ public class EntityCow extends EntityWalkingAnimal {
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
-                                    new AllMatchEvaluator(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE)
                                     ),

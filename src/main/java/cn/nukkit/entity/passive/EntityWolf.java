@@ -12,7 +12,10 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.*;
+import cn.nukkit.entity.ai.evaluator.ConditionalProbabilityEvaluator;
+import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
+import cn.nukkit.entity.ai.evaluator.PassByTimeEvaluator;
+import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.*;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
@@ -84,7 +87,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
-                                    new AllMatchEvaluator(
+                                    all(
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_BE_FED_TIME, 0, 400),
                                             new PassByTimeEvaluator(CoreMemoryTypes.LAST_IN_LOVE_TIME, 6000, Integer.MAX_VALUE),
                                             //只有拥有主人的狼才能交配
