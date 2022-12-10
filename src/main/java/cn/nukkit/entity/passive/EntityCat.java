@@ -209,7 +209,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
         int healable = this.getHealableItem(item);
         if (item.getId() == ItemID.RAW_FISH && item.getId() == ItemID.RAW_SALMON) {
-            if (!this.hasOwner()) {
+            if (this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
                     EntityEventPacket packet = new EntityEventPacket();
@@ -268,7 +268,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
         }
         return new Item[0];
     }
-
     //击杀幼猫不会获得exp
     public int getKillExperience() {
         return this.isBaby() ? 0 : Utils.rand(1, 3);
