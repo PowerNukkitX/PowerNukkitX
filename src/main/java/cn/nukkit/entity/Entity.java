@@ -3429,16 +3429,22 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * 向指定玩家群体播放此实体的动画
-     * @param animation 动画对象
-     * @param players 可视玩家
+     * Batch play animation on entity groups<br/>
+     * This method is recommended if you need to play the same animation on a large number of entities at the same time, as it only sends packets once for each player, which greatly reduces bandwidth pressure
+     * <p>
+     * 在实体群上批量播放动画<br/>
+     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
+     *
+     * @param animation 动画对象 Animation objects
+     * @param entities  需要播放动画的实体群 Group of entities that need to play animations
+     * @param players   可视玩家 Visible Player
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
-    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
-        pk.getEntityRuntimeIds().add(this.getId());
+        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
         pk.encode();
         Server.broadcastPacket(players, pk);
     }
@@ -3455,18 +3461,19 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * 在实体群上批量播放动画<br/>
-     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
-     * @param animation 动画对象
-     * @param entities 需要播放动画的实体群
-     * @param players 可视玩家
+     * Play the animation of this entity to a specified group of players
+     * <p>
+     * 向指定玩家群体播放此实体的动画
+     *
+     * @param animation 动画对象 Animation objects
+     * @param players   可视玩家 Visible Player
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
+    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
         var pk = new AnimateEntityPacket();
         pk.parseFromAnimation(animation);
-        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
+        pk.getEntityRuntimeIds().add(this.getId());
         pk.encode();
         Server.broadcastPacket(players, pk);
     }
