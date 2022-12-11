@@ -583,5 +583,6 @@ public class Network {
         this.registerPacket(ProtocolInfo.REQUEST_NETWORK_SETTINGS_PACKET, RequestNetworkSettingsPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_ADVENTURE_SETTINGS_PACKET, UpdateAdventureSettingsPacket.class);
         this.registerPacket(ProtocolInfo.UPDATE_CLIENT_INPUT_LOCKS, UpdateClientInputLocksPacket.class);
+        this.registerPacket(ProtocolInfo.PLAYER_FOG_PACKET, PlayerFogPacket.class);
     }
 }
