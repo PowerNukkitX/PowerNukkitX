@@ -2,6 +2,7 @@ package cn.nukkit.plugin;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.Listener;
@@ -231,6 +232,12 @@ public class CommonJSPlugin implements Plugin, Listener {
     @Override
     public PluginLoader getPluginLoader() {
         return jsPluginLoader;
+    }
+
+    @Since("1.19.50-r3")
+    @Override
+    public File getFile() {
+        return pluginDir;
     }
 
     public boolean isInitialized() {
