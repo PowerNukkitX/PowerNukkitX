@@ -51,6 +51,7 @@ public class ClearSpawnPointCommand extends VanillaCommand {
             }
             for (Player player : players) {
                 player.setSpawn(null);
+                player.setSpawnBlock(null);
             }
             String players_str = players.stream().map(p -> p.getName()).collect(Collectors.joining(" "));
             if (players.size() > 1) {

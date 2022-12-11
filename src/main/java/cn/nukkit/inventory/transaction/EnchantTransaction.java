@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.Since;
 import cn.nukkit.event.inventory.EnchantItemEvent;
 import cn.nukkit.inventory.EnchantInventory;
@@ -41,6 +42,7 @@ public class EnchantTransaction extends InventoryTransaction {
     }
 
     @Override
+    @PowerNukkitXDifference(info = "Use setItemByPlayer", since = "1.19.50-r3")
     public boolean execute() {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {
@@ -70,7 +72,7 @@ public class EnchantTransaction extends InventoryTransaction {
         if (!ev.getNewItem().equals(this.outputItem, true, true)) {
             // Plugin changed item, so the previous slot change is going to be invalid
             // Send the replaced item to the enchant inventory manually
-            inv.setItem(0, ev.getNewItem(), true);
+            inv.setItemByPlayer(source, 0, ev.getNewItem(), true);
         }
 
         if (!source.isCreative()) {

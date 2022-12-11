@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.item.Item;
 
 import java.util.Collection;
@@ -68,6 +70,20 @@ public interface Inventory {
      * @return the item
      */
     boolean setItem(int index, Item item, boolean send);
+
+    /**
+     * Now it is only called by {@link cn.nukkit.inventory.transaction.action.SlotChangeAction} and {@link cn.nukkit.inventory.transaction.EnchantTransaction}
+     *
+     * @param player player that will receive the changes
+     * @param index index of the item
+     * @param item item to set
+     * @return true if the item was set
+     */
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    default boolean setItemByPlayer(Player player, int index, Item item, boolean send) {
+        return setItem(index, item, send);
+    }
 
     Item[] addItem(Item... slots);
 

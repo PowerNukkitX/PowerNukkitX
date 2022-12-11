@@ -3420,6 +3420,57 @@ public abstract class Entity extends Location implements Metadatable {
         this.setDataProperty(new StringEntityData(Entity.DATA_AMBIENT_SOUND_EVENT_NAME, eventName));
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void playAnimation(AnimateEntityPacket.Animation animation) {
+        var viewers = this.getViewers().values();
+        if (this.isPlayer) viewers.add((Player) this);
+        playAnimation(animation, viewers);
+    }
+
+    /**
+     * 向指定玩家群体播放此实体的动画
+     * @param animation 动画对象
+     * @param players 可视玩家
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void playAnimation(AnimateEntityPacket.Animation animation, Collection<Player> players) {
+        var pk = new AnimateEntityPacket();
+        pk.parseFromAnimation(animation);
+        pk.getEntityRuntimeIds().add(this.getId());
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
+        var viewers = new HashSet<Player>();
+        entities.forEach(entity -> {
+            viewers.addAll(entity.getViewers().values());
+            if (entity.isPlayer) viewers.add((Player) entity);
+        });
+        playAnimationOnEntities(animation, entities, viewers);
+    }
+
+    /**
+     * 在实体群上批量播放动画<br/>
+     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
+     * @param animation 动画对象
+     * @param entities 需要播放动画的实体群
+     * @param players 可视玩家
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
+        var pk = new AnimateEntityPacket();
+        pk.parseFromAnimation(animation);
+        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
     private record OldStringClass(String key, Class<? extends Entity> value) {
     }
 }

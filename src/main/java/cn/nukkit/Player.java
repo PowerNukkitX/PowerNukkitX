@@ -274,7 +274,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    protected Vector3 spawnBlockPosition;
+    protected Position spawnBlockPosition;
 
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
@@ -1588,8 +1588,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             } else {
                 this.spawnPosition = null;
             }
-            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY") && this.namedTag.containsInt("SpawnBlockPositionZ")) {
-                this.spawnBlockPosition = new Vector3(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"));
+            if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
+                    && this.namedTag.containsInt("SpawnBlockPositionZ") && this.namedTag.containsInt("SpawnBlockLevel")) {
+                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel")));
             } else {
                 this.spawnBlockPosition = null;
             }
@@ -1720,64 +1721,37 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
         this.resetCraftingGridType();
 
-        //level spawn point < self spawn < block spawn
+        //level spawn point < block spawn = self spawn
         PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
-        Block respawnBlock = null;
-        Vector3 spawnBlockPos = getSpawnBlock();
-        if (spawnBlockPos == null) {
-            //using the default spawn position of the level
-            playerRespawnEvent.setRespawnBlockAvailable(false);
-            playerRespawnEvent.setKeepRespawnPosition(true);
-            playerRespawnEvent.setKeepRespawnBlockPosition(true);
-            playerRespawnEvent.setConsumeCharge(false);
-            playerRespawnEvent.setRespawnPosition(this.getSpawn());
-        } else {
-            Block spawnBlock = Position.fromObject(getSpawnBlock(), this.getLevel()).getLevelBlock();
-            playerRespawnEvent.setRespawnBlockPosition(spawnBlock);
-            playerRespawnEvent.setKeepRespawnPosition(false);
-            playerRespawnEvent.setKeepRespawnBlockPosition(false);
+        if (spawnPosition != null && spawnBlockPosition == null) {//self spawn
+            playerRespawnEvent.setRespawnPosition(spawnPosition);
+        } else if (spawnBlockPosition != null && spawnPosition == null) {//block spawn
+            Block spawnBlock = spawnBlockPosition.getLevelBlock();
             if (spawnBlock != null && isValidRespawnBlock(spawnBlock)) {
-                playerRespawnEvent.setConsumeCharge(spawnBlock.getId() == BlockID.RESPAWN_ANCHOR);
-                playerRespawnEvent.setRespawnBlockAvailable(true);
                 playerRespawnEvent.setRespawnPosition(spawnBlock);
-            } else {
-                playerRespawnEvent.setConsumeCharge(false);
-                playerRespawnEvent.setRespawnBlockAvailable(false);
-                playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
-            }
-        }
-        this.server.getPluginManager().callEvent(playerRespawnEvent);
-
-        // handle spawn point change when block spawn not available
-        if (!playerRespawnEvent.isRespawnBlockAvailable()) {
-            if (!playerRespawnEvent.isKeepRespawnBlockPosition()) {//block spawn -> level spawn
-                this.spawnBlockPosition = null;
-            }
-            if (!playerRespawnEvent.isKeepRespawnPosition()) {//self spawn -> level spawn
-                this.spawnPosition = null;
-                if (playerRespawnEvent.isSendInvalidRespawnBlockMessage()) {
-                    sendMessage(new TranslationContainer(TextFormat.GRAY +
-                            "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
-                }
-            }
-        }
-
-        // handle RESPAWN_ANCHOR state change when consume charge is true
-        if (playerRespawnEvent.isConsumeCharge()) {
-            Position pos = playerRespawnEvent.getRespawnBlockPosition();
-            if (pos != null && pos.isValid()) {
-                respawnBlock = pos.getLevelBlock();
-                if (respawnBlock.getId() == BlockID.RESPAWN_ANCHOR) {
-                    BlockRespawnAnchor respawnAnchor = (BlockRespawnAnchor) respawnBlock;
+                // handle RESPAWN_ANCHOR state change when consume charge is true
+                if (spawnBlock.getId() == BlockID.RESPAWN_ANCHOR) {
+                    BlockRespawnAnchor respawnAnchor = (BlockRespawnAnchor) spawnBlock;
                     int charge = respawnAnchor.getCharge();
                     if (charge > 0) {
                         respawnAnchor.setCharge(charge - 1);
-                        respawnAnchor.getLevel().setBlock(respawnAnchor, respawnBlock);
+                        respawnAnchor.getLevel().setBlock(respawnAnchor, spawnBlock);
                         respawnAnchor.getLevel().scheduleUpdate(respawnAnchor, 10);
+                        respawnAnchor.getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE, 1, 1, this);
                     }
                 }
+            } else {//block not available
+                playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
+                // handle spawn point change when block spawn not available
+                this.spawnPosition = null;
+                this.spawnBlockPosition = null;
+                sendMessage(new TranslationContainer(TextFormat.GRAY +
+                        "%tile." + (this.getLevel().getDimension() == Level.DIMENSION_OVERWORLD ? "bed" : "respawn_anchor") + ".notValid"));
             }
+        } else {//level spawn point
+            playerRespawnEvent.setRespawnPosition(this.getServer().getDefaultLevel().getSafeSpawn());
         }
+        this.server.getPluginManager().callEvent(playerRespawnEvent);
 
         Position respawnPos = playerRespawnEvent.getRespawnPosition();
 
@@ -1807,10 +1781,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.teleport(respawnPos, null);
         this.spawnToAll();
         this.scheduleUpdate();
-
-        if (playerRespawnEvent.isConsumeCharge()) {
-            getLevel().addSound(this, Sound.RESPAWN_ANCHOR_DEPLETE, 1, 1, this);
-        }
     }
 
     @Override
@@ -2453,7 +2423,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public Position getSpawn() {
-        if (this.spawnPosition != null && this.spawnPosition.getLevel() != null) {
+        if (this.spawnPosition != null) {
             return this.spawnPosition;
         } else {
             return this.server.getDefaultLevel().getSafeSpawn();
@@ -2470,7 +2440,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     @Nullable
-    public Vector3 getSpawnBlock() {
+    public Position getSpawnBlock() {
         return spawnBlockPosition;
     }
 
@@ -2485,9 +2455,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.4.0.0-PN")
     public void setSpawnBlock(@Nullable Vector3 spawnBlock) {
         if (spawnBlock == null) {
+            this.setSpawnBlock(null);
+        } else {
+            this.setSpawnBlock(Position.fromObject(spawnBlock, this.getLevel()));
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void setSpawnBlock(@Nullable Position spawnBlock) {
+        if (spawnBlock == null) {
             this.spawnBlockPosition = null;
         } else {
-            this.spawnBlockPosition = new Vector3(spawnBlock.x, spawnBlock.y, spawnBlock.z);
+            this.spawnBlockPosition = spawnBlock.clone();
+            this.spawnPosition = null;
         }
     }
 
@@ -2662,7 +2643,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
-        this.setSpawnBlock(pos);
+        this.setSpawnBlock(Position.fromObject(pos, getLevel()));
         this.level.sleepTicks = 60;
 
         this.timeSinceRest = 0;
@@ -2680,6 +2661,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 level = ((Position) pos).getLevel();
             }
             this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            this.spawnBlockPosition = null;
             SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
             pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
             pk.x = (int) this.spawnPosition.x;
@@ -5762,13 +5744,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public void saveNBT() {
         super.saveNBT();
-
         if (spawnBlockPosition == null) {
-            namedTag.remove("SpawnBlockPositionX").remove("SpawnBlockPositionY").remove("SpawnBlockPositionZ");
+            namedTag.remove("SpawnBlockPositionX").remove("SpawnBlockPositionY").remove("SpawnBlockPositionZ").remove("SpawnBlockLevel");
         } else {
             namedTag.putInt("SpawnBlockPositionX", spawnBlockPosition.getFloorX())
                     .putInt("SpawnBlockPositionY", spawnBlockPosition.getFloorY())
-                    .putInt("SpawnBlockPositionZ", spawnBlockPosition.getFloorZ());
+                    .putInt("SpawnBlockPositionZ", spawnBlockPosition.getFloorZ())
+                    .putString("SpawnBlockLevel", this.spawnBlockPosition.getLevel().getFolderName());
         }
 
         if (spawnPosition == null) {
