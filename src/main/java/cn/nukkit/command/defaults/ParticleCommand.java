@@ -12,6 +12,7 @@ import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xtypr
@@ -22,7 +23,7 @@ public class ParticleCommand extends VanillaCommand {
         super(name, "commands.particle.description");
         this.setPermission("nukkit.command.particle");
         this.commandParameters.clear();
-        ArrayList<String> particles = new ArrayList<>();
+        List<String> particles = new ArrayList<>();
         for (ParticleEffect particle : ParticleEffect.values()) {
             particles.add(particle.getIdentifier());
         }
