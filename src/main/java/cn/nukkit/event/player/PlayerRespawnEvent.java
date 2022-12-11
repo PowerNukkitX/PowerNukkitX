@@ -14,19 +14,22 @@ public class PlayerRespawnEvent extends PlayerEvent {
     }
 
     private Position position;//Respawn Position
-
+    @Deprecated
     private Position spawnBlock;
 
     @Deprecated
     private Position originalSpawnPosition;
-
+    @Deprecated
     private boolean spawnBlockAvailable;
 
     private boolean firstSpawn;
-
+    @Deprecated
     private boolean keepRespawnBlockPosition;
+    @Deprecated
     private boolean keepRespawnPosition;
+    @Deprecated
     private boolean sendInvalidRespawnBlockMessage = true;
+    @Deprecated
     private boolean consumeCharge = true;
 
     public PlayerRespawnEvent(Player player, Position position) {
@@ -51,18 +54,21 @@ public class PlayerRespawnEvent extends PlayerEvent {
         return firstSpawn;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public Position getRespawnBlockPosition() {
         return spawnBlock;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setRespawnBlockPosition(Position spawnBlock) {
         this.spawnBlock = spawnBlock;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isRespawnBlockAvailable() {
@@ -74,6 +80,7 @@ public class PlayerRespawnEvent extends PlayerEvent {
      *
      * @param spawnBlockAvailable the spawn block available
      */
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setRespawnBlockAvailable(boolean spawnBlockAvailable) {
@@ -94,48 +101,56 @@ public class PlayerRespawnEvent extends PlayerEvent {
         this.originalSpawnPosition = originalSpawnPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isKeepRespawnBlockPosition() {
         return keepRespawnBlockPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setKeepRespawnBlockPosition(boolean keepRespawnBlockPosition) {
         this.keepRespawnBlockPosition = keepRespawnBlockPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isKeepRespawnPosition() {
         return keepRespawnPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setKeepRespawnPosition(boolean keepRespawnPosition) {
         this.keepRespawnPosition = keepRespawnPosition;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isSendInvalidRespawnBlockMessage() {
         return sendInvalidRespawnBlockMessage;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setSendInvalidRespawnBlockMessage(boolean sendInvalidRespawnBlockMessage) {
         this.sendInvalidRespawnBlockMessage = sendInvalidRespawnBlockMessage;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public boolean isConsumeCharge() {
         return consumeCharge;
     }
 
+    @Deprecated
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void setConsumeCharge(boolean consumeCharge) {
