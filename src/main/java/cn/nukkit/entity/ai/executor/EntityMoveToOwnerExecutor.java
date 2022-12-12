@@ -81,52 +81,7 @@ public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecut
                     return true;//继续寻找
                 else return !entity.teleport(targetVector);
             }
-            //猫也使用相同原理寻找主人故加入
-        } /*else if (entity instanceof EntityCat entityCat) {
-            var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
-            if (player == null || entityCat.isSitting()) return false;
-
-            //获取目的地位置（这个clone很重要）
-            var target = player.clone();
-            if (target.distanceSquared(entity) <= 9) return false;
-
-            //不允许跨世界
-            if (!target.level.getName().equals(entity.level.getName()))
-                return false;
-
-            if (entityCat.getPosition().floor().equals(oldTarget)) return false;
-
-            var distanceSquared = entity.distanceSquared(player);
-            if (distanceSquared <= maxFollowRangeSquared) {
-                //更新寻路target
-                setRouteTarget(entity, target);
-                //更新视线target
-                setLookTarget(entity, target);
-
-                if (entity.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_FEEDING_PLAYER)) {
-                    entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INTERESTED, true);
-                }
-
-                if (updateRouteImmediatelyWhenTargetChange) {
-                    var floor = target.floor();
-
-                    if (oldTarget == null || oldTarget.equals(floor))
-                        entity.getBehaviorGroup().setForceUpdateRoute(true);
-
-                    oldTarget = floor;
-                }
-
-                if (entity.getMovementSpeed() != speed)
-                    entity.setMovementSpeed(speed);
-
-                return true;
-            } else {
-                var targetVector = randomVector3(player, 4);
-                if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
-                    return true;//继续寻找
-                else return !entityCat.teleport(targetVector);
-            }
-        }*/
+        }
         return false;
     }
 
