@@ -59,9 +59,4 @@ public abstract class EntitySwimmingAnimal extends EntityAnimal {
     public float getMovementSpeedAtBlock(Block block) {
         return getMovementSpeed();
     }
-
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
-    }
 }

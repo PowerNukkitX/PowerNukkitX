@@ -7,6 +7,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityCanAttack;
+import cn.nukkit.entity.EntityCanSit;
+import cn.nukkit.entity.EntityTamable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -43,7 +45,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -55,15 +56,12 @@ import static cn.nukkit.entity.mob.EntityMob.DIFFICULTY_HAND_DAMAGE;
  * @author Cool_Loong (PowerNukkitX Project)
  * todo 野生狼不会被刷新
  */
-public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack {
+public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, EntityCanAttack, EntityCanSit {
     public static final int NETWORK_ID = 14;
-    private Player owner;
-    private String ownerName = "";
     //实体子类字段最好不要显式初始化，因为实体创建流程是先初始化父类Entity然后进入Entity#init方法,
     //随后调用子类initEntity初始化实体,之后从根父类Entity逐级返回初始化字段,最后进入子类初始化字段
     //字段初始化语句，应当放进initEntity中执行
     //如果不明白顺序，可能会出现在initEntity中初始化后被字段初始化覆盖的情况
-    private boolean sitting;
     private boolean angry;
     private DyeColor collarColor;//项圈颜色
     private IBehaviorGroup behaviorGroup;
@@ -146,9 +144,9 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)
                                     , 6, 1),
                             new Behavior(new EntityBreedingExecutor<>(EntityWolf.class, 16, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                            new Behavior(new WolfMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                            new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityWolf entityWolf && entityWolf.hasOwner()) {
-                                    var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
+                                    var player = getOwner();
                                     if (player == null) return false;
                                     if (!player.isOnGround()) return false;
                                     var distanceSquared = entity.distanceSquared(player);
@@ -207,13 +205,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         this.setMaxHealth(8);
         super.initEntity();
 
-        if (this.namedTag.contains("Sitting")) {
-            if (this.namedTag.getBoolean("Sitting")) {
-                this.sitting = true;
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, true);
-            }
-        } else this.sitting = false;
-
         if (this.namedTag.contains("Angry")) {
             if (this.namedTag.getBoolean("Angry")) {
                 this.angry = true;
@@ -246,23 +237,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         super.saveNBT();
         this.namedTag.putBoolean("Angry", this.angry);
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
-        this.namedTag.putBoolean("Sitting", this.sitting);
-        this.namedTag.putString("OwnerName", this.ownerName);
         this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
-    }
-
-    @Override
-    public boolean onUpdate(int currentTick) {
-        var result = super.onUpdate(currentTick);
-
-        //initEntity的时候玩家还没连接，所以只能在onUpdate里面更新
-        if (this.namedTag.contains("OwnerName") && this.owner == null) {
-            String ownerName = namedTag.getString("OwnerName");
-            if (ownerName != null && ownerName.length() > 0) {
-                setOwnerName(ownerName);
-            }
-        }
-        return result;
     }
 
     @Override
@@ -323,66 +298,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
         return false;
     }
 
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    @Override
-    public String getOwnerName() {
-        return this.ownerName;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    @Override
-    public void setOwnerName(String playerName) {
-        var player = getServer().getPlayerExact(playerName);
-        if (player == null) return;
-        this.owner = player;
-        this.ownerName = playerName;
-        this.setDataProperty(new LongEntityData(DATA_OWNER_EID, player.getId()));
-        this.setTamed(true);
-        this.namedTag.putString("OwnerName", this.ownerName);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    @Nullable
-    @Override
-    public Player getOwner() {
-        return this.owner;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    @Override
-    public boolean hasOwner() {
-        return hasOwner(true);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean hasOwner(boolean checkOnline) {
-        if (checkOnline) {
-            if (this.ownerName == null || this.ownerName.isEmpty()) return false;
-            var owner = getServer().getPlayerExact(this.ownerName);
-            return owner != null;
-        } else {
-            return this.ownerName != null && !this.ownerName.isEmpty();
-        }
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean isSitting() {
-        return this.sitting;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setSitting(boolean sit) {
-        this.sitting = sit;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
-        this.namedTag.putBoolean("Sitting", sit);
-    }
 
     @PowerNukkitXOnly
     @Since("1.19.30-r1")

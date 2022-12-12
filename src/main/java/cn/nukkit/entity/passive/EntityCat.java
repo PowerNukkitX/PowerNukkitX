@@ -6,6 +6,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityCanSit;
+import cn.nukkit.entity.EntityTamable;
 import cn.nukkit.entity.ai.behavior.Behavior;
 import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
@@ -41,11 +43,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
+public class EntityCat extends EntityWalkingAnimal implements EntityTamable, EntityCanSit {
     public static final int NETWORK_ID = 75;
-    private Player owner;
-    private String ownerName = "";
-    private boolean sitting = false;
     private DyeColor collarColor = DyeColor.RED;//驯服后项圈为红色
     private IBehaviorGroup behaviorGroup;
     //猫咪有11种颜色变种
@@ -105,12 +104,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                             new Behavior(entity -> false, entity -> this.isSitting(), 7),
                             //猫咪繁殖 优先级5
                             new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5, 1),
-                            //猫咪随机目标点移动 优先级1
-                            new Behavior(new RandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 50),
-                            //猫咪看向目标玩家 优先级1
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 200), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25),
                             //猫咪向主人移动 优先级4
-                            new Behavior(new WolfMoveToOwnerExecutor(0.35f, true, 15), entity -> {
+                            new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityCat entityCat && entityCat.hasOwner()) {
                                     var player = entityCat.getServer().getPlayer(entityCat.getOwnerName());
                                     if (player == null) return false;
@@ -120,7 +115,11 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                                 } else return false;
                             }, 4, 1),
                             //猫咪看向食物 优先级3
-                            new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1)
+                            new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
+                            //猫咪随机目标点移动 优先级1
+                            new Behavior(new RandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 50),
+                            //猫咪看向目标玩家 优先级1
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 200), new ConditionalProbabilityEvaluator(3, 7, entity -> entityHasOwner(entity, false, false), 10), 1, 1, 25)
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
                             new NearestPlayerSensor(8, 0, 20),
@@ -167,12 +166,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-        if (this.namedTag.contains("Sitting")) {
-            if (this.namedTag.getBoolean("Sitting")) {
-                this.sitting = true;
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, true);
-            }
-        } else this.sitting = false;
 
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
@@ -200,22 +193,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
-        this.namedTag.putBoolean("Sitting", this.sitting);
-        this.namedTag.putString("OwnerName", this.ownerName);
         this.namedTag.putInt("Variant", this.variant);
-    }
-    @Override
-    public boolean onUpdate(int currentTick) {
-        var result = super.onUpdate(currentTick);
-
-        //initEntity的时候玩家还没连接，所以只能在onUpdate里面更新
-        if (this.namedTag.contains("OwnerName") && this.owner == null) {
-            String ownerName = namedTag.getString("OwnerName");
-            if (ownerName != null && ownerName.length() > 0) {
-                setOwnerName(ownerName);
-            }
-        }
-        return result;
     }
 
     @Override
@@ -326,62 +304,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
 
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
-    public String getOwnerName() {
-        return this.ownerName;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setOwnerName(String playerName) {
-        var player = getServer().getPlayerExact(playerName);
-        if (player == null) return;
-        this.ownerName = playerName;
-        this.setDataProperty(new LongEntityData(DATA_OWNER_EID, player.getId()));
-        this.setTamed(true);
-        this.namedTag.putString("OwnerName", this.ownerName);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    @Nullable
-    public Player getOwner() {
-        return this.owner;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean hasOwner() {
-        return hasOwner(true);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean hasOwner(boolean checkOnline) {
-        if (checkOnline) {
-            if (this.ownerName == null || this.ownerName.isEmpty()) return false;
-            var owner = getServer().getPlayerExact(this.ownerName);
-            return owner != null;
-        } else {
-            return this.ownerName != null && !this.ownerName.isEmpty();
-        }
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public boolean isSitting() {
-        return this.sitting;
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
-    public void setSitting(boolean sit) {
-        this.sitting = sit;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SITTING, sit);
-        this.namedTag.putBoolean("Sitting", sit);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.30-r1")
     private void setTamed(boolean tamed) {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, tamed);
     }
@@ -401,5 +323,4 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
             return entityCat.hasOwner(checkOnline);
         } else return defaultValue;
     }
-
 }

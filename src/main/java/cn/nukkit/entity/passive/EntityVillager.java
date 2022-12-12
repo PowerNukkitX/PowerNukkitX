@@ -368,16 +368,6 @@ public class EntityVillager extends EntityCreature implements InventoryHolder, E
         this.namedTag.putInt("tradeExp", this.tradeTier);
     }
 
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);
-    }
-
-    public void setBaby(boolean baby) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_BABY, baby);
-        this.setScale(baby ? 0.5f : 1);
-    }
-
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     @Override
