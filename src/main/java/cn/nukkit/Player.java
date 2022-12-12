@@ -99,6 +99,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.powernukkit.version.Version;
@@ -373,6 +375,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Since("1.19.30-r1")
     protected Entity lastBeAttackEntity = null;
     private boolean foodEnabled = true;
+    /**
+     * 玩家迷雾设置
+     * <p>
+     * Player Fog Settings
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    @Getter
+    @Setter
+    protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
+
 
     @PowerNukkitOnly
     public Player(SourceInterface interfaz, Long clientID, String ip, int port) {
@@ -797,6 +810,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (scoreboardManager != null) {//in test environment sometimes the scoreboard manager is null
             scoreboardManager.onPlayerJoin(this);
         }
+
+        this.sendFogStack();
     }
 
     protected boolean orderChunks() {
@@ -1559,6 +1574,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.namedTag.putBoolean("HasSeenCredits", false);
         }
         this.hasSeenCredits = this.namedTag.getBoolean("HasSeenCredits");
+
+        //以下两个List的元素一一对应
+        if (!this.namedTag.contains("fogIdentifiers")) {
+            this.namedTag.putList(new ListTag<StringTag>("fogIdentifiers"));
+        }
+        if (!this.namedTag.contains("userProvidedFogIds")) {
+            this.namedTag.putList(new ListTag<StringTag>("userProvidedFogIds"));
+        }
+        var fogIdentifiers = this.namedTag.getList("fogIdentifiers", StringTag.class);
+        var userProvidedFogIds = this.namedTag.getList("userProvidedFogIds", StringTag.class);
+        for (int i = 0; i < fogIdentifiers.size(); i++) {
+            this.fogStack.add(i, new PlayerFogPacket.Fog(Identifier.tryParse(fogIdentifiers.get(i).data), userProvidedFogIds.get(i).data));
+        }
 
         if (!this.server.isCheckMovement()) {
             this.checkMovement = false;
@@ -2925,6 +2953,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    /**
+     * 将迷雾设定发送到客户端
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void sendFogStack() {
+        var pk = new PlayerFogPacket();
+        pk.setFogStack(this.fogStack);
+        pk.encode();
+        this.dataPacket(pk);
+    }
 
     @Override
     public boolean onUpdate(int currentTick) {
@@ -5800,6 +5839,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.namedTag.putInt("foodLevel", this.getFoodData().getLevel());
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getFoodSaturationLevel());
+
+            var fogIdentifiers = new ListTag<StringTag>("fogIdentifiers");
+            var userProvidedFogIds = new ListTag<StringTag>("userProvidedFogIds");
+            this.fogStack.forEach(fog -> {
+                fogIdentifiers.add(new StringTag("", fog.identifier().toString()));
+                userProvidedFogIds.add(new StringTag("", fog.userProvidedId()));
+            });
+            this.namedTag.putList(fogIdentifiers);
+            this.namedTag.putList(userProvidedFogIds);
 
             this.namedTag.putInt("TimeSinceRest", this.timeSinceRest);
 
