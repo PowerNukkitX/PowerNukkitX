@@ -68,6 +68,6 @@ public class PlayerTeleportEvent extends PlayerEvent implements Cancellable {
         UNKNOWN,       // Unknown cause
         @PowerNukkitOnly @Since("1.4.0.0-PN") END_PORTAL,    // Teleport using End Portal
         @PowerNukkitOnly @Since("1.4.0.0-PN") END_GATEWAY,    // Teleport using End Gateway
-        @PowerNukkitXOnly @Since("1.19.50-r3") PLAYER_SPAWN    // Teleport player Spawn
+        @PowerNukkitXOnly @Since("1.19.50-r3") PLAYER_SPAWN    // Teleport when players are spawn
     }
 }
