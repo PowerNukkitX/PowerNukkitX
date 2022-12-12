@@ -120,7 +120,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable {
                                 } else return false;
                             }, 4, 1),
                             //猫咪看向食物 优先级3
-                            new Behavior(new WolfLookFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1)
+                            new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1)
                     ),
                     Set.of(new WolfNearestFeedingPlayerSensor(7, 0),
                             new NearestPlayerSensor(8, 0, 20),

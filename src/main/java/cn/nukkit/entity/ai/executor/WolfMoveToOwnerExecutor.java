@@ -43,8 +43,6 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
             if (player == null || entityWolf.isSitting()) return false;
 
             //获取目的地位置（这个clone很重要）
-//            var tmp = randomVector3(player, 2);
-//            if (tmp == null) return true;
             var target = player.clone();
             if (target.distanceSquared(entity) <= 9) return false;
 
@@ -90,8 +88,6 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
             if (player == null || entityCat.isSitting()) return false;
 
             //获取目的地位置（这个clone很重要）
-//            var tmp = randomVector3(player, 2);
-//            if (tmp == null) return true;
             var target = player.clone();
             if (target.distanceSquared(entity) <= 9) return false;
 
