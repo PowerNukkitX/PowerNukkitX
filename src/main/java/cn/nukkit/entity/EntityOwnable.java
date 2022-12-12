@@ -7,6 +7,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.LongEntityData;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -25,7 +26,8 @@ public interface EntityOwnable {
     /**
      * 设置这个实体主人的名字,相当于设置这个实体的主人<br>The name of the owner of this entity,Equivalent to set the owner of this entity.
      */
-    default void setOwnerName(String playerName) {
+    default void setOwnerName(@Nonnull String playerName) {
+        if (playerName.isEmpty()) throw new IllegalArgumentException("Owner's name cannot be empty!");
         var entity = (EntityCreature) this;
         entity.ownerName = playerName;
         var player = entity.getServer().getPlayerExact(playerName);
@@ -41,8 +43,11 @@ public interface EntityOwnable {
     @Nullable
     default Player getOwner() {
         var entity = (EntityCreature) this;
-        if (entity.owner != null) return entity.owner;
-        if (entity.ownerName == null) return null;
+        if (entity.owner != null) {
+            if (entity.owner.isOnline()) return entity.owner;
+            else entity.owner = null;
+        }
+        if (entity.ownerName == null || entity.ownerName.isEmpty()) return null;
         var player = entity.getServer().getPlayerExact(entity.ownerName);
         if (player == null) return null;
         entity.owner = player;

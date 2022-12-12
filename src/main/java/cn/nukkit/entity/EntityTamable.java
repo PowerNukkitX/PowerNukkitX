@@ -27,11 +27,9 @@ public interface EntityTamable extends EntityOwnable {
     default boolean hasOwner(boolean checkOnline) {
         var entity = (EntityCreature) this;
         if (checkOnline) {
-            if (entity.ownerName == null || entity.ownerName.isEmpty()) return false;
-            var owner = entity.getServer().getPlayerExact(entity.ownerName);
-            return owner != null;
+            return getOwner() != null;
         } else {
-            return entity.ownerName != null && !entity.ownerName.isEmpty();
+            return entity.ownerName != null;
         }
     }
 }
