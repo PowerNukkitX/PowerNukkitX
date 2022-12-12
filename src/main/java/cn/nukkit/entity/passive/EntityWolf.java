@@ -147,7 +147,6 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                             new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (entity instanceof EntityWolf entityWolf && entityWolf.hasOwner()) {
                                     var player = getOwner();
-                                    if (player == null) return false;
                                     if (!player.isOnGround()) return false;
                                     var distanceSquared = entity.distanceSquared(player);
                                     return distanceSquared >= 100;
