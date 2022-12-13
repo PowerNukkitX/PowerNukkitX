@@ -137,6 +137,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                     return distanceSquared >= 100;
                                 } else return false;
                             }, 4),
+                            //猫在主人身边随机移动 优先级3
+                            new Behavior(new FlatRandomRoamExecutor(0.1f, 4, 100, false, -1, true, 20), entity -> this.hasOwner() && this.getOwner().distanceSquared(this) < 100, 3),
                             //猫咪看向食物 优先级3
                             new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3),
                             //猫咪随机目标点移动 优先级1
