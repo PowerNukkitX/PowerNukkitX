@@ -81,6 +81,9 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
             target = entity.getBehaviorGroup().getMemoryStorage().get(memory);
         }
 
+        //如果已经死了就退出
+        if (!target.isAlive()) return false;
+
         //如果是玩家检测模式 检查距离 检查是否在同一维度
         if ((target instanceof Player player && (!player.isSurvival() || !player.isOnline())) || entity.distanceSquared(target) > maxSenseRangeSquared
                 || !(entity.level.getId() == target.level.getId())) return false;
