@@ -181,6 +181,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
+        this.getLevel().addSound(this, Sound.MOB_CAT_STRAYMEOW);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
