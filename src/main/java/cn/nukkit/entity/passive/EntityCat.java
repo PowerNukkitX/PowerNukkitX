@@ -33,6 +33,7 @@ import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 
@@ -75,6 +76,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                 //当猫被驯服时发出的声音
                                 if (this.hasOwner(false))
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
+                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.IS_IN_LOVE))
+                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
                                 else
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
                                 return false;
@@ -179,6 +182,12 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
+        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
+        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
+        //空闲声音
+        this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
+        this.setAmbientSoundInterval(5.0f);
+        this.setAmbientSoundIntervalRange(8.0f);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
@@ -195,6 +204,9 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
             this.variant = getRandomVariant();
         }
         this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
+        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.IS_IN_LOVE)) {
+            this.getLevel().addSound(this, Sound.MOB_CAT_PURR);
+        }
     }
 
     private int getRandomVariant() {
@@ -213,9 +225,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
-
         int healable = this.getHealingAmount(item);
-
         if (this.isBreedingItem(item)) {
             if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
@@ -262,8 +272,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
             this.setSitting(!this.isSitting());
             return false;
         }
-
         return false;
+
     }
 
     //击杀猫会掉落0-2根线
