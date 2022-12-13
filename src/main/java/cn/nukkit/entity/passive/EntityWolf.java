@@ -144,7 +144,7 @@ public class EntityWolf extends EntityWalkingAnimal implements EntityTamable, En
                                 } else return false;
                             }, 4, 1),
                             new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3, 1),
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 150), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10),
                                     1, 1, 25),
                             new Behavior(new FlatRandomRoamExecutor(0.1f, 12, 150, false, -1, true, 10),
                                     new ProbabilityEvaluator(5, 10), 1, 1, 50)

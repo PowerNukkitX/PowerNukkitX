@@ -47,6 +47,7 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     public boolean execute(@NotNull EntityIntelligent entity) {
         currentTargetCalTick++;
         durationTick++;
+        if (entity.isEnablePitch()) entity.setEnablePitch(false);
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
             Vector3 target = next(entity);
             if (avoidWater) {
@@ -77,8 +78,18 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        stop(entity);
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        stop(entity);
+    }
+
+    protected void stop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
+        entity.setEnablePitch(true);
         currentTargetCalTick = 0;
         durationTick = 0;
     }

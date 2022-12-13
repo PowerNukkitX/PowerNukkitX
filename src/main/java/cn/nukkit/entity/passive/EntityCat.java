@@ -102,9 +102,9 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             //坐下锁定 优先级7
                             new Behavior(entity -> false, entity -> this.isSitting(), 7),
                             //攻击仇恨目标 优先级6
-                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.45f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
+                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
                             //猫咪繁殖 优先级5
-                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.45f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5),
+                            new Behavior(new EntityBreedingExecutor<>(EntityCat.class, 8, 100, 0.35f), entity -> entity.getMemoryStorage().get(CoreMemoryTypes.IS_IN_LOVE), 5),
                             //猫咪向主人移动 优先级4
                             new Behavior(new EntityMoveToOwnerExecutor(0.35f, true, 15), entity -> {
                                 if (this.hasOwner()) {
@@ -119,7 +119,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             //猫咪随机目标点移动 优先级1
                             new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 50),
                             //猫咪看向目标玩家 优先级1
-                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 200), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10), 1, 1, 25)
+                            new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10), 1, 1, 25)
                     ),
                     Set.of(new NearestFeedingPlayerSensor(7, 0),
                             new NearestPlayerSensor(8, 0, 20),
