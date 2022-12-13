@@ -115,8 +115,15 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             )
                     ),
                     Set.of(
-                            //坐下锁定 优先级7
-                            new Behavior(entity -> false, entity -> this.isSitting(), 7),
+                            //坐下锁定 优先级8
+                            new Behavior(entity -> false, entity -> this.isSitting(), 8),
+                            //睡觉 优先级7
+                            new Behavior(new SleepOnOwnerBedExecutor(), entity -> {
+                                var player = this.getOwner();
+                                if (player == null) return false;
+                                if (player.getLevel().getId() != this.level.getId()) return false;
+                                return player.isSleeping();
+                            }, 7),
                             //攻击仇恨目标 优先级6
                             new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.35f, 15, true, 10), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 6),
                             //猫咪繁殖 优先级5
