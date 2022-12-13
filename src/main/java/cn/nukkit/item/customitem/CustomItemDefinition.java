@@ -9,6 +9,7 @@ import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import com.google.gson.Gson;
 import lombok.NonNull;
 
@@ -196,9 +197,15 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
          *
          * @param tag the tag
          */
-        public SimpleBuilder tag(String tag) {
-            this.nbt.getCompound("components")
-                    .putCompound("tag:" + tag, new CompoundTag());
+        public SimpleBuilder tag(String... tag) {
+            var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
+            if (list == null) {
+                list = new ListTag<>("item_tags");
+                this.nbt.getCompound("components").putList(list);
+            }
+            for (var s : tag) {
+                list.add(new StringTag("", s));
+            }
             return this;
         }
 

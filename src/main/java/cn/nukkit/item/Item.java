@@ -635,9 +635,9 @@ public class Item implements Cloneable, BlockID, ItemID {
             CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
             // 在服务端注册自定义物品的tag
             if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
-                var tagSet = componentTag.getAllTags().stream().map(Tag::getName).filter(tagName -> tagName.startsWith("tag:")).collect(Collectors.toSet());
-                if (tagSet.size() != 0) {
-                    ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagSet);
+                var tagList = componentTag.getList("item_tags", StringTag.class);
+                if (tagList.size() != 0) {
+                    ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
                 }
             }
             RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
