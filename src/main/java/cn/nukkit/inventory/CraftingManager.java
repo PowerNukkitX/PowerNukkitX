@@ -683,16 +683,24 @@ public class CraftingManager {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
-    public static UUID getItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
+    public static UUID getItemWithItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
         BinaryStream stream = new BinaryStream();
         for (Item item : items) {
             stream.putVarInt(getFullItemHash(item));
         }
         for (var des : itemDescriptors) {
             if (des instanceof ItemTagDescriptor) {
-                stream.putVarInt(itemDescriptors.hashCode());
+                stream.putVarInt(des.hashCode());
             }
         }
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessItemDescriptorHash(Collection<ItemDescriptor> itemDescriptors) {
+        var stream = new BinaryStream();
+        itemDescriptors.stream().mapToInt(Objects::hashCode).sorted().forEachOrdered(stream::putVarInt);
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
@@ -761,7 +769,7 @@ public class CraftingManager {
         Map<UUID, ShapedRecipe> map = getShapedRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
         List<Item> list1 = new LinkedList<>(recipe.getIngredientsAggregate());
         var list2 = recipe.getNewIngredientList();
-        map.put(getItemDescriptorsHash(list1, list2), recipe);
+        map.put(getItemWithItemDescriptorsHash(list1, list2), recipe);
     }
 
 
@@ -789,7 +797,7 @@ public class CraftingManager {
         List<Item> list1 = recipe.getIngredientsAggregate();
         List<ItemDescriptor> list2 = recipe.getNewIngredients();
 
-        UUID hash = getItemDescriptorsHash(list1, list2);
+        UUID hash = getItemWithItemDescriptorsHash(list1, list2);
 
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, ShapelessRecipe> map = getShapelessRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());

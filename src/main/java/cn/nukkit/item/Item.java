@@ -14,6 +14,7 @@ import cn.nukkit.blockstate.BlockStateRegistry;
 import cn.nukkit.blockstate.exception.InvalidBlockStateException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
+import cn.nukkit.inventory.ItemTag;
 import cn.nukkit.item.customitem.CustomItemDefinition;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -611,16 +612,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
-            log.warn("The server does not have the experiment mode feature enabled. " + c.getName() + "Unable to register!");
-            return;
-        }
-        ItemCustom itemCustom = c.getDeclaredConstructor().newInstance();
-        if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
-        CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), c);
-        CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
-        RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
-        addCreativeItem(itemCustom);
+        registerCustomItem(List.of(c));
     }
 
     /**
@@ -639,7 +631,15 @@ public class Item implements Cloneable, BlockID, ItemID {
             ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
             if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
             CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
-            CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), itemCustom.getDefinition());
+            var customDef = itemCustom.getDefinition();
+            CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
+            // 在服务端注册自定义物品的tag
+            if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
+                var tagSet = componentTag.getAllTags().stream().map(Tag::getName).filter(tagName -> tagName.startsWith("tag:")).collect(Collectors.toSet());
+                if (tagSet.size() != 0) {
+                    ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagSet);
+                }
+            }
             RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
             addCreativeItem(itemCustom);
         }

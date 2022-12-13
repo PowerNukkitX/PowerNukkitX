@@ -6,10 +6,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.utils.Config;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @PowerNukkitXOnly
@@ -54,4 +51,20 @@ public final class ItemTag {
         if (result == null) return null;
         return result.stream().toList();
     }
+
+    /**
+     * Register item tags for the given item namespaceId.
+     * This is a server-side only method, DO NOT affect the client.
+     *
+     * @param namespaceId The item namespaceId
+     * @param tags        The tags to register
+     */
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static void registerItemTag(String namespaceId, Collection<String> tags) {
+        var tagSet = ITEM_2_TAGS.get(namespaceId);
+        if (tagSet != null) tagSet.addAll(tags);
+        else ITEM_2_TAGS.put(namespaceId, new HashSet<>(tags));
+    }
+
 }
