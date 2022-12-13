@@ -30,7 +30,7 @@ public class EntityTropicalFish extends EntitySwimmingAnimal {
 
     @Override
     public float getWidth() {
-        return 0.4f;
+        return 0.5f;
     }
 
     @Override
