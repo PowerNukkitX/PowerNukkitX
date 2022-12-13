@@ -60,7 +60,7 @@ public class NearestTargetEntitySensor<T extends Entity> implements ISensor {
             if (memories.size() >= 1 && allTargetFunction.length == memories.size()) {
                 this.allTargetFunction = allTargetFunction;
             } else
-                throw new IllegalArgumentException("allTargetFunction必须与memories一一对应");
+                throw new IllegalArgumentException("All Target Function must correspond to memories one by one");
         }
         this.memories = memories;
     }

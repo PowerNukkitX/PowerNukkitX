@@ -9,7 +9,6 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.evaluator.RandomTimeRangeEvaluator;
 import cn.nukkit.entity.ai.executor.*;
@@ -108,7 +107,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                             }, (entity) -> true, 1, 1, 20)),
                     Set.of(
                             new Behavior(
-                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)), new AllMatchEvaluator(
+                                    new WardenViolentAnimationExecutor((int) (4.2 * 20)), all(
                                     (entity) -> entity.getMemoryStorage().compareDataTo(CoreMemoryTypes.IS_ATTACK_TARGET_CHANGED, true),
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET)), 5
                             ),
@@ -130,7 +129,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET), 3, 1
                             ),
                             new Behavior(new WardenSniffExecutor((int) (4.2 * 20), 35), new RandomTimeRangeEvaluator(5 * 20, 10 * 20), 2),
-                            new Behavior(new RandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
+                            new Behavior(new FlatRandomRoamExecutor(0.05f, 12, 100, true, -1, true, 10), (entity -> true), 1)
                     ),
                     Set.of(new RouteUnreachableTimeSensor(CoreMemoryTypes.ROUTE_UNREACHABLE_TIME)),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -166,9 +165,7 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
         this.setAmbientSoundInterval(8.0f);
         this.setAmbientSoundIntervalRange(16.0f);
         this.level.getVibrationManager().addListener(this);
-        if (this.diffHandDamage == null) {
-            this.setDiffHandDamage(new float[]{16, 30, 45});
-        }
+        this.diffHandDamage = new float[]{16, 30, 45};
     }
 
     @Override
@@ -276,12 +273,6 @@ public class EntityWarden extends EntityWalkingMob implements VibrationListener 
                 this.getMemoryStorage().put(CoreMemoryTypes.ATTACK_TARGET, entity);
             }
         } else angerValueMap.put(entity, added);
-    }
-
-    public void removeEntityAngerValue(Entity entity) {
-        this.getMemoryStorage()
-                .get(CoreMemoryTypes.WARDEN_ANGER_VALUE)
-                .remove(entity);
     }
 
     public boolean isValidAngerEntity(Entity entity) {

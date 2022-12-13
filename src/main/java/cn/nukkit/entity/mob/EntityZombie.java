@@ -10,10 +10,9 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.WalkController;
-import cn.nukkit.entity.ai.evaluator.AllMatchEvaluator;
 import cn.nukkit.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import cn.nukkit.entity.ai.executor.MeleeAttackExecutor;
-import cn.nukkit.entity.ai.executor.RandomRoamExecutor;
+import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.WalkingPosEvaluator;
@@ -48,11 +47,11 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
                     this.tickSpread,
                     Set.of(),
                     Set.of(
-                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, 40, true, 10), new AllMatchEvaluator(
+                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.ATTACK_TARGET, 0.15f, 40, true, 10), all(
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.ATTACK_TARGET),
                                     entity -> !entity.getMemoryStorage().notEmpty(CoreMemoryTypes.ATTACK_TARGET) || !(entity.getMemoryStorage().get(CoreMemoryTypes.ATTACK_TARGET) instanceof Player player) || player.isSurvival()
                             ), 3, 1),
-                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, 40, false, 10), new AllMatchEvaluator(
+                            new Behavior(new MeleeAttackExecutor(CoreMemoryTypes.NEAREST_PLAYER, 0.15f, 40, false, 10), all(
                                     new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_PLAYER),
                                     entity -> {
                                         if (entity.getMemoryStorage().isEmpty(CoreMemoryTypes.NEAREST_PLAYER)) return true;
@@ -60,7 +59,7 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
                                         return player.isSurvival();
                                     }
                             ), 2, 1),
-                            new Behavior(new RandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
+                            new Behavior(new FlatRandomRoamExecutor(0.15f, 12, 100, false, -1, true, 10), (entity -> true), 1, 1)
                     ),
                     Set.of(new NearestPlayerSensor(40, 0, 20)),
                     Set.of(new WalkController(), new LookController(true, true)),
@@ -78,10 +77,8 @@ public class EntityZombie extends EntityWalkingMob implements EntitySmite {
     @Override
     protected void initEntity() {
         this.setMaxHealth(20);
+        this.diffHandDamage = new float[]{2.5f, 3f, 4.5f};
         super.initEntity();
-        if (this.diffHandDamage == null) {
-            this.setDiffHandDamage(new float[]{2.5f, 3f, 4.5f});
-        }
     }
 
     @Override

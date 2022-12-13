@@ -37,7 +37,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     private static final String TAG_MAINHAND = "Mainhand";
     private static final String TAG_OFFHAND = "Offhand";
     private static final String TAG_ARMOR = "Armor";
-    public static final String DIFFICULTY_HAND_DAMAGE = "diffHandDamage";
 
     @Getter
     private EntityEquipmentInventory equipmentInventory;
@@ -50,7 +49,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
      * <p>
      * The damage that can be caused by the entity's empty hand at different difficulties.
      */
-    protected float[] diffHandDamage;
+    protected float[] diffHandDamage = new float[]{0,0,0};
 
     public EntityMob(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -76,13 +75,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             for (CompoundTag armorTag : armorList.getAll()) {
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
-        }
-        if (this.namedTag.contains(DIFFICULTY_HAND_DAMAGE)) {
-            var damageList = this.namedTag.getList(DIFFICULTY_HAND_DAMAGE, FloatTag.class);
-            this.diffHandDamage = new float[3];
-            this.diffHandDamage[0] = damageList.get(0).getData();
-            this.diffHandDamage[1] = damageList.get(1).getData();
-            this.diffHandDamage[2] = damageList.get(2).getData();
         }
     }
 
@@ -115,8 +107,6 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
             }
             this.namedTag.putList(armorTag);
         }
-        if (diffHandDamage != null)
-            this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
     }
 
     @Override
@@ -253,14 +243,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
     }
 
     @Override
-    public void setDiffHandDamage(float[] damages) {
-        this.diffHandDamage = damages;
-        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
-    }
-
-    @Override
-    public void setDiffHandDamage(int difficulty, float damage) {
-        this.diffHandDamage[difficulty - 1] = damage;
-        this.namedTag.putList(new ListTag<FloatTag>(DIFFICULTY_HAND_DAMAGE).add(new FloatTag("", this.diffHandDamage[0])).add(new FloatTag("", this.diffHandDamage[1])).add(new FloatTag("", this.diffHandDamage[2])));
+    public boolean attackTarget(Entity entity) {
+        return entity instanceof Player;
     }
 }

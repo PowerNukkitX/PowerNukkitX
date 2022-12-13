@@ -8,6 +8,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 import javax.annotation.Nonnull;
 
@@ -21,8 +23,10 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
     //以下属性涉及到对应的语义接口
     //若未实现相应接口，对应属性可忽略
     boolean sitting = false;
+    boolean angry = false;
     String ownerName;
     Player owner;
+
 
     public EntityCreature(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -42,6 +46,13 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
             this.ownerName = this.namedTag.getString("OwnerName");
             this.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_TAMED, true);
         }
+
+        if (this instanceof EntityAngryable && this.namedTag.contains("Angry")) {
+            if (this.namedTag.getBoolean("Angry")) {
+                this.angry = true;
+                this.setDataFlag(DATA_FLAGS, DATA_FLAG_ANGRY, true);
+            }
+        }
     }
 
     @Override
@@ -51,6 +62,7 @@ public abstract class EntityCreature extends EntityLiving implements EntityNamea
         //语义接口逻辑
         if (this instanceof EntityCanSit) this.namedTag.putBoolean("Sitting", sitting);
         if (this instanceof EntityTamable && this.ownerName != null) this.namedTag.putString("OwnerName", this.ownerName);
+        if (this instanceof EntityAngryable) this.namedTag.putBoolean("Angry", this.angry);
     }
 
     // Armor stands, when implemented, should also check this.

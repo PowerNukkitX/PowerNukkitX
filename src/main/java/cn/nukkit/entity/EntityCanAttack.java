@@ -28,24 +28,11 @@ public interface EntityCanAttack {
      * @param difficulty 难度id<br>difficulty id
      * @return 伤害<br>damage
      */
-    float getDiffHandDamage(int difficulty);
+    default float getDiffHandDamage(int difficulty) {
+        return getDiffHandDamage()[difficulty - 1];
+    }
 
-    /**
-     * 设置所有难度下不携带物品能造成的伤害.
-     * <p>
-     * Set the damage that can be dealt without carrying items on all difficulties.
-     *
-     * @param damages 伤害
-     */
-    void setDiffHandDamage(float[] damages);
-
-    /**
-     * 设置指定难度下不携带物品能造成的伤害
-     * <p>
-     * Set the damage that can be dealt without carrying the item at the specified difficulty.
-     *
-     * @param difficulty 难度
-     * @param damage     伤害
-     */
-    void setDiffHandDamage(int difficulty, float damage);
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    boolean attackTarget(Entity entity);
 }

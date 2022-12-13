@@ -82,8 +82,8 @@ public class MeleeAttackExecutor implements EntityControl, IBehaviorExecutor {
         }
 
         //如果是玩家检测模式 检查距离 检查是否在同一维度
-        if ((target instanceof Player player && !player.isSurvival()) || entity.distanceSquared(target) > maxSenseRangeSquared
-                || !entity.level.getName().equals(target.level.getName())) return false;
+        if ((target instanceof Player player && (!player.isSurvival() || !player.isOnline())) || entity.distanceSquared(target) > maxSenseRangeSquared
+                || !(entity.level.getId() == target.level.getId())) return false;
 
         if (entity.getMovementSpeed() != speed) entity.setMovementSpeed(speed);
 
