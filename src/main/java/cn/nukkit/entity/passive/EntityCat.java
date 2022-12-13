@@ -137,7 +137,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             //猫咪看向食物 优先级3
                             new Behavior(new LookAtFeedingPlayerExecutor(), new MemoryCheckNotEmptyEvaluator(CoreMemoryTypes.NEAREST_FEEDING_PLAYER), 3),
                             //猫咪随机目标点移动 优先级1
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 50),
+                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25),
                             //猫咪看向目标玩家 优先级1
                             new Behavior(new LookAtTargetExecutor(CoreMemoryTypes.NEAREST_PLAYER, 100), new ConditionalProbabilityEvaluator(3, 7, entity -> hasOwner(false), 10), 1, 1, 25)
                     ),
@@ -181,7 +181,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-        this.getLevel().addSound(this, Sound.MOB_CAT_STRAYMEOW);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
@@ -213,6 +212,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        this.getLevel().addSound(this, Sound.MOB_CAT_STRAYMEOW);
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
