@@ -77,8 +77,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
                                 else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE))
                                     this.getLevel().addSound(this, Sound.MOB_CAT_PURR);
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.NEAREST_PLAYER))
-                                    this.getLevel().addSound(this, Sound.MOB_CAT_STRAYMEOW);
                                 else
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
                                 return false;
@@ -215,12 +213,12 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
         if (item.getId() == Item.NAME_TAG && !player.isAdventure()) {
             return applyNameTag(player, item);
         }
         int healable = this.getHealingAmount(item);
         if (this.isBreedingItem(item)) {
+            this.getLevel().addSound(this, Sound.MOB_CAT_EAT);
             if (!this.hasOwner()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
                 if (Utils.rand(1, 3) == 3) {
