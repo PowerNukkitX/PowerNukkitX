@@ -76,7 +76,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                 if (this.hasOwner())
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
                                     //当猫在爱爱时发出的声音
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.IS_IN_LOVE))
+                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_BE_FED_TIME))
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
                                     //当猫爱爱结束时发出的声音
                                 else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_IN_LOVE_TIME))
