@@ -33,7 +33,6 @@ import cn.nukkit.level.particle.ItemBreakParticle;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Utils;
 
@@ -182,12 +181,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_INTERVAL_TICKS, 40));
-        this.setDataProperty(new IntEntityData(Entity.DATA_HEARTBEAT_SOUND_EVENT, LevelSoundEventPacket.SOUND_HEARTBEAT));
-        //空闲声音
-        this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
-        this.setAmbientSoundInterval(5.0f);
-        this.setAmbientSoundIntervalRange(8.0f);
+        this.getLevel().addSound(this, Sound.MOB_CAT_STRAYMEOW);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
@@ -204,9 +198,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
             this.variant = getRandomVariant();
         }
         this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
-        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) {
-            this.getLevel().addSound(this, Sound.MOB_CAT_PURR);
-        }
     }
 
     private int getRandomVariant() {
@@ -218,7 +209,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
         super.saveNBT();
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putInt("Variant", this.variant);
-        this.namedTag.putBoolean("isSitting", this.isSitting());
     }
 
     @Override
