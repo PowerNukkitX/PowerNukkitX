@@ -75,15 +75,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                 //当猫被驯服时发出的声音
                                 if (this.hasOwner())
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
-                                    //当猫在爱爱时发出的声音
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_BE_FED_TIME))
-                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
-                                    //当猫爱爱结束时发出的声音
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_IN_LOVE_TIME))
-                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURREOW);
                                 else
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
-
                                 return false;
                             }, (entity) -> true, 1, 1, 20),
                             //用于刷新InLove状态的核心行为
@@ -195,6 +188,9 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
         } else this.collarColor = DyeColor.RED;
+        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) {
+            this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
+        }
         if (this.namedTag.contains("Variant")) {
             this.variant = this.namedTag.getInt("Variant");
         } else {
