@@ -218,6 +218,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
         super.saveNBT();
         this.namedTag.putByte("CollarColor", this.collarColor.getDyeData());
         this.namedTag.putInt("Variant", this.variant);
+        this.namedTag.putBoolean("isSitting", this.isSitting());
     }
 
     @Override
