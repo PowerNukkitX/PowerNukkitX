@@ -55,6 +55,9 @@ public class CraftingManager {
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
+    private final Map<String, Map<UUID, ModProcessRecipe>> modProcessRecipeMap = new HashMap<>();
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
@@ -213,6 +216,13 @@ public class CraftingManager {
     @PowerNukkitXOnly
     public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
         return recipeXpMap;
+    }
+
+    // Get Mod-Processing Recipes
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public Map<String, Map<UUID, ModProcessRecipe>> getModProcessRecipeMap() {
+        return modProcessRecipeMap;
     }
 
     @Deprecated
@@ -721,6 +731,14 @@ public class CraftingManager {
         getCampfireRecipeMap().put(getItemHash(input), recipe);
     }
 
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
+        var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
+        var inputHash = getMultiItemHash(recipe.getIngredients());
+        map.put(inputHash, recipe);
+    }
+
     @PowerNukkitOnly("Public only in PowerNukkit")
     @Since("FUTURE")
     public static int getItemHash(Item item) {
@@ -1018,6 +1036,19 @@ public class CraftingManager {
             return recipe.matchItems(inputList, extraOutputList, multiplier);
         }
         return false;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    @Nullable
+    public ModProcessRecipe matchModProcessRecipe(@Nonnull String category, @Nonnull List<Item> inputList) {
+        var recipeMap = getModProcessRecipeMap();
+        var subMap = recipeMap.get(category);
+        if (subMap != null) {
+            var uuid = getMultiItemHash(inputList);
+            return subMap.get(uuid);
+        }
+        return null;
     }
 
     @Since("1.4.0.0-PN")
