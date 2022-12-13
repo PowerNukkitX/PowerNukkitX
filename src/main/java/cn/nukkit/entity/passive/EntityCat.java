@@ -73,10 +73,8 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                             new Behavior((entity) -> {
                                 //刷新随机播放音效
                                 //当猫被驯服时发出的声音
-                                if (this.hasOwner())
+                                if (this.hasOwner(false))
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
-                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE))
-                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
                                 else
                                     this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
                                 return false;
@@ -179,12 +177,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) {
-            this.level.addSound(this, Sound.MOB_CAT_PURR);
-        }
-        this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
-        this.setAmbientSoundInterval(8.0f);
-        this.setAmbientSoundIntervalRange(16.0f);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
