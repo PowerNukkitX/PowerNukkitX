@@ -177,7 +177,12 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     public void initEntity() {
         this.setMaxHealth(10);
         super.initEntity();
-
+        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) {
+            this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
+        }
+        this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
+        this.setAmbientSoundInterval(8.0f);
+        this.setAmbientSoundIntervalRange(16.0f);
         if (this.namedTag.contains("CollarColor")) {
             var collarColor = DyeColor.getByDyeData(this.namedTag.getByte("CollarColor"));
             if (collarColor == null) {
@@ -188,9 +193,6 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                 this.setDataProperty(new ByteEntityData(DATA_COLOUR, collarColor.getWoolData()));
             }
         } else this.collarColor = DyeColor.RED;
-        if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.ENTITY_SPOUSE)) {
-            this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
-        }
         if (this.namedTag.contains("Variant")) {
             this.variant = this.namedTag.getInt("Variant");
         } else {
