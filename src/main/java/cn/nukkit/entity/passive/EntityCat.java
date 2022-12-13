@@ -70,6 +70,22 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
             behaviorGroup = new BehaviorGroup(
                     this.tickSpread,
                     Set.of(
+                            new Behavior((entity) -> {
+                                //刷新随机播放音效
+                                //当猫被驯服时发出的声音
+                                if (this.hasOwner())
+                                    this.setAmbientSoundEvent(Sound.MOB_CAT_MEOW);
+                                    //当猫在爱爱时发出的声音
+                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.IS_IN_LOVE))
+                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURR);
+                                    //当猫爱爱结束时发出的声音
+                                else if (this.getMemoryStorage().notEmpty(CoreMemoryTypes.LAST_IN_LOVE_TIME))
+                                    this.setAmbientSoundEvent(Sound.MOB_CAT_PURREOW);
+                                else
+                                    this.setAmbientSoundEvent(Sound.MOB_CAT_STRAYMEOW);
+
+                                return false;
+                            }, (entity) -> true, 1, 1, 20),
                             //用于刷新InLove状态的核心行为
                             new Behavior(
                                     new InLoveExecutor(400),
