@@ -30,6 +30,10 @@ public class SpaceMoveController implements IController {
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
             if (xyzLength < speed) {
                 needNewDirection(entity);
+                //刹车！
+                entity.motionX = 0;
+                entity.motionY = 0;
+                entity.motionZ = 0;
                 return false;
             }
             return true;

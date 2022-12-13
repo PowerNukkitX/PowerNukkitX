@@ -59,6 +59,9 @@ public class WalkController implements IController {
             entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xzLength < speed) {
                 needNewDirection(entity);
+                //刹车！
+                entity.motionX = 0;
+                entity.motionZ = 0;
                 return false;
             }
             return true;
