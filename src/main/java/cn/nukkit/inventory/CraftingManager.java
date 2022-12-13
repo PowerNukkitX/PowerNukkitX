@@ -704,6 +704,14 @@ public class CraftingManager {
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessMultiItemHash(Collection<Item> items) {
+        var stream = new BinaryStream();
+        items.stream().mapToInt(CraftingManager::getFullItemHash).sorted().forEachOrdered(stream::putVarInt);
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
     @PowerNukkitOnly("Public only in PowerNukkit")
     @Since("FUTURE")
     public static int getFullItemHash(Item item) {
@@ -743,7 +751,7 @@ public class CraftingManager {
     @PowerNukkitXOnly
     public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
         var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
-        var inputHash = getMultiItemHash(recipe.getIngredients());
+        var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
         map.put(inputHash, recipe);
     }
 
@@ -1054,7 +1062,13 @@ public class CraftingManager {
         var subMap = recipeMap.get(category);
         if (subMap != null) {
             var uuid = getMultiItemHash(inputList);
-            return subMap.get(uuid);
+            var recipe = subMap.get(uuid);
+            if (recipe != null) return recipe;
+            for (var modProcessRecipe : subMap.values()) {
+                if (modProcessRecipe.matchItems(Collections.unmodifiableList(inputList))) {
+                    return modProcessRecipe;
+                }
+            }
         }
         return null;
     }

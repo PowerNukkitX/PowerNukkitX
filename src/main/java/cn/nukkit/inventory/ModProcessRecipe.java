@@ -3,6 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.energy.EnergyType;
+import cn.nukkit.inventory.recipe.ItemDescriptor;
 import cn.nukkit.item.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ public interface ModProcessRecipe extends Recipe {
     String getCategory();
 
     @NotNull
-    List<Item> getIngredients();
+    List<ItemDescriptor> getIngredients();
 
     @NotNull
     List<Item> getExtraResults();
@@ -53,5 +54,24 @@ public interface ModProcessRecipe extends Recipe {
     @Override
     default void registerToCraftingManager(CraftingManager manager) {
         manager.registerModProcessRecipe(this);
+    }
+
+    default boolean matchItems(@NotNull List<Item> inputItems) {
+        for (var item : inputItems) {
+            if (item == null || item.isNull()) {
+                continue;
+            }
+            var found = false;
+            for (var each : getIngredients()) {
+                if (each.match(item)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
     }
 }
