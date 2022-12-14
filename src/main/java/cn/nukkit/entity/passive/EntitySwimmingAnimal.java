@@ -3,6 +3,7 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
@@ -29,17 +30,20 @@ public abstract class EntitySwimmingAnimal extends EntityAnimal {
 
     @Override
     protected void handleGravity() {
-        resetFallDistance();
+        if (!this.onGround && !this.isInsideOfWater()) {
+            this.motionY -= this.getGravity();
+        } else if (this.isInsideOfWater())
+            resetFallDistance();
     }
 
     @Override
     public float getGravity() {
-        return 0;
+        return super.getGravity();
     }
 
     @Override
     protected void handleFrictionMovement() {
-
+        if (!isInsideOfWater()) super.handleFrictionMovement();
     }
 
     @Override
@@ -48,21 +52,25 @@ public abstract class EntitySwimmingAnimal extends EntityAnimal {
     }
 
     @Override
-    public void updateMovement() {
+    public void updateMovement() {// 检测自由落体时间
+        if (!this.onGround && !this.isInsideOfWater() && this.y < this.highestPosition) {
+            this.fallingTick++;
+        }
         super.updateMovement();
-        this.motionX = 0;
-        this.motionY = 0;
-        this.motionZ = 0;
+        //处理下落
+        if (this.isInsideOfWater()) {
+            this.motionX = 0;
+            if (this.motionY < 0) {
+                this.motionY += getGravity();
+                if (this.motionY > 0) this.motionY = 0;
+            }
+            this.motionZ = 0;
+        }
     }
 
     @Override
     public float getMovementSpeedAtBlock(Block block) {
-        return getMovementSpeed();
-    }
-
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
+        return block instanceof BlockLiquid liquid ? getMovementSpeed() : super.getMovementSpeedAtBlock(block) * 0.2f;
     }
 
     //巨型体系

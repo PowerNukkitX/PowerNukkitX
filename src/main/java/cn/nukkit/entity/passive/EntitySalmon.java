@@ -22,10 +22,9 @@ import java.util.Set;
 /**
  * @author PetteriM1
  */
-public class EntitySalmon extends EntitySwimmingAnimal {
+public class EntitySalmon extends EntityFish {
 
     public static final int NETWORK_ID = 109;
-    private IBehaviorGroup behaviorGroup;
 
     public EntitySalmon(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -35,31 +34,6 @@ public class EntitySalmon extends EntitySwimmingAnimal {
     public int getNetworkId() {
         return NETWORK_ID;
     }
-
-    @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            new Behavior((entity) -> {
-                                //刷新随机播放音效
-                                if (!this.isInsideOfWater())
-                                    this.getLevel().addSound(this, Sound.MOB_FISH_FLOP);
-                                return false;
-                            }, (entity) -> true, 1, 1, 20)
-                    ),
-                    Set.of(
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
-                    ),
-                    Set.of(),
-                    Set.of(new SpaceMoveController(), new LookController(true, true)),
-                    new SimpleFlatAStarRouteFinder(new SwimmingPosEvaluator(), this)
-            );
-        }
-        return behaviorGroup;
-    }
-
 
     @PowerNukkitOnly
     @Since("1.5.1.0-PN")
