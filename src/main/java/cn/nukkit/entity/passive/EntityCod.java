@@ -22,37 +22,12 @@ import java.util.Set;
 /**
  * @author PetteriM1
  */
-public class EntityCod extends EntitySwimmingAnimal {
+public class EntityCod extends EntityFish {
 
     public static final int NETWORK_ID = 112;
-    private IBehaviorGroup behaviorGroup;
 
     public EntityCod(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    public IBehaviorGroup getBehaviorGroup() {
-        if (behaviorGroup == null) {
-            behaviorGroup = new BehaviorGroup(
-                    this.tickSpread,
-                    Set.of(
-                            new Behavior((entity) -> {
-                                //刷新随机播放音效
-                                if (!this.isInsideOfWater())
-                                    this.getLevel().addSound(this, Sound.MOB_FISH_FLOP);
-                                return false;
-                            }, (entity) -> true, 1, 1, 20)
-                    ),
-                    Set.of(
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
-                    ),
-                    Set.of(),
-                    Set.of(new SpaceMoveController(), new LookController(true, true)),
-                    new SimpleFlatAStarRouteFinder(new SwimmingPosEvaluator(), this)
-            );
-        }
-        return behaviorGroup;
     }
 
     @Override
