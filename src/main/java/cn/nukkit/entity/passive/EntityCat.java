@@ -97,7 +97,7 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
                                         if (storage.notEmpty(CoreMemoryTypes.ATTACK_TARGET)) return false;
                                         Entity attackTarget = null;
                                         //已驯服为家猫就不攻击下述动物反之未驯服为流浪猫攻击下述动物
-                                        //攻击最近的鸡，小海龟，兔子
+                                        //攻击最近的小海龟，兔子
                                         if (storage.notEmpty(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET) && storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET).isAlive()) {
                                             attackTarget = storage.get(CoreMemoryTypes.NEAREST_SUITABLE_ATTACK_TARGET);
                                         }
@@ -164,13 +164,13 @@ public class EntityCat extends EntityWalkingAnimal implements EntityTamable, Ent
     }
 
     //攻击选择器
-    //流浪猫会攻击兔子,鸡,小海龟
+    //流浪猫会攻击兔子,小海龟
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     @Override
     public boolean attackTarget(Entity entity) {
         return switch (entity.getNetworkId()) {
-            case EntityRabbit.NETWORK_ID, EntityChicken.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
+            case EntityRabbit.NETWORK_ID, EntityTurtle.NETWORK_ID -> true;
             default -> false;
         };
     }
