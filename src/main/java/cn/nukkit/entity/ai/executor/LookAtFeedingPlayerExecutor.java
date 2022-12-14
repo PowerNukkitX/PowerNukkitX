@@ -7,13 +7,15 @@ import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
 
 /**
- * 狼看向携带食物的玩家.
+ * 实体看向最近携带食物的玩家<br/>
+ * 此执行器与 {@link LookAtTargetExecutor} 最大的一点不同是，它会设置实体的DATA_FLAG_INTERESTED为true
  * <p>
- * Wolf looks at the player carrying the food.
+ * Entity looks at the nearest player carrying the food<br/>
+ * The biggest difference between this executor and {@link LookAtTargetExecutor} is that it will set the entity's DATA_FLAG_INTERESTED to true
  */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
-public class WolfLookFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
+public class LookAtFeedingPlayerExecutor implements EntityControl, IBehaviorExecutor {
     @Override
     public boolean execute(EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);

@@ -1,5 +1,7 @@
 package cn.nukkit.entity.ai.executor;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
@@ -7,7 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
+@PowerNukkitXOnly
+@Since("1.6.0.0-PNX")
+public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor {
 
     protected float speed;
     protected int maxRoamRange;
@@ -20,15 +24,15 @@ public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
     protected boolean avoidWater;
     protected int maxRetryTime;
 
-    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
+    public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency) {
         this(speed, maxRoamRange, frequency, false, 100);
     }
 
-    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
+    public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime) {
         this(speed, maxRoamRange, frequency, calNextTargetImmediately, runningTime, false, 10);
     }
 
-    public RandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
+    public FlatRandomRoamExecutor(float speed, int maxRoamRange, int frequency, boolean calNextTargetImmediately, int runningTime, boolean avoidWater, int maxRetryTime) {
         this.speed = speed;
         this.maxRoamRange = maxRoamRange;
         this.frequency = frequency;
@@ -43,6 +47,7 @@ public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
     public boolean execute(@NotNull EntityIntelligent entity) {
         currentTargetCalTick++;
         durationTick++;
+        if (entity.isEnablePitch()) entity.setEnablePitch(false);
         if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
             Vector3 target = next(entity);
             if (avoidWater) {
@@ -73,8 +78,18 @@ public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        stop(entity);
+    }
+
+    @Override
+    public void onStop(EntityIntelligent entity) {
+        stop(entity);
+    }
+
+    protected void stop(EntityIntelligent entity) {
         removeRouteTarget(entity);
         removeLookTarget(entity);
+        entity.setEnablePitch(true);
         currentTargetCalTick = 0;
         durationTick = 0;
     }
@@ -87,7 +102,6 @@ public class RandomRoamExecutor implements EntityControl, IBehaviorExecutor {
         var random = ThreadLocalRandom.current();
         int x = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorX();
         int z = random.nextInt(maxRoamRange * 2) - maxRoamRange + entity.getFloorZ();
-        double y = entity.getLevel().getHighestBlockAt(x, z) + 1;
-        return new Vector3(x, y, z);
+        return new Vector3(x, entity.y, z);
     }
 }

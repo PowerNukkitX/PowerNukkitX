@@ -73,9 +73,4 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
     public void setProfession(int profession) {
         this.namedTag.putInt("Profession", profession);
     }
-
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
-    }
 }

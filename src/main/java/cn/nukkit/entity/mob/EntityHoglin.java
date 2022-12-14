@@ -53,17 +53,4 @@ public class EntityHoglin extends EntityWalkingMob implements EntityAgeable {
     public String getOriginalName() {
         return "Hoglin";
     }
-
-    @PowerNukkitOnly
-    @Override
-    public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public void setBaby(boolean baby) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_BABY, baby);
-        this.setScale(baby ? 0.5f : 1.0f);
-    }
 }

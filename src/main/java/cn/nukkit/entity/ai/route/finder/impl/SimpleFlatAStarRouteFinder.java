@@ -464,11 +464,12 @@ public class SimpleFlatAStarRouteFinder extends SimpleRouteFinder {
         if (pos1.equals(pos2)) return false;
         return VectorMath.getPassByVector3(pos1, pos2).stream().anyMatch(
                 (pos) -> {
-                    var offsetX = pos.x - this.entity.x;
-                    var offsetY = pos.y - this.entity.y;
-                    var offsetZ = pos.z - this.entity.z;
-                    var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
-                    return Utils.hasCollisionBlocks(this.level, offsetBox);
+//                    var offsetX = pos.x - this.entity.x;
+//                    var offsetY = pos.y - this.entity.y;
+//                    var offsetZ = pos.z - this.entity.z;
+//                    var offsetBox = this.entity.getBoundingBox().getOffsetBoundingBox(offsetX, offsetY, offsetZ);
+//                    return Utils.hasCollisionBlocks(this.level, offsetBox);
+                    return !evalStandingBlock(this.level.getBlock(pos.add(0, -1)));
                 }
         );
     }

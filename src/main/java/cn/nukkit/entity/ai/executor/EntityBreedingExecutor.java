@@ -73,11 +73,16 @@ public class EntityBreedingExecutor<T extends EntityAnimal> implements IBehavior
 
     @Override
     public void onInterrupt(EntityIntelligent entity) {
+        clearData((T) entity);
+
         currentTick = 0;
         finded = false;
         entity.setEnablePitch(false);
-        another.setEnablePitch(false);
-        another = null;
+        if (another != null) {
+            clearData(another);
+            another.setEnablePitch(false);
+            another = null;
+        }
     }
 
     protected void setSpouse(T entity1, T entity2) {

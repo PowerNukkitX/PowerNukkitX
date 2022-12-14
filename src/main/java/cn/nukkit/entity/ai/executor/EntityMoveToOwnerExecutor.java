@@ -6,26 +6,26 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.entity.ai.memory.CoreMemoryTypes;
-import cn.nukkit.entity.passive.EntityWolf;
+import cn.nukkit.entity.EntityTamable;
 import cn.nukkit.math.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 狼移动到主人身边.
+ * 实体移动到主人身边.(只对实现了接口 {@link EntityTamable} 的实体有效)
  * <p>
- * The wolf moves to the master's side.
+ * The entity moves to the master's side.(Only valid for entities that implement the interface {@link EntityTamable})
  */
 @PowerNukkitXOnly
 @Since("1.19.30-r1")
-public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
+public class EntityMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor {
     protected float speed;
     protected int maxFollowRangeSquared;
     protected Vector3 oldTarget;
     protected boolean updateRouteImmediatelyWhenTargetChange;
 
-    public WolfMoveToOwnerExecutor(float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange) {
+    public EntityMoveToOwnerExecutor(float speed, boolean updateRouteImmediatelyWhenTargetChange, int maxFollowRange) {
         this.speed = speed;
         this.updateRouteImmediatelyWhenTargetChange = updateRouteImmediatelyWhenTargetChange;
         if (maxFollowRange >= 0) {
@@ -37,13 +37,11 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
     public boolean execute(@NotNull EntityIntelligent entity) {
         if (!entity.isEnablePitch()) entity.setEnablePitch(true);
 
-        if (entity instanceof EntityWolf entityWolf) {
-            var player = entityWolf.getServer().getPlayer(entityWolf.getOwnerName());
-            if (player == null || entityWolf.isSitting()) return false;
+        if (entity instanceof EntityTamable entityTamable) {
+            var player = entity.getServer().getPlayer(entityTamable.getOwnerName());
+            if (player == null) return false;
 
             //获取目的地位置（这个clone很重要）
-//            var tmp = randomVector3(player, 2);
-//            if (tmp == null) return true;
             var target = player.clone();
             if (target.distanceSquared(entity) <= 9) return false;
 
@@ -51,7 +49,7 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
             if (!target.level.getName().equals(entity.level.getName()))
                 return false;
 
-            if (entityWolf.getPosition().floor().equals(oldTarget)) return false;
+            if (entity.getPosition().floor().equals(oldTarget)) return false;
 
             var distanceSquared = entity.distanceSquared(player);
             if (distanceSquared <= maxFollowRangeSquared) {
@@ -81,7 +79,7 @@ public class WolfMoveToOwnerExecutor implements EntityControl, IBehaviorExecutor
                 var targetVector = randomVector3(player, 4);
                 if (targetVector == null || targetVector.distanceSquared(player) > maxFollowRangeSquared)
                     return true;//继续寻找
-                else return !entityWolf.teleport(targetVector);
+                else return !entity.teleport(targetVector);
             }
         }
         return false;
