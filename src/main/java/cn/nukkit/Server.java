@@ -632,7 +632,7 @@ public class Server {
                 put("check-login-time", true);
                 put("disable-auto-bug-report", false);
                 put("allow-shaded", false);
-                put("server-authoritative-movement", "client-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
+                put("server-authoritative-movement", "server-auth");// Allowed values: "client-auth", "server-auth", "server-auth-with-rewind"
             }
         });
         // Allow Nether? (determines if we create a nether world if one doesn't exist on startup)
