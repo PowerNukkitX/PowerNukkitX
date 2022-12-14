@@ -1605,8 +1605,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         Level level = null;
-        if (this.namedTag.containsInt("SpawnLevel")) {
+        if (this.namedTag.containsString("SpawnLevel")) {
             level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"));
+        }
+        if (this.namedTag.containsString("SpawnBlockLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel"));
         }
         if (level != null) {
             if (this.namedTag.containsInt("SpawnX") && this.namedTag.containsInt("SpawnY") && this.namedTag.containsInt("SpawnZ")) {
@@ -1615,8 +1618,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.spawnPosition = null;
             }
             if (this.namedTag.containsInt("SpawnBlockPositionX") && this.namedTag.containsInt("SpawnBlockPositionY")
-                    && this.namedTag.containsInt("SpawnBlockPositionZ") && this.namedTag.containsInt("SpawnBlockLevel")) {
-                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), this.server.getLevelByName(this.namedTag.getString("SpawnBlockLevel")));
+                    && this.namedTag.containsInt("SpawnBlockPositionZ") && this.namedTag.containsString("SpawnBlockLevel")) {
+                this.spawnBlockPosition = new Position(namedTag.getInt("SpawnBlockPositionX"), namedTag.getInt("SpawnBlockPositionY"), namedTag.getInt("SpawnBlockPositionZ"), level);
             } else {
                 this.spawnBlockPosition = null;
             }
