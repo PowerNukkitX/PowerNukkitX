@@ -456,6 +456,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_HAS_DASH_COOLDOWN = dynamic(108);
     @Since("1.19.50-r1")
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = dynamic(109);
+    @Since("1.19.50-r3")
+    public static final int DATA_FLAG_LARGE = dynamic(110);
     private static final Set<CustomEntityDefinition> entityDefinitions = new HashSet<>();
     private static final Map<String, EntityProvider<? extends Entity>> knownEntities = new HashMap<>();
     private static final Map<String, String> shortNames = new HashMap<>();

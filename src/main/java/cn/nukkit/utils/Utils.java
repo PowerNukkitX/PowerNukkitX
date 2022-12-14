@@ -4,6 +4,8 @@ import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
@@ -587,5 +589,11 @@ public class Utils {
         isPlantOrFluid[Block.STILL_LAVA] = true;
         isPlantOrFluid[Block.ICE] = true; //solid water
         isPlantOrFluid[Block.PACKED_ICE] = true; //solid water
+    }
+
+    public static boolean entityInsideWaterFast(Entity entity) {
+        double y = entity.y + entity.getEyeHeight();
+        int b = entity.level.getBlockIdAt(NukkitMath.floorDouble(entity.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(entity.z));
+        return b == BlockID.FLOWING_WATER || b == BlockID.STILL_WATER;
     }
 }
