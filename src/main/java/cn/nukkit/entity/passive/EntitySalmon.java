@@ -1,6 +1,5 @@
 package cn.nukkit.entity.passive;
 
-import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.ai.behavior.Behavior;
@@ -15,7 +14,6 @@ import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Utils;
 
@@ -47,7 +45,7 @@ public class EntitySalmon extends EntitySwimmingAnimal {
                             new Behavior((entity) -> {
                                 //刷新随机播放音效
                                 if (!this.isInsideOfWater())
-                                    this.getLevel().addSound(this, Sound.MOB_FISH_FLOP, 1.0f, 1.0f);
+                                    this.getLevel().addSound(this, Sound.MOB_FISH_FLOP);
                                 return false;
                             }, (entity) -> true, 1, 1, 20)
                     ),
@@ -94,28 +92,6 @@ public class EntitySalmon extends EntitySwimmingAnimal {
     public void initEntity() {
         this.setMaxHealth(3);
         super.initEntity();
-    }
-
-    @Override
-    public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
-        if (item.getId() == Item.BUCKET && (item.getDamage() == 0 || item.getDamage() == 8) && Utils.entityInsideWaterFast(this)) {
-            this.close();
-            if (item.getCount() <= 1) {
-                player.getInventory().setItemInHand(Item.get(Item.BUCKET, this.getBucketMeta(), 1));
-                return false;
-            } else {
-                if (!player.isCreative()) {
-                    player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
-                }
-                player.getInventory().addItem(Item.get(Item.BUCKET, this.getBucketMeta(), 1));
-                return true;
-            }
-        }
-        return super.onInteract(player, item, clickedPos);
-    }
-
-    int getBucketMeta() {
-        return 0;
     }
 
     @Override
