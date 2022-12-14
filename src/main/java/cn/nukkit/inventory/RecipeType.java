@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.api.PowerNukkitOnly;
+import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
 public enum RecipeType {
@@ -21,7 +22,8 @@ public enum RecipeType {
     @PowerNukkitOnly STONECUTTER(0),
     @PowerNukkitOnly CARTOGRAPHY(0),
     @PowerNukkitOnly REPAIR(-1),
-    @PowerNukkitOnly @Since("1.4.0.0-PN") SMITHING(0)
+    @PowerNukkitOnly @Since("1.4.0.0-PN") SMITHING(0),
+    @PowerNukkitXOnly @Since("1.19.50-r3") MOD_PROCESS(0) // For mods
     ;
 
     @PowerNukkitOnly public final int networkType;

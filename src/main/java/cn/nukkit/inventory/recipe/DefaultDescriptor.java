@@ -2,6 +2,7 @@ package cn.nukkit.inventory.recipe;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.inventory.CraftingManager;
 import cn.nukkit.item.Item;
 import lombok.Value;
 
@@ -29,5 +30,15 @@ public class DefaultDescriptor implements ItemDescriptor {
     @Override
     public int getCount() {
         return this.item.getCount();
+    }
+
+    @Override
+    public boolean match(Item item) {
+        return this.item.equals(item, true, false);
+    }
+
+    @Override
+    public int hashCode() {
+        return CraftingManager.getFullItemHash(item);
     }
 }

@@ -55,6 +55,9 @@ public class CraftingManager {
     private final Deque<Recipe> recipeList = new ArrayDeque<>();
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
+    private final Map<String, Map<UUID, ModProcessRecipe>> modProcessRecipeMap = new HashMap<>();
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
     private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
 
     //<editor-fold desc="deprecated fields" defaultstate="collapsed">
@@ -213,6 +216,13 @@ public class CraftingManager {
     @PowerNukkitXOnly
     public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
         return recipeXpMap;
+    }
+
+    // Get Mod-Processing Recipes
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public Map<String, Map<UUID, ModProcessRecipe>> getModProcessRecipeMap() {
+        return modProcessRecipeMap;
     }
 
     @Deprecated
@@ -673,16 +683,32 @@ public class CraftingManager {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
-    public static UUID getItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
+    public static UUID getItemWithItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
         BinaryStream stream = new BinaryStream();
         for (Item item : items) {
             stream.putVarInt(getFullItemHash(item));
         }
         for (var des : itemDescriptors) {
             if (des instanceof ItemTagDescriptor) {
-                stream.putVarInt(itemDescriptors.hashCode());
+                stream.putVarInt(des.hashCode());
             }
         }
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessItemDescriptorHash(Collection<ItemDescriptor> itemDescriptors) {
+        var stream = new BinaryStream();
+        itemDescriptors.stream().mapToInt(Objects::hashCode).sorted().forEachOrdered(stream::putVarInt);
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessMultiItemHash(Collection<Item> items) {
+        var stream = new BinaryStream();
+        items.stream().mapToInt(CraftingManager::getFullItemHash).sorted().forEachOrdered(stream::putVarInt);
         return UUID.nameUUIDFromBytes(stream.getBuffer());
     }
 
@@ -721,6 +747,14 @@ public class CraftingManager {
         getCampfireRecipeMap().put(getItemHash(input), recipe);
     }
 
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
+        var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
+        var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
+        map.put(inputHash, recipe);
+    }
+
     @PowerNukkitOnly("Public only in PowerNukkit")
     @Since("FUTURE")
     public static int getItemHash(Item item) {
@@ -743,7 +777,7 @@ public class CraftingManager {
         Map<UUID, ShapedRecipe> map = getShapedRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
         List<Item> list1 = new LinkedList<>(recipe.getIngredientsAggregate());
         var list2 = recipe.getNewIngredientList();
-        map.put(getItemDescriptorsHash(list1, list2), recipe);
+        map.put(getItemWithItemDescriptorsHash(list1, list2), recipe);
     }
 
 
@@ -771,7 +805,7 @@ public class CraftingManager {
         List<Item> list1 = recipe.getIngredientsAggregate();
         List<ItemDescriptor> list2 = recipe.getNewIngredients();
 
-        UUID hash = getItemDescriptorsHash(list1, list2);
+        UUID hash = getItemWithItemDescriptorsHash(list1, list2);
 
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, ShapelessRecipe> map = getShapelessRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
@@ -1018,6 +1052,25 @@ public class CraftingManager {
             return recipe.matchItems(inputList, extraOutputList, multiplier);
         }
         return false;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    @Nullable
+    public ModProcessRecipe matchModProcessRecipe(@Nonnull String category, @Nonnull List<Item> inputList) {
+        var recipeMap = getModProcessRecipeMap();
+        var subMap = recipeMap.get(category);
+        if (subMap != null) {
+            var uuid = getMultiItemHash(inputList);
+            var recipe = subMap.get(uuid);
+            if (recipe != null) return recipe;
+            for (var modProcessRecipe : subMap.values()) {
+                if (modProcessRecipe.matchItems(Collections.unmodifiableList(inputList))) {
+                    return modProcessRecipe;
+                }
+            }
+        }
+        return null;
     }
 
     @Since("1.4.0.0-PN")

@@ -9,6 +9,7 @@ import cn.nukkit.item.customitem.data.ItemCreativeCategory;
 import cn.nukkit.item.customitem.data.RenderOffsets;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import com.google.gson.Gson;
 import lombok.NonNull;
 
@@ -20,9 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition#SimpleBuilder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
+ * CustomBlockDefinition用于获得发送给客户端的物品行为包数据。{@link CustomItemDefinition.SimpleBuilder}中提供的方法都是控制发送给客户端数据，如果需要控制服务端部分行为，请覆写{@link cn.nukkit.item.Item Item}中的方法。
  * <p>
- * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition#SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
+ * CustomBlockDefinition is used to get the data of the item behavior_pack sent to the client. The methods provided in {@link CustomItemDefinition.SimpleBuilder} control the data sent to the client, if you need to control some of the server-side behavior, please override the methods in {@link cn.nukkit.item.Item Item}.
  */
 @PowerNukkitXOnly
 @Since("1.19.31-r1")
@@ -185,6 +186,26 @@ public record CustomItemDefinition(String identifier, CompoundTag nbt) {
         public SimpleBuilder renderOffsets(@NonNull RenderOffsets renderOffsets) {
             this.nbt.getCompound("components")
                     .putCompound("minecraft:render_offsets", renderOffsets.nbt);
+            return this;
+        }
+
+        /**
+         * 向自定义物品添加一个tag，通常用于合成等
+         * <p>
+         * Add a tag to a custom item, usually used for crafting, etc.
+         * todo: 2022/12/13  检查是否真的在客户端起作用
+         *
+         * @param tag the tag
+         */
+        public SimpleBuilder tag(String... tag) {
+            var list = this.nbt.getCompound("components").getList("item_tags", StringTag.class);
+            if (list == null) {
+                list = new ListTag<>("item_tags");
+                this.nbt.getCompound("components").putList(list);
+            }
+            for (var s : tag) {
+                list.add(new StringTag("", s));
+            }
             return this;
         }
 
