@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 @PowerNukkitXOnly
 @Since("1.19.21-r2")
 public abstract class CustomEntityProvider implements EntityProvider<Entity> {
-    protected CustomEntityDefinition customEntityDefinition;
+    private CustomEntityDefinition customEntityDefinition;
 
     public CustomEntityProvider(CustomEntityDefinition customEntityDefinition) {
         this.customEntityDefinition = customEntityDefinition;

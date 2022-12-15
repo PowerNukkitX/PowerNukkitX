@@ -32,7 +32,7 @@ public class CustomClassEntityProvider extends CustomEntityProvider implements E
         try {
             def = this.clazz.getDeclaredField("DEF");
             def.setAccessible(true);
-            this.customEntityDefinition = (CustomEntityDefinition) def.get(null);
+            this.setCustomEntityDefinition((CustomEntityDefinition) def.get(null));
         } catch (NoSuchFieldException e) {
             try {
                 def = this.clazz.getDeclaredField("def");
@@ -42,7 +42,7 @@ public class CustomClassEntityProvider extends CustomEntityProvider implements E
             }
             try {
                 def.setAccessible(true);
-                this.customEntityDefinition = (CustomEntityDefinition) def.get(null);
+                this.setCustomEntityDefinition((CustomEntityDefinition) def.get(null));
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
