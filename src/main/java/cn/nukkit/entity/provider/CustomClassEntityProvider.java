@@ -20,6 +20,11 @@ import java.util.List;
 public class CustomClassEntityProvider extends CustomEntityProvider implements EntityProviderWithClass {
     private final Class<? extends Entity> clazz;
 
+    /**
+     * 调用此方法注册自定义实体，请一定要在自定义实体类中，存在一个名为 def 或者 DEF(推荐) 的{@link CustomEntityDefinition}静态常量
+     *
+     * @param customEntityClass the custom entity class
+     */
     public CustomClassEntityProvider(Class<? extends Entity> customEntityClass) {
         super(null);
         this.clazz = customEntityClass;
