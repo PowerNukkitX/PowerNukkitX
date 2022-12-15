@@ -44,7 +44,7 @@ public class KillCommand extends VanillaCommand {
         }
         if (args.length == 1) {
             if (!sender.hasPermission("nukkit.command.kill.other")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
                 return true;
             }
             List<Entity> entities = EntitySelector.hasArguments(args[0]) ? EntitySelector.matchEntities(sender, args[0]) : Server.getInstance().getPlayer(args[0]) != null ? Collections.singletonList(Server.getInstance().getPlayer(args[0])) : null;
@@ -78,7 +78,7 @@ public class KillCommand extends VanillaCommand {
         }
         if (sender.isPlayer()) {
             if (!sender.hasPermission("nukkit.command.kill.self")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
                 return true;
             }
             EntityDamageEvent ev = new EntityDamageEvent(sender.asPlayer(), DamageCause.SUICIDE, 1000000);

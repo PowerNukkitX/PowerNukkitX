@@ -1,13 +1,14 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Server;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.TextFormat;
 
-public class TpsCommand extends VanillaCommand {
+public class TpsCommand extends Command implements CoreCommand {
     public TpsCommand(String name) {
         super(name, "get server tps");
         this.setPermission("nukkit.tps.status");

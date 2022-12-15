@@ -44,7 +44,7 @@ public class SimpleCommand extends Command {
     }
 
     public void sendInGameMessage(CommandSender sender) {
-        sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+        sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
     }
 
     @Override

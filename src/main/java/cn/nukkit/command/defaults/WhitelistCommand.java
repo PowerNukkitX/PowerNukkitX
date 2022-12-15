@@ -115,7 +115,7 @@ public class WhitelistCommand extends VanillaCommand {
 
     private boolean badPerm(CommandSender sender, String perm) {
         if (!sender.hasPermission("nukkit.command.whitelist." + perm) && !sender.hasPermission("nukkit.command.allowlist." + perm)) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
             return true;
         }

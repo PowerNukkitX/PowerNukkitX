@@ -22,7 +22,7 @@ import java.util.List;
 public class EnchantCommand extends VanillaCommand {
 
     public EnchantCommand(String name) {
-        super(name, "commands.enchant.description");
+        super(name, "commands.enchant.description", "nukkit.command.enchant.usage");
         this.setPermission("nukkit.command.enchant");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

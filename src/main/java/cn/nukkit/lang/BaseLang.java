@@ -1,5 +1,7 @@
 package cn.nukkit.lang;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 
@@ -14,11 +16,24 @@ import java.util.Objects;
  */
 @Log4j2
 public class BaseLang {
+    /**
+     * 默认备选语言，对应language文件夹
+     */
     public static final String FALLBACK_LANGUAGE = "eng";
 
+    /**
+     * The Lang name.
+     */
     protected final String langName;
 
+    /**
+     * 本地语言，从nukkit.yml中指定
+     */
     protected Map<String, String> lang;
+
+    /**
+     * 备选语言映射，当从本地语言映射中无法翻译时调用备选语言映射，默认为英文
+     */
     protected Map<String, String> fallbackLang = new HashMap<>();
 
 
@@ -116,6 +131,45 @@ public class BaseLang {
         }
         return d;
     }
+
+    /**
+     * 翻译一个文本key，key从语言文件中查询
+     *
+     * @param key the key
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key) {
+        return this.translateString(key);
+    }
+
+    /**
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     *
+     * @param key  the key
+     * @param args the args
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key, String... args) {
+        return this.translateString(key, args);
+    }
+
+    /**
+     * 翻译一个文本key，key从语言文件中查询，并且按照给定参数填充结果
+     *
+     * @param key  the key
+     * @param args the args
+     * @return the string
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public String tr(String key, Object... args) {
+        return this.translateString(key, args);
+    }
+
 
     public String translateString(String str) {
         return this.translateString(str, new String[]{}, null);

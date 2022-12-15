@@ -3,6 +3,9 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
 import cn.nukkit.utils.BinaryStream;
+import com.nukkitx.network.util.Preconditions;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.ToString;
 
 import java.util.*;
@@ -53,6 +56,7 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_COMMAND = dynamic(70);
 
     public Map<String, CommandDataVersions> commands;
+    @Deprecated
     public final Map<String, List<String>> softEnums = new HashMap<>();
 
     @Override
@@ -62,142 +66,198 @@ public class AvailableCommandsPacket extends DataPacket {
 
     @Override
     public void decode() {
-
+        //non
     }
 
     @Override
     public void encode() {
         this.reset();
+        Set<String> enumValuesSet = new ObjectOpenHashSet<>();
+        Set<String> postfixSet = new ObjectOpenHashSet<>();
+        Set<CommandEnum> enumsSet = new ObjectOpenHashSet<>();
+        Set<CommandEnum> softEnumsSet = new ObjectOpenHashSet<>();
 
-        LinkedHashSet<String> enumValuesSet = new LinkedHashSet<>();
-        LinkedHashSet<String> postFixesSet = new LinkedHashSet<>();
-        LinkedHashSet<CommandEnum> enumsSet = new LinkedHashSet<>();
-
-        commands.forEach((name, data) -> {
-            CommandData cmdData = data.versions.get(0);
-
-            if (cmdData.aliases != null) {
-                enumsSet.add(cmdData.aliases);
-
-                enumValuesSet.addAll(cmdData.aliases.getValues());
+        // Get all enum values
+        for (var entry : commands.entrySet()) {
+            var data = entry.getValue().versions.get(0);
+            if (data.aliases != null) {
+                enumValuesSet.addAll(data.aliases.getValues());
+                enumsSet.add(data.aliases);
             }
 
-            for (CommandOverload overload : cmdData.overloads.values()) {
-                for (CommandParameter parameter : overload.input.parameters) {
-                    if (parameter.enumData != null) {
-                        enumsSet.add(parameter.enumData);
-
-                        enumValuesSet.addAll(parameter.enumData.getValues());
+            for (CommandParameter[] overload : data.overloads.values().stream().map(o -> o.input.parameters).toList()) {
+                for (CommandParameter parameter : overload) {
+                    CommandEnum commandEnumData = parameter.enumData;
+                    if (commandEnumData != null) {
+                        if (commandEnumData.isSoft()) {
+                            softEnumsSet.add(commandEnumData);
+                        } else {
+                            enumValuesSet.addAll(commandEnumData.getValues());
+                            enumsSet.add(commandEnumData);
+                        }
                     }
 
-                    if (parameter.postFix != null) {
-                        postFixesSet.add(parameter.postFix);
+                    String postfix = parameter.postFix;
+                    if (postfix != null) {
+                        postfixSet.add(postfix);
                     }
                 }
             }
-        });
+        }
 
-        List<String> enumValues = new ArrayList<>(enumValuesSet);
-        List<CommandEnum> enums = new ArrayList<>(enumsSet);
-        List<String> postFixes = new ArrayList<>(postFixesSet);
+        // Add Constraint Enums
+        // Not need it for now
+        /*for(CommandEnumData enumData : packet.getConstraints().stream().map(CommandEnumConstraintData::getEnumData).collect(Collectors.toList())) {
+            if (enumData.isSoft()) {
+                softEnumsSet.add(enumData);
+            } else {
+                enumsSet.add(enumData);
+            }
+            enumValuesSet.addAll(Arrays.asList(enumData.getValues()));
+        }*/
 
-        this.putUnsignedVarInt(enumValues.size());
-        enumValues.forEach(this::putString);
+        List<String> enumValues = new ObjectArrayList<>(enumValuesSet);
+        List<String> postFixes = new ObjectArrayList<>(postfixSet);
+        List<CommandEnum> enums = new ObjectArrayList<>(enumsSet);
+        List<CommandEnum> softEnums = new ObjectArrayList<>(softEnumsSet);
 
-        this.putUnsignedVarInt(postFixes.size());
-        postFixes.forEach(this::putString);
+        putUnsignedVarInt(enumValues.size());
+        for (var enumValue : enumValues) {
+            this.putString(enumValue);
+        }
+        putUnsignedVarInt(postFixes.size());
+        for (var postFix : postFixes) {
+            this.putString(postFix);
+        }
 
+        this.writeEnums(enumValues, enums);
+
+        this.putUnsignedVarInt(commands.size());
+        for (var entry : commands.entrySet()) {
+            this.writeCommand(entry, enums, softEnums, postFixes);
+        }
+
+        this.putUnsignedVarInt(softEnums.size());
+        for (var softEnum : softEnums) {
+            this.writeCommandEnum(softEnum);
+        }
+
+        // Constraints
+        // Not need it for now
+        /*helper.writeArray(buffer, packet.getConstraints(), (buf, constraint) -> {
+            helper.writeCommandEnumConstraints(buf, constraint, enums, enumValues);
+        });*/
+
+        this.putUnsignedVarInt(0);
+    }
+
+    private void writeEnums(List<String> values, List<CommandEnum> enums) {
+        // Determine width of enum index
         ObjIntConsumer<BinaryStream> indexWriter;
-        if (enumValues.size() < 256) {
+        int valuesSize = values.size();
+        if (valuesSize < 0x100) {//256
             indexWriter = WRITE_BYTE;
-        } else if (enumValues.size() < 65536) {
+        } else if (valuesSize < 0x10000) {//65536
             indexWriter = WRITE_SHORT;
         } else {
             indexWriter = WRITE_INT;
         }
+        // Write enums
+        putUnsignedVarInt(enums.size());
+        for (CommandEnum commandEnum : enums) {
+            this.putString(commandEnum.getName());
 
-        this.putUnsignedVarInt(enums.size());
-        enums.forEach((cmdEnum) -> {
-            putString(cmdEnum.getName());
-
-            List<String> values = cmdEnum.getValues();
-            putUnsignedVarInt(values.size());
-
-            for (String val : values) {
-                int i = enumValues.indexOf(val);
-
-                if (i < 0) {
-                    throw new IllegalStateException("Enum value '" + val + "' not found");
-                }
-
-                indexWriter.accept(this, i);
+            this.putUnsignedVarInt(commandEnum.getValues().size());
+            for (String value : commandEnum.getValues()) {
+                int index = values.indexOf(value);
+                Preconditions.checkArgument(index > -1, "Invalid enum value detected: " + value);
+                indexWriter.accept(this, index);
             }
-        });
-
-        putUnsignedVarInt(commands.size());
-
-        commands.forEach((name, cmdData) -> {
-            CommandData data = cmdData.versions.get(0);
-
-            putString(name);
-            putString(data.description);
-
-            int flags = 0;
-            for (CommandData.Flag flag : data.flags) {
-                flags |= 1 << flag.ordinal();
-            }
-            putLShort(flags);
-
-            putByte((byte) data.permission);
-
-            putLInt(data.aliases == null ? -1 : enums.indexOf(data.aliases));
-
-            putUnsignedVarInt(data.overloads.size());
-            for (CommandOverload overload : data.overloads.values()) {
-                putUnsignedVarInt(overload.input.parameters.length);
-
-                for (CommandParameter parameter : overload.input.parameters) {
-                    putString(parameter.name);
-
-                    int type = 0;
-                    if (parameter.postFix != null) {
-                        int i = postFixes.indexOf(parameter.postFix);
-                        if (i < 0) {
-                            throw new IllegalStateException("Postfix '" + parameter.postFix + "' isn't in postfix array");
-                        }
-                        type = ARG_FLAG_POSTFIX | i;
-                    } else {
-                        type |= ARG_FLAG_VALID;
-                        if (parameter.enumData != null) {
-                            type |= ARG_FLAG_ENUM | enums.indexOf(parameter.enumData);
-                        } else {
-                            type |= parameter.type.getId();
-                        }
-                    }
-
-                    putLInt(type);
-                    putBoolean(parameter.optional);
-//                    putByte(parameter.options); // TODO: 19/03/2019 Bit flags. Only first bit is used for GameRules.
-                    byte options = 0;
-
-                    if (parameter.paramOptions != null) {
-                        for (CommandParamOption option : parameter.paramOptions) {
-                            options |= 1 << option.ordinal();
-                        }
-                    }
-                    this.putByte(options);
-                }
-            }
-        });
-
-        this.putUnsignedVarInt(softEnums.size());
-
-        softEnums.forEach((name, values) -> {
-            this.putString(name);
-            this.putUnsignedVarInt(values.size());
-            values.forEach(this::putString);
-        });
-
-        this.putUnsignedVarInt(0);
+        }
     }
+
+    private void writeCommand(Map.Entry<String, CommandDataVersions> commandEntry, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+        var commandData = commandEntry.getValue().versions.get(0);
+        this.putString(commandEntry.getKey());
+        this.putString(commandData.description);
+        int flags = 0;
+        for (CommandData.Flag flag : commandData.flags) {
+            flags |= 1 << flag.ordinal();
+        }
+        this.putLShort(flags);
+        this.putByte((byte) commandData.permission);
+
+        CommandEnum aliases = commandData.aliases;
+        this.putLInt(commandData.aliases == null ? -1 : enums.indexOf(commandData.aliases));
+
+        Collection<CommandOverload> overloads = commandData.overloads.values();
+        this.putUnsignedVarInt(overloads.size());
+        for (CommandOverload overload : overloads) {
+            this.putUnsignedVarInt(overload.input.parameters.length);
+            for (CommandParameter param : overload.input.parameters) {
+                this.writeParameter(param, enums, softEnums, postFixes);
+            }
+        }
+    }
+
+    private void writeParameter(CommandParameter param, List<CommandEnum> enums, List<CommandEnum> softEnums, List<String> postFixes) {
+        this.putString(param.name);
+
+        int index;
+        boolean postfix = false;
+        boolean enumData = false;
+        boolean softEnum = false;
+        if (param.postFix != null) {
+            postfix = true;
+            index = postFixes.indexOf(param.postFix);
+        } else if (param.enumData != null) {
+            if (param.enumData.isSoft()) {
+                softEnum = true;
+                index = softEnums.indexOf(param.enumData);
+            } else {
+                enumData = true;
+                index = enums.indexOf(param.enumData);
+            }
+        } else if (param.type != null) {
+            index = param.type.getId();
+        } else {
+            throw new IllegalStateException("No param type specified: " + param);
+        }
+
+        int value = index;
+        if (enumData) {
+            value |= ARG_FLAG_ENUM;
+        }
+        if (softEnum) {
+            value |= ARG_FLAG_SOFT_ENUM;
+        }
+        if (postfix) {
+            value |= ARG_FLAG_POSTFIX;
+        } else {
+            value |= ARG_FLAG_VALID;
+        }
+        this.putLInt(value);
+        this.putBoolean(param.optional);
+
+        byte options = 0;
+        if (param.paramOptions != null) {
+            for (CommandParamOption option : param.paramOptions) {
+                options |= 1 << option.ordinal();
+            }
+        }
+        this.putByte(options);
+    }
+
+    private void writeCommandEnum(CommandEnum enumData) {
+        Preconditions.checkNotNull(enumData, "enumData");
+
+        this.putString(enumData.getName());
+
+        List<String> values = enumData.getValues();
+        this.putUnsignedVarInt(values.size());
+        for (String value : values) {
+            this.putString(value);
+        }
+    }
+
 }

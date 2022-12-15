@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.utils.CommandOutputContainer;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
@@ -5482,7 +5483,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void sendMessage(TextContainer message) {
-        if (message instanceof TranslationContainer) {
+        if (message instanceof CommandOutputContainer op) {
+            var pk = new CommandOutputPacket();
+            pk.messages.add(new CommandOutputMessage(op.isSuccessed(), op.getText(), op.getParameters()));
+            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
+            pk.type = CommandOutputType.ALL_OUTPUT;//1.19.40已经失效
+            pk.successCount = op.getSuccessCount();
+            this.dataPacket(pk);
+            return;
+        } else if (message instanceof TranslationContainer) {
             this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
             return;
         }

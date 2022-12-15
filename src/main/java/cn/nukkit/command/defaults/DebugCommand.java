@@ -12,7 +12,7 @@ import cn.nukkit.lang.TranslationContainer;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r1")
-public class DebugCommand extends TestCommand{
+public class DebugCommand extends TestCommand implements CoreCommand {
     public DebugCommand(String name) {
         super(name, "commands.debug.description");
         this.setPermission("nukkit.command.debug");

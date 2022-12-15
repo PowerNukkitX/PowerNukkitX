@@ -12,9 +12,9 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.BVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.BVector3;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -178,7 +178,7 @@ public class CommandParser {
                             }
                         }
                     } else {
-                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || !parameter.enumData.isLimited()) {
+                        if (parameter.enumData.getName().equals("Block") || parameter.enumData.getName().equals("Item") || parameter.enumData.isSoft()) {
                             pattern.append(STRING_PATTERN);
                         } else {
                             pattern.append("(");
