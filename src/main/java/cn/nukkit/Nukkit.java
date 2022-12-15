@@ -169,8 +169,6 @@ public class Nukkit {
 
         // 停止JS定时器
         JSIInitiator.jsTimer.cancel();
-        // 强制关闭异步任务线程池
-        Server.getInstance().getScheduler().close();
         // 强制关闭PGZIPOutputStream中的线程池
         PGZIPOutputStream.getSharedThreadPool().shutdownNow();
         for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
