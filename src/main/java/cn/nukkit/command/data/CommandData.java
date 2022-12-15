@@ -12,8 +12,8 @@ import java.util.Map;
 @PowerNukkitXDifference(since = "1.19.50-r1", info = "Use List<Flag> instead")
 public class CommandData implements Cloneable {
 
-    public CommandEnum aliases = null;
     public String description = "description";
+    public CommandEnum aliases = null;
     public Map<String, CommandOverload> overloads = new HashMap<>();
     public List<Flag> flags = new ArrayList<>();
     public int permission;

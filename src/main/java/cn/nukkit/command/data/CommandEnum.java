@@ -12,7 +12,7 @@ import java.util.List;
  * @author CreeperFace
  */
 public class CommandEnum {
-    
+
     @Since("1.4.0.0-PN")
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
 
@@ -50,7 +50,7 @@ public class CommandEnum {
 
     private String name;
     private List<String> values;
-    private boolean limited = true;
+    private boolean isSoft;//softEnum
 
     @Since("1.4.0.0-PN")
     public CommandEnum(String name, String... values) {
@@ -58,15 +58,22 @@ public class CommandEnum {
     }
 
     public CommandEnum(String name, List<String> values) {
-        this(name, values, true);
+        this(name, values, false);
     }
 
+    /**
+     * 构建一个枚举参数
+     *
+     * @param name   该枚举的名称，会显示到命令中
+     * @param values 该枚举的可选值，不能为空，但是可以为空列表
+     * @param isSoft 当为False  时，客户端显示枚举参数会带上枚举名称{@link CommandEnum#getName()},当为true时 则判定为String
+     */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public CommandEnum(String name, List<String> values, boolean limited) {
+    public CommandEnum(String name, List<String> values, boolean isSoft) {
         this.name = name;
         this.values = values;
-        this.limited = limited;
+        this.isSoft = isSoft;
     }
 
     public String getName() {
@@ -77,8 +84,8 @@ public class CommandEnum {
         return values;
     }
 
-    public boolean isLimited() {
-        return limited;
+    public boolean isSoft() {
+        return isSoft;
     }
 
     @Override

@@ -1,0 +1,134 @@
+package cn.nukkit.command.tree;
+
+import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.command.tree.node.*;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+public class ParamTree {
+    private final Command command;
+    private final Map<String, ParamList> root;
+    private CommandSender sender;
+    private String[] args;
+
+    @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
+    public ParamTree(Command command) {
+        this.command = command;
+        var root = new HashMap<String, ParamList>();
+        for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
+            var paramList = new ParamList();
+            for (CommandParameter parameter : entry.getValue()) {
+                if (parameter.paramNode != null) {
+                    paramList.add(parameter.paramNode.init(this, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
+                    continue;
+                }
+                if (parameter.enumData == null) {
+                    switch (parameter.type) {
+                        case INT -> {
+                            paramList.add(new IntNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case WILDCARD_INT -> {
+                            paramList.add(new WildcardIntNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case FLOAT, VALUE -> {
+                            paramList.add(new FloatNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case POSITION -> {//(?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
+                            paramList.add(new FloatPositionNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case BLOCK_POSITION -> {
+                            paramList.add(new IntPositionNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case TARGET -> {
+                            paramList.add(new EntitiesNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case WILDCARD_TARGET -> {
+                            paramList.add(new WildcardTargetStringNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case STRING -> {
+                            paramList.add(new StringNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case FILE_PATH -> {
+                            //todo 6
+                        }
+                        case OPERATOR -> {
+                            paramList.add(new OperatorStringNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                        case MESSAGE, TEXT, COMMAND, RAWTEXT, JSON -> {
+                            paramList.add(new StringNode().init(this, null, parameter.optional, null, null, null));
+                        }
+                    }
+                } else {
+                    paramList.add(new EnumNode().init(this, null, parameter.optional, null, parameter.enumData, null));
+                }
+            }
+            root.put(entry.getKey(), paramList);
+        }
+        this.root = root;
+    }
+
+    public ParamTree(Command command, Map<String, ParamList> root) {
+        this.root = root;
+        this.command = command;
+    }
+
+    @Nullable
+    public HashMap.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+        this.args = args;
+        this.sender = sender;
+        this.root.forEach((key, value) -> value.reset());
+        Map.Entry<String, ParamList> result = null;
+        var error = new HashSet<ParamList>();
+
+        for (var entry : this.root.entrySet()) {
+            f2:
+            for (var node : entry.getValue()) {
+                while (!node.hasResult()) {
+                    try {
+                        node.fill(args[entry.getValue().getIndexAndIncrement()]);
+                    } catch (CommandSyntaxException |
+                             ArrayIndexOutOfBoundsException ignore) {//第一个代表当前索引位置解析错误，第二个代表参数不足够
+                        entry.getValue().error();
+                        break f2;
+                    }
+                }
+            }
+            if (entry.getValue().isComplete()) {
+                if (entry.getValue().getIndex() < args.length) {//错误=没用完参数
+                    entry.getValue().getIndexAndIncrement();
+                    entry.getValue().error();
+                    error.add(entry.getValue());
+                } else result = Map.entry(entry.getKey(), entry.getValue().clone());
+            } else error.add(entry.getValue());
+        }
+
+        if (result == null) {//全部不成功
+            System.out.println("全部不成功:" + error.stream().map(ParamList::getError).max(Integer::compare).get());//logger
+            return null;
+        } else {
+            return result;
+        }
+    }
+
+    public CommandSender getSender() {
+        return sender;
+    }
+
+    public String[] getArgs() {
+        return args;
+    }
+
+    public Command getCommand() {
+        return command;
+    }
+
+    public Map<String, ParamList> getRoot() {
+        return root;
+    }
+}
