@@ -606,7 +606,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     server.getLogger().debug("Tried to set item " + handItem.getId() + " but " + this.username + " had item " + clone.getId() + " in their hand slot");
                 }
                 inventory.sendHeldItem(this.getViewers().values());
-            }
+            } else if (handItem == null)
+                this.level.sendBlocks(new Player[]{this}, new Block[]{this.level.getBlock(blockPos.asVector3())}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
             return;
         }
 
@@ -4977,7 +4978,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     if (blockVector.distanceSquared(this) < 10000) {
                                         target = this.level.getBlock(blockVector.asVector3());
-                                        this.level.sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                                        this.level.sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
 
                                         BlockEntity blockEntity = this.level.getBlockEntity(blockVector.asVector3());
                                         if (blockEntity instanceof BlockEntitySpawnable) {
