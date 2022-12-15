@@ -115,6 +115,7 @@ public class TimingsManager {
     }
 
     static Timing getTiming(String group, String name, Timing groupTiming, boolean cache) {
+        if (Timings.isTimingsCloseCompletely()) return Timings.emptyTimer;
         TimingIdentifier id = new TimingIdentifier(group, name, groupTiming);
         return cache ? TIMING_MAP.computeIfAbsent(id, k -> new Timing(id)) : new Timing(id);
     }
