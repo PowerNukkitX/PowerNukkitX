@@ -5383,12 +5383,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     RequestPermissionsPacket requestPermissionsPacket = (RequestPermissionsPacket) packet;
                     var player = requestPermissionsPacket.getTargetPlayer();
-                    var customPermissions = requestPermissionsPacket.parseCustomPermissions();
-                    for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
-                        player.adventureSettings.set(controllableAbility, customPermissions.contains(controllableAbility));
+                    if (player != null && player.isOnline()) {
+                        var customPermissions = requestPermissionsPacket.parseCustomPermissions();
+                        for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
+                            player.adventureSettings.set(controllableAbility, customPermissions.contains(controllableAbility));
+                        }
+                        player.adventureSettings.setPlayerPermission(requestPermissionsPacket.permissions);
+                        player.adventureSettings.update();
                     }
-                    player.adventureSettings.setPlayerPermission(requestPermissionsPacket.permissions);
-                    player.adventureSettings.update();
                     break;
                 default:
                     break;

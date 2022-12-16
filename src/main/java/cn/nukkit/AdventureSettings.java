@@ -67,7 +67,7 @@ public class AdventureSettings implements Cloneable {
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
         //取消op
-        if (this.playerPermission != PlayerPermission.OPERATOR && this.player.isOp())
+        if (playerPermission != PlayerPermission.OPERATOR && this.player.isOp())
             this.player.setOp(false);
     }
 
