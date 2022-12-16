@@ -79,7 +79,7 @@ public class Materials {
      * @return the materials
      */
     public Materials down(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("down", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
@@ -105,7 +105,7 @@ public class Materials {
      * @return the materials
      */
     public Materials north(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("north", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
@@ -131,7 +131,7 @@ public class Materials {
      * @return the materials
      */
     public Materials south(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("south", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
@@ -141,7 +141,7 @@ public class Materials {
      * @see #east(RenderMethod, Boolean, Boolean, String)
      */
     public Materials east(RenderMethod renderMethod, String texture) {
-        this.process("any", true, true, renderMethod, texture);
+        this.process("east", true, true, renderMethod, texture);
         return this;
     }
 
@@ -157,7 +157,7 @@ public class Materials {
      * @return the materials
      */
     public Materials east(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("east", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
@@ -183,7 +183,7 @@ public class Materials {
      * @return the materials
      */
     public Materials west(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("west", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
@@ -209,7 +209,7 @@ public class Materials {
      * @return the materials
      */
     public Materials any(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
-        this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
+        this.process("*", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
