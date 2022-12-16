@@ -1499,13 +1499,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             nbt.putInt("playerGameType", this.gamemode);
         }
 
-        this.adventureSettings = new AdventureSettings(this)
+        this.adventureSettings = new AdventureSettings(this, nbt);/*
                 .set(Type.WORLD_IMMUTABLE, isAdventure() || isSpectator())
                 .set(Type.WORLD_BUILDER, !isAdventure() && !isSpectator())
                 .set(Type.AUTO_JUMP, true)
                 .set(Type.ALLOW_FLIGHT, isCreative() || isSpectator())
                 .set(Type.NO_CLIP, isSpectator())
-                .set(Type.FLYING, isSpectator());
+                .set(Type.FLYING, isSpectator());*/
 
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
@@ -2217,10 +2217,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } else {
             this.server.removeOp(this.getName());
         }
-
-        this.recalculatePermissions();
-        this.getAdventureSettings().update();
-        this.sendCommandData();
     }
 
     @Override
@@ -5383,6 +5379,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
                         this.adventureSettings.set(controllableAbility, customPermissions.contains(controllableAbility));
                     }
+                    this.adventureSettings.setPlayerPermission(requestPermissionsPacket.permissions);
                     this.adventureSettings.update();
                     break;
                 default:
@@ -5826,6 +5823,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
             }
         }
+
+        this.adventureSettings.saveNBT();
     }
 
     public void save(boolean async) {
