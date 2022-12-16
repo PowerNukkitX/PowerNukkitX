@@ -1,6 +1,7 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
@@ -10,9 +11,7 @@ import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author MagicDroidX (Nukkit Project)
@@ -24,6 +23,8 @@ public class AdventureSettings implements Cloneable {
     public static final int PERMISSION_HOST = 2;
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
+
+    private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
 
     private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
 
@@ -43,9 +44,25 @@ public class AdventureSettings implements Cloneable {
         }
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public AdventureSettings set(PlayerAbility ability, boolean value) {
+        this.values.put(ability2TypeMap.get(ability), value);
+        return this;
+    }
+
     public AdventureSettings set(Type type, boolean value) {
         this.values.put(type, value);
         return this;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public boolean get(PlayerAbility ability) {
+        var type = ability2TypeMap.get(ability);
+        Boolean value = this.values.get(type);
+
+        return value == null ? type.getDefaultValue() : value;
     }
 
     public boolean get(Type type) {
@@ -57,7 +74,12 @@ public class AdventureSettings implements Cloneable {
     @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
-        this.sendAbilities(player.getServer().getOnlinePlayers().values());
+        //Permission to send to all players so they can see each other
+        var players = new HashSet<>(player.getServer().getOnlinePlayers().values());
+        //确保会发向自己（eg：玩家进服时在线玩家里没有此玩家）
+        //Make sure it will be sent to yourself (eg: there is no such player among the online players when the player enters the server)
+        players.add(this.player);
+        this.sendAbilities(players);
         this.updateAdventureSettings();
     }
 
@@ -129,6 +151,7 @@ public class AdventureSettings implements Cloneable {
         Type(PlayerAbility ability, boolean defaultValue) {
             this.ability = ability;
             this.defaultValue = defaultValue;
+            if (this.ability != null) ability2TypeMap.put(this.ability, this);
         }
 
         public boolean getDefaultValue() {

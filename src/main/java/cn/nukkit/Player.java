@@ -5377,6 +5377,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     tickSyncPacketToClient.setResponseTimestamp(this.getServer().getTick());
                     this.dataPacketImmediately(tickSyncPacketToClient);
                     break;
+                case ProtocolInfo.REQUEST_PERMISSIONS_PACKET:
+                    RequestPermissionsPacket requestPermissionsPacket = (RequestPermissionsPacket) packet;
+                    var customPermissions = requestPermissionsPacket.parseCustomPermissions();
+                    for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
+                        this.adventureSettings.set(controllableAbility, customPermissions.contains(controllableAbility));
+                    }
+                    this.adventureSettings.update();
+                    break;
                 default:
                     break;
             }
