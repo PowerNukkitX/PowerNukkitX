@@ -1685,7 +1685,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(new BiomeDefinitionListPacket());
         this.dataPacket(new AvailableEntityIdentifiersPacket());
         this.inventory.sendCreativeContents();
-        this.getAdventureSettings().update();
+        this.adventureSettings.update();
+        //发送玩家权限列表
+        server.getOnlinePlayers().values().forEach(player -> {
+            if (player != this) {
+                player.adventureSettings.sendAbilities(Collections.singleton(this));
+            }
+        });
 
         this.sendAttributes();
 

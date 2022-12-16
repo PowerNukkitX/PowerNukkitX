@@ -1,6 +1,8 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitDifference;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.network.protocol.UpdateAbilitiesPacket;
 import cn.nukkit.network.protocol.UpdateAdventureSettingsPacket;
 import cn.nukkit.network.protocol.types.AbilityLayer;
@@ -8,6 +10,7 @@ import cn.nukkit.network.protocol.types.CommandPermission;
 import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.network.protocol.types.PlayerPermission;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -22,7 +25,7 @@ public class AdventureSettings implements Cloneable {
     public static final int PERMISSION_AUTOMATION = 3;
     public static final int PERMISSION_ADMIN = 4;
 
-    private Map<Type, Boolean> values = new EnumMap<>(Type.class);
+    private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
 
     private Player player;
 
@@ -51,10 +54,16 @@ public class AdventureSettings implements Cloneable {
         return value == null ? type.getDefaultValue() : value;
     }
 
-    @PowerNukkitDifference(
-            info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation",
-            since = "1.3.1.2-PN")
+    @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
     public void update() {
+        //向所有玩家发送以使他们能看到彼此的权限
+        this.sendAbilities(player.getServer().getOnlinePlayers().values());
+        this.updateAdventureSettings();
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void sendAbilities(Collection<Player> players) {
         UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
         packet.entityId = player.getId();
         packet.commandPermission = player.isOp() ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
@@ -80,6 +89,7 @@ public class AdventureSettings implements Cloneable {
 
         if (player.isOp()) {
             layer.getAbilityValues().add(PlayerAbility.OPERATOR_COMMANDS);
+            layer.getAbilityValues().add(PlayerAbility.TELEPORT);
         }
 
 
@@ -87,40 +97,26 @@ public class AdventureSettings implements Cloneable {
         layer.setFlySpeed(Player.DEFAULT_FLY_SPEED);
         packet.abilityLayers.add(layer);
 
+        Server.broadcastPacket(players, packet);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public void updateAdventureSettings() {
         UpdateAdventureSettingsPacket adventurePacket = new UpdateAdventureSettingsPacket();
         adventurePacket.autoJump = get(Type.AUTO_JUMP);
         adventurePacket.immutableWorld = get(Type.WORLD_IMMUTABLE);
         adventurePacket.noMvP = get(Type.NO_MVP);
         adventurePacket.noPvM = get(Type.NO_PVM);
         adventurePacket.showNameTags = get(Type.SHOW_NAME_TAGS);
-
-        player.dataPacket(packet);
         player.dataPacket(adventurePacket);
         player.resetInAirTicks();
     }
 
     public enum Type {
-        WORLD_IMMUTABLE(false),
-        NO_PVM(false),
-        NO_MVP(PlayerAbility.INVULNERABLE, false),
-        SHOW_NAME_TAGS(false),
-        AUTO_JUMP(true),
-        ALLOW_FLIGHT(PlayerAbility.MAY_FLY, false),
-        NO_CLIP(PlayerAbility.NO_CLIP, false),
-        WORLD_BUILDER(PlayerAbility.WORLD_BUILDER, false),
-        FLYING(PlayerAbility.FLYING, false),
-        MUTED(PlayerAbility.MUTED, false),
-        MINE(PlayerAbility.MINE, true),
-        DOORS_AND_SWITCHED(PlayerAbility.DOORS_AND_SWITCHES, true),
-        OPEN_CONTAINERS(PlayerAbility.OPEN_CONTAINERS, true),
-        ATTACK_PLAYERS(PlayerAbility.ATTACK_PLAYERS, true),
-        ATTACK_MOBS(PlayerAbility.ATTACK_MOBS, true),
-        OPERATOR(PlayerAbility.OPERATOR_COMMANDS, false),
-        TELEPORT(PlayerAbility.TELEPORT, false),
-        BUILD(PlayerAbility.BUILD, true),
+        WORLD_IMMUTABLE(false), NO_PVM(false), NO_MVP(PlayerAbility.INVULNERABLE, false), SHOW_NAME_TAGS(false), AUTO_JUMP(true), ALLOW_FLIGHT(PlayerAbility.MAY_FLY, false), NO_CLIP(PlayerAbility.NO_CLIP, false), WORLD_BUILDER(PlayerAbility.WORLD_BUILDER, false), FLYING(PlayerAbility.FLYING, false), MUTED(PlayerAbility.MUTED, false), MINE(PlayerAbility.MINE, true), DOORS_AND_SWITCHED(PlayerAbility.DOORS_AND_SWITCHES, true), OPEN_CONTAINERS(PlayerAbility.OPEN_CONTAINERS, true), ATTACK_PLAYERS(PlayerAbility.ATTACK_PLAYERS, true), ATTACK_MOBS(PlayerAbility.ATTACK_MOBS, true), OPERATOR(PlayerAbility.OPERATOR_COMMANDS, false), TELEPORT(PlayerAbility.TELEPORT, false), BUILD(PlayerAbility.BUILD, true),
 
-        @Deprecated
-        DEFAULT_LEVEL_PERMISSIONS(null, false);
+        @Deprecated DEFAULT_LEVEL_PERMISSIONS(null, false);
 
         private final PlayerAbility ability;
         private final boolean defaultValue;
