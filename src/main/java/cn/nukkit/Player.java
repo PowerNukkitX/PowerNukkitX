@@ -5091,6 +5091,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
                                     break;
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK:
+                                    if (target instanceof Player && !this.getAdventureSettings().get(Type.ATTACK_PLAYERS)
+                                            || !(target instanceof Player) && !this.getAdventureSettings().get(Type.ATTACK_MOBS))
+                                        break;
                                     if (target.getId() == this.getId()) {
                                         this.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
                                         log.warn(this.getName() + " tried to attack oneself");
@@ -5374,6 +5377,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.dataPacketImmediately(tickSyncPacketToClient);
                     break;
                 case ProtocolInfo.REQUEST_PERMISSIONS_PACKET:
+                    if (!isOp()) {
+                        this.kick("Illegal permission operation", true);
+                        break;
+                    }
                     RequestPermissionsPacket requestPermissionsPacket = (RequestPermissionsPacket) packet;
                     var customPermissions = requestPermissionsPacket.parseCustomPermissions();
                     for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
@@ -6378,6 +6385,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public boolean teleport(Location location, TeleportCause cause) {
         if (!this.isOnline()) {
+            return false;
+        }
+
+        if (!this.getAdventureSettings().get(PlayerAbility.TELEPORT)) {
             return false;
         }
 
