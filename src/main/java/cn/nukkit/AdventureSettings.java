@@ -162,7 +162,9 @@ public class AdventureSettings implements Cloneable {
         set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
-        playerPermission = op ? PlayerPermission.OPERATOR : PlayerPermission.MEMBER;
+        //不要覆盖自定义/访客状态
+        if (op && playerPermission != PlayerPermission.OPERATOR) playerPermission = PlayerPermission.OPERATOR;
+        if (!op && playerPermission == PlayerPermission.OPERATOR)playerPermission = PlayerPermission.MEMBER;
         this.update();
     }
 
