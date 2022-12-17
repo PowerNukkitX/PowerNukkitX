@@ -5,6 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Permutations {
         this(Arrays.stream(permutations).toList());
     }
 
-    public Permutations(List<Permutation.PermutationBuilder> permutations) {
+    public Permutations(@NotNull List<Permutation.PermutationBuilder> permutations) {
         var listTag = new ListTag<CompoundTag>();
         for (var per : permutations) {
             listTag.add(getPermutationData(per.build()));
@@ -33,29 +34,37 @@ public class Permutations {
         this.permutations = listTag;
     }
 
-    private CompoundTag getPermutationData(Permutation permutation) {
+    private CompoundTag getPermutationData(@NotNull Permutation permutation) {
+        var componentNBT = new CompoundTag("components");
+        if (permutation.collision_box_enabled) {
+            componentNBT.putCompound("minecraft:collision_box", new CompoundTag()
+                    .putBoolean("enabled", permutation.collision_box_enabled)
+                    .putList(new ListTag<FloatTag>("origin")
+                            .add(new FloatTag("", permutation.collision_box_origin.x))
+                            .add(new FloatTag("", permutation.collision_box_origin.y))
+                            .add(new FloatTag("", permutation.collision_box_origin.z)))
+                    .putList(new ListTag<FloatTag>("size")
+                            .add(new FloatTag("", permutation.collision_box_size.x))
+                            .add(new FloatTag("", permutation.collision_box_size.y))
+                            .add(new FloatTag("", permutation.collision_box_size.z))));
+        }
+        if (permutation.selection_box_enabled) {
+            componentNBT.putCompound("minecraft:selection_box", new CompoundTag()
+                    .putBoolean("enabled", permutation.selection_box_enabled)
+                    .putList(new ListTag<FloatTag>("origin")
+                            .add(new FloatTag("", permutation.selection_box_origin.x))
+                            .add(new FloatTag("", permutation.selection_box_origin.y))
+                            .add(new FloatTag("", permutation.selection_box_origin.z)))
+                    .putList(new ListTag<FloatTag>("size")
+                            .add(new FloatTag("", permutation.selection_box_size.x))
+                            .add(new FloatTag("", permutation.selection_box_size.y))
+                            .add(new FloatTag("", permutation.selection_box_size.z))));
+        }
+        for (var each : permutation.components) {
+            componentNBT.putCompound(each.getName(), each);
+        }
         return new CompoundTag()
-                .putCompound("components", new CompoundTag()
-                        .putCompound("minecraft:collision_box", new CompoundTag()
-                                .putBoolean("enabled", permutation.collision_box_enabled)
-                                .putList(new ListTag<FloatTag>("origin")
-                                        .add(new FloatTag("", permutation.collision_box_origin.x))
-                                        .add(new FloatTag("", permutation.collision_box_origin.y))
-                                        .add(new FloatTag("", permutation.collision_box_origin.z)))
-                                .putList(new ListTag<FloatTag>("size")
-                                        .add(new FloatTag("", permutation.collision_box_size.x))
-                                        .add(new FloatTag("", permutation.collision_box_size.y))
-                                        .add(new FloatTag("", permutation.collision_box_size.z))))
-                        .putCompound("minecraft:selection_box", new CompoundTag()
-                                .putBoolean("enabled", permutation.selection_box_enabled)
-                                .putList(new ListTag<FloatTag>("origin")
-                                        .add(new FloatTag("", permutation.selection_box_origin.x))
-                                        .add(new FloatTag("", permutation.selection_box_origin.y))
-                                        .add(new FloatTag("", permutation.selection_box_origin.z)))
-                                .putList(new ListTag<FloatTag>("size")
-                                        .add(new FloatTag("", permutation.selection_box_size.x))
-                                        .add(new FloatTag("", permutation.selection_box_size.y))
-                                        .add(new FloatTag("", permutation.selection_box_size.z)))))
+                .putCompound("components", componentNBT)
                 .putString("condition", permutation.condition);
     }
 
