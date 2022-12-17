@@ -2630,6 +2630,7 @@ public class Server {
         if (player != null) {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(true);
+            player.getAdventureSettings().update();
             player.sendCommandData();
         }
         this.operators.save(true);
@@ -2641,6 +2642,7 @@ public class Server {
         if (player != null) {
             player.recalculatePermissions();
             player.getAdventureSettings().onOpChange(false);
+            player.getAdventureSettings().update();
             player.sendCommandData();
         }
         this.operators.save();
