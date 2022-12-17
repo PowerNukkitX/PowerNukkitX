@@ -66,9 +66,7 @@ public class AdventureSettings implements Cloneable {
     @Since("1.19.50-r3")
     public void setPlayerPermission(PlayerPermission playerPermission) {
         this.playerPermission = playerPermission;
-        //取消op
-        if (playerPermission != PlayerPermission.OPERATOR && this.player.isOp())
-            this.player.setOp(false);
+        this.player.setOp(playerPermission == PlayerPermission.OPERATOR);
     }
 
     @PowerNukkitXOnly
@@ -147,7 +145,7 @@ public class AdventureSettings implements Cloneable {
 
     /**
      * 当玩家OP身份变动时此方法将被调用
-     *
+     * 注意此方法并不会向客户端发包刷新权限信息，你需要手动调用update()方法刷新
      * @param op 是否是OP
      */
     @PowerNukkitXOnly
@@ -156,16 +154,15 @@ public class AdventureSettings implements Cloneable {
         if (op) {
             for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES)
                 set(controllableAbility, true);
+            //设置op特有属性
+            set(Type.OPERATOR, true);
+            set(Type.TELEPORT, true);
         }
-        //设置op特有属性
-        set(Type.OPERATOR, op);
-        set(Type.TELEPORT, op);
 
         commandPermission = op ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
         //不要覆盖自定义/访客状态
         if (op && playerPermission != PlayerPermission.OPERATOR) playerPermission = PlayerPermission.OPERATOR;
-        if (!op && playerPermission == PlayerPermission.OPERATOR)playerPermission = PlayerPermission.MEMBER;
-        this.update();
+        if (!op && playerPermission == PlayerPermission.OPERATOR) playerPermission = PlayerPermission.MEMBER;
     }
 
     @PowerNukkitXOnly

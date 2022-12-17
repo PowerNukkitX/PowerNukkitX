@@ -6391,10 +6391,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        if (!this.getAdventureSettings().get(PlayerAbility.TELEPORT)) {
-            return false;
-        }
-
         Location from = this.getLocation();
         Location to = location;
 
