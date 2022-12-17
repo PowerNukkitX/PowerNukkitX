@@ -34,7 +34,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #up(RenderMethod, Boolean, Boolean, String)
+     * @see #up(RenderMethod, boolean, boolean, String)
      */
     public Materials up(RenderMethod renderMethod, String texture) {
         this.process("up", true, true, renderMethod, texture);
@@ -52,7 +52,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials up(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials up(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("up", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -60,7 +60,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #down(RenderMethod, Boolean, Boolean, String)
+     * @see #down(RenderMethod, boolean, boolean, String)
      */
     public Materials down(RenderMethod renderMethod, String texture) {
         this.process("down", true, true, renderMethod, texture);
@@ -78,7 +78,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials down(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials down(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("down", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -86,7 +86,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #north(RenderMethod, Boolean, Boolean, String)
+     * @see #north(RenderMethod, boolean, boolean, String)
      */
     public Materials north(RenderMethod renderMethod, String texture) {
         this.process("north", true, true, renderMethod, texture);
@@ -104,7 +104,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials north(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials north(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("north", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -112,7 +112,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #south(RenderMethod, Boolean, Boolean, String)
+     * @see #south(RenderMethod, boolean, boolean, String)
      */
     public Materials south(RenderMethod renderMethod, String texture) {
         this.process("south", true, true, renderMethod, texture);
@@ -130,7 +130,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials south(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials south(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("south", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -138,7 +138,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #east(RenderMethod, Boolean, Boolean, String)
+     * @see #east(RenderMethod, boolean, boolean, String)
      */
     public Materials east(RenderMethod renderMethod, String texture) {
         this.process("east", true, true, renderMethod, texture);
@@ -156,7 +156,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials east(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials east(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("east", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -164,7 +164,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #west(RenderMethod, Boolean, Boolean, String)
+     * @see #west(RenderMethod, boolean, boolean, String)
      */
     public Materials west(RenderMethod renderMethod, String texture) {
         this.process("west", true, true, renderMethod, texture);
@@ -182,7 +182,7 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials west(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials west(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("west", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
@@ -190,7 +190,7 @@ public class Materials {
     /**
      * ambientOcclusion=true, faceDimming=true
      *
-     * @see #any(RenderMethod, Boolean, Boolean, String)
+     * @see #any(RenderMethod, boolean, boolean, String)
      */
     public Materials any(RenderMethod renderMethod, String texture) {
         this.process("*", true, true, renderMethod, texture);
@@ -208,12 +208,29 @@ public class Materials {
      * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
      * @return the materials
      */
-    public Materials any(RenderMethod renderMethod, Boolean ambientOcclusion, Boolean faceDimming, String texture) {
+    public Materials any(RenderMethod renderMethod, boolean ambientOcclusion, boolean faceDimming, String texture) {
         this.process("*", ambientOcclusion, faceDimming, renderMethod, texture);
         return this;
     }
 
-    private void process(@NonNull String face, Boolean ambientOcclusion, Boolean faceDimming, @NonNull RenderMethod renderMethod, @NonNull String texture) {
+    /**
+     * 指定对应对应的渲染方法、渲染参数和材质。此方法是完全自定义的，请在使用之前抓包确认参数合法性
+     *
+     * @param face             指定面的名称，可选值为：up, down, north, south, east, west, *
+     * @param ambientOcclusion 在照明时是否应该应用环境光遮蔽?<br>Should it be applied ambient light shielding when lighting?
+     * @param faceDimming      是否应该根据它所面对的方向变暗?<br>Should it be dimmed according to the direction it is facing?
+     * @param renderMethodName 要使用的渲染方法<br>Rendering method to be used
+     * @param texture          材质名称<br>Specify the texture's name
+     */
+    public void process(@NonNull String face, boolean ambientOcclusion, boolean faceDimming, @NonNull String renderMethodName, @NonNull String texture) {
+        this.tag.putCompound(face, new CompoundTag()
+                .putBoolean("ambient_occlusion", ambientOcclusion)
+                .putBoolean("face_dimming", faceDimming)
+                .putString("render_method", renderMethodName)
+                .putString("texture", texture));
+    }
+
+    private void process(@NonNull String face, boolean ambientOcclusion, boolean faceDimming, @NonNull RenderMethod renderMethod, @NonNull String texture) {
         this.tag.putCompound(face, new CompoundTag()
                 .putBoolean("ambient_occlusion", ambientOcclusion)
                 .putBoolean("face_dimming", faceDimming)
