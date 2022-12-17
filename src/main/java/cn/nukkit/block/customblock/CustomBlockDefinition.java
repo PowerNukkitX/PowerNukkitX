@@ -177,6 +177,52 @@ public record CustomBlockDefinition(String identifier, CompoundTag nbt) {
             return this;
         }
 
+        /**
+         * 设置此方块的客户端碰撞箱。
+         * <p>
+         * Set the client collision box for this block.
+         *
+         * @param origin 碰撞箱的原点 The origin of the collision box
+         * @param size   碰撞箱的大小 The size of the collision box
+         */
+        public Builder collisionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:collision_box", new CompoundTag()
+                            .putBoolean("enabled", true)
+                            .putList(new ListTag<FloatTag>("origin")
+                                    .add(new FloatTag("", -3.25f))
+                                    .add(new FloatTag("", 4.75f))
+                                    .add(new FloatTag("", -3.25f)))
+                            .putList(new ListTag<FloatTag>("size")
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))));
+            return this;
+        }
+
+        /**
+         * 设置此方块的客户端选择箱。
+         * <p>
+         * Set the client collision box for this block.
+         *
+         * @param origin 选择箱的原点 The origin of the collision box
+         * @param size   选择箱的大小 The size of the collision box
+         */
+        public Builder selectionBox(@NotNull Vector3f origin, @NotNull Vector3f size) {
+            this.nbt.getCompound("components")
+                    .putCompound("minecraft:selection_box", new CompoundTag()
+                            .putBoolean("enabled", true)
+                            .putList(new ListTag<FloatTag>("origin")
+                                    .add(new FloatTag("", -3.25f))
+                                    .add(new FloatTag("", 4.75f))
+                                    .add(new FloatTag("", -3.25f)))
+                            .putList(new ListTag<FloatTag>("size")
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))
+                                    .add(new FloatTag("", 6.5f))));
+            return this;
+        }
+
        /*public Builder blockTags(String creativeGroup) {
             if (creativeGroup.isBlank()) {
                 System.out.println("creativeGroup has an invalid value!");
