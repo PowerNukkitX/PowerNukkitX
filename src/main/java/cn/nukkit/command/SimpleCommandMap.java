@@ -5,6 +5,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
@@ -283,6 +284,8 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public boolean dispatch(CommandSender sender, String cmdLine) {
+        if (sender.isPlayer() && !sender.asPlayer().getAdventureSettings().get(PlayerAbility.OPERATOR_COMMANDS))
+            return false;
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
             return false;

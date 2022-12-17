@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
 import lombok.ToString;
 
@@ -29,9 +31,11 @@ public class PlayerListPacket extends DataPacket {
         this.reset();
         this.putByte(this.type);
         this.putUnsignedVarInt(this.entries.length);
-        for (Entry entry : this.entries) {
-            this.putUUID(entry.uuid);
-            if (type == TYPE_ADD) {
+
+        if (this.type == TYPE_ADD) {
+            for (Entry entry : this.entries) {
+                this.putUUID(entry.uuid);
+
                 this.putVarLong(entry.entityId);
                 this.putString(entry.name);
                 this.putString(entry.xboxUserId);
@@ -41,11 +45,13 @@ public class PlayerListPacket extends DataPacket {
                 this.putBoolean(entry.isTeacher);
                 this.putBoolean(entry.isHost);
             }
-        }
 
-        if (type == TYPE_ADD) {
             for (Entry entry : this.entries) {
-                this.putBoolean(true);
+                this.putBoolean(entry.trustedSkin);
+            }
+        } else {
+            for (Entry entry : this.entries) {
+                this.putUUID(entry.uuid);
             }
         }
     }
@@ -68,6 +74,9 @@ public class PlayerListPacket extends DataPacket {
         public Skin skin;
         public boolean isTeacher;
         public boolean isHost;
+        @PowerNukkitXOnly
+        @Since("1.19.50-r3")
+        public boolean trustedSkin;
 
         public Entry(UUID uuid) {
             this.uuid = uuid;

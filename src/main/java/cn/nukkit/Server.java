@@ -2629,6 +2629,8 @@ public class Server {
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(true);
+            player.sendCommandData();
         }
         this.operators.save(true);
     }
@@ -2638,6 +2640,8 @@ public class Server {
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(false);
+            player.sendCommandData();
         }
         this.operators.save();
     }

@@ -1499,13 +1499,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             nbt.putInt("playerGameType", this.gamemode);
         }
 
-        this.adventureSettings = new AdventureSettings(this)
+        this.adventureSettings = new AdventureSettings(this, nbt);/*
                 .set(Type.WORLD_IMMUTABLE, isAdventure() || isSpectator())
                 .set(Type.WORLD_BUILDER, !isAdventure() && !isSpectator())
                 .set(Type.AUTO_JUMP, true)
                 .set(Type.ALLOW_FLIGHT, isCreative() || isSpectator())
                 .set(Type.NO_CLIP, isSpectator())
-                .set(Type.FLYING, isSpectator());
+                .set(Type.FLYING, isSpectator());*/
 
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
@@ -1685,7 +1685,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(new BiomeDefinitionListPacket());
         this.dataPacket(new AvailableEntityIdentifiersPacket());
         this.inventory.sendCreativeContents();
-        this.getAdventureSettings().update();
+        this.adventureSettings.update();
+        //发送玩家权限列表
+        server.getOnlinePlayers().values().forEach(player -> {
+            if (player != this) {
+                player.adventureSettings.sendAbilities(Collections.singleton(this));
+            }
+        });
 
         this.sendAttributes();
 
@@ -2211,10 +2217,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } else {
             this.server.removeOp(this.getName());
         }
-
-        this.recalculatePermissions();
-        this.getAdventureSettings().update();
-        this.sendCommandData();
     }
 
     @Override
@@ -5089,6 +5091,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
                                     break;
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK:
+                                    if (target instanceof Player && !this.getAdventureSettings().get(Type.ATTACK_PLAYERS)
+                                            || !(target instanceof Player) && !this.getAdventureSettings().get(Type.ATTACK_MOBS))
+                                        break;
                                     if (target.getId() == this.getId()) {
                                         this.kick(PlayerKickEvent.Reason.INVALID_PVP, "Attempting to attack yourself");
                                         log.warn(this.getName() + " tried to attack oneself");
@@ -5370,6 +5375,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     tickSyncPacketToClient.setRequestTimestamp(tickSyncPacket.getRequestTimestamp());
                     tickSyncPacketToClient.setResponseTimestamp(this.getServer().getTick());
                     this.dataPacketImmediately(tickSyncPacketToClient);
+                    break;
+                case ProtocolInfo.REQUEST_PERMISSIONS_PACKET:
+                    if (!isOp()) {
+                        this.kick("Illegal permission operation", true);
+                        break;
+                    }
+                    RequestPermissionsPacket requestPermissionsPacket = (RequestPermissionsPacket) packet;
+                    var player = requestPermissionsPacket.getTargetPlayer();
+                    if (player != null && player.isOnline()) {
+                        var customPermissions = requestPermissionsPacket.parseCustomPermissions();
+                        for (PlayerAbility controllableAbility : RequestPermissionsPacket.CONTROLLABLE_ABILITIES) {
+                            player.adventureSettings.set(controllableAbility, customPermissions.contains(controllableAbility));
+                        }
+                        player.adventureSettings.setPlayerPermission(requestPermissionsPacket.permissions);
+                        player.adventureSettings.update();
+                    }
                     break;
                 default:
                     break;
@@ -5812,6 +5833,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.namedTag.putInt("SpawnDimension", this.server.getDefaultLevel().getDimension());
             }
         }
+
+        this.adventureSettings.saveNBT();
     }
 
     public void save(boolean async) {
@@ -6365,6 +6388,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public boolean teleport(Location location, TeleportCause cause) {
         if (!this.isOnline()) {
+            return false;
+        }
+
+        if (!this.getAdventureSettings().get(PlayerAbility.TELEPORT)) {
             return false;
         }
 
