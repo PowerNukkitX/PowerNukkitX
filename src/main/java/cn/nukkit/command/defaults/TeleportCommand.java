@@ -12,6 +12,7 @@ import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.BVector3;
+import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -80,6 +81,12 @@ public class TeleportCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return false;
         }
+
+        //检查是否可以使用tp指令
+        if (sender.isPlayer() && !sender.asPlayer().getAdventureSettings().get(PlayerAbility.TELEPORT)) {
+            return false;
+        }
+
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             String form = parser.matchCommandForm();
