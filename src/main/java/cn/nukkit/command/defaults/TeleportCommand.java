@@ -77,13 +77,15 @@ public class TeleportCommand extends VanillaCommand {
     }
 
     @Override
+    public boolean testPermissionSilent(CommandSender target) {
+        if (target.isPlayer() && target.asPlayer().getAdventureSettings().get(PlayerAbility.TELEPORT))
+            return true;
+        return super.testPermissionSilent(target);
+    }
+
+    @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (!this.testPermission(sender)) {
-            return false;
-        }
-
-        //检查是否可以使用tp指令
-        if (sender.isPlayer() && !sender.asPlayer().getAdventureSettings().get(PlayerAbility.TELEPORT)) {
             return false;
         }
 
@@ -94,7 +96,7 @@ public class TeleportCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
                 return false;
             }
-            ;
+
             switch (form) {
                 case "->Entity" -> {
                     if (!sender.isEntity()) {

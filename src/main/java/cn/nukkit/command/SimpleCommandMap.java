@@ -284,8 +284,6 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public boolean dispatch(CommandSender sender, String cmdLine) {
-        if (sender.isPlayer() && !sender.asPlayer().getAdventureSettings().get(PlayerAbility.OPERATOR_COMMANDS))
-            return false;
         ArrayList<String> parsed = parseArguments(cmdLine);
         if (parsed.size() == 0) {
             return false;
