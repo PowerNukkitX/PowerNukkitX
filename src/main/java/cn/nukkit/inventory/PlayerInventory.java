@@ -497,9 +497,9 @@ public class PlayerInventory extends BaseInventory {
 
         CreativeContentPacket pk = new CreativeContentPacket();
 
-        if (!p.isSpectator()) { //fill it for all gamemodes except spectator
-            pk.entries = Item.getCreativeItems().toArray(Item.EMPTY_ARRAY);
-        }
+//        if (!p.isSpectator()) { //fill it for all gamemodes except spectator
+        pk.entries = Item.getCreativeItems().toArray(Item.EMPTY_ARRAY);
+//        }
 
         p.dataPacket(pk);
     }

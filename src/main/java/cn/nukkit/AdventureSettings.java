@@ -44,7 +44,7 @@ public class AdventureSettings implements Cloneable {
     @Since("1.19.50-r3")
     private static final Map<PlayerAbility, Type> ability2TypeMap = new HashMap<>();
 
-    private final Map<Type, Boolean> values = new EnumMap<>(Type.class);
+    private Map<Type, Boolean> values = new EnumMap<>(Type.class);
     @Getter
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
@@ -95,6 +95,7 @@ public class AdventureSettings implements Cloneable {
     public AdventureSettings clone(Player newPlayer) {
         try {
             AdventureSettings settings = (AdventureSettings) super.clone();
+            settings.values = new EnumMap<>(values);
             settings.player = newPlayer;
             settings.playerPermission = playerPermission;
             settings.commandPermission = commandPermission;
