@@ -8,8 +8,7 @@ import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
 import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
-import cn.nukkit.entity.ai.executor.FlatRandomRoamExecutor;
-import cn.nukkit.entity.ai.route.finder.impl.SimpleFlatAStarRouteFinder;
+import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
 import cn.nukkit.level.Sound;
@@ -45,7 +44,7 @@ public abstract class EntityFish extends EntitySwimmingAnimal{
                             }, (entity) -> true, 1, 1, 20)
                     ),
                     Set.of(
-                            new Behavior(new FlatRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
+                            new Behavior(new SpaceRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
                     ),
                     Set.of(),
                     Set.of(new SpaceMoveController(), new LookController(true, true)),
