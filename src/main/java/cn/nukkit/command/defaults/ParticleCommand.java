@@ -28,7 +28,7 @@ public class ParticleCommand extends VanillaCommand {
             particles.add(particle.getIdentifier());
         }
         this.commandParameters.put("default", new CommandParameter[]{
-                CommandParameter.newEnum("effect", new CommandEnum("particle", particles, false)),
+                CommandParameter.newEnum("effect", new CommandEnum("particle", particles, true)),
                 CommandParameter.newType("position", CommandParamType.POSITION),
                 CommandParameter.newType("count", true, CommandParamType.INT)
         });

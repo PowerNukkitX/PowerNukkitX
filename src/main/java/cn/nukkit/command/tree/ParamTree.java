@@ -1,16 +1,21 @@
 package cn.nukkit.command.tree;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.node.*;
+import cn.nukkit.command.utils.CommandLogger;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public class ParamTree {
     private final Command command;
     private final Map<String, ParamList> root;
@@ -79,7 +84,7 @@ public class ParamTree {
     }
 
     @Nullable
-    public HashMap.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
+    public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
         this.args = args;
         this.sender = sender;
         this.root.forEach((key, value) -> value.reset());
@@ -104,12 +109,17 @@ public class ParamTree {
                     entry.getValue().getIndexAndIncrement();
                     entry.getValue().error();
                     error.add(entry.getValue());
-                } else result = Map.entry(entry.getKey(), entry.getValue().clone());
+                } else {
+                    result = Map.entry(entry.getKey(), entry.getValue().clone());
+                    break;
+                }
             } else error.add(entry.getValue());
         }
 
         if (result == null) {//全部不成功
-            System.out.println("全部不成功:" + error.stream().map(ParamList::getError).max(Integer::compare).get());//logger
+            var log = new CommandLogger(this.getCommand(), sender, args);
+            var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(0);
+            log.outputSyntaxErrors(errorIndex);
             return null;
         } else {
             return result;

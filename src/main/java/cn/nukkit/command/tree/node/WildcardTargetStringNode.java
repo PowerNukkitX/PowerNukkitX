@@ -2,11 +2,15 @@ package cn.nukkit.command.tree.node;
 
 
 import cn.nukkit.Server;
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.ParamNodeType;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public class WildcardTargetStringNode extends StringNode {
     private static final IScoreboardManager MANAGER = Server.getInstance().getScoreboardManager();
 

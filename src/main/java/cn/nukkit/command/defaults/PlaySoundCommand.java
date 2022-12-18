@@ -29,7 +29,7 @@ public class PlaySoundCommand extends VanillaCommand {
         this.setPermission("nukkit.command.playsound");
         this.getCommandParameters().clear();
         this.addCommandParameters("default", new CommandParameter[]{
-                CommandParameter.newEnum("sound", false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()), false)),
+                CommandParameter.newEnum("sound", false, new CommandEnum("sound", Arrays.stream(Sound.values()).map(s -> s.getSound()).collect(Collectors.toList()), true)),
                 CommandParameter.newType("player", true, CommandParamType.TARGET),
                 CommandParameter.newType("position", true, CommandParamType.POSITION),
                 CommandParameter.newType("volume", true, CommandParamType.FLOAT),

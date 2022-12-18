@@ -5,6 +5,9 @@ import cn.nukkit.Server;
 import cn.nukkit.api.*;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.command.data.*;
+import cn.nukkit.command.tree.ParamList;
+import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
@@ -47,6 +50,10 @@ public abstract class Command {
     protected Map<String, CommandParameter[]> commandParameters = new HashMap<>();
 
     public Timing timing;
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public ParamTree paramTree;
 
     public Command(String name) {
         this(name, "", null, EmptyArrays.EMPTY_STRINGS);
@@ -147,8 +154,14 @@ public abstract class Command {
             return pos + Double.parseDouble(arg.substring(1));
         }
     }
-    
-    public abstract boolean execute(CommandSender sender, String commandLabel, String[] args);
+
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        throw new UnsupportedOperationException("You must override Command#execute(CommandSender sender, String commandLabel, String[] args) to execute the command.");
+    }
+
+    public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        throw new UnsupportedOperationException("You must initialize the paramTree and override Command#execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) to execute the command.");
+    }
 
     public String getName() {
         return name;
@@ -249,7 +262,7 @@ public abstract class Command {
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public String getCommandFormatTips(){
+    public String getCommandFormatTips() {
         StringBuilder builder = new StringBuilder();
         for (String form : this.getCommandParameters().keySet()) {
             CommandParameter[] commandParameters = this.getCommandParameters().get(form);
@@ -258,14 +271,14 @@ public abstract class Command {
                 if (!commandParameter.optional) {
                     if (commandParameter.enumData == null) {
                         builder.append(" <").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append(">");
-                    }else{
-                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
+                    } else {
+                        builder.append(" <").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append(">");
                     }
-                }else{
+                } else {
                     if (commandParameter.enumData == null) {
                         builder.append(" [").append(commandParameter.name + ": " + commandParameter.type.name().toLowerCase()).append("]");
-                    }else{
-                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0,commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
+                    } else {
+                        builder.append(" [").append(commandParameter.enumData.getValues().subList(0, commandParameter.enumData.getValues().size() > 10 ? 10 : commandParameter.enumData.getValues().size()).stream().collect(Collectors.joining("|"))).append(commandParameter.enumData.getValues().size() > 10 ? "|..." : "").append("]");
                     }
                 }
             }
@@ -338,7 +351,7 @@ public abstract class Command {
 
     public static void broadcastCommandMessage(CommandSender source, TextContainer message, boolean sendToSource) {
         if ((source instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT)) ||
-            (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
+                (source instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !source.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))) {
             return;
         }
 

@@ -7,6 +7,7 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockentity.ICommandBlock;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
@@ -54,6 +55,16 @@ public class ExecutorCommandSender implements CommandSender {
             return;
         if (entity instanceof Player) {
             ((Player) entity).sendMessage(message);
+        }
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public void sendCommandOutput(CommandOutputContainer container) {
+        if (this.executor instanceof ICommandBlock && !executor.getPosition().level.getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
+            return;
+        if (entity instanceof Player) {
+            ((Player) entity).sendCommandOutput(container);
         }
     }
 

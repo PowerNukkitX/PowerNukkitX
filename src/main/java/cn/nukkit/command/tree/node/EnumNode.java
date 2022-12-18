@@ -1,11 +1,15 @@
 package cn.nukkit.command.tree.node;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.ParamNodeType;
 import cn.nukkit.command.tree.ParamTree;
 
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public class EnumNode implements IParamNode<String> {
     protected String value = null;
     protected boolean optional;

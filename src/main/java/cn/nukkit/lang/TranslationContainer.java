@@ -4,8 +4,6 @@ package cn.nukkit.lang;
  * @author MagicDroidX (Nukkit Project)
  */
 public class TranslationContainer extends TextContainer implements Cloneable {
-
-    protected static final String[] EMPTY_STRING_ARRAY = new String[0];
     protected String[] params;
 
     public TranslationContainer(String text) {

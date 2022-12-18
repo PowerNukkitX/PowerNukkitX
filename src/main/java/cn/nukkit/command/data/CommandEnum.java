@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author CreeperFace
@@ -48,9 +49,16 @@ public class CommandEnum {
         ENUM_ENTITY = new CommandEnum("Entity", Collections.emptyList());
     }
 
-    private String name;
-    private List<String> values;
-    private boolean isSoft;//softEnum
+    private final String name;
+    private final List<String> values;
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    private final boolean isSoft;//softEnum
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    private final Supplier<List<String>> strListSupplier;
 
     @Since("1.4.0.0-PN")
     public CommandEnum(String name, String... values) {
@@ -74,6 +82,25 @@ public class CommandEnum {
         this.name = name;
         this.values = values;
         this.isSoft = isSoft;
+        this.strListSupplier = null;
+    }
+
+    /**
+     * 配合{@link cn.nukkit.Player#sendCommandData()}能实现动态枚举，性能可能很差，因为{@link cn.nukkit.network.protocol.AvailableCommandsPacket AvailableCommandsPacket}数据包量很大
+     * Instantiates a new Command enum.<br>
+     * todo 找到原版实现动态枚举的方法
+     *
+     * @param name            the name
+     * @param strListSupplier the str list supplier
+     * @param isSoft          the is soft
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public CommandEnum(String name, Supplier<List<String>> strListSupplier, boolean isSoft) {
+        this.name = name;
+        this.values = null;
+        this.isSoft = isSoft;
+        this.strListSupplier = strListSupplier;
     }
 
     public String getName() {
@@ -81,7 +108,8 @@ public class CommandEnum {
     }
 
     public List<String> getValues() {
-        return values;
+        if (this.strListSupplier == null) return values;
+        else return strListSupplier.get();
     }
 
     public boolean isSoft() {

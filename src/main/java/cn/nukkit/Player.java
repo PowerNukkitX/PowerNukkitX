@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
-import cn.nukkit.command.utils.CommandOutputContainer;
 import cn.nukkit.command.utils.RawText;
 import cn.nukkit.dialog.handler.FormDialogHandler;
 import cn.nukkit.dialog.response.FormResponseDialog;
@@ -47,6 +46,7 @@ import cn.nukkit.item.*;
 import cn.nukkit.item.customitem.ItemCustom;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.sideeffect.SideEffect;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -5483,19 +5483,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public void sendMessage(TextContainer message) {
-        if (message instanceof CommandOutputContainer op) {
-            var pk = new CommandOutputPacket();
-            pk.messages.add(new CommandOutputMessage(op.isSuccessed(), op.getText(), op.getParameters()));
-            pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
-            pk.type = CommandOutputType.ALL_OUTPUT;//1.19.40已经失效
-            pk.successCount = op.getSuccessCount();
-            this.dataPacket(pk);
-            return;
-        } else if (message instanceof TranslationContainer) {
+        if (message instanceof TranslationContainer) {
             this.sendTranslation(message.getText(), ((TranslationContainer) message).getParameters());
             return;
         }
         this.sendMessage(message.getText());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    public void sendCommandOutput(CommandOutputContainer container) {
+        var pk = new CommandOutputPacket();
+        pk.messages.addAll(container.getMessages());
+        pk.commandOriginData = new CommandOriginData(CommandOriginData.Origin.PLAYER, this.getUniqueId(), "", null);
+        pk.type = CommandOutputType.ALL_OUTPUT;
+        pk.successCount = container.getSuccessCount();
+        this.dataPacket(pk);
     }
 
     @PowerNukkitXOnly

@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.command.data.*;
+import cn.nukkit.network.protocol.types.CommandEnumConstraintData;
 import cn.nukkit.utils.BinaryStream;
 import com.nukkitx.network.util.Preconditions;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -58,6 +59,7 @@ public class AvailableCommandsPacket extends DataPacket {
     public Map<String, CommandDataVersions> commands;
     @Deprecated
     public final Map<String, List<String>> softEnums = new HashMap<>();
+    public final List<CommandEnumConstraintData> constraints = new ObjectArrayList<>();
 
     @Override
     public byte pid() {

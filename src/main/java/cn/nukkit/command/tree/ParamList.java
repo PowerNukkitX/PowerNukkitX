@@ -1,10 +1,14 @@
 package cn.nukkit.command.tree;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = -1;
     private int index = 0;

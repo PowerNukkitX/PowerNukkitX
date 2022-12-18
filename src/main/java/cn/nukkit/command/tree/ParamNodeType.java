@@ -1,5 +1,10 @@
 package cn.nukkit.command.tree;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
+
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public enum ParamNodeType {
     INT,
     FLOAT,
