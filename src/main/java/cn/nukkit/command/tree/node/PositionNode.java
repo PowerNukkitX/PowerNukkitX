@@ -37,7 +37,7 @@ public abstract class PositionNode extends ParamNode<Position> {
         else {
             try {
                 Player player = null;
-                if (this.parent.getSender() instanceof Player p) {
+                if (this.parent.parent.getSender() instanceof Player p) {
                     player = p;
                 }
                 for (String s : TMP) {
@@ -71,9 +71,12 @@ public abstract class PositionNode extends ParamNode<Position> {
                             }
                         } else {
                             switch (index) {
-                                case 0 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
-                                case 1 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
-                                case 2 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
+                                case 0 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
+                                case 1 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
+                                case 2 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
                                 default -> throw new CommandSyntaxException();
                             }
                         }

@@ -4,14 +4,14 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
-import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.tree.ParamList;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public abstract class ParamNode<T> implements IParamNode<T> {
     protected T value = null;
     protected boolean optional;
-    protected ParamTree parent;
+    protected ParamList parent;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -38,7 +38,7 @@ public abstract class ParamNode<T> implements IParamNode<T> {
     }
 
     @Override
-    public IParamNode<T> init(ParamTree parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+    public IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this.parent = parent;
         this.optional = optional;
         return this;

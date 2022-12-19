@@ -119,7 +119,7 @@ public class CommandParameter {
     }
 
     @PowerNukkitXOnly
-    @Since("1.19.50-r3")
+    @Since("1.19.50-r4")
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix, IParamNode<?> paramNode) {
         this.name = name;
         this.optional = optional;
@@ -164,6 +164,21 @@ public class CommandParameter {
     @Since("1.4.0.0-PN")
     public static CommandParameter newType(String name, boolean optional, CommandParamType type) {
         return new CommandParameter(name, optional, type, null, null);
+    }
+
+    /**
+     * 创建一个命令参数,参数解析节点{@link IParamNode}依据参数类型{@link CommandParamType}自动选取
+     *
+     * @param name     参数名
+     * @param optional 该参数是否为可选参数
+     * @param type     类型{@link CommandParamType}
+     * @return the command parameter
+     */
+    @Since("1.19.50-r4")
+    public static CommandParameter newType(String name, boolean optional, CommandParamType type, CommandParamOption... options) {
+        var result = new CommandParameter(name, optional, type, null, null);
+        result.paramOptions = Lists.newArrayList(options);
+        return result;
     }
 
     /**
@@ -267,14 +282,14 @@ public class CommandParameter {
      * @param name     参数名称
      * @param optional 改参数是否可选
      * @param data     枚举数据{@link CommandEnum},其中的{@link CommandEnum#getName()}才是真正的枚举参数名
-     * @param option   the option
+     * @param options  the options
      * @return the command parameter
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... option) {
+    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, null, data, null);
-        result.paramOptions = Lists.newArrayList(option);
+        result.paramOptions = Lists.newArrayList(options);
         return result;
     }
 
@@ -301,14 +316,14 @@ public class CommandParameter {
      * @param optional the optional
      * @param data     the data
      * @param enumNode the enum node
-     * @param option   the option
+     * @param options  the options
      * @return the command parameter
      */
     @PowerNukkitXOnly
     @Since("1.19.50-r4")
-    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, EnumNode enumNode, CommandParamOption... option) {
+    public static CommandParameter newEnum(String name, boolean optional, CommandEnum data, EnumNode enumNode, CommandParamOption... options) {
         var result = new CommandParameter(name, optional, null, data, null, enumNode);
-        result.paramOptions = Lists.newArrayList(option);
+        result.paramOptions = Lists.newArrayList(options);
         return result;
     }
 

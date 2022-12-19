@@ -9,12 +9,12 @@ import java.util.HashSet;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class OperatorStringNode extends StringNode {
-    private static final HashSet<String> OPERATOR = Sets.newHashSet("+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><");
+public class CompareOperatorStringNode extends StringNode {
+    private static final HashSet<String> COMPARE_OPERATOR = Sets.newHashSet("<", "<=", "=", ">=", ">");
 
     @Override
     public void fill(String arg) throws CommandSyntaxException {
-        if (OPERATOR.contains(arg)) this.value = arg;
+        if (COMPARE_OPERATOR.contains(arg)) this.value = arg;
         else throw new CommandSyntaxException();
     }
 

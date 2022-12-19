@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.tree.ParamNodeType;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 
@@ -25,8 +24,4 @@ public class WildcardTargetStringNode extends StringNode {
         }
     }
 
-    @Override
-    public ParamNodeType type() {
-        return ParamNodeType.WILDCARD_TARGET;
-    }
 }

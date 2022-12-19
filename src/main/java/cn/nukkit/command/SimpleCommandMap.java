@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
+import cn.nukkit.command.tree.TestCommand;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
@@ -104,6 +105,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
         this.register("nukkit", new DebugPasteCommand("debugpaste"));
+        this.register("nukkit", new TestCommand("testtp"));
         if (!Timings.isTimingsCloseCompletely()) this.register("nukkit", new TimingsCommand("timings"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
         if (this.server.getConfig("debug.commands", false)) {
@@ -300,19 +302,24 @@ public class SimpleCommandMap implements CommandMap {
         boolean output;
         target.timing.startTiming();
         try {
-            if (target.paramTree == null) {
+            try {
                 output = target.execute(sender, sentCommandLabel, args);
-            } else {
+            } catch (UnsupportedOperationException e) {
+                if (target.paramTree == null) return false;
                 var result = target.paramTree.matchAndParse(sender, args);
                 if (result == null || !target.testPermission(sender)) {
                     target.timing.stopTiming();
                     return false;
                 }
-                output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args));
+                try {
+                    output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args));
+                } catch (UnsupportedOperationException ignore) {
+                    log.fatal("You must override Command#execute(CommandSender sender, String commandLabel, String[] args) to execute the command.");
+                    log.fatal("or initialize the paramTree and override Command#execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) to execute the command.");
+                    target.timing.stopTiming();
+                    return false;
+                }
             }
-        } catch (UnsupportedOperationException e) {
-            log.fatal(e.getMessage());
-            output = false;
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
             log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)), e);

@@ -12,6 +12,11 @@ import java.util.function.Predicate;
 public class ParamList extends ArrayList<IParamNode<?>> {
     private int error = -1;
     private int index = 0;
+    public final ParamTree parent;
+
+    public ParamList(ParamTree parent) {
+        this.parent = parent;
+    }
 
     public void reset() {
         this.error = -1;

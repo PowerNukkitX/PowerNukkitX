@@ -482,7 +482,20 @@ public class ScoreboardCommand extends VanillaCommand {
 
         String operation = list.getResult(4);
         String selector_str = list.getResult(5);
-        Set<IScorer> selectorScorers = EntitySelector.matchEntities(sender, selector_str).stream().filter(Objects::nonNull).map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+
+        Set<IScorer> selectorScorers = new HashSet<>();
+        if (wildcard_target_str.equals("*")) {
+            for (var scoreboard : manager.getScoreboards().values()) {
+                selectorScorers.addAll(scoreboard.getLines().keySet());
+            }
+        } else if (EntitySelector.hasArguments(wildcard_target_str)) {
+            selectorScorers = EntitySelector.matchEntities(sender, wildcard_target_str).stream().map(t -> t instanceof Player ? new PlayerScorer((Player) t) : new EntityScorer(t)).collect(Collectors.toSet());
+        } else if (Server.getInstance().getPlayer(wildcard_target_str) != null) {
+            selectorScorers.add(new PlayerScorer(Server.getInstance().getPlayer(wildcard_target_str)));
+        } else {
+            selectorScorers.add(new FakeScorer(wildcard_target_str));
+        }
+
         if (selectorScorers.size() > 1) {
             log.outputError(TextFormat.RED + "%commands.generic.tooManyTargets");
             return false;
@@ -508,37 +521,47 @@ public class ScoreboardCommand extends VanillaCommand {
             }
             int targetScore = targetScoreboard.getLines().get(targetScorer).getScore();
             int selectorScore = selectorScoreboard.getLines().get(seletorScorer).getScore();
+            int changeScore = -1;
             switch (operation) {
                 case "+=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(targetScore + selectorScore);
+                    changeScore = targetScore + selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "-=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(targetScore - selectorScore);
+                    changeScore = targetScore - selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "*=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(targetScore * selectorScore);
+                    changeScore = targetScore * selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "/=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(targetScore / selectorScore);
+                    changeScore = targetScore / selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "%=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(targetScore % selectorScore);
+                    changeScore = targetScore % selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "=" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(selectorScore);
+                    changeScore = selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "<" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(Math.min(targetScore, selectorScore));
+                    changeScore = Math.min(targetScore, selectorScore);
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case ">" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(Math.max(targetScore, selectorScore));
+                    changeScore = Math.max(targetScore, selectorScore);
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                 }
                 case "><" -> {
-                    targetScoreboard.getLines().get(targetScorer).setScore(selectorScore);
+                    changeScore = selectorScore;
+                    targetScoreboard.getLines().get(targetScorer).setScore(changeScore);
                     selectorScoreboard.getLines().get(seletorScorer).setScore(targetScore);
                 }
             }
-            log.addInfo("commands.scoreboard.players.operation.success", targetObjectiveName, String.valueOf(targetScorers.size()));
+            log.addInfo("commands.scoreboard.players.operation.success", String.valueOf(changeScore), targetObjectiveName);
         }
         log.output();
         return true;

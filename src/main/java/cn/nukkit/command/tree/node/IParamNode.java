@@ -5,7 +5,7 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.tree.ParamNodeType;
+import cn.nukkit.command.tree.ParamList;
 import cn.nukkit.command.tree.ParamTree;
 
 @PowerNukkitXOnly
@@ -31,8 +31,6 @@ public interface IParamNode<T> {
 
     boolean isOptional();
 
-    ParamNodeType type();
-
     /**
      * 这个方法用于初始化{@link ParamTree}和一些能从{@link cn.nukkit.command.data.CommandParameter CommandParameter}得到的参数,例如optional enumData等，插件不需要调用
      *
@@ -45,5 +43,7 @@ public interface IParamNode<T> {
      * @return the param node
      * @throws IllegalArgumentException the illegal argument exception
      */
-    IParamNode<T> init(ParamTree parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix);
+    default IParamNode<T> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+        return this;
+    }
 }

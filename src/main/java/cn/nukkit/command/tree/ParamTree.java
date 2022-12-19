@@ -27,51 +27,59 @@ public class ParamTree {
         this.command = command;
         var root = new HashMap<String, ParamList>();
         for (Map.Entry<String, CommandParameter[]> entry : command.getCommandParameters().entrySet()) {
-            var paramList = new ParamList();
+            var paramList = new ParamList(this);
             for (CommandParameter parameter : entry.getValue()) {
+                IParamNode<?> node = new VoidNode();
                 if (parameter.paramNode != null) {
-                    paramList.add(parameter.paramNode.init(this, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
-                    continue;
-                }
-                if (parameter.enumData == null) {
+                    node = parameter.paramNode;
+                } else if (parameter.enumData == null) {
                     switch (parameter.type) {
                         case INT -> {
-                            paramList.add(new IntNode().init(this, null, parameter.optional, null, null, null));
+                            node = new IntNode();
                         }
                         case WILDCARD_INT -> {
-                            paramList.add(new WildcardIntNode().init(this, null, parameter.optional, null, null, null));
+                            node = new WildcardIntNode();
                         }
                         case FLOAT, VALUE -> {
-                            paramList.add(new FloatNode().init(this, null, parameter.optional, null, null, null));
+                            node = new FloatNode();
                         }
                         case POSITION -> {//(?<=\s|^)([~^]?-?\d+\.?\d*(?=\s|$))
-                            paramList.add(new FloatPositionNode().init(this, null, parameter.optional, null, null, null));
+                            node = new FloatPositionNode();
                         }
                         case BLOCK_POSITION -> {
-                            paramList.add(new IntPositionNode().init(this, null, parameter.optional, null, null, null));
+                            node = new IntPositionNode();
                         }
                         case TARGET -> {
-                            paramList.add(new EntitiesNode().init(this, null, parameter.optional, null, null, null));
+                            node = new EntitiesNode();
                         }
                         case WILDCARD_TARGET -> {
-                            paramList.add(new WildcardTargetStringNode().init(this, null, parameter.optional, null, null, null));
+                            node = new WildcardTargetStringNode();
                         }
                         case STRING -> {
-                            paramList.add(new StringNode().init(this, null, parameter.optional, null, null, null));
+                            node = new StringNode();
                         }
                         case FILE_PATH -> {
-                            //todo 6
+                            //todo 1
+                            node = new StringNode();
+                        }
+                        case COMMAND -> {
+                            node = new CommandNode();
                         }
                         case OPERATOR -> {
-                            paramList.add(new OperatorStringNode().init(this, null, parameter.optional, null, null, null));
+                            node = new OperatorStringNode();
                         }
-                        case MESSAGE, TEXT, COMMAND, RAWTEXT, JSON -> {
-                            paramList.add(new StringNode().init(this, null, parameter.optional, null, null, null));
+                        case COMPARE_OPERATOR -> {
+                            node = new CompareOperatorStringNode();
+                        }
+                        case MESSAGE, TEXT, RAWTEXT, JSON -> {
+                            //todo 2
+                            node = new StringNode();
                         }
                     }
                 } else {
-                    paramList.add(new EnumNode().init(this, null, parameter.optional, null, parameter.enumData, null));
+                    node = new EnumNode();
                 }
+                paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
             }
             root.put(entry.getKey(), paramList);
         }
@@ -90,8 +98,8 @@ public class ParamTree {
         this.root.forEach((key, value) -> value.reset());
         Map.Entry<String, ParamList> result = null;
         var error = new HashSet<ParamList>();
-
-        for (var entry : this.root.entrySet()) {
+        var lists = this.root.entrySet().stream().filter(list -> args.length >= list.getValue().stream().filter(n -> !n.isOptional()).count()).toList();
+        for (var entry : lists) {
             f2:
             for (var node : entry.getValue()) {
                 while (!node.hasResult()) {

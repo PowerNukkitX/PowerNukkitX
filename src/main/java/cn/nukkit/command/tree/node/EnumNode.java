@@ -5,15 +5,12 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.command.tree.ParamNodeType;
-import cn.nukkit.command.tree.ParamTree;
+import cn.nukkit.command.tree.ParamList;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
-public class EnumNode implements IParamNode<String> {
-    protected String value = null;
-    protected boolean optional;
-    private CommandEnum commandEnum;
+public class EnumNode extends ParamNode<String> {
+    protected CommandEnum commandEnum;
 
     @Override
     public void fill(String arg) throws CommandSyntaxException {
@@ -35,38 +32,11 @@ public class EnumNode implements IParamNode<String> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <E> E get() {
-        if (this.isOptional()) {
-            if (value == null) return null;
-            else return (E) value;
-        } else return (E) value;
-    }
-
-    @Override
-    public boolean hasResult() {
-        return value != null;
-    }
-
-    @Override
-    public void reset() {
-        this.value = null;
-    }
-
-    @Override
-    public boolean isOptional() {
-        return optional;
-    }
-
-    @Override
-    public IParamNode<String> init(ParamTree parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+    public IParamNode<String> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+        this.parent = parent;
         this.commandEnum = enumData;
         this.optional = optional;
         return this;
     }
 
-    @Override
-    public ParamNodeType type() {
-        return ParamNodeType.ENUM;
-    }
 }

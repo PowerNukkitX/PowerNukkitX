@@ -14,10 +14,11 @@ import java.util.Collections;
 @Since("1.19.50-r4")
 public class EntitiesNode extends TargetNode<Entity> {
 
+    //todo 支持uuid 或者 xuid
     @Override
     public void fill(String arg) throws CommandSyntaxException {
         if (EntitySelector.hasArguments(arg)) {
-            var result = EntitySelector.matchEntities(this.parent.getSender(), arg);
+            var result = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
             if (result.isEmpty()) throw new CommandSyntaxException();
             this.value = result;
         } else {

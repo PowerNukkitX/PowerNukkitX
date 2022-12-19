@@ -156,11 +156,11 @@ public abstract class Command {
     }
 
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        throw new UnsupportedOperationException("You must override Command#execute(CommandSender sender, String commandLabel, String[] args) to execute the command.");
+        throw new UnsupportedOperationException();
     }
 
     public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
-        throw new UnsupportedOperationException("You must initialize the paramTree and override Command#execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) to execute the command.");
+        throw new UnsupportedOperationException();
     }
 
     public String getName() {
