@@ -305,7 +305,7 @@ public class SimpleCommandMap implements CommandMap {
             } catch (UnsupportedOperationException e) {
                 if (target.paramTree == null) return false;
                 var result = target.paramTree.matchAndParse(sender, args);
-                if (result == null || !target.testPermission(sender)) {
+                if (result == null) {
                     target.timing.stopTiming();
                     return false;
                 }

@@ -112,6 +112,7 @@ public class ScoreboardCommand extends VanillaCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (!this.testPermission(sender)) return false;
         var list = result.getValue();
         var manager = Server.getInstance().getScoreboardManager();
         switch (result.getKey()) {

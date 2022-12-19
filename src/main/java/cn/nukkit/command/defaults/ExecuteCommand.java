@@ -171,6 +171,7 @@ public class ExecuteCommand extends VanillaCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) {
+        if (!this.testPermission(sender)) return false;
         var list = result.getValue();
         switch (result.getKey()) {
             case "run" -> {
