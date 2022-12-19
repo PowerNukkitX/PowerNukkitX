@@ -5,6 +5,9 @@ import cn.nukkit.api.Since;
 
 import java.util.regex.Pattern;
 
+/**
+ * 浮点数坐标节点，对应参数类型{@link cn.nukkit.command.data.CommandParamType#POSITION POSITION}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class FloatPositionNode extends PositionNode {

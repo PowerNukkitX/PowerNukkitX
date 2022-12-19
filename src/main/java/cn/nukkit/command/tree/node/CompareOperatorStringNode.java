@@ -7,6 +7,11 @@ import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 
+
+/**
+ * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令中需要的的比较操作命令节点<br>
+ * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#COMPARE_OPERATOR COMPARE_OPERATOR}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class CompareOperatorStringNode extends StringNode {

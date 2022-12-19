@@ -4,6 +4,8 @@ import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.node.*;
@@ -22,6 +24,26 @@ public class ParamTree {
     private CommandSender sender;
     private String[] args;
 
+    /**
+     * 从给定的命令中初始化命令节点树，其中每个参数类型{@link cn.nukkit.command.data.CommandParamType CommandParamType}会对应一个默认的参数节点,或者使用
+     * {@link CommandParameter#newType(String, CommandParamType, IParamNode)}<br>
+     * {@link CommandParameter#newEnum(String, boolean, CommandEnum, EnumNode)}<br>
+     * 初始化指定的命令节点。
+     * 该方法应该在命令构造函数中commandParameters初始化完毕后调用，形如<br>
+     * <pre>
+     *   public TestCommand(String name) {
+     *       super(name, description, usage, aliases);
+     *       this.setPermission("nukkit.command.test");
+     *       this.commandParameters.clear();
+     *       this.commandParameters.put("pos", new CommandParameter[]{
+     *         CommandParameter.newType("destination", CommandParamType.POSITION)
+     *       });
+     *       this.paramTree = new ParamTree(this);
+     *   }
+     * </pre>
+     *
+     * @param command the command
+     */
     @SuppressWarnings("RedundantLabeledSwitchRuleCodeBlock")
     public ParamTree(Command command) {
         this.command = command;
@@ -91,6 +113,14 @@ public class ParamTree {
         this.command = command;
     }
 
+    /**
+     * 从给定输入参数匹配该命令节点树对应命令{@link Command}的命令重载，并且解析对应参数。<br>
+     * 返回值是一个{@link Map.Entry},它是成功匹配的命令重载，对应{@link Command#commandParameters commandParameters}。<br>
+     * 其Key对应commandParameters中的Key,值是一个{@link ParamList} 其中每个节点与commandParameters的Value一一对应，并且是解析之后的结果。
+     *
+     * @param sender 命令发送者
+     * @param args   命令的参数
+     */
     @Nullable
     public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
         this.args = args;

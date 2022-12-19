@@ -7,6 +7,9 @@ import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 
+/**
+ * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#OPERATOR OPERATOR}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class OperatorStringNode extends StringNode {

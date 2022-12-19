@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * 坐标节点基类
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public abstract class PositionNode extends ParamNode<Position> {
@@ -71,12 +74,9 @@ public abstract class PositionNode extends ParamNode<Position> {
                             }
                         } else {
                             switch (index) {
-                                case 0 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
-                                case 1 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
-                                case 2 ->
-                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
+                                case 0 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
+                                case 1 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
+                                case 2 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
                                 default -> throw new CommandSyntaxException();
                             }
                         }

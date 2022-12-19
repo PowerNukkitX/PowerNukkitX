@@ -10,6 +10,10 @@ import cn.nukkit.entity.Entity;
 
 import java.util.Collections;
 
+/**
+ * 可以从玩家名或者目标选择器解析出一个{@link Entity} {@link java.util.List List},不可能为空，当为空时会抛出{@link CommandSyntaxException}<br>
+ * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#TARGET TARGET}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class EntitiesNode extends TargetNode<Entity> {

@@ -8,6 +8,10 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.EntitySelector;
 import cn.nukkit.scoreboard.manager.IScoreboardManager;
 
+
+/**
+ * 对应参数类型{@link cn.nukkit.command.data.CommandParamType#WILDCARD_TARGET WILDCARD_TARGET}
+ */
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class WildcardTargetStringNode extends StringNode {

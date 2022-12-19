@@ -1,5 +1,7 @@
 package cn.nukkit.command.tree.node;
 
+import cn.nukkit.api.PowerNukkitXOnly;
+import cn.nukkit.api.Since;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import com.google.common.collect.Sets;
 
@@ -8,11 +10,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.StringJoiner;
 
+
+/**
+ * {@link cn.nukkit.command.defaults.ExecuteCommand ExecuteCommand}命令的链命令节点
+ */
+@PowerNukkitXOnly
+@Since("1.19.50-r4")
 public class ChainedCommandNode extends EnumNode {
     private static final HashSet<String> CHAINED = Sets.newHashSet("run", "as", "at", "positioned", "if", "unless", "in", "align", "anchored", "rotated", "facing");
     private boolean remain = false;
 
-    protected final List<String> TMP = new ArrayList<>();
+    private final List<String> TMP = new ArrayList<>();
 
     @Override
     public void fill(String arg) throws CommandSyntaxException {

@@ -54,10 +54,18 @@ public class ParamList extends ArrayList<IParamNode<?>> {
         return index;
     }
 
+    /**
+     * 获取指定索引处参数节点的值。
+     */
     public <E> E getResult(int index) {
         return this.get(index).get();
     }
 
+    /**
+     * 如果是可选命令{@link IParamNode#isOptional()}节点，请在获取值{@link #getResult(int)}之前调用该方法判断是否存在
+     *
+     * @return 指定索引处的参数节点是否存在值
+     */
     public boolean hasResult(int index) {
         return index < this.size() && index > -1 && this.get(index).get() != null;
     }

@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
-import cn.nukkit.command.tree.TestCommand;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
@@ -105,7 +104,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
         this.register("nukkit", new DebugPasteCommand("debugpaste"));
-        this.register("nukkit", new TestCommand("testtp"));
         if (!Timings.isTimingsCloseCompletely()) this.register("nukkit", new TimingsCommand("timings"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
         if (this.server.getConfig("debug.commands", false)) {
