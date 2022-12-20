@@ -33,89 +33,6 @@ import java.util.zip.Deflater;
 @Log4j2
 public class CraftingManager {
 
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.",
-            replaceWith = "getPacket()")
-    @Since("1.5.0.0-PN")
-    public static DataPacket packet = null;
-
-    private static int RECIPE_COUNT = 0;
-    private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<FurnaceRecipe> furnaceRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<BlastFurnaceRecipe> blastFurnaceRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<CampfireRecipe> campfireRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<SmokerRecipe> smokerRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Map<UUID, MultiRecipe> multiRecipeMap = new HashMap<>();
-    private final Int2ObjectMap<BrewingRecipe> brewingRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<ContainerRecipe> containerRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<StonecutterRecipe> stonecutterRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<Map<UUID, ShapelessRecipe>> shapelessRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<Map<UUID, CartographyRecipe>> cartographyRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipeMap = new Int2ObjectOpenHashMap<>();
-    private final Deque<Recipe> recipeList = new ArrayDeque<>();
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    private final Map<String, Map<UUID, ModProcessRecipe>> modProcessRecipeMap = new HashMap<>();
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
-
-    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    public final Collection<Recipe> recipes = recipeList;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = shapedRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    public final Map<Integer, FurnaceRecipe> furnaceRecipes = furnaceRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitOnly
-    public final Map<Integer, BlastFurnaceRecipe> blastFurnaceRecipes = blastFurnaceRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitOnly
-    public final Map<Integer, SmokerRecipe> smokerRecipes = smokerRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitOnly
-    public final Map<Integer, CampfireRecipe> campfireRecipes = campfireRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @Since("1.4.0.0-PN")
-    public final Map<UUID, MultiRecipe> multiRecipes = multiRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    public final Map<Integer, BrewingRecipe> brewingRecipes = brewingRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    public final Map<Integer, ContainerRecipe> containerRecipes = containerRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitOnly
-    public final Map<Integer, StonecutterRecipe> stonecutterRecipes = stonecutterRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    protected final Map<Integer, Map<UUID, ShapelessRecipe>> shapelessRecipes = shapelessRecipeMap;
-
-    @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
-    @PowerNukkitOnly
-    protected final Map<Integer, Map<UUID, CartographyRecipe>> cartographyRecipes = cartographyRecipeMap;
-    //</editor-fold>
-
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         if (i1.getId() > i2.getId()) {
             return 1;
@@ -127,110 +44,83 @@ public class CraftingManager {
             return -1;
         } else return Integer.compare(i1.getCount(), i2.getCount());
     };
-
-    //<editor-fold desc="getters" defaultstate="collapsed">
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<Map<UUID, ShapedRecipe>> getShapedRecipeMap() {
-        return shapedRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<FurnaceRecipe> getFurnaceRecipesMap() {
-        return furnaceRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
-        return blastFurnaceRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<SmokerRecipe> getSmokerRecipeMap() {
-        return smokerRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<CampfireRecipe> getCampfireRecipeMap() {
-        return campfireRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Map<UUID, MultiRecipe> getMultiRecipeMap() {
-        return multiRecipeMap;
-    }
-
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<BrewingRecipe> getBrewingRecipeMap() {
-        return brewingRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<ContainerRecipe> getContainerRecipeMap() {
-        return containerRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<StonecutterRecipe> getStonecutterRecipeMap() {
-        return stonecutterRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    protected Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
-        return shapelessRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<Map<UUID, CartographyRecipe>> getCartographyRecipeMap() {
-        return cartographyRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
-        return smithingRecipeMap;
-    }
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    public static DataPacket getCraftingPacket() {
-        return packet;
-    }
-
-    public Collection<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
-        return recipeXpMap;
-    }
-
-    // Get Mod-Processing Recipes
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    public Map<String, Map<UUID, ModProcessRecipe>> getModProcessRecipeMap() {
-        return modProcessRecipeMap;
-    }
-
+    /**
+     * 缓存着配方数据包
+     */
+    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     @Deprecated
-    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", replaceWith = "getFurnaceRecipeMap()",
-            reason = "The other provides a specialized map which performs better")
-    public Map<Integer, FurnaceRecipe> getFurnaceRecipes() {
-        return furnaceRecipes;
-    }
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.",
+            replaceWith = "getPacket()")
+    @Since("1.5.0.0-PN")
+    public static DataPacket packet = null;
+    @PowerNukkitXDifference(info = "Now it is the count of all recipes", since = "1.19.50-r3")
+    private static int RECIPE_COUNT = 0;
+    private final Int2ObjectMap<Map<UUID, ShapedRecipe>> shapedRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = shapedRecipeMap;
+    private final Int2ObjectMap<FurnaceRecipe> furnaceRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    public final Map<Integer, FurnaceRecipe> furnaceRecipes = furnaceRecipeMap;
+    private final Int2ObjectMap<BlastFurnaceRecipe> blastFurnaceRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitOnly
+    public final Map<Integer, BlastFurnaceRecipe> blastFurnaceRecipes = blastFurnaceRecipeMap;
+    private final Int2ObjectMap<CampfireRecipe> campfireRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitOnly
+    public final Map<Integer, CampfireRecipe> campfireRecipes = campfireRecipeMap;
+    private final Int2ObjectMap<SmokerRecipe> smokerRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitOnly
+    public final Map<Integer, SmokerRecipe> smokerRecipes = smokerRecipeMap;
+    private final Map<UUID, MultiRecipe> multiRecipeMap = new HashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @Since("1.4.0.0-PN")
+    public final Map<UUID, MultiRecipe> multiRecipes = multiRecipeMap;
+    private final Int2ObjectMap<BrewingRecipe> brewingRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    public final Map<Integer, BrewingRecipe> brewingRecipes = brewingRecipeMap;
+    private final Int2ObjectMap<ContainerRecipe> containerRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    public final Map<Integer, ContainerRecipe> containerRecipes = containerRecipeMap;
+    private final Int2ObjectMap<StonecutterRecipe> stonecutterRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitOnly
+    public final Map<Integer, StonecutterRecipe> stonecutterRecipes = stonecutterRecipeMap;
+    private final Int2ObjectMap<Map<UUID, ShapelessRecipe>> shapelessRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    protected final Map<Integer, Map<UUID, ShapelessRecipe>> shapelessRecipes = shapelessRecipeMap;
+    private final Int2ObjectMap<Map<UUID, CartographyRecipe>> cartographyRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitOnly
+    protected final Map<Integer, Map<UUID, CartographyRecipe>> cartographyRecipes = cartographyRecipeMap;
+    private final Int2ObjectOpenHashMap<Map<UUID, SmithingRecipe>> smithingRecipeMap = new Int2ObjectOpenHashMap<>();
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    private final Map<String, Map<UUID, ModProcessRecipe>> modProcessRecipeMap = new HashMap<>();
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    private final Object2DoubleOpenHashMap<Recipe> recipeXpMap = new Object2DoubleOpenHashMap<>();
+    private final Deque<Recipe> recipeList = new ArrayDeque<>();
+
+    /**
+     * 一个包含全部种类配方的双端队列集合
+     */
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.")
+    @PowerNukkitXDifference(info = "Now it is contain all type recipes", since = "1.19.50-r3")
+    public final Collection<Recipe> recipes = recipeList;
     //</editor-fold>
 
     //<editor-fold desc="constructors and setup" defaultstate="collapsed">
@@ -394,7 +284,7 @@ public class CraftingManager {
             registerContainerRecipe(new ContainerRecipe(Item.fromString(fromItemId), Item.fromString(ingredient), Item.fromString(toItemId)));
         }
 
-        // Allow to rename without crafting 
+        // Allow to rename without crafting
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP), Collections.singletonList(Item.get(ItemID.EMPTY_MAP))));
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.EMPTY_MAP, 2), Collections.singletonList(Item.get(ItemID.EMPTY_MAP, 2))));
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP), Collections.singletonList(Item.get(ItemID.MAP))));
@@ -402,6 +292,210 @@ public class CraftingManager {
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 4), Collections.singletonList(Item.get(ItemID.MAP, 4))));
         registerCartographyRecipe(new CartographyRecipe(Item.get(ItemID.MAP, 5), Collections.singletonList(Item.get(ItemID.MAP, 5))));
     }
+    //</editor-fold>
+
+    //<editor-fold desc="getters" defaultstate="collapsed">
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    public static DataPacket getCraftingPacket() {
+        return packet;
+    }
+
+    @PowerNukkitOnly("Public only in PowerNukkit")
+    @Since("FUTURE")
+    public static UUID getMultiItemHash(Collection<Item> items) {
+        BinaryStream stream = new BinaryStream();
+        for (Item item : items) {
+            stream.putVarInt(getFullItemHash(item));
+        }
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r2")
+    public static UUID getItemWithItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
+        BinaryStream stream = new BinaryStream();
+        for (Item item : items) {
+            stream.putVarInt(getFullItemHash(item));
+        }
+        for (var des : itemDescriptors) {
+            if (des instanceof ItemTagDescriptor) {
+                stream.putVarInt(des.hashCode());
+            }
+        }
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessItemDescriptorHash(Collection<ItemDescriptor> itemDescriptors) {
+        var stream = new BinaryStream();
+        itemDescriptors.stream().mapToInt(Objects::hashCode).sorted().forEachOrdered(stream::putVarInt);
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public static UUID getShapelessMultiItemHash(Collection<Item> items) {
+        var stream = new BinaryStream();
+        items.stream().mapToInt(CraftingManager::getFullItemHash).sorted().forEachOrdered(stream::putVarInt);
+        return UUID.nameUUIDFromBytes(stream.getBuffer());
+    }
+
+    @PowerNukkitOnly("Public only in PowerNukkit")
+    @Since("FUTURE")
+    public static int getFullItemHash(Item item) {
+        return 31 * getItemHash(item) + item.getCount();
+    }
+
+    @PowerNukkitOnly("Public only in PowerNukkit")
+    @Since("FUTURE")
+    public static int getItemHash(Item item) {
+        return getItemHash(item, item.getDamage());
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static int getItemHash(Item item, int meta) {
+        int id = item.getId();
+        int hash = 31 + (id << 8 | meta & 0xFF);
+        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem ?
+                item.getNamespaceId().hashCode()
+                : 0);
+        return hash;
+    }
+
+    @PowerNukkitOnly("Public only in PowerNukkit")
+    @Since("FUTURE")
+    public static int getPotionHash(Item ingredient, Item potion) {
+        int ingredientId = ingredient.getId();
+        int potionId = potion.getId();
+        int hash = 17;
+        hash *= 31 + ingredientId;
+        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
+        hash *= 31 + potion.getDamage();
+        hash *= 31 + potionId;
+        hash *= 31 + (potionId == ItemID.STRING_IDENTIFIED_ITEM ? potion.getNamespaceId().hashCode() : 0);
+        hash *= 31 + potion.getDamage();
+        return hash;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public static int getContainerHash(@Nonnull Item ingredient, @Nonnull Item container) {
+        int ingredientId = ingredient.getId();
+        int containerId = container.getId();
+        int hash = 17;
+        hash *= 31 + ingredientId;
+        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
+        hash *= 31 + containerId;
+        hash *= 31 + (containerId == ItemID.STRING_IDENTIFIED_ITEM ? container.getNamespaceId().hashCode() : 0);
+        return hash;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<Map<UUID, ShapedRecipe>> getShapedRecipeMap() {
+        return shapedRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<FurnaceRecipe> getFurnaceRecipesMap() {
+        return furnaceRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
+        return blastFurnaceRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<SmokerRecipe> getSmokerRecipeMap() {
+        return smokerRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<CampfireRecipe> getCampfireRecipeMap() {
+        return campfireRecipeMap;
+    }
+
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Map<UUID, MultiRecipe> getMultiRecipeMap() {
+        return multiRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<BrewingRecipe> getBrewingRecipeMap() {
+        return brewingRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<ContainerRecipe> getContainerRecipeMap() {
+        return containerRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<StonecutterRecipe> getStonecutterRecipeMap() {
+        return stonecutterRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    protected Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
+        return shapelessRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<Map<UUID, CartographyRecipe>> getCartographyRecipeMap() {
+        return cartographyRecipeMap;
+    }
+
+    @PowerNukkitOnly
+    @Since("FUTURE")
+    public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
+        return smithingRecipeMap;
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public Object2DoubleOpenHashMap<Recipe> getRecipeXpMap() {
+        return recipeXpMap;
+    }
+
+    // Get Mod-Processing Recipes
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public Map<String, Map<UUID, ModProcessRecipe>> getModProcessRecipeMap() {
+        return modProcessRecipeMap;
+    }
+
+    @Deprecated
+    @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", replaceWith = "getFurnaceRecipeMap()",
+            reason = "The other provides a specialized map which performs better")
+    public Map<Integer, FurnaceRecipe> getFurnaceRecipes() {
+        return furnaceRecipes;
+    }
+
+    public Collection<Recipe> getRecipes() {
+        return recipeList;
+    }
+
+    public static int getRecipeCount() {
+        return RECIPE_COUNT;
+    }
+
+    //</editor-fold>
+
 
     @PowerNukkitXOnly
     @Since("1.19.50-r2")
@@ -580,11 +674,15 @@ public class CraftingManager {
         CraftingDataPacket pk = new CraftingDataPacket();
         pk.cleanRecipes = true;
 
-        for (Recipe recipe : getRecipes()) {
-            if (recipe instanceof ShapedRecipe) {
-                pk.addShapedRecipe((ShapedRecipe) recipe);
-            } else if (recipe instanceof ShapelessRecipe) {
-                pk.addShapelessRecipe((ShapelessRecipe) recipe);
+        for (Map<UUID, ShapedRecipe> map : getShapedRecipeMap().values()) {
+            for (ShapedRecipe recipe : map.values()) {
+                pk.addShapedRecipe(recipe);
+            }
+        }
+
+        for (Map<UUID, ShapelessRecipe> map : getShapelessRecipeMap().values()) {
+            for (ShapelessRecipe recipe : map.values()) {
+                pk.addShapelessRecipe(recipe);
             }
         }
 
@@ -630,7 +728,6 @@ public class CraftingManager {
         //TODO: find out whats wrong with compression
         packet = pk.compress(Deflater.BEST_COMPRESSION);
     }
-    //</editor-fold>
 
     public FurnaceRecipe matchFurnaceRecipe(Item input) {
         if (input.isNull()) {
@@ -671,128 +768,7 @@ public class CraftingManager {
         return recipe;
     }
 
-    @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
-    public static UUID getMultiItemHash(Collection<Item> items) {
-        BinaryStream stream = new BinaryStream();
-        for (Item item : items) {
-            stream.putVarInt(getFullItemHash(item));
-        }
-        return UUID.nameUUIDFromBytes(stream.getBuffer());
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r2")
-    public static UUID getItemWithItemDescriptorsHash(Collection<Item> items, Collection<ItemDescriptor> itemDescriptors) {
-        BinaryStream stream = new BinaryStream();
-        for (Item item : items) {
-            stream.putVarInt(getFullItemHash(item));
-        }
-        for (var des : itemDescriptors) {
-            if (des instanceof ItemTagDescriptor) {
-                stream.putVarInt(des.hashCode());
-            }
-        }
-        return UUID.nameUUIDFromBytes(stream.getBuffer());
-    }
-
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    public static UUID getShapelessItemDescriptorHash(Collection<ItemDescriptor> itemDescriptors) {
-        var stream = new BinaryStream();
-        itemDescriptors.stream().mapToInt(Objects::hashCode).sorted().forEachOrdered(stream::putVarInt);
-        return UUID.nameUUIDFromBytes(stream.getBuffer());
-    }
-
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    public static UUID getShapelessMultiItemHash(Collection<Item> items) {
-        var stream = new BinaryStream();
-        items.stream().mapToInt(CraftingManager::getFullItemHash).sorted().forEachOrdered(stream::putVarInt);
-        return UUID.nameUUIDFromBytes(stream.getBuffer());
-    }
-
-    @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
-    public static int getFullItemHash(Item item) {
-        return 31 * getItemHash(item) + item.getCount();
-    }
-
-    @PowerNukkitOnly
-    public void registerStonecutterRecipe(StonecutterRecipe recipe) {
-        getStonecutterRecipeMap().put(getItemHash(recipe.getResult()), recipe);
-    }
-
-    public void registerFurnaceRecipe(FurnaceRecipe recipe) {
-        Item input = recipe.getInput();
-        getFurnaceRecipesMap().put(getItemHash(input), recipe);
-    }
-
-
-    @PowerNukkitOnly
-    public void registerBlastFurnaceRecipe(BlastFurnaceRecipe recipe) {
-        Item input = recipe.getInput();
-        getBlastFurnaceRecipeMap().put(getItemHash(input), recipe);
-    }
-
-    @PowerNukkitOnly
-    public void registerSmokerRecipe(SmokerRecipe recipe) {
-        Item input = recipe.getInput();
-        getSmokerRecipeMap().put(getItemHash(input), recipe);
-    }
-
-    @PowerNukkitOnly
-    public void registerCampfireRecipe(CampfireRecipe recipe) {
-        Item input = recipe.getInput();
-        getCampfireRecipeMap().put(getItemHash(input), recipe);
-    }
-
-    @Since("1.19.50-r3")
-    @PowerNukkitXOnly
-    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
-        var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
-        var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
-        map.put(inputHash, recipe);
-    }
-
-    @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
-    public static int getItemHash(Item item) {
-        return getItemHash(item, item.getDamage());
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public static int getItemHash(Item item, int meta) {
-        int id = item.getId();
-        int hash = 31 + (id << 8 | meta & 0xFF);
-        hash *= 31 + (id == ItemID.STRING_IDENTIFIED_ITEM && item instanceof StringItem ?
-                item.getNamespaceId().hashCode()
-                : 0);
-        return hash;
-    }
-
-    public void registerShapedRecipe(ShapedRecipe recipe) {
-        int resultHash = getItemHash(recipe.getResult());
-        Map<UUID, ShapedRecipe> map = getShapedRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-        List<Item> list1 = new LinkedList<>(recipe.getIngredientsAggregate());
-        var list2 = recipe.getNewIngredientList();
-        map.put(getItemWithItemDescriptorsHash(list1, list2), recipe);
-    }
-
-
     public void registerRecipe(Recipe recipe) {
-        UUID id = null;
-        if (recipe instanceof CraftingRecipe || recipe instanceof StonecutterRecipe) {
-            id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
-        }
-        if (recipe instanceof CraftingRecipe) {
-            ((CraftingRecipe) recipe).setId(id);
-            getRecipes().add(recipe);
-        } else if (recipe instanceof StonecutterRecipe) {
-            ((StonecutterRecipe) recipe).setId(id);
-        }
-
         recipe.registerToCraftingManager(this);
     }
 
@@ -801,7 +777,17 @@ public class CraftingManager {
         this.registerShapelessRecipe(recipe);
     }
 
+    public void registerShapedRecipe(ShapedRecipe recipe) {
+        this.addRecipe(recipe);
+        int resultHash = getItemHash(recipe.getResult());
+        Map<UUID, ShapedRecipe> map = getShapedRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
+        List<Item> list1 = new LinkedList<>(recipe.getIngredientsAggregate());
+        var list2 = recipe.getNewIngredientList();
+        map.put(getItemWithItemDescriptorsHash(list1, list2), recipe);
+    }
+
     public void registerShapelessRecipe(ShapelessRecipe recipe) {
+        this.addRecipe(recipe);
         List<Item> list1 = recipe.getIngredientsAggregate();
         List<ItemDescriptor> list2 = recipe.getNewIngredients();
 
@@ -814,16 +800,84 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly
+    public void registerStonecutterRecipe(StonecutterRecipe recipe) {
+        this.addRecipe(recipe);
+        getStonecutterRecipeMap().put(getItemHash(recipe.getResult()), recipe);
+    }
+
+    public void registerFurnaceRecipe(FurnaceRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getInput();
+        getFurnaceRecipesMap().put(getItemHash(input), recipe);
+    }
+
+    @PowerNukkitOnly
+    public void registerBlastFurnaceRecipe(BlastFurnaceRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getInput();
+        getBlastFurnaceRecipeMap().put(getItemHash(input), recipe);
+    }
+
+    @PowerNukkitOnly
+    public void registerSmokerRecipe(SmokerRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getInput();
+        getSmokerRecipeMap().put(getItemHash(input), recipe);
+    }
+
+    @PowerNukkitOnly
+    public void registerCampfireRecipe(CampfireRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getInput();
+        getCampfireRecipeMap().put(getItemHash(input), recipe);
+    }
+
+    @Since("1.19.50-r3")
+    @PowerNukkitXOnly
+    public void registerModProcessRecipe(@Nonnull ModProcessRecipe recipe) {
+        this.addRecipe(recipe);
+        var map = getModProcessRecipeMap().computeIfAbsent(recipe.getCategory(), k -> new HashMap<>());
+        var inputHash = getShapelessItemDescriptorHash(recipe.getIngredients());
+        map.put(inputHash, recipe);
+    }
+
+
+    @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public void registerSmithingRecipe(@Nonnull SmithingRecipe recipe) {
+        this.addRecipe(recipe);
         List<Item> list = recipe.getIngredientsAggregate();
-
         UUID hash = getMultiItemHash(list);
-
         int resultHash = getItemHash(recipe.getResult());
         Map<UUID, SmithingRecipe> map = getSmithingRecipeMap().computeIfAbsent(resultHash, k -> new HashMap<>());
-
         map.put(hash, recipe);
+    }
+
+    public void registerBrewingRecipe(BrewingRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getIngredient();
+        Item potion = recipe.getInput();
+
+        int potionHash = getPotionHash(input, potion);
+        var brewingRecipes = getBrewingRecipeMap();
+        if (brewingRecipes.containsKey(potionHash)) {
+            log.warn("The brewing recipe {} is being replaced by {}", brewingRecipes.get(potionHash), recipe);
+        }
+        brewingRecipes.put(potionHash, recipe);
+    }
+
+    public void registerContainerRecipe(ContainerRecipe recipe) {
+        this.addRecipe(recipe);
+        Item input = recipe.getIngredient();
+        Item potion = recipe.getInput();
+
+        getContainerRecipeMap().put(getContainerHash(input, potion), recipe);
+    }
+
+    @Since("1.4.0.0-PN")
+    public void registerMultiRecipe(MultiRecipe recipe) {
+        this.addRecipe(recipe);
+        getMultiRecipeMap().put(recipe.getId(), recipe);
     }
 
     @PowerNukkitOnly
@@ -890,53 +944,6 @@ public class CraftingManager {
         }
 
         return null;
-    }
-
-    @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
-    public static int getPotionHash(Item ingredient, Item potion) {
-        int ingredientId = ingredient.getId();
-        int potionId = potion.getId();
-        int hash = 17;
-        hash *= 31 + ingredientId;
-        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
-        hash *= 31 + potion.getDamage();
-        hash *= 31 + potionId;
-        hash *= 31 + (potionId == ItemID.STRING_IDENTIFIED_ITEM ? potion.getNamespaceId().hashCode() : 0);
-        hash *= 31 + potion.getDamage();
-        return hash;
-    }
-
-    @PowerNukkitOnly
-    @Since("FUTURE")
-    public static int getContainerHash(@Nonnull Item ingredient, @Nonnull Item container) {
-        int ingredientId = ingredient.getId();
-        int containerId = container.getId();
-        int hash = 17;
-        hash *= 31 + ingredientId;
-        hash *= 31 + (ingredientId == ItemID.STRING_IDENTIFIED_ITEM ? ingredient.getNamespaceId().hashCode() : 0);
-        hash *= 31 + containerId;
-        hash *= 31 + (containerId == ItemID.STRING_IDENTIFIED_ITEM ? container.getNamespaceId().hashCode() : 0);
-        return hash;
-    }
-
-    public void registerBrewingRecipe(BrewingRecipe recipe) {
-        Item input = recipe.getIngredient();
-        Item potion = recipe.getInput();
-
-        int potionHash = getPotionHash(input, potion);
-        var brewingRecipes = getBrewingRecipeMap();
-        if (brewingRecipes.containsKey(potionHash)) {
-            log.warn("The brewing recipe {} is being replaced by {}", brewingRecipes.get(potionHash), recipe);
-        }
-        brewingRecipes.put(potionHash, recipe);
-    }
-
-    public void registerContainerRecipe(ContainerRecipe recipe) {
-        Item input = recipe.getIngredient();
-        Item potion = recipe.getInput();
-
-        getContainerRecipeMap().put(getContainerHash(input, potion), recipe);
     }
 
     public BrewingRecipe matchBrewingRecipe(Item input, Item potion) {
@@ -1073,21 +1080,35 @@ public class CraftingManager {
         return null;
     }
 
-    @Since("1.4.0.0-PN")
-    public void registerMultiRecipe(MultiRecipe recipe) {
-        getMultiRecipeMap().put(recipe.getId(), recipe);
-    }
-
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
     public void setRecipeXp(Recipe recipe, double xp) {
         recipeXpMap.put(recipe, xp);
     }
 
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void setCraftingPacket(DataPacket craftingPacket) {
+        CraftingManager.packet = craftingPacket;
+    }
+
     @Since("1.19.50-r3")
     @PowerNukkitXOnly
     public double getRecipeXp(Recipe recipe) {
         return recipeXpMap.getOrDefault(recipe, 0.0);
+    }
+
+    private void addRecipe(Recipe recipe) {
+        ++RECIPE_COUNT;
+        if (recipe instanceof CraftingRecipe || recipe instanceof StonecutterRecipe) {
+            UUID id = Utils.dataToUUID(String.valueOf(RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
+            if (recipe instanceof CraftingRecipe) {
+                ((CraftingRecipe) recipe).setId(id);
+            } else {
+                ((StonecutterRecipe) recipe).setId(id);
+            }
+        }
+        this.recipeList.add(recipe);
     }
 
     public static class Entry {

@@ -341,7 +341,7 @@ public class Server {
         launchTime = System.currentTimeMillis();
         BatchPacket batchPacket = new BatchPacket();
         batchPacket.payload = EmptyArrays.EMPTY_BYTES;
-        CraftingManager.packet = batchPacket;
+        CraftingManager.setCraftingPacket(batchPacket);
 
         currentThread = Thread.currentThread();
         File abs = tempDir.getAbsoluteFile();
