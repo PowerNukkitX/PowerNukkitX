@@ -1815,6 +1815,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.offhandInventory.sendContents(this);
 
         this.teleport(respawnPos.getFloorY() == respawnPos.getY() ? respawnPos.add(0, 0.5) : respawnPos.setY(Math.ceil(respawnPos.getY())), TeleportCause.PLAYER_SPAWN);
+        this.despawnFromAll();
         this.spawnToAll();
         this.scheduleUpdate();
     }
@@ -6104,7 +6105,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (health < 1) {
             health = 0;
         }
-
         super.setHealth(health);
         //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
         Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH).setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
