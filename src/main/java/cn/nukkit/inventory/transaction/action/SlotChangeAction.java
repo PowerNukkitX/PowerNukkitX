@@ -73,7 +73,8 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public void onExecuteSuccess(Player source) {
         Set<Player> viewers = new HashSet<>(this.inventory.getViewers());
-        if (source.getLoginChainData().getDeviceOS() == 7) {
+        //todo hack implement to fix issue#732 and issue#692
+        if (source.getLoginChainData().getDeviceOS() == 7) {//win10
             this.inventory.sendSlot(this.inventorySlot, viewers);
         } else {
             viewers.remove(source);
