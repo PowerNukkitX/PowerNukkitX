@@ -44,10 +44,11 @@ public class CraftingManager {
             return -1;
         } else return Integer.compare(i1.getCount(), i2.getCount());
     };
+
+    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     /**
      * 缓存着配方数据包
      */
-    //<editor-fold desc="deprecated fields" defaultstate="collapsed">
     @Deprecated
     @DeprecationDetails(by = "PowerNukkit", since = "FUTURE", reason = "Direct access to fields are not future-proof.",
             replaceWith = "getPacket()")
@@ -302,7 +303,6 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
     public static UUID getMultiItemHash(Collection<Item> items) {
         BinaryStream stream = new BinaryStream();
         for (Item item : items) {
@@ -366,7 +366,6 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly("Public only in PowerNukkit")
-    @Since("FUTURE")
     public static int getPotionHash(Item ingredient, Item potion) {
         int ingredientId = ingredient.getId();
         int potionId = potion.getId();
@@ -381,7 +380,6 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public static int getContainerHash(@Nonnull Item ingredient, @Nonnull Item container) {
         int ingredientId = ingredient.getId();
         int containerId = container.getId();
@@ -394,74 +392,62 @@ public class CraftingManager {
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<Map<UUID, ShapedRecipe>> getShapedRecipeMap() {
         return shapedRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<FurnaceRecipe> getFurnaceRecipesMap() {
         return furnaceRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<BlastFurnaceRecipe> getBlastFurnaceRecipeMap() {
         return blastFurnaceRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<SmokerRecipe> getSmokerRecipeMap() {
         return smokerRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<CampfireRecipe> getCampfireRecipeMap() {
         return campfireRecipeMap;
     }
 
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Map<UUID, MultiRecipe> getMultiRecipeMap() {
         return multiRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<BrewingRecipe> getBrewingRecipeMap() {
         return brewingRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<ContainerRecipe> getContainerRecipeMap() {
         return containerRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<StonecutterRecipe> getStonecutterRecipeMap() {
         return stonecutterRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     protected Int2ObjectMap<Map<UUID, ShapelessRecipe>> getShapelessRecipeMap() {
         return shapelessRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<Map<UUID, CartographyRecipe>> getCartographyRecipeMap() {
         return cartographyRecipeMap;
     }
 
     @PowerNukkitOnly
-    @Since("FUTURE")
     public Int2ObjectMap<Map<UUID, SmithingRecipe>> getSmithingRecipeMap() {
         return smithingRecipeMap;
     }
