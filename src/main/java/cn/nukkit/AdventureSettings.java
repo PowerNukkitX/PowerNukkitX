@@ -1,7 +1,6 @@
 package cn.nukkit;
 
 import cn.nukkit.api.PowerNukkitDifference;
-import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -56,7 +55,12 @@ public class AdventureSettings implements Cloneable {
     private CommandPermission commandPermission;
     private Player player;
 
-    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Add nbt parameter")
+    public AdventureSettings(Player player) {
+        this.player = player;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
