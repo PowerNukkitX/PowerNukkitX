@@ -92,6 +92,7 @@ public class PlayerListPacket extends DataPacket {
             this.entityId = entityId;
             this.name = name;
             this.skin = skin;
+            this.trustedSkin = skin.isTrusted();
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
     }
