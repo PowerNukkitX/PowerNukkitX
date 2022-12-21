@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
@@ -76,7 +77,7 @@ public class PlayerListPacket extends DataPacket {
         public boolean isHost;
         @PowerNukkitXOnly
         @Since("1.19.50-r3")
-        public boolean trustedSkin;
+        public boolean trustedSkin = Server.getInstance().isForceSkinTrusted();
 
         public Entry(UUID uuid) {
             this.uuid = uuid;
