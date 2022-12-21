@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.entity.data.Skin;
@@ -47,7 +48,7 @@ public class PlayerListPacket extends DataPacket {
             }
 
             for (Entry entry : this.entries) {
-                this.putBoolean(entry.trustedSkin);
+                this.putBoolean(entry.trustedSkin || Server.getInstance().isForceSkinTrusted());
             }
         } else {
             for (Entry entry : this.entries) {
@@ -91,6 +92,7 @@ public class PlayerListPacket extends DataPacket {
             this.entityId = entityId;
             this.name = name;
             this.skin = skin;
+            this.trustedSkin = skin.isTrusted();
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
     }
