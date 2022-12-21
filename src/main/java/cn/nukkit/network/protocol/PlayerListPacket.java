@@ -48,7 +48,7 @@ public class PlayerListPacket extends DataPacket {
             }
 
             for (Entry entry : this.entries) {
-                this.putBoolean(entry.trustedSkin);
+                this.putBoolean(entry.trustedSkin || Server.getInstance().isForceSkinTrusted());
             }
         } else {
             for (Entry entry : this.entries) {
@@ -77,7 +77,7 @@ public class PlayerListPacket extends DataPacket {
         public boolean isHost;
         @PowerNukkitXOnly
         @Since("1.19.50-r3")
-        public boolean trustedSkin = Server.getInstance().isForceSkinTrusted();
+        public boolean trustedSkin;
 
         public Entry(UUID uuid) {
             this.uuid = uuid;
