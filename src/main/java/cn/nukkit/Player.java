@@ -429,24 +429,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * Returns a client-friendly gamemode of the specified real gamemode
-     * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
-     * <p>
-     * TODO: remove this when Spectator Mode gets added properly to MCPE
-     */
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r3", reason = "MCBE now has spectator mode")
-    private static int getClientFriendlyGamemode(int gamemode) {
-        gamemode &= 0x03;
-        if (gamemode == Player.SPECTATOR) {
-            return Player.CREATIVE;
-        }
-        return gamemode;
-    }
-
-    /**
      * 将服务端侧游戏模式转换为网络包适用的游戏模式ID
      * 此方法是为了解决NK观察者模式ID为3而原版ID为6的问题
+     *
      * @param gamemode 服务端侧游戏模式
      * @return 网络层游戏模式ID
      */
@@ -1508,22 +1493,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int expLevel = nbt.getInt("expLevel");
         this.setExperience(exp, expLevel);
 
-        this.adventureSettings = new AdventureSettings(this, nbt);/*
-                .set(Type.WORLD_IMMUTABLE, isAdventure() || isSpectator())
-                .set(Type.WORLD_BUILDER, !isAdventure() && !isSpectator())
-                .set(Type.AUTO_JUMP, true)
-                .set(Type.ALLOW_FLIGHT, isCreative() || isSpectator())
-                .set(Type.NO_CLIP, isSpectator())
-                .set(Type.FLYING, isSpectator());*/
-
-        var gm = nbt.getInt("playerGameType")/* & 0x03*/;
-        if (this.server.getForceGamemode()) {
-            gm = this.server.getGamemode();
-            nbt.putInt("playerGameType", gm);
-        }
-        //Send to other
-        //TODO: HACK! 玩家重进时强制由旁观者模式修改为创造模式以避免下落bug
-        this.setGamemode(gm != 3 ? gm : 1);
+        this.adventureSettings = new AdventureSettings(this, nbt);
 
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null) {
@@ -1647,10 +1617,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
         else worldSpawnPoint = spawnPosition;
 
+        var gm = this.namedTag.getInt("playerGameType")/* & 0x03*/;
+        if (this.server.getForceGamemode()) {
+            gm = this.server.getGamemode();
+            this.namedTag.putInt("playerGameType", gm);
+        }
+        if (gm != 3) this.setGamemode(gm);
+        else
+            this.server.getScheduler().scheduleDelayedTask(null, () -> this.setGamemode(3), 20);//延迟20tick设置观察者模式，解决观察者模式疾跑速度不正确的问题。只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
         startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
+        startGamePacket.playerGamemode = toNetworkGamemode(gm);
         startGamePacket.x = (float) this.x;
         startGamePacket.y = (float) this.y;
         startGamePacket.z = (float) this.z;
@@ -1714,11 +1692,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendAttributes();
 
         this.sendPotionEffects(this);
-
-//        if (this.isSpectator()) {
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
-//        }
 
         this.sendData(this);
 
@@ -2158,7 +2131,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawned && player.spawned && this.isAlive() && player.getLevel() == this.level && player.canSee(this)/* && !this.isSpectator()*/) {
             super.spawnTo(player);
 
-            if (this.isSpectator()){
+            if (this.isSpectator()) {
                 //发送旁观者的游戏模式给对方，使得对方客户端正确渲染玩家实体
                 var pk = new UpdatePlayerGameTypePacket();
                 pk.gameType = GameType.SPECTATOR;
@@ -2786,14 +2759,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.setGamemode(gamemode, false, null);
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r3", reason = "Parameter clientSide is useless now")
+    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Parameter clientSide is useless now")
     public boolean setGamemode(int gamemode, boolean clientSide) {
         return this.setGamemode(gamemode, clientSide, null);
     }
 
-    @Deprecated
-    @DeprecationDetails(since = "1.19.50-r3", reason = "Parameter clientSide is useless now")
+    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Parameter clientSide is useless now")
     public boolean setGamemode(int gamemode, boolean clientSide, AdventureSettings newSettings) {
         if (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode) {
             return false;
@@ -2822,22 +2793,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.keepMovement = true;
             this.onGround = false;
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
-//            this.despawnFromAll();
         } else {
             this.keepMovement = false;
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-//            this.spawnToAll();
         }
 
         //这里需要判空下，因为玩家进服时this.namedTag暂时为空
         if (this.namedTag != null)
             this.namedTag.putInt("playerGameType", this.gamemode);
-
-//        if (!clientSide) {
-//        SetPlayerGameTypePacket pk = new SetPlayerGameTypePacket();
-//        pk.gamemode = toNetworkGamemode(gamemode);
-//        this.dataPacket(pk);
-//        }
 
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
@@ -2846,31 +2809,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.entityId = this.getId();
         Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
 
-//        if (this.isSpectator()) {
-//            this.teleport(this, null);
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
-//
-//            /*InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-//            inventoryContentPacket.inventoryId = InventoryContentPacket.SPECIAL_CREATIVE;
-//            this.dataPacket(inventoryContentPacket);*/
-//        } else {
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, false);
-//            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-//            /*InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-//            inventoryContentPacket.inventoryId = InventoryContentPacket.SPECIAL_CREATIVE;
-//            inventoryContentPacket.slots = Item.getCreativeItems().toArray(new Item[0]);
-//            this.dataPacket(inventoryContentPacket);*/
-//        }
-
         this.resetFallDistance();
 
-//        this.inventory.sendContents(this);
-//        this.inventory.sendHeldItem(this.hasSpawned.values());
-//        this.offhandInventory.sendContents(this);
-//        this.offhandInventory.sendContents(this.getViewers().values());
-//
-//        this.inventory.sendCreativeContents();
         return true;
     }
 
@@ -4491,17 +4431,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET:
                     SetPlayerGameTypePacket setPlayerGameTypePacket = (SetPlayerGameTypePacket) packet;
                     if (setPlayerGameTypePacket.gamemode != this.gamemode && this.hasPermission("nukkit.command.gamemode")) {
-//                        if (!this.hasPermission("nukkit.command.gamemode")) {
-//                            SetPlayerGameTypePacket setPlayerGameTypePacket1 = new SetPlayerGameTypePacket();
-//                            setPlayerGameTypePacket1.gamemode = this.gamemode & 0x01;
-//                            this.dataPacket(setPlayerGameTypePacket1);
-//                            this.getAdventureSettings().update();
-//                            break;
-//                        }
                         this.setGamemode(switch (setPlayerGameTypePacket.gamemode) {
-                            case 0,1,2 -> setPlayerGameTypePacket.gamemode;
+                            case 0, 1, 2 -> setPlayerGameTypePacket.gamemode;
                             case 6 -> 3;
-                            default -> throw new IllegalStateException("Unexpected value: " + setPlayerGameTypePacket.gamemode);
+                            default ->
+                                    throw new IllegalStateException("Unexpected value: " + setPlayerGameTypePacket.gamemode);
                         });
                         Command.broadcastCommandMessage(this, new TranslationContainer("commands.gamemode.success.self", Server.getGamemodeString(this.gamemode)));
                     }
