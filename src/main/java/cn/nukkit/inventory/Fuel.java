@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
 
@@ -9,6 +10,7 @@ import java.util.TreeMap;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@PowerNukkitXDifference
 public abstract class Fuel {
     public static final Map<Integer, Short> duration = new TreeMap<>();
 
