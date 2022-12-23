@@ -1617,16 +1617,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
         else worldSpawnPoint = spawnPosition;
 
-        var gm = this.namedTag.getInt("playerGameType");
+        this.gamemode = this.namedTag.getInt("playerGameType");
         if (this.server.getForceGamemode()) {
-            gm = this.server.getGamemode();
-            this.namedTag.putInt("playerGameType", gm);
+            this.gamemode = this.server.getGamemode();
+            this.namedTag.putInt("playerGameType", this.gamemode);
         }
 
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
         startGamePacket.entityRuntimeId = this.id;
-        startGamePacket.playerGamemode = toNetworkGamemode(gm);
+        startGamePacket.playerGamemode = toNetworkGamemode(this.gamemode);
         startGamePacket.x = (float) this.x;
         startGamePacket.y = (float) this.y;
         startGamePacket.z = (float) this.z;
@@ -1728,13 +1728,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     protected void onPlayerLocallyInitialized() {
-        var gm = this.namedTag.getInt("playerGameType");
         /**
          * 我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
          * 只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
          */
-        //                                            强制更新游戏模式以确保客户端会收到模式更新包
-        this.setGamemode(gm, false, null, true);
+        //                                                     强制更新游戏模式以确保客户端会收到模式更新包
+        this.setGamemode(this.gamemode, false, null, true);
     }
 
     @PowerNukkitOnly
