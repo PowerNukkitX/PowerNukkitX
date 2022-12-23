@@ -2,15 +2,26 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.Utils;
 
 /**
  * @author PetteriM1
  */
-public class EntityTropicalFish extends EntitySwimmingAnimal {
+public class EntityTropicalFish extends EntityFish {
 
     public static final int NETWORK_ID = 111;
+    private static final int[] VARIANTS = {0, 1};
+    private static final int[] MARK_VARIANTS = {0, 1, 2, 3, 4, 5};
+    private static final int[] COLOR = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    private static final int[] COLOR2 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    private int variant;
+    private int mark_variant;
+    private int color;
+    private int color2;
 
     public EntityTropicalFish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -42,5 +53,54 @@ public class EntityTropicalFish extends EntitySwimmingAnimal {
     public void initEntity() {
         this.setMaxHealth(6);
         super.initEntity();
+        if (this.namedTag.contains("Variant")) {
+            this.variant = this.namedTag.getInt("Variant");
+        } else {
+            this.variant = getRandomVariant();
+        }
+        if (this.namedTag.contains("Mark_Variant")) {
+            this.mark_variant = this.namedTag.getInt("Mark_Variant");
+        } else {
+            this.mark_variant = getRandomMarkVariant();
+        }
+        if (this.namedTag.contains("Color")) {
+            this.color = this.namedTag.getInt("Color");
+        } else {
+            this.color = getRandomColor();
+        }
+        if (this.namedTag.contains("Color2")) {
+            this.color2 = this.namedTag.getInt("Color2");
+        } else {
+            this.color2 = getRandomColor2();
+        }
+        this.setDataProperty(new IntEntityData(DATA_MARK_VARIANT, this.mark_variant));
+        this.setDataProperty(new IntEntityData(DATA_VARIANT, this.variant));
+        this.setDataProperty(new IntEntityData(DATA_COLOR, this.color));
+        this.setDataProperty(new IntEntityData(DATA_COLOR_2, this.color2));
     }
+
+    private int getRandomMarkVariant() {
+        return MARK_VARIANTS[Utils.rand(0, MARK_VARIANTS.length - 1)];
+    }
+
+    private int getRandomColor2() {
+        return COLOR2[Utils.rand(0, COLOR2.length - 1)];
+    }
+
+    private int getRandomColor() {
+        return COLOR[Utils.rand(0, COLOR.length - 1)];
+    }
+
+    private int getRandomVariant() {
+        return VARIANTS[Utils.rand(0, VARIANTS.length - 1)];
+    }
+
+    @Override
+    public Item[] getDrops() {
+        if (Utils.rand(0, 3) == 1) {
+            return new Item[]{Item.get(Item.CLOWNFISH), Item.get(Item.BONE, 0, Utils.rand(1, 2))};
+        }
+        return new Item[]{Item.get(Item.CLOWNFISH)};
+    }
+
 }
