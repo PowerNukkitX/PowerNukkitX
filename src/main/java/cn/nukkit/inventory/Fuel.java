@@ -10,7 +10,7 @@ import java.util.TreeMap;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
-@PowerNukkitXDifference
+@PowerNukkitXDifference(info = "Add blocks and items.", since = "1.19.50-r3")
 public abstract class Fuel {
     public static final Map<Integer, Short> duration = new TreeMap<>();
 
