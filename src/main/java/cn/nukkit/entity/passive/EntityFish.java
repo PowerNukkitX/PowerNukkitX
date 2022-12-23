@@ -38,8 +38,9 @@ public abstract class EntityFish extends EntitySwimmingAnimal{
                     Set.of(
                             new Behavior((entity) -> {
                                 //刷新随机播放音效
-                                if (!this.isInsideOfWater())
+                                if (!this.isInsideOfWater()) {
                                     this.getLevel().addSound(this, Sound.MOB_FISH_FLOP);
+                                }
                                 return false;
                             }, (entity) -> true, 1, 1, 20)
                     ),
