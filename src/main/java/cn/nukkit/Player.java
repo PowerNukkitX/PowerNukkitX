@@ -2803,7 +2803,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
             newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
             newSettings.set(Type.NO_CLIP, gamemode == SPECTATOR);
-            newSettings.set(Type.FLYING, gamemode == SPECTATOR);
+            newSettings.set(Type.FLYING, switch (gamemode) {
+                case SURVIVAL -> false;
+                case CREATIVE -> newSettings.get(Type.FLYING);
+                case ADVENTURE -> false;
+                case SPECTATOR -> true;
+                default -> throw new IllegalStateException("Unexpected game mode: " + gamemode);
+            });
         }
 
         PlayerGameModeChangeEvent ev;
