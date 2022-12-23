@@ -44,19 +44,18 @@ public class SpaceRandomRoamExecutor implements EntityControl, IBehaviorExecutor
         currentTargetCalTick++;
         durationTick++;
         if (entity.isEnablePitch()) entity.setEnablePitch(false);
-        if (entity.isInsideOfWater()) {
-            if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
-                Vector3 target = next(entity);
-                if (entity.getMovementSpeed() != speed)
-                    entity.setMovementSpeed(speed);
-                //更新寻路target
-                setRouteTarget(entity, target);
-                //更新视线target
-                setLookTarget(entity, target);
-                currentTargetCalTick = 0;
-                entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
-            }
+        if (currentTargetCalTick >= frequency || (calNextTargetImmediately && needUpdateTarget(entity))) {
+            Vector3 target = next(entity);
+            if (entity.getMovementSpeed() != speed)
+                entity.setMovementSpeed(speed);
+            //更新寻路target
+            setRouteTarget(entity, target);
+            //更新视线target
+            setLookTarget(entity, target);
+            currentTargetCalTick = 0;
+            entity.getBehaviorGroup().setForceUpdateRoute(calNextTargetImmediately);
         }
+
         if (durationTick <= runningTime || runningTime == -1)
             return true;
         else {
