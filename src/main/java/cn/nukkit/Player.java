@@ -1617,14 +1617,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
         else worldSpawnPoint = spawnPosition;
 
-        var gm = this.namedTag.getInt("playerGameType")/* & 0x03*/;
+        var gm = this.namedTag.getInt("playerGameType");
         if (this.server.getForceGamemode()) {
             gm = this.server.getGamemode();
             this.namedTag.putInt("playerGameType", gm);
         }
-        if (gm != 3) this.setGamemode(gm);
-        else
-            this.server.getScheduler().scheduleDelayedTask(null, () -> this.setGamemode(3), 20);//延迟20tick设置观察者模式，解决观察者模式疾跑速度不正确的问题。只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
+
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
         startGamePacket.entityRuntimeId = this.id;
@@ -1636,7 +1634,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.pitch = (float) this.pitch;
         startGamePacket.seed = -1L;
         startGamePacket.dimension = (byte) (this.level.getDimension() & 0xff);
-        startGamePacket.worldGamemode = toNetworkGamemode(this.gamemode);
+        startGamePacket.worldGamemode = toNetworkGamemode(getServer().getDefaultGamemode());
         startGamePacket.difficulty = this.server.getDifficulty();
         startGamePacket.spawnX = worldSpawnPoint.getFloorX();
         startGamePacket.spawnY = worldSpawnPoint.getFloorY();
@@ -1681,7 +1679,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(new BiomeDefinitionListPacket());
         this.dataPacket(new AvailableEntityIdentifiersPacket());
         this.inventory.sendCreativeContents();
-        this.adventureSettings.update();
+        //已在onPlayerLocallyInitialized()中调用，无需重复更新
+        //this.adventureSettings.update();
+
         //发送玩家权限列表
         server.getOnlinePlayers().values().forEach(player -> {
             if (player != this) {
@@ -1720,6 +1720,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.server.addOnlinePlayer(this);
         this.server.onPlayerCompleteLoginSequence(this);
+    }
+
+    /**
+     * 玩家客户端初始化完成后调用
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    protected void onPlayerLocallyInitialized() {
+        var gm = this.namedTag.getInt("playerGameType");
+        /**
+         * 我们在玩家客户端初始化后才发送游戏模式，以解决观察者模式疾跑速度不正确的问题
+         * 只有在玩家客户端进入游戏显示后再设置观察者模式，疾跑速度才正常
+         */
+        //                                            强制更新游戏模式以确保客户端会收到模式更新包
+        this.setGamemode(gm, false, null, true);
     }
 
     @PowerNukkitOnly
@@ -2759,14 +2774,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.setGamemode(gamemode, false, null);
     }
 
-    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Parameter clientSide is useless now")
-    public boolean setGamemode(int gamemode, boolean clientSide) {
-        return this.setGamemode(gamemode, clientSide, null);
+    public boolean setGamemode(int gamemode, boolean serverSide) {
+        return this.setGamemode(gamemode, serverSide, null);
     }
 
-    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Parameter clientSide is useless now")
-    public boolean setGamemode(int gamemode, boolean clientSide, AdventureSettings newSettings) {
-        if (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode) {
+    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings) {
+        return this.setGamemode(gamemode, serverSide, newSettings, false);
+    }
+
+    /**
+     *
+     * @param gamemode 要设置的玩家游戏模式
+     * @param serverSide 是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
+     * @param newSettings 新的AdventureSettings
+     * @param forceUpdate 是否强制更新。若为true，将取消对形参'gamemode'的检查
+     * @return
+     */
+    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Implement the new spectator game mode")
+    public boolean setGamemode(int gamemode, boolean serverSide, AdventureSettings newSettings, boolean forceUpdate) {
+        if (!forceUpdate && (gamemode < 0 || gamemode > 3 || this.gamemode == gamemode)) {
             return false;
         }
 
@@ -2798,16 +2824,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
         }
 
-        //这里需要判空下，因为玩家进服时this.namedTag暂时为空
-        if (this.namedTag != null)
-            this.namedTag.putInt("playerGameType", this.gamemode);
+        this.namedTag.putInt("playerGameType", this.gamemode);
 
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
-        var pk = new UpdatePlayerGameTypePacket();
-        pk.gameType = GameType.from(toNetworkGamemode(gamemode));
-        pk.entityId = this.getId();
-        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        if (!serverSide) {
+            var pk = new UpdatePlayerGameTypePacket();
+            pk.gameType = GameType.from(toNetworkGamemode(gamemode));
+            pk.entityId = this.getId();
+            //我们需要给所有玩家发送此包，来使玩家客户端能正确渲染玩家实体
+            //eg: 观察者模式玩家对于gm 0 1 2的玩家不可见
+            Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
+        }
 
         this.resetFallDistance();
 
@@ -3454,6 +3482,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.locallyInitialized = true;
                     PlayerLocallyInitializedEvent locallyInitializedEvent = new PlayerLocallyInitializedEvent(this);
                     this.server.getPluginManager().callEvent(locallyInitializedEvent);
+                    this.onPlayerLocallyInitialized();
                     break;
                 case ProtocolInfo.PLAYER_SKIN_PACKET:
                     PlayerSkinPacket skinPacket = (PlayerSkinPacket) packet;
