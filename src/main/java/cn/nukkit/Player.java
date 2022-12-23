@@ -719,7 +719,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(setTimePacket);
 
         Location pos;
-        if (this.server.isSafeSpawn()) {
+        //                                      生存或冒险模式
+        if (this.server.isSafeSpawn() && (this.gamemode & 0x01) == 0) {
             pos = this.level.getSafeSpawn(this).getLocation();
             pos.yaw = this.yaw;
             pos.pitch = this.pitch;

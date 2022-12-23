@@ -17,6 +17,7 @@ import cn.nukkit.network.protocol.types.PlayerPermission;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -58,6 +59,7 @@ public class AdventureSettings implements Cloneable {
 
     public AdventureSettings(Player player) {
         this.player = player;
+        init(null);
     }
 
     @PowerNukkitXOnly
@@ -76,8 +78,8 @@ public class AdventureSettings implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
-    public void init(CompoundTag nbt) {
-        if (!nbt.contains(KEY_ABILITIES)) {
+    public void init(@Nullable CompoundTag nbt) {
+        if (nbt != null && !nbt.contains(KEY_ABILITIES)) {
             set(Type.WORLD_IMMUTABLE, player.isAdventure() || player.isSpectator());
             set(Type.WORLD_BUILDER, !player.isAdventure() && !player.isSpectator());
             set(Type.AUTO_JUMP, true);
