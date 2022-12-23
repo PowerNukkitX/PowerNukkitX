@@ -44,7 +44,7 @@ public abstract class EntityFish extends EntitySwimmingAnimal{
                             }, (entity) -> true, 1, 1, 20)
                     ),
                     Set.of(
-                            new Behavior(new SpaceRandomRoamExecutor(0.2f, 12, 150, false, -1, true, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
+                            new Behavior(new SpaceRandomRoamExecutor(0.2f, 12, 150, false, -1, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
                     ),
                     Set.of(),
                     Set.of(new SpaceMoveController(), new LookController(true, true)),
