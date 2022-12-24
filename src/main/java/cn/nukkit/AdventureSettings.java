@@ -79,7 +79,7 @@ public class AdventureSettings implements Cloneable {
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
     public void init(@Nullable CompoundTag nbt) {
-        if (nbt != null && !nbt.contains(KEY_ABILITIES)) {
+        if (nbt == null || !nbt.contains(KEY_ABILITIES)) {
             set(Type.WORLD_IMMUTABLE, player.isAdventure() || player.isSpectator());
             set(Type.WORLD_BUILDER, !player.isAdventure() && !player.isSpectator());
             set(Type.AUTO_JUMP, true);
