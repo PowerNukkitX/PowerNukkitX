@@ -100,13 +100,4 @@ public class TerraGeneratorWrapper extends Generator {
     public boolean shouldGenerateStructures() {
         return true;
     }
-
-    /**
-     * Terra底层自带fjp线程池进行多核并行区块生成，所以说这边我们不需要使用fjp
-     */
-    @Since("1.19.50-r2")
-    @Override
-    public void handleAsyncChunkPopTask(AsyncTask task) {
-        Server.getInstance().getScheduler().scheduleAsyncTask(null, task);
-    }
 }

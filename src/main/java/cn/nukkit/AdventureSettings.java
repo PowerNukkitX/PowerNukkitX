@@ -17,6 +17,7 @@ import cn.nukkit.network.protocol.types.PlayerPermission;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -56,7 +57,13 @@ public class AdventureSettings implements Cloneable {
     private CommandPermission commandPermission;
     private Player player;
 
-    @PowerNukkitXDifference(since = "1.19.50-r3", info = "Add nbt parameter")
+    public AdventureSettings(Player player) {
+        this.player = player;
+        init(null);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
     public AdventureSettings(Player player, CompoundTag nbt) {
         this.player = player;
         init(nbt);
@@ -71,8 +78,8 @@ public class AdventureSettings implements Cloneable {
 
     @PowerNukkitXOnly
     @Since("1.19.50-r3")
-    public void init(CompoundTag nbt) {
-        if (!nbt.contains(KEY_ABILITIES)) {
+    public void init(@Nullable CompoundTag nbt) {
+        if (nbt != null && !nbt.contains(KEY_ABILITIES)) {
             set(Type.WORLD_IMMUTABLE, player.isAdventure() || player.isSpectator());
             set(Type.WORLD_BUILDER, !player.isAdventure() && !player.isSpectator());
             set(Type.AUTO_JUMP, true);
@@ -95,6 +102,7 @@ public class AdventureSettings implements Cloneable {
     public AdventureSettings clone(Player newPlayer) {
         try {
             AdventureSettings settings = (AdventureSettings) super.clone();
+            settings.values.putAll(this.values);
             settings.player = newPlayer;
             settings.playerPermission = playerPermission;
             settings.commandPermission = commandPermission;
@@ -132,6 +140,7 @@ public class AdventureSettings implements Cloneable {
     }
 
     @PowerNukkitDifference(info = "Players in spectator mode will be flagged as member even if they are OP due to a client-side limitation", since = "1.3.1.2-PN")
+    @PowerNukkitXDifference(info = "updateAdventureSettingsPacket now will be sent to all players")
     public void update() {
         //向所有玩家发送以使他们能看到彼此的权限
         //Permission to send to all players so they can see each other
@@ -142,6 +151,8 @@ public class AdventureSettings implements Cloneable {
         this.sendAbilities(players);
         this.updateAdventureSettings();
     }
+
+
 
     /**
      * 当玩家OP身份变动时此方法将被调用
@@ -170,9 +181,7 @@ public class AdventureSettings implements Cloneable {
     public void sendAbilities(Collection<Player> players) {
         UpdateAbilitiesPacket packet = new UpdateAbilitiesPacket();
         packet.entityId = player.getId();
-//        packet.commandPermission = player.isOp() ? CommandPermission.OPERATOR : CommandPermission.NORMAL;
         packet.commandPermission = commandPermission;
-//        packet.playerPermission = player.isOp() && !player.isSpectator() ? PlayerPermission.OPERATOR : PlayerPermission.MEMBER;
         packet.playerPermission = playerPermission;
 
         AbilityLayer layer = new AbilityLayer();
@@ -188,11 +197,6 @@ public class AdventureSettings implements Cloneable {
         if (player.isCreative()) { // Make sure player can interact with creative menu
             layer.getAbilityValues().add(PlayerAbility.INSTABUILD);
         }
-
-//        if (player.isOp()) {
-//            layer.getAbilityValues().add(PlayerAbility.OPERATOR_COMMANDS);
-//            layer.getAbilityValues().add(PlayerAbility.TELEPORT);
-//        }
 
         // Because we send speed
         layer.getAbilityValues().add(PlayerAbility.WALK_SPEED);
