@@ -136,15 +136,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     public static final Player[] EMPTY_ARRAY = new Player[0];
-
-    private static final int NO_SHIELD_DELAY = 10;
-
     public static final int SURVIVAL = 0;
     public static final int CREATIVE = 1;
     public static final int ADVENTURE = 2;
     public static final int SPECTATOR = 3;
     public static final int VIEW = SPECTATOR;
-
     public static final int SURVIVAL_SLOTS = 36;
     public static final int CREATIVE_SLOTS = 112;
     public static final int CRAFTING_SMALL = 0;
@@ -158,64 +154,56 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final @PowerNukkitOnly int CRAFTING_SMITHING = 1003;
     public static final @PowerNukkitXOnly
     @Since("1.19.21-r1") int TRADE_WINDOW_ID = 500;
-
     public static final float DEFAULT_SPEED = 0.1f;
     public static final float DEFAULT_FLY_SPEED = 0.05f;
     public static final float MAXIMUM_SPEED = 0.5f;
-
     public static final int PERMISSION_CUSTOM = 3;
     public static final int PERMISSION_OPERATOR = 2;
     public static final int PERMISSION_MEMBER = 1;
     public static final int PERMISSION_VISITOR = 0;
-
     public static final int ANVIL_WINDOW_ID = 2;
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
     public static final @PowerNukkitOnly int GRINDSTONE_WINDOW_ID = dynamic(5);
     public static final @Since("1.4.0.0-PN")
     @PowerNukkitOnly int SMITHING_WINDOW_ID = dynamic(6);
-
     @Since("FUTURE")
     protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
-
+    private static final int NO_SHIELD_DELAY = 10;
+    public final HashSet<String> achievements = new HashSet<>();
+    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
     protected final SourceInterface interfaz;
     @Since("1.19.30-r1")
     @PowerNukkitXOnly
     protected final NetworkPlayerSession networkSession;
-
+    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
+    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
+    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
+    protected final InetSocketAddress rawSocketAddress;
+    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
+    protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
+    protected final int chunksPerTick;
+    protected final int spawnThreshold;
+    private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
+    private final AtomicReference<Locale> locale = new AtomicReference<>(null);
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
     @Since("1.4.0.0-PN")
     public boolean locallyInitialized = false;
-    private boolean verified = false;
-    private int unverifiedPackets;
     public int gamemode;
     public long lastBreak;
-    private BlockVector3 lastBreakPosition = new BlockVector3();
-
+    public Vector3 speed = null;
+    public int craftingType = CRAFTING_SMALL;
+    public long creationTime = 0;
+    public Block breakingBlock = null;
+    public int pickedXPOrb = 0;
+    public EntityFishingHook fishing = null;
+    public long lastSkinChange;
     protected int windowCnt = 4;
-
-    protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
-
-    protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
-    private boolean inventoryOpen;
     @Since("1.4.0.0-PN")
     protected int closingWindowId = Integer.MIN_VALUE;
-
     protected int messageCounter = 2;
-
-    private String clientSecret;
-
-    public Vector3 speed = null;
-
-    private final Queue<Vector3> clientMovements = PlatformDependent.newMpscQueue(4);
-
-    public final HashSet<String> achievements = new HashSet<>();
-
-    public int craftingType = CRAFTING_SMALL;
-
     protected PlayerUIInventory playerUIInventory;
     protected CraftingGrid craftingGrid;
     protected CraftingTransaction craftingTransaction;
@@ -232,93 +220,38 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.21-r1")
     protected TradingTransaction tradingTransaction;
-
-    public long creationTime = 0;
-
     protected long randomClientId;
-
     protected Vector3 forceMovement = null;
-
     protected Vector3 teleportPosition = null;
-
     protected boolean connected = true;
-    protected final InetSocketAddress rawSocketAddress;
     protected InetSocketAddress socketAddress;
     protected boolean removeFormat = true;
-
     protected String username;
     protected String iusername;
     protected String displayName;
-
     protected int startAction = -1;
-
     protected Vector3 sleeping = null;
     protected Long clientID = null;
-
-    private int loaderId;
-
-    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
-
     protected int chunkLoadCount = 0;
-    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
     protected int nextChunkOrderRun = 1;
-
-    protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
-
     protected Vector3 newPosition = null;
-
     protected int chunkRadius;
     protected int viewDistance;
-    protected final int chunksPerTick;
-    protected final int spawnThreshold;
-
     protected Position spawnPosition;
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected Position spawnBlockPosition;
-
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
-
-    private int noShieldTicks;
-
     protected AdventureSettings adventureSettings;
-
     protected boolean checkMovement = true;
-
-    private PermissibleBase perm = null;
-
-    private int exp = 0;
-    private int expLevel = 0;
-
     protected PlayerFood foodData = null;
-
-    private Entity killer = null;
-
-    private final AtomicReference<Locale> locale = new AtomicReference<>(null);
-
-    private int hash;
-
-    private String buttonText = "Button";
-
     protected boolean enableClientCommand = true;
-
-    private BlockEnderChest viewingEnderChest = null;
-
     protected int lastEnderPearl = 20;
     protected int lastChorusFruitTeleport = 20;
-
-    private LoginChainData loginChainData;
-    public Block breakingBlock = null;
-    private PlayerBlockActionData lastBlockAction;
-
-    public int pickedXPOrb = 0;
-
     protected int formWindowCount = 0;
     protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
     protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
-
     /**
      * 我们使用google的cache来存储NPC对话框发送信息
      * 原因是发送过去的对话框客户端有几率不响应，在特定情况下我们无法清除这些对话框，这会导致内存泄漏
@@ -327,37 +260,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
     protected Cache<String, FormWindowDialog> dialogWindows = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-
     protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-
-    private AsyncTask preLoginEventTask = null;
     protected boolean shouldLogin = false;
-
-    public EntityFishingHook fishing = null;
-
-    public long lastSkinChange;
-
     protected double lastRightClickTime = 0.0;
     protected Vector3 lastRightClickPos = null;
-
-    private int timeSinceRest;
-
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
     protected int lastPlayerdLevelUpSoundTime = 0;
-
-    private TaskHandler delayedPosTrackingUpdate;
-
-    private float soulSpeedMultiplier = 1;
-    private boolean wasInSoulSandCompatible;
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    private boolean showingCredits;
-
-    @PowerNukkitOnly
-    @Since("1.4.0.0-PN")
-    private boolean hasSeenCredits;
     /**
      * 玩家最后攻击的实体.
      * <p>
@@ -374,7 +283,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @PowerNukkitXOnly
     @Since("1.19.30-r1")
     protected Entity lastBeAttackEntity = null;
-    private boolean foodEnabled = true;
     /**
      * 玩家迷雾设置
      * <p>
@@ -385,6 +293,34 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Getter
     @Setter
     protected List<PlayerFogPacket.Fog> fogStack = new ArrayList<>();
+    private boolean verified = false;
+    private int unverifiedPackets;
+    private BlockVector3 lastBreakPosition = new BlockVector3();
+    private boolean inventoryOpen;
+    private String clientSecret;
+    private final int loaderId;
+    private int noShieldTicks;
+    private PermissibleBase perm = null;
+    private int exp = 0;
+    private int expLevel = 0;
+    private Entity killer = null;
+    private int hash;
+    private String buttonText = "Button";
+    private BlockEnderChest viewingEnderChest = null;
+    private LoginChainData loginChainData;
+    private PlayerBlockActionData lastBlockAction;
+    private AsyncTask preLoginEventTask = null;
+    private int timeSinceRest;
+    private TaskHandler delayedPosTrackingUpdate;
+    private float soulSpeedMultiplier = 1;
+    private boolean wasInSoulSandCompatible;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean showingCredits;
+    @PowerNukkitOnly
+    @Since("1.4.0.0-PN")
+    private boolean hasSeenCredits;
+    private boolean foodEnabled = true;
 
 
     @PowerNukkitOnly
@@ -441,10 +377,41 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return gamemode != SPECTATOR ? gamemode : GameType.SPECTATOR.ordinal();
     }
 
+    public static int calculateRequireExperience(int level) {
+        if (level >= 30) {
+            return 112 + (level - 30) * 9;
+        } else if (level >= 15) {
+            return 37 + (level - 15) * 5;
+        } else {
+            return 7 + level * 2;
+        }
+    }
+
+    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
+        LevelChunkPacket pk = new LevelChunkPacket();
+        pk.chunkX = chunkX;
+        pk.chunkZ = chunkZ;
+        pk.subChunkCount = subChunkCount;
+        pk.data = payload;
+        pk.encode();
+
+        BatchPacket batch = new BatchPacket();
+        byte[][] batchPayload = new byte[2][];
+        byte[] buf = pk.getBuffer();
+        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
+        batchPayload[1] = buf;
+        byte[] data = Binary.appendBytes(batchPayload);
+        try {
+            batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return batch;
+    }
+
     private void logTriedToSetButHadInHand(Item tried, Item had) {
         log.debug("Tried to set item {} but {} had item {} in their hand slot", tried.getId(), this.username, had.getId());
     }
-
 
     private EntityInteractable getEntityAtPosition(Entity[] nearbyEntities, int x, int y, int z) {
         for (Entity nearestEntity : nearbyEntities) {
@@ -2103,14 +2070,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Deprecated
-    public void setAllowFlight(boolean value) {
-        this.getAdventureSettings().set(Type.ALLOW_FLIGHT, value);
-        this.getAdventureSettings().update();
+    public boolean getAllowFlight() {
+        return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
     }
 
     @Deprecated
-    public boolean getAllowFlight() {
-        return this.getAdventureSettings().get(Type.ALLOW_FLIGHT);
+    public void setAllowFlight(boolean value) {
+        this.getAdventureSettings().set(Type.ALLOW_FLIGHT, value);
+        this.getAdventureSettings().update();
     }
 
     public void setAllowModifyWorld(boolean value) {
@@ -2166,12 +2133,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return removeFormat;
     }
 
-    public void setRemoveFormat() {
-        this.setRemoveFormat(true);
-    }
-
     public void setRemoveFormat(boolean remove) {
         this.removeFormat = remove;
+    }
+
+    public void setRemoveFormat() {
+        this.setRemoveFormat(true);
     }
 
     public boolean canSee(Player player) {
@@ -2477,6 +2444,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
+    public void setSpawn(@Nullable Vector3 pos) {
+        if (pos != null) {
+            Level level;
+            if (!(pos instanceof Position)) {
+                level = this.level;
+            } else {
+                level = ((Position) pos).getLevel();
+            }
+            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
+            this.spawnBlockPosition = null;
+            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
+            pk.x = (int) this.spawnPosition.x;
+            pk.y = (int) this.spawnPosition.y;
+            pk.z = (int) this.spawnPosition.z;
+            pk.dimension = this.spawnPosition.level.getDimension();
+            this.dataPacket(pk);
+        } else {
+            this.spawnPosition = null;
+        }
+    }
+
     /**
      * The block that holds the player respawn position. May be null when unknown.
      * <p>
@@ -2562,7 +2552,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
     }
-
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
@@ -2698,29 +2687,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    @PowerNukkitDifference(info = "pos can be null now and if it is null,the player's spawn will use the level's default spawn")
-    public void setSpawn(@Nullable Vector3 pos) {
-        if (pos != null) {
-            Level level;
-            if (!(pos instanceof Position)) {
-                level = this.level;
-            } else {
-                level = ((Position) pos).getLevel();
-            }
-            this.spawnPosition = new Position(pos.x, pos.y, pos.z, level);
-            this.spawnBlockPosition = null;
-            SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
-            pk.spawnType = SetSpawnPositionPacket.TYPE_PLAYER_SPAWN;
-            pk.x = (int) this.spawnPosition.x;
-            pk.y = (int) this.spawnPosition.y;
-            pk.z = (int) this.spawnPosition.z;
-            pk.dimension = this.spawnPosition.level.getDimension();
-            this.dataPacket(pk);
-        } else {
-            this.spawnPosition = null;
-        }
-    }
-
     public void stopSleep() {
         if (this.sleeping != null) {
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
@@ -2784,9 +2750,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     *
-     * @param gamemode 要设置的玩家游戏模式
-     * @param serverSide 是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
+     * @param gamemode    要设置的玩家游戏模式
+     * @param serverSide  是否只更新服务端侧玩家游戏模式。若为true，则不会向客户端发送游戏模式更新包
      * @param newSettings 新的AdventureSettings
      * @param forceUpdate 是否强制更新。若为true，将取消对形参'gamemode'的检查
      * @return
@@ -3195,7 +3160,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return entity;
     }
 
-
     public void checkNetwork() {
         if (!this.isOnline()) {
             return;
@@ -3224,7 +3188,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         double dot1 = dV.dot(new Vector2(pos.x, pos.z));
         return (dot1 - dot) >= -maxDiff;
     }
-
 
     public void handleDataPacket(DataPacket packet) {
         if (!connected) {
@@ -3846,7 +3809,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Vector3 pos = new Vector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z);
                     BlockFace face = BlockFace.fromIndex(playerActionPacket.face);
 
-                    actionswitch:
                     switch (playerActionPacket.action) {
                         case PlayerActionPacket.ACTION_START_BREAK:
                             this.onBlockBreakStart(pos, face);
@@ -4330,8 +4292,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (this.isOp() && this.isCreative()) {
                         if (cmdpk.isBlock) {
                             BlockEntity blockEntity = this.level.getBlockEntity(new Vector3(cmdpk.x, cmdpk.y, cmdpk.z));
-                            if (blockEntity instanceof BlockEntityCommandBlock) {
-                                BlockEntityCommandBlock commandBlock = (BlockEntityCommandBlock) blockEntity;
+                            if (blockEntity instanceof BlockEntityCommandBlock commandBlock) {
                                 Block cmdBlock = commandBlock.getLevelBlock();
 
                                 //change commandblock type
@@ -4501,8 +4462,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     } else {
                         BlockEntity blockEntityLectern = this.level.getBlockEntity(this.temporalVector);
-                        if (blockEntityLectern instanceof BlockEntityLectern) {
-                            BlockEntityLectern lectern = (BlockEntityLectern) blockEntityLectern;
+                        if (blockEntityLectern instanceof BlockEntityLectern lectern) {
                             LecternPageChangeEvent lecternPageChangeEvent = new LecternPageChangeEvent(this, lectern, lecternUpdatePacket.page);
                             this.server.getPluginManager().callEvent(lecternPageChangeEvent);
                             if (!lecternPageChangeEvent.isCancelled()) {
@@ -4536,8 +4496,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (mapItem == null) {
                         for (BlockEntity be : this.level.getBlockEntities().values()) {
-                            if (be instanceof BlockEntityItemFrame) {
-                                BlockEntityItemFrame itemFrame1 = (BlockEntityItemFrame) be;
+                            if (be instanceof BlockEntityItemFrame itemFrame1) {
 
                                 if (itemFrame1.getItem() instanceof ItemMap && ((ItemMap) itemFrame1.getItem()).getMapId() == pk.mapId) {
                                     ((ItemMap) itemFrame1.getItem()).sendImage(this);
@@ -4853,7 +4812,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             return;
                         } else {
-                            log.debug("Got unexpected normal inventory action with incomplete repair item transaction from " + this.getName() + ", refusing to execute repair item " + transactionPacket.toString());
+                            log.debug("Got unexpected normal inventory action with incomplete repair item transaction from " + this.getName() + ", refusing to execute repair item " + transactionPacket);
                             this.removeAllWindows(false);
                             this.sendAllInventories();
                             this.repairItemTransaction = null;
@@ -5490,6 +5449,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
+    public int getViewDistance() {
+        return this.chunkRadius;
+    }
+
     public void setViewDistance(int distance) {
         this.chunkRadius = distance;
 
@@ -5497,10 +5460,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.radius = distance;
 
         this.dataPacket(pk);
-    }
-
-    public int getViewDistance() {
-        return this.chunkRadius;
     }
 
     @Override
@@ -5620,7 +5579,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.fadeOutTime = fadeout;
         this.dataPacket(pk);
     }
-
 
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
@@ -6141,6 +6099,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.exp;
     }
 
+    public void setExperience(int exp) {
+        setExperience(exp, this.getExperienceLevel());
+    }
+
     public int getExperienceLevel() {
         return this.expLevel;
     }
@@ -6162,20 +6124,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             most = calculateRequireExperience(level);
         }
         this.setExperience(added, level, playLevelUpSound);
-    }
-
-    public static int calculateRequireExperience(int level) {
-        if (level >= 30) {
-            return 112 + (level - 30) * 9;
-        } else if (level >= 15) {
-            return 37 + (level - 15) * 5;
-        } else {
-            return 7 + level * 2;
-        }
-    }
-
-    public void setExperience(int exp) {
-        setExperience(exp, this.getExperienceLevel());
     }
 
     public void setExperience(int exp, int level) {
@@ -6833,28 +6781,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
-    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, int subChunkCount, byte[] payload) {
-        LevelChunkPacket pk = new LevelChunkPacket();
-        pk.chunkX = chunkX;
-        pk.chunkZ = chunkZ;
-        pk.subChunkCount = subChunkCount;
-        pk.data = payload;
-        pk.encode();
-
-        BatchPacket batch = new BatchPacket();
-        byte[][] batchPayload = new byte[2][];
-        byte[] buf = pk.getBuffer();
-        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
-        batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
-        try {
-            batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return batch;
-    }
-
     public boolean isFoodEnabled() {
         return !(this.isCreative() || this.isSpectator()) && this.foodEnabled;
     }
@@ -6917,12 +6843,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.checkMovement;
     }
 
-    public synchronized void setLocale(Locale locale) {
-        this.locale.set(locale);
-    }
-
     public synchronized Locale getLocale() {
         return this.locale.get();
+    }
+
+    public synchronized void setLocale(Locale locale) {
+        this.locale.set(locale);
     }
 
     @Override
@@ -7080,8 +7006,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         int tick = this.getServer().getTick();
-        if (pickedXPOrb < tick && entity instanceof EntityXPOrb && this.boundingBox.isVectorInside(entity)) {
-            EntityXPOrb xpOrb = (EntityXPOrb) entity;
+        if (pickedXPOrb < tick && entity instanceof EntityXPOrb xpOrb && this.boundingBox.isVectorInside(entity)) {
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();
                 entity.kill();
@@ -7134,10 +7059,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Player)) {
+        if (!(obj instanceof Player other)) {
             return false;
         }
-        Player other = (Player) obj;
         return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.getId() == other.getId();
     }
 
