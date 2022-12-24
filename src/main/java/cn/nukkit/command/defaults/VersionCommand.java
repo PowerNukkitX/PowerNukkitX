@@ -126,10 +126,6 @@ public class VersionCommand extends VanillaCommand {
                     sender.getServer().getApiVersion(),
                     sender.getServer().getVersion(),
                     String.valueOf(ProtocolInfo.CURRENT_PROTOCOL)));
-            if (sender.isOp()) {
-                sender.sendMessage(TextFormat.ITALIC + "Retrieving version information from remote server...");
-                queryQueue.add(new Query(sender, listVersion()));
-            }
         } else {
             StringBuilder pluginName = new StringBuilder();
             for (String arg : args) pluginName.append(arg).append(" ");

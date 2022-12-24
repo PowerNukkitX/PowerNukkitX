@@ -341,7 +341,7 @@ public class Server {
         launchTime = System.currentTimeMillis();
         BatchPacket batchPacket = new BatchPacket();
         batchPacket.payload = EmptyArrays.EMPTY_BYTES;
-        CraftingManager.packet = batchPacket;
+        CraftingManager.setCraftingPacket(batchPacket);
 
         currentThread = Thread.currentThread();
         File abs = tempDir.getAbsoluteFile();
@@ -2629,6 +2629,9 @@ public class Server {
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(true);
+            player.getAdventureSettings().update();
+            player.sendCommandData();
         }
         this.operators.save(true);
     }
@@ -2638,6 +2641,9 @@ public class Server {
         Player player = this.getPlayerExact(name);
         if (player != null) {
             player.recalculatePermissions();
+            player.getAdventureSettings().onOpChange(false);
+            player.getAdventureSettings().update();
+            player.sendCommandData();
         }
         this.operators.save();
     }

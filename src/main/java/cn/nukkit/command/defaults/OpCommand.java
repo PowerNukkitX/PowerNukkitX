@@ -9,6 +9,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.utils.CommandParser;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class OpCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return false;
         }
+
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", "\n" + this.getCommandFormatTips()));
             return false;

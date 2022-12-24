@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.PowerNukkitDifference;
 import cn.nukkit.api.PowerNukkitOnly;
@@ -108,6 +109,8 @@ public class BlockLever extends BlockFlowable implements RedstoneComponent, Face
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
+            return false;
         this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         toggleBooleanProperty(OPEN);
         var pos = this.add(0.5, 0.5, 0.5);

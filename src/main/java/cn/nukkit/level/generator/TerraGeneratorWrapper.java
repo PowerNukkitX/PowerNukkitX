@@ -3,6 +3,7 @@ package cn.nukkit.level.generator;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
+import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.DimensionData;
 import cn.nukkit.level.terra.TerraGenerator;
@@ -12,6 +13,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,7 +63,17 @@ public class TerraGeneratorWrapper extends Generator {
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
-        this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
+        if (!ChunkPrePopulateEvent.getHandlers().isEmpty()) {
+            var nukkitRandom = new NukkitRandom(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+            var chunk = level.getChunk(chunkX, chunkZ);
+            var event = new ChunkPrePopulateEvent(chunk, List.of(), List.of());
+            Server.getInstance().getPluginManager().callEvent(event);
+            this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
+            for (var populator : event.getTerrainPopulators()) populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
+            for (var populator : event.getBiomePopulators()) populator.populate(level, chunkX, chunkX, nukkitRandom, chunk);
+        } else {
+            this.terra.populateChunk(chunkX, chunkZ, getChunkManager());
+        }
     }
 
     @Override
@@ -87,14 +99,5 @@ public class TerraGeneratorWrapper extends Generator {
     @Override
     public boolean shouldGenerateStructures() {
         return true;
-    }
-
-    /**
-     * Terra底层自带fjp线程池进行多核并行区块生成，所以说这边我们不需要使用fjp
-     */
-    @Since("1.19.50-r2")
-    @Override
-    public void handleAsyncChunkPopTask(AsyncTask task) {
-        Server.getInstance().getScheduler().scheduleAsyncTask(null, task);
     }
 }

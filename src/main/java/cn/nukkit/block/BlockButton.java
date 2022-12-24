@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.api.*;
 import cn.nukkit.blockproperty.BlockProperties;
@@ -95,6 +96,8 @@ public abstract class BlockButton extends BlockFlowable implements RedstoneCompo
 
     @Override
     public boolean onActivate(@Nonnull Item item, Player player) {
+        if (!player.getAdventureSettings().get(AdventureSettings.Type.DOORS_AND_SWITCHED))
+            return false;
         if (this.isActivated()) {
             return false;
         }
