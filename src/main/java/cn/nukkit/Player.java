@@ -1494,6 +1494,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int expLevel = nbt.getInt("expLevel");
         this.setExperience(exp, expLevel);
 
+        this.gamemode = nbt.getInt("playerGameType") & 0x03;
+        if (this.server.getForceGamemode()) {
+            this.gamemode = this.server.getGamemode();
+            nbt.putInt("playerGameType", this.gamemode);
+        }
+
         this.adventureSettings = new AdventureSettings(this, nbt);
 
         Level level;
@@ -1617,12 +1623,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Vector3 worldSpawnPoint;
         if (this.spawnPosition == null) worldSpawnPoint = this.server.getDefaultLevel().getSafeSpawn();
         else worldSpawnPoint = spawnPosition;
-
-        this.gamemode = this.namedTag.getInt("playerGameType");
-        if (this.server.getForceGamemode()) {
-            this.gamemode = this.server.getGamemode();
-            this.namedTag.putInt("playerGameType", this.gamemode);
-        }
 
         StartGamePacket startGamePacket = new StartGamePacket();
         startGamePacket.entityUniqueId = this.id;
