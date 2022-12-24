@@ -12,13 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static cn.nukkit.inventory.BaseInventory.AIR_ITEM;
+
 @Since("1.19.50-r3")
 @PowerNukkitXOnly
 public class InventorySlice implements Inventory {
     @NotNull
-    public final Inventory rawInv;
-    public int startSlot;
-    public int endSlot;
+    private final Inventory rawInv;
+    private int startSlot;
+    private int endSlot;
 
     public InventorySlice(@NotNull Inventory rawInv, int startSlot, int endSlot) {
         this.rawInv = rawInv;
@@ -69,11 +71,19 @@ public class InventorySlice implements Inventory {
 
     @Override
     public Item getItem(int index) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            return AIR_ITEM;
+        }
         return rawInv.getItem(index + startSlot);
     }
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            return false;
+        }
         return rawInv.setItem(index + startSlot, item, send);
     }
 
@@ -123,6 +133,11 @@ public class InventorySlice implements Inventory {
     @Override
     public void setContents(Map<Integer, Item> items) {
         for (Map.Entry<Integer, Item> entry : items.entrySet()) {
+            // check whether the index is in the range
+            var key = entry.getKey();
+            if (key < 0 || key >= getSize()) {
+                continue;
+            }
             rawInv.setItem(entry.getKey() + startSlot, entry.getValue());
         }
     }
@@ -215,6 +230,10 @@ public class InventorySlice implements Inventory {
 
     @Override
     public void decreaseCount(int slot) {
+        // check whether the index is in the range
+        if (slot < 0 || slot >= getSize()) {
+            throw new IllegalArgumentException("Slot index " + slot + " out of range");
+        }
         rawInv.decreaseCount(slot + startSlot);
     }
 
@@ -304,6 +323,10 @@ public class InventorySlice implements Inventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
+        // check whether the index is in the range
+        if (index < 0 || index >= getSize()) {
+            throw new IllegalArgumentException("Slot index " + index + " out of range");
+        }
         rawInv.onSlotChange(index + startSlot, before, send);
     }
 
