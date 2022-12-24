@@ -312,6 +312,8 @@ public abstract class EntityPhysical extends EntityCreature implements EntityAsy
     protected void calculateOffsetBoundingBox() {
         final double dx = this.getWidth() * 0.5;
         final double dz = this.getHeight() * 0.5;
+        //由于是asyncPrepare,this.offsetBoundingBox有几率为null，需要判空
+        if (this.offsetBoundingBox == null) return;
         this.offsetBoundingBox.setMinX(this.x - dx);
         this.offsetBoundingBox.setMaxX(this.x + dz);
         this.offsetBoundingBox.setMinY(this.y);
