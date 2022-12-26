@@ -84,36 +84,22 @@ public class EntityTropicalFish extends EntityFish {
     private int randomColor() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double rand = random.nextDouble(1, 100);
-        if (rand <= 99) {
-            //黑色
-            return random.nextBoolean() ? DyeColor.BLACK.getWoolData() :
-                    //灰色
-                    random.nextBoolean() ? DyeColor.GRAY.getWoolData() :
-                            //橙色
-                            random.nextBoolean() ? DyeColor.ORANGE.getWoolData() :
-                                    // 粉红色
-                                    random.nextBoolean() ? DyeColor.PINK.getWoolData() :
-                                            //浅灰色
-                                            random.nextBoolean() ? DyeColor.LIGHT_GRAY.getWoolData() :
-                                                    //蓝色
-                                                    random.nextBoolean() ? DyeColor.BLUE.getWoolData() :
-                                                            //红色
-                                                            random.nextBoolean() ? DyeColor.RED.getWoolData() :
-                                                                    //绿色
-                                                                    random.nextBoolean() ? DyeColor.GREEN.getWoolData() :
-                                                                            //黄色
-                                                                            random.nextBoolean() ? DyeColor.YELLOW.getWoolData() :
-                                                                                    //浅蓝色
-                                                                                    random.nextBoolean() ? DyeColor.LIGHT_BLUE.getWoolData() :
-                                                                                            //品红色
-                                                                                            random.nextBoolean() ? DyeColor.MAGENTA.getWoolData() :
-                                                                                                    //紫色
-                                                                                                    random.nextBoolean() ? DyeColor.PURPLE.getWoolData() :
-                                                                                                            random.nextBoolean() ? DyeColor.CYAN.getWoolData() : DyeColor.BROWN.getWoolData()
-
-                    ;
+        //黑色
+        if (rand <= 85) {
+            return random.nextBoolean() ? DyeColor.BLUE.getWoolData() : random.nextBoolean() ? DyeColor.RED.getWoolData() : DyeColor.BLACK.getWoolData();
         }
-
+        if (rand <= 95) {
+            return random.nextBoolean() ? DyeColor.GREEN.getWoolData() : random.nextBoolean() ? DyeColor.YELLOW.getWoolData() : DyeColor.GRAY.getWoolData();
+        }
+        if (rand <= 65) {
+            return random.nextBoolean() ? DyeColor.ORANGE.getWoolData() : random.nextBoolean() ? DyeColor.LIGHT_GRAY.getWoolData() : DyeColor.PINK.getWoolData();
+        }
+        if (rand <= 55) {
+            return random.nextBoolean() ? DyeColor.LIGHT_BLUE.getWoolData() : random.nextBoolean() ? DyeColor.MAGENTA.getWoolData() : DyeColor.BROWN.getWoolData();
+        }
+        if (rand <= 75) {
+            return random.nextBoolean() ? DyeColor.PURPLE.getWoolData() : random.nextBoolean() ? DyeColor.CYAN.getWoolData() : DyeColor.LIME.getWoolData();
+        }
         return DyeColor.WHITE.getWoolData();
     }
 
