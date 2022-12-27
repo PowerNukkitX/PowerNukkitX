@@ -1,11 +1,9 @@
 package cn.nukkit.level;
 
-import lombok.Data;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-@Data
 public class DimensionData {
     private final String dimensionName;
     private final int dimensionId;
@@ -43,5 +41,40 @@ public class DimensionData {
         this.height = height;
 
         this.chunkSectionCount = Objects.requireNonNullElseGet(chunkSectionCount, () -> this.height >> 4 + ((this.height & 15) == 0 ? 0 : 1));
+    }
+
+    public String getDimensionName() {
+        return this.dimensionName;
+    }
+
+    public int getDimensionId() {
+        return this.dimensionId;
+    }
+
+    public int getMinHeight() {
+        return this.minHeight;
+    }
+
+    public int getMaxHeight() {
+        return this.maxHeight;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public int getChunkSectionCount() {
+        return this.chunkSectionCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DimensionData that)) return false;
+        return dimensionId == that.dimensionId && minHeight == that.minHeight && maxHeight == that.maxHeight && height == that.height && chunkSectionCount == that.chunkSectionCount && dimensionName.equals(that.dimensionName);
+    }
+
+    public String toString() {
+        return "DimensionData(dimensionName=" + this.getDimensionName() + ", dimensionId=" + this.getDimensionId() + ", minHeight=" + this.getMinHeight() + ", maxHeight=" + this.getMaxHeight() + ", height=" + this.getHeight() + ", chunkSectionCount=" + this.getChunkSectionCount() + ")";
     }
 }
