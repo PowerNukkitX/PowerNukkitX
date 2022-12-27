@@ -39,14 +39,14 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
         putUnsignedVarInt(chunkY);
         putVarInt(chunkZ);
         putVarInt(standardBlocks.size());
-        for(final var each : standardBlocks) {
+        for (final var each : standardBlocks) {
             putBlockVector3(each.blockPos());
             putUnsignedVarInt(each.runtimeID());
             putUnsignedVarInt(each.updateFlags());
             putUnsignedVarLong(each.messageEntityID());
             putUnsignedVarInt(each.messageType().ordinal());
         }
-        for(final var each : extraBlocks) {
+        for (final var each : extraBlocks) {
             putBlockVector3(each.blockPos());
             putUnsignedVarInt(each.runtimeID());
             putUnsignedVarInt(each.updateFlags());
@@ -75,20 +75,11 @@ public class UpdateSubChunkBlocksPacket extends DataPacket {
         return this.extraBlocks;
     }
 
-    public boolean equals(final Object o) {
-        if (o == this) return true;
-        if (!(o instanceof final UpdateSubChunkBlocksPacket other)) return false;
-        if (!other.canEqual(this)) return false;
-        if (this.chunkX != other.chunkX) return false;
-        if (this.chunkY != other.chunkY) return false;
-        if (this.chunkZ != other.chunkZ) return false;
-        if (!((Object) this.standardBlocks).equals(other.standardBlocks))
-            return false;
-        return ((Object) this.extraBlocks).equals(other.extraBlocks);
-    }
-
-    protected boolean canEqual(final Object other) {
-        return other instanceof UpdateSubChunkBlocksPacket;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UpdateSubChunkBlocksPacket that)) return false;
+        return chunkX == that.chunkX && chunkY == that.chunkY && chunkZ == that.chunkZ && standardBlocks.equals(that.standardBlocks) && extraBlocks.equals(that.extraBlocks);
     }
 
     public int hashCode() {

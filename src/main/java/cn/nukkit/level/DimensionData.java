@@ -67,36 +67,11 @@ public class DimensionData {
         return this.chunkSectionCount;
     }
 
-    public boolean equals(final Object o) {
-        if (o == this) return true;
-        if (!(o instanceof final DimensionData other)) return false;
-        if (!other.canEqual(this)) return false;
-        final Object this$dimensionName = this.getDimensionName();
-        final Object other$dimensionName = other.getDimensionName();
-        if (!Objects.equals(this$dimensionName, other$dimensionName))
-            return false;
-        if (this.getDimensionId() != other.getDimensionId()) return false;
-        if (this.getMinHeight() != other.getMinHeight()) return false;
-        if (this.getMaxHeight() != other.getMaxHeight()) return false;
-        if (this.getHeight() != other.getHeight()) return false;
-        return this.getChunkSectionCount() == other.getChunkSectionCount();
-    }
-
-    protected boolean canEqual(final Object other) {
-        return other instanceof DimensionData;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final Object $dimensionName = this.getDimensionName();
-        result = result * PRIME + ($dimensionName == null ? 43 : $dimensionName.hashCode());
-        result = result * PRIME + this.getDimensionId();
-        result = result * PRIME + this.getMinHeight();
-        result = result * PRIME + this.getMaxHeight();
-        result = result * PRIME + this.getHeight();
-        result = result * PRIME + this.getChunkSectionCount();
-        return result;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DimensionData that)) return false;
+        return dimensionId == that.dimensionId && minHeight == that.minHeight && maxHeight == that.maxHeight && height == that.height && chunkSectionCount == that.chunkSectionCount && dimensionName.equals(that.dimensionName);
     }
 
     public String toString() {

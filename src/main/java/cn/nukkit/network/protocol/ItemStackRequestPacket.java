@@ -36,13 +36,13 @@ public class ItemStackRequestPacket extends DataPacket {
     }
 
     @Since("1.4.0.0-PN")
-        public record ItemStackAction(byte type, boolean bool0, byte byte0, int varInt0, int varInt1, byte baseByte0,
-                                      byte baseByte1, byte baseByte2, int baseVarInt0, byte flagsByte0, byte flagsByte1,
-                                      int flagsVarInt0, List<Item> items) {
+    public record ItemStackAction(byte type, boolean bool0, byte byte0, int varInt0, int varInt1, byte baseByte0,
+                                  byte baseByte1, byte baseByte2, int baseVarInt0, byte flagsByte0, byte flagsByte1,
+                                  int flagsVarInt0, List<Item> items) {
         @Override
-            public String toString() {
-                StringJoiner joiner = new StringJoiner(", ");
-                joiner.add("type=" + type);
+        public String toString() {
+            StringJoiner joiner = new StringJoiner(", ");
+            joiner.add("type=" + type);
 
             switch (type) {
                 case 0, 1, 2 -> joiner.add("baseByte0=" + baseByte0)
@@ -67,7 +67,7 @@ public class ItemStackRequestPacket extends DataPacket {
                 case 10, 11, 12, 13, 14, 15 -> joiner.add("varInt0=" + varInt0);
                 case 17 -> joiner.add("items=" + items);
             }
-                return "ItemStackAction(" + joiner + ")";
-            }
+            return "ItemStackAction(" + joiner + ")";
         }
+    }
 }
