@@ -49,7 +49,7 @@ public final class ItemTag {
 
     @NotNull
     public static Set<String> getTagSet(String namespaceId) {
-        return Collections.unmodifiableSet(TAG_2_ITEMS.getOrDefault(namespaceId, Set.of()));
+        return Collections.unmodifiableSet(ITEM_2_TAGS.getOrDefault(namespaceId, Set.of()));
     }
 
     public static List<String> getItems(String tag) {
@@ -76,6 +76,11 @@ public final class ItemTag {
         var tagSet = ITEM_2_TAGS.get(namespaceId);
         if (tagSet != null) tagSet.addAll(tags);
         else ITEM_2_TAGS.put(namespaceId, new HashSet<>(tags));
+        for (var tag : tags) {
+            var itemSet = TAG_2_ITEMS.get(tag);
+            if (itemSet != null) itemSet.add(namespaceId);
+            else TAG_2_ITEMS.put(tag, new HashSet<>(Collections.singleton(namespaceId)));
+        }
     }
 
 }
