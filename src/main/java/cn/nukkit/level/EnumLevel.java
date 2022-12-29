@@ -94,7 +94,7 @@ public enum EnumLevel {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.19.50-r4", info = "Supporting World Dimension Judgment")
+    @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Level getOtherTheEndPair(Level current) {
         if (current == OVERWORLD.level || current.getDimension() == Level.DIMENSION_OVERWORLD) {
             return THE_END.level;
@@ -107,7 +107,7 @@ public enum EnumLevel {
 
     @PowerNukkitOnly
     @Since("1.4.0.0-PN")
-    @PowerNukkitXDifference(since = "1.19.50-r4", info = "Supporting World Dimension Judgment")
+    @PowerNukkitXDifference(since = "1.18.30", info = "Supporting World Dimension Judgment")
     public static Position moveToTheEnd(Position current) {
         if (THE_END.level == null) {
             return null;
