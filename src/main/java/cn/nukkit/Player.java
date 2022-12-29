@@ -2945,6 +2945,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
+    @PowerNukkitXDifference(info = "Calculate fall distance when wearing elytra", since = "1.19.50-r4")
     public boolean onUpdate(int currentTick) {
         if (!this.loggedIn) {
             return false;
@@ -3048,7 +3049,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.highestPosition = this.y;
                     }
 
-                    if (this.isGliding()) this.resetFallDistance();
+                    // Wiki: 使用鞘翅滑翔时在垂直高度下降率低于每刻 0.5 格的情况下，摔落高度被重置为 1 格。
+                    // Wiki: 玩家在较小的角度和足够低的速度上着陆不会受到坠落伤害。着陆时临界伤害角度为50°，伤害值等同于玩家从滑行的最高点直接摔落到着陆点受到的伤害。
+                    if (this.isGliding() && Math.abs(this.speed.y) < 0.5 && this.getPitch() <= 40) {
+                        this.resetFallDistance();
+                    }
 
                     ++this.inAirTicks;
 
