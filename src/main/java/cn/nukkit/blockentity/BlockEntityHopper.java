@@ -257,36 +257,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                 return false;
         }
 
-        //Fix for furnace outputs
-        if (blockEntity instanceof BlockEntityFurnace) {
-            FurnaceInventory inv = ((BlockEntityFurnace) blockEntity).getInventory();
-            Item item = inv.getResult();
-
-            if (!item.isNull()) {
-                Item itemToAdd = item.clone();
-                itemToAdd.count = 1;
-
-                if (!this.inventory.canAddItem(itemToAdd)) {
-                    return false;
-                }
-
-                InventoryMoveItemEvent ev = new InventoryMoveItemEvent(inv, this.inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
-                this.server.getPluginManager().callEvent(ev);
-
-                if (ev.isCancelled()) {
-                    return false;
-                }
-
-                Item[] items = this.inventory.addItem(itemToAdd);
-
-                if (items.length <= 0) {
-                    item.count--;
-                    inv.setResult(item);
-                    return true;
-                }
-            }
-        } else if (blockEntity instanceof InventoryHolder) {
-            Inventory inv = ((InventoryHolder) blockEntity).getInventory();
+        if (blockEntity instanceof InventoryHolder) {
+            Inventory inv = blockEntity instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getProductView() : ((InventoryHolder) blockEntity).getInventory();
 
             for (int i = 0; i < inv.getSize(); i++) {
                 Item item = inv.getItem(i);
@@ -622,7 +594,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                 return true;
             }
         } else {
-            Inventory inventory = ((InventoryHolder) be).getInventory();
+            Inventory inventory = be instanceof RecipeInventoryHolder recipeInventoryHolder ? recipeInventoryHolder.getIngredientView() : ((InventoryHolder) be).getInventory();
 
             if (inventory.isFull()) {
                 return false;

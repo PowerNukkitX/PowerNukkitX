@@ -1,7 +1,9 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
@@ -251,12 +253,14 @@ public class TheEnd extends Generator {
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
         this.nukkitRandom.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        for (Populator populator : this.populators) {
+        @SuppressWarnings("deprecation")
+        Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
+        var event = new ChunkPrePopulateEvent(chunk, this.populators, biome.getPopulators());
+        Server.getInstance().getPluginManager().callEvent(event);
+        for (Populator populator : event.getTerrainPopulators()) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }
-
-        Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
-        biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+        biome.populateChunk(this.level, event.getBiomePopulators(), chunkX, chunkZ, this.nukkitRandom);
     }
 
     public Vector3 getSpawn() {

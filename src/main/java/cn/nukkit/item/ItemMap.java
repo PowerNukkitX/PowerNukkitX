@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
+import cn.nukkit.plugin.PowerNukkitPlugin;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
@@ -104,6 +105,7 @@ public class ItemMap extends Item {
         BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
+        pk.eids = new long[] { getMapId() };
         pk.mapId = getMapId();
         pk.update = 2;
         pk.scale = 0;
@@ -114,7 +116,7 @@ public class ItemMap extends Item {
         pk.image = image;
 
         p.dataPacket(pk);
-        Server.getInstance().getScheduler().scheduleDelayedTask(null, () -> p.dataPacket(pk), 20);
+        Server.getInstance().getScheduler().scheduleDelayedTask(PowerNukkitPlugin.getInstance(), () -> p.dataPacket(pk), 20);
     }
 
     public boolean trySendImage(Player p) {

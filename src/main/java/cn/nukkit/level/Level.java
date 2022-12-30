@@ -52,6 +52,7 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
@@ -2835,6 +2836,8 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             if (!setBlockDestroy) {
+                if (!player.getAdventureSettings().get(PlayerAbility.MINE))
+                    return null;
                 boolean fastBreak = Long.sum(player.lastBreak, (long) breakTime * 1000) > Long.sum(System.currentTimeMillis(), 1000);
                 BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(),
                         fastBreak);
@@ -3121,9 +3124,9 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (player != null) {
-            if (!block.isBlockChangeAllowed(player)) {
+            if (!player.getAdventureSettings().get(PlayerAbility.BUILD)
+                    || !block.isBlockChangeAllowed(player))
                 return null;
-            }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
             if (player.getGamemode() == 2) {

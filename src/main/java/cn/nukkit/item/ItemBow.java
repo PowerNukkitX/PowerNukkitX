@@ -55,7 +55,6 @@ public class ItemBow extends ItemTool {
     }
 
     @PowerNukkitDifference(info = "Using new method to play sounds", since = "1.4.0.0-PN")
-    //todo 优化弓箭
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Item itemArrow = Item.get(Item.ARROW, 0, 1);

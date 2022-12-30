@@ -9,10 +9,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.FurnaceBurnEvent;
 import cn.nukkit.event.inventory.FurnaceSmeltEvent;
-import cn.nukkit.inventory.FurnaceInventory;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.inventory.SmeltingRecipe;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemBucket;
@@ -29,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author MagicDroidX
  */
-public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, RecipeInventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
     protected FurnaceInventory inventory;
 
@@ -467,5 +464,15 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     @PowerNukkitXOnly
     public short calculateXpDrop() {
         return (short) (Math.floor(this.storedXP) + (ThreadLocalRandom.current().nextFloat() < (this.storedXP % 1) ? 1 : 0));
+    }
+
+    @Override
+    public Inventory getIngredientView() {
+        return new InventorySlice(this.inventory, 0, 1);
+    }
+
+    @Override
+    public Inventory getProductView() {
+        return new InventorySlice(this.inventory, 2, 3);
     }
 }

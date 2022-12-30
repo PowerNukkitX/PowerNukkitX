@@ -22,7 +22,7 @@ debug:
   - LevelChunkPacket
 
 timings:
- completely-close: true
+ completely-close: false
  enabled: false
  verbose: false
  history-interval: 6000

@@ -1,5 +1,6 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.api.PowerNukkitXDifference;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
 
@@ -9,6 +10,7 @@ import java.util.TreeMap;
 /**
  * @author MagicDroidX (Nukkit Project)
  */
+@PowerNukkitXDifference(info = "Add blocks and items.", since = "1.19.50-r3")
 public abstract class Fuel {
     public static final Map<Integer, Short> duration = new TreeMap<>();
 
@@ -76,6 +78,18 @@ public abstract class Fuel {
         addItem(ItemID.JUNGLE_SIGN, (short) 200);
         addBlock(BlockID.DRIED_KELP_BLOCK, (short) 4000);
         addItem(ItemID.CROSSBOW, (short) 200);
+        addBlock(BlockID.BEE_NEST, (short) 300);
+        addBlock(BlockID.BEEHIVE, (short) 300);
+        addBlock(BlockID.BAMBOO, (short) 50);
+        addBlock(BlockID.SCAFFOLDING, (short) 50);
+        addBlock(BlockID.CARTOGRAPHY_TABLE, (short) 300);
+        addBlock(BlockID.FLETCHING_TABLE, (short) 300);
+        addBlock(BlockID.SMITHING_TABLE, (short) 300);
+        addBlock(BlockID.LOOM, (short) 300);
+        addBlock(BlockID.LECTERN, (short) 300);
+        addBlock(BlockID.COMPOSTER, (short) 300);
+        addBlock(BlockID.BARREL, (short) 300);
+        addBlock(BlockID.AZALEA, (short) 100);
     }
 
     private static void addItem(int itemID, short fuelDuration) {
