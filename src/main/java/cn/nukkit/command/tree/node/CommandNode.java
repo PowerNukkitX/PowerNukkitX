@@ -2,7 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ public class CommandNode extends ParamNode<String> {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (this.parent.getIndex() != this.parent.parent.getArgs().length) TMP.add(arg);
         else {
             TMP.add(arg);

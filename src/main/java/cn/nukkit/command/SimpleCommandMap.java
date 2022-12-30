@@ -6,7 +6,6 @@ import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.command.utils.CommandLogger;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timings;
@@ -301,22 +300,18 @@ public class SimpleCommandMap implements CommandMap {
         boolean output;
         target.timing.startTiming();
         try {
-            try {
+            if (target.paramTree == null) {
                 output = target.execute(sender, sentCommandLabel, args);
-            } catch (UnsupportedOperationException e) {
-                if (target.paramTree == null) return false;
+            } else {
                 var result = target.paramTree.matchAndParse(sender, args);
-                if (result == null) {
-                    target.timing.stopTiming();
-                    return false;
-                }
-                try {
-                    output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args));
-                } catch (UnsupportedOperationException ignore) {
-                    log.fatal("You must override Command#execute(CommandSender sender, String commandLabel, String[] args) to execute the command.");
-                    log.fatal("or initialize the paramTree and override Command#execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) to execute the command.");
-                    target.timing.stopTiming();
-                    return false;
+                if (result == null) output = false;
+                else {
+                    try {
+                        output = target.execute(sender, sentCommandLabel, result, new CommandLogger(target, sender, args));
+                    } catch (UnsupportedOperationException e) {
+                        log.fatal("If you use paramtree, you must override execute(CommandSender sender, String commandLabel, Map.Entry<String, ParamList> result, CommandLogger log) method to run the command!");
+                        output = false;
+                    }
                 }
             }
         } catch (Exception e) {

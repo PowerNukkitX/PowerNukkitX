@@ -2,7 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 
 /**
  * 代表一个可以输入通配符 * 的{@link IntNode},当输入通配符时，将会解析结果将变成默认值{@link #defaultV}
@@ -23,13 +22,15 @@ public class WildcardIntNode extends ParamNode<Integer> {
     }
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
-        try {
-            if (arg.length() == 1 && arg.charAt(0) == '*') {
-                this.value = defaultV;
-            } else this.value = Integer.parseInt(arg);
-        } catch (NumberFormatException e) {
-            throw new CommandSyntaxException();
+    public void fill(String arg) {
+        if (arg.length() == 1 && arg.charAt(0) == '*') {
+            this.value = defaultV;
+        } else {
+            try {
+                this.value = Integer.parseInt(arg);
+            } catch (NumberFormatException e) {
+                this.parent.error();
+            }
         }
     }
 

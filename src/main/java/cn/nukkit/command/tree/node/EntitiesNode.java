@@ -20,14 +20,14 @@ public class EntitiesNode extends TargetNode<Entity> {
 
     //todo 支持uuid 或者 xuid
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (EntitySelector.hasArguments(arg)) {
             var result = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
-            if (result.isEmpty()) throw new CommandSyntaxException();
+            if (result.isEmpty()) this.parent.error();
             this.value = result;
         } else {
             Player player = Server.getInstance().getPlayer(arg);
-            if (player == null) throw new CommandSyntaxException();
+            if (player == null) this.parent.error();
             else this.value = Collections.singletonList(player);
         }
     }

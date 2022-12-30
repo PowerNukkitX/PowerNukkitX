@@ -19,15 +19,15 @@ import java.util.stream.Collectors;
 public class PlayersNode extends TargetNode<Player> {
     //todo 支持uuid 或者 xuid
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (EntitySelector.hasArguments(arg)) {
             var entities = EntitySelector.matchEntities(this.parent.parent.getSender(), arg);
             var result = entities.stream().filter(entity -> entity instanceof Player).map(entity -> (Player) entity).collect(Collectors.toList());
-            if (result.isEmpty()) throw new CommandSyntaxException();
-            this.value = result;
+            if (result.isEmpty()) this.parent.error();
+            else this.value = result;
         } else {
             Player player = Server.getInstance().getPlayer(arg);
-            if (player == null) throw new CommandSyntaxException();
+            if (player == null) this.parent.error();
             else this.value = Collections.singletonList(player);
         }
     }

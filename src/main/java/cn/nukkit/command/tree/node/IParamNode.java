@@ -20,9 +20,8 @@ public interface IParamNode<T> {
      * 当验证失败或者解析失败,请抛出异常{@link CommandSyntaxException}
      *
      * @param arg the arg
-     * @throws CommandSyntaxException the command syntax exception
      */
-    void fill(String arg) throws CommandSyntaxException;
+    void fill(String arg);
 
     /**
      * 获取已被{@link #fill(String)}填充后的节点值,会自动转型为接受类型E,不会判断是否能成功转型<br>有可能抛出{@link ClassCastException}

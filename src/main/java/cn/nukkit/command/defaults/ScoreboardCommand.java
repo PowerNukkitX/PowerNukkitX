@@ -132,11 +132,11 @@ public class ScoreboardCommand extends VanillaCommand {
                 return true;
             }
             case "objectives-list" -> {
-                log.addInfo(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
+                /*log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.objectives.list.count", String.valueOf(manager.getScoreboards().size()));
                 for (var scoreboard : manager.getScoreboards().values()) {
-                    log.addInfo("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
+                    log.addSuccess("commands.scoreboard.objectives.list.entry", scoreboard.getObjectiveName(), scoreboard.getDisplayName(), scoreboard.getCriteriaName());
                 }
-                log.output();
+                log.outputSuccess();*/
                 return true;
             }
             case "objectives-remove" -> {
@@ -231,13 +231,13 @@ public class ScoreboardCommand extends VanillaCommand {
                             log.outputError(TextFormat.RED + "%commands.scoreboard.players.list.player.empty", scorer.getName());
                             return false;
                         }
-                        log.addInfo(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
+                        log.addSuccess(TextFormat.GREEN + "%commands.scoreboard.players.list.player.count", String.valueOf(count), scorer.getName());
                         for (var scoreboard : manager.getScoreboards().values()) {
                             if (scoreboard.getLines().containsKey(scorer)) {
-                                log.addInfo("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
+                                log.addSuccess("commands.scoreboard.players.list.player.entry", String.valueOf(scoreboard.getLines().get(scorer).getScore()), scoreboard.getDisplayName(), scoreboard.getObjectiveName());
                             }
                         }
-                        log.output();
+                        log.outputSuccess();
                     }
                     return true;
                 } else {
@@ -291,9 +291,9 @@ public class ScoreboardCommand extends VanillaCommand {
                         scoreboard.addLine(new ScoreboardLine(scoreboard, scorer, score));
                     }
                     scoreboard.getLines().get(scorer).setScore(score);
-                    log.addInfo("commands.scoreboard.players.set.success", objectiveName, scorer.getName(), String.valueOf(score));
+                    log.addSuccess("commands.scoreboard.players.set.success", objectiveName, scorer.getName(), String.valueOf(score));
                 }
-                log.output();
+                log.outputSuccess();
                 return true;
             }
             case "players-reset" -> {
@@ -320,21 +320,21 @@ public class ScoreboardCommand extends VanillaCommand {
                     for (IScorer scorer : scorers) {
                         if (scoreboard.containLine(scorer)) {
                             scoreboard.removeLine(scorer);
-                            log.addInfo("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
+                            log.addSuccess("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
                         }
                     }
-                    log.output();
+                    log.outputSuccess();
                     return true;
                 } else {
                     for (var scoreboard : manager.getScoreboards().values()) {
                         for (IScorer scorer : scorers) {
                             if (scoreboard.containLine(scorer)) {
                                 scoreboard.removeLine(scorer);
-                                log.addInfo("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
+                                log.addSuccess("commands.scoreboard.players.resetscore.success", scoreboard.getObjectiveName(), scorer.getName());
                             }
                         }
                     }
-                    log.output();
+                    log.outputSuccess();
                     return true;
                 }
             }
@@ -374,9 +374,9 @@ public class ScoreboardCommand extends VanillaCommand {
                         log.outputError(TextFormat.RED + "%commands.scoreboard.players.test.failed", String.valueOf(score), String.valueOf(min), String.valueOf(max));
                         return false;
                     }
-                    log.addInfo("commands.scoreboard.players.test.success", String.valueOf(score), String.valueOf(min), String.valueOf(max));
+                    log.addSuccess("commands.scoreboard.players.test.success", String.valueOf(score), String.valueOf(min), String.valueOf(max));
                 }
-                log.output();
+                log.outputSuccess();
                 return true;
             }
         }
@@ -562,9 +562,9 @@ public class ScoreboardCommand extends VanillaCommand {
                     selectorScoreboard.getLines().get(seletorScorer).setScore(targetScore);
                 }
             }
-            log.addInfo("commands.scoreboard.players.operation.success", String.valueOf(changeScore), targetObjectiveName);
+            log.addSuccess("commands.scoreboard.players.operation.success", String.valueOf(changeScore), targetObjectiveName);
         }
-        log.output();
+        log.outputSuccess();
         return true;
     }
 }

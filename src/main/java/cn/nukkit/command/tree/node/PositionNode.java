@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BVector3;
 
@@ -28,15 +27,15 @@ public abstract class PositionNode extends ParamNode<Position> {
     }
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         TMP.clear();
         var matcher = pattern.matcher(arg);
         while (matcher.find()) {
             TMP.add(matcher.group());
         }
         var str = TMP.stream().reduce((s1, s2) -> s1 + s2);
-        if (str.isEmpty()) throw new CommandSyntaxException();
-        else if (str.get().length() != arg.length()) throw new CommandSyntaxException();
+        if (str.isEmpty()) this.parent.error();
+        else if (str.get().length() != arg.length()) this.parent.error();
         else {
             try {
                 Player player = null;
@@ -45,39 +44,44 @@ public abstract class PositionNode extends ParamNode<Position> {
                 }
                 for (String s : TMP) {
                     if (s.charAt(0) == '~') {
-                        if (player == null) throw new CommandSyntaxException();
+                        if (player == null) {
+                            this.parent.error();
+                            return;
+                        }
                         String relativeCoordinate = s.substring(1);
                         if (relativeCoordinate.isEmpty()) {
-                            switch (index) {
-                                case 0 -> coordinate[index] = player.getX();
-                                case 1 -> coordinate[index] = player.getY();
-                                case 2 -> coordinate[index] = player.getZ();
-                                default -> throw new CommandSyntaxException();
-                            }
+                            if (setCorrdinate(player)) return;
                         } else {
                             switch (index) {
                                 case 0 -> coordinate[index] = player.getX() + Double.parseDouble(relativeCoordinate);
                                 case 1 -> coordinate[index] = player.getY() + Double.parseDouble(relativeCoordinate);
                                 case 2 -> coordinate[index] = player.getZ() + Double.parseDouble(relativeCoordinate);
-                                default -> throw new CommandSyntaxException();
+                                default -> {
+                                    this.parent.error();
+                                    return;
+                                }
                             }
                         }
                     } else if (s.charAt(0) == '^') {
-                        if (player == null) throw new CommandSyntaxException();
+                        if (player == null) {
+                            this.parent.error();
+                            return;
+                        }
                         String relativeAngleCoordinate = s.substring(1);
                         if (relativeAngleCoordinate.isEmpty()) {
-                            switch (index) {
-                                case 0 -> coordinate[index] = player.getX();
-                                case 1 -> coordinate[index] = player.getY();
-                                case 2 -> coordinate[index] = player.getZ();
-                                default -> throw new CommandSyntaxException();
-                            }
+                            if (!setCorrdinate(player)) return;
                         } else {
                             switch (index) {
-                                case 0 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
-                                case 1 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
-                                case 2 -> coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
-                                default -> throw new CommandSyntaxException();
+                                case 0 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(-90, 0).setYAngle(0).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getX();
+                                case 1 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).addAngle(0, 90).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getY();
+                                case 2 ->
+                                        coordinate[index] = BVector3.fromLocation(player.getLocation()).setLength(Double.parseDouble(relativeAngleCoordinate)).addToPos(player).getZ();
+                                default -> {
+                                    this.parent.error();
+                                    return;
+                                }
                             }
                         }
                     } else {
@@ -90,8 +94,21 @@ public abstract class PositionNode extends ParamNode<Position> {
                     index = 0;
                 }
             } catch (NumberFormatException ignore) {
-                throw new CommandSyntaxException();
+                this.parent.error();
             }
         }
+    }
+
+    private boolean setCorrdinate(Player player) {
+        switch (index) {
+            case 0 -> coordinate[index] = player.getX();
+            case 1 -> coordinate[index] = player.getY();
+            case 2 -> coordinate[index] = player.getZ();
+            default -> {
+                this.parent.error();
+                return false;
+            }
+        }
+        return true;
     }
 }

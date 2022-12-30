@@ -7,7 +7,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
 
@@ -101,6 +100,7 @@ public class ParamTree {
                 } else {
                     node = new EnumNode();
                 }
+
                 paramList.add(node.init(paramList, parameter.name, parameter.optional, parameter.type, parameter.enumData, parameter.postFix));
             }
             root.put(entry.getKey(), paramList);
@@ -115,7 +115,7 @@ public class ParamTree {
 
     /**
      * 从给定输入参数匹配该命令节点树对应命令{@link Command}的命令重载，并且解析对应参数。<br>
-     * 返回值是一个{@link Map.Entry},它是成功匹配的命令重载，对应{@link Command#commandParameters commandParameters}。<br>
+     * 返回值是一个{@link Map.Entry},它是成功匹配的命令重载，对应{@link Command#getCommandParameters()}  commandParameters}。<br>
      * 其Key对应commandParameters中的Key,值是一个{@link ParamList} 其中每个节点与commandParameters的Value一一对应，并且是解析之后的结果。
      *
      * @param sender 命令发送者
@@ -125,38 +125,42 @@ public class ParamTree {
     public Map.Entry<String, ParamList> matchAndParse(CommandSender sender, String[] args) {//成功条件 命令链与参数长度相等 命令链必选参数全部有结果
         this.args = args;
         this.sender = sender;
-        this.root.forEach((key, value) -> value.reset());
+        //reset
+        for (var list : this.root.values()) {
+            list.reset();
+        }
         Map.Entry<String, ParamList> result = null;
         var error = new HashSet<ParamList>();
-        var lists = this.root.entrySet().stream().filter(list -> args.length >= list.getValue().stream().filter(n -> !n.isOptional()).count()).toList();
+        var lists = this.root.entrySet();
+        //var lists = this.root.entrySet().stream().filter(list -> args.length >= list.getValue().stream().filter(n -> !n.isOptional()).count()).toList();
         for (var entry : lists) {
+            var list = entry.getValue();
             f2:
-            for (var node : entry.getValue()) {
+            for (var node : list) {
                 while (!node.hasResult()) {
-                    try {
-                        node.fill(args[entry.getValue().getIndexAndIncrement()]);
-                    } catch (CommandSyntaxException |
-                             ArrayIndexOutOfBoundsException ignore) {//第一个代表当前索引位置解析错误，第二个代表参数不足够
-                        entry.getValue().error();
+                    if (list.getIndex() >= args.length) {
+                        if (node.isOptional()) break f2;
+                        list.getIndexAndIncrement();
+                        list.error();
+                        break f2;
+                    }
+                    node.fill(args[list.getIndexAndIncrement()]);
+                    if (list.getError() != Integer.MIN_VALUE) {
                         break f2;
                     }
                 }
             }
-            if (entry.getValue().isComplete()) {
-                if (entry.getValue().getIndex() < args.length) {//错误=没用完参数
-                    entry.getValue().getIndexAndIncrement();
-                    entry.getValue().error();
-                    error.add(entry.getValue());
-                } else {
-                    result = Map.entry(entry.getKey(), entry.getValue().clone());
-                    break;
-                }
-            } else error.add(entry.getValue());
+            if (list.getError() == Integer.MIN_VALUE) {
+                result = Map.entry(entry.getKey(), list.clone());
+                break;
+            } else {
+                error.add(list);
+            }
         }
 
         if (result == null) {//全部不成功
             var log = new CommandLogger(this.getCommand(), sender, args);
-            var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(0);
+            var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(-1);
             log.outputSyntaxErrors(errorIndex);
             return null;
         } else {

@@ -10,12 +10,16 @@ import cn.nukkit.network.protocol.DataPacket;
 @PowerNukkitXOnly
 public interface NetworkPlayerSession {
     void sendPacket(DataPacket packet);
+
     void sendImmediatePacket(DataPacket packet, Runnable callback);
+
+    void sendImmediatePacket(DataPacket packet);
 
     void disconnect(String reason);
 
     Player getPlayer();
 
     void setCompression(CompressionProvider compression);
+
     CompressionProvider getCompression();
 }

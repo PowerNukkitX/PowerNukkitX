@@ -13,11 +13,11 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 @Since("1.19.50-r4")
 public class IntNode extends ParamNode<Integer> {
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         try {
             this.value = Integer.parseInt(arg);
         } catch (NumberFormatException e) {
-            throw new CommandSyntaxException();
+            this.parent.error();
         }
     }
 

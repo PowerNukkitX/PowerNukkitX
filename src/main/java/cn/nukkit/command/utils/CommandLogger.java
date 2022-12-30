@@ -58,12 +58,12 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     /**
-     * 输出默认的命令格式错误信息
+     * 输出默认的命令格式错误信息,会提示命令发送者在指定索引处发生错误
      *
      * @param errorIndex 发生错误的参数索引
      */
     public void outputSyntaxErrors(int errorIndex) {
-        if (!isSend()) return;
+        if (isNotSend()) return;
         if (sender instanceof Player player) {
             player.sendCommandOutput(new CommandOutputContainer("commands.generic.syntax", this.syntaxErrorsValue(errorIndex), 0));
         } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
@@ -80,7 +80,7 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     /**
-     * 输出一个参数过小错误信息
+     * 输出一个参数过小的错误信息，会提示命令发送者指定位置的参数最小值不能低于minimum
      *
      * @param errorIndex 发生错误的参数索引
      * @param minimum    允许的最小值
@@ -97,16 +97,21 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
      * @param params   给命令目标的反馈信息参数
      */
     public void outputObjectWhisper(String rawtext, Player receiver, Object... params) {
-        if (!isSend()) return;
+        if (isNotSend()) return;
         receiver.sendRawTextMessage(RawText.fromRawText(String.format(rawtext, params)));
     }
 
+    /**
+     * 输出一条命令成功执行的消息给命令发送者<br>参数message可以是纯文本，也可以是语言文本key<br>如果是语言文本key将会翻译成对应message
+     *
+     * @param message the message
+     */
     public void outputSuccess(String message) {
         this.outputSuccess(message, new String[]{});
     }
 
     public void outputSuccess(String key, String... params) {
-        if (!isSend()) return;
+        if (isNotSend()) return;
         if (sender instanceof Player player) {
             player.sendCommandOutput(new CommandOutputContainer(key, params, 1));
         } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
@@ -114,29 +119,16 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
         } else sender.sendMessage(new TranslationContainer(key, params));
     }
 
-    public void outputError(String message) {
-        this.outputError(message, new String[]{});
-    }
-
-    public void outputError(String key, String... params) {
-        if (!isSend()) return;
-        if (sender instanceof Player player) {
-            player.sendCommandOutput(new CommandOutputContainer(key, params, 0));
-        } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
-            executorCommandSender.sendCommandOutput(new CommandOutputContainer(key, params, 0));
-        } else sender.sendMessage(new TranslationContainer(key, params));
-    }
-
-    public void addInfo(String key) {
+    public void addSuccess(String key) {
         this.outputContainer.getMessages().add(new CommandOutputMessage(key));
     }
 
-    public void addInfo(String key, String... params) {
+    public void addSuccess(String key, String... params) {
         this.outputContainer.getMessages().add(new CommandOutputMessage(key, params));
     }
 
-    public void output() {
-        if (!isSend()) return;
+    public void outputSuccess() {
+        if (isNotSend()) return;
         if (sender instanceof Player player) {
             this.outputContainer.setSuccessCount(this.outputContainer.getMessages().size());
             player.sendCommandOutput(this.outputContainer);
@@ -149,6 +141,19 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
             }
         }
         this.outputContainer.getMessages().clear();
+    }
+
+    public void outputError(String message) {
+        this.outputError(message, new String[]{});
+    }
+
+    public void outputError(String key, String... params) {
+        if (isNotSend()) return;
+        if (sender instanceof Player player) {
+            player.sendCommandOutput(new CommandOutputContainer(key, params, 0));
+        } else if (sender instanceof ExecutorCommandSender executorCommandSender) {
+            executorCommandSender.sendCommandOutput(new CommandOutputContainer(key, params, 0));
+        } else sender.sendMessage(new TranslationContainer(key, params));
     }
 
     private String[] syntaxErrorsValue(int errorIndex) {
@@ -188,11 +193,11 @@ public record CommandLogger(Command command, CommandSender sender, String[] args
     }
 
     //only player
-    private boolean isSend() {
+    private boolean isNotSend() {
         if (sender instanceof ICommandBlock && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return false;
+            return true;
         if (sender instanceof ExecutorCommandSender exeSender && exeSender.getExecutor() instanceof ICommandBlock && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.COMMAND_BLOCK_OUTPUT))
-            return false;
-        return !(sender instanceof Player) || sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
+            return true;
+        return sender instanceof Player && !sender.getPosition().getLevel().getGameRules().getBoolean(GameRule.SEND_COMMAND_FEEDBACK);
     }
 }

@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public class ParamList extends ArrayList<IParamNode<?>> {
-    private int error = -1;
+    private int error = Integer.MIN_VALUE;
     private int index = 0;
     public final ParamTree parent;
 
@@ -19,9 +19,11 @@ public class ParamList extends ArrayList<IParamNode<?>> {
     }
 
     public void reset() {
-        this.error = -1;
+        this.error = Integer.MIN_VALUE;
         this.index = 0;
-        forEach(IParamNode::reset);
+        for (var node : this) {
+            node.reset();
+        }
     }
 
     public int getIndexAndIncrement() {

@@ -2,7 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
@@ -16,9 +15,9 @@ public class OperatorStringNode extends StringNode {
     private static final HashSet<String> OPERATOR = Sets.newHashSet("+=", "-=", "*=", "/=", "%=", "=", "<", ">", "><");
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (OPERATOR.contains(arg)) this.value = arg;
-        else throw new CommandSyntaxException();
+        else this.parent.error();
     }
 
 }

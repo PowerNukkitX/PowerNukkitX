@@ -6,6 +6,9 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.command.tree.ParamList;
+import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 
 /**
@@ -16,9 +19,10 @@ import cn.nukkit.command.tree.ParamList;
 @Since("1.19.50-r4")
 public class EnumNode extends ParamNode<String> {
     protected CommandEnum commandEnum;
+    protected Set<String> enums;
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (commandEnum.isSoft()) {
             this.value = arg;
             return;
@@ -32,7 +36,7 @@ public class EnumNode extends ParamNode<String> {
 //                throw new CommandSyntaxException();
 //            }
 //        }
-        if (!commandEnum.getValues().contains(arg)) throw new CommandSyntaxException();
+        if (!enums.contains(arg)) this.parent.error();
         this.value = arg;
     }
 
@@ -40,6 +44,7 @@ public class EnumNode extends ParamNode<String> {
     public IParamNode<String> init(ParamList parent, String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
         this.parent = parent;
         this.commandEnum = enumData;
+        this.enums = Sets.newHashSet(this.commandEnum.getValues());
         this.optional = optional;
         return this;
     }

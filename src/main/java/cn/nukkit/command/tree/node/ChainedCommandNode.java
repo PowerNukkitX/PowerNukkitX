@@ -2,7 +2,6 @@ package cn.nukkit.command.tree.node;
 
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
-import cn.nukkit.command.exceptions.CommandSyntaxException;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
@@ -23,9 +22,9 @@ public class ChainedCommandNode extends EnumNode {
     private final List<String> TMP = new ArrayList<>();
 
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         if (!remain) {
-            if (!CHAINED.contains(arg)) throw new CommandSyntaxException();
+            if (!CHAINED.contains(arg)) this.parent.error();
             TMP.add(arg);
             remain = true;
         } else {

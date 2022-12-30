@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CommandParameter {
 
@@ -355,6 +356,23 @@ public class CommandParameter {
         }
 
         return CommandParamType.RAWTEXT;
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CommandParameter that = (CommandParameter) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Deprecated

@@ -13,11 +13,11 @@ import cn.nukkit.command.exceptions.CommandSyntaxException;
 @Since("1.19.50-r4")
 public class FloatNode extends ParamNode<Double> {
     @Override
-    public void fill(String arg) throws CommandSyntaxException {
+    public void fill(String arg) {
         try {
             this.value = Double.parseDouble(arg);
         } catch (Exception e) {
-            throw new CommandSyntaxException();
+            this.parent.error();
         }
     }
 
