@@ -7,7 +7,6 @@ import cn.nukkit.entity.ai.behaviorgroup.BehaviorGroup;
 import cn.nukkit.entity.ai.behaviorgroup.IBehaviorGroup;
 import cn.nukkit.entity.ai.controller.LookController;
 import cn.nukkit.entity.ai.controller.SpaceMoveController;
-import cn.nukkit.entity.ai.evaluator.ProbabilityEvaluator;
 import cn.nukkit.entity.ai.executor.SpaceRandomRoamExecutor;
 import cn.nukkit.entity.ai.route.finder.impl.SimpleSpaceAStarRouteFinder;
 import cn.nukkit.entity.ai.route.posevaluator.SwimmingPosEvaluator;
@@ -37,7 +36,9 @@ public abstract class EntityFish extends EntitySwimmingAnimal{
                     this.tickSpread,
                     Set.of(),
                     Set.of(
-                            new Behavior(new SpaceRandomRoamExecutor(0.2f, 12, 150, false, -1, 20), new ProbabilityEvaluator(5, 10), 1, 1, 25)
+                            new Behavior(
+                                    new SpaceRandomRoamExecutor(0.2f, 12, 1, 80, false, -1, false, 10),
+                                    entity -> true, 1)
                     ),
                     Set.of(),
                     Set.of(new SpaceMoveController(), new LookController(true, true)),
