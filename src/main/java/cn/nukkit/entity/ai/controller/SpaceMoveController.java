@@ -3,6 +3,7 @@ package cn.nukkit.entity.ai.controller;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityIntelligent;
 import cn.nukkit.math.Vector3;
 
@@ -28,6 +29,7 @@ public class SpaceMoveController implements IController {
             var dy = relativeVector.y * k;
             var dz = relativeVector.z * k;
             entity.addTmpMoveMotion(new Vector3(dx, dy, dz));
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, true);
             if (xyzLength < speed) {
                 needNewDirection(entity);
                 //刹车！
@@ -38,6 +40,7 @@ public class SpaceMoveController implements IController {
             }
             return true;
         } else {
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_MOVING, false);
             return false;
         }
     }

@@ -17,9 +17,9 @@ public class FlatRandomRoamExecutor implements EntityControl, IBehaviorExecutor 
     protected int maxRoamRange;
     protected int frequency;
 
-    protected int currentTargetCalTick = 0;
+    protected int currentTargetCalTick;
     protected int durationTick = 0;
-    protected boolean calNextTargetImmediately = false;
+    protected boolean calNextTargetImmediately;
     protected int runningTime;
     protected boolean avoidWater;
     protected int maxRetryTime;
