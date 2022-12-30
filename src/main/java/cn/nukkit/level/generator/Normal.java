@@ -1,10 +1,12 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.Server;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockStone;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.event.level.ChunkPrePopulateEvent;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeSelector;
@@ -398,13 +400,14 @@ public class Normal extends Generator {
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = this.level.getChunk(chunkX, chunkZ);
         this.nukkitRandom.setSeed(0xdeadbeef ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
-        for (Populator populator : this.populators) {
-            populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
-        }
-
         @SuppressWarnings("deprecation")
         Biome biome = EnumBiome.getBiome(chunk.getBiomeId(7, 7));
-        biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+        var event = new ChunkPrePopulateEvent(chunk, this.populators, biome.getPopulators());
+        Server.getInstance().getPluginManager().callEvent(event);
+        for (Populator populator : event.getTerrainPopulators()) {
+            populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
+        }
+        biome.populateChunk(this.level, event.getBiomePopulators(), chunkX, chunkZ, this.nukkitRandom);
     }
 
     @Since("1.19.21-r2")

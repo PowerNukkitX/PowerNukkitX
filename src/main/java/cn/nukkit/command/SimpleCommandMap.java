@@ -5,8 +5,10 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.network.protocol.types.PlayerAbility;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
+import co.aikar.timings.Timings;
 import io.netty.util.internal.EmptyArrays;
 import lombok.extern.log4j.Log4j2;
 
@@ -101,8 +103,8 @@ public class SimpleCommandMap implements CommandMap {
 
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
-        this.register("nukkit", new TimingsCommand("timings"));
         this.register("nukkit", new DebugPasteCommand("debugpaste"));
+        if (!Timings.isTimingsCloseCompletely()) this.register("nukkit", new TimingsCommand("timings"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
         if (this.server.getConfig("debug.commands", false)) {
             this.register("nukkit", new DebugCommand("debug"));

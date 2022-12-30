@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFallableMeta;
 import cn.nukkit.block.BlockMeta;
 import cn.nukkit.item.Item;
+import lombok.NonNull;
 
 import java.util.Locale;
 
@@ -53,6 +54,7 @@ public interface CustomBlock {
      * <p>
      * {@code @Override} this method to set the namespace ID of the custom block
      */
+    @NonNull
     String getNamespaceId();
 
     /**

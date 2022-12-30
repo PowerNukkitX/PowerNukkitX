@@ -611,7 +611,7 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(Class<? extends ItemCustom> c) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomItem(Class<? extends ItemCustom> c) {
         registerCustomItem(List.of(c));
     }
 
@@ -622,26 +622,34 @@ public class Item implements Cloneable, BlockID, ItemID {
      */
     @PowerNukkitXOnly
     @Since("1.6.0.0-PNX")
-    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomItem(@Nonnull List<Class<? extends ItemCustom>> itemClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the custom item feature enabled. Unable to register the customItemList!");
             return;
         }
         for (var clazz : itemClassList) {
-            ItemCustom itemCustom = clazz.getDeclaredConstructor().newInstance();
-            if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
-            CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
-            var customDef = itemCustom.getDefinition();
-            CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
-            // 在服务端注册自定义物品的tag
-            if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
-                var tagList = componentTag.getList("item_tags", StringTag.class);
-                if (tagList.size() != 0) {
-                    ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+            try {
+                var method = clazz.getDeclaredConstructor();
+                method.setAccessible(true);
+                ItemCustom itemCustom = method.newInstance();
+                if (CUSTOM_ITEMS.containsKey(itemCustom.getNamespaceId())) return;
+                CUSTOM_ITEMS.put(itemCustom.getNamespaceId(), clazz);
+                var customDef = itemCustom.getDefinition();
+                CUSTOM_ITEM_DEFINITIONS.put(itemCustom.getNamespaceId(), customDef);
+                // 在服务端注册自定义物品的tag
+                if (customDef.nbt().get("components") instanceof CompoundTag componentTag) {
+                    var tagList = componentTag.getList("item_tags", StringTag.class);
+                    if (tagList.size() != 0) {
+                        ItemTag.registerItemTag(itemCustom.getNamespaceId(), tagList.getAll().stream().map(tag -> tag.data).collect(Collectors.toSet()));
+                    }
                 }
+                RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
+                addCreativeItem(itemCustom);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                log.error("Cannot find the parameterless constructor for this custom item:" + clazz.getCanonicalName());
             }
-            RuntimeItems.getRuntimeMapping().registerCustomItem(itemCustom);
-            addCreativeItem(itemCustom);
         }
     }
 

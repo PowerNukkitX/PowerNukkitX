@@ -1219,7 +1219,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockClassList 传入自定义方块class List
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomBlock(@Nonnull List<Class<? extends CustomBlock>> blockClassList) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
@@ -1227,9 +1227,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         SortedMap<String, CustomBlock> sortedCustomBlock = new TreeMap<>(MinecraftNamespaceComparator::compareFNV);
 
         for (var each : blockClassList) {
-            CustomBlock block = each.getDeclaredConstructor().newInstance();
-            if (!CUSTOM_BLOCK_ID_MAP.containsKey(block.getNamespaceId())) {
-                sortedCustomBlock.put(block.getNamespaceId(), block);
+            CustomBlock block = null;
+            try {
+                var method = each.getDeclaredConstructor();
+                method.setAccessible(true);
+                block = method.newInstance();
+                if (!CUSTOM_BLOCK_ID_MAP.containsKey(block.getNamespaceId())) {
+                    sortedCustomBlock.put(block.getNamespaceId(), block);
+                }
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                log.error("Cannot find the parameterless constructor for this custom block:" + each.getCanonicalName());
             }
         }
         if (!sortedCustomBlock.isEmpty()) {
@@ -1252,7 +1261,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param blockNamespaceClassMap 传入自定义方块classMap { key: NamespaceID, value: Class }
      */
     @PowerNukkitXOnly
-    public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void registerCustomBlock(@Nonnull Map<String, Class<? extends CustomBlock>> blockNamespaceClassMap) {
         if (!Server.getInstance().isEnableExperimentMode() || Server.getInstance().getConfig("settings.waterdogpe", false)) {
             log.warn("The server does not have the experiment mode feature enabled.Unable to register custom block!");
             return;
@@ -1269,11 +1278,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (!sortedCustomBlockClasses.isEmpty()) {
             //注册各种数据
             for (var entry : sortedCustomBlockClasses.entrySet()) {
-                CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
-                CustomBlock block = entry.getValue().getDeclaredConstructor().newInstance();
-                ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
-                CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
-                ++nextBlockId;
+                try {
+                    var method = entry.getValue().getDeclaredConstructor();
+                    method.setAccessible(true);
+                    CustomBlock block = method.newInstance();
+                    CUSTOM_BLOCK_ID_MAP.put(entry.getKey(), nextBlockId);//自定义方块标识符->自定义方块id
+                    ID_TO_CUSTOM_BLOCK.put(nextBlockId, block);//自定义方块id->自定义方块
+                    CUSTOM_BLOCK_DEFINITIONS.add(block.getDefinition());//行为包数据
+                    ++nextBlockId;
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
+                    log.error("Cannot find the parameterless constructor for this custom block:" + entry.getValue().getCanonicalName());
+                }
             }
             var blocks = ID_TO_CUSTOM_BLOCK.values().stream().toList();
             BlockStateRegistry.registerCustomBlockState(blocks);//注册方块state

@@ -22,8 +22,9 @@ import java.util.List;
 public class ClientboundMapItemDataPacket extends DataPacket {
 
     public static final byte NETWORK_ID = ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET;
+    public static final long[] EMPTY_LONGS = new long[0];
 
-    public int[] eids = EmptyArrays.EMPTY_INTS;
+    public long[] eids = EMPTY_LONGS;
 
     public long mapId;
     public int update;
@@ -80,7 +81,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
         if ((update & ENTITIES_UPDATE) != 0) { //TODO: find out what these are for
             this.putUnsignedVarInt(eids.length);
-            for (int eid : eids) {
+            for (long eid : eids) {
                 this.putEntityUniqueId(eid);
             }
         }
