@@ -20,7 +20,7 @@ import java.util.Set;
  * 所有鱼的基类
  */
 @PowerNukkitXOnly
-@Since("1.19.50-r3")
+@Since("1.19.50-r4")
 public abstract class EntityFish extends EntitySwimmingAnimal{
 
     protected IBehaviorGroup behaviorGroup;
