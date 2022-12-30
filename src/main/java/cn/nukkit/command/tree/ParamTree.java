@@ -11,8 +11,8 @@ import cn.nukkit.command.tree.node.*;
 import cn.nukkit.command.utils.CommandLogger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 @PowerNukkitXOnly
@@ -130,9 +130,8 @@ public class ParamTree {
             list.reset();
         }
         Map.Entry<String, ParamList> result = null;
-        var error = new HashSet<ParamList>();
+        var error = new ArrayList<ParamList>();
         var lists = this.root.entrySet();
-        //var lists = this.root.entrySet().stream().filter(list -> args.length >= list.getValue().stream().filter(n -> !n.isOptional()).count()).toList();
         for (var entry : lists) {
             var list = entry.getValue();
             f2:
@@ -157,7 +156,6 @@ public class ParamTree {
                 error.add(list);
             }
         }
-
         if (result == null) {//全部不成功
             var log = new CommandLogger(this.getCommand(), sender, args);
             var errorIndex = error.stream().map(ParamList::getError).max(Integer::compare).orElse(-1);

@@ -5,7 +5,6 @@ import cn.nukkit.api.Since;
 import cn.nukkit.command.tree.node.IParamNode;
 
 import java.util.ArrayList;
-import java.util.function.Predicate;
 
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
@@ -32,10 +31,6 @@ public class ParamList extends ArrayList<IParamNode<?>> {
 
     public void error() {
         this.error = index - 1;
-    }
-
-    public boolean isComplete() {
-        return this.stream().filter(Predicate.not(IParamNode::isOptional)).allMatch(IParamNode::hasResult);
     }
 
     /**

@@ -24,7 +24,10 @@ public class ChainedCommandNode extends EnumNode {
     @Override
     public void fill(String arg) {
         if (!remain) {
-            if (!CHAINED.contains(arg)) this.parent.error();
+            if (!CHAINED.contains(arg)) {
+                this.parent.error();
+                return;
+            }
             TMP.add(arg);
             remain = true;
         } else {
