@@ -263,7 +263,8 @@ public class InventorySlice implements Inventory {
     @Override
     public boolean isFull() {
         for (int i = startSlot; i < endSlot; ++i) {
-            if (rawInv.getItem(i).getId() == Item.AIR) {
+            var item = rawInv.getItem(i);
+            if (item == null || item.getId() == Item.AIR || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
                 return false;
             }
         }
