@@ -1979,7 +1979,7 @@ Need to switch languages?
 
 <!--1.19.50-r1-PNX Protocol Version 560-->
 [#1.19.50-r1]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r1
-<!--1.19.40-r2-PNX Protocol Version 560-->
+<!--1.19.50-r2-PNX Protocol Version 560-->
 [#1.19.50-r2]: https://github.com/PowerNukkitX/PowerNukkitX/releases/tag/1.19.50-r2
 <!--1.19.xx-PNX Version summary End-->
 
