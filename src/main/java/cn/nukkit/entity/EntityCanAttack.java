@@ -29,7 +29,7 @@ public interface EntityCanAttack {
      * @return 伤害<br>damage
      */
     default float getDiffHandDamage(int difficulty) {
-        return getDiffHandDamage()[difficulty - 1];
+        return getDiffHandDamage()[difficulty];
     }
 
     @PowerNukkitXOnly

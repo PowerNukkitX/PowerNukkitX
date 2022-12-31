@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.api.PowerNukkitOnly;
 import cn.nukkit.api.Since;
 import cn.nukkit.block.BlockID;
@@ -76,6 +77,15 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
                 this.armorInventory.setItem(armorTag.getByte("Slot"), NBTIO.getItemHelper(armorTag));
             }
         }
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        //怪物不能在和平模式下生存
+        if (this.getServer().getDifficulty() == 0) {
+            this.close();
+            return true;
+        } else return super.onUpdate(currentTick);
     }
 
     public void spawnToAll() {
@@ -239,7 +249,7 @@ public abstract class EntityMob extends EntityIntelligent implements EntityInven
 
     @Override
     public float getDiffHandDamage(int difficulty) {
-        return this.diffHandDamage[difficulty - 1];
+        return this.diffHandDamage[difficulty];
     }
 
     @Override
