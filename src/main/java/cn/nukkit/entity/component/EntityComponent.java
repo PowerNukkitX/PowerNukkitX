@@ -3,6 +3,10 @@ package cn.nukkit.entity.component;
 import cn.nukkit.api.PowerNukkitXOnly;
 import cn.nukkit.api.Since;
 
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 实体组件<p>
  * 一个实体组件包含了此组件功能的所有逻辑,并可被注册到实体组件组中<p>
@@ -15,6 +19,11 @@ import cn.nukkit.api.Since;
 @PowerNukkitXOnly
 @Since("1.19.50-r4")
 public interface EntityComponent {
+
+    /**
+     * 组件构造函数缓存
+     */
+    Map<Class<? extends EntityComponent>, Constructor<? extends EntityComponent>> CONSTRUCTOR_CACHE = new HashMap<>();
 
     /**
      * 实体初始化时被调用，组件可以在这个方法中写一些状态设置的逻辑
