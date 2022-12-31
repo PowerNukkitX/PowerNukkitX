@@ -27,6 +27,10 @@ public interface EntityComponentGroup {
         return component;
     }
 
+    default <T extends EntityComponent> boolean hasComponent(Class<T> clazz) {
+        return getComponents().containsKey(clazz);
+    }
+
     default void onInitEntity() {
         getComponents().values().forEach(EntityComponent::onInitEntity);
     }
