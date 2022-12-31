@@ -7,6 +7,10 @@ import cn.nukkit.api.*;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.blockstate.BlockState;
+import cn.nukkit.entity.component.EntityComponent;
+import cn.nukkit.entity.component.EntityComponentGroup;
+import cn.nukkit.entity.component.EntityComponentRegistery;
+import cn.nukkit.entity.component.SimpleEntityComponentGroup;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.*;
@@ -53,10 +57,12 @@ import co.aikar.timings.TimingsHistory;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -549,6 +555,10 @@ public abstract class Entity extends Location implements Metadatable {
     protected Server server;
     protected Timing timing;
     protected boolean isPlayer = this instanceof Player;
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    @Getter
+    protected EntityComponentGroup componentGroup;
     private int maxHealth = 20;
     private volatile boolean initialized;
 
@@ -748,6 +758,38 @@ public abstract class Entity extends Location implements Metadatable {
                         .add(new FloatTag("", pitch)));
     }
 
+    /**
+     * Batch play animation on entity groups<br/>
+     * This method is recommended if you need to play the same animation on a large number of entities at the same time, as it only sends packets once for each player, which greatly reduces bandwidth pressure
+     * <p>
+     * 在实体群上批量播放动画<br/>
+     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
+     *
+     * @param animation 动画对象 Animation objects
+     * @param entities  需要播放动画的实体群 Group of entities that need to play animations
+     * @param players   可视玩家 Visible Player
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
+        var pk = new AnimateEntityPacket();
+        pk.parseFromAnimation(animation);
+        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
+        pk.encode();
+        Server.broadcastPacket(players, pk);
+    }
+
+    @PowerNukkitXOnly
+    @Since("1.19.50-r3")
+    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
+        var viewers = new HashSet<Player>();
+        entities.forEach(entity -> {
+            viewers.addAll(entity.getViewers().values());
+            if (entity.isPlayer) viewers.add((Player) entity);
+        });
+        playAnimationOnEntities(animation, entities, viewers);
+    }
+
     public abstract int getNetworkId();
 
     public float getHeight() {
@@ -839,6 +881,13 @@ public abstract class Entity extends Location implements Metadatable {
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
         this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
         this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
+
+        try {
+            this.componentGroup = requireEntityComponentGroup();
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("An error occurred while creating the component group", e);
+        }
+        this.componentGroup.onInitEntity();
 
         this.scheduleUpdate();
     }
@@ -1282,6 +1331,8 @@ public abstract class Entity extends Location implements Metadatable {
         } else {
             this.namedTag.remove("ActiveEffects");
         }
+
+        this.getComponentGroup().onSaveNBT();
     }
 
     /**
@@ -1735,8 +1786,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.checkBlockCollision();
 
         if (this.y < (level.getMinHeight() - 18) && this.isAlive()) {
-            if (this instanceof Player) {
-                Player player = (Player) this;
+            if (this instanceof Player player) {
                 if (!player.isCreative()) this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
             } else {
                 this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
@@ -1856,10 +1906,6 @@ public abstract class Entity extends Location implements Metadatable {
                 .filter(block -> block.down().getId() != BlockID.NETHER_PORTAL)
                 .min(euclideanDistance.thenComparing(heightDistance))
                 .orElse(null);
-
-        if (nearestPortal == null) {
-            return null;
-        }
 
         return nearestPortal;
     }
@@ -3053,7 +3099,7 @@ public abstract class Entity extends Location implements Metadatable {
 
         if (this.setPositionAndRotation(to, yaw, pitch)) {
             this.resetFallDistance();
-            this.onGround = this.noClip ? false : true;
+            this.onGround = !this.noClip;
 
             this.updateMovement();
 
@@ -3157,7 +3203,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (data.getId() == DATA_FLAGS_EXTENDED) {
                 metadata.put(this.dataProperties.get(DATA_FLAGS));
             }
-            this.sendData(this.hasSpawned.values().toArray(new Player[0]), metadata);
+            this.sendData(this.hasSpawned.values().toArray(Player.EMPTY_ARRAY), metadata);
         }
         return true;
     }
@@ -3431,38 +3477,6 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * Batch play animation on entity groups<br/>
-     * This method is recommended if you need to play the same animation on a large number of entities at the same time, as it only sends packets once for each player, which greatly reduces bandwidth pressure
-     * <p>
-     * 在实体群上批量播放动画<br/>
-     * 若你需要同时在大量实体上播放同一动画，建议使用此方法，因为此方法只会针对每个玩家发送一次包，这能极大地缓解带宽压力
-     *
-     * @param animation 动画对象 Animation objects
-     * @param entities  需要播放动画的实体群 Group of entities that need to play animations
-     * @param players   可视玩家 Visible Player
-     */
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities, Collection<Player> players) {
-        var pk = new AnimateEntityPacket();
-        pk.parseFromAnimation(animation);
-        entities.forEach(entity -> pk.getEntityRuntimeIds().add(entity.getId()));
-        pk.encode();
-        Server.broadcastPacket(players, pk);
-    }
-
-    @PowerNukkitXOnly
-    @Since("1.19.50-r3")
-    public static void playAnimationOnEntities(AnimateEntityPacket.Animation animation, Collection<Entity> entities) {
-        var viewers = new HashSet<Player>();
-        entities.forEach(entity -> {
-            viewers.addAll(entity.getViewers().values());
-            if (entity.isPlayer) viewers.add((Player) entity);
-        });
-        playAnimationOnEntities(animation, entities, viewers);
-    }
-
-    /**
      * Play the animation of this entity to a specified group of players
      * <p>
      * 向指定玩家群体播放此实体的动画
@@ -3478,6 +3492,32 @@ public abstract class Entity extends Location implements Metadatable {
         pk.getEntityRuntimeIds().add(this.getId());
         pk.encode();
         Server.broadcastPacket(players, pk);
+    }
+
+    /**
+     * 通过反射获取类实现的接口并查询{@link cn.nukkit.entity.component.EntityComponentRegistery}创建对应组件
+     */
+    @PowerNukkitXOnly
+    @Since("1.19.50-r4")
+    protected EntityComponentGroup requireEntityComponentGroup() throws InvocationTargetException, InstantiationException, IllegalAccessException {
+        var components = new HashSet<EntityComponent>();
+
+        var interfaces = this.getClass().getInterfaces();
+        for (var interfaze : interfaces) {
+            var component = EntityComponentRegistery.getInterfaceBoundEntityComponent(interfaze);
+            if (component != null) {
+                var constructor = EntityComponent.CONSTRUCTOR_CACHE.computeIfAbsent(component,k -> {
+                    try {
+                        return component.getConstructor(Entity.class);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("The required entity component constructor was not found", e);
+                    }
+                });
+                components.add(constructor.newInstance(this));
+            }
+        }
+
+        return new SimpleEntityComponentGroup(components);
     }
 
     private record OldStringClass(String key, Class<? extends Entity> value) {
